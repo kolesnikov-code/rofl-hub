@@ -106,3 +106,6 @@ class Database:
             #
 
             print("[DB] Все таблицы империи успешно созданы")
+
+
+db = Database()

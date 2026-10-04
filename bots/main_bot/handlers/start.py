@@ -44,3 +44,5 @@ async def cmd_start_step_2(callback: types.CallbackQuery):
         "Монеты можно потратить разными способами, они — основа экономики хаба. Береги их...\n\n"
         "🛑 <b>Но у тебя наверняка возник вопрос:</b> Что за котлета? Кого ей кормить?"
     )
+    await callback.message.edit_text(bonus_text, parse_mode="HTML")
+    await callback.answer()

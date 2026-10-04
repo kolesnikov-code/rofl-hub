@@ -25,8 +25,9 @@ ADMIN_CHANNEL_ID = getenv("ADMIN_SECRET_CHANNEL_ID")
 async def main():
     dp = Dispatcher()
 
-    from shared.database import init_db
-    await init_db()
+    from shared.database import db
+    await db.connect()
+    await db.create_tables()
 
     dp.include_router(start_router)
     dp.include_router(help_router)
