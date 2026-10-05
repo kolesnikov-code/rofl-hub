@@ -55,7 +55,8 @@ class Database:
                     inv_cutlets INT DEFAULT 1,
                     referred_by BIGINT,
                     is_subscribed INT DEFAULT 0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    team_id INT DEFAULT NULL
                 );
             """)
 
@@ -116,7 +117,20 @@ class Database:
                 );
             """)
 
-            #
+            # ТАБЛИЦА КОМАНД (ДО 50 ИГРОКОВ)
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS teams (
+                    team_id SERIAL PRIMARY KEY,                      -- Уникальный ID команды
+                    team_name VARCHAR(100) UNIQUE NOT NULL,          -- Название банды (напр. "7-Б класс 110 школы")
+                    captain_id BIGINT UNIQUE NOT NULL,               -- Telegram ID создателя (Капитана)
+                    city VARCHAR(100) DEFAULT 'Не указан',            -- Город привязки для поиска
+                    school_num VARCHAR(50) DEFAULT 'Не указана',      -- Номер школы для поиска
+                    members_count INT DEFAULT 1,                     -- Текущий состав (Капитан уже внутри)
+                    max_members INT DEFAULT 50,                      -- ЖЕСТКИЙ ЛИМИТ АНАТОЛИЯ АЛЕКСЕЕВИЧА!
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (captain_id) REFERENCES users(user_id) ON DELETE CASCADE
+                );
+            """)
 
             #
 
