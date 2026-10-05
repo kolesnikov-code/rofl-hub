@@ -52,6 +52,7 @@ class Database:
                     username VARCHAR(100),
                     rofl_hub_id VARCHAR(50) DEFAULT NULL,
                     balance INT DEFAULT 1000,
+                    inv_cutlets INT DEFAULT 1,
                     referred_by BIGINT,
                     is_subscribed INT DEFAULT 0,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

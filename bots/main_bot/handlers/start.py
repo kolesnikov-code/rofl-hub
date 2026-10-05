@@ -1,5 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.filters import Command
+from shared.db_users import register_new_user
 import html
 
 router = Router()
@@ -33,6 +34,10 @@ async def cmd_start(message: types.Message):
 
 @router.callback_query(F.data == "intro_step_2")
 async def cmd_start_step_2(callback: types.CallbackQuery):
+    user_id = callback.from_user.id
+    username = callback.from_user.username or "NoName"
+    referred_by = None
+    await register_new_user(user_id=user_id, username=username, referred_by=referred_by)
     bonus_text = (
         "🎁 <b>ДЕРЖИ СВОИ ПЕРВЫЕ НАГРАДЫ ЗА РЕГИСТРАЦИЮ!</b>\n"
         "..................................................\n"
