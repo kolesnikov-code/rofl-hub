@@ -2,9 +2,22 @@ import os
 import asyncpg
 from dotenv import load_dotenv
 
-load_dotenv()
+# Принудительно находим корень проекта и жестко привязываем файл .env для локальных тестов на компе
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-DB_URL = os.getenv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/rofl_db")
+# Считываем ссылку из .env. На сервере Railway эта переменная подставится автоматически!
+DB_URL = os.getenv("DATABASE_URL")
+
+if not DB_URL:
+    # Защитный буфер: если переменные на хостинге или локально лежат раздельно
+    PGHOST = os.getenv("PGHOST", "localhost")
+    PGPORT = os.getenv("PGPORT", "5432")
+    PGUSER = os.getenv("PGUSER", "postgres")
+    PGPASSWORD = os.getenv("PGPASSWORD", "postgres")
+    PGDATABASE = os.getenv("PGDATABASE", "rofl_db")
+    DB_URL = f"postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
+
 
 class Database:
     def __init__(self):
@@ -13,6 +26,7 @@ class Database:
     async def connect(self):
         """Открывает асинхронный пул соединений к БД"""
         try:
+            print(f"DEBUG: Наш текущий URL базы: {DB_URL}")
             self.pool = await asyncpg.create_pool(dsn=DB_URL)
             print("[DB] Пул соединений с PostgreSQL успешно открыт!")
         except Exception as e:
