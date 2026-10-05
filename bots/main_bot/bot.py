@@ -3,10 +3,10 @@ from os import getenv
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, Router
 from bots.main_bot.handlers.start import router as start_router
-from bots.main_bot.handlers.help import router as help_router
+from bots.main_bot.handlers.menu import router as help_router
 from bots.main_bot.handlers.faq import router as faq_router
+from bots.main_bot.handlers.rofl_hub_all import router as rofl_hub_all_router
 
-#from bots.main_bot.handlers.balance import router as balance_router
 #from bots.main_bot.handlers.buy_coins import router as buy_coins_router
 #from bots.main_bot.handlers.buy_post import router as buy_post_router
 #from bots.main_bot.handlers.buy_vip import router as buy_vip_router
@@ -32,6 +32,7 @@ async def main():
     dp.include_router(start_router)
     dp.include_router(help_router)
     dp.include_router(faq_router)
+    dp.include_router(rofl_hub_all_router)
 
     bot = Bot(token=TOKEN)
 
