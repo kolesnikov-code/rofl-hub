@@ -9,9 +9,9 @@ from bots.main_bot.handlers.rofl_hub_all import router as rofl_hub_all_router
 from bots.main_bot.handlers.rules import router as rules_router
 from bots.main_bot.handlers.profile import router as profile_router
 from bots.main_bot.handlers.clans import router as clans_router
+from bots.main_bot.handlers.shop import router as shop_router
 
 
-#from bots.main_bot.handlers.catalog import router as catalog_router
 #from bots.main_bot.handlers.my_id import router as my_id_router
 #from bots.main_bot.handlers.my_stats import router as my_stats_router
 #from bots.main_bot.handlers.referral import router as referral_router
@@ -37,6 +37,7 @@ async def main():
     dp.include_router(rules_router)
     dp.include_router(profile_router)
     dp.include_router(clans_router)
+    dp.include_router(shop_router)
 
     bot = Bot(token=TOKEN)
 
