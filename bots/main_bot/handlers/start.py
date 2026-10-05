@@ -77,7 +77,7 @@ async def cmd_start_step_3(callback: types.CallbackQuery):
         "🛑 <b>Это будет последнее сообщение нашего знакомства. Дальше только в бой:)</b>"
     )
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="Да расскажи уже скорее и в БОЙ!", callback_data="intro_step_4")]
+        [types.InlineKeyboardButton(text="Расскажи скорее и в БОЙ!", callback_data="intro_step_4")]
     ])
     await callback.message.edit_text(miner_text, reply_markup=keyboard, parse_mode="HTML")
     await callback.answer()
