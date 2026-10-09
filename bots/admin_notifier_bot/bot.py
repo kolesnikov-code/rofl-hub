@@ -5,15 +5,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = getenv("ADMIN_BOT_TOKEN")
-ADMIN_CHANNEL_ID = getenv("ADMIN_SECRET_CHANNEL_ID")
+ADMIN_TOKEN = os.getenv("ADMIN_SECRET_BOT_TOKEN") or os.getenv("ADMIN_BOT_TOKEN")ADMIN_CHANNEL_ID = getenv("ADMIN_SECRET_CHANNEL_ID")
 
 dp = Dispatcher()
 router = Router()
 dp.include_router(router)
 
 async def main():
-    bot = Bot(token=TOKEN)
+    bot = Bot(token=ADMIN_TOKEN)
     await dp.start_polling(bot)
 
 if __name__ == '__main__':

@@ -26,7 +26,6 @@ class Database:
     async def connect(self):
         """Открывает асинхронный пул соединений к БД"""
         try:
-            print(f"DEBUG: Наш текущий URL базы: {DB_URL}")
             self.pool = await asyncpg.create_pool(dsn=DB_URL)
             print("[DB] Пул соединений с PostgreSQL успешно открыт!")
         except Exception as e:

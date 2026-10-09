@@ -1,6 +1,7 @@
 import random
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
+current_time = datetime.now(timezone.utc)  # Серверное время всегда бьёт в одну наносекунду круглый год!
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext

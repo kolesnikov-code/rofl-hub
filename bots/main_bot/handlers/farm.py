@@ -1,5 +1,6 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
+current_time = datetime.now(timezone.utc)  # Серверное время всегда бьёт в одну наносекунду круглый год!
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from shared.database import db  # Твой официальный экземпляр класса БД
@@ -154,3 +155,38 @@ async def cmd_run_farm(message: types.Message):
                 f"📈 <i>Станок круглосуточно выкачивает монеты из рудников. Счётчик баланса запущен!</i>",
                 parse_mode="HTML"
             )
+
+
+# ----------------------------------------------------------------
+# 🎰 ПЕРЕХВАТ ИНЛАЙН-КЛИКОВ С ПAНЕЛИ ФЕPМЫ
+# ----------------------------------------------------------------
+@router.callback_query(F.data == "farm_action:load_1")
+async def process_inline_load_one_cutlet(callback: types.CallbackQuery):
+    user_id = callback.from_user.id
+
+    async with db.pool.acquire() as conn:
+        async with conn.transaction():
+            user = await conn.fetchrow(
+                "SELECT inv_cutlets, fridge_cutlets, fridge_capacity FROM users WHERE user_id = $1 FOR UPDATE",
+                user_id
+            )
+            if not user or user["inv_cutlets"] <= 0 or user["fridge_cutlets"] >= user["fridge_capacity"]:
+                await callback.answer("⚠️ Нечего заправлять или холодильник уже полон!", show_alert=True)
+                return
+
+            await conn.execute(
+                "UPDATE users SET inv_cutlets = inv_cutlets - 1, fridge_cutlets = fridge_cutlets + 1 WHERE user_id = $1",
+                user_id
+            )
+
+    await callback.answer("🥩 1 кибер-котлета успешно улетела в хаб!", show_alert=False)
+    # Имитируем повторный вызов команды farm, чтобы обновить цифры на экране у ребенка в один миг!
+    await callback.message.delete()
+    await cmd_farm(callback.message)
+
+
+@router.callback_query(F.data == "farm_action:run")
+async def process_inline_run_farm(callback: types.CallbackQuery):
+    # Просто гасим часики и вызываем уже готовую и проверенную логику /run_farm!
+    await callback.answer()
+    await cmd_run_farm(callback.message)

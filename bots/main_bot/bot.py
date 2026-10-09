@@ -19,7 +19,8 @@ from bots.main_bot.handlers import farm
 
 load_dotenv()
 
-TOKEN = getenv("USER_BOT_TOKEN")
+# Забудь про config.py, читай напрямую из системы (Титановый стандарт Railway)!
+BOT_TOKEN = os.getenv("USER_BOT_TOKEN") or os.getenv("MAIN_BOT_TOKEN")
 ADMIN_CHANNEL_ID = getenv("ADMIN_SECRET_CHANNEL_ID")
 
 async def main():
@@ -41,7 +42,7 @@ async def main():
     dp.include_router(games.router)
     dp.include_router(farm.router)
 
-    bot = Bot(token=TOKEN)
+    bot = Bot(token=BOT_TOKEN)
 
     print("🚀 ГЛАВНЫЙ БОТ ЮЗЕРОВ УСПЕШНО ЗАПУЩЕН НА ЛОКАЛЬНОМ ХОСТЕ!")
 

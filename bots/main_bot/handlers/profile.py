@@ -114,33 +114,56 @@ async def cmd_referral_link(message: types.Message):
 
 
 # ----------------------------------------------------------------
-# 🚜 КОМАНДА: /farm
+# 🚜 КОМАНДА: /farm (ОБНОВЛЕННАЯ: С ИНЛАЙН-УПРАВЛЕНИЕМ ХАБА)
 # ----------------------------------------------------------------
 @router.message(Command("my_farm"))
+@router.message(Command("farm"))
 async def cmd_farm(message: types.Message):
     user_id = message.from_user.id
 
+    # Вытягиваем актуальные данные фермы напрямую из базы Railway
     async with db.pool.acquire() as conn:
-        data = await conn.fetchrow("SELECT fridge_cutlets, miner_junior_count, miner_premium_count FROM users WHERE user_id = $1", user_id)
+        data = await conn.fetchrow(
+            """
+            SELECT fridge_cutlets, inv_cutlets, miner_junior_count, miner_premium_count
+            FROM users
+            WHERE user_id = $1
+            """,
+            user_id
+        )
 
     if not data:
+        await message.answer("⚠️ Профиль не найден. Нажми /start")
         return
 
-    # Динамически выводим суммарное количество купленных роботов
-    miner_junior_count = data.get("miner_junior_count", 0)
-    miner_premium_count = data.get("miner_premium_count", 0)
-    farm_power = (miner_junior_count * 2) + (miner_premium_count * 5)
+    total_miners = data.get("miner_junior_count", 0) + data.get("miner_premium_count", 0)
+
+    # 🕹️ СОЗДАЕМ СОЧНУЮ ИНЛАЙН-КЛАВИАТУРУ УПРАВЛЕНИЯ
+    # callback_data привязываем напрямую к нашим обработчикам из farm.py!
+    farm_keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+        [
+            types.InlineKeyboardButton(text="🔋 Заправить 1 котлету", callback_data="farm_action:load_1"),
+            types.InlineKeyboardButton(text="⚡ Запустить Завод на 24ч", callback_data="farm_action:run")
+        ],
+        [
+            types.InlineKeyboardButton(text="🏪 Зайти в Магазин /shop", callback_data="open_shop_from_farm")
+        ]
+    ])
 
     my_farm_text = (
-        f"🚜 <b>КИБЕР-ФЕРМА АВТОДОБЫЧИ МОНЕТ</b>\n"
-        f"..................................................\n"
-        f"🥩 В хабе лежит: <b>{data.get('fridge_cutlets', 0)} кибер-котлет</b>\n"
-        f"🤖 Активных Младших-Майнеров: <b>{miner_junior_count} шт.</b>\n"
-        f"🤖 Активных Кибер-Бурильщиков: <b>{miner_premium_count} шт.</b>\n"
-        f"🤖 Мощность фермы: <b>{farm_power} в час, {farm_power * 24} в день, {farm_power * 720} в месяц.</b>\n"
-
-        f"..................................................\n"
-        f"💿 <b>ВНИМАНИЕ!</b>\n"
-        f"Введи команду /shop, чтобы запустить или прокачать круглосуточную ферму монет!"
+        f"🚜 <b>КИБЕР-ФЕРМА АВТОДОБЫЧИ МОНЕТ ROFL HUB</b>\n"
+        f"..................................................\n\n"
+        f"🤖 Активных роботов на заводе: <b>{total_miners} шт.</b>\n"
+        f"• Младшие Майнеры: <code>{data.get('miner_junior_count', 0)} шт.</code>\n"
+        f"• Кибер-Бурильщики: <code>{data.get('miner_premium_count', 0)} шт.</code>\n\n"
+        f"..................................................\n\n"
+        f"📦 <b>СОСТОЯНИЕ ТОПЛИВНОГО ХАБА:</b>\n"
+        f"🥩 Запас в Холодильнике: <b>{data.get('fridge_cutlets', 0)} шт.</b>\n"
+        f"💼 Котлеты в кармане инвентаря: <code>{data.get('inv_cutlets', 0)} шт.</code>\n\n"
+        f"..................................................\n\n"
+        f"💿 <b>ИНСТРУКЦИЯ ВОЖАКА:</b>\n"
+        f"1. Нажми <b>[Заправить 1 котлету]</b>, чтобы переложить топливо на склад.\n"
+        f"2. Нажми <b>[Запустить Завод]</b>, чтобы Бурильщики ушли работать на сутки!"
     )
-    await message.answer(my_farm_text, parse_mode="HTML")
+
+    await message.answer(my_farm_text, reply_markup=farm_keyboard, parse_mode="HTML")
