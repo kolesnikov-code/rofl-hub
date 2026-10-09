@@ -11,9 +11,9 @@ from bots.main_bot.handlers.profile import router as profile_router
 from bots.main_bot.handlers.clans import router as clans_router
 from bots.main_bot.handlers.shop import router as shop_router
 from bots.main_bot.handlers.vip_shop import router as vip_shop_router
+from bots.main_bot.handlers import games
+from bots.main_bot.handlers import farm
 
-
-#from bots.main_bot.handlers.referral import router as referral_router
 #from bots.main_bot.handlers.send_coin import router as send_coin_router
 #from bots.main_bot.handlers.support import router as support_router
 
@@ -38,6 +38,8 @@ async def main():
     dp.include_router(clans_router)
     dp.include_router(shop_router)
     dp.include_router(vip_shop_router)
+    dp.include_router(games.router)
+    dp.include_router(farm.router)
 
     bot = Bot(token=TOKEN)
 
