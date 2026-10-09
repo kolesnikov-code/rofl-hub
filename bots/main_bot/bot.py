@@ -13,7 +13,6 @@ from bots.main_bot.handlers.shop import router as shop_router
 from bots.main_bot.handlers.vip_shop import router as vip_shop_router
 
 
-#from bots.main_bot.handlers.my_stats import router as my_stats_router
 #from bots.main_bot.handlers.referral import router as referral_router
 #from bots.main_bot.handlers.send_coin import router as send_coin_router
 #from bots.main_bot.handlers.support import router as support_router

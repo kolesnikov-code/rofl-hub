@@ -39,102 +39,187 @@ class Database:
             print("[DB] Пул соединений с PostgreSQL закрыт")
 
     async def create_tables(self):
-        """Создание БД """
+        """Создание БД империи ROFL HUB CORE под ленивый расчёт и генератор Pillow"""
         if not self.pool:
             return
 
-        # 1. ТАБЛИЦА ЮЗЕРА, СТАРТОВОГО БАЛАНСА И ВНУТРЕННЕГО ID ЭКОСИСТЕМЫ
-
         async with self.pool.acquire() as conn:
+            # ----------------------------------------------------------------
+            # 👑 1. ГЛАВНАЯ ТАБЛИЦА ПРОФИЛЯ ЮЗЕРА, ФЕРМ И ТОПЛИВНОГО ХАБА
+            # ----------------------------------------------------------------
+            # Сюда вшита вся экономика, подписки на ремонт и счетчики роботов!
+            await conn.execute(
+                """
+                               CREATE TABLE IF NOT EXISTS users
+                               (
+                                   user_id BIGINT PRIMARY KEY,
+                                   username VARCHAR
+                               (
+                                   100
+                               ),
+                                   rofl_hub_id VARCHAR
+                               (
+                                   50
+                               ) DEFAULT NULL,
+                                   balance BIGINT DEFAULT 1000, -- BIGINT защита от миллиардных переполнений Китов
+                                   referred_by BIGINT,
+                                   is_subscribed INT DEFAULT 0,
+                                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                   team_id INT DEFAULT NULL,
+
+                                   -- 📦 ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ (НОВАЯ ЛOГИКА АНАТOЛИЯ АЛЕКСЕЕВИЧА)
+                                   fridge_capacity INT DEFAULT 1, -- Вместимость хаба (1, 5, 10, 50, 100 котлет)
+                                   fridge_cutlets INT DEFAULT 1, -- Сколько платных котлет лежит на складе сейчас
+                                   inv_cutlets INT DEFAULT 0, -- Котлеты в кармане (не заправленные в хаб)
+
+                               -- 🤖 СЧЁТЧИКИ ОБОPУДОВАНИЯ (Поддерживают неограниченный закуп доната!)
+                                   miner_junior_count INT DEFAULT 0, -- Сколько у юзера Младших Майнеров (★49 Stars)
+                                   miner_premium_count INT DEFAULT 0, -- Сколько у юзера Кибер-Бурильщиков (★99 Stars)
+
+                               -- ⏳ ТИТАНОВЫЙ ПРЕДOХРАНИТЕЛЬ СЕРВЕРА Railway (Lazy Evaluation)
+                                   last_update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Время последнего ленивого расчета баланса
+                                   );
+                               """)
+
+            # ----------------------------------------------------------------
+            # 📊 2. ТАБЛИЦА ИГРОВОЙ АНАЛИТИКИ И АНТИФРОДА
+            # ----------------------------------------------------------------
             await conn.execute("""
-                CREATE TABLE IF NOT EXISTS users (
-                    user_id BIGINT PRIMARY KEY,
-                    username VARCHAR(100),
-                    rofl_hub_id VARCHAR(50) DEFAULT NULL,
-                    balance INT DEFAULT 1000,
-                    inv_cutlets INT DEFAULT 1,
-                    referred_by BIGINT,
-                    is_subscribed INT DEFAULT 0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    team_id INT DEFAULT NULL
-                );
-            """)
+                               CREATE TABLE IF NOT EXISTS game_stats
+                               (
+                                   user_id
+                                   BIGINT
+                                   PRIMARY
+                                   KEY,
+                                   games_played
+                                   INT
+                                   DEFAULT
+                                   0,
+                                   games_won
+                                   INT
+                                   DEFAULT
+                                   0,
+                                   today_games_count
+                                   INT
+                                   DEFAULT
+                                   0,
+                                   last_game_time
+                                   TIMESTAMP
+                                   DEFAULT
+                                   CURRENT_TIMESTAMP,
+                                   FOREIGN
+                                   KEY
+                               (
+                                   user_id
+                               ) REFERENCES users
+                               (
+                                   user_id
+                               ) ON DELETE CASCADE
+                                   );
+                               """)
 
-            # 2. ТАБЛИЦА МАЙНЕРОВ И ХОЛОДИЛЬНИКА
-
+            # ----------------------------------------------------------------
+            # 📸 3. ТАБЛИЦА ПОКУПКИ ПОСТОВ (Спринты и Инста-Лифт)
+            # ----------------------------------------------------------------
             await conn.execute("""
-                CREATE TABLE IF NOT EXISTS miners (
-                    user_id BIGINT PRIMARY KEY,
-                    miner_type VARCHAR(50) DEFAULT 'none',
-                    miner_coins_packed INT DEFAULT 0,
-                    fridge_slots INT DEFAULT 1,
-                    cutlets_inside INT DEFAULT 0,
-                    miner_charge INT DEFAULT 100,
-                    contract_expires TIMESTAMP,
-                    last_claim_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-                );
-            """)
+                               CREATE TABLE IF NOT EXISTS pending_posts
+                               (
+                                   post_id
+                                   SERIAL
+                                   PRIMARY
+                                   KEY,
+                                   user_id
+                                   BIGINT
+                                   NOT
+                                   NULL,
+                                   photo_file_id
+                                   VARCHAR
+                               (
+                                   255
+                               ) NOT NULL,
+                                   post_text TEXT NOT NULL,
+                                   target_url VARCHAR
+                               (
+                                   255
+                               ) NOT NULL,
+                                   status VARCHAR
+                               (
+                                   20
+                               ) DEFAULT 'pending',
+                                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                   FOREIGN KEY
+                               (
+                                   user_id
+                               ) REFERENCES users
+                               (
+                                   user_id
+                               ) ON DELETE CASCADE
+                                   );
+                               """)
 
-            # 3. ТАБЛИЦА ИГРОВОЙ АНАЛИТИКИ И АНТИФРОДА
-
+            # ----------------------------------------------------------------
+            # 🌐 4. ТАБЛИЦА РЕКЛАМЫ НА БУДУЩЕМ САЙТЕ
+            # ----------------------------------------------------------------
             await conn.execute("""
-                CREATE TABLE IF NOT EXISTS game_stats (
-                    user_id BIGINT PRIMARY KEY,
-                    games_played INT DEFAULT 0,
-                    games_won INT DEFAULT 0,
-                    today_games_count INT DEFAULT 0,
-                    last_game_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-                );
-            """)
+                               CREATE TABLE IF NOT EXISTS site_ads
+                               (
+                                   ad_id
+                                   SERIAL
+                                   PRIMARY
+                                   KEY,
+                                   photo_file_id
+                                   VARCHAR
+                               (
+                                   255
+                               ) NOT NULL,
+                                   post_text TEXT NOT NULL,
+                                   target_url VARCHAR
+                               (
+                                   255
+                               ) NOT NULL,
+                                   expires_at TIMESTAMP NOT NULL,
+                                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                                   );
+                               """)
 
-            # 4. ТАБЛИЦА ПОКУПКИ ПОСТОВ
-
+            # ----------------------------------------------------------------
+            # 👥 5. ТАБЛИЦА КОМАНД (ЖЕСТКИЙ ЛИМИТ 50 ИГРOКОВ)
+            # ----------------------------------------------------------------
             await conn.execute("""
-                CREATE TABLE IF NOT EXISTS pending_posts (
-                    post_id SERIAL PRIMARY KEY,
-                    user_id BIGINT NOT NULL,
-                    photo_file_id VARCHAR(255) NOT NULL,
-                    post_text TEXT NOT NULL,
-                    target_url VARCHAR(255) NOT NULL,
-                    status VARCHAR(20) DEFAULT 'pending',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-                );
-            """)
+                               CREATE TABLE IF NOT EXISTS teams
+                               (
+                                   team_id
+                                   SERIAL
+                                   PRIMARY
+                                   KEY,
+                                   team_name
+                                   VARCHAR
+                               (
+                                   100
+                               ) UNIQUE NOT NULL,
+                                   captain_id BIGINT UNIQUE NOT NULL,
+                                   city VARCHAR
+                               (
+                                   100
+                               ) DEFAULT 'Не указан',
+                                   school_num VARCHAR
+                               (
+                                   50
+                               ) DEFAULT 'Не указана',
+                                   members_count INT DEFAULT 1,
+                                   max_members INT DEFAULT 50,
+                                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                   FOREIGN KEY
+                               (
+                                   captain_id
+                               ) REFERENCES users
+                               (
+                                   user_id
+                               ) ON DELETE CASCADE
+                                   );
+                               """)
 
-            # 5. ТАБЛИЦА
-
-            await conn.execute("""
-                CREATE TABLE IF NOT EXISTS site_ads (
-                    ad_id SERIAL PRIMARY KEY,
-                    photo_file_id VARCHAR(255) NOT NULL,
-                    post_text TEXT NOT NULL,
-                    target_url VARCHAR(255) NOT NULL,
-                    expires_at TIMESTAMP NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-            """)
-
-            # ТАБЛИЦА КОМАНД (ДО 50 ИГРОКОВ)
-            await conn.execute("""
-                CREATE TABLE IF NOT EXISTS teams (
-                    team_id SERIAL PRIMARY KEY,                      -- Уникальный ID команды
-                    team_name VARCHAR(100) UNIQUE NOT NULL,          -- Название банды (напр. "7-Б класс 110 школы")
-                    captain_id BIGINT UNIQUE NOT NULL,               -- Telegram ID создателя (Капитана)
-                    city VARCHAR(100) DEFAULT 'Не указан',            -- Город привязки для поиска
-                    school_num VARCHAR(50) DEFAULT 'Не указана',      -- Номер школы для поиска
-                    members_count INT DEFAULT 1,                     -- Текущий состав (Капитан уже внутри)
-                    max_members INT DEFAULT 50,                      -- ЖЕСТКИЙ ЛИМИТ АНАТОЛИЯ АЛЕКСЕЕВИЧА!
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (captain_id) REFERENCES users(user_id) ON DELETE CASCADE
-                );
-            """)
-
-            #
-
-            print("[DB] Все таблицы империи успешно созданы")
+            print("[DB] Все таблицы империи успешно созданы по новой токеномике!")
 
 
 db = Database()
