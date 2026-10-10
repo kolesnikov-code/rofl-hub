@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class SoloGameStates(StatesGroup):
-    waiting_for_quiz = State()  # Состояние FSM для удержания викторины
+    waiting_for_quiz = State()
 
 
 # ============================================================================
@@ -89,7 +89,6 @@ async def process_rps_choice(callback: types.CallbackQuery):
     bot_choice = random.choice(["rock", "scissors", "paper"])
     choices_ru = {"rock": "🪨 Камень", "scissors": "✂️ Ножницы", "paper": "🧻 Бумага"}
 
-    # Инлайн-кнопка реванша под итогом раунда
     retry_kb = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🎮 Сыграть еще раз!", callback_data="game_retry:rps")]
     ])
@@ -133,8 +132,8 @@ async def cmd_high_low(message: types.Message):
 
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [
-            types.InlineKeyboardButton(text="📈 Больше", callback_data=f"hl_play:up:{base_num}:{secret_num}"),
-            types.InlineKeyboardButton(text="📉 Меньше", callback_data=f"hl_play:down:{base_num}:{secret_num}")
+            types.InlineKeyboardButton(text="📈... Больше", callback_data=f"hl_play:up:{base_num}:{secret_num}"),
+            types.InlineKeyboardButton(text="...📉 Меньше", callback_data=f"hl_play:down:{base_num}:{secret_num}")
         ]
     ])
     await message.answer(
@@ -182,7 +181,6 @@ async def process_high_low_choice(callback: types.CallbackQuery):
 # ============================================================================
 @router.message(Command("quiz"))
 async def cmd_quiz_start(message: types.Message, state: FSMContext):
-    # Только чистый игровой контент Анатолия Алексеевича без ИТ-закулисья!
     quizzes = [
         {"q": "Какую скорость добычи дает Кибер-Бурильщик в магазине /shop?", "a": "5 рофлов в час",
          "o": ["2 рофла в час", "5 рофлов в час", "10 рофлов в час", "100 рофлов в час"]},
@@ -219,7 +217,13 @@ async def cmd_quiz_start(message: types.Message, state: FSMContext):
 @router.callback_query(SoloGameStates.waiting_for_quiz, F.data.startswith("quiz_check:"))
 async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
-    selected = callback.data.split(":", 1)[1]
+
+    # 🔥 ЖЕСТКИЙ ФИКС: Вытаскиваем строго текстовое значение ответа (индекс 1)
+    parts = callback.data.split(":", 1)
+    if len(parts) < 2:
+        await callback.answer()
+        return
+    selected = parts[1]
 
     user_data = await state.get_data()
     correct = user_data.get("correct_answer")
@@ -234,7 +238,6 @@ async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext):
         await callback.message.answer(result_text)
         return
 
-    # Кнопка быстрого перезапуска раунда Викторины
     retry_kb = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🎮 Ответить на другой вопрос!", callback_data="game_retry:quiz")]
     ])
@@ -255,19 +258,68 @@ async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext):
 
 
 # ============================================================================
-# 🎯 ЦЕНТРАЛЬНЫЙ ПЕРЕХВАТ КЛИКOВ С КНОПОК РЕВАНША (БЫСТРЫЙ RESTART)
+# 🎯 ЦЕНТРАЛЬНЫЙ ПЕРЕХВАТ КЛИКOВ С КНОПОК РЕВАНША (БЕСШОВНОЕ РЕДАКТИРОВАНИЕ)
 # ============================================================================
 @router.callback_query(F.data.startswith("game_retry:"))
 async def process_game_retry_inline(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
-    game_type = callback.data.split(":")
+    game_type = callback.data.split(":")[1]
 
-    # Стираем старый итог раунда, чтобы чат оставался чистым и аккуратным
-    await callback.message.delete()
-
+    # 🔥 UX-ПРОРЫВ: Вместо удаления сообщения, плавно подменяем старый экран на новый раунд!
     if game_type == "rps":
-        await cmd_rps_start(callback.message)
+        await callback.message.edit_text(
+            "🪨✂️🧻 <b>КАМЕНЬ-НОЖНИЦЫ-БУМАГА С БOТOM</b>\n\n"
+            "Выбирай свое оружие. Победа принесет <b>+2 рофла</b>, проигрыш спишет <b>-3 рофла</b>!",
+            reply_markup=get_rps_keyboard(),
+            parse_mode="HTML"
+        )
     elif game_type == "hl":
-        await cmd_high_low(callback.message)
+        base_num = random.randint(10, 90)
+        secret_num = random.randint(1, 100)
+        if secret_num == base_num:
+            secret_num += 1
+
+        keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+            [
+                types.InlineKeyboardButton(text="📈 Больше", callback_data=f"hl_play:up:{base_num}:{secret_num}"),
+                types.InlineKeyboardButton(text="📉 Меньше", callback_data=f"hl_play:down:{base_num}:{secret_num}")
+            ]
+        ])
+        await callback.message.edit_text(
+            f"🎲 <b>ИГРА «БОЛЬШЕ ИЛИ МЕНЬШЕ»</b>\n\n"
+            f"Бот выставил число: <b>{base_num}</b>.\n\n"
+            f"Загаданное скрытое число будет БОЛЬШЕ или МЕНЬШЕ этого значения?\n"
+            f"Победа: <b>+2 рофла</b> | Штраф: <b>-3 рофла</b>",
+            reply_markup=keyboard,
+            parse_mode="HTML"
+        )
     elif game_type == "quiz":
-        await cmd_quiz_start(callback.message, state)
+        quizzes = [
+            {"q": "Какую скорость добычи дает Кибер-Бурильщик в магазине /shop?", "a": "5 рофлов в час",
+             "o": ["2 рофла в час", "5 рофлов в час", "10 рофлов в час", "100 рофлов в час"]},
+            {"q": "Какое максимальное количество человек может вместить вечный Мега-Клан?", "a": "1000 человек",
+             "o": ["50 человек", "100 человек", "500 человек", "1000 человек"]},
+            {"q": "Какая максимальная вместимость автоматического Холодильника in игре?", "a": "100 шт.",
+             "o": ["10 шт.", "50 шт.", "100 шт.", "500 шт."]},
+        ]
+        quiz = random.choice(quizzes)
+        options = list(quiz["o"])
+        random.shuffle(options)
+
+        buttons = []
+        for option in options:
+            buttons.append([types.InlineKeyboardButton(text=option, callback_data=f"quiz_check:{option}")])
+
+        keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+        await state.update_data(correct_answer=quiz["a"])
+        await state.set_state(SoloGameStates.waiting_for_quiz)
+
+        await callback.message.edit_text(
+            f"🧠 <b>ИГРОВОЙ ИНТЕЛЛЕКТУАЛЬНЫЙ ТЕСТ</b>\n"
+            f"..................................................\n\n"
+            f"❓ <b>Вопрос:</b> {quiz['q']}\n\n"
+            f"⚠️ <i>ВНИМАНИЕ! Малейшая ошибка активирует капкан списания <b>-5 рофлов</b>, "
+            f"верный ответ принесет всего <b>+2 рофла</b>!</i>",
+            reply_markup=keyboard,
+            parse_mode="HTML"
+        )

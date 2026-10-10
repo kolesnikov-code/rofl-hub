@@ -18,13 +18,16 @@ PREMIUM_RATE_HOUR = 5
 
 
 async def apply_lazy_mining_earnings(user_id: int, conn) -> dict:
+    """Ленивый часовой расчет пассивного дохода на автопилоте"""
     user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
-    if not user: return None
+    if not user:
+        return None
 
     current_time = datetime.now(timezone.utc)
     last_update = user["last_update_time"]
     seconds_passed = int((current_time - last_update).total_seconds())
-    if seconds_passed <= 0: return user
+    if seconds_passed <= 0:
+        return user
 
     hours_passed = seconds_passed / 3600.0
     fridge_cutlets = user["fridge_cutlets"]
@@ -57,6 +60,7 @@ async def apply_lazy_mining_earnings(user_id: int, conn) -> dict:
 
 
 def generate_profile_image(user_id: int, username: str, data: dict) -> str:
+    """Рендерит неоновый паспорт инвентаря через Pillow"""
     capacity = data["fridge_capacity"]
     template_path = os.path.join(STATIC_DIR, f"fridge_{capacity}.jpg")
     if not os.path.exists(template_path):
@@ -89,7 +93,7 @@ def generate_profile_image(user_id: int, username: str, data: dict) -> str:
 
 
 # ============================================================================
-# 👤 ТЕКУЩИЙ ЛИЧНЫЙ КАБИНЕТ: /profile
+# 👤 ТЕКУЩИЙ ЛИЧНЫЙ КАБИНЕТ: /profile ИЛИ /profile ИНЛАЙН-КЛИК
 # ============================================================================
 @router.message(Command("profile"))
 async def cmd_profile_stats(message: types.Message):
@@ -103,7 +107,6 @@ async def cmd_profile_stats(message: types.Message):
                 await message.answer("⚠️ Профиль не найден. Прожми /start")
                 return
 
-            # Проверяем команду игрока БЕЗ вывода личных юзернеймов на публику!
             team_name = "Нет команды"
             if user["team_id"] is not None:
                 t_row = await conn.fetchrow("SELECT team_name, max_members FROM teams WHERE team_id = $1",
@@ -144,7 +147,8 @@ async def cmd_profile_stats(message: types.Message):
     photo_file = FSInputFile(photo_path)
     await message.answer_photo(photo=photo_file, caption=caption_text, reply_markup=profile_keyboard, parse_mode="HTML")
     try:
-        if os.path.exists(photo_path): os.remove(photo_path)
+        if os.path.exists(photo_path):
+            os.remove(photo_path)
     except Exception:
         pass
 
