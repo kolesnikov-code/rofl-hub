@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class SoloGameStates(StatesGroup):
-    waiting_for_quiz = State()  # Состояние для удержания викторины в FSM
+    waiting_for_quiz = State()  # Состояние FSM для удержания викторины
 
 
 # ============================================================================
@@ -21,30 +21,23 @@ async def execute_solo_game_payout(user_id: int, win_reward: int, lose_penalty: 
     bool, str, int]:
     """
     Титановый движок расчета соло-игр холдинга ROFL HUB CORE.
-    Автоматически считывает boost_level и добавляет +1, +2 или +3 монеты прямо к выигрышу!
+    Защищает баланс игрока от параллельных кликов через жесткий затвор FOR UPDATE.
+    Обеспечивает отрицательное матожидание для выжигания монет из экономики.
     """
     async with db.pool.acquire() as conn:
         async with conn.transaction():
-            # Вытягиваем баланс и уровень буста вожака
-            user = await conn.fetchrow("SELECT balance, boost_level FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+            user = await conn.fetchrow("SELECT balance FROM users WHERE user_id = $1 FOR UPDATE", user_id)
             if not user:
                 return False, "⚠️ Профиль не найден. Нажми /start", 0
 
             current_balance = user["balance"]
-            boost_level = user["boost_level"] or 0
 
             if not is_win and current_balance < lose_penalty:
                 return False, f"❌ У тебя недостаточно Рофлов для оплаты штрафа! Нужно минимум {lose_penalty} монет.", current_balance
 
             if is_win:
-                # 🔥 ИГРОВАЯ МАТЕМАТИКА АНАТОЛИЯ АЛЕКСЕЕВИЧА: Награда + Бонус уровня буста!
-                final_reward = win_reward + boost_level
-                new_balance = current_balance + final_reward
-
-                if boost_level > 0:
-                    status_text = f"🎉 ПОБЕДА! Начислено: <b>+{win_reward} рофлов</b> (и плюс эксклюзивный бонус буста: <b>+{boost_level} рофлов</b>)!"
-                else:
-                    status_text = f"🎉 ПОБЕДА! Начислено: <b>+{win_reward} рофлов</b>."
+                new_balance = current_balance + win_reward
+                status_text = f"🎉 ПОБЕДА! Начислено: <b>+{win_reward} рофлов</b>."
             else:
                 new_balance = current_balance - lose_penalty
                 status_text = f"💀 ПРОИГРЫШ! Списан штраф: <b>-{lose_penalty} рофлов</b>."
@@ -96,7 +89,7 @@ async def process_rps_choice(callback: types.CallbackQuery):
     bot_choice = random.choice(["rock", "scissors", "paper"])
     choices_ru = {"rock": "🪨 Камень", "scissors": "✂️ Ножницы", "paper": "🧻 Бумага"}
 
-    # 🔥 ФИКС: Вшиваем инлайн-кнопку реванша под итогом раунда
+    # Инлайн-кнопка реванша под итогом раунда
     retry_kb = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🎮 Сыграть еще раз!", callback_data="game_retry:rps")]
     ])
@@ -169,7 +162,6 @@ async def process_high_low_choice(callback: types.CallbackQuery):
         await callback.message.answer(result_text)
         return
 
-    # 🔥 ФИКС: Кнопка быстрого перезапуска раунда Больше/Меньше
     retry_kb = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🎮 Сыграть еще раз!", callback_data="game_retry:hl")]
     ])
@@ -190,14 +182,14 @@ async def process_high_low_choice(callback: types.CallbackQuery):
 # ============================================================================
 @router.message(Command("quiz"))
 async def cmd_quiz_start(message: types.Message, state: FSMContext):
-    # Наш выверенный пакет вопросов от ассистентов
+    # Только чистый игровой контент Анатолия Алексеевича без ИТ-закулисья!
     quizzes = [
-        {"q": "Какой робот-майнер в /shop стоит ровно ★ 99 Stars?", "a": "⚡ Робот «Кибер Бурильщик»",
-         "o": ["🤖 Робот «Младший Майнер»", "⚡ Робот «Кибер Бурильщик»", "🥩 10 кибер-котлет", "👑 Бандл «VIP-Старт»"]},
-        {"q": "Какая база данных хранит профили нашей империи на Railway?", "a": "PostgreSQL",
-         "o": ["MongoDB", "MySQL", "PostgreSQL", "Redis"]},
-        {"q": "Какая максимальная вместимость Центрального Холодильника в игре?", "a": "100 шт.",
-         "o": ["10 шт.", "50 шт.", "100 шт.", "Бесконечно"]},
+        {"q": "Какую скорость добычи дает Кибер-Бурильщик в магазине /shop?", "a": "5 рофлов в час",
+         "o": ["2 рофла в час", "5 рофлов в час", "10 рофлов в час", "100 рофлов в час"]},
+        {"q": "Какое максимальное количество человек может вместить вечный Мега-Клан?", "a": "1000 человек",
+         "o": ["50 человек", "100 человек", "500 человек", "1000 человек"]},
+        {"q": "Какая максимальная вместимость автоматического Холодильника в игре?", "a": "100 шт.",
+         "o": ["10 шт.", "50 шт.", "100 шт.", "500 шт."]},
     ]
     quiz = random.choice(quizzes)
 
@@ -214,7 +206,7 @@ async def cmd_quiz_start(message: types.Message, state: FSMContext):
     await state.set_state(SoloGameStates.waiting_for_quiz)
 
     await message.answer(
-        f"🧠 <b>ШКОЛЬНЫЙ ИНТЕЛЛЕКТУАЛЬНЫЙ ТЕСТ</b>\n"
+        f"🧠 <b>ИГРОВОЙ ИНТЕЛЛЕКТУАЛЬНЫЙ ТЕСТ</b>\n"
         f"..................................................\n\n"
         f"❓ <b>Вопрос:</b> {quiz['q']}\n\n"
         f"⚠️ <i>ВНИМАНИЕ! Малейшая ошибка активирует капкан списания <b>-5 рофлов</b>, "
@@ -227,7 +219,7 @@ async def cmd_quiz_start(message: types.Message, state: FSMContext):
 @router.callback_query(SoloGameStates.waiting_for_quiz, F.data.startswith("quiz_check:"))
 async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
-    selected = callback.data.split(":", 1)[1]  # Исправлено извлечение строки ответа
+    selected = callback.data.split(":", 1)[1]
 
     user_data = await state.get_data()
     correct = user_data.get("correct_answer")
@@ -268,9 +260,9 @@ async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext):
 @router.callback_query(F.data.startswith("game_retry:"))
 async def process_game_retry_inline(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
-    game_type = callback.data.split(":")[1]
+    game_type = callback.data.split(":")
 
-    # Стираем старый итог раунда, чтобы чат оставался чистым и неоновым
+    # Стираем старый итог раунда, чтобы чат оставался чистым и аккуратным
     await callback.message.delete()
 
     if game_type == "rps":
