@@ -2,17 +2,14 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Путь к .env в корне проекта
-# __file__ = .../ROFL-HUB/bots/main_bot/config.py
-# .parent = .../ROFL-HUB/bots/main_bot/
-# .parent.parent = .../ROFL-HUB/bots/
-# .parent.parent.parent = .../ROFL-HUB/
+# Намертво находим корень нашего проекта ROFL-HUB
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(PROJECT_ROOT / ".env")
 
-env_path = Path(__file__).parent.parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
-
-# Читаем токен ИМЕННО этого бота
+# Единый, монолитный источник токена админа
 BOT_TOKEN = os.getenv("ADMIN_SECRET_BOT_TOKEN")
 
 if not BOT_TOKEN:
-    raise ValueError("ADMIN_SECRET_BOT_TOKEN не найден в .env")
+    raise RuntimeError(
+        "🚨 КРИТИЧЕСКИЙ КРАШ: Переменная ADMIN_SECRET_BOT_TOKEN отсутствует в системе или файле .env! Запуск заблокирован."
+    )

@@ -1,7 +1,10 @@
 import asyncio
-from os import getenv
-from dotenv import load_dotenv
-from aiogram import Bot, Dispatcher, Router
+import logging
+import os
+from aiogram import Bot, Dispatcher
+from bots.main_bot.config import BOT_TOKEN
+
+# Импортируем только реально существующие боевые роутеры
 from bots.main_bot.handlers.start import router as start_router
 from bots.main_bot.handlers.menu import router as help_router
 from bots.main_bot.handlers.faq import router as faq_router
@@ -10,44 +13,51 @@ from bots.main_bot.handlers.rules import router as rules_router
 from bots.main_bot.handlers.profile import router as profile_router
 from bots.main_bot.handlers.clans import router as clans_router
 from bots.main_bot.handlers.shop import router as shop_router
-from bots.main_bot.handlers.vip_shop import router as vip_shop_router
-from bots.main_bot.handlers import games
-from bots.main_bot.handlers import farm
+from bots.main_bot.handlers.payments import router as payments_router  # Наш титановый Stars-шлюз!
+from bots.main_bot.handlers import games, farm
 
-#from bots.main_bot.handlers.send_coin import router as send_coin_router
-#from bots.main_bot.handlers.support import router as support_router
+from shared.database import db
 
-load_dotenv()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Забудь про config.py, читай напрямую из системы (Титановый стандарт Railway)!
-BOT_TOKEN = os.getenv("USER_BOT_TOKEN") or os.getenv("MAIN_BOT_TOKEN")
-ADMIN_CHANNEL_ID = getenv("ADMIN_SECRET_CHANNEL_ID")
 
-async def main():
+async def main() -> None:
+    bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
 
-    from shared.database import db
-    await db.connect()
-    await db.create_tables()
+    try:
+        # Инициализируем пул и создаем таблицы империи в PostgreSQL на Railway
+        await db.connect()
+        await db.create_tables()
 
-    dp.include_router(start_router)
-    dp.include_router(help_router)
-    dp.include_router(faq_router)
-    dp.include_router(rofl_hub_all_router)
-    dp.include_router(rules_router)
-    dp.include_router(profile_router)
-    dp.include_router(clans_router)
-    dp.include_router(shop_router)
-    dp.include_router(vip_shop_router)
-    dp.include_router(games.router)
-    dp.include_router(farm.router)
+        # Подключаем роутеры строго по нашему новому приоритету
+        for router in (
+                start_router,
+                help_router,
+                faq_router,
+                rofl_hub_all_router,
+                rules_router,
+                profile_router,
+                clans_router,
+                shop_router,
+                payments_router,  # Включаем приём платежей!
+                games.router,
+                farm.router,
+        ):
+            dp.include_router(router)
 
-    bot = Bot(token=BOT_TOKEN)
+        logger.info("🟢 ГЛАВНЫЙ БОТ ЮЗЕРОВ УСПЕШНО ЗАПУЩЕН НА ЛОКАЛЬНОМ ХОСТЕ!")
+        await dp.start_polling(bot)
 
-    print("🚀 ГЛАВНЫЙ БОТ ЮЗЕРОВ УСПЕШНО ЗАПУЩЕН НА ЛОКАЛЬНОМ ХОСТЕ!")
+    except Exception as e:
+        logger.critical(f"🚨 Фатальная ошибка во время работы основного бота: {e}")
 
-    await dp.start_polling(bot)
+    finally:
+        logger.info("⏳ Закрываю сессии бота и пул соединений PostgreSQL...")
+        await bot.session.close()
+        await db.disconnect()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     asyncio.run(main())
-

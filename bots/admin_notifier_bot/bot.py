@@ -1,21 +1,26 @@
-from os import getenv
 import asyncio
-from aiogram import Bot, Dispatcher, Router
-from dotenv import load_dotenv
+import logging
+import os
+from aiogram import Bot, Dispatcher
+from bots.admin_notifier_bot.config import BOT_TOKEN
 
-load_dotenv()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-ADMIN_TOKEN = os.getenv("ADMIN_SECRET_BOT_TOKEN") or os.getenv("ADMIN_BOT_TOKEN")
-ADMIN_CHANNEL_ID = getenv("ADMIN_SECRET_CHANNEL_ID")
 
-dp = Dispatcher()
-router = Router()
-dp.include_router(router)
+async def main() -> None:
+    bot = Bot(token=BOT_TOKEN)
+    dp = Dispatcher()
 
-async def main():
-    bot = Bot(token=ADMIN_TOKEN)
-    await dp.start_polling(bot)
+    try:
+        logger.info("🟢 АДМИНИСТРАТИВНЫЙ БОТ УСПЕШНО ЗАПУЩЕН НА RAILWAY!")
+        await dp.start_polling(bot)
+    except Exception as e:
+        logger.critical(f"🚨 Фатальная ошибка во время работы админ-бота: {e}")
+    finally:
+        logger.info("⏳ Закрываю сессии административного бота...")
+        await bot.session.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     asyncio.run(main())
-
