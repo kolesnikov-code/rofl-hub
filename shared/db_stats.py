@@ -5,7 +5,7 @@ from shared.database import db
 async def get_complete_user_data(user_id: int) -> dict:
     """
     Вытаскивает полный срез ДНК профиля игрока из PostgreSQL на Railway.
-    Обеспечивает данными ленивый движок начисления и графический конвейер Pillow.
+    Обеспечивает чистыми данными ленивый движок начисления и графический конвейер Pillow.
     """
     if not db.pool:
         return None
@@ -17,13 +17,13 @@ async def get_complete_user_data(user_id: int) -> dict:
             if not row:
                 return None
 
-            # Забираем игровую аналитику дуэлей
+            # Забираем игровую аналитику дуэлей из таблицы game_stats
             g_row = await conn.fetchrow(
                 "SELECT games_played, games_won FROM game_stats WHERE user_id = $1",
                 user_id
             )
 
-            # Считаем живую банду рефералов из базы
+            # Считаем живую банду рефералов из базы данных
             ref_count = await conn.fetchval("SELECT COUNT(*) FROM users WHERE referred_by = $1", user_id)
 
             # Собираем монолитный словарь данных под новые нужды profile.py и движка
@@ -33,6 +33,7 @@ async def get_complete_user_data(user_id: int) -> dict:
                 "referred_by": row["referred_by"],
                 "created_at": row["created_at"],
                 "team_id": row["team_id"],
+                "boost_level": row["boost_level"],  # 🔥 Твой уровень Боевого Буста дуэлей
 
                 # 📦 Твой обновленный центральный топливный хаб
                 "fridge_capacity": row["fridge_capacity"],

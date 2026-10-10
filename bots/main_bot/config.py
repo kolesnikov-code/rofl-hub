@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Намертво находим корень нашего проекта ROFL-HUB
+# Намертво находим корень нашего проекта ROFL-HUB от этой точки
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(PROJECT_ROOT / ".env")
 

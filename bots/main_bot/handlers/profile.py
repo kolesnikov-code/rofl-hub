@@ -1,169 +1,168 @@
 import os
+import logging
+from datetime import datetime, timezone
 from aiogram import Router, types, F
 from aiogram.filters import Command
-from aiogram.types import FSInputFile  # ТИТАНОВЫЙ ИМПОРТ ДЛЯ ХРАНИЛИЩА RAILWAY
-from shared.database import db         # Импортируем твой официальный экземпляр класса базы данных
-from shared.strings import get_plural_cutlets
+from aiogram.types import FSInputFile
+from PIL import Image, ImageDraw, ImageFont
+from shared.database import db
 
 router = Router()
+logger = logging.getLogger(__name__)
 
+STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "static")
+FONT_PATH = os.path.join(STATIC_DIR, "Arial.ttf")
 
-# ----------------------------------------------------------------
-# 💰 КОМАНДА: /balance
-# ----------------------------------------------------------------
-@router.message(Command("balance"))
-async def cmd_balance(message: types.Message):
-    user_id = message.from_user.id
+# 🔥 УЛЬТИМАТИВНЫЙ ДОХОД АНАТОЛИЯ АЛЕКСЕЕВИЧА (НОВЫЙ ЖИРНЫЙ ТАРИФ В ЧАС!)
+JUNIOR_RATE_HOUR = 5       # Было 2, стало 5 монет в час!
+PREMIUM_RATE_HOUR = 10     # Было 5, стало 10 монет в час!
 
-    # Прямой снайперский запрос баланса из пула
-    async with db.pool.acquire() as conn:
-        data = await conn.fetchrow("SELECT balance FROM users WHERE user_id = $1", user_id)
+# ============================================================================
+# ⚙️ ГЕНЕРАЛЬНЫЙ АВТОМАТИЧЕСКИЙ ЛЕНИВЫЙ ДВИЖОК НАЧИСЛЕНИЯ (ПОЛНЫЙ АВТОПИЛОТ)
+# ============================================================================
+async def apply_lazy_mining_earnings(user_id: int, conn) -> dict:
+    """
+    Ленивый расчет на автопилоте.
+    1. Младший Майнер майнит ВСЕГДА (5 монет/час), котлеты не ест вообще.
+    2. Кибер-Бурильщик майнит (10 монет/час), только пока в холодильнике есть еда (1 бурильщик = 1 котлета в сутки).
+    """
+    user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+    if not user:
+        return None
 
-    if not data:
-        await message.answer("⚠️ Ты еще не зарегистрирован в системе! Нажми /start")
-        return
+    current_time = datetime.now(timezone.utc)
+    last_update = user["last_update_time"]
 
-    await message.answer(
-        f"💰 <b>ТВОЙ КОШЕЛЁК ROFL HUB:</b>\n..................................................\n\n"
-        f"🪙 На твоем счету: <code>{data['balance']}</code> рофлов",
-        parse_mode="HTML"
+    seconds_passed = int((current_time - last_update).total_seconds())
+    if seconds_passed <= 0:
+        return user
+
+    hours_passed = seconds_passed / 3600.0
+
+    fridge_cutlets = user["fridge_cutlets"]
+    miner_junior = user["miner_junior_count"]
+    miner_premium = user["miner_premium_count"]
+    balance = user["balance"]
+
+    # 1. РАСЧЕТ МЛАДШИХ МАЙНЕРОВ (Абсолютный вечный двигатель, еда не нужна!)
+    earned_junior = hours_passed * miner_junior * JUNIOR_RATE_HOUR
+    total_earned = earned_junior
+
+    # 2. РАСЧЕТ КИБЕР-БУРИЛЬЩИКОВ (Кушают строго из холодильника автоматически)
+    if miner_premium > 0 and fridge_cutlets > 0:
+        # Расход пачки бурильщиков: 1 бурильщик съедает 1 котлету за 86400 секунд (24 часа)
+        cutlets_needed_per_second = miner_premium / 86400.0
+        total_cutlets_needed = seconds_passed * cutlets_needed_per_second
+
+        if fridge_cutlets >= total_cutlets_needed:
+            # Топлива хватило на весь отрезок времени!
+            earned_premium = hours_passed * miner_premium * PREMIUM_RATE_HOUR
+            fridge_cutlets = max(0, fridge_cutlets - int(total_cutlets_needed))
+        else:
+            # Еда закончилась раньше, чем пользователь вызвал ленивый перерасчет
+            seconds_worked = int(fridge_cutlets / cutlets_needed_per_second)
+            hours_worked = seconds_worked / 3600.0
+            earned_premium = hours_worked * miner_premium * PREMIUM_RATE_HOUR
+            fridge_cutlets = 0
+
+        total_earned += earned_premium
+
+    new_balance = balance + int(total_earned)
+
+    await conn.execute(
+        """
+        UPDATE users 
+        SET balance = $1,fridge_cutlets = $2,last_update_time = $3 
+        WHERE user_id = $4
+        """,
+        new_balance, fridge_cutlets, current_time, user_id
     )
 
+    return await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", user_id)
 
-# ----------------------------------------------------------------
-# 📊 КОМАНДА: /my_stats (МOНОЛИТНЫЙ ВАPИАНТ С ГPАФИКОЙ ИЗ static)
-# ----------------------------------------------------------------
+def generate_profile_image(user_id: int, username: str, data: dict) -> str:
+    capacity = data["fridge_capacity"]
+    template_name = f"fridge_{capacity}.jpg"
+    template_path = os.path.join(STATIC_DIR, template_name)
+
+    if not os.path.exists(template_path):
+        template_path = os.path.join(STATIC_DIR, "fridge_1.jpg")
+
+    output_path = os.path.join(STATIC_DIR, f"user_{user_id}_profile.jpg")
+
+    try:
+        with Image.open(template_path) as img:
+            draw = ImageDraw.Draw(img)
+            try:
+                font_id = ImageFont.truetype(FONT_PATH, 24)
+                font_data = ImageFont.truetype(FONT_PATH, 20)
+            except IOError:
+                font_id = ImageFont.load_default()
+                font_data = ImageFont.load_default()
+
+            draw.text((50, 40), f"ID ПAСПOPТA: {user_id}", fill="#00ffff", font=font_id)
+            draw.text((50, 80), f"ВОЖAК: @{username}", fill="#ffffff", font=font_data)
+            draw.text((50, 150), f"💰 Бaлaнс: {data['balance']} рофлов", fill="#ffff00", font=font_id)
+            draw.text((50, 200), f"🥩 В холодильнике: {data['fridge_cutlets']} / {capacity} шт.", fill="#ff00ff", font=font_data)
+            draw.text((50, 240), f"💼 Котлеты в инвентаре: {data['inv_cutlets']} шт.", fill="#ffffff", font=font_data)
+            draw.text((50, 310), f"🤖 Млaдшие Мaйнеры: {data['miner_junior_count']} шт.", fill="#00ff00", font=font_data)
+            draw.text((50, 350), f"⚡ Кибер Бурильщики: {data['miner_premium_count']} шт.", fill="#ff3300", font=font_data)
+            draw.text((50, 390), f"🚀 Боевой Буст: Уровень {data['boost_level']}", fill="#aa00ff", font=font_data)
+
+            img.save(output_path, "JPEG")
+            return output_path
+    except Exception as e:
+        logger.error(f"[PILLOW] Ошибка рендеринга картинки: {e}")
+        return template_path
+
+@router.message(Command("profile"))
 @router.message(Command("my_stats"))
-async def cmd_my_stats(message: types.Message):
+async def cmd_profile_stats(message: types.Message):
     user_id = message.from_user.id
+    username = message.from_user.username or f"user_{user_id}"
 
-    # 🎯 Прямой хирургический запрос в PostgreSQL без посредников
     async with db.pool.acquire() as conn:
-        data = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", user_id)
+        async with conn.transaction():
+            user = await apply_lazy_mining_earnings(user_id, conn)
+            if not user:
+                await message.answer("⚠️ Профиль не найден. Прожми /start для активации Паспорта.")
+                return
+            ref_count = await conn.fetchval("SELECT COUNT(*) FROM users WHERE referred_by = $1", user_id)
 
-    if not data:
-        await message.answer("⚠️ Ты еще не зарегистрирован в системе! Нажми /start")
-        return
+    user_data_dict = {
+        "balance": user["balance"],
+        "fridge_capacity": user["fridge_capacity"],
+        "fridge_cutlets": user["fridge_cutlets"],
+        "inv_cutlets": user["inv_cutlets"],
+        "miner_junior_count": user["miner_junior_count"],
+        "miner_premium_count": user["miner_premium_count"],
+        "boost_level": user["boost_level"]
+    }
 
-    # Забираем вместимость холодильника (если поля нет в записи — ставим дефолт 1)
-    capacity = data.get("fridge_capacity", 1)
+    photo_path = generate_profile_image(user_id, username, user_data_dict)
 
-    # 🎰 Динамический подбор неоновой картинки под уровень прокачки из папки static
-    if capacity == 1:
-        photo_path = "static/fridge_1.jpg"
-    elif capacity == 5:
-        photo_path = "static/fridge_5.jpg"
-    elif capacity == 10:
-        photo_path = "static/fridge_10.jpg"
-    elif capacity == 50:
-        photo_path = "static/fridge_50.jpg"
-    else:
-        photo_path = "static/fridge_100.jpg" # При значении 100 включится этот международный арт!
-
-    # Обертываем путь в объект локального файла для жесткого диска
-    fridge_photo = FSInputFile(photo_path)
-
-    # Красивое формирование кастомного или системного ID Паспорта
-    display_id = f"👑 <b>VIP ID:</b> <code>{data['rofl_hub_id']}</code>" if data.get('rofl_hub_id') else f"📎 <b>ID Паспорта:</b> <code>{user_id}</code>"
-
-    # Считываем актуальный запас котлет внутри центрального хаба (где у тебя вбито 42)
-    actual_cutlets = data.get("fridge_cutlets", 0)
-    all_cutlets = data.get("inv_cutlets", 0)
-    cutlets_text = get_plural_cutlets(actual_cutlets)
-
-    # Собираем монолитный пацанский текст профиля
-    profile_text = (
-        f"🛸 <b>ЛИЧНЫЙ ПРОФИЛЬ ИГРОКА @{message.from_user.username or 'NoName'}</b>\n"
-        f"..................................................\n"
-        f"{display_id}\n"
-        f"💰 <b>Баланс на счету:</b> <code>{data['balance']}</code> рофлов\n"
-        f"👥 <b>Твоя банда:</b> <code>{data.get('ref_count', 0)}</code> рефералов\n"
-        f"..................................................\n"
-        f"📦 <b>РАЗМЕР ХОЛОДИЛЬНИКА: {capacity}</b>\n"
-        f"🥩 <b>В холодильнике:</b> {cutlets_text}\n"
-        f"🥩 <b>Кибер-котлет всего:</b> {all_cutlets} шт.\n"        
-        f"..................................................\n"
-        f"📊 <b>БОЕВАЯ СТАТИСТИКА ДУЭЛЕЙ:</b>\n"
-        f"• Сыграно раундов: <code>{data.get('games_played', 0)}</code>\n"
-        f"• Успешных побед: <code>{data.get('games_won', 0)}</code>"
-    )
-
-    # 🚀 СНАЙПЕРСКИЙ ВЫСТРЕЛ: Картинка из папки static + текст под ней на одном экране!
-    await message.answer_photo(
-        photo=fridge_photo,
-        caption=profile_text,
-        parse_mode="HTML"
-    )
-
-
-# ----------------------------------------------------------------
-# 👥 КОМАНДА: /referral_link
-# ----------------------------------------------------------------
-@router.message(Command("referral_link"))
-async def cmd_referral_link(message: types.Message):
-    ref_link = f"https://t.me{message.from_user.id}"
-    ref_text = (
-        f"👥 <b>ТВОЯ РЕФЕРАЛЬНАЯ ССЫЛКА:</b>\n"
-        f"..................................................\n"
-        f"<code>{ref_link}</code>\n"
-        f"..................................................\n"
-        f"🎁 Скопируй ссылку и кидай друзьям! За каждого, кто придёт по твоему приглашению, "
-        f"ты МГНОВЕННО получишь <b>+1 000 рофлов</b> на счет!"
-    )
-    await message.answer(ref_text, parse_mode="HTML")
-
-
-# ----------------------------------------------------------------
-# 🚜 КОМАНДА: /farm (ОБНОВЛЕННАЯ: С ИНЛАЙН-УПРАВЛЕНИЕМ ХАБА)
-# ----------------------------------------------------------------
-@router.message(Command("my_farm"))
-@router.message(Command("farm"))
-async def cmd_farm(message: types.Message):
-    user_id = message.from_user.id
-
-    # Вытягиваем актуальные данные фермы напрямую из базы Railway
-    async with db.pool.acquire() as conn:
-        data = await conn.fetchrow(
-            """
-            SELECT fridge_cutlets, inv_cutlets, miner_junior_count, miner_premium_count
-            FROM users
-            WHERE user_id = $1
-            """,
-            user_id
-        )
-
-    if not data:
-        await message.answer("⚠️ Профиль не найден. Нажми /start")
-        return
-
-    total_miners = data.get("miner_junior_count", 0) + data.get("miner_premium_count", 0)
-
-    # 🕹️ СОЗДАЕМ СОЧНУЮ ИНЛАЙН-КЛАВИАТУРУ УПРАВЛЕНИЯ
-    # callback_data привязываем напрямую к нашим обработчикам из farm.py!
-    farm_keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+    profile_keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [
-            types.InlineKeyboardButton(text="🔋 Заправить 1 котлету", callback_data="farm_action:load_1"),
-            types.InlineKeyboardButton(text="⚡ Запустить Завод на 24ч", callback_data="farm_action:run")
-        ],
-        [
-            types.InlineKeyboardButton(text="🏪 Зайти в Магазин /shop", callback_data="open_shop_from_farm")
+            types.InlineKeyboardButton(text="🚜 Моя Кибер-Ферма", callback_data="open_farm_from_profile"),
+            types.InlineKeyboardButton(text="🏪 Открыть Магазин /shop", callback_data="open_shop_from_farm")
         ]
     ])
 
-    my_farm_text = (
-        f"🚜 <b>КИБЕР-ФЕРМА АВТОДОБЫЧИ МОНЕТ ROFL HUB</b>\n"
+    caption_text = (
+        f"📋 <b>ЛИЧНЫЙ КАБИНЕТ ИГРОКА ROFL HUB</b>\n"
         f"..................................................\n\n"
-        f"🤖 Активных роботов на заводе: <b>{total_miners} шт.</b>\n"
-        f"• Младшие Майнеры: <code>{data.get('miner_junior_count', 0)} шт.</code>\n"
-        f"• Кибер-Бурильщики: <code>{data.get('miner_premium_count', 0)} шт.</code>\n\n"
-        f"..................................................\n\n"
-        f"📦 <b>СОСТОЯНИЕ ТОПЛИВНОГО ХАБА:</b>\n"
-        f"🥩 Запас в Холодильнике: <b>{data.get('fridge_cutlets', 0)} шт.</b>\n"
-        f"💼 Котлеты в кармане инвентаря: <code>{data.get('inv_cutlets', 0)} шт.</code>\n\n"
-        f"..................................................\n\n"
-        f"💿 <b>ИНСТРУКЦИЯ ВОЖАКА:</b>\n"
-        f"1. Нажми <b>[Заправить 1 котлету]</b>, чтобы переложить топливо на склад.\n"
-        f"2. Нажми <b>[Запустить Завод]</b>, чтобы Бурильщики ушли работать на сутки!"
+        f"🆔 Твой ID Паспорта: <code>{user_id}</code>\n"
+        f"💰 Актуальный баланс: <b>{user['balance']} рофлов</b>\n"
+        f"👥 Приглашенных друзей: <b>{ref_count} чел.</b>\n\n"
+        f"..................................................\n"
+        f"<i>Твои данные обновляются при каждом вызове кабинета. Нажми кнопку ниже, чтобы управлять ресурсами!</i>"
     )
 
-    await message.answer(my_farm_text, reply_markup=farm_keyboard, parse_mode="HTML")
+    photo_file = FSInputFile(photo_path)
+    await message.answer_photo(photo=photo_file, caption=caption_text, reply_markup=profile_keyboard, parse_mode="HTML")
+
+    try:
+        if os.path.exists(photo_path) and "user_" in photo_path:
+            os.remove(photo_path)
+    except Exception:
+        pass

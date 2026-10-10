@@ -18,7 +18,6 @@ if not DB_URL:
     PGDATABASE = os.getenv("PGDATABASE", "rofl_db")
     DB_URL = f"postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
 
-
 class Database:
     def __init__(self):
         self.pool = None
@@ -38,7 +37,7 @@ class Database:
             print("[DB] Пул соединений с PostgreSQL закрыт")
 
     async def create_tables(self):
-        """Создание СУБД империи ROFL HUB CORE под ленивый расчёт,Stars-транзакции и аукционы"""
+        """Создание СУБД империи ROFL HUB CORE под ленивый расчёт, Stars-транзакции и аукционы"""
         if not self.pool:
             return
 
@@ -58,7 +57,7 @@ class Database:
                     team_id INT DEFAULT NULL,
                     boost_level INT DEFAULT 0,                    -- Уровень Боевого Буста дуэлей (макс 3)
 
-                    -- 📦 ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ (НОВАЯ ЛOГИКА АНАТOЛИЯ АЛЕКСЕЕВИЧА)
+                    -- 📦 ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ (НОВАЯ ЛОГИКА АНАТOЛИЯ АЛЕКСЕЕВИЧА)
                     fridge_capacity INT DEFAULT 1,                -- Вместимость хаба (1, 5, 10, 50, 100 котлет)
                     fridge_cutlets INT DEFAULT 1,                 -- Сколько платных котлет лежит на складе сейчас
                     inv_cutlets INT DEFAULT 0,                    -- Котлеты в кармане (не заправленные в хаб)
@@ -133,7 +132,7 @@ class Database:
             """)
 
             # ----------------------------------------------------------------
-            # 🌐 6. ТАБЛИЦА РЕКЛАМЫ НА БУДУЩЕМ САЙТЕ
+            # 🌐 6. ТАБЛИЦА РЕКЛАМЫ НА САЙТЕ / ИНСТА-АВИТО
             # ----------------------------------------------------------------
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS site_ads (
@@ -164,6 +163,5 @@ class Database:
             """)
 
             print("[DB] Все таблицы империи успешно созданы по новой токеномике!")
-
 
 db = Database()

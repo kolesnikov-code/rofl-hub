@@ -1,192 +1,153 @@
 import logging
-from datetime import datetime, timezone
-current_time = datetime.now(timezone.utc)  # Серверное время всегда бьёт в одну наносекунду круглый год!
 from aiogram import Router, types, F
 from aiogram.filters import Command
-from shared.database import db  # Твой официальный экземпляр класса БД
-from shared.strings import get_plural_cutlets
+from shared.database import db
 
 router = Router()
 logger = logging.getLogger(__name__)
 
 
-# ================================================================
-# ⚙️ ТИТАНОВЫЙ МЕХАНИЗМ ЗАПРАВКИ И РАСЧЁТА ФЕРМЫ
-# ================================================================
+def get_farm_keyboard() -> types.InlineKeyboardMarkup:
+    """Кнопки управления фермой: только заправка и мгновенный переход в магазин!"""
+    return types.InlineKeyboardMarkup(inline_keyboard=[
+        [
+            types.InlineKeyboardButton(text="🥩 Заправить 1 шт.", callback_data="farm_action:load_1"),
+            types.InlineKeyboardButton(text="⚡ Заправить ВСЁ", callback_data="farm_action:load_all")
+        ],
+        [
+            types.InlineKeyboardButton(text="🏪 Зайти в Магазин /shop", callback_data="open_shop_from_farm")
+        ]
+    ])
 
-@router.message(Command("load_fridge"))
-async def cmd_load_fridge(message: types.Message):
-    """
-    КOМАНДA: /load_fridge [количество]
-    Перекладывает котлеты из кармана инвентаря в Центральный Топливный Хаб.
-    """
+
+@router.message(Command("farm"))
+@router.message(Command("my_farm"))
+async def cmd_farm(message: types.Message):
     user_id = message.from_user.id
-    args = message.text.split()
 
-    if len(args) < 2 or not args[1].isdigit():
-        await message.answer("⚠️ Укажи количество котлет! Пример: <code>/load_fridge 5</code>", parse_mode="HTML")
-        return
-
-    want_to_load = int(args[1])
-    if want_to_load <= 0:
-        await message.answer("⚠️ Количество котлет должно быть больше нуля!")
-        return
+    from bots.main_bot.handlers.profile import apply_lazy_mining_earnings
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
-            # Блокируем строку юзера (защита от дюпа и параллельных кликов)
-            user = await conn.fetchrow(
-                "SELECT inv_cutlets, fridge_cutlets, fridge_capacity FROM users WHERE user_id = $1 FOR UPDATE",
-                user_id
-            )
+            # Накатываем автоматические часовые начисления монет прямо при вызове фермы!
+            user = await apply_lazy_mining_earnings(user_id, conn)
             if not user:
                 await message.answer("⚠️ Профиль не найден. Нажми /start")
                 return
 
-            inv_cutlets = user["inv_cutlets"]  # Котлеты в кармане (незаправленные)
-            fridge_cutlets = user["fridge_cutlets"]  # Котлеты внутри хаба
-            fridge_capacity = user["fridge_capacity"]  # Общий объём хаба (5, 10, 50, 100)
+    total_miners = user["miner_junior_count"] + user["miner_premium_count"]
 
-            if inv_cutlets == 0:
-                await message.answer("❌ У тебя в кармане нет кибер-котлет! Купи их в магазине /shop")
-                return
+    # Расчитываем актуальный статус активности Кибер-Бурильщиков на автопилоте
+    if user["miner_premium_count"] > 0:
+        if user["fridge_cutlets"] > 0:
+            status_work = "🟢 Кибер-Бурильщики активны и добывают валюту автоматически!"
+        else:
+            status_work = "🔴 Кибер-Бурильщики остановились! В холодильнике кончилось топливо."
+    else:
+        status_work = "💡 Заведи Кибер-Бурильщиков в /shop для мега-дохода."
 
-            # Вычисляем, сколько реально можно закинуть с учётом лимитов склада
-            available_space = fridge_capacity - fridge_cutlets
-            if available_space <= 0:
-                await message.answer("📦 Твой Центральный Холодильник забит до отказа! Расширь его в /shop")
-                return
+    farm_text = (
+        f"🚜 <b>ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ ROFL HUB</b>\n"
+        f"..................................................\n\n"
+        f"🤖 Активных роботов на заводе: <b>{total_miners} шт.</b>\n"
+        f"• Младшие Майнеры (вечные): <code>{user['miner_junior_count']} шт.</code>\n"
+        f"• Кибер-Бурильщики (SaaS): <code>{user['miner_premium_count']} шт.</code>\n\n"
+        f"📋 <b>СТАТУС ИГРОВОГО ЗАВОДА:</b>\n"
+        f"{status_work}\n\n"
+        f"..................................................\n\n"
+        f"📦 <b>СОСТОЯНИЕ АВТОМАТИЧЕСКОГО ХОЛОДИЛЬНИКА:</b>\n"
+        f"🥩 Запас топлива: <b>{user['fridge_cutlets']} / {user['fridge_capacity']} шт.</b>\n"
+        f"💼 Котлеты на складе инвентаря: <code>{user['inv_cutlets']} шт.</code>\n\n"
+        f"..................................................\n\n"
+        f"💿 <i>Младшие Майнеры косят монеты вечно и бесплатно. Кибер-Бурильщики автоматически потребляют по 1 котлете в сутки из холодильника! Просто держи его заправленным!</i>"
+    )
 
-            actual_load = min(want_to_load, inv_cutlets, available_space)
-
-            # Перезаписываем данные в PostgreSQL на Railway
-            new_inv = inv_cutlets - actual_load
-            new_fridge = fridge_cutlets + actual_load
-
-            await conn.execute(
-                """
-                UPDATE users
-                SET inv_cutlets    = $1,
-                    fridge_cutlets = $2
-                WHERE user_id = $3
-                """,
-                new_inv, new_fridge, user_id
-            )
-
-            logger.info(f"🥩 ХАБ ЗАПРАВЛЕН: Юзер {user_id} переложил {actual_load} котлет в холодильник.")
-
-            await message.answer(
-                f"📦 <b>ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ ОБНОВЛЕН</b>\n"
-                f"..................................................\n\n"
-                f"✅ Успешно заправлено: <b>{actual_load} шт.</b>\n"
-                f"🥩 В кармане осталось: <code>{new_inv} шт.</code>\n"
-                f"🔋 Запас в холодильнике: <b>{new_fridge} / {fridge_capacity} котлет</b>\n\n"
-                f"..................................................\n"
-                f"🤖 <i>Теперь твои Кибер-Бурильщики сыты и готовы качать кэш на автопилоте!</i>",
-                parse_mode="HTML"
-            )
+    await message.answer(farm_text, reply_markup=get_farm_keyboard(), parse_mode="HTML")
 
 
-@router.message(Command("run_farm"))
-async def cmd_run_farm(message: types.Message):
-    """
-    КОМАНДА: /run_farm
-    Запускает суточный цикл кормления роботов. Списывает целые котлеты из хаба
-    и продлевает работу Бурильщиков ровно на 24 часа.
-    """
-    user_id = message.from_user.id
-    current_time = datetime.now()
+@router.callback_query(F.data.startswith("farm_action:"))
+async def process_farm_inline_actions(callback: types.CallbackQuery):
+    user_id = callback.from_user.id
+    parts = callback.data.split(":")
+    if len(parts) < 2:
+        await callback.answer()
+        return
+    action = parts
+
+    await callback.answer()
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
-            user = await conn.fetchrow(
-                """
-                SELECT fridge_cutlets, miner_premium_count, last_update_time
-                FROM users
-                WHERE user_id = $1 FOR UPDATE
-                """,
-                user_id
-            )
+            user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
             if not user:
                 return
 
+            inv_cutlets = user["inv_cutlets"]
             fridge_cutlets = user["fridge_cutlets"]
-            miner_premium_count = user["miner_premium_count"]
+            fridge_capacity = user["fridge_capacity"]
 
-            if miner_premium_count == 0:
-                await message.answer("⚠️ У тебя нет активных Кибер-Бурильщиков! Кормить некого. Купи их в /shop")
-                return
+            if action == "load_1":
+                if inv_cutlets <= 0:
+                    await callback.message.answer("❌ У тебя в инвентаре нет кибер-котлет! Купи их в /shop")
+                    return
+                if fridge_cutlets >= fridge_capacity:
+                    await callback.message.answer("📦 Твой Холодильник уже полностью забит!")
+                    return
+                await conn.execute(
+                    "UPDATE users SET inv_cutlets = inv_cutlets - 1, fridge_cutlets = fridge_cutlets + 1 WHERE user_id = $1",
+                    user_id)
 
-            # Твоё жёсткое правило: 1 робот = 1 целая котлета в сутки!
-            need_cutlets = miner_premium_count
+            elif action == "load_all":
+                if inv_cutlets <= 0:
+                    await callback.message.answer("❌ У тебя в инвентаре нет кибер-котлет!")
+                    return
+                available_space = fridge_capacity - fridge_cutlets
+                if available_space <= 0:
+                    await callback.message.answer("📦 Твой Холодильник забит до отказа!")
+                    return
+                actual_load = min(inv_cutlets, available_space)
+                await conn.execute(
+                    "UPDATE users SET inv_cutlets = inv_cutlets - $1, fridge_cutlets = fridge_cutlets + $1 WHERE user_id = $2",
+                    actual_load, user_id)
 
-            if fridge_cutlets < need_cutlets:
-                await message.answer(
-                    f"❌ <b>ОСТАНОВКА ИТ-ЗАВОДА!</b>\n\n"
-                    f"У тебя {miner_premium_count} Кибер-Бурильщиков, им нужно ровно {need_cutlets} котлет на сутки! "
-                    f"А в твоем хабе лежит всего <b>{fridge_cutlets} шт.</b>\n\n"
-                    f"🪓 Часть роботов проголодалась и отключилась! "
-                    f"Срочно заправь холодильник командой <code>/load_fridge</code> или докупи еды в /shop!",
-                    parse_mode="HTML"
-                )
-                return
-
-            # Списываем строго ЦЕЛЫЕ котлеты по числу роботов
-            new_fridge = fridge_cutlets - need_cutlets
-
-            # Обновляем таймштамп старта работы на текущую секунду
-            await conn.execute(
-                """
-                UPDATE users
-                SET fridge_cutlets   = $1,
-                    last_update_time = $2
-                WHERE user_id = $3
-                """,
-                new_fridge, current_time, user_id
-            )
-
-            await message.answer(
-                f"⚡ <b>ИТ-ЗАВОД ROFL HUB НАБИРАЕТ ОБОРОТЫ!</b>\n"
-                f"..................................................\n\n"
-                f"🥩 Списано из хаба: <b>{need_cutlets} целых котлет</b>.\n"
-                f"🤖 Твоя батарея из <b>{miner_premium_count} Бурильщиков</b> сыта и заправлена на 24 часа вперёд!\n"
-                f"📦 Остаток в холодильнике: <code>{new_fridge} шт.</code>\n\n"
-                f"..................................................\n"
-                f"📈 <i>Станок круглосуточно выкачивает монеты из рудников. Счётчик баланса запущен!</i>",
-                parse_mode="HTML"
-            )
-
-
-# ----------------------------------------------------------------
-# 🎰 ПЕРЕХВАТ ИНЛАЙН-КЛИКОВ С ПAНЕЛИ ФЕPМЫ
-# ----------------------------------------------------------------
-@router.callback_query(F.data == "farm_action:load_1")
-async def process_inline_load_one_cutlet(callback: types.CallbackQuery):
-    user_id = callback.from_user.id
-
-    async with db.pool.acquire() as conn:
-        async with conn.transaction():
-            user = await conn.fetchrow(
-                "SELECT inv_cutlets, fridge_cutlets, fridge_capacity FROM users WHERE user_id = $1 FOR UPDATE",
-                user_id
-            )
-            if not user or user["inv_cutlets"] <= 0 or user["fridge_cutlets"] >= user["fridge_capacity"]:
-                await callback.answer("⚠️ Нечего заправлять или холодильник уже полон!", show_alert=True)
-                return
-
-            await conn.execute(
-                "UPDATE users SET inv_cutlets = inv_cutlets - 1, fridge_cutlets = fridge_cutlets + 1 WHERE user_id = $1",
+            updated = await conn.fetchrow(
+                "SELECT fridge_cutlets, inv_cutlets, fridge_capacity, miner_junior_count, miner_premium_count FROM users WHERE user_id = $1",
                 user_id
             )
 
-    await callback.answer("🥩 1 кибер-котлета успешно улетела в хаб!", show_alert=False)
-    # Имитируем повторный вызов команды farm, чтобы обновить цифры на экране у ребенка в один миг!
+    total_miners = updated["miner_junior_count"] + updated["miner_premium_count"]
+    if updated["miner_premium_count"] > 0:
+        if updated["fridge_cutlets"] > 0:
+            status_work = "🟢 Кибер-Бурильщики активны и добывают валюту автоматически!"
+        else:
+            status_work = "🔴 Кибер-Бурильщики остановились! В холодильнике кончилось топливо."
+    else:
+        status_work = "💡 Заведи Кибер-Бурильщиков в /shop для мега-дохода."
+
+    updated_text = (
+        f"🚜 <b>ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ ROFL HUB</b>\n"
+        f"..................................................\n\n"
+        f"🤖 Активных роботов на заводе: <b>{total_miners} шт.</b>\n"
+        f"• Младшие Майнеры (вечные): <code>{updated['miner_junior_count']} шт.</code>\n"
+        f"• Кибер-Бурильщики (SaaS): <code>{updated['miner_premium_count']} шт.</code>\n\n"
+        f"📋 <b>СТАТУС ИГРОВОГО ЗАВОДА:</b>\n"
+        f"{status_work}\n\n"
+        f"..................................................\n\n"
+        f"📦 <b>СОСТОЯНИЕ АВТОМАТИЧЕСКОГО ХОЛОДИЛЬНИКА:</b>\n"
+        f"🥩 Запас топлива: <b>{updated['fridge_cutlets']} / {updated['fridge_capacity']} шт.</b>\n"
+        f"💼 Котлеты на складе инвентаря: <code>{updated['inv_cutlets']} шт.</code>\n\n"
+        f"..................................................\n\n"
+        f"💿 <i>Младшие Майнеры косят монеты вечно и бесплатно. Кибер-Бурильщики автоматически потребляют по 1 котлете в сутки из холодильника! Просто держи его заправленным!</i>"
+    )
+
+    try:
+        await callback.message.edit_text(updated_text, reply_markup=get_farm_keyboard(), parse_mode="HTML")
+    except Exception:
+        pass
+
+
+@router.callback_query(F.data == "open_farm_from_profile")
+async def open_farm_from_profile_callback(callback: types.CallbackQuery):
+    await callback.answer()
     await callback.message.delete()
     await cmd_farm(callback.message)
-
-
-@router.callback_query(F.data == "farm_action:run")
-async def process_inline_run_farm(callback: types.CallbackQuery):
-    # Просто гасим часики и вызываем уже готовую и проверенную логику /run_farm!
-    await callback.answer()
-    await cmd_run_farm(callback.message)
