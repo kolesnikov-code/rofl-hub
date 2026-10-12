@@ -7,6 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from shared.database import db
 from shared.db_clans import create_new_team_in_db
+from shared.economy import TEAM_CREATE_COST
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -55,8 +56,9 @@ def get_cancel_keyboard() -> types.InlineKeyboardMarkup:
 # ============================================================================
 @router.message(Command("clan"))
 @router.message(Command("clans"))
+@router.message(F.text == "🏆 КОМАНДЫ И КЛАНЫ")
 @router.callback_query(F.data == "clan_main_menu")
-async def cmd_clan_hub(message: types.Message or types.CallbackQuery):
+async def cmd_clan_hub(message: types.Message | types.CallbackQuery):
     is_callback = isinstance(message, types.CallbackQuery)
     # 🔥 ФИКС 4: Вытягиваем ID строго из from_user, а не из message.from_user (который равен боту при callback)
     user_id = message.from_user.id
@@ -178,31 +180,42 @@ async def cmd_all_teams_isolated(message: types.Message):
         [types.InlineKeyboardButton(text="🔄 Показать другие команды", callback_data="clan_action:search_city")]
     ])
     await message.answer("👇 <b>Не нашел подходящую банду? Прокрути рулетку!</b>", reply_markup=rotation_kb,
-                         refresh_mode=None, parse_mode="HTML")
+                         parse_mode="HTML")
 
 
 # ============================================================================
 # 👥 4. ПОШАГОВЫЙ БЕЗОПАСНЫЙ КОНВЕЙЕР СОЗДАНИЯ КОМАНДЫ (FSM С СЕРВЕРНОЙ ВАЛИДАЦИЕЙ)
 # ============================================================================
-@router.callback_query(F.data == "clan_action:start_create")
-async def trigger_clan_creation_inline(callback: types.CallbackQuery, state: FSMContext):
-    await callback.answer()
-    user_id = callback.from_user.id
-
+async def _begin_team_creation(target: types.Message, user_id: int, state: FSMContext) -> None:
+    """Общий вход в создание команды: из кнопки и из команды /create_team."""
     async with db.pool.acquire() as conn:
         user = await conn.fetchrow("SELECT balance, team_id FROM users WHERE user_id = $1", user_id)
 
-    if user and user["team_id"] is not None:
-        await callback.message.answer("⚠️ Ошибка! Ты уже состоишь в команде.")
+    if not user:
+        await target.answer("⚠️ Профиль не найден. Нажми /start")
         return
-    if not user or user["balance"] < 100000:
-        await callback.message.answer(
-            f"❌ Недостаточно рофлов! Создание стоит 100 000. Твой баланс: {user['balance'] if user else 0}")
+    if user["team_id"] is not None:
+        await target.answer("⚠️ Ты уже состоишь в команде. Посмотреть её: /my_team")
+        return
+    if user["balance"] < TEAM_CREATE_COST:
+        await target.answer(
+            f"❌ Недостаточно рофлов! Создание стоит {TEAM_CREATE_COST:,}. Твой баланс: {user['balance']:,}".replace(",", " "))
         return
 
     await state.set_state(ClanCreationStates.waiting_for_name)
-    await callback.message.answer("🏆 <b>ШАГ 1 ИЗ 3: НАЗВАНИЕ КОМАНДЫ</b>\n\nВведи уникальное имя банды (до 32 знаков):",
-                                  reply_markup=get_cancel_keyboard(), parse_mode="HTML")
+    await target.answer("🏆 <b>ШАГ 1 ИЗ 3: НАЗВАНИЕ КОМАНДЫ</b>\n\nВведи уникальное имя банды (до 32 знаков):",
+                        reply_markup=get_cancel_keyboard(), parse_mode="HTML")
+
+
+@router.message(Command("create_team"))
+async def cmd_create_team(message: types.Message, state: FSMContext):
+    await _begin_team_creation(message, message.from_user.id, state)
+
+
+@router.callback_query(F.data == "clan_action:start_create")
+async def trigger_clan_creation_inline(callback: types.CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await _begin_team_creation(callback.message, callback.from_user.id, state)
 
 
 @router.message(ClanCreationStates.waiting_for_name)
@@ -355,7 +368,10 @@ async def process_clan_join_request(callback: types.CallbackQuery):
 async def process_clan_leave_logic(callback: types.CallbackQuery):
     await callback.answer()
     user_id = callback.from_user.id
-    team_id = int(callback.data.split(":"))
+    parts = callback.data.split(":")
+    if len(parts) < 2 or not parts[1].isdigit():
+        return
+    team_id = int(parts[1])
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
@@ -373,7 +389,7 @@ async def process_clan_leave_logic(callback: types.CallbackQuery):
                 # 👑 СЦЕНАРИЙ А: ВЫХОДИТ САМ КАПИТАН БАНДЫ!
                 # Ищем самого преданного ветерана (кто зарегистрирован в команде раньше всех)
                 next_captain = await conn.fetchrow(
-                    "SELECT user_id, username FROM users WHERE team_id = $1 AND user_id != $2 ORDER BY user_id ASC LIMIT 1",
+                    "SELECT user_id, username FROM users WHERE team_id = $1 AND user_id != $2 ORDER BY last_seen_at DESC, user_id ASC LIMIT 1",
                     team_id, user_id
                 )
 
@@ -389,7 +405,7 @@ async def process_clan_leave_logic(callback: types.CallbackQuery):
                         f"..................................................\n\n"
                         f"Капитан бросил команду <b>{team['team_name']}</b> и ушёл в закат.\n\n"
                         f"👑 По праву преданности и старшинства, новым <b>Вожаком банды</b> официально объявлен ветеран: "
-                        f"@{next_captain['username']} (ID: <code>{next_captain['user_id']}</code>)!\n\n"
+                        f"@{html.escape(next_captain['username'] or str(next_captain['user_id']))} (ID: <code>{next_captain['user_id']}</code>)!\n\n"
                         f"<i>Власть сменилась. Команда продолжает битву за ТОП СНГ!</i>"
                     )
                     await callback.message.answer(announce_text, parse_mode="HTML")

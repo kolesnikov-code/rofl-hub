@@ -1,3 +1,4 @@
+import html
 import os
 import logging
 from datetime import datetime, timezone
@@ -6,15 +7,22 @@ from aiogram.filters import Command
 from aiogram.types import FSInputFile
 from PIL import Image, ImageDraw, ImageFont
 from shared.database import db
+from shared.economy import MINER_RATE_PER_HOUR
 
 router = Router()
 logger = logging.getLogger(__name__)
 
 STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "static")
-FONT_PATH = os.path.join(STATIC_DIR, "Arial.ttf")
+FONT_CANDIDATES = [
+    os.path.join(STATIC_DIR, "DejaVuSans.ttf"),
+    os.path.join(STATIC_DIR, "Arial.ttf"),
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "C:/Windows/Fonts/arial.ttf",
+]
+FONT_PATH = next((p for p in FONT_CANDIDATES if os.path.exists(p)), None)
 
-JUNIOR_RATE_HOUR = 2
-PREMIUM_RATE_HOUR = 5
+JUNIOR_RATE_HOUR = MINER_RATE_PER_HOUR["junior"]
+PREMIUM_RATE_HOUR = MINER_RATE_PER_HOUR["premium"]
 
 
 # ============================================================================
@@ -94,19 +102,18 @@ def generate_profile_image(user_id: int, username: str, data: dict) -> str:
             try:
                 font_id = ImageFont.truetype(FONT_PATH, 24)
                 font_data = ImageFont.truetype(FONT_PATH, 20)
-            except IOError:
+            except (IOError, TypeError):
                 font_id = font_data = ImageFont.load_default()
 
-            draw.text((50, 40), f"ID ПAСПOPТA: {user_id}", fill="#00ffff", font=font_id)
-            draw.text((50, 80), f"ВОЖAК: @{username}", fill="#ffffff", font=font_data)
-            draw.text((50, 150), f"💰 Бaлaнс: {data['balance']} рофлов", fill="#ffff00", font=font_id)
-            draw.text((50, 200), f"🥩 В холодильнике: {data['fridge_cutlets']} / {capacity} шт.", fill="#ff00ff",
+            draw.text((50, 40), f"ID ПАСПОРТА: {user_id}", fill="#00ffff", font=font_id)
+            draw.text((50, 80), f"ВОЖАК: @{username}", fill="#ffffff", font=font_data)
+            draw.text((50, 150), f"Баланс: {data['balance']} рофлов", fill="#ffff00", font=font_id)
+            draw.text((50, 200), f"В холодильнике: {data['fridge_cutlets']} / {capacity} шт.", fill="#ff00ff",
                       font=font_data)
-            draw.text((50, 240), f"💼 Котлеты в инвентаре: {data['inv_cutlets']} шт.", fill="#ffffff", font=font_data)
-            draw.text((50, 310), f"🤖 Млaдшие Мaйнеры: {data['miner_junior_count']} шт.", fill="#00ff00", font=font_data)
-            draw.text((50, 350), f"⚡ Кибер Бурильщики: {data['miner_premium_count']} шт.", fill="#ff3300",
+            draw.text((50, 240), f"Котлеты на складе: {data['inv_cutlets']} шт.", fill="#ffffff", font=font_data)
+            draw.text((50, 310), f"Младшие Майнеры: {data['miner_junior_count']} шт.", fill="#00ff00", font=font_data)
+            draw.text((50, 350), f"Кибер-Бурильщики: {data['miner_premium_count']} шт.", fill="#ff3300",
                       font=font_data)
-            draw.text((50, 390), f"🚀 Боевой Буст: Уровень {data['boost_level']}", fill="#aa00ff", font=font_data)
             img.save(output_path, "JPEG")
             return output_path
     except Exception as e:
@@ -121,7 +128,7 @@ def generate_profile_image(user_id: int, username: str, data: dict) -> str:
 @router.message(F.text == "👤 МОЙ ПРОФИЛЬ")
 async def cmd_profile_stats(message: types.Message):
     user_id = message.from_user.id
-    username = message.from_user.username or f"user_{user_id}"
+    username = html.escape(message.from_user.username or f"user_{user_id}")
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():

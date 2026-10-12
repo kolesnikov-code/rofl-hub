@@ -26,7 +26,7 @@ def get_reply_main_keyboard() -> types.ReplyKeyboardMarkup:
             ]
         ],
         resize_keyboard=True,
-        persistent=True
+        is_persistent=True
     )
 
 def get_games_inline_keyboard() -> types.InlineKeyboardMarkup:
@@ -86,11 +86,17 @@ async def cmd_games_hub(message: types.Message):
         "Здесь ты можешь сразиться с ботом в быстрых дуэлях или пройти "
         "интеллектуальный спринт-тест, чтобы сорвать куш или слить баланс!\n\n"
         "💸 Победа приносит: <b>+2 рофла</b>\n"
-        "💀 Капкан проигрыша списывает: <b>до -5 рофлов!</b>\n\n"
+        "💀 Проигрыш или ничья списывает: <b>-1 рофл</b>\n\n"
         "..................................................\n"
         "👇 <b>КЛИКАЙ ПО КНОПКЕ НИЖЕ ДЛЯ НЕМЕДЛЕННОГО СТАРТА РAУНДA:</b>"
     )
     await message.answer(games_text, reply_markup=get_games_inline_keyboard(), parse_mode="HTML")
+
+@router.callback_query(F.data == "games_hub")
+async def games_hub_callback(callback: types.CallbackQuery):
+    await callback.answer()
+    await cmd_games_hub(callback.message)
+
 
 @router.callback_query(F.data == "refresh_main_menu")
 async def refresh_main_menu_callback(callback: types.CallbackQuery):

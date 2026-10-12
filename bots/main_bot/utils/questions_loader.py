@@ -1,74 +1,86 @@
+"""
+База вопросов викторины: CSV (разделитель ;) → кэш в памяти при старте.
+
+Формат строки: category;question;correct_answer;option_1;option_2;option_3
+Тексты экранируются для HTML один раз при загрузке.
+"""
+from __future__ import annotations
+
 import csv
-import os
-import logging
 import html
+import logging
 import random
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# Хранилище вопросов в оперативной памяти сервера
-_cached_questions = []
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_CSV_PATH = PROJECT_ROOT / "data" / "questions.csv"
+
+_questions: list[dict] = []
+_by_id: dict[int, dict] = {}
+
+FALLBACK_QUESTIONS = [
+    {"id": 1, "category": "Экономика ROFL HUB", "q": "Сколько рофлов в час приносит Кибер-Бурильщик?",
+     "correct": "10", "options": ["5", "10", "20", "50"]},
+]
 
 
-def load_questions_from_csv():
-    """
-    Считывает вопросы из CSV-таблицы в буфер памяти при старте бота.
-    Жестко привязан к абсолютному корню проекта ROFL-HUB.
-    """
-    global _cached_questions
-    _cached_questions = []
-
-    # 🔥 ЖЕСТКИЙ ПУТЬ: Находим корень проекта по расположению этого файла
-    # bots/main_bot/utils/questions_loader.py -> parents[3] уводит в ROFL-HUB/
-    from pathlib import Path
-    current_file = Path(__file__).resolve()
-    project_root = current_file.parents[3]
-    csv_path = os.path.join(project_root, "data", "questions.csv")
-
-    if not os.path.exists(csv_path):
-        logger.warning(f"⚠️ Файл базы вопросов {csv_path} не найден! Викторина запущена на аварийном паке.")
-        _cached_questions = [
-            {
-                "id": 1, "category": "Экономика", "q": "Какая скорость добычи дает Кибер-Бурильщик в магазине?",
-                "correct": "5 рофлов в час",
-                "options": ["2 рофла в час", "5 рофлов в час", "10 рофлов в час", "100 рофлов в час"]
-            }
-        ]
-        return
-
-    try:
-        with open(csv_path, mode="r", encoding="utf-8-sig") as f:
-            reader = csv.DictReader(f, delimiter=";")
-            for idx, row in enumerate(reader, start=1):
-                if not row.get("question") or not row.get("correct_answer"):
-                    continue
-
-                q_text = html.escape(row["question"].strip())
-                ans_correct = html.escape(row["correct_answer"].strip())
-
-                # Собираем все 4 варианта (правильный всегда первый в файле, перемешаем при выдаче)
-                options = [
-                    ans_correct,
-                    html.escape(row["option_1"].strip()),
-                    html.escape(row["option_2"].strip()),
-                    html.escape(row["option_3"].strip())
-                ]
-
-                _cached_questions.append({
-                    "id": idx,
-                    "category": row.get("category", "Общая").strip(),
-                    "q": q_text,
-                    "correct": ans_correct,
-                    "options": options
-                })
-        logger.info(f"📊 УСПЕШНО КЭШИРОВАНО ИЗ CSV: {len(_cached_questions)} ВОПРОСОВ ДЛЯ ТУРНИРОВ!")
-    except Exception as e:
-        logger.error(f"🚨 Ошибка парсинга CSV-файла викторины: {e}")
+def parse_questions(rows, *, source: str = "csv") -> list[dict]:
+    """Чистый парсер: список словарей из DictReader → список вопросов. Битые строки пропускаются."""
+    result: list[dict] = []
+    for idx, row in enumerate(rows, start=1):
+        q = (row.get("question") or "").strip()
+        correct = (row.get("correct_answer") or "").strip()
+        wrong = [(row.get(f"option_{i}") or "").strip() for i in (1, 2, 3)]
+        if not q or not correct or any(not w for w in wrong):
+            logger.warning("[QUIZ_CSV] строка %s пропущена: пустое поле (%s)", idx, source)
+            continue
+        options = [html.escape(correct)] + [html.escape(w) for w in wrong]
+        if len(set(options)) != 4:
+            logger.warning("[QUIZ_CSV] строка %s пропущена: повторяющиеся варианты", idx)
+            continue
+        result.append({
+            "id": idx,
+            "category": html.escape((row.get("category") or "Общая").strip()),
+            "q": html.escape(q),
+            "correct": options[0],
+            "options": options,
+        })
+    return result
 
 
-def get_random_question() -> dict:
-    """Выдергивает случайный вопрос из кэша памяти"""
-    global _cached_questions
-    if not _cached_questions:
+def load_questions_from_csv(path: Path | str | None = None) -> int:
+    """Загружает вопросы в кэш. Возвращает количество. При ошибке — аварийный пак."""
+    global _questions, _by_id
+    csv_path = Path(path) if path else DEFAULT_CSV_PATH
+    loaded: list[dict] = []
+    if csv_path.exists():
+        try:
+            with open(csv_path, encoding="utf-8-sig", newline="") as f:
+                loaded = parse_questions(csv.DictReader(f, delimiter=";"), source=str(csv_path))
+        except Exception:
+            logger.exception("[QUIZ_CSV] ошибка чтения %s", csv_path)
+    else:
+        logger.warning("[QUIZ_CSV] файл %s не найден", csv_path)
+
+    if not loaded:
+        logger.warning("[QUIZ_CSV] викторина работает на аварийном паке из %s вопросов", len(FALLBACK_QUESTIONS))
+        loaded = [dict(q) for q in FALLBACK_QUESTIONS]
+
+    _questions = loaded
+    _by_id = {q["id"]: q for q in loaded}
+    logger.info("[QUIZ_CSV] загружено вопросов: %s", len(loaded))
+    return len(loaded)
+
+
+def get_random_question() -> dict | None:
+    if not _questions:
         load_questions_from_csv()
-    return random.choice(_cached_questions) if _cached_questions else None
+    return random.choice(_questions) if _questions else None
+
+
+def get_question_by_id(qid: int) -> dict | None:
+    if not _by_id:
+        load_questions_from_csv()
+    return _by_id.get(qid)

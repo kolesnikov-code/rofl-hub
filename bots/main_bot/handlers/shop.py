@@ -1,94 +1,117 @@
+"""
+Магазин: reply-панель «МАГАЗИН / ДЛЯ ФЕРМЫ / ИГРОВЫЕ», витрина — инлайн-кнопки из каталога.
+Переключение категории удаляет предыдущее сообщение витрины и рисует новое (по ТЗ).
+"""
+from __future__ import annotations
+
 import logging
-from aiogram import Router, types, F
+
+from aiogram import F, Router, types
 from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+
+from bots.main_bot.catalog import CATALOG, CATEGORY_FARM, CATEGORY_GAMES, SHOP_LAYOUT
 from shared.database import db
 
 router = Router()
 logger = logging.getLogger(__name__)
 
-
-def get_premium_shop_keyboard(current_capacity: int) -> types.InlineKeyboardMarkup:
-    """
-    Генерирует строго очищенную от розничного мусора витрину магазина.
-    Все паки крупные, понятные и вызывают мгновенное желание купить.
-    """
-    keyboard_buttons = [
-        # 1. ЛИНИЙКА РОБОТОВ-МАЙНЕРОВ
-        [
-            types.InlineKeyboardButton(text="🤖 Младший Майнер | 49 Stars", callback_data="buy_miner_junior"),
-            types.InlineKeyboardButton(text="⚡ Кибер Бурильщик | 99 Stars", callback_data="buy_miner_premium")
-        ],
-        # 2. КРУПНЫЕ ОПТОВЫЕ ПАКИ КОТЛЕТ
-        [
-            types.InlineKeyboardButton(text="🥩 Пак котлет (10 шт.) | 49 Stars", callback_data="buy_cutlet_10")
-        ],
-        [
-            types.InlineKeyboardButton(text="🥩 Запас котлет (50 шт.) | 239 Stars", callback_data="buy_cutlet_50"),
-            types.InlineKeyboardButton(text="🥩 Пром. пак (100 шт.) | 449 Stars", callback_data="buy_cutlet_100")
-        ],
-        # 3. УЛУЧШЕНИЯ ХОЛОДИЛЬНИКА (СИНХРОНИЗИРОВАНО С ПАКАМИ КОТЛЕТ)
-        [
-            types.InlineKeyboardButton(text="📦 Холодильник на 10 шт. | 99 Stars", callback_data="buy_fridge_10")
-        ],
-        [
-            types.InlineKeyboardButton(text="📦 Холодильник на 50 шт. | 499 Stars", callback_data="buy_fridge_50"),
-            types.InlineKeyboardButton(text="📦 Холодильник на 100 шт. | 999 Stars", callback_data="buy_fridge_100")
-        ],
-        # 4. ВЫСОКОДОХОДНЫЕ СГОРАЕМЫЕ БУСТЫ ФЕРМЫ (НА 30 ДНЕЙ)
-        [
-            types.InlineKeyboardButton(text="🔋 Ядерный Разгон x5 | 199 Stars", callback_data="buy_boost_nuclear_30"),
-            types.InlineKeyboardButton(text="❄️ Азотное Охлаждение +40% | 299 Stars",
-                                       callback_data="buy_boost_nitrogen_30")
-        ],
-        # 5. СНЯТИЕ СУТОЧНЫХ ЛИМИТОВ НА ГЕЙМИНГ
-        [
-            types.InlineKeyboardButton(text="⚡ Игровой Безлимит (24ч) | 5 Stars", callback_data="buy_unlimit_24h"),
-            types.InlineKeyboardButton(text="🚀 Игровой Безлимит (30д) | 99 Stars", callback_data="buy_unlimit_30d")
-        ],
-        # 6. VIP-АВТОМАТИЗАЦИЯ (ДРОН НА 1 ГОД)
-        [
-            types.InlineKeyboardButton(text="🤖 VIP Дрон-Ремонтник (1 год) | 999 Stars",
-                                       callback_data="buy_repair_drone_365")
-        ],
-        # 7. ОПТОВАЯ КАЗНА МОНЕТ (БЕЗ МЕЛКОГО МУСОРА)
-        [
-            types.InlineKeyboardButton(text="💰 Пак 5 000 рофлов | 149 Stars", callback_data="buy_coins_5k"),
-            types.InlineKeyboardButton(text="💰 Пак 10 000 рофлов | 299 Stars", callback_data="buy_coins_10k")
-        ],
-        [
-            types.InlineKeyboardButton(text="👑 Пак 50 000 рофлов | 1299 Stars", callback_data="buy_coins_50k"),
-            types.InlineKeyboardButton(text="👑 Пак 100 000 рофлов | 2499 Stars", callback_data="buy_coins_100k")
-        ],
-        # 8. МЕГА-КЛАНЫ
-        [
-            types.InlineKeyboardButton(text="🏆 Лицензия Мега-Клана | 2499 Stars", callback_data="buy_clan_upgrade")
-        ]
-    ]
-    return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+BTN_SHOP = "🏪 МАГАЗИН"
+BTN_FARM_CAT = "🚜 ДЛЯ ФЕРМЫ"
+BTN_GAMES_CAT = "🕹️ ИГРОВЫЕ"
+BTN_MAIN_MENU = "📱 ГЛАВНОЕ МЕНЮ"
 
 
-# ============================================================================
-# 🏪 ВЫЗОВ ОБНОВЛЕННОГО МАРКЕТПЛЕЙСА: /shop ИЛИ КНОПКА МЕНЮ
-# ============================================================================
-@router.message(Command("shop"))
-@router.message(F.text == "🏪 МАГАЗИН")
-async def cmd_premium_shop(message: types.Message):
-    user_id = message.from_user.id
-
-    # Считываем текущую вместимость игрока, чтобы бот знал, выдавать ли ошибку при покупке меньшего объема
-    async with db.pool.acquire() as conn:
-        user_data = await conn.fetchrow("SELECT fridge_capacity FROM users WHERE user_id = $1", user_id)
-
-    current_capacity = user_data["fridge_capacity"] if user_data else 1
-
-    shop_text = (
-        "🏪 <b>МАРКЕТПЛЕЙС И ИНЖЕНЕРНАЯ МАСТЕРСКАЯ ROFL HUB</b>\n"
-        "..................................................\n\n"
-        "Прокачай аккаунт холдинга и увеличивай пассивную скорость добычи монеток! "
-        "Покупки совершаются моментально через официальные звёзды Telegram Stars.\n\n"
-        f"📦 <b>Текущая вместимость твоего холодильника:</b> CAPACITY {current_capacity}\n\n"
-        "..................................................\n"
-        "👇 <b>ВЫБЕРИ ТОВАР ДЛЯ ПОКУПКИ:</b>"
+def get_shop_reply_keyboard() -> types.ReplyKeyboardMarkup:
+    return types.ReplyKeyboardMarkup(
+        keyboard=[
+            [types.KeyboardButton(text=BTN_SHOP)],
+            [types.KeyboardButton(text=BTN_FARM_CAT), types.KeyboardButton(text=BTN_GAMES_CAT)],
+            [types.KeyboardButton(text=BTN_MAIN_MENU)],
+        ],
+        resize_keyboard=True,
+        is_persistent=True,
     )
 
-    await message.answer(shop_text, reply_markup=get_premium_shop_keyboard(current_capacity), parse_mode="HTML")
+
+def get_catalog_keyboard(category: str) -> types.InlineKeyboardMarkup:
+    rows = []
+    for row in SHOP_LAYOUT[category]:
+        rows.append([
+            types.InlineKeyboardButton(text=CATALOG[sku]["button"], callback_data=f"buy_{sku}")
+            for sku in row
+        ])
+    return types.InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+def _category_text(category: str, capacity: int) -> str:
+    if category == CATEGORY_FARM:
+        return (
+            "🚜 <b>МАГАЗИН · ДЛЯ ФЕРМЫ</b>\n"
+            "..................................................\n"
+            "Роботы на 30 дней, топливо, холодильники, бусты и Мастер-дрон.\n"
+            f"📦 Твой холодильник сейчас: <b>{capacity} котлет</b>\n"
+            "..................................................\n"
+            "👇 <b>Выбери товар:</b>"
+        )
+    return (
+        "🕹️ <b>МАГАЗИН · ИГРОВЫЕ</b>\n"
+        "..................................................\n"
+        "Снятие лимитов побед, паки рофлов и лицензия Мега-Клана.\n"
+        "..................................................\n"
+        "👇 <b>Выбери товар:</b>"
+    )
+
+
+async def _show_category(message: types.Message, state: FSMContext, category: str, user_id: int) -> None:
+    async with db.pool.acquire() as conn:
+        capacity = await conn.fetchval("SELECT fridge_capacity FROM users WHERE user_id = $1", user_id)
+    if capacity is None:
+        await message.answer("⚠️ Профиль не найден. Нажми /start для регистрации.")
+        return
+
+    data = await state.get_data()
+    old_id = data.get("shop_message_id")
+    if old_id:
+        try:
+            await message.bot.delete_message(chat_id=message.chat.id, message_id=old_id)
+        except Exception:
+            pass
+
+    sent = await message.answer(_category_text(category, capacity),
+                                reply_markup=get_catalog_keyboard(category), parse_mode="HTML")
+    await state.update_data(shop_message_id=sent.message_id)
+
+
+@router.message(Command("shop"))
+@router.message(F.text == BTN_SHOP)
+async def cmd_premium_shop(message: types.Message, state: FSMContext):
+    """Вход в магазин: меняем нижнюю панель и показываем категорию «Для фермы»."""
+    await message.answer(
+        "🏪 <b>МАГАЗИН ROFL HUB</b>\nПокупки — через официальные Telegram Stars. Выбери категорию кнопками внизу.",
+        reply_markup=get_shop_reply_keyboard(), parse_mode="HTML")
+    await _show_category(message, state, CATEGORY_FARM, message.from_user.id)
+
+
+@router.message(F.text == BTN_FARM_CAT)
+async def cmd_shop_farm(message: types.Message, state: FSMContext):
+    await _show_category(message, state, CATEGORY_FARM, message.from_user.id)
+
+
+@router.message(F.text == BTN_GAMES_CAT)
+async def cmd_shop_games(message: types.Message, state: FSMContext):
+    await _show_category(message, state, CATEGORY_GAMES, message.from_user.id)
+
+
+@router.callback_query(F.data == "open_shop_from_farm")
+async def open_shop_from_farm(callback: types.CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await cmd_premium_shop_for_user(callback.message, state, callback.from_user.id)
+
+
+async def cmd_premium_shop_for_user(message: types.Message, state: FSMContext, user_id: int) -> None:
+    """Вариант для вызова из инлайн-кнопок, где message.from_user — это бот."""
+    await message.answer(
+        "🏪 <b>МАГАЗИН ROFL HUB</b>\nПокупки — через официальные Telegram Stars. Выбери категорию кнопками внизу.",
+        reply_markup=get_shop_reply_keyboard(), parse_mode="HTML")
+    await _show_category(message, state, CATEGORY_FARM, user_id)

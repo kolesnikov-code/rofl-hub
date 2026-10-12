@@ -47,7 +47,26 @@ logger = logging.getLogger(__name__)
 dp = Dispatcher(storage=MemoryStorage())
 
 # Юзернейм главного бота для моментальной генерации диплинков
-MAIN_BOT_USERNAME = "RoflHubGame_Bot"
+MAIN_BOT_USERNAME = os.getenv("MAIN_BOT_USERNAME", "RoflHubGame_Bot").lstrip("@")
+
+MAIN_BOT_TOKEN = os.getenv("MAIN_BOT_TOKEN")
+
+
+async def notify_user_via_main_bot(user_id: int, text: str) -> bool:
+    """Отправляет игроку сообщение от имени главного бота. Ошибки не роняют админ-бот."""
+    if not MAIN_BOT_TOKEN:
+        logger.warning("[NOTIFY] MAIN_BOT_TOKEN не задан — уведомление игроку %s не отправлено", user_id)
+        return False
+    main_bot = Bot(token=MAIN_BOT_TOKEN)
+    try:
+        await main_bot.send_message(user_id, text, parse_mode="HTML")
+        return True
+    except Exception as e:
+        logger.warning("[NOTIFY] не удалось уведомить игрока %s: %s", user_id, e)
+        return False
+    finally:
+        await main_bot.session.close()
+
 
 class AuctionCreationStates(StatesGroup):
     waiting_for_title = State()
@@ -122,7 +141,7 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
         )
 
     # 🔥 БЕЗУПРЕЧНЫЙ ФИКС СЛЭШЕЙ: Ссылка собирается строго с разделителем /
-    deep_link = f"https://t.me{MAIN_BOT_USERNAME}?start=auction_{auction_id}"
+    deep_link = f"https://t.me/{MAIN_BOT_USERNAME}?start=auction_{auction_id}"
 
     channel_post_text = (
         f"🔥 <b>БИТВА ВОЖАКОВ ЗА ВЕЧНЫЙ ПОНТ И VIP-ПРИЗЫ!</b>\n"
@@ -133,7 +152,7 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
         f"💰 Стартовая цена: <b>{data.get('auc_price')} рофлов</b>\n"
         f"🚀 Шаг повышения: <b>+{step} рофлов</b>\n\n"
         f"..................................................\n"
-        f"⚠️ <i>Напоминаем: Каждая ставка является НЕВOЗВРAТНОЙ и сжигается! Победитель забирает реальный приз!</i>\n\n"
+        f"⚠️ <i>Ставки возвратные: если тебя перебили, монеты вернутся на баланс. Платит только победитель!</i>\n\n"
         f"👇 <b>КЛИКАЙ ПО ССЫЛКЕ НИЖЕ ДЛЯ ВХОДА И СТАВКИ:</b>\n"
         f"{deep_link}"
     )
@@ -158,11 +177,14 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
     await message.answer(success_text, parse_mode="HTML")
 
 @dp.message(Command("close_auction"))
-async def admin_close_auction(message: types.Message):
+async def admin_close_auction(message: types.Message, bot: Bot):
     if not is_admin(message.from_user.id): return
     parts = message.text.split()
     if len(parts) < 2:
         await message.answer("⚠️ Пример: <code>/close_auction 1</code>", parse_mode="HTML")
+        return
+    if not parts[1].isdigit():
+        await message.answer("❌ ID лота должен быть числом.")
         return
     auction_id = int(parts[1])
 
@@ -173,6 +195,23 @@ async def admin_close_auction(message: types.Message):
                 await message.answer("❌ Лот не существует или уже закрыт.")
                 return
             await conn.execute("UPDATE auctions SET status = 'closed' WHERE auction_id = $1", auction_id)
+
+    winner_id = auction["highest_bidder_id"]
+    if winner_id:
+        # Игрок общается с ГЛАВНЫМ ботом: админ-бот не может писать ему первым (chat not found)
+        await notify_user_via_main_bot(
+                winner_id,
+                f"🏆 <b>Ты победил в аукционе за лот «{auction['item_title']}»!</b>\n"
+                f"Финальная цена: <b>{auction['current_price']} рофлов</b>. Администрация свяжется с тобой для выдачи приза.",
+        )
+        try:
+            await bot.send_message(
+                USERS_CHANNEL_ID,
+                f"🏁 <b>Аукцион за лот «{auction['item_title']}» завершён!</b>\n"
+                f"👑 Победитель: ID <code>{winner_id}</code> · 💰 {auction['current_price']} рофлов",
+                parse_mode="HTML")
+        except Exception as e:
+            logger.warning("[AUCTION_CLOSE] не удалось опубликовать итог в канал: %s", e)
 
     await message.answer(
         f"🏁 <b>АУКЦИОН №{auction_id} ЗАКРЫТ ИЗ ШТАБА!</b>\n\n"
@@ -199,8 +238,7 @@ async def dynamic_analytics_daemon(bot: Bot):
 
     while True:
         try:
-            # Спим ровно 30 секунд, чтобы не грузить ядро постоянными проверками
-            await asyncio.sleep(30)
+            await asyncio.sleep(20)
 
             now_utc = datetime.now(timezone.utc)
             current_hour = now_utc.hour
@@ -256,7 +294,7 @@ async def dynamic_analytics_daemon(bot: Bot):
                 # ====================================================================
                 # 👑 ПОЛНОЧНЫЙ ИТОГОВЫЙ СРЕЗ И КОГОРТНЫЙ АНАЛИЗ (СТРОГО В 00:00 UTC)
                 # ====================================================================
-                if current_hour in (6, 12, 18):
+                if current_hour == 0:
                     async with db.pool.acquire() as conn:
                         cohort_data = await conn.fetchrow("""
                                                           WITH user_spend

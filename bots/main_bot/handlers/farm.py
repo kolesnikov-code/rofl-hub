@@ -2,6 +2,10 @@ import logging
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from shared.database import db
+from shared.economy import MINER_RATE_PER_HOUR
+
+JUNIOR_RATE = MINER_RATE_PER_HOUR["junior"]
+PREMIUM_RATE = MINER_RATE_PER_HOUR["premium"]
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -25,6 +29,7 @@ def get_farm_keyboard() -> types.InlineKeyboardMarkup:
 # ============================================================================
 @router.message(Command("farm"))
 @router.message(Command("my_farm"))
+@router.message(F.text == "🚜 МОЯ ФЕРМА")
 async def cmd_farm(message: types.Message, override_user_id: int = None):
     """
     Выводит дашборд топливного хаба фермы.
@@ -56,7 +61,7 @@ async def cmd_farm(message: types.Message, override_user_id: int = None):
         status_work = "💡 Заведи Кибер-Бурильщиков в /shop для увеличения дохода."
 
     # Расчет чистой выработки (2 и 5 монет в час)
-    speed_per_hour = (junior_count * 2) + (premium_count * 5)
+    speed_per_hour = (junior_count * JUNIOR_RATE) + (premium_count * PREMIUM_RATE)
     speed_per_day = speed_per_hour * 24
     speed_per_month = speed_per_hour * 720
 
@@ -64,8 +69,8 @@ async def cmd_farm(message: types.Message, override_user_id: int = None):
         f"🚜 <b>ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ ROFL HUB</b>\n"
         f"..................................................\n\n"
         f"🤖 Активных роботов на заводе: <b>{total_miners} шт.</b>\n"
-        f"• Младшие Майнеры (2 рофла/ч): <code>{junior_count} шт.</code>\n"
-        f"• Кибер-Бурильщики (5 рофлов/ч): <code>{premium_count} шт.</code>\n\n"
+        f"• Младшие Майнеры ({JUNIOR_RATE} рофлов/ч): <code>{junior_count} шт.</code>\n"
+        f"• Кибер-Бурильщики ({PREMIUM_RATE} рофлов/ч): <code>{premium_count} шт.</code>\n\n"
         f"📊 <b>АКТУАЛЬНАЯ СКОРОСТЬ ТВОЕЙ ФЕРМЫ:</b>\n"
         f"• Выработка в час: <b>+{speed_per_hour} рофлов</b>\n"
         f"• Выработка в сутки: <b>+{speed_per_day} рофлов</b>\n"
@@ -77,7 +82,7 @@ async def cmd_farm(message: types.Message, override_user_id: int = None):
         f"🥩 Запас топлива: <b>{user['fridge_cutlets']} / {user['fridge_capacity']} шт.</b>\n"
         f"💼 Котлеты на складе инвентаря: <code>{user['inv_cutlets']} шт.</code>\n\n"
         f"..................................................\n\n"
-        f"<i>💿 Важно: Все майнеры приобретаются строго на срок 30 дней. Младшие Майнеры работают автономно, а Кибер-Бурильщики автоматически потребляют по 1 котлете в сутки из运行 холодильника. Следи за заправкой бака!</i>"
+        f"<i>💿 Важно: все роботы покупаются на 30 дней. Младшие Майнеры работают автономно, Кибер-Бурильщики потребляют по 1 котлете в сутки из холодильника. Следи за заправкой!</i>"
     )
 
     await message.answer(farm_text, reply_markup=get_farm_keyboard(), parse_mode="HTML")
@@ -140,7 +145,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery):
     premium_count = updated["miner_premium_count"]
     total_miners = junior_count + premium_count
 
-    speed_per_hour = (junior_count * 2) + (premium_count * 5)
+    speed_per_hour = (junior_count * JUNIOR_RATE) + (premium_count * PREMIUM_RATE)
     speed_per_day = speed_per_hour * 24
     speed_per_month = speed_per_hour * 720
 
@@ -156,8 +161,8 @@ async def process_farm_inline_actions(callback: types.CallbackQuery):
         f"🚜 <b>ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ ROFL HUB</b>\n"
         f"..................................................\n\n"
         f"🤖 Активных роботов на заводе: <b>{total_miners} шт.</b>\n"
-        f"• Младшие Майнеры (2 рофла/ч): <code>{junior_count} шт.</code>\n"
-        f"• Кибер-Бурильщики (5 рофлов/ч): <code>{premium_count} шт.</code>\n\n"
+        f"• Младшие Майнеры ({JUNIOR_RATE} рофлов/ч): <code>{junior_count} шт.</code>\n"
+        f"• Кибер-Бурильщики ({PREMIUM_RATE} рофлов/ч): <code>{premium_count} шт.</code>\n\n"
         f"📊 <b>АКТУАЛЬНАЯ СКОРОСТЬ ТВОЕЙ ФЕРМЫ:</b>\n"
         f"• Выработка в час: <b>+{speed_per_hour} рофлов</b>\n"
         f"• Выработка в сутки: <b>+{speed_per_day} рофлов</b>\n"
@@ -169,7 +174,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery):
         f"🥩 Запас топлива: <b>{updated['fridge_cutlets']} / {updated['fridge_capacity']} шт.</b>\n"
         f"💼 Котлеты на складе инвентаря: <code>{updated['inv_cutlets']} шт.</code>\n\n"
         f"..................................................\n\n"
-        f"<i>💿 Важно: Все майнеры приобретаются строго на срок 30 дней. Младшие Майнеры работают автономно, а Кибер-Бурильщики автоматически потребляют по 1 котлете в сутки из холодильника. Следи за заправкой бака!</i>"
+        f"<i>💿 Важно: все роботы покупаются на 30 дней. Младшие Майнеры работают автономно, Кибер-Бурильщики потребляют по 1 котлете в сутки из холодильника. Следи за заправкой!</i>"
     )
 
     try:
