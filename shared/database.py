@@ -159,6 +159,41 @@ SCHEMA_STATEMENTS: list[str] = [
     """,
     "CREATE INDEX IF NOT EXISTS users_referred_by_idx ON users (referred_by);",
     "CREATE INDEX IF NOT EXISTS users_team_id_idx ON users (team_id);",
+    # --- Блок 2: ферма. Каждый робот — строка со своей датой сгорания ---
+    """
+    CREATE TABLE IF NOT EXISTS miners (
+        miner_id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        kind VARCHAR(16) NOT NULL,
+        purchased_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        fuel_until TIMESTAMP WITH TIME ZONE
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS miners_user_idx ON miners (user_id);",
+    # Остаток точного начисления (рофло-микросекунды, см. shared/farm_logic.py)
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS mining_acc BIGINT NOT NULL DEFAULT 0;",
+    # Ежедневная бесплатная котлета: время последнего нажатия «ЗАБРАТЬ БОНУС»
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_bonus_claim_at TIMESTAMP WITH TIME ZONE;",
+    # Разовый перенос старых счётчиков роботов в таблицу miners (30 дней жизни).
+    # Идемпотентно: после переноса счётчики обнуляются и блок больше не срабатывает.
+    """
+    DO $$
+    BEGIN
+        IF EXISTS (SELECT 1 FROM users WHERE miner_junior_count > 0 OR miner_premium_count > 0) THEN
+            INSERT INTO miners (user_id, kind, purchased_at, expires_at)
+            SELECT u.user_id, 'junior', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '30 days'
+            FROM users u CROSS JOIN LATERAL generate_series(1, u.miner_junior_count)
+            WHERE u.miner_junior_count > 0;
+            INSERT INTO miners (user_id, kind, purchased_at, expires_at)
+            SELECT u.user_id, 'premium', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '30 days'
+            FROM users u CROSS JOIN LATERAL generate_series(1, u.miner_premium_count)
+            WHERE u.miner_premium_count > 0;
+            UPDATE users SET miner_junior_count = 0, miner_premium_count = 0
+            WHERE miner_junior_count > 0 OR miner_premium_count > 0;
+        END IF;
+    END $$;
+    """,
 ]
 
 

@@ -9,10 +9,10 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Awaitable, Callable
 
-from shared.economy import extend_expiry, extend_expiry_hours, utcnow
+from shared.economy import MINER_LICENSE_DAYS, extend_expiry, extend_expiry_hours, utcnow
 from shared.ledger import change_balance
 
 logger = logging.getLogger(__name__)
@@ -32,10 +32,14 @@ async def _deliver_cutlets(conn, user_id: int, order: dict, now: datetime) -> st
 
 
 async def _deliver_miner(conn, user_id: int, order: dict, now: datetime) -> str:
-    column = "miner_junior_count" if order["kind"] == "junior" else "miner_premium_count"
-    await conn.execute(f"UPDATE users SET {column} = {column} + 1 WHERE user_id = $1", user_id)
+    expires_at = now + timedelta(days=MINER_LICENSE_DAYS)
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES ($1, $2, $3, $4)",
+        user_id, order["kind"], now, expires_at,
+    )
     name = "Младший Майнер" if order["kind"] == "junior" else "Кибер-Бурильщик"
-    return f"🤖 Робот <b>«{name}»</b> доставлен на твою ферму."
+    return (f"🤖 Робот <b>«{name}»</b> доставлен на твою ферму.\n"
+            f"⏳ Срок службы: до <b>{expires_at:%d.%m.%Y %H:%M} UTC</b>.")
 
 
 async def _deliver_fridge(conn, user_id: int, order: dict, now: datetime) -> str:

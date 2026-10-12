@@ -27,7 +27,7 @@ async def conn():
     await database.connect(TEST_DSN)
     await database.create_tables()
     async with database.pool.acquire() as c:
-        await c.execute("TRUNCATE users, teams, star_payments, game_stats, auctions, ledger RESTART IDENTITY")
+        await c.execute("TRUNCATE users, teams, star_payments, game_stats, auctions, ledger, miners RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -73,7 +73,11 @@ async def test_all_18_items_deliver(conn):
     assert u["balance"] == 165_000
     assert u["inv_cutlets"] == 160
     assert u["fridge_capacity"] == 100
-    assert u["miner_junior_count"] == 1 and u["miner_premium_count"] == 1
+    kinds = [r["kind"] for r in await conn.fetch(
+        "SELECT kind FROM miners WHERE user_id = 3 ORDER BY kind")]
+    assert kinds == ["junior", "premium"]
+    expiry = await conn.fetchval("SELECT MIN(expires_at - purchased_at) FROM miners WHERE user_id = 3")
+    assert expiry.days == 30
     assert u["boost_nuclear_until"] and u["boost_nitrogen_until"] and u["drone_until"] and u["unlimit_until"]
     assert await conn.fetchval("SELECT max_members FROM teams WHERE captain_id = 3") == 1000
     assert await conn.fetchval("SELECT COUNT(*) FROM star_payments WHERE user_id = 3") == 18
@@ -126,3 +130,65 @@ async def test_register_user_ignores_unknown_referrer(conn):
     from bots.main_bot.handlers.start import register_user
     await register_user(conn, 12, "x", "ru", referrer_id=999_999)
     assert await conn.fetchval("SELECT referred_by FROM users WHERE user_id = 12") is None
+
+
+# ---------------------------------------------------------------- ферма (Блок 2)
+async def test_lazy_farm_credits_mining_via_ledger_and_burns_fuel(conn):
+    from datetime import timedelta
+    from shared.economy import utcnow
+    from shared.farm_logic import apply_lazy_farm
+
+    now = utcnow()
+    await _mk_user(conn, 20, 0, fridge_cutlets=1)
+    await conn.execute("UPDATE users SET last_update_time = $1 WHERE user_id = 20",
+                       now - timedelta(hours=48))
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES "
+        "(20, 'junior', $1, $2), (20, 'premium', $1, $2)",
+        now - timedelta(hours=48), now + timedelta(days=29))
+
+    async with conn.transaction():
+        user, miners = await apply_lazy_farm(conn, 20, now)
+
+    # junior: 48ч*5 = 240; premium: 1 котлета = ровно 24ч*10 = 240
+    assert user["balance"] == 480
+    assert user["fridge_cutlets"] == 0
+    assert len(miners) == 2
+    row = await conn.fetchrow("SELECT delta, reason FROM ledger WHERE user_id = 20")
+    assert (row["delta"], row["reason"]) == (480, "mining")
+
+
+async def test_lazy_farm_deletes_expired_miners(conn):
+    from datetime import timedelta
+    from shared.economy import utcnow
+    from shared.farm_logic import apply_lazy_farm
+
+    now = utcnow()
+    await _mk_user(conn, 21, 0)
+    await conn.execute("UPDATE users SET last_update_time = $1 WHERE user_id = 21",
+                       now - timedelta(hours=10))
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES (21, 'junior', $1, $2)",
+        now - timedelta(days=30, hours=10), now - timedelta(hours=5))
+
+    async with conn.transaction():
+        user, miners = await apply_lazy_farm(conn, 21, now)
+
+    assert user["balance"] == 25  # доработал 5 часов до сгорания
+    assert miners == []
+    assert await conn.fetchval("SELECT COUNT(*) FROM miners WHERE user_id = 21") == 0
+
+
+async def test_counter_migration_moves_robots_to_miners_table_once(conn):
+    database = Database()
+    await database.connect(TEST_DSN)
+    try:
+        await _mk_user(conn, 22, 0, miner_junior_count=2, miner_premium_count=1)
+        await database.create_tables()
+        await database.create_tables()  # повторный запуск не дублирует роботов
+        rows = await conn.fetch("SELECT kind FROM miners WHERE user_id = 22 ORDER BY kind")
+        assert [r["kind"] for r in rows] == ["junior", "junior", "premium"]
+        u = await conn.fetchrow("SELECT miner_junior_count, miner_premium_count FROM users WHERE user_id = 22")
+        assert (u["miner_junior_count"], u["miner_premium_count"]) == (0, 0)
+    finally:
+        await database.close()

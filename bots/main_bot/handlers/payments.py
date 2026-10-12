@@ -21,6 +21,7 @@ from bots.main_bot.catalog import CatalogError, build_order, normalize_sku
 from bots.main_bot.config import ADMIN_SECRET_CHANNEL_ID, is_shop_tester
 from shared.database import db
 from shared.delivery import DeliveryError, already_delivered, deliver_order
+from shared.farm_logic import apply_lazy_farm
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -51,7 +52,9 @@ async def _deliver_in_transaction(user_id: int, order: dict, charge_id: str) -> 
         async with conn.transaction():
             if await already_delivered(conn, charge_id):
                 return True, "✅ Этот платёж уже был обработан, товар выдан ранее."
-            user = await conn.fetchrow("SELECT user_id FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+            # Сначала закрываем прошлое время по старым ставкам: купленный буст,
+            # дрон или робот действует строго вперёд, а не задним числом.
+            user, _ = await apply_lazy_farm(conn, user_id)
             if not user:
                 return False, "Профиль не найден."
             try:

@@ -1,13 +1,13 @@
 import html
 import os
 import logging
-from datetime import datetime, timezone
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.types import FSInputFile
 from PIL import Image, ImageDraw, ImageFont
 from shared.database import db
-from shared.economy import MINER_RATE_PER_HOUR
+from shared.economy import utcnow
+from shared.farm_logic import apply_lazy_farm, farm_counts
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -21,70 +21,9 @@ FONT_CANDIDATES = [
 ]
 FONT_PATH = next((p for p in FONT_CANDIDATES if os.path.exists(p)), None)
 
-JUNIOR_RATE_HOUR = MINER_RATE_PER_HOUR["junior"]
-PREMIUM_RATE_HOUR = MINER_RATE_PER_HOUR["premium"]
-
-
-# ============================================================================
-# ⚙️ ТИТАНОВЫЙ ЛЕHИВЫЙ ДВИЖОК НАЧИСЛЕНИЯ (СОХРАНЯЕТ ДРОБНЫЕ СЕКУНДЫ)
-# ============================================================================
-async def apply_lazy_mining_earnings(user_id: int, conn) -> dict:
-    """
-    Ленивый часовой расчет пассивного дохода на автопилоте.
-    Исключает потерю монет через сохранение остатка секунд.
-    """
-    user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
-    if not user:
-        return None
-
-    current_time = datetime.now(timezone.utc)
-    last_update = user["last_update_time"]
-
-    # Считаем чистые секунды, прошедшие с момента последнего захода
-    seconds_passed = int((current_time - last_update).total_seconds())
-    if seconds_passed <= 0:
-        return user
-
-    hours_passed = seconds_passed / 3600.0
-    fridge_cutlets = user["fridge_cutlets"]
-    miner_junior = user["miner_junior_count"]
-    miner_premium = user["miner_premium_count"]
-    balance = user["balance"]
-
-    # 1. РАСЧЕТ МЛАДШИХ МАЙНЕРОВ (Не едят, но зависят от точных часов)
-    earned_junior = hours_passed * miner_junior * JUNIOR_RATE_HOUR
-    total_earned = earned_junior
-
-    # 2. РАСЧЕТ КИБЕР-БУРИЛЬЩИКОВ (1 бурильщик съедает 1 котлету за 86400 секунд)
-    if miner_premium > 0 and fridge_cutlets > 0:
-        cutlets_needed_per_second = miner_premium / 86400.0
-        total_cutlets_needed = seconds_passed * cutlets_needed_per_second
-
-        if fridge_cutlets >= total_cutlets_needed:
-            earned_premium = hours_passed * miner_premium * PREMIUM_RATE_HOUR
-            fridge_cutlets = max(0, fridge_cutlets - int(total_cutlets_needed))
-        else:
-            # Еда закончилась раньше, чем пользователь зашел в бота
-            seconds_worked = int(fridge_cutlets / cutlets_needed_per_second)
-            hours_worked = seconds_worked / 3600.0
-            earned_premium = hours_worked * miner_premium * PREMIUM_RATE_HOUR
-            fridge_cutlets = 0
-        total_earned += earned_premium
-
-    # Накатываем чистый заработок без обрезания копеек времени
-    new_balance = balance + int(total_earned)
-
-    await conn.execute(
-        """
-        UPDATE users
-        SET balance          = $1,
-            fridge_cutlets   = $2,
-            last_update_time = $3
-        WHERE user_id = $4
-        """,
-        new_balance, fridge_cutlets, current_time, user_id
-    )
-    return await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", user_id)
+# Ленивый движок начисления переехал в shared/farm_logic.apply_lazy_farm:
+# роботы живут в таблице miners, топливо списывается целыми циклами 24ч,
+# начисления идут через ledger без потери «копеек времени».
 
 
 def generate_profile_image(user_id: int, username: str, data: dict) -> str:
@@ -130,9 +69,10 @@ async def cmd_profile_stats(message: types.Message):
     user_id = message.from_user.id
     username = html.escape(message.from_user.username or f"user_{user_id}")
 
+    now = utcnow()
     async with db.pool.acquire() as conn:
         async with conn.transaction():
-            user = await apply_lazy_mining_earnings(user_id, conn)
+            user, miners = await apply_lazy_farm(conn, user_id, now)
             if not user:
                 await message.answer("⚠️ Профиль не найден. Прожми /start")
                 return
@@ -145,10 +85,11 @@ async def cmd_profile_stats(message: types.Message):
                     status_team = "Клан" if t_row["max_members"] >= 1000 else "Команда"
                     team_name = f"{status_team} «{t_row['team_name']}»"
 
+    counts = farm_counts(miners, now)
     user_data_dict = {
         "balance": user["balance"], "fridge_capacity": user["fridge_capacity"],
         "fridge_cutlets": user["fridge_cutlets"], "inv_cutlets": user["inv_cutlets"],
-        "miner_junior_count": user["miner_junior_count"], "miner_premium_count": user["miner_premium_count"],
+        "miner_junior_count": counts["junior"], "miner_premium_count": counts["premium"],
         "boost_level": user["boost_level"]
     }
 

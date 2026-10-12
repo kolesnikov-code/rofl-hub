@@ -34,6 +34,10 @@ BOOST_DAYS = 30
 DRONE_DAYS = 365
 DAILY_CUTLET_BONUS_COOLDOWN_SECONDS = 24 * 3600
 
+# Внутренняя точность начислений: копим рофло-микросекунды, чтобы ни одна
+# «копейка времени» не терялась между ленивыми пересчётами.
+MINING_ACC_PER_ROFL = 3600 * 1_000_000  # µs работы на 1 рофл при ставке 1 рофл/ч
+
 # --------------------------------------------------------------------------
 # Игры и лимиты
 # --------------------------------------------------------------------------
@@ -98,6 +102,33 @@ def extend_expiry_hours(current: datetime | None, now: datetime, hours: int) -> 
 
 def is_active(expiry: datetime | None, now: datetime) -> bool:
     return expiry is not None and expiry > now
+
+
+def miner_hourly_rate(kind: str, *, nuclear_active: bool = False, nitrogen_active: bool = False) -> int:
+    """
+    Ставка робота в рофлах/час с учётом бустов. Эффекты складываются:
+    Азот +40% к базе (5→7, 10→14), затем Ядерный разгон ×5 (7→35, 14→70).
+    """
+    rate = MINER_RATE_PER_HOUR[kind]
+    if nitrogen_active:
+        rate = rate * (100 + NITROGEN_BONUS_PERCENT) // 100
+    if nuclear_active:
+        rate *= NUCLEAR_SPEED_MULTIPLIER
+    return rate
+
+
+def cutlets_per_cycle(nuclear_active: bool) -> int:
+    """Сколько котлет съедает один бурильщик при старте цикла 24ч."""
+    return PREMIUM_CUTLETS_PER_CYCLE_BASE * (NUCLEAR_FUEL_MULTIPLIER if nuclear_active else 1)
+
+
+def daily_bonus_seconds_left(last_claim: datetime | None, now: datetime) -> int:
+    """0 — бонус доступен; иначе сколько секунд ждать (округление вверх)."""
+    if last_claim is None:
+        return 0
+    passed = (now - last_claim).total_seconds()
+    left = DAILY_CUTLET_BONUS_COOLDOWN_SECONDS - passed
+    return max(0, -int(-left // 1))  # ceil
 
 
 def tournament_winners_count(participants: int) -> int:
