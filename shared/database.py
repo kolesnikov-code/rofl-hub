@@ -146,6 +146,8 @@ SCHEMA_STATEMENTS: list[str] = [
     "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS daily_wins_safe INT NOT NULL DEFAULT 0;",
     "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS quiz_correct_total INT NOT NULL DEFAULT 0;",
     "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS quiz_level INT NOT NULL DEFAULT 0;",
+    # Прогресс текущей итерации уровня (обнуляется при переходе на новый уровень)
+    "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS quiz_level_progress INT NOT NULL DEFAULT 0;",
     # --- Миграции: срочные лицензии (бусты, дрон, безлимит) ---
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS boost_nuclear_until TIMESTAMP WITH TIME ZONE;",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS boost_nitrogen_until TIMESTAMP WITH TIME ZONE;",

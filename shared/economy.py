@@ -55,8 +55,11 @@ DAILY_WIN_LIMITS = {
 }
 DEFAULT_DAILY_WIN_LIMIT = 15
 QUIZ_ANSWER_SECONDS = 10
-QUIZ_ANSWERS_PER_LEVEL = 30
-QUIZ_LEVEL_UP_BONUS = 500
+# Прогрессивные уровни викторины (решение владельца 13.10.2026):
+# уровень N закрывается за N*10 верных ответов (счётчик итерации обнуляется),
+# награда за уровень N — N*100 рофлов. 1-й: 10 ответов → +100; 100-й: 1000 → +10 000.
+QUIZ_LEVEL_STEP_ANSWERS = 10
+QUIZ_LEVEL_REWARD_PER_LEVEL = 100
 
 
 def win_reward_for(game_type: str) -> int:
@@ -64,16 +67,18 @@ def win_reward_for(game_type: str) -> int:
     return SAFE_WIN_REWARD if game_type == "safe" else WIN_REWARD
 
 
-def quiz_level_for(correct_total: int) -> int:
-    """Уровень викторины: каждый полный пакет из QUIZ_ANSWERS_PER_LEVEL верных ответов."""
-    if correct_total < 0:
-        raise ValueError("correct_total must be non-negative")
-    return correct_total // QUIZ_ANSWERS_PER_LEVEL
+def quiz_answers_required(level: int) -> int:
+    """Сколько верных ответов нужно набрать в итерации, чтобы закрыть уровень level."""
+    if level <= 0:
+        raise ValueError("level must be positive")
+    return level * QUIZ_LEVEL_STEP_ANSWERS
 
 
-def quiz_answers_to_next_level(correct_total: int) -> int:
-    """Сколько верных ответов осталось до следующего уровня (1..30)."""
-    return QUIZ_ANSWERS_PER_LEVEL - correct_total % QUIZ_ANSWERS_PER_LEVEL
+def quiz_level_reward(level: int) -> int:
+    """Награда за закрытие уровня level."""
+    if level <= 0:
+        raise ValueError("level must be positive")
+    return level * QUIZ_LEVEL_REWARD_PER_LEVEL
 UNLIMIT_DAY_HOURS = 24
 UNLIMIT_MONTH_DAYS = 30
 

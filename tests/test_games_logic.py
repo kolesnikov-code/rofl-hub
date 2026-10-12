@@ -19,13 +19,13 @@ from bots.main_bot.handlers.games import (  # noqa: E402
     safe_outcome,
 )
 from shared.economy import (  # noqa: E402
-    QUIZ_ANSWERS_PER_LEVEL,
-    QUIZ_LEVEL_UP_BONUS,
+    QUIZ_LEVEL_REWARD_PER_LEVEL,
+    QUIZ_LEVEL_STEP_ANSWERS,
     SAFE_CODES_COUNT,
     SAFE_WIN_REWARD,
     WIN_REWARD,
-    quiz_answers_to_next_level,
-    quiz_level_for,
+    quiz_answers_required,
+    quiz_level_reward,
     win_reward_for,
 )
 
@@ -111,30 +111,42 @@ def test_safe_expected_value_matches_coin():
 
 
 # ---------------------------------------------------------------- Уровни викторины
-@pytest.mark.parametrize("total,level", [
-    (0, 0), (1, 0), (29, 0), (30, 1), (31, 1), (59, 1), (60, 2), (90, 3), (300, 10),
+# Прогрессия владельца: уровень N требует N*10 верных ответов (итерация с нуля),
+# награда за уровень N — N*100 рофлов.
+@pytest.mark.parametrize("level,required", [
+    (1, 10), (2, 20), (3, 30), (4, 40), (10, 100), (100, 1000),
 ])
-def test_quiz_level_for(total, level):
-    assert quiz_level_for(total) == level
+def test_quiz_answers_required(level, required):
+    assert quiz_answers_required(level) == required
 
 
-@pytest.mark.parametrize("total,to_next", [
-    (0, 30), (1, 29), (29, 1), (30, 30), (59, 1), (60, 30),
+@pytest.mark.parametrize("level,reward", [
+    (1, 100), (2, 200), (3, 300), (4, 400), (10, 1000), (100, 10_000),
 ])
-def test_quiz_answers_to_next_level(total, to_next):
-    assert quiz_answers_to_next_level(total) == to_next
+def test_quiz_level_reward(level, reward):
+    assert quiz_level_reward(level) == reward
 
 
-def test_quiz_level_rejects_negative():
+def test_quiz_level_helpers_reject_nonpositive():
     with pytest.raises(ValueError):
-        quiz_level_for(-1)
+        quiz_answers_required(0)
+    with pytest.raises(ValueError):
+        quiz_level_reward(-1)
 
 
 def test_quiz_level_constants():
-    assert QUIZ_ANSWERS_PER_LEVEL == 30
-    assert QUIZ_LEVEL_UP_BONUS == 500
+    assert QUIZ_LEVEL_STEP_ANSWERS == 10
+    assert QUIZ_LEVEL_REWARD_PER_LEVEL == 100
 
 
-def test_level_up_triggers_exactly_on_multiples_of_30():
-    triggers = [n for n in range(1, 121) if n % QUIZ_ANSWERS_PER_LEVEL == 0]
-    assert triggers == [30, 60, 90, 120]
+def test_first_two_levels_fit_exactly_into_daily_limit():
+    """Маркетинговая механика: уровни 1+2 = ровно дневной лимит викторины (30 побед),
+    уровень 4 (40 ответов) за день без безлимита уже не закрыть."""
+    assert quiz_answers_required(1) + quiz_answers_required(2) == limit_for("quiz")
+    assert quiz_answers_required(4) > limit_for("quiz")
+
+
+def test_quiz_inflation_is_bounded():
+    """Награда за уровень = 10 рофлов за каждый верный ответ итерации — на любом уровне."""
+    for level in (1, 2, 5, 10, 50, 100):
+        assert quiz_level_reward(level) / quiz_answers_required(level) == 10

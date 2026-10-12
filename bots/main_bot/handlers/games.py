@@ -25,14 +25,12 @@ from shared.economy import (
     DEFAULT_DAILY_WIN_LIMIT,
     LOSE_PENALTY,
     QUIZ_ANSWER_SECONDS,
-    QUIZ_ANSWERS_PER_LEVEL,
-    QUIZ_LEVEL_UP_BONUS,
     SAFE_CODES_COUNT,
     SAFE_WIN_REWARD,
     WIN_REWARD,
     is_active,
-    quiz_answers_to_next_level,
-    quiz_level_for,
+    quiz_answers_required,
+    quiz_level_reward,
     utcnow,
     win_reward_for,
 )
@@ -177,21 +175,29 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
                     """,
                     user_id, 1 if is_win else 0, today)
 
-            # Уровни викторины: каждые 30 верных ответов — +500 рофлов
+            # Прогрессивные уровни викторины: уровень N = N*10 верных ответов → N*100 рофлов
             if is_win and game_type == "quiz":
-                total = await conn.fetchval(
-                    "UPDATE game_stats SET quiz_correct_total = quiz_correct_total + 1 "
-                    "WHERE user_id = $1 RETURNING quiz_correct_total", user_id)
-                if total % QUIZ_ANSWERS_PER_LEVEL == 0:
-                    level = quiz_level_for(total)
-                    await conn.execute("UPDATE game_stats SET quiz_level = $2 WHERE user_id = $1",
-                                       user_id, level)
-                    new_balance = await change_balance(conn, user_id, QUIZ_LEVEL_UP_BONUS,
-                                                       "quiz_level_up", str(level))
-                    status += (f"\n\n🏅 <b>НОВЫЙ УРОВЕНЬ ВИКТОРИНЫ: {level}!</b> "
-                               f"Бонус: <b>+{QUIZ_LEVEL_UP_BONUS} рофлов</b>!")
+                row = await conn.fetchrow(
+                    "UPDATE game_stats SET quiz_correct_total = quiz_correct_total + 1, "
+                    "quiz_level_progress = quiz_level_progress + 1 "
+                    "WHERE user_id = $1 RETURNING quiz_level, quiz_level_progress", user_id)
+                next_level = row["quiz_level"] + 1
+                required = quiz_answers_required(next_level)
+                if row["quiz_level_progress"] >= required:
+                    bonus = quiz_level_reward(next_level)
+                    await conn.execute(
+                        "UPDATE game_stats SET quiz_level = $2, quiz_level_progress = 0 "
+                        "WHERE user_id = $1", user_id, next_level)
+                    new_balance = await change_balance(conn, user_id, bonus,
+                                                       "quiz_level_up", str(next_level))
+                    status += (f"\n\n🏅 <b>УРОВЕНЬ ИНТЕЛЛЕКТА ПОВЫШЕН: {next_level}!</b> "
+                               f"Награда: <b>+{bonus} рофлов</b>!\n"
+                               f"Следующий уровень: {quiz_answers_required(next_level + 1)} верных ответов "
+                               f"→ +{quiz_level_reward(next_level + 1)} рофлов.")
                 else:
-                    status += f"\n📚 До следующего уровня: <b>{quiz_answers_to_next_level(total)}</b> верных ответов."
+                    left = required - row["quiz_level_progress"]
+                    status += (f"\n📚 До уровня <b>{next_level}</b>: ещё <b>{left}</b> верных "
+                               f"(награда +{quiz_level_reward(next_level)} рофлов).")
 
             return True, status, new_balance
 
@@ -287,7 +293,7 @@ async def process_high_low_choice(callback: types.CallbackQuery):
 # ============================================================================
 # Игра 3: Викторина — таймер 10 секунд и уровни по 30 верных ответов
 # ============================================================================
-def _quiz_round(question: dict, level: int, correct_total: int) -> tuple[str, types.InlineKeyboardMarkup, int]:
+def _quiz_round(question: dict, level: int, progress: int) -> tuple[str, types.InlineKeyboardMarkup, int]:
     """Возвращает текст, клавиатуру и индекс правильного ответа в перемешанном порядке."""
     options = list(question["options"])
     random.shuffle(options)
@@ -296,8 +302,11 @@ def _quiz_round(question: dict, level: int, correct_total: int) -> tuple[str, ty
         [types.InlineKeyboardButton(text=opt, callback_data=f"quiz_check:{question['id']}:{i}")]
         for i, opt in enumerate(options)
     ])
+    next_level = level + 1
+    required = quiz_answers_required(next_level)
     text = (f"🧠 <b>ВИКТОРИНА · {question['category']}</b>\n"
-            f"🏅 Уровень: <b>{level}</b> · До следующего: <b>{quiz_answers_to_next_level(correct_total)}</b> верных\n\n"
+            f"🏅 Уровень интеллекта: <b>{level}</b> · До уровня {next_level}: "
+            f"<b>{progress}/{required}</b> верных (+{quiz_level_reward(next_level)} рофлов)\n\n"
             f"❓ {question['q']}\n\n"
             f"⏱ <b>На ответ — {QUIZ_ANSWER_SECONDS} секунд!</b> Не успел — проигрыш.\n"
             f"<i>Верно: <b>+{WIN_REWARD}</b> · Ошибка: <b>-{LOSE_PENALTY}</b> · Лимит: <b>{limit_for('quiz')}</b> побед</i>")
@@ -330,10 +339,12 @@ async def _start_quiz(target: types.Message, state: FSMContext, user_id: int, ed
         return
 
     async with db.pool.acquire() as conn:
-        total = await conn.fetchval(
-            "SELECT quiz_correct_total FROM game_stats WHERE user_id = $1", user_id) or 0
+        row = await conn.fetchrow(
+            "SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = $1", user_id)
+    level = row["quiz_level"] if row else 0
+    progress = row["quiz_level_progress"] if row else 0
 
-    text, kb, correct_idx = _quiz_round(question, quiz_level_for(total), total)
+    text, kb, correct_idx = _quiz_round(question, level, progress)
     token = random.getrandbits(62)
     await state.set_state(SoloGameStates.waiting_for_quiz)
     await state.update_data(quiz_qid=question["id"], quiz_correct=correct_idx, quiz_token=token)

@@ -189,19 +189,39 @@ async def global_db():
     await gdb.close()
 
 
-async def test_quiz_level_up_awards_bonus_on_30th_answer(conn, global_db):
+async def test_quiz_level_1_closes_after_10_answers_and_resets_progress(conn, global_db):
     pytest.importorskip("aiogram")
     from bots.main_bot.handlers.games import execute_solo_game_payout
     await _mk_user(conn, 30, 100)
-    await conn.execute("INSERT INTO game_stats (user_id, quiz_correct_total) VALUES (30, 29)")
+    await conn.execute(
+        "INSERT INTO game_stats (user_id, quiz_correct_total, quiz_level_progress) VALUES (30, 9, 9)")
 
     ok, text, balance = await execute_solo_game_payout(30, True, "quiz")
 
-    assert ok and balance == 100 + 2 + 500
-    stats = await conn.fetchrow("SELECT quiz_correct_total, quiz_level FROM game_stats WHERE user_id = 30")
-    assert (stats["quiz_correct_total"], stats["quiz_level"]) == (30, 1)
+    assert ok and balance == 100 + 2 + 100  # победа +2 и награда уровня 1 (+100)
+    stats = await conn.fetchrow(
+        "SELECT quiz_correct_total, quiz_level, quiz_level_progress FROM game_stats WHERE user_id = 30")
+    assert (stats["quiz_correct_total"], stats["quiz_level"], stats["quiz_level_progress"]) == (10, 1, 0)
     reasons = {r["reason"]: r["delta"] for r in await conn.fetch("SELECT reason, delta FROM ledger WHERE user_id = 30")}
-    assert reasons == {"game_win:quiz": 2, "quiz_level_up": 500}
+    assert reasons == {"game_win:quiz": 2, "quiz_level_up": 100}
+
+
+async def test_quiz_level_2_requires_20_fresh_answers(conn, global_db):
+    pytest.importorskip("aiogram")
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    await _mk_user(conn, 34, 0)
+    # Уровень 1 уже закрыт, в текущей итерации 18 из 20 верных
+    await conn.execute(
+        "INSERT INTO game_stats (user_id, quiz_level, quiz_level_progress) VALUES (34, 1, 18)")
+
+    ok, _, balance = await execute_solo_game_payout(34, True, "quiz")   # 19/20 — уровня нет
+    assert ok and balance == 2
+    assert await conn.fetchval("SELECT quiz_level FROM game_stats WHERE user_id = 34") == 1
+
+    ok, _, balance = await execute_solo_game_payout(34, True, "quiz")   # 20/20 — уровень 2, +200
+    assert ok and balance == 2 + 2 + 200
+    stats = await conn.fetchrow("SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = 34")
+    assert (stats["quiz_level"], stats["quiz_level_progress"]) == (2, 0)
 
 
 async def test_safe_win_pays_increased_reward(conn, global_db):

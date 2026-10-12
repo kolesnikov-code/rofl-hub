@@ -6,7 +6,7 @@ from aiogram.filters import Command
 from aiogram.types import FSInputFile
 from PIL import Image, ImageDraw, ImageFont
 from shared.database import db
-from shared.economy import utcnow
+from shared.economy import quiz_answers_required, quiz_level_reward, utcnow
 from shared.farm_logic import apply_lazy_farm, farm_counts
 
 router = Router()
@@ -85,6 +85,9 @@ async def cmd_profile_stats(message: types.Message):
                     status_team = "Клан" if t_row["max_members"] >= 1000 else "Команда"
                     team_name = f"{status_team} «{t_row['team_name']}»"
 
+            quiz_row = await conn.fetchrow(
+                "SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = $1", user_id)
+
     counts = farm_counts(miners, now)
     user_data_dict = {
         "balance": user["balance"], "fridge_capacity": user["fridge_capacity"],
@@ -105,12 +108,20 @@ async def cmd_profile_stats(message: types.Message):
         ]
     ])
 
+    quiz_level = quiz_row["quiz_level"] if quiz_row else 0
+    quiz_progress = quiz_row["quiz_level_progress"] if quiz_row else 0
+    next_level = quiz_level + 1
+    required = quiz_answers_required(next_level)
+
     caption_text = (
         f"📋 <b>ЛИЧНЫЙ КАБИНЕТ ИГРОКА ROFL HUB</b>\n"
         f"..................................................\n\n"
         f"🆔 Твой ID Паспорта: <code>{user_id}</code>\n"
         f"💰 Монеты сейчас: <b>{user['balance']} рофлов</b>\n"
-        f"🏆 Твой статус: <b>{team_name}</b>\n\n"
+        f"🏆 Твой статус: <b>{team_name}</b>\n"
+        f"🧠 Уровень интеллекта: <b>{quiz_level}</b> · до уровня {next_level}: "
+        f"<b>{required - quiz_progress}</b> верных ответов в /quiz "
+        f"(награда: +{quiz_level_reward(next_level)} рофлов)\n\n"
         f"..................................................\n"
         f"<i>Здесь показано то, что есть у тебя прямо сейчас. Используй кнопки для перелёта в другие разделы!</i>"
     )
