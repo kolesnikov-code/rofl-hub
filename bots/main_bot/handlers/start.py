@@ -58,7 +58,8 @@ def _auction_id_from(cb_part: str) -> int | None:
     return None
 
 
-async def register_user(conn, user_id: int, username: str, lang: str, referrer_id: int | None) -> bool:
+async def register_user(conn, user_id: int, username: str, lang: str, referrer_id: int | None,
+                        display_name: str | None = None) -> bool:
     """Создаёт профиль, если его нет. Начисляет бонус рефереру. Возвращает True, если создан."""
     exists = await conn.fetchval("SELECT 1 FROM users WHERE user_id = $1", user_id)
     if exists:
@@ -70,10 +71,12 @@ async def register_user(conn, user_id: int, username: str, lang: str, referrer_i
 
     await conn.execute(
         """
-        INSERT INTO users (user_id, username, balance, referred_by, fridge_capacity, fridge_cutlets, inv_cutlets, lang)
-        VALUES ($1, $2, $3, $4, 1, 0, $5, $6)
+        INSERT INTO users (user_id, username, balance, referred_by, fridge_capacity, fridge_cutlets,
+                           inv_cutlets, lang, display_name)
+        VALUES ($1, $2, $3, $4, 1, 0, $5, $6, $7)
         """,
         user_id, username, START_BALANCE, referrer_id, START_CUTLETS_INVENTORY, lang,
+        (display_name or "")[:128] or None,
     )
     await conn.execute("INSERT INTO ledger (user_id, delta, reason) VALUES ($1, $2, 'signup_bonus')",
                        user_id, START_BALANCE)
@@ -97,8 +100,10 @@ async def cmd_start(message: types.Message, state: FSMContext):
     async with db.pool.acquire() as conn:
         user = await conn.fetchrow("SELECT lang FROM users WHERE user_id = $1", user_id)
         if user:
-            await conn.execute("UPDATE users SET last_seen_at = NOW(), username = $2 WHERE user_id = $1",
-                               user_id, message.from_user.username or f"user_{user_id}")
+            await conn.execute(
+                "UPDATE users SET last_seen_at = NOW(), username = $2, display_name = $3 WHERE user_id = $1",
+                user_id, message.from_user.username or f"user_{user_id}",
+                (message.from_user.full_name or "")[:128] or None)
 
     ref_part = str(referrer_id) if referrer_id else "none"
     auc_part = f"auc_{auction_id}" if auction_id else "none"
@@ -138,7 +143,8 @@ async def process_language_binding(callback: types.CallbackQuery, state: FSMCont
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
-            await register_user(conn, user_id, username, lang, referrer_id)
+            await register_user(conn, user_id, username, lang, referrer_id,
+                                display_name=callback.from_user.full_name)
 
     start_text = (
         "👋 <b>Привет! Я — ROFL HUB BOT, главный бот игровой экосистемы ROFL HUB. "

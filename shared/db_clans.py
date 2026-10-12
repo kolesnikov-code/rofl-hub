@@ -41,6 +41,8 @@ async def create_new_team_in_db(captain_id: int, team_name: str, city: str, scho
                 """,
                 team_name, captain_id, city, school,
             )
-            await conn.execute("UPDATE users SET team_id = $1 WHERE user_id = $2", team_id, captain_id)
+            await conn.execute(
+                "UPDATE users SET team_id = $1, team_joined_at = NOW() WHERE user_id = $2",
+                team_id, captain_id)
             logger.info("[TEAM_CREATED] team=%s captain=%s", team_id, captain_id)
             return True, "OK"

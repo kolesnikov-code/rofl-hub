@@ -19,10 +19,13 @@ from bots.main_bot.handlers.games import router as games_router
 from bots.main_bot.handlers.menu import router as menu_router
 from bots.main_bot.handlers.payments import router as payments_router
 from bots.main_bot.handlers.profile import router as profile_router
+from bots.main_bot.handlers.referral_link import router as referral_router
 from bots.main_bot.handlers.rofl_hub_all import router as rofl_hub_all_router
 from bots.main_bot.handlers.rules import router as rules_router
 from bots.main_bot.handlers.shop import router as shop_router
 from bots.main_bot.handlers.start import router as start_router
+from bots.main_bot.handlers.transfer import router as transfer_router
+from bots.main_bot.middleware import ActivityMiddleware
 from bots.main_bot.utils.questions_loader import load_questions_from_csv
 from shared.database import db
 
@@ -34,9 +37,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 dp = Dispatcher(storage=MemoryStorage())
+# Блокировка игроков + учёт активности (DAU) — на каждый апдейт
+dp.update.outer_middleware(ActivityMiddleware())
 # Порядок важен: start (регистрация) и payments (деньги) — первыми
 for r in (start_router, payments_router, shop_router, games_router, farm_router, profile_router,
-          clans_router, menu_router, faq_router, rules_router, rofl_hub_all_router):
+          clans_router, transfer_router, referral_router, menu_router, faq_router, rules_router,
+          rofl_hub_all_router):
     dp.include_router(r)
 
 

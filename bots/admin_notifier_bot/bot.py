@@ -86,9 +86,137 @@ async def cmd_admin_start(message: types.Message):
         "🛠️ <b>ШТАБ-КВАРТИРА МОДЕРАЦИИ ROFL HUB</b>\n..................................................\n\n"
         "🟢 <b>ДОСТУПНЫЕ КОМАНДЫ ПУЛЬТА:</b>\n"
         "• /new_auction — Запустить лот и вывесить автоматический анонс в канал юзеров\n"
-        "• /close_auction [ID] — Принудительно закрыть торги\n",
+        "• /close_auction [ID] — Принудительно закрыть торги\n"
+        "• /report — Суточный отчёт: DAU, продажи, когорты за 30 дней\n"
+        "• /gift [ID] [сумма] — Подарить рофлы игроку (отрицательная сумма — штраф)\n"
+        "• /block [ID] — Заблокировать игрока · /unblock [ID] — Разблокировать\n"
+        "• /find [ID или @username] — Досье игрока\n",
         parse_mode="HTML"
     )
+
+
+# ============================================================================
+# 🛡️ МОДЕРАЦИЯ И ЭКОНОМИКА (Блок 4): блокировки, подарки, отчёт по запросу
+# ============================================================================
+from shared.db_admin import admin_gift_coins, collect_daily_report, format_daily_report, set_user_blocked  # noqa: E402
+from shared.ledger import UserNotFound  # noqa: E402
+
+
+@dp.message(Command("report"))
+async def admin_daily_report(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    async with db.pool.acquire() as conn:
+        report = await collect_daily_report(conn)
+    await message.answer(format_daily_report(report), parse_mode="HTML")
+
+
+def _parse_id_arg(text: str) -> int | None:
+    parts = text.split()
+    return int(parts[1]) if len(parts) >= 2 and parts[1].isdigit() else None
+
+
+@dp.message(Command("block"))
+async def admin_block_user(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    user_id = _parse_id_arg(message.text)
+    if user_id is None:
+        await message.answer("⚠️ Пример: <code>/block 123456789</code>", parse_mode="HTML")
+        return
+    async with db.pool.acquire() as conn:
+        found = await set_user_blocked(conn, user_id, True)
+    if not found:
+        await message.answer("❌ Игрок с таким ID не найден в базе.")
+        return
+    await notify_user_via_main_bot(user_id, "🚫 <b>Твой аккаунт заблокирован администрацией ROFL HUB.</b>")
+    await message.answer(f"🚫 Игрок <code>{user_id}</code> заблокирован: бот перестал отвечать на его действия.",
+                         parse_mode="HTML")
+
+
+@dp.message(Command("unblock"))
+async def admin_unblock_user(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    user_id = _parse_id_arg(message.text)
+    if user_id is None:
+        await message.answer("⚠️ Пример: <code>/unblock 123456789</code>", parse_mode="HTML")
+        return
+    async with db.pool.acquire() as conn:
+        found = await set_user_blocked(conn, user_id, False)
+    if not found:
+        await message.answer("❌ Игрок с таким ID не найден в базе.")
+        return
+    await notify_user_via_main_bot(user_id, "✅ <b>Твой аккаунт разблокирован. С возвращением в ROFL HUB!</b>")
+    await message.answer(f"✅ Игрок <code>{user_id}</code> разблокирован.", parse_mode="HTML")
+
+
+@dp.message(Command("gift"))
+async def admin_gift(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    parts = message.text.split()
+    if len(parts) != 3 or not parts[1].isdigit() or not parts[2].lstrip("-").isdigit() or int(parts[2]) == 0:
+        await message.answer("⚠️ Пример: <code>/gift 123456789 5000</code> (отрицательная сумма — штраф)",
+                             parse_mode="HTML")
+        return
+    user_id, amount = int(parts[1]), int(parts[2])
+
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                await conn.execute("SELECT 1 FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+                new_balance = await admin_gift_coins(conn, user_id, amount, message.from_user.id)
+    except UserNotFound:
+        await message.answer("❌ Игрок с таким ID не найден в базе.")
+        return
+    except Exception as e:
+        await message.answer(f"❌ Операция отклонена: {e}")
+        return
+
+    if amount > 0:
+        await notify_user_via_main_bot(
+            user_id, f"🎁 <b>Администрация ROFL HUB подарила тебе {amount} рофлов!</b> Проверь /profile")
+    await message.answer(
+        f"💰 Готово! Игроку <code>{user_id}</code> {'начислено' if amount > 0 else 'списано'} "
+        f"<b>{abs(amount)} рофлов</b>. Новый баланс: <b>{new_balance}</b>.", parse_mode="HTML")
+
+
+@dp.message(Command("find"))
+async def admin_find_user(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    parts = message.text.split()
+    if len(parts) != 2:
+        await message.answer("⚠️ Пример: <code>/find 123456789</code> или <code>/find @username</code>",
+                             parse_mode="HTML")
+        return
+    arg = parts[1]
+
+    async with db.pool.acquire() as conn:
+        if arg.startswith("@"):
+            user = await conn.fetchrow("SELECT * FROM users WHERE LOWER(username) = LOWER($1)", arg[1:])
+        elif arg.isdigit():
+            user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", int(arg))
+        else:
+            user = None
+        if not user:
+            await message.answer("❌ Игрок не найден.")
+            return
+        stars = await conn.fetchval(
+            "SELECT COALESCE(SUM(stars_amount), 0) FROM star_payments WHERE user_id = $1", user["user_id"])
+        quiz = await conn.fetchrow(
+            "SELECT quiz_level, quiz_correct_total FROM game_stats WHERE user_id = $1", user["user_id"])
+
+    await message.answer(
+        f"🕵️ <b>ДОСЬЕ ИГРОКА</b>\n"
+        f"🆔 <code>{user['user_id']}</code> · @{user['username'] or '—'} · {user['display_name'] or '—'}\n"
+        f"💰 Баланс: <b>{user['balance']}</b> · 🧠 Уровень: {quiz['quiz_level'] if quiz else 0}\n"
+        f"💵 Потрачено Stars: <b>★ {stars}</b>\n"
+        f"🏆 Команда: {user['team_id'] or 'нет'} · 🌐 Язык: {user['lang']}\n"
+        f"📅 Регистрация: {user['created_at']:%d.%m.%Y} · Был в сети: {user['last_seen_at']:%d.%m.%Y %H:%M}\n"
+        f"🚫 Блокировка: <b>{'ДА' if user['is_blocked'] else 'нет'}</b>",
+        parse_mode="HTML")
 
 @dp.message(Command("new_auction"))
 async def admin_new_auction(message: types.Message, state: FSMContext):

@@ -145,15 +145,21 @@ async def cmd_historical_stats(message: types.Message):
     user_id = message.from_user.id
 
     async with db.pool.acquire() as conn:
-        g_row = await conn.fetchrow("SELECT games_played, games_won FROM game_stats WHERE user_id = $1", user_id)
+        g_row = await conn.fetchrow(
+            "SELECT games_played, games_won, quiz_level, quiz_correct_total "
+            "FROM game_stats WHERE user_id = $1", user_id)
         ref_count = await conn.fetchval("SELECT COUNT(*) FROM users WHERE referred_by = $1", user_id)
 
     played = g_row["games_played"] if g_row else 0
     won = g_row["games_won"] if g_row else 0
+    quiz_level = g_row["quiz_level"] if g_row else 0
+    quiz_total = g_row["quiz_correct_total"] if g_row else 0
 
     stats_text = (
         f"📊 <b>ИГРОВАЯ СТАТИСТИКА ДОСТИЖЕНИЙ (30 ДНЕЙ)</b>\n"
         f"..................................................\n\n"
+        f"🧠 Уровень игрового интеллекта: <b>{quiz_level}</b> "
+        f"(всего верных ответов: {quiz_total})\n"
         f"🎮 Проведено раундов в дуэлях: <b>{played} игр</b>\n"
         f"🏆 Одержано побед над соперниками: <code>{won} раз</code>\n"
         f"👥 Приглашено активных друзей: <b>{ref_count} чел.</b>\n\n"

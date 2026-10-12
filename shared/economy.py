@@ -88,6 +88,17 @@ UNLIMIT_MONTH_DAYS = 30
 TEAM_CREATE_COST = 100_000
 TEAM_MAX_MEMBERS = 50
 MEGA_CLAN_MAX_MEMBERS = 1000
+TEAM_LIST_PAGE_SIZE = 25      # тиммейтов на страницу в /my_team (Мега-Клан — до 40 страниц)
+
+# --------------------------------------------------------------------------
+# Переводы монет между игроками
+# --------------------------------------------------------------------------
+TRANSFER_MIN_AMOUNT = 10
+TRANSFER_FEE_PERCENT = 0      # комиссия сжигается; на старте 0, поднять — одно число
+
+
+def transfer_fee(amount: int) -> int:
+    return amount * TRANSFER_FEE_PERCENT // 100
 DUEL_BURN_PERCENT = 20
 TOURNAMENT_ENTRY_FEE = 5000
 TOURNAMENT_WINNERS_PERCENT = 1

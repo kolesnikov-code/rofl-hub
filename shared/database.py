@@ -183,6 +183,12 @@ SCHEMA_STATEMENTS: list[str] = [
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS mining_acc BIGINT NOT NULL DEFAULT 0;",
     # Ежедневная бесплатная котлета: время последнего нажатия «ЗАБРАТЬ БОНУС»
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_bonus_claim_at TIMESTAMP WITH TIME ZONE;",
+    # --- Блок 4: тиммейты, капитанство по старшинству, имена без username ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS team_joined_at TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(128);",
+    # Старожилам без даты вступления — консервативная отметка «сейчас» (один раз)
+    "UPDATE users SET team_joined_at = CURRENT_TIMESTAMP WHERE team_id IS NOT NULL AND team_joined_at IS NULL;",
+    "CREATE INDEX IF NOT EXISTS users_team_joined_idx ON users (team_id, team_joined_at);",
     # Разовый перенос старых счётчиков роботов в таблицу miners (30 дней жизни).
     # Идемпотентно: после переноса счётчики обнуляются и блок больше не срабатывает.
     """

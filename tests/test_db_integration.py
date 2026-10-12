@@ -269,6 +269,93 @@ async def test_daily_limit_blocks_win_for_new_games(conn, global_db):
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 33") == 0
 
 
+# ---------------------------------------------------------------- Блок 4: команды, переводы, админ
+async def test_team_create_and_join_set_team_joined_at(conn, global_db):
+    pytest.importorskip("aiogram")
+    from shared.db_clans import create_new_team_in_db
+    await _mk_user(conn, 40, 200_000)
+    await _mk_user(conn, 41, 0)
+
+    ok, _ = await create_new_team_in_db(40, "Тест-Банда", "девиз", "🔥")
+    assert ok
+    assert await conn.fetchval("SELECT team_joined_at FROM users WHERE user_id = 40") is not None
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 40") == 100_000
+
+
+async def test_captain_succession_goes_to_earliest_joined(conn):
+    from datetime import timedelta
+    from shared.economy import utcnow
+    now = utcnow()
+    await conn.execute("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('t', 50, 3)")
+    team_id = await conn.fetchval("SELECT team_id FROM teams WHERE captain_id = 50")
+    # Капитан 50; ветеран 51 вступил раньше, новичок 52 — позже, но заходил в бота позже всех
+    await _mk_user(conn, 50, 0, team_id=team_id)
+    await _mk_user(conn, 51, 0, team_id=team_id)
+    await _mk_user(conn, 52, 0, team_id=team_id)
+    await conn.execute("UPDATE users SET team_joined_at = $1 WHERE user_id = 51", now - timedelta(days=10))
+    await conn.execute("UPDATE users SET team_joined_at = $1, last_seen_at = $2 WHERE user_id = 52",
+                       now - timedelta(days=1), now)
+
+    # Запрос наследования — тот же, что в обработчике выхода капитана
+    next_captain = await conn.fetchval(
+        "SELECT user_id FROM users WHERE team_id = $1 AND user_id != $2 "
+        "ORDER BY team_joined_at ASC NULLS LAST, user_id ASC LIMIT 1", team_id, 50)
+    assert next_captain == 51  # старшинство вступления, а не активность
+
+
+async def test_transfer_moves_coins_and_writes_ledger(conn):
+    from shared.transfers import transfer_coins
+    await _mk_user(conn, 60, 1000)
+    await _mk_user(conn, 61, 0)
+
+    async with conn.transaction():
+        received, sender_balance = await transfer_coins(conn, 60, 61, 300)
+
+    assert (received, sender_balance) == (300, 700)
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 61") == 300
+    rows = await conn.fetch("SELECT user_id, delta, reason, ref FROM ledger ORDER BY id")
+    assert [(r["user_id"], r["delta"], r["reason"], r["ref"]) for r in rows] == [
+        (60, -300, "transfer_out", "61"), (61, 300, "transfer_in", "60")]
+
+
+async def test_transfer_rejects_bad_cases(conn):
+    from shared.transfers import TransferError, transfer_coins
+    await _mk_user(conn, 62, 100)
+    await _mk_user(conn, 63, 0, is_blocked=True)
+
+    for sender, recipient, amount in [(62, 62, 50), (62, 999, 50), (62, 63, 50), (62, 63, 5)]:
+        with pytest.raises(TransferError):
+            async with conn.transaction():
+                await transfer_coins(conn, sender, recipient, amount)
+    # Нехватка баланса
+    await _mk_user(conn, 64, 0)
+    with pytest.raises(TransferError):
+        async with conn.transaction():
+            await transfer_coins(conn, 62, 64, 500)
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 62") == 100
+
+
+async def test_admin_block_gift_and_report(conn):
+    from shared.db_admin import admin_gift_coins, collect_daily_report, set_user_blocked
+    await _mk_user(conn, 70, 50)
+
+    assert await set_user_blocked(conn, 70, True) is True
+    assert await conn.fetchval("SELECT is_blocked FROM users WHERE user_id = 70") is True
+    assert await set_user_blocked(conn, 999_999, True) is False
+
+    async with conn.transaction():
+        assert await admin_gift_coins(conn, 70, 1000, admin_id=1) == 1050
+    row = await conn.fetchrow("SELECT delta, reason, ref FROM ledger WHERE user_id = 70")
+    assert (row["delta"], row["reason"], row["ref"]) == (1000, "admin_gift", "1")
+
+    report = await collect_daily_report(conn)
+    assert report["total_users"] == 1
+    assert report["blocked_users"] == 1
+    assert report["dau"] == 1  # last_seen_at по умолчанию = сейчас
+    assert report["cohort_f2p"] == 1
+    assert report["coins_mass"] == 1050
+
+
 async def test_counter_migration_moves_robots_to_miners_table_once(conn):
     database = Database()
     await database.connect(TEST_DSN)

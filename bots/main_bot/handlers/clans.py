@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from shared.database import db
 from shared.db_clans import create_new_team_in_db
-from shared.economy import TEAM_CREATE_COST
+from shared.economy import TEAM_CREATE_COST, TEAM_LIST_PAGE_SIZE
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -115,14 +115,55 @@ async def cmd_my_team_isolated(message: types.Message):
         await show_user_team_dashboard(message, user["team_id"], user_id)
 
 
+def format_member_line(member: dict, captain_id: int) -> str:
+    """
+    Строка тиммейта: 🧠уровень интеллекта + кликабельный @username,
+    а у кого username нет — имя без ссылки. Капитан помечен короной.
+    """
+    level = member.get("quiz_level") or 0
+    crown = "👑 " if member["user_id"] == captain_id else ""
+    if member.get("username"):
+        name = f"@{html.escape(member['username'])}"
+    else:
+        display = member.get("display_name") or f"Игрок {member['user_id']}"
+        name = f"<b>{html.escape(display)}</b>"
+    return f"🧠{level} · {crown}{name}"
+
+
+def team_pages_total(members_count: int, page_size: int = TEAM_LIST_PAGE_SIZE) -> int:
+    return max(1, -(-members_count // page_size))  # ceil, минимум 1 страница
+
+
+async def _fetch_team_members(conn, team_id: int, captain_id: int, page: int) -> list[dict]:
+    """Капитан всегда первым, дальше — ветераны по старшинству вступления."""
+    rows = await conn.fetch(
+        """
+        SELECT u.user_id, u.username, u.display_name,
+               COALESCE(g.quiz_level, 0) AS quiz_level
+        FROM users u
+        LEFT JOIN game_stats g ON g.user_id = u.user_id
+        WHERE u.team_id = $1
+        ORDER BY (u.user_id = $2) DESC, u.team_joined_at ASC NULLS LAST, u.user_id ASC
+        LIMIT $3 OFFSET $4
+        """,
+        team_id, captain_id, TEAM_LIST_PAGE_SIZE, page * TEAM_LIST_PAGE_SIZE,
+    )
+    return [dict(r) for r in rows]
+
+
 async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_id: int):
     """Рендеринг дашборда банды с титановой защитой от утечки юзернеймов"""
     async with db.pool.acquire() as conn:
         team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1", team_id)
-        captain_row = await conn.fetchrow("SELECT username FROM users WHERE user_id = $1", team["captain_id"])
+        captain_row = await conn.fetchrow(
+            "SELECT u.username, COALESCE(g.quiz_level, 0) AS quiz_level "
+            "FROM users u LEFT JOIN game_stats g ON g.user_id = u.user_id WHERE u.user_id = $1",
+            team["captain_id"])
 
     # Защита от буллинга: юзернейм виден только соклановцам, чужие видят сухой ID
-    captain_name = f"@{captain_row['username']}" if captain_row else f"ID {team['captain_id']}"
+    captain_name = f"@{captain_row['username']}" if captain_row and captain_row["username"] \
+        else f"ID {team['captain_id']}"
+    captain_level = captain_row["quiz_level"] if captain_row else 0
     status_clan = "👑 СТАТУС: КЛАН ИМПЕРИИ" if team["max_members"] >= 1000 else "👥 СТАТУС: ОБЫЧНАЯ КОМАНДА"
 
     clan_text = (
@@ -130,7 +171,7 @@ async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_
         f"..................................................\n\n"
         f"📌 Название: <b>{team['team_name']}</b>\n"
         f"⚡ {status_clan}\n"
-        f"👤 Капитан банды: <b>{captain_name}</b>\n"
+        f"👤 Капитан банды: 🧠{captain_level} · <b>{captain_name}</b>\n"
         f"💬 Девиз: <i>«{team['city']}»</i>\n"
         f"🔮 Символ эмблемы: {team['school_num']}\n\n"
         f"👥 Состав участников: <b>{team['members_count']} / {team['max_members']} чел.</b>\n"
@@ -139,10 +180,66 @@ async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_
     )
 
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text="👥 СПИСОК ТИММЕЙТОВ", callback_data=f"team_members:{team_id}:0")],
         [types.InlineKeyboardButton(text="🚪 Покинуть команду / Бросить банду", callback_data=f"clan_leave:{team_id}")],
         [types.InlineKeyboardButton(text="💿 Главное Меню /menu", callback_data="refresh_main_menu")]
     ])
     await message.answer(clan_text, reply_markup=kb, parse_mode="HTML")
+
+
+# ============================================================================
+# 👥 СПИСОК ТИММЕЙТОВ: видят только участники этой же команды, пагинация до 1000
+# ============================================================================
+@router.callback_query(F.data.startswith("team_members:"))
+async def show_team_members_page(callback: types.CallbackQuery):
+    parts = callback.data.split(":")
+    if len(parts) != 3 or not (parts[1].isdigit() and parts[2].isdigit()):
+        await callback.answer()
+        return
+    team_id, page = int(parts[1]), int(parts[2])
+    viewer_id = callback.from_user.id
+
+    async with db.pool.acquire() as conn:
+        viewer = await conn.fetchrow("SELECT team_id FROM users WHERE user_id = $1", viewer_id)
+        # 🔒 Приватность: состав виден ТОЛЬКО участникам этой же команды
+        if not viewer or viewer["team_id"] != team_id:
+            await callback.answer("🔒 Список участников виден только членам этой команды!", show_alert=True)
+            return
+        team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1", team_id)
+        if not team:
+            await callback.answer("❌ Команда уже расформирована.", show_alert=True)
+            return
+
+        pages = team_pages_total(team["members_count"])
+        page = min(page, pages - 1)
+        members = await _fetch_team_members(conn, team_id, team["captain_id"], page)
+
+    await callback.answer()
+    lines = [format_member_line(m, team["captain_id"]) for m in members]
+    members_text = (
+        f"👥 <b>СОСТАВ КОМАНДЫ «{team['team_name']}»</b>\n"
+        f"🧠 — уровень игрового интеллекта (прокачивается только в /quiz)\n"
+        f"..................................................\n\n"
+        + "\n".join(lines) +
+        f"\n\n..................................................\n"
+        f"📄 Страница <b>{page + 1} / {pages}</b> · Всего бойцов: <b>{team['members_count']}</b>\n"
+        f"<i>Кликай по @username тиммейта, чтобы написать ему, собрать свой чат "
+        f"и позвать банду на командные состязания!</i>"
+    )
+
+    nav_row = []
+    if page > 0:
+        nav_row.append(types.InlineKeyboardButton(text="⬅️ Назад", callback_data=f"team_members:{team_id}:{page - 1}"))
+    if page < pages - 1:
+        nav_row.append(types.InlineKeyboardButton(text="Вперёд ➡️", callback_data=f"team_members:{team_id}:{page + 1}"))
+    kb_rows = [nav_row] if nav_row else []
+    kb_rows.append([types.InlineKeyboardButton(text="🏆 Дашборд команды", callback_data="clan_main_menu")])
+    kb = types.InlineKeyboardMarkup(inline_keyboard=kb_rows)
+
+    try:
+        await callback.message.edit_text(members_text, reply_markup=kb, parse_mode="HTML")
+    except Exception:
+        await callback.message.answer(members_text, reply_markup=kb, parse_mode="HTML")
 
 
 # ============================================================================
@@ -355,7 +452,9 @@ async def process_clan_join_request(callback: types.CallbackQuery):
                 await callback.message.answer("📦 В этой команде закончились места!")
                 return
             await conn.execute("UPDATE teams SET members_count = members_count + 1 WHERE team_id = $1", team_id)
-            await conn.execute("UPDATE users SET team_id = $1 WHERE user_id = $2", team_id, user_id)
+            await conn.execute(
+                "UPDATE users SET team_id = $1, team_joined_at = NOW() WHERE user_id = $2",
+                team_id, user_id)
     await callback.message.edit_text(
         f"🎉 <b>ПОЗДРАВЛЯЕМ, ТЫ В ИГРЕ!</b>\n\nТы успешно вступил в команду <b>{team['team_name']}</b>!\n📍 Пиши команду /my_team, чтобы проверить состав!",
         parse_mode="HTML")
@@ -387,9 +486,10 @@ async def process_clan_leave_logic(callback: types.CallbackQuery):
 
             if team["captain_id"] == user_id:
                 # 👑 СЦЕНАРИЙ А: ВЫХОДИТ САМ КАПИТАН БАНДЫ!
-                # Ищем самого преданного ветерана (кто зарегистрирован в команде раньше всех)
+                # Корона переходит самому преданному ветерану — кто ВСТУПИЛ раньше всех
                 next_captain = await conn.fetchrow(
-                    "SELECT user_id, username FROM users WHERE team_id = $1 AND user_id != $2 ORDER BY last_seen_at DESC, user_id ASC LIMIT 1",
+                    "SELECT user_id, username FROM users WHERE team_id = $1 AND user_id != $2 "
+                    "ORDER BY team_joined_at ASC NULLS LAST, user_id ASC LIMIT 1",
                     team_id, user_id
                 )
 
@@ -398,7 +498,8 @@ async def process_clan_leave_logic(callback: types.CallbackQuery):
                     await conn.execute(
                         "UPDATE teams SET captain_id = $1, members_count = members_count - 1 WHERE team_id = $2",
                         next_captain["user_id"], team_id)
-                    await conn.execute("UPDATE users SET team_id = NULL WHERE user_id = $1", user_id)
+                    await conn.execute(
+                        "UPDATE users SET team_id = NULL, team_joined_at = NULL WHERE user_id = $1", user_id)
 
                     announce_text = (
                         f"🚪 <b>РЕВОЛЮЦИЯ В БАНДЕ!</b>\n"
@@ -410,16 +511,18 @@ async def process_clan_leave_logic(callback: types.CallbackQuery):
                     )
                     await callback.message.answer(announce_text, parse_mode="HTML")
                 else:
-                    # Капитан был один на лодке — наглухо аннулируем команду, чтоб не спамить базу Railway
+                    # Капитан был один на лодке — наглухо аннулируем команду, чтоб не спамить базу
                     await conn.execute("DELETE FROM teams WHERE team_id = $1", team_id)
-                    await conn.execute("UPDATE users SET team_id = NULL WHERE user_id = $1", user_id)
+                    await conn.execute(
+                        "UPDATE users SET team_id = NULL, team_joined_at = NULL WHERE user_id = $1", user_id)
                     await callback.message.answer(
                         "🚪 Ты был единственным участником. Команда официально <b>удалена и расформирована</b>.",
                         parse_mode="HTML")
             else:
                 # 👥 СЦЕНАРИЙ Б: ВЫХОДИТ ОБЫЧНЫЙ УЧАСТНИК
                 await conn.execute("UPDATE teams SET members_count = members_count - 1 WHERE team_id = $1", team_id)
-                await conn.execute("UPDATE users SET team_id = NULL WHERE user_id = $1", user_id)
+                await conn.execute(
+                    "UPDATE users SET team_id = NULL, team_joined_at = NULL WHERE user_id = $1", user_id)
                 await callback.message.answer(
                     f"🚪 Ты успешно покинул команду <b>{team['team_name']}</b>. Теперь ты вольная птица!",
                     parse_mode="HTML")
