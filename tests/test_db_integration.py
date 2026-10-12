@@ -179,6 +179,76 @@ async def test_lazy_farm_deletes_expired_miners(conn):
     assert await conn.fetchval("SELECT COUNT(*) FROM miners WHERE user_id = 21") == 0
 
 
+# ---------------------------------------------------------------- игры (Блок 3)
+@pytest.fixture
+async def global_db():
+    """Подключает глобальный db (его использует execute_solo_game_payout)."""
+    from shared.database import db as gdb
+    await gdb.connect(TEST_DSN)
+    yield gdb
+    await gdb.close()
+
+
+async def test_quiz_level_up_awards_bonus_on_30th_answer(conn, global_db):
+    pytest.importorskip("aiogram")
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    await _mk_user(conn, 30, 100)
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_correct_total) VALUES (30, 29)")
+
+    ok, text, balance = await execute_solo_game_payout(30, True, "quiz")
+
+    assert ok and balance == 100 + 2 + 500
+    stats = await conn.fetchrow("SELECT quiz_correct_total, quiz_level FROM game_stats WHERE user_id = 30")
+    assert (stats["quiz_correct_total"], stats["quiz_level"]) == (30, 1)
+    reasons = {r["reason"]: r["delta"] for r in await conn.fetch("SELECT reason, delta FROM ledger WHERE user_id = 30")}
+    assert reasons == {"game_win:quiz": 2, "quiz_level_up": 500}
+
+
+async def test_safe_win_pays_increased_reward(conn, global_db):
+    pytest.importorskip("aiogram")
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    from shared.economy import SAFE_WIN_REWARD
+    await _mk_user(conn, 31, 0)
+
+    ok, text, balance = await execute_solo_game_payout(31, True, "safe")
+
+    assert ok and balance == SAFE_WIN_REWARD
+    assert await conn.fetchval("SELECT daily_wins_safe FROM game_stats WHERE user_id = 31") == 1
+
+
+async def test_new_day_resets_all_six_win_counters(conn, global_db):
+    pytest.importorskip("aiogram")
+    from datetime import date, timedelta
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    await _mk_user(conn, 32, 0)
+    await conn.execute(
+        "INSERT INTO game_stats (user_id, daily_wins_rps, daily_wins_hl, daily_wins_quiz, "
+        "daily_wins_coin, daily_wins_dice, daily_wins_safe, last_game_date) "
+        "VALUES (32, 15, 15, 30, 15, 15, 15, $1)", date.today() - timedelta(days=1))
+
+    ok, text, balance = await execute_solo_game_payout(32, True, "coin")  # вчерашний лимит не мешает
+
+    assert ok and balance == 2
+    stats = await conn.fetchrow("SELECT * FROM game_stats WHERE user_id = 32")
+    assert stats["daily_wins_coin"] == 1
+    for col in ("daily_wins_rps", "daily_wins_hl", "daily_wins_quiz", "daily_wins_dice", "daily_wins_safe"):
+        assert stats[col] == 0, col
+
+
+async def test_daily_limit_blocks_win_for_new_games(conn, global_db):
+    pytest.importorskip("aiogram")
+    from datetime import date
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    await _mk_user(conn, 33, 0)
+    await conn.execute(
+        "INSERT INTO game_stats (user_id, daily_wins_safe, last_game_date) VALUES (33, 15, $1)", date.today())
+
+    ok, text, balance = await execute_solo_game_payout(33, True, "safe")
+
+    assert not ok and "лимит" in text.lower()
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 33") == 0
+
+
 async def test_counter_migration_moves_robots_to_miners_table_once(conn):
     database = Database()
     await database.connect(TEST_DSN)

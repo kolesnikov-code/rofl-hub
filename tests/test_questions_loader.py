@@ -45,3 +45,33 @@ def test_callback_data_for_any_answer_fits_64_bytes():
     for q in ql._questions:
         for i in range(4):
             assert len(f"quiz_check:{q['id']}:{i}".encode()) <= 64
+
+
+# ---------------------------------------------------------------- Блок 3: боевая база
+def test_shipped_csv_has_200_plus_questions():
+    n = ql.load_questions_from_csv(ql.DEFAULT_CSV_PATH)
+    assert n >= 200, f"В базе {n} вопросов, по ТЗ нужно 200+"
+
+
+def test_shipped_csv_has_no_duplicate_questions():
+    ql.load_questions_from_csv(ql.DEFAULT_CSV_PATH)
+    texts = [q["q"] for q in ql._questions]
+    dupes = {t for t in texts if texts.count(t) > 1}
+    assert not dupes, f"Повторяющиеся вопросы: {dupes}"
+
+
+def test_shipped_csv_every_question_valid_for_buttons():
+    """4 уникальных варианта, правильный среди них, тексты влезают в кнопку."""
+    ql.load_questions_from_csv(ql.DEFAULT_CSV_PATH)
+    for q in ql._questions:
+        assert len(set(q["options"])) == 4, q["q"]
+        assert q["correct"] in q["options"], q["q"]
+        for opt in q["options"]:
+            assert len(opt) <= 40, f"Слишком длинный вариант у «{q['q']}»: {opt}"
+
+
+def test_shipped_csv_covers_rofl_hub_category():
+    ql.load_questions_from_csv(ql.DEFAULT_CSV_PATH)
+    categories = {q["category"] for q in ql._questions}
+    assert "ROFL HUB" in categories
+    assert len(categories) >= 10

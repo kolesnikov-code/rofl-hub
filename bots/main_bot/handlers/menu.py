@@ -33,11 +33,18 @@ def get_games_inline_keyboard() -> types.InlineKeyboardMarkup:
     """Инлайн-панель моментального запуска дуэлей и игр"""
     return types.InlineKeyboardMarkup(inline_keyboard=[
         [
-            types.InlineKeyboardButton(text="🪨 КНБ дуэль (/rps)", callback_data="game_retry:rps"),
-            types.InlineKeyboardButton(text="🎲 Больше/Меньше (/high_low)", callback_data="game_retry:hl")
+            types.InlineKeyboardButton(text="🧠 Викторина (/quiz)", callback_data="game_retry:quiz")
         ],
         [
-            types.InlineKeyboardButton(text="🧠 Пройти Викторину (/quiz)", callback_data="game_retry:quiz")
+            types.InlineKeyboardButton(text="🪨 КНБ (/rps)", callback_data="game_retry:rps"),
+            types.InlineKeyboardButton(text="📈 Больше/Меньше (/high_low)", callback_data="game_retry:hl")
+        ],
+        [
+            types.InlineKeyboardButton(text="🪙 Орёл/Решка (/coin)", callback_data="game_retry:coin"),
+            types.InlineKeyboardButton(text="🎲 Кубики (/dice)", callback_data="game_retry:dice")
+        ],
+        [
+            types.InlineKeyboardButton(text="🔐 Кибер-Сейф (/safe)", callback_data="game_retry:safe")
         ]
     ])
 
@@ -60,7 +67,9 @@ async def cmd_main_menu(message: types.Message):
         "• /farm — Топливный хаб: заправка и скорость выработки роботов\n"
         "• /shop — Маркетплейс: закупка майнеров, котлет и улучшений хаба\n\n"
         "🕹️ <b>ИГРОВАЯ КОМНАТА:</b>\n"
-        "• /games — Запустить инлайн-хаб дуэлей и спринт-тестов против бота\n\n"
+        "• /games — Инлайн-хаб всех игр против бота\n"
+        "• /quiz — Викторина на скорость: 10 секунд на ответ, уровни и бонусы\n"
+        "• /rps, /high_low, /coin, /dice, /safe — Быстрые дуэли на рофлы\n\n"
         "👥 <b>УПРАВЛЕНИЕ БАНДАМИ:</b>\n"
         "• /create_team — Зарегистрировать свою команду за 100 000 рофлов\n"
         "• /my_team — Проверить дашборд и девиз своей банды\n"
@@ -85,8 +94,9 @@ async def cmd_games_hub(message: types.Message):
         "..................................................\n\n"
         "Здесь ты можешь сразиться с ботом в быстрых дуэлях или пройти "
         "интеллектуальный спринт-тест, чтобы сорвать куш или слить баланс!\n\n"
-        "💸 Победа приносит: <b>+2 рофла</b>\n"
-        "💀 Проигрыш или ничья списывает: <b>-1 рофл</b>\n\n"
+        "💸 Победа приносит: <b>+2 рофла</b> (Кибер-Сейф: <b>+5</b>)\n"
+        "💀 Проигрыш или ничья списывает: <b>-1 рофл</b>\n"
+        "🧠 В Викторине — таймер 10 секунд и уровни: каждые 30 верных ответов дают <b>+500 рофлов</b>!\n\n"
         "..................................................\n"
         "👇 <b>КЛИКАЙ ПО КНОПКЕ НИЖЕ ДЛЯ НЕМЕДЛЕННОГО СТАРТА РAУНДA:</b>"
     )

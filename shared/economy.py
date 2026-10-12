@@ -43,6 +43,8 @@ MINING_ACC_PER_ROFL = 3600 * 1_000_000  # µs работы на 1 рофл пр�
 # --------------------------------------------------------------------------
 WIN_REWARD = 2
 LOSE_PENALTY = 1
+SAFE_WIN_REWARD = 5       # Сейф: шанс 1 из 4, выигрыш больше (EV как у Орла/Решки)
+SAFE_CODES_COUNT = 4      # вариантов кода на дверце сейфа
 DAILY_WIN_LIMITS = {
     "quiz": 30,
     "rps": 15,
@@ -55,6 +57,23 @@ DEFAULT_DAILY_WIN_LIMIT = 15
 QUIZ_ANSWER_SECONDS = 10
 QUIZ_ANSWERS_PER_LEVEL = 30
 QUIZ_LEVEL_UP_BONUS = 500
+
+
+def win_reward_for(game_type: str) -> int:
+    """Выигрыш за раунд: у Сейфа повышенный (ниже шанс), у остальных базовый."""
+    return SAFE_WIN_REWARD if game_type == "safe" else WIN_REWARD
+
+
+def quiz_level_for(correct_total: int) -> int:
+    """Уровень викторины: каждый полный пакет из QUIZ_ANSWERS_PER_LEVEL верных ответов."""
+    if correct_total < 0:
+        raise ValueError("correct_total must be non-negative")
+    return correct_total // QUIZ_ANSWERS_PER_LEVEL
+
+
+def quiz_answers_to_next_level(correct_total: int) -> int:
+    """Сколько верных ответов осталось до следующего уровня (1..30)."""
+    return QUIZ_ANSWERS_PER_LEVEL - correct_total % QUIZ_ANSWERS_PER_LEVEL
 UNLIMIT_DAY_HOURS = 24
 UNLIMIT_MONTH_DAYS = 30
 
