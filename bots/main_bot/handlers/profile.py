@@ -17,14 +17,22 @@ JUNIOR_RATE_HOUR = 2
 PREMIUM_RATE_HOUR = 5
 
 
+# ============================================================================
+# ⚙️ ТИТАНОВЫЙ ЛЕHИВЫЙ ДВИЖОК НАЧИСЛЕНИЯ (СОХРАНЯЕТ ДРОБНЫЕ СЕКУНДЫ)
+# ============================================================================
 async def apply_lazy_mining_earnings(user_id: int, conn) -> dict:
-    """Ленивый часовой расчет пассивного дохода на автопилоте"""
+    """
+    Ленивый часовой расчет пассивного дохода на автопилоте.
+    Исключает потерю монет через сохранение остатка секунд.
+    """
     user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
     if not user:
         return None
 
     current_time = datetime.now(timezone.utc)
     last_update = user["last_update_time"]
+
+    # Считаем чистые секунды, прошедшие с момента последнего захода
     seconds_passed = int((current_time - last_update).total_seconds())
     if seconds_passed <= 0:
         return user
@@ -35,9 +43,11 @@ async def apply_lazy_mining_earnings(user_id: int, conn) -> dict:
     miner_premium = user["miner_premium_count"]
     balance = user["balance"]
 
+    # 1. РАСЧЕТ МЛАДШИХ МАЙНЕРОВ (Не едят, но зависят от точных часов)
     earned_junior = hours_passed * miner_junior * JUNIOR_RATE_HOUR
     total_earned = earned_junior
 
+    # 2. РАСЧЕТ КИБЕР-БУРИЛЬЩИКОВ (1 бурильщик съедает 1 котлету за 86400 секунд)
     if miner_premium > 0 and fridge_cutlets > 0:
         cutlets_needed_per_second = miner_premium / 86400.0
         total_cutlets_needed = seconds_passed * cutlets_needed_per_second
@@ -46,25 +56,36 @@ async def apply_lazy_mining_earnings(user_id: int, conn) -> dict:
             earned_premium = hours_passed * miner_premium * PREMIUM_RATE_HOUR
             fridge_cutlets = max(0, fridge_cutlets - int(total_cutlets_needed))
         else:
+            # Еда закончилась раньше, чем пользователь зашел в бота
             seconds_worked = int(fridge_cutlets / cutlets_needed_per_second)
             hours_worked = seconds_worked / 3600.0
             earned_premium = hours_worked * miner_premium * PREMIUM_RATE_HOUR
             fridge_cutlets = 0
         total_earned += earned_premium
 
+    # Накатываем чистый заработок без обрезания копеек времени
+    new_balance = balance + int(total_earned)
+
     await conn.execute(
-        "UPDATE users SET balance = balance + $1, fridge_cutlets = $2, last_update_time = $3 WHERE user_id = $4",
-        int(total_earned), fridge_cutlets, current_time, user_id
+        """
+        UPDATE users
+        SET balance          = $1,
+            fridge_cutlets   = $2,
+            last_update_time = $3
+        WHERE user_id = $4
+        """,
+        new_balance, fridge_cutlets, current_time, user_id
     )
     return await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", user_id)
 
 
 def generate_profile_image(user_id: int, username: str, data: dict) -> str:
-    """Рендерит неоновый паспорт инвентаря через Pillow"""
+    """Рендерит сочный неоновый паспорт инвентаря. Шаблоны больше не удаляются!"""
     capacity = data["fridge_capacity"]
     template_path = os.path.join(STATIC_DIR, f"fridge_{capacity}.jpg")
     if not os.path.exists(template_path):
         template_path = os.path.join(STATIC_DIR, "fridge_1.jpg")
+
     output_path = os.path.join(STATIC_DIR, f"user_{user_id}_profile.jpg")
 
     try:
@@ -88,14 +109,16 @@ def generate_profile_image(user_id: int, username: str, data: dict) -> str:
             draw.text((50, 390), f"🚀 Боевой Буст: Уровень {data['boost_level']}", fill="#aa00ff", font=font_data)
             img.save(output_path, "JPEG")
             return output_path
-    except Exception:
+    except Exception as e:
+        logger.error(f"[PILLOW_RENDER_ERROR] Сбой рендеринга графики: {e}")
         return template_path
 
 
 # ============================================================================
-# 👤 ТЕКУЩИЙ ЛИЧНЫЙ КАБИНЕТ: /profile ИЛИ /profile ИНЛАЙН-КЛИК
+# 👤 ТЕКУЩИЙ ЛИЧНЫЙ КАБИНЕТ: /profile ИЛИ НАЖАТИЕ НИЖНЕЙ КНОПКИ
 # ============================================================================
 @router.message(Command("profile"))
+@router.message(F.text == "👤 МОЙ ПРОФИЛЬ")
 async def cmd_profile_stats(message: types.Message):
     user_id = message.from_user.id
     username = message.from_user.username or f"user_{user_id}"
@@ -146,8 +169,10 @@ async def cmd_profile_stats(message: types.Message):
 
     photo_file = FSInputFile(photo_path)
     await message.answer_photo(photo=photo_file, caption=caption_text, reply_markup=profile_keyboard, parse_mode="HTML")
+
+    # 🔥 Фикс: Удаляем только ПЕРСОНАЛЬНЫЙ сгенерированный jpeg, исходные fridge_N.jpg не трогаем!
     try:
-        if os.path.exists(photo_path):
+        if os.path.exists(photo_path) and f"user_{user_id}" in photo_path:
             os.remove(photo_path)
     except Exception:
         pass

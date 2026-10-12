@@ -1,77 +1,35 @@
 import logging
 import random
-from aiogram import Router, types, F
+import os
+from aiogram import Router, types, F, Bot
+from aiogram.types import LabeledPrice, PreCheckoutQuery
 from shared.database import db
 from bots.main_bot.catalog import calculate_stars_order
 
 router = Router()
 logger = logging.getLogger(__name__)
 
-
-# Вспомогательный метод сборки клавиатуры, чтобы обновить маркет на лету
-def get_updated_shop_keyboard(fridge_capacity: int, boost_level: int) -> types.InlineKeyboardMarkup:
-    if boost_level == 0:
-        boost_btn_text = "🚀 Купить Боевой Буст I Ур. | ★ 99 Stars"
-    elif boost_level == 1:
-        boost_btn_text = "🚀🚀 Апгрейд Буста до II Ур. | ★ 199 Stars"
-    elif boost_level == 2:
-        boost_btn_text = "🚀🚀🚀 Апгрейд Буста до III Ур. | ★ 299 Stars"
-    else:
-        boost_btn_text = "👑 МАКСИМАЛЬНЫЙ БУСТ АКТИВИРОВАН"
-
-    buttons = [
-        [types.InlineKeyboardButton(text="🤖 Робот «Младший Майнер» | ★ 49 Stars", callback_data="buy_miner_junior")],
-        [types.InlineKeyboardButton(text="⚡ Робот «Кибер Бурильщик» | ★ 99 Stars", callback_data="buy_miner_premium")],
-        [types.InlineKeyboardButton(text="🥩 1 кибер-котлета | ★ 7 Stars", callback_data="buy_cutlet_1")],
-        [types.InlineKeyboardButton(text="🥩 5 кибер-котлет | ★ 29 Stars", callback_data="buy_cutlet_5")],
-        [types.InlineKeyboardButton(text="🥩 10 кибер-котлет | ★ 49 Stars", callback_data="buy_cutlet_10")],
-        [types.InlineKeyboardButton(text="🥩 50 кибер-котлет | ★ 239 Stars", callback_data="buy_cutlet_50")],
-        [types.InlineKeyboardButton(text="🥩 100 кибер-котлет | ★ 449 Stars", callback_data="buy_cutlet_100")]
-    ]
-
-    if fridge_capacity < 5:
-        buttons.append(
-            [types.InlineKeyboardButton(text="📦 Холодильник на 5 котлет | ★ 49 Stars", callback_data="buy_fridge_5")])
-    if fridge_capacity < 10:
-        buttons.append(
-            [types.InlineKeyboardButton(text="📦 Холодильник на 10 котлет | ★ 99 Stars", callback_data="buy_fridge_10")])
-    if fridge_capacity < 50:
-        buttons.append([types.InlineKeyboardButton(text="📦 Холодильник на 50 котлет | ★ 499 Stars",
-                                                   callback_data="buy_fridge_50")])
-    if fridge_capacity < 100:
-        buttons.append([types.InlineKeyboardButton(text="👑 Холодильник на 100 котлет | ★ 999 Stars",
-                                                   callback_data="buy_fridge_100")])
-
-    buttons.extend([
-        [types.InlineKeyboardButton(text="💰 «Солдат»: 1 000 монет | ★ 49 Stars", callback_data="buy_coins_1k")],
-        [types.InlineKeyboardButton(text="💰 «Капитан»: 3 000 монет | ★ 99 Stars", callback_data="buy_coins_3k")],
-        [types.InlineKeyboardButton(text="💰 «Ветеран»: 10 000 монет | ★ 299 Stars", callback_data="buy_coins_10k")],
-        [types.InlineKeyboardButton(text="👑 «Легенда»: 50 000 монет | ★ 1299 Stars", callback_data="buy_coins_50k")],
-        [types.InlineKeyboardButton(text="👑 «Генерал армии»: 100 000 монет | ★ 2499 Stars",
-                                    callback_data="buy_coins_100k")],
-        [types.InlineKeyboardButton(text="🏆 Лицензия Клана (до 1000 чел.) | ★ 2499 Stars",
-                                    callback_data="buy_clan_upgrade")],
-        [types.InlineKeyboardButton(text="🎁 Элитарный Бандл «VIP-Старт» | ★ 149 Stars",
-                                    callback_data="buy_vip_start_bundle")],
-        [types.InlineKeyboardButton(text=boost_btn_text,
-                                    callback_data="buy_boost_upgrade" if boost_level < 3 else "boost_maxed_alert")],
-        [types.InlineKeyboardButton(text="⚙️ Зайти в Ремонтную Мастерскую Роботов", callback_data="open_repair_shop")]
-    ])
-    return types.InlineKeyboardMarkup(inline_keyboard=buttons)
+# 🔥 ТУМБЛЕР БЕЗОПАСНОСТИ АНАТОЛИЯ АЛЕКСЕЕВИЧА
+# Впиши сюда свой реальный Telegram ID, чтобы тестировать покупки бесплатно!
+ADMIN_TESTER_ID = 227653457  # Подставить актуальный ID при деплое
 
 
 # ============================================================================
-# 🏪 ЛОКАЛЬНЫЙ СИМУЛЯТОР СКАЧИВАНИЯ STARS (С ДИНАМИЧЕСКИМ АПДЕЙТОМ КНОПОК)
+# 🏪 1. ПЕРЕХВАТ НАЖАТИЯ КНОПОК КАТАЛОГА (ГЕНЕРАЦИЯ ИНВОЙСА / ТЕСТ-РЕЖИМ)
 # ============================================================================
 @router.callback_query(F.data.startswith("buy_"))
-async def process_shop_purchase_intent(callback: types.CallbackQuery):
+async def process_shop_purchase_intent(callback: types.CallbackQuery, bot: Bot):
     user_id = callback.from_user.id
     payload = callback.data
 
     await callback.answer()
 
+    # Извлекаем текущие лимиты игрока из PostgreSQL на Railway
     async with db.pool.acquire() as conn:
-        user_data = await conn.fetchrow("SELECT fridge_capacity, boost_level FROM users WHERE user_id = $1", user_id)
+        user_data = await conn.fetchrow(
+            "SELECT fridge_capacity, boost_level FROM users WHERE user_id = $1",
+            user_id
+        )
 
     current_capacity = user_data["fridge_capacity"] if user_data else 1
     current_boost = user_data["boost_level"] if user_data else 0
@@ -79,113 +37,188 @@ async def process_shop_purchase_intent(callback: types.CallbackQuery):
     if payload == "buy_boost_upgrade":
         next_level = current_boost + 1
         if next_level > 3:
-            await callback.message.answer("❌ Достигнут максимальный уровень буста!")
+            await callback.message.answer("❌ Достигнут максимальный уровень Боевого Буста!")
             return
         payload = f"boost:{next_level}"
 
     try:
+        # Валидируем покупку через единый бэкенд-каталог
         order = calculate_stars_order(payload, current_capacity, current_boost)
     except ValueError as e:
         await callback.message.answer(f"❌ {e}")
         return
 
-    charge_id = f"LOCAL_TEST_XTR_{random.randint(100000, 999999)}"
-    result_msg = ""
+    # 🛡️ ПРОВЕРКА ТУМБЛEРА: ЕСЛИ КЛИКАЕТ ТЕСТИРОВЩИК — ВЫДАЕМ МГНОВЕННО И БЕСПЛАТНО
+    if user_id == ADMIN_TESTER_ID:
+        charge_id = f"LOCAL_TEST_XTR_{random.randint(100000, 999999)}"
+        success, result_msg = await award_item_to_user(user_id, order, payload, charge_id)
+
+        if success:
+            success_text = (
+                f"💎 <b>ТЕСТОВЫЙ РЕЖИМ АКТИВИРОВАН (ID: {user_id})</b>\n"
+                f"..................................................\n\n"
+                f"🧾 Чек симулятора: <code>{charge_id}</code>\n"
+                f"💵 Стоимость: <s>{order['stars']} ★</s> (Списано: 0 ★)\n\n"
+                f"..................................................\n\n"
+                f"{result_msg}\n\n"
+                f"📊 <i>База данных Railway обновлена без реальных затрат Stars. Проверяй!</i>"
+            )
+            await callback.message.answer(success_text, parse_mode="HTML")
+        else:
+            await callback.message.answer(f"❌ Ошибка начисления: {result_msg}")
+        return
+
+    # 💳 РЕЖИМ РЕАЛЬНОГО КИТа: ВЫКАTЫВАЕМ ОФИЦИАЛЬНЫЙ ПЛАТЕЖНЫЙ ШЛЮЗ TELEGRAM STARS
+    prices = [LabeledPrice(label="XTR", amount=order["stars"])]
+
+    try:
+        await bot.send_invoice(
+            chat_id=user_id,
+            title=order["title"],
+            description=f"Покупка и мгновенная доставка внутриигрового контента холдинга ROFL HUB CORE.",
+            prices=prices,
+            provider_token="",  # Строго пустая строка для Telegram Stars (XTR)
+            currency="XTR",
+            payload=f"{payload}:{order['stars']}",  # Запечатываем параметры в payload чека
+            start_parameter="rofl_hub_shop"
+        )
+    except Exception as e:
+        logger.error(f"[STARS_INVOICE_ERROR] Ошибка отправки инвойса: {e}")
+        await callback.message.answer("⚠️ Не удалось сформировать чек Telegram Stars. Попробуй позже.")
+
+
+# ============================================================================
+# 🛡️ 2. ВАЛИДАЦИЯ ПЛАТЕЖА ЗА 10 СЕКУНД ДО СПИСАНИЯ (PRE-CHECKOUT)
+# ============================================================================
+@router.pre_checkout_query()
+async def process_pre_checkout_query(pre_checkout_query: PreCheckoutQuery):
+    """
+    Официальный шлюз окончательной верификации платежа серверами Telegram.
+    Проверяет, не пытается ли читер купить уже заполненный холодильник.
+    """
+    user_id = pre_checkout_query.from_user.id
+    payload = pre_checkout_query.invoice_payload.split(":")[0]
 
     async with db.pool.acquire() as conn:
-        async with conn.transaction():
-            user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
-            if not user:
-                return
+        user_data = await conn.fetchrow("SELECT fridge_capacity, boost_level FROM users WHERE user_id = $1", user_id)
 
-            if order["type"] == "cutlets":
-                await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $1 WHERE user_id = $2", order["qty"],
-                                   user_id)
-                result_msg = f"🥩 В твой карман инвентаря успешно добавлено: <b>{order['qty']} шт.</b>"
+    if not user_data:
+        await pre_checkout_query.answer(ok=False, error_message="Профиль игрока не найден в PostgreSQL. Нажми /start")
+        return
 
-            elif order["type"] == "miner":
-                if order["kind"] == "junior":
-                    await conn.execute(
-                        "UPDATE users SET miner_junior_count = miner_junior_count + 1 WHERE user_id = $1", user_id)
-                    result_msg = "🤖 <b>Робот «Младший Майнер» успешно доставлен на твой завод!</b>"
-                else:
-                    await conn.execute(
-                        "UPDATE users SET miner_premium_count = miner_premium_count + 1 WHERE user_id = $1", user_id)
-                    result_msg = "⚡ <b>Титановый «Кибер Бурильщик» на гусеницах готов к работе!</b>"
+    # Дополнительная защита на этапе Pre-Checkout
+    if payload.startswith("buy_fridge_"):
+        target_capacity = int(payload.split("_")[-1])
+        if target_capacity <= user_data["fridge_capacity"]:
+            await pre_checkout_query.answer(ok=False,
+                                            error_message="🚨 Читерство! Твой холодильник уже равен или больше этого уровня.")
+            return
 
-            elif order["type"] == "fridge_upgrade":
-                await conn.execute("UPDATE users SET fridge_capacity = $1 WHERE user_id = $2", order["capacity"],
-                                   user_id)
-                result_msg = f"📦 Твой Центральный Холодильник расширен до уровня: <b>CAPACITY {order['capacity']}</b>"
+    # Железно одобряем списание звезд
+    await pre_checkout_query.answer(ok=True)
 
-            elif order["type"] == "coins":
-                await conn.execute("UPDATE users SET balance = balance + $1 WHERE user_id = $2", order["coins_amount"],
-                                   user_id)
-                result_msg = f"💰 На твой счёт успешно зачислено: <b>+{order['coins_amount']} рофлов</b>."
 
-            elif order["type"] == "boost_upgrade":
-                await conn.execute("UPDATE users SET boost_level = $1 WHERE user_id = $2", order["next_level"], user_id)
-                result_msg = f"🚀 Уровень твоего Боевого Буста повышен до: <b>{order['next_level']} уровня</b>!"
+# ============================================================================
+# 🎰 3. РЕАЛЬНОЕ НАЧИСЛЕНИЕ КОНТЕНТА ПОСЛЕ УСПЕШНОЙ ОПЛАТЫ (SUCCESSFUL PAYMENT)
+# ============================================================================
+@router.message(F.successful_payment)
+async def process_successful_payment(message: types.Message):
+    """
+    Срабатывает ТОЛЬКО тогда, когда Telegram Stars официально списаны со счета.
+    Выдача товара на 100% запечатана. Избавлено от фейковых начислений.
+    """
+    user_id = message.from_user.id
+    payment_info = message.successful_payment
+    charge_id = payment_info.telegram_payment_charge_id  # Официальный ID транзакции Telegram
 
-            elif order["type"] == "vip_bundle":
-                await conn.execute(
-                    "UPDATE users SET miner_premium_count = miner_premium_count + 1, inv_cutlets = inv_cutlets + 30 WHERE user_id = $1",
-                    user_id)
-                result_msg = "🎁 <b>ЭЛИТАРНЫЙ БАНДЛ «VIP-СТАРТ» АКТИВИРОВАН!</b>"
+    payload = payment_info.invoice_payload.split(":")[0]
 
-            elif order["type"] == "clan_upgrade":
-                team = await conn.fetchrow("SELECT team_id, max_members FROM teams WHERE captain_id = $1", user_id)
-                if not team:
-                    await callback.message.answer(
-                        "❌ Чтобы купить Клан, сначала создай базовую Команду за 100 000 монет через /create_clan!")
-                    return
-                await conn.execute("UPDATE teams SET max_members = 1000 WHERE captain_id = $1", user_id)
-                result_msg = "🏆 <b>ТВОЯ БАНДА ОФИЦИАЛЬНО ПОЛУЧИЛА СТАТУС МЕГА-КЛАНА!</b>"
+    async with db.pool.acquire() as conn:
+        user_data = await conn.fetchrow("SELECT fridge_capacity, boost_level FROM users WHERE user_id = $1", user_id)
 
-            await conn.execute(
-                "INSERT INTO star_payments (user_id, telegram_charge_id, item_payload, stars_amount) VALUES ($1, $2, $3, $4)",
-                user_id, charge_id, payload, order["stars"]
-            )
+    current_capacity = user_data["fridge_capacity"] if user_data else 1
+    current_boost = user_data["boost_level"] if user_data else 0
 
-            # Вытягиваем свежие лимиты для мгновенного апдейта интерфейса
-            updated = await conn.fetchrow("SELECT fridge_capacity, boost_level FROM users WHERE user_id = $1", user_id)
+    order = calculate_stars_order(payload, current_capacity, current_boost)
 
-    success_text = (
-        f"💎 <b>УСПЕШНАЯ ТРАНЗАКЦИЯ СИМУЛЯТОРА</b>\n"
-        f"..................................................\n\n"
-        f"🧾 Чек платежа: <code>{charge_id}</code>\n"
-        f"💵 Сумма списания: <b>{order['stars']} ★</b>\n\n"
-        f"..................................................\n\n"
-        f"{result_msg}"
-    )
-    await callback.message.answer(success_text, parse_mode="HTML")
+    success, result_msg = await award_item_to_user(user_id, order, payload, charge_id)
 
-    # 🔥 ХАК ДИНАМИКИ: Мгновенно перерисовываем старое сообщение магазина, меняя текст кнопки на лету!
-    try:
-        updated_text = (
-            f"🛒 <b>МАРКЕТПЛЭЙС ИГРOВOЙ ЭКOСИСТЕМЫ ROFL HUB</b>\n"
+    if success:
+        success_text = (
+            f"🎉 <b>ПЛАТЕЖ УСПЕШНО ПОДТВЕРЖДЕН!</b>\n"
             f"..................................................\n\n"
-            f"🚀 <b>Прокачай свой аккаунт и запусти пассивный доход!</b>\n\n"
-            f"📌 <i>Твой уровень заправки хаба: <b>CAPACITY {updated['fridge_capacity']}</b>\n"
-            f"📌 Твой Боевой Буст: <b>+{updated['boost_level']} к победе в дуэлях</b></i>"
+            f"🧾 ID Транзакции: <code>{charge_id}</code>\n"
+            f"💵 Зачислено Stars: <b>{order['stars']} ★</b>\n\n"
+            f"..................................................\n\n"
+            f"{result_msg}\n\n"
+            f"📊 <i>Продукт доставлен на твой аккаунт на Railway. Баланс обновлен в /profile! Спасибо за поддержку хаба!</i>"
         )
-        await callback.message.edit_text(
-            text=updated_text,
-            reply_markup=get_updated_shop_keyboard(updated["fridge_capacity"], updated["boost_level"]),
-            parse_mode="HTML"
-        )
-    except Exception:
-        pass
+        await message.answer(success_text, parse_mode="HTML")
+    else:
+        await message.answer(f"🚨 КРИТИЧЕСКАЯ ОШИБКА ДОСТАВКИ: {result_msg}\nСрочно отправь этот чек администрации!")
+
 
 # ============================================================================
-# 🛡️ БОЕВОЙ ШЛЮЗ TELEGRAM STARS (АКТИВИРУЕТСЯ ПРИ ДЕПЛОЕ НА HTTPS СЕРВЕР)
+# ⚙️ 4. АТОМАРНЫЙ БЭКЕНД-ОБРАБОТЧИК НАЧИСЛЕНИЙ РЕСУРСОВ В БАЗУ
 # ============================================================================
-# Когда будешь переносить проект на боевой сервер, этот блок заменит симулятор выше.
-# @router.pre_checkout_query()
-# async def process_pre_checkout_stars(pre_checkout_query: types.PreCheckoutQuery):
-#     await pre_checkout_query.answer(ok=True)
+async def award_item_to_user(user_id: int, order: dict, payload: str, charge_id: str) -> tuple[bool, str]:
+    """Транзакционный контур начисления купленных товаров с защитой FOR UPDATE"""
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+                if not user:
+                    return False, "Профиль не найден"
 
-# @router.message(F.successful_payment)
-# async def process_successful_stars_payment(message: types.Message):
-#     # Сюда копируется аналогичная логика начислений из симулятора
-#     pass
+                if order["type"] == "cutlets":
+                    # 🔥 ФИКС: Переносим котлеты НА СКЛАД инвентаря, как решено по архитектуре!
+                    await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $1 WHERE user_id = $2", order["qty"], user_id)
+                    result_msg = f"🥩 В твой карман инвентаря (на склад) добавлено: <b>{order['qty']} шт.</b>"
+
+                elif order["type"] == "miner":
+                    if order["kind"] == "junior":
+                        await conn.execute("UPDATE users SET miner_junior_count = miner_junior_count + 1 WHERE user_id = $1", user_id)
+                        result_msg = "🤖 <b>Робот «Младший Майнер» доставлен на твой ИТ-завод!</b>"
+                    else:
+                        await conn.execute("UPDATE users SET miner_premium_count = miner_premium_count + 1 WHERE user_id = $1", user_id)
+                        result_msg = "⚡ <b>Титановый «Кибер Бурильщик» на гусеницах готов к работе!</b>"
+
+                elif order["type"] == "fridge_upgrade":
+                    await conn.execute("UPDATE users SET fridge_capacity = $1 WHERE user_id = $2", order["capacity"], user_id)
+                    result_msg = f"📦 Твой Автоматический Холодильник расширен до уровня: <b>CAPACITY {order['capacity']}</b>"
+
+                elif order["type"] == "coins":
+                    await conn.execute("UPDATE users SET balance = balance + $1 WHERE user_id = $2", order["coins_amount"], user_id)
+                    result_msg = f"💰 На твой счёт зачислено розничной казны: <b>+{order['coins_amount']} рофлов</b>."
+
+                elif order["type"] == "boost_upgrade":
+                    await conn.execute("UPDATE users SET boost_level = $1 WHERE user_id = $2", order["next_level"], user_id)
+                    result_msg = f"🚀 Уровень Боевого Буста повышен навсегда до: <b>{order['next_level']} уровня</b>!"
+
+                elif order["type"] == "vip_bundle":
+                    await conn.execute(
+                        "UPDATE users SET miner_premium_count = miner_premium_count + 1, inv_cutlets = inv_cutlets + 30 WHERE user_id = $1",
+                        user_id
+                    )
+                    result_msg = "🎁 <b>ЭЛИТАРНЫЙ БАНДЛ «VIP-СТАРТ» АКТИВИРОВАН!</b>\n⚡ Получен 1 Кибер-Бурильщик.\n🥩 На склад закинуто 30 котлет!"
+
+                elif order["type"] == "clan_upgrade":
+                    team = await conn.fetchrow("SELECT team_id FROM teams WHERE captain_id = $1 FOR UPDATE", user_id)
+                    if not team:
+                        return False, "У тебя нет созданной команды! Сначала вбей /create_team."
+                    await conn.execute("UPDATE teams SET max_members = 1000 WHERE captain_id = $1", user_id)
+                    result_msg = "🏆 <b>ТВОЯ КОМАНДА ОФИЦИАЛЬНО ПОЛУЧИЛА ВЫСШИЙ СТАТУС КЛАНА СНГ!</b>\nЛимит расширен до 1000 мест."
+
+                # Фиксируем финансовую операцию в журнал для строгого аудита
+                await conn.execute(
+                    """
+                    INSERT INTO star_payments (user_id, telegram_charge_id, item_payload, stars_amount) 
+                    VALUES ($1, $2, $3, $4)
+                    """,
+                    user_id, charge_id, payload, order["stars"]
+                )
+
+                return True, result_msg
+    except Exception as e:
+        logger.error(f"[DATABASE_AWARD_ERROR] Ошибка записи транзакции: {e}")
+        return False, str(e)

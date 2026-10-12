@@ -2,114 +2,71 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# ============================================================================
-# 🎰 ГЛOБАЛЬНЫЙ РЕЕСТР ЦЕН И КОНТЕНТА ТОВАРОВ STARS (XTR) — ROFL HUB CORE
-# ============================================================================
-# Все цены и метаданные жестко заперты на сервере. Подделать payload из кнопок нереально!
 
-# 1. ТOПЛИВНЫЕ РЕСУРСЫ: Котлеты (Строго по кнопкам со скрина витрины)
-CUTLET_PACKS = {
-    "buy_cutlet_1": {"stars": 7, "qty": 1, "title": "🥩 1 кибер-котлета"},
-    "buy_cutlet_5": {"stars": 29, "qty": 5, "title": "🥩 5 кибер-котлет"},
-    "buy_cutlet_10": {"stars": 49, "qty": 10, "title": "🥩 10 кибер-котлет"},
-    "buy_cutlet_50": {"stars": 239, "qty": 50, "title": "🥩 50 кибер-котлет"},
-    "buy_cutlet_100": {"stars": 449, "qty": 100, "title": "🥩 100 кибер-котлет"},
-}
-
-# 2. АПГРЕЙДЫ ЦЕНТРАЛЬНОГО ХОЛОДИЛЬНИКА (Только вверх)
-FRIDGE_UPGRADES = {
-    "buy_fridge_5": {"stars": 49, "capacity": 5, "title": "📦 Холодильник на 5 котлет"},
-    "buy_fridge_10": {"stars": 99, "capacity": 10, "title": "📦 Холодильник на 10 котлет"},
-    "buy_fridge_50": {"stars": 499, "capacity": 50, "title": "📦 Холодильник на 50 котлет"},
-    "buy_fridge_100": {"stars": 999, "capacity": 100, "title": "👑 Холодильник на 100 котлет"},
-}
-
-# 3. АВТОМАТИЗАЦИЯ И ФЕРМА: Роботы-майнеры
-MINER_EQUIPMENT = {
-    "buy_miner_junior": {"stars": 49, "kind": "junior", "title": "🤖 Робот «Младший Майнер»"},
-    "buy_miner_premium": {"stars": 99, "kind": "premium", "title": "⚡ Робот «Кибер Бурильщик»"},
-}
-
-# 4. РОЗНИЧНАЯ КАЗНА: Пакеты игровых монет (МАКСИМУМ ДО 100 000 МОНЕТ!)
-COIN_PACKS = {
-    "buy_coins_1k": {"stars": 49, "coins": 1000, "title": "💰 «Солдат»: 1 000 монет"},
-    "buy_coins_3k": {"stars": 99, "coins": 3000, "title": "💰 «Капитан»: 3 000 монет"},
-    "buy_coins_10k": {"stars": 299, "coins": 10000, "title": "💰 «Ветеран»: 10 000 монет"},
-    "buy_coins_50k": {"stars": 1299, "coins": 50000, "title": "👑 «Легенда»: 50 000 монет"},
-    "buy_coins_100k": {"stars": 2499, "coins": 100000, "title": "👑 «Генерал армии»: 100 000 монет"},
-}
-
-
-# ============================================================================
-# ⚙️ ЕДИНЫЙ ЦЕНТРАЛЬНЫЙ ВAЛИДАТOР И КAЛЬКУЛЯТOР ЗАКАЗOВ
-# ============================================================================
-def calculate_stars_order(payload: str, current_fridge_capacity: int, current_boost_level: int) -> dict:
+def calculate_stars_order(payload: str, current_capacity: int, current_boost: int) -> dict:
     """
-    Принимает payload клика, текущую вместимость хаба и уровень буста игрока из PostgreSQL.
-    Возвращает полный срез параметров товара для инвойса Stars.
+    Единый бэкенд-каталог цен и тарифов холдинга ROFL HUB CORE.
+    Очищен от розничного мусора, мелких паков и сложных бустов.
     """
-    clean_payload = payload
-    if payload.startswith("boost:"):
-        clean_payload = "buy_boost_upgrade"
+    cleaned_payload = payload.replace("buy_", "")
 
-    # 1. Обработка паков котлет
-    if clean_payload in CUTLET_PACKS:
-        item = CUTLET_PACKS[clean_payload]
-        return {"stars": item["stars"], "title": item["title"], "type": "cutlets", "qty": item["qty"]}
+    # 1. Линейка роботов-майнеров (Жесткий лимит жизни на 30 дней)
+    if cleaned_payload == "miner_junior":
+        return {"type": "miner", "kind": "junior", "stars": 49, "title": "🤖 Робот: Младший Майнер (Срок: 30 дней)"}
+    elif cleaned_payload == "miner_premium":
+        return {"type": "miner", "kind": "premium", "stars": 99, "title": "⚡ Робот: Кибер Бурильщик (Срок: 30 дней)"}
 
-    # 2. Обработка закупки роботов-майнеров
-    if clean_payload in MINER_EQUIPMENT:
-        item = MINER_EQUIPMENT[clean_payload]
-        return {"stars": item["stars"], "title": item["title"], "type": "miner", "kind": item["kind"]}
+    # 2. Ресурсы: Крупные оптовые паки кибер-котлет на склад инвентаря
+    elif cleaned_payload == "cutlet_10":
+        return {"type": "cutlets", "qty": 10, "stars": 49, "title": "🥩 10 котлет на склад"}
+    elif cleaned_payload == "cutlet_50":
+        return {"type": "cutlets", "qty": 50, "stars": 239, "title": "🥩 50 котлет на склад"}
+    elif cleaned_payload == "cutlet_100":
+        return {"type": "cutlets", "qty": 100, "stars": 449, "title": "🥩 100 котлет на склад"}
 
-    # 3. Обработка улучшения холодильника (С защитой «Только вверх!»)
-    if clean_payload in FRIDGE_UPGRADES:
-        item = FRIDGE_UPGRADES[clean_payload]
-        target_capacity = item["capacity"]
+    # 3. Прогрессивные улучшения Холодильника (Синхронизировано с паками котлет)
+    elif cleaned_payload.startswith("fridge_"):
+        target_capacity = int(cleaned_payload.split("_")[-1])
+        if target_capacity <= current_capacity:
+            raise ValueError("У тебя уже активирован холодильник равного или большего объема!")
 
-        if target_capacity <= current_fridge_capacity:
-            raise ValueError(
-                f"🚨 Читерский запрос! Попытка даунгрейда хаба с {current_fridge_capacity} до {target_capacity}."
-            )
-        return {"stars": item["stars"], "title": item["title"], "type": "fridge_upgrade", "capacity": target_capacity}
+        prices = {10: 99, 50: 499, 100: 999}
+        stars_cost = prices.get(target_capacity, 999)
+        return {"type": "fridge_upgrade", "capacity": target_capacity, "stars": stars_cost,
+                "title": f"📦 Апгрейд Холодильника до уровня {target_capacity}"}
 
-    # 4. Обработка пакетов розничной монетарной казни
-    if clean_payload in COIN_PACKS:
-        item = COIN_PACKS[clean_payload]
-        return {"stars": item["stars"], "title": item["title"], "type": "coins", "coins_amount": item["coins"]}
+    # 4. Высокодоходные математические бусты фермы (Сгораемые, на 30 дней)
+    elif cleaned_payload == "boost_nitrogen_30":
+        return {"type": "farm_boost", "kind": "nitrogen", "stars": 299,
+                "title": "❄️ Азотное охлаждение роботов: +40% к добыче всей фермы (На 30 дней)"}
+    elif cleaned_payload == "boost_nuclear_30":
+        return {"type": "farm_boost", "kind": "nuclear", "stars": 199,
+                "title": "🔋 +500% к скорости добычи Кибер Бурильщика (На 30 дней)"}
 
-    # 5. БОЕВОЙ БУСТ ПОБЕДЫ: ТРИ УРОВНЯ НА ОДНИ РУКИ НАВСЕГДА! (Capped Stacking)
-    if clean_payload == "buy_boost_upgrade":
-        target_level = current_boost_level + 1
+    # 5. Снятие суточных лимитов на гейминг и викторины (15/15/30 побед)
+    elif cleaned_payload == "unlimit_24h":
+        return {"type": "game_unlimit", "kind": "day", "stars": 5, "title": "⚡ Безлимитный гейминг: 24 часа"}
+    elif cleaned_payload == "unlimit_30d":
+        return {"type": "game_unlimit", "kind": "month", "stars": 99, "title": "🚀 Безлимитный гейминг: 30 дней"}
 
-        # 🔥 СНАЙПЕРСКИЙ ФИКС: Считываем строго вторую ячейку списка по индексу!
-        if payload.startswith("boost:"):
-            target_level = int(payload.split(":")[1])
+    # 6. Специальный VIP-персонаж: Дрон-Ремонтник (Авторемонт всех роботов на 1 год)
+    elif cleaned_payload == "repair_drone_365":
+        return {"type": "vip_character", "kind": "drone", "stars": 999,
+                "title": "🤖 VIP Дрон-Ремонтник (Лицензия: 1 год)"}
 
-        if current_boost_level >= 3 or target_level > 3:
-            raise ValueError("🚨 Лимит достигнут! У игрока уже активирован максимальный уровень буста.")
+    # 7. Оптовая казна монет (Крупные паки рофлов для входа в дуэли и кланы)
+    elif cleaned_payload == "coins_5k":
+        return {"type": "coins", "coins_amount": 5000, "stars": 149, "title": "💰 Пак «Сержант»: +5 000 рофлов"}
+    elif cleaned_payload == "coins_10k":
+        return {"type": "coins", "coins_amount": 10000, "stars": 299, "title": "💰 Пак «Ветеран»: +10 000 рофлов"}
+    elif cleaned_payload == "coins_50k":
+        return {"type": "coins", "coins_amount": 50000, "stars": 1299, "title": "👑 Пак «Генерал»: +50 000 рофлов"}
+    elif cleaned_payload == "coins_100k":
+        return {"type": "coins", "coins_amount": 100000, "stars": 2499, "title": "👑 Пак «Легенда»: +100 000 рофлов"}
 
-        if target_level <= current_boost_level:
-            raise ValueError("🚨 Этот уровень буста у тебя уже куплен!")
+    # 8. Специальные ультимативные предложения холдинга
+    elif cleaned_payload == "clan_upgrade":
+        return {"type": "clan_upgrade", "stars": 2499, "title": "🏆 Лицензия Мега-Клана (до 1000 мест)"}
 
-        if target_level == 1:
-            stars_price = 99
-            title = "🚀 Боевой Буст +1 монета за победу"
-        elif target_level == 2:
-            stars_price = 199
-            title = "🚀🚀 Боевой Буст +2 монеты за победу"
-        else:
-            stars_price = 299
-            title = "👑👑👑 Ультимативный Буст +3 монеты за победу"
-
-        return {"stars": stars_price, "title": title, "type": "boost_upgrade", "next_level": target_level}
-
-    # 6. КОМБО-БАНДЛ «VIP-СТАРТ» (Робот в подарок при покупке 30 котлет)
-    if clean_payload == "buy_vip_start_bundle":
-        return {"stars": 149, "title": "👑 Элитарный Бандл «VIP-Старт»", "type": "vip_bundle"}
-
-    # 7. ЭЛИТАРНЫЙ ИНСТРУМЕНТ ЗАРАБОТКА: Апгрейд Банды до Мега-Клана (до 1000 человек)
-    if clean_payload == "buy_clan_upgrade":
-        return {"stars": 2499, "title": "🏆 Лицензия Мега-Клана (до 1000 чел.)", "type": "clan_upgrade"}
-
-    raise ValueError(f"🚨 Ошибка каталога: Товар с payload '{payload}' не зарегистрирован в системе.")
+    else:
+        raise ValueError(f"Неизвестный тип товара в каталоге: {payload}")

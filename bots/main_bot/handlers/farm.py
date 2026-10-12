@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime, timezone
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from shared.database import db
@@ -9,14 +8,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_farm_keyboard() -> types.InlineKeyboardMarkup:
-    """Кнопки управления фермой: заправка, маркет и быстрый клановый контур"""
+    """Кнопки управления фермой: только заправка и мгновенный переход в магазин!"""
     return types.InlineKeyboardMarkup(inline_keyboard=[
         [
             types.InlineKeyboardButton(text="🥩 Заправить 1 шт.", callback_data="farm_action:load_1"),
-            types.InlineKeyboardButton(text="⚡ Заправить ВСЁ", callback_data="farm_action:load_all")
-        ],
-        [
-            types.InlineKeyboardButton(text="👥 Школьные Банды / Кланы", callback_data="clan_main_menu")
+            types.InlineKeyboardButton(text="⚡ Заправить ВСЕ", callback_data="farm_action:load_all")
         ],
         [
             types.InlineKeyboardButton(text="🏪 Зайти в Магазин /shop", callback_data="open_shop_from_farm")
@@ -24,19 +20,27 @@ def get_farm_keyboard() -> types.InlineKeyboardMarkup:
     ])
 
 
+# ============================================================================
+# 🚜 1. ЦЕНТРАЛЬНЫЙ УНИВЕРСАЛЬНЫЙ ВЫЗОВ ПАНЕЛИ ФЕРМЫ (УБИЙЦА БАГА КОНТЕКСТА)
+# ============================================================================
 @router.message(Command("farm"))
 @router.message(Command("my_farm"))
-async def cmd_farm(message: types.Message):
-    user_id = message.from_user.id
+async def cmd_farm(message: types.Message, override_user_id: int = None):
+    """
+    Выводит дашборд топливного хаба фермы.
+    Параметр override_user_id намертво страхует от падения при инлайн-переходах.
+    """
+    # 🔥 ЖЕСТКИЙ ФИКС: Если передан override_user_id — берем его, иначе берем из текста
+    user_id = override_user_id if override_user_id else message.from_user.id
 
     from bots.main_bot.handlers.profile import apply_lazy_mining_earnings
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
-            # Накатываем автоматические часовые начисления монет прямо при вызове фермы!
+            # Накатываем ленивые начисления с фиксацией точной математики секунд
             user = await apply_lazy_mining_earnings(user_id, conn)
             if not user:
-                await message.answer("⚠️ Профиль не найден. Нажми /start")
+                await message.answer("⚠️ Профиль не найден. Прожми /start для регистрации Паспорта.")
                 return
 
     junior_count = user["miner_junior_count"]
@@ -45,13 +49,13 @@ async def cmd_farm(message: types.Message):
 
     if premium_count > 0:
         if user["fridge_cutlets"] > 0:
-            status_work = "🟢 Кибер-Бурильщики активны и добывают монеты!"
+            status_work = "🟢 Кибер-Бурильщики активны и автоматически добывают монеты!"
         else:
             status_work = "🔴 Кибер-Бурильщики остановились! В холодильнике кончилось топливо."
     else:
         status_work = "💡 Заведи Кибер-Бурильщиков в /shop для увеличения дохода."
 
-    # Математический расчет чистой скорости фермы Анатолия Алексеевича
+    # Расчет чистой выработки (2 и 5 монет в час)
     speed_per_hour = (junior_count * 2) + (premium_count * 5)
     speed_per_day = speed_per_hour * 24
     speed_per_month = speed_per_hour * 720
@@ -73,12 +77,15 @@ async def cmd_farm(message: types.Message):
         f"🥩 Запас топлива: <b>{user['fridge_cutlets']} / {user['fridge_capacity']} шт.</b>\n"
         f"💼 Котлеты на складе инвентаря: <code>{user['inv_cutlets']} шт.</code>\n\n"
         f"..................................................\n\n"
-        f"<i>💿 Важно: Всё оборудование приобретается на срок 30 дней. Младшие Майнеры работают автономно, а Кибер-Бурильщики автоматически потребляют по 1 котлете в сутки из холодильника. Следи за заправкой и вовремя сдавай роботов в Ремонтную Мастерскую!</i>"
+        f"<i>💿 Важно: Все майнеры приобретаются строго на срок 30 дней. Младшие Майнеры работают автономно, а Кибер-Бурильщики автоматически потребляют по 1 котлете в сутки из运行 холодильника. Следи за заправкой бака!</i>"
     )
 
     await message.answer(farm_text, reply_markup=get_farm_keyboard(), parse_mode="HTML")
 
 
+# ============================================================================
+# 🎰 2. ПЕРЕХВАТ ИНЛАЙН-ЗАПРАВКИ И ОБНОВЛЕНИЯ ЭКРАНА
+# ============================================================================
 @router.callback_query(F.data.startswith("farm_action:"))
 async def process_farm_inline_actions(callback: types.CallbackQuery):
     user_id = callback.from_user.id
@@ -139,7 +146,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery):
 
     if premium_count > 0:
         if updated["fridge_cutlets"] > 0:
-            status_work = "🟢 Кибер-Бурильщики active и добывают монеты!"
+            status_work = "🟢 Кибер-Бурильщики активны и добывают монеты!"
         else:
             status_work = "🔴 Кибер-Бурильщики остановились! В холодильнике кончилось топливо."
     else:
@@ -149,8 +156,8 @@ async def process_farm_inline_actions(callback: types.CallbackQuery):
         f"🚜 <b>ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ ROFL HUB</b>\n"
         f"..................................................\n\n"
         f"🤖 Активных роботов на заводе: <b>{total_miners} шт.</b>\n"
-        f"• Младшие Майнеры (2 рофла/ч): <code>{updated['miner_junior_count']} шт.</code>\n"
-        f"• Кибер-Бурильщики (5 рофлов/ч): <code>{updated['miner_premium_count']} шт.</code>\n\n"
+        f"• Младшие Майнеры (2 рофла/ч): <code>{junior_count} шт.</code>\n"
+        f"• Кибер-Бурильщики (5 рофлов/ч): <code>{premium_count} шт.</code>\n\n"
         f"📊 <b>АКТУАЛЬНАЯ СКОРОСТЬ ТВОЕЙ ФЕРМЫ:</b>\n"
         f"• Выработка в час: <b>+{speed_per_hour} рофлов</b>\n"
         f"• Выработка в сутки: <b>+{speed_per_day} рофлов</b>\n"
@@ -162,7 +169,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery):
         f"🥩 Запас топлива: <b>{updated['fridge_cutlets']} / {updated['fridge_capacity']} шт.</b>\n"
         f"💼 Котлеты на складе инвентаря: <code>{updated['inv_cutlets']} шт.</code>\n\n"
         f"..................................................\n\n"
-        f"<i>💿 Важно: Всё оборудование приобретается на срок 30 дней. Младшие Майнеры работают автономно, а Кибер-Бурильщики автоматически потребляют по 1 котлете в сутки из холодильника. Следи за заправкой и вовремя сдавай роботов в Ремонтную Мастерскую!</i>"
+        f"<i>💿 Важно: Все майнеры приобретаются строго на срок 30 дней. Младшие Майнеры работают автономно, а Кибер-Бурильщики автоматически потребляют по 1 котлете в сутки из холодильника. Следи за заправкой бака!</i>"
     )
 
     try:
@@ -171,8 +178,21 @@ async def process_farm_inline_actions(callback: types.CallbackQuery):
         pass
 
 
+# ============================================================================
+# 🎯 3. БЕСШОВНОЕ ОТКРЫТИЕ ДАШБОРДА ФЕРМЫ ИЗ ПРОФИЛЯ (БЕЗ БАГОВ КОНТЕКСТА)
+# ============================================================================
 @router.callback_query(F.data == "open_farm_from_profile")
 async def open_farm_from_profile_callback(callback: types.CallbackQuery):
+    """Перехватывает клик по кнопке фермы под паспортом, вычищая контекст бота"""
     await callback.answer()
-    await callback.message.delete()
-    await cmd_farm(callback.message)
+
+    # Вытягиваем Telegram ID реального юзера, нажавшего инлайн
+    real_user_id = callback.from_user.id
+
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
+
+    # 🔥 ЖЕСТКИЙ ФИКС: Вызываем функцию, принудительно передавая ей ID живого игрока!
+    await cmd_farm(callback.message, override_user_id=real_user_id)

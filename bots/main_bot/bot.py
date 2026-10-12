@@ -3,25 +3,26 @@ import logging
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.fsm.storage.memory import MemoryStorage
 
-# Жестко привязываем чтение .env к корню проекта для безопасности токенов холдинга
+# Намертво привязываем чтение .env к корню проекта
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(PROJECT_ROOT / ".env")
 
-# Считываем токен главного игрового бота
+# Сверяем токен строго по вашей конфигурации из .env
 BOT_TOKEN = os.getenv("MAIN_BOT_TOKEN")
 
 if not BOT_TOKEN:
-    raise RuntimeError(
-        "🚨 КРИТИЧЕСКИЙ КРАШ СИСТЕМЫ: Переменная MAIN_BOT_TOKEN отсутствует в .env! Запуск заблокирован."
-    )
+    raise RuntimeError("🚨 КРИТИЧЕСКИЙ КРАШ: Переменная MAIN_BOT_TOKEN отсутствует в .env! Запуск заблокирован.")
 
 # Импортируем пул базы данных PostgreSQL на Railway
 from shared.database import db
+from bots.main_bot.utils.questions_loader import load_questions_from_csv
 
-# Импортируем все наши обновленные роутеры
+# ============================================================================
+# # 🔗 ИМПОРТ АБСОЛЮТНО ВСЕХ РОУТЕРОВ ЭКОСИСТЕМЫ С ВАШЕГО СКРИНШОТА
+# ============================================================================
 from bots.main_bot.handlers.start import router as start_router
 from bots.main_bot.handlers.menu import router as menu_router
 from bots.main_bot.handlers.profile import router as profile_router
@@ -30,13 +31,17 @@ from bots.main_bot.handlers.clans import router as clans_router
 from bots.main_bot.handlers.shop import router as shop_router
 from bots.main_bot.handlers.games import router as games_router
 from bots.main_bot.handlers.payments import router as payments_router
+from bots.main_bot.handlers.faq import router as faq_router
+from bots.main_bot.handlers.rules import router as rules_router
 
-# Импортируем сами функции-обработчики для прямой Reply-связи
+# ============================================================================
+# ⚙️ ИМПОРТ ФУНКЦИЙ-ОБРАБОТЧИКОВ ДЛЯ ПРЯМОЙ REPLY-СВЯЗИ
+# ============================================================================
 from bots.main_bot.handlers.menu import cmd_main_menu, cmd_games_hub
 from bots.main_bot.handlers.profile import cmd_profile_stats
 from bots.main_bot.handlers.farm import cmd_farm
 from bots.main_bot.handlers.clans import cmd_clan_hub
-from bots.main_bot.handlers.shop import cmd_shop
+from bots.main_bot.handlers.shop import cmd_premium_shop
 
 logging.basicConfig(
     level=logging.INFO,
@@ -44,55 +49,45 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+dp = Dispatcher(storage=MemoryStorage())
+
+# Включаем абсолютно все роутеры в диспетчер
+dp.include_router(start_router)
+dp.include_router(menu_router)
+dp.include_router(profile_router)
+dp.include_router(farm_router)
+dp.include_router(clans_router)
+dp.include_router(shop_router)
+dp.include_router(games_router)
+dp.include_router(payments_router)
+dp.include_router(faq_router)
+dp.include_router(rules_router)
+
 
 async def main() -> None:
-    """
-    Главная асинхронная точка входа в контур игрового бота ROFL HUB CORE.
-    """
-    # Инициализируем бота и диспетчер со встроенным хранилищем состояний FSM
+    """Главная асинхронная точка запуска продакшен-контура"""
     bot = Bot(token=BOT_TOKEN)
-    dp = Dispatcher(storage=MemoryStorage())
 
+    # Подключение к СУБД Railway и инициализация структуры таблиц
+    await db.connect()
+    await db.create_tables()
+
+    # Загрузка буфера 5000 вопросов викторины из CSV-таблицы
     try:
-        # Подключаемся к асинхронному пулу PostgreSQL на Railway
-        await db.connect()
-        await db.create_tables()
-
-        # ============================================================================
-        # 🎰 ЖЕСТКАЯ ПРИВЯЗКА ТЕКСТОВЫХ REPLY-КНОПОК К НАШИМ ОБРАБОТЧИКАМ
-        # ============================================================================
-        # Перехватываем нажатия постоянных нижних кнопок до регистрации роутеров
-        dp.message.register(cmd_main_menu, F.text == "📱 ГЛАВНОЕ МЕНЮ")
-        dp.message.register(cmd_profile_stats, F.text == "👤 МОЙ ПРОФИЛЬ")
-        dp.message.register(cmd_farm, F.text == "🚜 МОЯ ФЕРМА")
-        dp.message.register(cmd_games_hub, F.text == "🕹️ ИГРОВАЯ ЗОНА")
-        dp.message.register(cmd_clan_hub, F.text == "🏆 КОМАНДЫ И КЛАНЫ")
-        dp.message.register(cmd_shop, F.text == "🏪 МАГАЗИН")
-
-        # Включаем все наши монолитные изолированные роутеры
-        dp.include_router(start_router)
-        dp.include_router(menu_router)
-        dp.include_router(profile_router)
-        dp.include_router(farm_router)
-        dp.include_router(clans_router)
-        dp.include_router(shop_router)
-        dp.include_router(games_router)
-        dp.include_router(payments_router)
-
-        logger.info("🟢 ГЛАВНЫЙ БОТ ЮЗЕРОВ УСПЕШНО ЗАПУЩЕН И ГОТОВ К НАГРУЗКАМ!")
-
-        # Запускаем шлюз бесконечного прослушивания апдейтов
-        await dp.start_polling(bot)
-
+        load_questions_from_csv()
     except Exception as e:
-        logger.critical(f"🚨 Фатальная ошибка во время инициализации bot.py: {e}")
+        logger.error(f"Ошибка загрузки вопросов викторины: {e}")
 
-    finally:
-        logger.info("⏳ Безопасное закрытие сессий и пула базы данных...")
-        await bot.session.close()
-        if db.pool:
-            await db.pool.close()
-        logger.info("🔒 Контур бота полностью изолирован и закрыт.")
+    # Регистрация обработчиков текстовых Reply-кнопок
+    dp.message.register(cmd_profile_stats, F.text == "👤 МОЙ ПРОФИЛЬ")
+    dp.message.register(cmd_farm, F.text == "🚜 МОЯ ФЕРМА")
+    dp.message.register(cmd_games_hub, F.text == "🕹️ ИГРОВАЯ ЗОНА")
+    dp.message.register(cmd_clan_hub, F.text == "🏆 КОМАНДЫ И КЛАНЫ")
+    dp.message.register(cmd_premium_shop, F.text == "🏪 МАГАЗИН")
+    dp.message.register(cmd_main_menu, F.text == "📱 ГЛАВНОЕ МЕНЮ")
+
+    logger.info("🟢 ГЛАВНЫЙ ЮЗЕР-БОТ УСПЕШНО СИНХРОНИЗИРОВАН И ГОТОВ К РАБОТЕ!")
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":

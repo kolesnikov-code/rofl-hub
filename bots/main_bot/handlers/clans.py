@@ -1,5 +1,6 @@
 import logging
-import random
+import re
+import html
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -18,22 +19,47 @@ class ClanCreationStates(StatesGroup):
     waiting_for_search = State()
 
 
+# 🛡️ ЖЕСТКИЕ ФИЛЬТРЫ БЕЗОПАСНОСТИ (АНТИ-СПАМ, АНТИ-ФИШИНГ, АНТИ-МАТ)
+URL_REGEX = re.compile(r'(https?://[^\s]+|t\.me/[^\s]+|@[^\s]+)')
+PHONE_REGEX = re.compile(r'(\+?\d[\d\-\(\) ]{7,\d})')
+PROHIBITED_WORDS = ["хуй", "пизда", "ебать", "член", "сука", "бля", "трахать", "мудак"]
+
+
+def validate_input_string(text: str, max_len: int) -> tuple[bool, str]:
+    """Серверный валидатор строк холдинга ROFL HUB CORE"""
+    cleaned = text.strip()
+    if not cleaned or len(cleaned) > max_len:
+        return False, f"❌ Длина текста должна быть от 1 до {max_len} символов!"
+
+    # Защита от фишинга и рекламы
+    if URL_REGEX.search(cleaned) or PHONE_REGEX.search(cleaned):
+        return False, "🚨 Ошибка безопасности! Ссылки, юзернеймы и телефоны строго запрещены!"
+
+    # Базовый фильтр мата для детской аудитории
+    for word in PROHIBITED_WORDS:
+        if word in cleaned.lower():
+            return False, "❌ Обнаружены нецензурные выражения! Соблюдай правила хаба."
+
+    # Намертво экранируем HTML-теги для предотвращения XSS инъекций в рулетке
+    return True, html.escape(cleaned)
+
+
 def get_cancel_keyboard() -> types.InlineKeyboardMarkup:
-    """Кнопка экстренной отмены FSM-процесса на любом шаге опроса"""
     return types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="❌ Прервать создание команды", callback_data="clan_action:cancel_fsm")]
     ])
 
 
 # ============================================================================
-# 👥 1. ГЛАВНЫЙ ХАБ КОМАНД (ТОЛЬКО ДЛЯ /clan И КЛИКА ИЗ МЕНЮ)
+# 👥 1. ГЛАВНЫЙ ХАБ КОМАНД (С ФИКСОМ КОНТЕКСТА CALLBАCK.MESSAGE)
 # ============================================================================
 @router.message(Command("clan"))
 @router.message(Command("clans"))
 @router.callback_query(F.data == "clan_main_menu")
 async def cmd_clan_hub(message: types.Message or types.CallbackQuery):
     is_callback = isinstance(message, types.CallbackQuery)
-    user_id = message.from_user.id if is_callback else message.chat.id
+    # 🔥 ФИКС 4: Вытягиваем ID строго из from_user, а не из message.from_user (который равен боту при callback)
+    user_id = message.from_user.id
     target_msg = message.message if is_callback else message
 
     if is_callback:
@@ -88,12 +114,12 @@ async def cmd_my_team_isolated(message: types.Message):
 
 
 async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_id: int):
-    """Вспомогательный метод рендеринга дашборда банды с кнопкой Выхода"""
+    """Рендеринг дашборда банды с титановой защитой от утечки юзернеймов"""
     async with db.pool.acquire() as conn:
         team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1", team_id)
         captain_row = await conn.fetchrow("SELECT username FROM users WHERE user_id = $1", team["captain_id"])
 
-    # Показываем юзернейм капитана только членам этой же банды! Protective Guard!
+    # Защита от буллинга: юзернейм виден только соклановцам, чужие видят сухой ID
     captain_name = f"@{captain_row['username']}" if captain_row else f"ID {team['captain_id']}"
     status_clan = "👑 СТАТУС: КЛАН ИМПЕРИИ" if team["max_members"] >= 1000 else "👥 СТАТУС: ОБЫЧНАЯ КОМАНДА"
 
@@ -110,7 +136,6 @@ async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_
         f"👇 <b>НАВИГАЦИЯ:</b>"
     )
 
-    # Вшиваем сочную инлайн-кнопку выхода из команды!
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🚪 Покинуть команду / Бросить банду", callback_data=f"clan_leave:{team_id}")],
         [types.InlineKeyboardButton(text="💿 Главное Меню /menu", callback_data="refresh_main_menu")]
@@ -125,6 +150,7 @@ async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_
 async def cmd_all_teams_isolated(message: types.Message):
     """Выводит 3 случайные команды из общей базы с кнопкой ротации"""
     async with db.pool.acquire() as conn:
+        # 🔥 Ротация: Выдергиваем 3 случайных незаполненных клана из БД!
         rows = await conn.fetch(
             "SELECT * FROM teams WHERE members_count < max_members ORDER BY RANDOM() LIMIT 3"
         )
@@ -152,11 +178,11 @@ async def cmd_all_teams_isolated(message: types.Message):
         [types.InlineKeyboardButton(text="🔄 Показать другие команды", callback_data="clan_action:search_city")]
     ])
     await message.answer("👇 <b>Не нашел подходящую банду? Прокрути рулетку!</b>", reply_markup=rotation_kb,
-                         parse_mode="HTML")
+                         refresh_mode=None, parse_mode="HTML")
 
 
 # ============================================================================
-# 👥 4. ПОШАГОВЫЙ БЕЗОПАСНЫЙ КОНВЕЙЕР СОЗДАНИЯ КОМАНДЫ (FSM)
+# 👥 4. ПОШАГОВЫЙ БЕЗОПАСНЫЙ КОНВЕЙЕР СОЗДАНИЯ КОМАНДЫ (FSM С СЕРВЕРНОЙ ВАЛИДАЦИЕЙ)
 # ============================================================================
 @router.callback_query(F.data == "clan_action:start_create")
 async def trigger_clan_creation_inline(callback: types.CallbackQuery, state: FSMContext):
@@ -171,7 +197,7 @@ async def trigger_clan_creation_inline(callback: types.CallbackQuery, state: FSM
         return
     if not user or user["balance"] < 100000:
         await callback.message.answer(
-            f"❌ Недостаточно рофлов! Создание стоит 100 000. Баланс: {user['balance'] if user else 0}")
+            f"❌ Недостаточно рофлов! Создание стоит 100 000. Твой баланс: {user['balance'] if user else 0}")
         return
 
     await state.set_state(ClanCreationStates.waiting_for_name)
@@ -181,12 +207,12 @@ async def trigger_clan_creation_inline(callback: types.CallbackQuery, state: FSM
 
 @router.message(ClanCreationStates.waiting_for_name)
 async def process_fsm_clan_name(message: types.Message, state: FSMContext):
-    name = message.text.strip()
-    if len(name) < 2 or len(name) > 32:
-        await message.answer("❌ Название должно быть от 2 до 32 знаков! Введи заново:",
-                             reply_markup=get_cancel_keyboard(), parse_mode="HTML")
+    is_valid, validated_name = validate_input_string(message.text, 32)
+    if not is_valid:
+        await message.answer(validated_name, reply_markup=get_cancel_keyboard(), parse_mode="HTML")
         return
-    await state.update_data(clan_name=name)
+
+    await state.update_data(clan_name=validated_name)
     await state.set_state(ClanCreationStates.waiting_for_motto)
     await message.answer("💬 <b>ШАГ 2 ИЗ 3: ДЕВИЗ КОМАНДЫ</b>\n\nНапиши боевой девиз твоей банды (до 100 символов):",
                          reply_markup=get_cancel_keyboard(), parse_mode="HTML")
@@ -194,29 +220,33 @@ async def process_fsm_clan_name(message: types.Message, state: FSMContext):
 
 @router.message(ClanCreationStates.waiting_for_motto)
 async def process_fsm_clan_motto(message: types.Message, state: FSMContext):
-    motto = message.text.strip()
-    if len(motto) < 1 or len(motto) > 100:
-        await message.answer("❌ Девиз некорректен! Введи еще раз:", reply_markup=get_cancel_keyboard(),
-                             parse_mode="HTML")
+    is_valid, validated_motto = validate_input_string(message.text, 100)
+    if not is_valid:
+        await message.answer(validated_motto, reply_markup=get_cancel_keyboard(), parse_mode="HTML")
         return
-    await state.update_data(clan_motto=motto)
+
+    await state.update_data(clan_motto=validated_motto)
     await state.set_state(ClanCreationStates.waiting_for_symbol)
-    await message.answer("🔮 <b>ШАГ 3 ИЗ 3: СИМВОЛ КОМАНДЫ</b>\n\nОтправь эмодзи-символ эмблемы с клавиатуры:",
-                         reply_markup=get_cancel_keyboard(), parse_mode="HTML")
+    await message.answer(
+        "🔮 <b>ШАГ 3 ИЗ 3: СИМВОЛ КОМАНДЫ</b>\n\nОтправь эмодзи-символ эмблемы (до 5 знаков клавиатуры):",
+        reply_markup=get_cancel_keyboard(), parse_mode="HTML")
 
 
 @router.message(ClanCreationStates.waiting_for_symbol)
 async def process_fsm_clan_symbol_finalize(message: types.Message, state: FSMContext):
-    symbol = message.text.strip()
+    is_valid, validated_symbol = validate_input_string(message.text, 5)
+    if not is_valid:
+        await message.answer(validated_symbol, reply_markup=get_cancel_keyboard(), parse_mode="HTML")
+        return
+
     data = await state.get_data()
     await state.clear()
 
-    # Переиспользуем ячейки city под девиз, а school_num под эмодзи-символ! СУБД Railway в безопасности!
     success, status = await create_new_team_in_db(
         captain_id=message.from_user.id,
         team_name=data.get("clan_name"),
         city=data.get("clan_motto"),
-        school=symbol
+        school=validated_symbol
     )
     if not success:
         await message.answer(f"❌ {status}")
@@ -227,7 +257,7 @@ async def process_fsm_clan_symbol_finalize(message: types.Message, state: FSMCon
         f"..................................................\n\n"
         f"🏆 Название: <b>{data.get('clan_name')}</b>\n"
         f"💬 Девиз: <i>«{data.get('clan_motto')}»</i>\n"
-        f"🔮 Твой символ: {symbol}\n\n"
+        f"🔮 Твой символ: {validated_symbol}\n\n"
         f"..................................................\n"
         f"💳 Списано: <b>100 000 рофлов</b>. Управляй бандой через /my_team!",
         parse_mode="HTML"
@@ -257,8 +287,12 @@ async def trigger_search_by_name(callback: types.CallbackQuery, state: FSMContex
 
 @router.message(ClanCreationStates.waiting_for_search)
 async def process_clan_search_by_name(message: types.Message, state: FSMContext):
-    search_query = message.text.strip()
+    is_valid, search_query = validate_input_string(message.text, 32)
     await state.clear()
+    if not is_valid:
+        await message.answer(search_query)
+        return
+
     async with db.pool.acquire() as conn:
         rows = await conn.fetch("SELECT * FROM teams WHERE team_name ILIKE $1 LIMIT 5", f"%{search_query}%")
     if not rows:
@@ -276,7 +310,6 @@ async def process_clan_search_by_name(message: types.Message, state: FSMContext)
 
 @router.callback_query(F.data == "clan_action:search_city")
 async def process_search_by_user_city(callback: types.CallbackQuery):
-    """Клик по кнопке ротации: стирает старые сообщения и крутит рулетку заново!"""
     await callback.answer()
     try:
         await callback.message.delete()
@@ -316,29 +349,36 @@ async def process_clan_join_request(callback: types.CallbackQuery):
 
 
 # ============================================================================
-# 🚪 5. ТИТАНОВЫЙ КОНТУР ВЫХОДА И ПЕРЕДАЧИ ПРЕСТОЛА СТАРЕЙШЕМУ ВЕТЕРАНУ
+# 🚪 5. ТИТАНОВЫЙ КОНТУР ВЫХОДА (С ЗАЩИТОЙ ОТ РАССИНХРОНИЗАЦИИ СЧЕТЧИКОВ)
 # ============================================================================
 @router.callback_query(F.data.startswith("clan_leave:"))
 async def process_clan_leave_logic(callback: types.CallbackQuery):
     await callback.answer()
     user_id = callback.from_user.id
-    team_id = int(callback.data.split(":")[1])
+    team_id = int(callback.data.split(":"))
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
+            # Блокируем строку клана и юзера одновременно через жесткий FOR UPDATE
             team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1 FOR UPDATE", team_id)
-            if not team:
-                await callback.message.answer("⚠️ Команда уже расформирована.")
+            user = await conn.fetchrow("SELECT team_id FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+
+            # 🔥 ФИКС 7: Проверка, что игрок реально находится именно в этой команде
+            if not user or user["team_id"] != team_id or not team:
+                await callback.message.answer(
+                    "❌ Ошибка безопасности! Ты не состоишь в данной команде или она уже расформирована.")
                 return
 
             if team["captain_id"] == user_id:
                 # 👑 СЦЕНАРИЙ А: ВЫХОДИТ САМ КАПИТАН БАНДЫ!
+                # Ищем самого преданного ветерана (кто зарегистрирован в команде раньше всех)
                 next_captain = await conn.fetchrow(
                     "SELECT user_id, username FROM users WHERE team_id = $1 AND user_id != $2 ORDER BY user_id ASC LIMIT 1",
                     team_id, user_id
                 )
 
                 if next_captain:
+                    # Ветеран найден! Передаем ему корону и списываем одного человека
                     await conn.execute(
                         "UPDATE teams SET captain_id = $1, members_count = members_count - 1 WHERE team_id = $2",
                         next_captain["user_id"], team_id)
@@ -354,6 +394,7 @@ async def process_clan_leave_logic(callback: types.CallbackQuery):
                     )
                     await callback.message.answer(announce_text, parse_mode="HTML")
                 else:
+                    # Капитан был один на лодке — наглухо аннулируем команду, чтоб не спамить базу Railway
                     await conn.execute("DELETE FROM teams WHERE team_id = $1", team_id)
                     await conn.execute("UPDATE users SET team_id = NULL WHERE user_id = $1", user_id)
                     await callback.message.answer(
@@ -367,6 +408,7 @@ async def process_clan_leave_logic(callback: types.CallbackQuery):
                     f"🚪 Ты успешно покинул команду <b>{team['team_name']}</b>. Теперь ты вольная птица!",
                     parse_mode="HTML")
 
+            # Наводим идеальный порядок в чате: удаляем старый дашборд с кнопками
             try:
                 await callback.message.delete()
             except Exception:
