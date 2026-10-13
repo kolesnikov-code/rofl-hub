@@ -97,3 +97,28 @@ def test_build_me_payload_shape():
     assert farm["boosts"]["nuclear_until"] and farm["boosts"]["drone_until"] is None
     assert farm["nearest_burnout"].startswith("2026-11-11")
     assert payload["team"] is None
+
+
+# ---------------------------------------------------------------- /api/shop payload
+def test_build_shop_payload_mirrors_catalog():
+    pytest.importorskip("aiohttp")
+    import os
+    os.environ.setdefault("MAIN_BOT_TOKEN", "123456:TEST")
+    from bots.main_bot.catalog import CATALOG
+    from bots.main_bot.webapp import build_shop_payload
+
+    ru = build_shop_payload("ru")
+    en = build_shop_payload("en")
+
+    # Все 18 товаров на витрине, ни один не потерян
+    assert len(ru["farm"]) + len(ru["games"]) == len(CATALOG) == 18
+    skus = {i["sku"] for i in ru["farm"] + ru["games"]}
+    assert skus == set(CATALOG)
+
+    # Подписи локализованы и содержат цену в звёздах
+    first_ru, first_en = ru["farm"][0], en["farm"][0]
+    assert first_ru["sku"] == first_en["sku"]
+    assert first_ru["label"] != first_en["label"]
+    for item in ru["farm"] + ru["games"] + en["farm"] + en["games"]:
+        assert str(item["stars"]) in item["label"]
+        assert "★" in item["label"]

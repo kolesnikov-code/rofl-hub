@@ -107,9 +107,9 @@ async def main() -> None:
     # Жнец дуэлей: доигрывает зависшие раунды и возвращает ставки протухших очередей
     asyncio.create_task(duel_reaper_loop(bot))
 
-    # Mini App: веб-сервер (статика + API) и кнопка меню чата
+    # Mini App: веб-сервер (статика + API + Stars-инвойсы) и кнопка меню чата
     try:
-        await start_webapp_server(BOT_TOKEN, WEBAPP_PORT)
+        await start_webapp_server(BOT_TOKEN, WEBAPP_PORT, bot=bot)
     except OSError as e:
         logger.warning("Mini App сервер не стартовал (порт %s занят?): %s — бот работает дальше.",
                        WEBAPP_PORT, e)

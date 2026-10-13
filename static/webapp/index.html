@@ -63,6 +63,23 @@
     box-shadow: 0 0 18px rgba(0, 255, 225, .35);
   }
   .btn:disabled { background: #2a3354; color: var(--muted); box-shadow: none; }
+  .cta {
+    border-radius: 12px; padding: 10px 12px; margin-top: 10px; font-size: 13px;
+    font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  }
+  .cta.red { background: rgba(255,85,85,.12); border: 1px solid rgba(255,85,85,.55); color: #ff8e8e; }
+  .cta.yellow { background: rgba(255,217,61,.1); border: 1px solid rgba(255,217,61,.45); color: var(--accent); }
+  .cta button {
+    padding: 8px 12px; border: none; border-radius: 10px; background: var(--neon);
+    color: #04121c; font-weight: 800; cursor: pointer; white-space: nowrap; font-size: 13px;
+  }
+  .shop-sub { color: var(--accent); font-size: 13px; font-weight: 800; letter-spacing: 1.5px; margin-top: 12px; }
+  .shop-item {
+    width: 100%; margin-top: 8px; padding: 12px; border-radius: 12px; cursor: pointer;
+    border: 1px solid rgba(0,255,225,.28); background: #0d1326; color: var(--text);
+    font-size: 14px; font-weight: 700; text-align: center;
+  }
+  .shop-item:disabled { opacity: .45; cursor: wait; }
   .status-ok { color: var(--ok); } .status-bad { color: var(--bad); }
   .top-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; border-bottom: 1px dashed rgba(138,147,184,.18); }
   .top-row:last-child { border-bottom: none; }
@@ -101,6 +118,15 @@
       team: "🏆 МОЯ КОМАНДА", clan: "КЛАН", teamLabel: "Команда", captain: "👑 Ты капитан!",
       members: "Состав", noTeam: "Ты пока без команды — собери свою банду в чате бота!",
       top: "👑 ТОП-100 БОГАЧЕЙ ЭКОСИСТЕМЫ",
+      shop: "🏪 МАГАЗИН", shopFarm: "🚜 ДЛЯ ФЕРМЫ", shopGames: "🕹️ ИГРОВЫЕ",
+      shopHint: "Оплата официальными Telegram Stars — прямо здесь, в один тап.",
+      paid: "🎉 Оплачено! Товар уже на твоём аккаунте.",
+      payFail: "Платёж не прошёл. Попробуй ещё раз.",
+      oldClient: "Обнови Telegram, чтобы покупать из Mini App, или открой магазин в чате бота.",
+      ctaNoRobots: "💤 Ферма пуста! Заведи первого робота — монеты будут капать круглосуточно.",
+      ctaHungry: "🚨 Бурильщики голодают ({n} без топлива) — добыча стоит!",
+      ctaLowFuel: "⚠️ Котлет меньше, чем на сутки работы Бурильщиков.",
+      ctaShopBtn: "🛒 В магазин",
       footer: "Полное управление — в чате бота: /menu",
       noProfile: "Профиль не найден. Открой бота и нажми /start!",
       blocked: "Аккаунт заблокирован администрацией.",
@@ -120,6 +146,15 @@
       team: "🏆 MY TEAM", clan: "CLAN", teamLabel: "Team", captain: "👑 You are the captain!",
       members: "Roster", noTeam: "No team yet — build your crew in the bot chat!",
       top: "👑 TOP-100 RICHEST PLAYERS",
+      shop: "🏪 SHOP", shopFarm: "🚜 FOR THE FARM", shopGames: "🕹️ GAMING",
+      shopHint: "Pay with official Telegram Stars — right here, in one tap.",
+      paid: "🎉 Paid! The item is already on your account.",
+      payFail: "The payment didn't go through. Try again.",
+      oldClient: "Update Telegram to buy from the Mini App, or open the shop in the bot chat.",
+      ctaNoRobots: "💤 Your farm is empty! Get your first robot — coins will flow 24/7.",
+      ctaHungry: "🚨 Drillers are starving ({n} without fuel) — mining has stopped!",
+      ctaLowFuel: "⚠️ Fewer cutlets than a day of Driller work.",
+      ctaShopBtn: "🛒 To the shop",
       footer: "Full control — in the bot chat: /menu",
       noProfile: "Profile not found. Open the bot and press /start!",
       blocked: "Account blocked by administration.",
@@ -143,7 +178,7 @@
     return '<div class="card"><h2>' + title + '</h2>' + inner + '</div>';
   }
 
-  function render(me, top) {
+  function render(me, top, shop) {
     L = I18N[me.lang] || I18N.ru;
     document.getElementById("subtitle").textContent = L.subtitle;
     document.getElementById("footer").textContent = L.footer;
@@ -177,6 +212,7 @@
       '<div class="row"><span class="k">' + L.inv + '</span><span class="v">' + f.inv_cutlets + '</span></div>' +
       '<div class="row"><span class="k">' + L.burnout + '</span><span class="v">🔥 ' + burnout + '</span></div>' +
       '<div class="row"><span class="k">' + L.boosts + '</span><span class="v">' + (boosts.join(" ") || L.none) + '</span></div>' +
+      buildCta(f) +
       '<button class="btn" id="bonusBtn"></button>';
 
     let teamHtml;
@@ -198,10 +234,64 @@
       '<span class="bal">' + p.balance.toLocaleString("ru-RU") + '</span></div>'
     ).join("") || '<div class="hint">—</div>';
 
+    const shopHtml =
+      '<div class="hint">' + L.shopHint + '</div>' +
+      '<div class="shop-sub">' + L.shopFarm + '</div>' + shop.farm.map(shopBtn).join("") +
+      '<div class="shop-sub">' + L.shopGames + '</div>' + shop.games.map(shopBtn).join("");
+
     document.getElementById("app").innerHTML =
-      card(L.passport, passport) + card(L.farm, farm) + card(L.team, teamHtml) + card(L.top, topHtml);
+      card(L.passport, passport) + card(L.farm, farm) +
+      '<div class="card" id="shop"><h2>' + L.shop + '</h2>' + shopHtml + '</div>' +
+      card(L.team, teamHtml) + card(L.top, topHtml);
 
     setupBonusButton(f.bonus_seconds_left);
+    document.querySelectorAll(".shop-item").forEach(btn => {
+      btn.onclick = () => buy(btn.dataset.sku, btn);
+    });
+    document.querySelectorAll(".goShop").forEach(btn => {
+      btn.onclick = () => document.getElementById("shop").scrollIntoView({ behavior: "smooth" });
+    });
+  }
+
+  function shopBtn(item) {
+    return '<button class="shop-item" data-sku="' + esc(item.sku) + '">' + esc(item.label) + '</button>';
+  }
+
+  // CTA-триггеры: покупка предлагается в момент «боли», а не просто так
+  function buildCta(f) {
+    const box = (kind, text) =>
+      '<div class="cta ' + kind + '"><span>' + text + '</span><button class="goShop">' + L.ctaShopBtn + '</button></div>';
+    if (f.junior + f.premium === 0) return box("red", L.ctaNoRobots);
+    if (f.premium > 0 && f.premium_fueled < f.premium && f.fridge === 0 && f.inv_cutlets === 0)
+      return box("red", fmt(L.ctaHungry, { n: f.premium - f.premium_fueled }));
+    if (f.premium > 0 && f.fridge + f.inv_cutlets < f.premium) return box("yellow", L.ctaLowFuel);
+    return "";
+  }
+
+  // Покупка из Mini App: сервер создаёт Stars-инвойс, Telegram открывает оплату нативно
+  async function buy(sku, btn) {
+    if (!tg || !tg.openInvoice) {
+      if (tg && tg.showAlert) tg.showAlert(L.oldClient); else alert(L.oldClient);
+      return;
+    }
+    btn.disabled = true;
+    try {
+      const res = await api("/api/invoice", { method: "POST", body: JSON.stringify({ sku: sku }) });
+      tg.openInvoice(res.link, function (status) {
+        btn.disabled = false;
+        if (status === "paid") {
+          if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+          if (tg.showAlert) tg.showAlert(L.paid);
+          setTimeout(load, 1500);
+        } else if (status === "failed") {
+          if (tg.showAlert) tg.showAlert(L.payFail);
+        }
+      });
+    } catch (e) {
+      btn.disabled = false;
+      const msg = (e.body && e.body.error && e.status === 400) ? e.body.error : L.payFail;
+      if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg);
+    }
   }
 
   function setupBonusButton(secondsLeft) {
@@ -233,8 +323,8 @@
 
   async function load() {
     try {
-      const [me, top] = await Promise.all([api("/api/me"), api("/api/top")]);
-      render(me, top);
+      const [me, top, shop] = await Promise.all([api("/api/me"), api("/api/top"), api("/api/shop")]);
+      render(me, top, shop);
     } catch (e) {
       const lang = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user &&
                     tg.initDataUnsafe.user.language_code === "ru") ? "ru" : "ru";

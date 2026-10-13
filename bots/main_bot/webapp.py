@@ -14,6 +14,7 @@ from pathlib import Path
 
 from aiohttp import web
 
+from bots.main_bot.catalog import CATALOG, CatalogError, SHOP_LAYOUT, build_order, item_button, item_title
 from shared.database import db
 from shared.economy import (
     daily_bonus_seconds_left,
@@ -24,7 +25,7 @@ from shared.economy import (
     utcnow,
 )
 from shared.farm_logic import apply_lazy_farm, farm_counts
-from shared.locales import resolve_lang
+from shared.locales import resolve_lang, t
 from shared.webapp_auth import validate_init_data
 
 logger = logging.getLogger(__name__)
@@ -163,6 +164,80 @@ async def handle_bonus(request: web.Request) -> web.Response:
     return web.json_response({"ok": True, "seconds_left": 0})
 
 
+def build_shop_payload(lang: str) -> dict:
+    """Витрина магазина для Mini App: порядок и состав — строго как в чат-боте."""
+    def items_of(category: str) -> list[dict]:
+        result = []
+        for row in SHOP_LAYOUT[category]:
+            for sku in row:
+                item = CATALOG[sku]
+                result.append({"sku": sku, "label": item_button(item, lang), "stars": item["stars"]})
+        return result
+
+    return {"farm": items_of("farm"), "games": items_of("games")}
+
+
+async def handle_shop(request: web.Request) -> web.Response:
+    """Каталог магазина на языке игрока."""
+    user_id = await _auth_user_id(request)
+    if user_id is None:
+        return _unauthorized()
+    async with db.pool.acquire() as conn:
+        lang = await conn.fetchval("SELECT lang FROM users WHERE user_id = $1", user_id)
+    return web.json_response(build_shop_payload(resolve_lang(lang)))
+
+
+async def handle_invoice(request: web.Request) -> web.Response:
+    """
+    Создаёт Stars-инвойс для покупки из Mini App (createInvoiceLink).
+    Оплата и доставка идут через обычный платёжный контур бота:
+    pre_checkout перепроверит заказ, successful_payment доставит товар.
+    """
+    user_id = await _auth_user_id(request)
+    if user_id is None:
+        return _unauthorized()
+    bot = request.app.get("bot")
+    if bot is None:
+        return web.json_response({"error": "payments_unavailable"}, status=503)
+
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "bad_request"}, status=400)
+    sku = str(data.get("sku", ""))[:64]
+
+    async with db.pool.acquire() as conn:
+        user = await conn.fetchrow(
+            "SELECT fridge_capacity, lang, is_blocked FROM users WHERE user_id = $1", user_id)
+    if not user:
+        return web.json_response({"error": "no_profile"}, status=404)
+    if user["is_blocked"]:
+        return web.json_response({"error": "blocked"}, status=403)
+    lang = resolve_lang(user["lang"])
+
+    try:
+        order = build_order(sku, current_capacity=user["fridge_capacity"])
+    except CatalogError as e:
+        return web.json_response({"error": str(e)}, status=400)
+
+    from aiogram.types import LabeledPrice
+    title = item_title(order, lang)
+    try:
+        link = await bot.create_invoice_link(
+            title=title,
+            description=t(lang, "pay.invoice_desc"),
+            payload=f"{order['sku']}:{order['stars']}",
+            provider_token="",
+            currency="XTR",
+            prices=[LabeledPrice(label=title, amount=order["stars"])],
+        )
+    except Exception:
+        logger.exception("[WEBAPP_INVOICE] не удалось создать инвойс user=%s sku=%s", user_id, sku)
+        return web.json_response({"error": "invoice_failed"}, status=502)
+    logger.info("[WEBAPP_INVOICE] user=%s sku=%s stars=%s", user_id, order["sku"], order["stars"])
+    return web.json_response({"link": link})
+
+
 async def handle_top(request: web.Request) -> web.Response:
     """Топ-100 игроков по балансу (витрина богатства и интеллекта)."""
     if await _auth_user_id(request) is None:
@@ -188,21 +263,24 @@ async def handle_top(request: web.Request) -> web.Response:
     return web.json_response({"top": top})
 
 
-def create_webapp(bot_token: str) -> web.Application:
+def create_webapp(bot_token: str, bot=None) -> web.Application:
     app = web.Application()
     app["bot_token"] = bot_token
+    app["bot"] = bot  # aiogram Bot для createInvoiceLink (None — покупки из Mini App выключены)
     app.router.add_get("/", handle_index)
     app.router.add_get("/faq", handle_faq)
     app.router.add_get("/rules", handle_rules)
     app.router.add_get("/api/me", handle_me)
     app.router.add_post("/api/bonus", handle_bonus)
     app.router.add_get("/api/top", handle_top)
+    app.router.add_get("/api/shop", handle_shop)
+    app.router.add_post("/api/invoice", handle_invoice)
     app.router.add_get("/health", lambda r: web.json_response({"ok": True}))
     return app
 
 
-async def start_webapp_server(bot_token: str, port: int) -> web.AppRunner:
-    runner = web.AppRunner(create_webapp(bot_token))
+async def start_webapp_server(bot_token: str, port: int, bot=None) -> web.AppRunner:
+    runner = web.AppRunner(create_webapp(bot_token, bot))
     await runner.setup()
     site = web.TCPSite(runner, host="0.0.0.0", port=port)
     await site.start()
