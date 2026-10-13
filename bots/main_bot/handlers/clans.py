@@ -85,10 +85,10 @@ async def cmd_clan_hub(message: types.Message | types.CallbackQuery, user_lang: 
         f"👇 <b>ВЫБЕРИ ДЕЙСТВИЕ:</b>"
     )
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🏆 Создать Команду", callback_data="clan_action:start_create")],
-        [types.InlineKeyboardButton(text="🔍 Найти Команду по названию", callback_data="clan_action:search_name")],
-        [types.InlineKeyboardButton(text="📍 Игровая Рулетка команд СНГ", callback_data="clan_action:search_city")],
-        [types.InlineKeyboardButton(text="💿 Главное Меню", callback_data="refresh_main_menu")]
+        [types.InlineKeyboardButton(text="🏆 Создать команду", callback_data="clan_action:start_create")],
+        [types.InlineKeyboardButton(text="🔍 Найти команду / клан", callback_data="clan_action:search_name")],
+        [types.InlineKeyboardButton(text="📍 Игровая рулетка команд", callback_data="clan_action:search_city")],
+        [types.InlineKeyboardButton(text="💿 Главное меню", callback_data="refresh_main_menu")]
     ])
     await target_msg.answer(welcome_text, reply_markup=keyboard, parse_mode="HTML")
 
@@ -242,7 +242,7 @@ async def show_team_members_page(callback: types.CallbackQuery, user_lang: str =
 
 
 # ============================================================================
-# 🔍 3. ПРЯМОЙ ВЫЗОВ ПОИСКА И ИГРОВОЙ РУЛЕТКИ КОМАНД СНГ: /all_teams
+# 🔍 3. ПРЯМОЙ ВЫЗОВ ПОИСКА И ИГРОВОЙ РУЛЕТКИ КОМАНД: /all_teams
 # ============================================================================
 @router.message(Command("all_teams"))
 async def cmd_all_teams_isolated(message: types.Message):
@@ -257,7 +257,7 @@ async def cmd_all_teams_isolated(message: types.Message):
         await message.answer("⚠️ В базе данных пока нет свободных команд для вступления.")
         return
 
-    await message.answer("📍 <b>АКТУАЛЬНЫЕ КОМАНДЫ В СНГ:</b>", parse_mode="HTML")
+    await message.answer("📍 <b>АКТУАЛЬНЫЕ КОМАНДЫ ЭКОСИСТЕМЫ:</b>", parse_mode="HTML")
 
     for team in rows:
         status_clan = "Мега-Клан" if team["max_members"] >= 1000 else "Команда"
@@ -507,7 +507,7 @@ async def process_clan_leave_logic(callback: types.CallbackQuery, user_lang: str
                         f"Капитан бросил команду <b>{team['team_name']}</b> и ушёл в закат.\n\n"
                         f"👑 По праву преданности и старшинства, новым <b>Вожаком банды</b> официально объявлен ветеран: "
                         f"@{html.escape(next_captain['username'] or str(next_captain['user_id']))} (ID: <code>{next_captain['user_id']}</code>)!\n\n"
-                        f"<i>Власть сменилась. Команда продолжает битву за ТОП СНГ!</i>"
+                        f"<i>Власть сменилась. Команда продолжает битву за мировой ТОП!</i>"
                     )
                     await callback.message.answer(announce_text, parse_mode="HTML")
                 else:

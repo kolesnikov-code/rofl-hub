@@ -47,7 +47,7 @@ def test_resolve_supported_lang_returns_itself(lang):
 
 
 def test_resolve_unknown_and_none():
-    assert resolve_lang(None) == "ru"      # аудитория СНГ по умолчанию
+    assert resolve_lang(None) == "ru"      # язык по умолчанию
     assert resolve_lang("xx") == "en"      # незнакомый код → английский
     assert resolve_lang("uk") == "en"
 
