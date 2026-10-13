@@ -323,6 +323,16 @@ SCHEMA_STATEMENTS: list[str] = [
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     """,
+    # Квесты №4–10 приезжают СКРЫТЫМИ (запас под ротацию); владелец включает их
+    # в /quests_admin. ON CONFLICT DO NOTHING: повторный деплой не перетирает решение.
+    """
+    INSERT INTO feature_flags (key, enabled) VALUES
+        ('quest:night_drone', FALSE), ('quest:cutlet_exchange', FALSE),
+        ('quest:robot_chef', FALSE), ('quest:ice_expedition', FALSE),
+        ('quest:space_signal', FALSE), ('quest:blackout', FALSE),
+        ('quest:metro_veteran', FALSE)
+    ON CONFLICT (key) DO NOTHING;
+    """,
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS source VARCHAR(32) NOT NULL DEFAULT 'organic';",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS qualified_at TIMESTAMP WITH TIME ZONE;",
     "CREATE INDEX IF NOT EXISTS users_created_idx ON users (created_at);",

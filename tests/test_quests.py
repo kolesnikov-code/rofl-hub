@@ -24,9 +24,14 @@ def _load():
 
 
 # ---------------------------------------------------------------- боевые сценарии
-def test_three_flagship_quests_loaded_in_order():
+def test_all_ten_quests_loaded_in_order():
+    """3 флагмана + 7 «в запас» под ротацию (/quests_admin). Порядок — поле order."""
     quests = all_quests()
-    assert [q["id"] for q in quests] == ["golden_cutlet", "miner_career", "locked_safe"]
+    assert [q["id"] for q in quests] == [
+        "golden_cutlet", "miner_career", "locked_safe",
+        "night_drone", "cutlet_exchange", "robot_chef",
+        "ice_expedition", "space_signal", "blackout", "metro_veteran",
+    ]
 
 
 def test_every_quest_is_valid():
