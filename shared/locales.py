@@ -60,7 +60,7 @@ def btn_variants(key: str) -> set[str]:
 RU: dict[str, str] = {
     # ---------------- общее ----------------
     "common.no_profile": "⚠️ Профиль не найден. Нажми /start для регистрации.",
-    "common.btn_menu": "💿 Главное Меню",
+    "common.btn_menu": "💿 Главное меню",
     "common.blocked": "🚫 Твой аккаунт заблокирован администрацией ROFL HUB.",
 
     # ---------------- /start ----------------

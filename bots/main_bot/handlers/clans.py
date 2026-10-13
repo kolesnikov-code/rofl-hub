@@ -383,7 +383,7 @@ async def process_cancel_fsm_logic(callback: types.CallbackQuery, state: FSMCont
     except Exception:
         pass
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="💿 Открыть Главное Меню", callback_data="refresh_main_menu")]])
+        [types.InlineKeyboardButton(text="💿 Открыть главное меню", callback_data="refresh_main_menu")]])
     await callback.message.answer("❌ <b>Процедура создания отменена. Все временные данные удалены.</b>",
                                   reply_markup=kb, parse_mode="HTML")
 
