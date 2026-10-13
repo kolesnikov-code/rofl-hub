@@ -1,6 +1,16 @@
+"""
+/rules: ключевые пункты в чате + полное Пользовательское соглашение в Mini App.
+
+Полный документ — static/webapp/rules.html (та же схема, что /faq:
+простыни юридического текста в чат-боте нечитаемы).
+"""
 import logging
+
 from aiogram import Router, types, F
 from aiogram.filters import Command
+
+from bots.main_bot.config import WEBAPP_URL
+from shared.locales import t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -8,32 +18,15 @@ logger = logging.getLogger(__name__)
 
 @router.message(Command("rules"))
 @router.message(F.text == "📜 Пользовательское Соглашение")
-async def cmd_rules(message: types.Message):
-    """Выводит официальный юридический бронежилет экосистемы ROFL HUB"""
-    rules_text = (
-        "📜 <b>ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ ЭКОСИСТЕМЫ ROFL HUB</b>\n"
-        "..................................................\n\n"
-        "1. <b>ОБЩИЕ ПОЛОЖЕНИЯ:</b>\n"
-        "Игровая платформа ROFL HUB является развлекательным интерактивным симулятором. "
-        "Внутриигровая валюта (монеты) является виртуальным анимационным инвентарем, "
-        "не имеет материальной ценности и не подлежит обмену на реальные фиатные деньги или криптовалюту.\n\n"
-        "2. <b>ТОКЕНОМИКА TELEGRAM STARS:</b>\n"
-        "Все добровольные покупки внутриигровых ресурсов (Кибер-Бурильщики, котлеты) "
-        "совершаются пользователями через официальный платёжный инструмент Telegram Stars (XTR). "
-        "ВозвратStars за активированные и начисленные виртуальные предметы не предусмотрен.\n\n"
-        "3. <b>ЗАЩИТА ПЕРСОНАЛЬНЫХ ДАННЫХ:</b>\n"
-        "Платформа строго соблюдает международные стандарты анонимности. Мы НЕ запрашиваем, "
-        "НЕ собираем и НЕ храним ваши персональные данные (номера телефонов, геолокацию, "
-        "номера школ или учебных заведений). Все команды и девизы являются вымышленными.\n\n"
-        "4. <b>ПРАВИЛА ПОВЕДЕНИЯ:</b>\n"
-        "В экосистеме строго запрещен буллинг, оскорбления соперников в названиях банд, "
-        "а также использование нецензурных выражений. Модерация имеет право атомарно "
-        "аннулировать лицензию команды при нарушении правил.\n"
-        "..................................................\n"
-        "<i>⚖️ Нажимая кнопки меню и совершая заправку хаба, вы автоматически подтверждаете согласие с данными правилами.</i>"
-    )
-
-    kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="💿 Вернуться в Меню", callback_data="refresh_main_menu")]
-    ])
-    await message.answer(rules_text, reply_markup=kb, parse_mode="HTML")
+async def cmd_rules(message: types.Message, user_lang: str = "ru"):
+    """Выжимка соглашения + кнопка полного документа."""
+    rows = []
+    if WEBAPP_URL:
+        rows.append([types.InlineKeyboardButton(
+            text=t(user_lang, "rules.btn_open"),
+            web_app=types.WebAppInfo(url=f"{WEBAPP_URL}/rules"))])
+    rows.append([types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
+                                            callback_data="refresh_main_menu")])
+    await message.answer(t(user_lang, "rules.teaser"),
+                         reply_markup=types.InlineKeyboardMarkup(inline_keyboard=rows),
+                         parse_mode="HTML")

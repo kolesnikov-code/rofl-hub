@@ -199,6 +199,21 @@ RU: dict[str, str] = {
         "👇 <b>Полный справочник со всеми механиками — по кнопке:</b>"
     ),
     "faq.btn_open": "📖 ОТКРЫТЬ ПОЛНЫЙ СПРАВОЧНИК",
+    "rules.teaser": (
+        "📜 <b>ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ ROFL HUB</b>\n"
+        "..................................................\n\n"
+        "Главное в двух словах:\n"
+        "🪙 Монеты и все игровые предметы — виртуальные развлекательные элементы: "
+        "они не являются деньгами и не обмениваются на реальные средства.\n"
+        "💫 Покупки — только через официальные Telegram Stars; цифровые товары доставляются "
+        "мгновенно, при сбое доставки Stars возвращаются автоматически.\n"
+        "🛡️ Мы не собираем телефоны, геолокацию и персональные данные.\n"
+        "🤝 Запрещены оскорбления, накрутки и мультиаккаунты — за нарушение возможна блокировка.\n\n"
+        "..................................................\n"
+        "👇 <b>Полный текст соглашения и отказ от ответственности — по кнопке:</b>\n"
+        "<i>⚖️ Используя бота, ты подтверждаешь согласие с условиями.</i>"
+    ),
+    "rules.btn_open": "📜 ОТКРЫТЬ ПОЛНОЕ СОГЛАШЕНИЕ",
 
     # ---------------- ферма ----------------
     "farm.btn_bonus": "🎁 ЗАБРАТЬ БОНУС (котлета раз в 24 ч)",
@@ -744,6 +759,21 @@ EN: dict[str, str] = {
         "👇 <b>The full guide with every mechanic — one tap away:</b>"
     ),
     "faq.btn_open": "📖 OPEN THE FULL GUIDE",
+    "rules.teaser": (
+        "📜 <b>ROFL HUB USER AGREEMENT</b>\n"
+        "..................................................\n\n"
+        "The essentials:\n"
+        "🪙 Coins and all in-game items are virtual entertainment elements: "
+        "they are not money and cannot be exchanged for real funds.\n"
+        "💫 Purchases go only through official Telegram Stars; digital items are delivered "
+        "instantly, and Stars are refunded automatically if delivery fails.\n"
+        "🛡️ We do not collect phone numbers, location or personal data.\n"
+        "🤝 Insults, boosting schemes and multi-accounts are forbidden — violations may lead to a ban.\n\n"
+        "..................................................\n"
+        "👇 <b>The full agreement and disclaimer — one tap away:</b>\n"
+        "<i>⚖️ By using the bot you confirm your acceptance of the terms.</i>"
+    ),
+    "rules.btn_open": "📜 OPEN THE FULL AGREEMENT",
 
     # ---------------- farm ----------------
     "farm.btn_bonus": "🎁 CLAIM BONUS (a cutlet every 24h)",

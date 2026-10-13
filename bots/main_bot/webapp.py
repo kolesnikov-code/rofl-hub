@@ -106,6 +106,11 @@ async def handle_faq(request: web.Request) -> web.Response:
     return web.FileResponse(WEBAPP_DIR / "faq.html")
 
 
+async def handle_rules(request: web.Request) -> web.Response:
+    """Пользовательское соглашение — публичная страница без авторизации."""
+    return web.FileResponse(WEBAPP_DIR / "rules.html")
+
+
 async def handle_me(request: web.Request) -> web.Response:
     user_id = await _auth_user_id(request)
     if user_id is None:
@@ -188,6 +193,7 @@ def create_webapp(bot_token: str) -> web.Application:
     app["bot_token"] = bot_token
     app.router.add_get("/", handle_index)
     app.router.add_get("/faq", handle_faq)
+    app.router.add_get("/rules", handle_rules)
     app.router.add_get("/api/me", handle_me)
     app.router.add_post("/api/bonus", handle_bonus)
     app.router.add_get("/api/top", handle_top)
