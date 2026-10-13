@@ -4,9 +4,10 @@
 Единый движок execute_solo_game_payout(): лимиты побед по UTC-дате, учёт купленного
 безлимита (users.unlimit_until), все движения монет — через ledger.
 
-Викторина: таймер 10 секунд (вотчдог-задача; не успел — проигрыш) и прогрессивные
-уровни — уровень N закрывается за N×10 верных ответов и даёт N×100 монет.
-Все тексты — через shared/locales (ru/en).
+Викторина: таймер QUIZ_ANSWER_SECONDS (вотчдог-задача; не успел(а) — проигрыш)
+и прогрессивные уровни — уровень N закрывается за N×10 верных ответов и даёт N×100 монет.
+Вопрос — лаконичный (дизайн владельца), техника и правила — в итоге раунда.
+Все тексты — через shared/locales (14 языков).
 """
 from __future__ import annotations
 
@@ -190,10 +191,6 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
                     status += "\n\n" + t(lang, "games.level_up", level=next_level, bonus=bonus,
                                          next_required=quiz_answers_required(next_level + 1),
                                          next_reward=quiz_level_reward(next_level + 1))
-                else:
-                    status += "\n" + t(lang, "games.level_progress", level=next_level,
-                                       left=required - row["quiz_level_progress"],
-                                       reward=quiz_level_reward(next_level))
 
             return True, status, new_balance
 
@@ -288,10 +285,13 @@ async def process_high_low_choice(callback: types.CallbackQuery, user_lang: str 
 
 
 # ============================================================================
-# Игра 3: Викторина — таймер 10 секунд и прогрессивные уровни
+# Игра 3: Викторина — таймер QUIZ_ANSWER_SECONDS и прогрессивные уровни
 # ============================================================================
-def _quiz_round(question: dict, level: int, progress: int,
-                lang: str) -> tuple[str, types.InlineKeyboardMarkup, int]:
+# Разделитель блоков в итоге раунда — дизайн владельца (13.10)
+QUIZ_DOTS = "." * 40
+
+
+def _quiz_round(question: dict, lang: str) -> tuple[str, types.InlineKeyboardMarkup, int]:
     """Возвращает текст, клавиатуру и индекс правильного ответа в перемешанном порядке."""
     options = list(question["options"])
     random.shuffle(options)
@@ -300,19 +300,41 @@ def _quiz_round(question: dict, level: int, progress: int,
         [types.InlineKeyboardButton(text=opt, callback_data=f"quiz_check:{question['id']}:{i}")]
         for i, opt in enumerate(options)
     ])
-    next_level = level + 1
     text = t(lang, "quiz.round",
-             category=question["category"], level=level, next_level=next_level,
-             progress=progress, required=quiz_answers_required(next_level),
-             reward=quiz_level_reward(next_level), question=question["q"],
-             seconds=QUIZ_ANSWER_SECONDS, win=WIN_REWARD, penalty=LOSE_PENALTY,
-             limit=limit_for("quiz"))
+             category=str(question["category"]).upper(), question=question["q"])
     return text, kb, correct_idx
 
 
+async def _quiz_result_tail(user_id: int, lang: str, balance: int,
+                            lost_line: bool = False) -> str:
+    """
+    Хвост итога раунда по дизайну владельца: [списание] / баланс / уровень / правила,
+    блоки разделены строкой точек. Уровень читается из БД после начисления.
+    """
+    async with db.pool.acquire() as conn:
+        row = await conn.fetchrow(
+            "SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = $1", user_id)
+    level = row["quiz_level"] if row else 0
+    progress = row["quiz_level_progress"] if row else 0
+    next_level = level + 1
+    left = max(quiz_answers_required(next_level) - progress, 0)
+
+    money_block = t(lang, "games.balance", balance=balance)
+    if lost_line:
+        money_block = t(lang, "quiz.lost_line", penalty=LOSE_PENALTY) + "\n" + money_block
+    return (
+        f"{QUIZ_DOTS}\n{money_block}\n"
+        f"{QUIZ_DOTS}\n"
+        + t(lang, "quiz.level_line", level=level, next_level=next_level, left=left) + "\n"
+        f"{QUIZ_DOTS}\n"
+        + t(lang, "quiz.rules", seconds=QUIZ_ANSWER_SECONDS, win=WIN_REWARD,
+            penalty=LOSE_PENALTY, limit=limit_for("quiz"))
+    )
+
+
 async def _quiz_timeout_watchdog(message: types.Message, state: FSMContext, token: int,
-                                 user_id: int, lang: str) -> None:
-    """Через 10 секунд закрывает неотвеченный вопрос как проигрыш."""
+                                 user_id: int, lang: str, correct_answer: str) -> None:
+    """По истечении таймера закрывает неотвеченный вопрос как проигрыш."""
     await asyncio.sleep(QUIZ_ANSWER_SECONDS)
     try:
         if await state.get_state() != SoloGameStates.waiting_for_quiz.state:
@@ -322,9 +344,11 @@ async def _quiz_timeout_watchdog(message: types.Message, state: FSMContext, toke
             return  # уже другой вопрос
         await state.clear()
         ok, text, balance = await execute_solo_game_payout(user_id, False, "quiz", lang=lang)
-        body = t(lang, "quiz.timeout", seconds=QUIZ_ANSWER_SECONDS) + f"\n\n{text}"
+        body = t(lang, "quiz.timeout", correct=correct_answer)
         if ok:
-            body += "\n" + t(lang, "games.balance", balance=balance)
+            body += "\n" + await _quiz_result_tail(user_id, lang, balance, lost_line=True)
+        else:
+            body += f"\n\n{text}"
         await _safe_edit(message, body, _retry_kb(lang, "quiz", t(lang, "quiz.btn_new")))
     except Exception:
         logger.exception("[QUIZ_TIMER] сбой вотчдога user=%s", user_id)
@@ -337,13 +361,7 @@ async def _start_quiz(target: types.Message, state: FSMContext, user_id: int, ed
         await target.answer(t(lang, "quiz.empty"))
         return
 
-    async with db.pool.acquire() as conn:
-        row = await conn.fetchrow(
-            "SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = $1", user_id)
-    level = row["quiz_level"] if row else 0
-    progress = row["quiz_level_progress"] if row else 0
-
-    text, kb, correct_idx = _quiz_round(question, level, progress, lang)
+    text, kb, correct_idx = _quiz_round(question, lang)
     token = random.getrandbits(62)
     await state.set_state(SoloGameStates.waiting_for_quiz)
     await state.update_data(quiz_qid=question["id"], quiz_correct=correct_idx, quiz_token=token)
@@ -351,7 +369,8 @@ async def _start_quiz(target: types.Message, state: FSMContext, user_id: int, ed
         sent = await _safe_edit(target, text, kb)
     else:
         sent = await target.answer(text, reply_markup=kb, parse_mode="HTML")
-    asyncio.create_task(_quiz_timeout_watchdog(sent or target, state, token, user_id, lang))
+    asyncio.create_task(_quiz_timeout_watchdog(sent or target, state, token, user_id, lang,
+                                               question["correct"]))
 
 
 @router.message(Command("quiz"))
@@ -383,13 +402,15 @@ async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext, 
         return
 
     question = get_question_by_id(qid)
-    verdict = t(user_lang, "quiz.correct") if is_win else \
-        t(user_lang, "quiz.wrong", correct=question["correct"] if question else "—")
-    await _safe_edit(
-        callback.message,
-        f"{t(user_lang, 'quiz.result_header')}\n\n{verdict}\n\n{text}\n"
-        + t(user_lang, "games.balance", balance=balance),
-        _retry_kb(user_lang, "quiz", t(user_lang, "quiz.btn_new")))
+    if is_win:
+        # text = games.win (+ games.level_up при повышении уровня)
+        head = text
+    else:
+        head = t(user_lang, "quiz.wrong", correct=question["correct"] if question else "—")
+    tail = await _quiz_result_tail(callback.from_user.id, user_lang, balance,
+                                   lost_line=not is_win)
+    await _safe_edit(callback.message, f"{head}\n{tail}",
+                     _retry_kb(user_lang, "quiz", t(user_lang, "quiz.btn_new")))
 
 
 @router.callback_query(F.data.startswith("quiz_check:"))

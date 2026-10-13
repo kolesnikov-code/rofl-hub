@@ -1,23 +1,32 @@
 """
-Локализация ROFL HUB: ru + en на старте (решение владельца 13.10.2026).
+Локализация ROFL HUB: 14 языков (решение владельца 13.10.2026).
 
-Правила:
-- t(lang, key, **kwargs) — единственная точка получения текста; ru — эталон,
-  отсутствующий en-ключ тихо падает обратно на ru (тест следит, чтобы такого не было);
-- resolve_lang(): 'ru' → ru, всё остальное (en/zh/hi/... и незнакомые коды) → en,
-  None (нет профиля и кода клиента) → ru — аудитория запуска СНГ;
-- reply-кнопки матчатся по тексту, поэтому у каждой кнопки есть btn_variants() —
-  обработчики ловят оба языка.
+Устройство:
+- ru и en живут в этом файле (ru — ЭТАЛОН ключей и содержания);
+- остальные 12 языков — паки shared/locale_packs/<код>.py (STRINGS, BUTTONS,
+  MINIAPP, COMMANDS), собираются внизу файла; битый пак не роняет бота —
+  язык просто выпадает в en-фолбэк с ошибкой в логе;
+- t(lang, key, **kwargs) — единственная точка получения текста; отсутствующий
+  ключ падает на RU (тесты следят за полным паритетом всех языков);
+- resolve_lang(): поддерживаемый код → он сам; None → ru (аудитория СНГ);
+  незнакомый код → en;
+- reply-кнопки матчатся по тексту: btn_variants() отдаёт варианты ВСЕХ языков.
 """
 from __future__ import annotations
 
-SUPPORTED_LANGS = ("ru", "en")
+import importlib
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Паки, подключаемые из shared/locale_packs (ru/en — в этом файле)
+PACK_CODES = ("uz", "es", "fr", "pt", "de", "it", "pl", "id", "zh", "hi", "bn", "ar")
 
 
 def resolve_lang(lang: str | None) -> str:
     if lang is None:
         return "ru"
-    return "ru" if lang == "ru" else "en"
+    return lang if lang in STRINGS else "en"
 
 
 # ==========================================================================
@@ -36,11 +45,12 @@ BUTTONS: dict[str, dict[str, str]] = {
 
 
 def btn(lang: str, key: str) -> str:
-    return BUTTONS[key][resolve_lang(lang)]
+    variants = BUTTONS[key]
+    return variants.get(resolve_lang(lang)) or variants["en"]
 
 
 def btn_variants(key: str) -> set[str]:
-    """Все языковые варианты кнопки — для F.text.in_(...) в обработчиках."""
+    """Варианты кнопки на ВСЕХ языках — для F.text.in_(...) в обработчиках."""
     return set(BUTTONS[key].values())
 
 
@@ -101,7 +111,7 @@ RU: dict[str, str] = {
         "- Получать бонус за ежедневный вход и задания\n"
         "- Завести робота для круглосуточной добычи монет (Младший Майнер / Кибер-Бурильщик)\n"
         "..................................................\n"
-        "<b>Если ты завёл робота второго уровня (Кибер-Бурильщик) — его нужно кормить каждый день. "
+        "<b>Если ты завёл(а) робота второго уровня (Кибер-Бурильщик) — его нужно кормить каждый день. "
         "Вот здесь и пригодится кибер-котлета — топливо для автоматической добычи, "
         "которое выдаётся бесплатно каждый день! Твоя задача простая — зайти и покормить робота.</b>\n\n"
         "Если не покормить вовремя — робот разряжается и добыча останавливается.\n\n"
@@ -142,7 +152,7 @@ RU: dict[str, str] = {
         "• /shop — Маркетплейс: закупка майнеров, котлет и улучшений хаба\n\n"
         "🕹️ <b>ИГРОВАЯ КОМНАТА:</b>\n"
         "• /games — Инлайн-хаб всех игр против бота\n"
-        "• /quiz — Викторина на скорость: 10 секунд на ответ, уровни и бонусы\n"
+        "• /quiz — Викторина на скорость: 15 секунд на ответ, уровни и бонусы\n"
         "• /duel — ДУЭЛИ 1-на-1 с живыми игроками: столы 10/100/1000\n"
         "• /quests — КВЕСТЫ: детективы, комедии и головоломки с наградами\n"
         "• /rps, /high_low, /coin, /dice, /safe — Быстрые игры на монеты\n\n"
@@ -166,10 +176,10 @@ RU: dict[str, str] = {
         "интеллектуальный спринт-тест, чтобы сорвать куш или слить баланс!\n\n"
         "💸 Победа приносит: <b>+2 монеты</b> (Кибер-Сейф: <b>+5</b>)\n"
         "💀 Проигрыш или ничья списывает: <b>-1 монета</b>\n"
-        "🧠 В Викторине — таймер 10 секунд и уровни интеллекта: 1-й уровень — 10 верных ответов и <b>+100 монет</b>, "
+        "🧠 В Викторине — таймер 15 секунд и уровни интеллекта: 1-й уровень — 10 верных ответов и <b>+100 монет</b>, "
         "дальше каждый уровень на 10 ответов длиннее, но и награда растёт на 100!\n\n"
         "..................................................\n"
-        "👇 <b>КЛИКАЙ ПО КНОПКЕ НИЖЕ ДЛЯ НЕМЕДЛЕННОГО СТАРТА РAУНДA:</b>"
+        "👇 <b>КЛИКАЙ ПО КНОПКЕ НИЖЕ ДЛЯ НЕМЕДЛЕННОГО СТАРТА РАУНДА:</b>"
     ),
     "menu.btn_quiz": "🧠 Викторина",
     "menu.btn_rps": "🪨 КНБ",
@@ -193,7 +203,7 @@ RU: dict[str, str] = {
         "🚜 Роботы добывают монеты круглосуточно: Младший Майнер — 5/ч без топлива, "
         "Кибер-Бурильщик — 10/ч, и КАЖДЫЙ Бурильщик ест свою 1 кибер-котлету в сутки. "
         "Все роботы живут 30 дней (Мастер-дрон замораживает износ).\n"
-        "🧠 Викторина: 10 секунд на ответ, уровни интеллекта с растущими наградами.\n"
+        "🧠 Викторина: 15 секунд на ответ, уровни интеллекта с растущими наградами.\n"
         "⚔️ Дуэли с живыми игроками на столах 10/100/1000 монет.\n"
         "🏆 Команды до 50 бойцов (Мега-Клан — до 1000) и событийные Битвы с призами каждому.\n\n"
         "..................................................\n"
@@ -322,12 +332,12 @@ RU: dict[str, str] = {
     "img.premium": "Кибер-Бурильщики: {count} шт.",
 
     # ---------------- игры: общий движок ----------------
-    "games.win": "🎉 ПОБЕДА! Начислено: <b>+{reward} монет.</b>",
-    "games.lose": "💀 ПРОИГРЫШ! Сбор раунда: <b>-{penalty} монета</b>.",
-    "games.draw": "🤝 НИЧЬЯ! Сбор раунда: <b>-{penalty} монета</b>.",
+    "games.win": "🎉 <b>ПОБЕДА!</b> 🎉\nНачислено монет: <b>+{reward}</b>",
+    "games.lose": "💀 <b>ПРОИГРЫШ!</b>\nСписано монет: <b>-{penalty}</b>",
+    "games.draw": "🤝 <b>НИЧЬЯ!</b>\nСписано монет: <b>-{penalty}</b>",
     "games.limit": (
         "🛑 <b>Суточный лимит достигнут!</b>\n\n"
-        "В игре {game} ты уже забрал {limit} побед на сегодня. Лимит обновится в 00:00 UTC.\n\n"
+        "В игре {game} ты уже забрал(а) {limit} побед на сегодня. Лимит обновится в 00:00 UTC.\n\n"
         "⚡ Снять лимит на 24 часа — 5 ★, на 30 дней — 99 ★ (раздел «Игровые» в /shop)."
     ),
     "games.no_coins": "❌ У тебя 0 монет — нечем оплатить сбор раунда. Забери доход с фермы в /farm!",
@@ -338,7 +348,6 @@ RU: dict[str, str] = {
         "🏅 <b>УРОВЕНЬ ИНТЕЛЛЕКТА ПОВЫШЕН: {level}!</b> Награда: <b>+{bonus} монет</b>!\n"
         "Следующий уровень: {next_required} верных ответов → +{next_reward} монет."
     ),
-    "games.level_progress": "📚 До уровня <b>{level}</b>: ещё <b>{left}</b> верных (награда +{reward} монет).",
     "games.name.rps": "Камень-Ножницы-Бумага",
     "games.name.hl": "Больше/Меньше",
     "games.name.quiz": "Викторина",
@@ -370,22 +379,28 @@ RU: dict[str, str] = {
     "hl.result": "🎲 <b>ИТОГ РАУНДА</b>\n\nЧисло бота: <b>{base}</b> · Скрытое: <b>{secret}</b>",
 
     # ---------------- викторина ----------------
+    # Дизайн владельца (13.10): вопрос — лаконично, вся техника и правила — в итоге раунда
     "quiz.round": (
-        "🧠 <b>ВИКТОРИНА · {category}</b>\n"
-        "🏅 Уровень интеллекта: <b>{level}</b> · До уровня {next_level}: "
-        "<b>{progress}/{required}</b> верных (+{reward} монет)\n\n"
-        "❓ {question}\n\n"
-        "⏱ <b>На ответ — {seconds} секунд!</b> Не успел — проигрыш.\n"
-        "<i>Верно: <b>+{win}</b> · Ошибка: <b>-{penalty}</b> · Лимит: <b>{limit}</b> побед</i>"
+        "🧠 <b>ВИКТОРИНА • {category}</b>\n"
+        "🤔 ВОПРОС: <b>{question}</b>"
     ),
     "quiz.btn_new": "🧠 Новый вопрос",
-    "quiz.timeout": "⏰ <b>ВРЕМЯ ВЫШЛО!</b> На ответ даётся {seconds} секунд.",
+    "quiz.timeout": "⌛ <b>ВРЕМЯ ВЫШЛО!</b> ⌛\nПравильный ответ: <b>{correct}</b>",
     "quiz.stale": "⏳ Этот вопрос уже не активен. Запусти новый!",
     "quiz.stale_alert": "Этот вопрос уже не активен. Запусти новый!",
     "quiz.empty": "⚠️ База вопросов пуста. Сообщи администратору.",
-    "quiz.result_header": "📊 <b>ИТОГ</b>",
-    "quiz.correct": "✅ <b>Верно!</b>",
-    "quiz.wrong": "❌ <b>Ошибка.</b> Правильный ответ: <code>{correct}</code>",
+    "quiz.wrong": "❌ <b>Ошибка</b> ❌\nПравильный ответ: <b>{correct}</b>",
+    "quiz.lost_line": "💀 <b>-{penalty} монета</b> за проигрыш!",
+    "quiz.level_line": (
+        "🧠 Уровень интеллекта: <b>{level}</b>\n"
+        "До {next_level} уровня осталось побед: <b>{left}</b>"
+    ),
+    "quiz.rules": (
+        "<i>На ответ {seconds} секунд!\n"
+        "Верно: +{win} монеты на баланс\n"
+        "Ошибка / не успел(а): списание -{penalty} монета\n"
+        "Лимит: {limit} побед в сутки</i>"
+    ),
 
     # ---------------- Орёл/Решка ----------------
     "coin.intro": (
@@ -416,7 +431,7 @@ RU: dict[str, str] = {
     ),
     "safe.btn_retry": "🔐 Взломать ещё раз!",
     "safe.win": "🔓 <b>Сейф вскрыт!</b> Код был: <b>{code}</b>.",
-    "safe.lose": "🚨 <b>Сработала сигнализация!</b> Ты набрал {guess}, а код был: <b>{code}</b>.",
+    "safe.lose": "🚨 <b>Сработала сигнализация!</b> Ты набрал(а) {guess}, а код был: <b>{code}</b>.",
 
     # ---------------- дуэли ----------------
     "duel.intro": (
@@ -441,7 +456,7 @@ RU: dict[str, str] = {
         "Ждём второго бойца... Как только он сядет — вам обоим придёт выбор жеста!\n"
         "<i>Очередь живёт {ttl} минут, потом ставка вернётся автоматически.</i>"
     ),
-    "duel.cancelled": "🚪 Ты покинул стол. Ставка <b>{stake} монет</b> вернулась на баланс.",
+    "duel.cancelled": "🚪 Ты покинул(а) стол. Ставка <b>{stake} монет</b> вернулась на баланс.",
     "duel.expired": "⌛ Соперник за столом {stake} так и не нашёлся. Ставка <b>{stake} монет</b> возвращена.",
     "duel.matched": (
         "⚔️ <b>СОПЕРНИК НАЙДЕН! Стол {stake} монет.</b>\n"
@@ -497,7 +512,7 @@ RU: dict[str, str] = {
 
     # ---------------- переводы ----------------
     "tr.help": (
-        "🔄 <b>ПЕРЕВОД РОФЛОВ ДРУГОМУ ИГРОКУ</b>\n"
+        "🔄 <b>ПЕРЕВОД МОНЕТ ДРУГОМУ ИГРОКУ</b>\n"
         "..................................................\n\n"
         "Формат команды:\n"
         "<code>/transfer ID сумма</code> — по ID Паспорта (виден в /profile)\n"
@@ -630,7 +645,7 @@ RU: dict[str, str] = {
     "clan.btn_prev": "⬅️ Назад",
     "clan.btn_next": "Вперёд ➡️",
     "clan.join_ok": (
-        "🎉 <b>ПОЗДРАВЛЯЕМ, ТЫ В ИГРЕ!</b>\n\nТы успешно вступил в команду <b>{name}</b>!\n"
+        "🎉 <b>ПОЗДРАВЛЯЕМ, ТЫ В ИГРЕ!</b>\n\nТы успешно вступил(а) в команду <b>{name}</b>!\n"
         "📍 Пиши команду /my_team, чтобы проверить состав!"
     ),
     "clan.leave_ok": "🚪 Ты успешно покинул команду <b>{name}</b>. Теперь ты вольная птица!",
@@ -731,7 +746,7 @@ EN: dict[str, str] = {
         "• /shop — Marketplace: miners, cutlets and hub upgrades\n\n"
         "🕹️ <b>GAME ROOM:</b>\n"
         "• /games — Inline hub of all games against the bot\n"
-        "• /quiz — Speed quiz: 10 seconds per answer, levels and bonuses\n"
+        "• /quiz — Speed quiz: 15 seconds per answer, levels and bonuses\n"
         "• /duel — 1-on-1 DUELS with real players: tables 10/100/1000\n"
         "• /quests — QUESTS: detectives, comedies and puzzles with rewards\n"
         "• /rps, /high_low, /coin, /dice, /safe — Quick games for coins\n\n"
@@ -755,7 +770,7 @@ EN: dict[str, str] = {
         "to win big — or lose it all!\n\n"
         "💸 A win pays: <b>+2 coins</b> (Cyber-Safe: <b>+5</b>)\n"
         "💀 A loss or draw costs: <b>-1 coin</b>\n"
-        "🧠 The Quiz has a 10-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 coins</b>, "
+        "🧠 The Quiz has a 15-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 coins</b>, "
         "each next level is 10 answers longer — but the reward grows by 100!\n\n"
         "..................................................\n"
         "👇 <b>TAP A BUTTON BELOW TO START A ROUND RIGHT NOW:</b>"
@@ -782,7 +797,7 @@ EN: dict[str, str] = {
         "🚜 Robots mine coins around the clock: Miner Bot — 5/h fuel-free, "
         "Cyber-Driller — 10/h, and EVERY Driller eats its own cyber-cutlet per day. "
         "All robots live 30 days (the Master Drone pauses wear).\n"
-        "🧠 Quiz: 10 seconds per answer, intellect levels with growing rewards.\n"
+        "🧠 Quiz: 15 seconds per answer, intellect levels with growing rewards.\n"
         "⚔️ Duels against real players at 10/100/1000 coin tables.\n"
         "🏆 Teams up to 50 fighters (Mega-Clan — up to 1000) and Battle events with prizes for everyone.\n\n"
         "..................................................\n"
@@ -912,9 +927,9 @@ EN: dict[str, str] = {
     "img.premium": "Cyber-Drillers: {count}",
 
     # ---------------- games engine ----------------
-    "games.win": "🎉 VICTORY! Awarded: <b>+{reward} coins.</b>",
-    "games.lose": "💀 DEFEAT! Round fee: <b>-{penalty} coin</b>.",
-    "games.draw": "🤝 DRAW! Round fee: <b>-{penalty} coin</b>.",
+    "games.win": "🎉 <b>VICTORY!</b> 🎉\nCoins earned: <b>+{reward}</b>",
+    "games.lose": "💀 <b>DEFEAT!</b>\nCoins deducted: <b>-{penalty}</b>",
+    "games.draw": "🤝 <b>DRAW!</b>\nCoins deducted: <b>-{penalty}</b>",
     "games.limit": (
         "🛑 <b>Daily limit reached!</b>\n\n"
         "You've already taken {limit} wins in {game} today. The limit resets at 00:00 UTC.\n\n"
@@ -928,7 +943,6 @@ EN: dict[str, str] = {
         "🏅 <b>INTELLECT LEVEL UP: {level}!</b> Reward: <b>+{bonus} coins</b>!\n"
         "Next level: {next_required} correct answers → +{next_reward} coins."
     ),
-    "games.level_progress": "📚 To level <b>{level}</b>: <b>{left}</b> more correct (reward +{reward} coins).",
     "games.name.rps": "Rock-Paper-Scissors",
     "games.name.hl": "High/Low",
     "games.name.quiz": "Quiz",
@@ -961,22 +975,27 @@ EN: dict[str, str] = {
 
     # ---------------- quiz ----------------
     "quiz.round": (
-        "🧠 <b>QUIZ · {category}</b>\n"
-        "🏅 Intellect level: <b>{level}</b> · To level {next_level}: "
-        "<b>{progress}/{required}</b> correct (+{reward} coins)\n\n"
-        "❓ {question}\n\n"
-        "⏱ <b>{seconds} seconds to answer!</b> Too slow — you lose.\n"
-        "<i>Correct: <b>+{win}</b> · Mistake: <b>-{penalty}</b> · Limit: <b>{limit}</b> wins</i>\n"
+        "🧠 <b>QUIZ • {category}</b>\n"
+        "🤔 QUESTION: <b>{question}</b>\n\n"
         "<i>🌐 Questions are in Russian for now — the English pack is coming soon!</i>"
     ),
     "quiz.btn_new": "🧠 New question",
-    "quiz.timeout": "⏰ <b>TIME'S UP!</b> You get {seconds} seconds to answer.",
+    "quiz.timeout": "⌛ <b>TIME'S UP!</b> ⌛\nCorrect answer: <b>{correct}</b>",
     "quiz.stale": "⏳ This question is no longer active. Start a new one!",
     "quiz.stale_alert": "This question is no longer active. Start a new one!",
     "quiz.empty": "⚠️ The question base is empty. Tell the administrator.",
-    "quiz.result_header": "📊 <b>RESULT</b>",
-    "quiz.correct": "✅ <b>Correct!</b>",
-    "quiz.wrong": "❌ <b>Wrong.</b> The correct answer: <code>{correct}</code>",
+    "quiz.wrong": "❌ <b>Wrong</b> ❌\nCorrect answer: <b>{correct}</b>",
+    "quiz.lost_line": "💀 <b>-{penalty} coin</b> for the loss!",
+    "quiz.level_line": (
+        "🧠 Intellect level: <b>{level}</b>\n"
+        "Wins left to level {next_level}: <b>{left}</b>"
+    ),
+    "quiz.rules": (
+        "<i>{seconds} seconds per answer!\n"
+        "Correct: +{win} coins to your balance\n"
+        "Wrong / out of time: -{penalty} coin\n"
+        "Limit: {limit} wins per day</i>"
+    ),
 
     # ---------------- Heads/Tails ----------------
     "coin.intro": (
@@ -1089,7 +1108,7 @@ EN: dict[str, str] = {
 
     # ---------------- transfers ----------------
     "tr.help": (
-        "🔄 <b>SEND ROFLS TO ANOTHER PLAYER</b>\n"
+        "🔄 <b>SEND COINS TO ANOTHER PLAYER</b>\n"
         "..................................................\n\n"
         "Command format:\n"
         "<code>/transfer ID amount</code> — by Passport ID (see /profile)\n"
@@ -1229,6 +1248,25 @@ EN: dict[str, str] = {
 }
 
 STRINGS: dict[str, dict[str, str]] = {"ru": RU, "en": EN}
+MINIAPP_PACKS: dict[str, dict] = {}   # Mini App словари паков (ru/en живут в index.html)
+COMMAND_PACKS: dict[str, dict] = {}   # описания команд синего меню по языкам
+
+for _code in PACK_CODES:
+    try:
+        _m = importlib.import_module(f"shared.locale_packs.{_code}")
+        _missing = set(RU) - set(_m.STRINGS)
+        if _missing:
+            raise ValueError(f"нет ключей: {sorted(_missing)[:5]}")
+        STRINGS[_code] = _m.STRINGS
+        for _key, _value in getattr(_m, "BUTTONS", {}).items():
+            if _key in BUTTONS and _value:
+                BUTTONS[_key][_code] = _value
+        MINIAPP_PACKS[_code] = dict(getattr(_m, "MINIAPP", {}))
+        COMMAND_PACKS[_code] = dict(getattr(_m, "COMMANDS", {}))
+    except Exception as _e:  # битый пак не должен ронять бота
+        logger.error("[LOCALES] пак %s не подключён (%s) — язык уйдёт в en-фолбэк", _code, _e)
+
+SUPPORTED_LANGS = tuple(STRINGS)
 
 
 def t(lang: str | None, key: str, **kwargs) -> str:

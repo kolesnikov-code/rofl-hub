@@ -95,11 +95,12 @@ CATALOG: dict[str, dict] = {
 
 
 def item_title(item: dict, lang: str = "ru") -> str:
-    return item["title_en"] if lang == "en" and item.get("title_en") else item["title"]
+    """Каталог локализован ru/en: все не-русские языки видят английскую витрину."""
+    return item["title_en"] if lang != "ru" and item.get("title_en") else item["title"]
 
 
 def item_button(item: dict, lang: str = "ru") -> str:
-    return item["button_en"] if lang == "en" and item.get("button_en") else item["button"]
+    return item["button_en"] if lang != "ru" and item.get("button_en") else item["button"]
 
 # Порядок кнопок на витрине. СТРОГО по одной кнопке в ряд (решение владельца 13.10:
 # две кнопки в ряду обрезают текст с ценой на телефонах — игроки боятся нажимать).

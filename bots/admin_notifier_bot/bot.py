@@ -863,7 +863,7 @@ async def admin_close_auction(message: types.Message, bot: Bot):
         # Игрок общается с ГЛАВНЫМ ботом: админ-бот не может писать ему первым (chat not found)
         await notify_user_via_main_bot(
                 winner_id,
-                f"🏆 <b>Ты победил в аукционе за лот «{auction['item_title']}»!</b>\n"
+                f"🏆 <b>Ты победил(а) в аукционе за лот «{auction['item_title']}»!</b>\n"
                 f"Финальная цена: <b>{auction['current_price']} монет</b>. Администрация свяжется с тобой для выдачи приза.",
         )
         try:

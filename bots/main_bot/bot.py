@@ -58,7 +58,7 @@ BOT_COMMANDS: dict[str, tuple[str, str]] = {
     "farm": ("🚜 Кибер-ферма и заправка", "🚜 Cyber-farm & refueling"),
     "shop": ("🏪 Магазин за Telegram Stars", "🏪 Shop (Telegram Stars)"),
     "games": ("🕹️ Все игры против бота", "🕹️ All games vs the bot"),
-    "quiz": ("🧠 Викторина: 10 секунд на ответ", "🧠 Quiz: 10 seconds to answer"),
+    "quiz": ("🧠 Викторина: 15 секунд на ответ", "🧠 Quiz: 15 seconds to answer"),
     "duel": ("⚔️ Дуэль 1-на-1 на ставку", "⚔️ 1-on-1 duel for a stake"),
     "quests": ("🗺️ Квесты: истории с выборами", "🗺️ Quests: stories with choices"),
     "my_team": ("🏆 Моя команда и тиммейты", "🏆 My team & teammates"),
@@ -72,11 +72,28 @@ BOT_COMMANDS: dict[str, tuple[str, str]] = {
 
 
 async def register_bot_commands(bot: Bot) -> None:
-    """Регистрирует синее меню команд: русский — для ru-клиентов, английский — для всех прочих."""
+    """
+    Синее меню команд на всех языках: en — дефолт, ru — из BOT_COMMANDS,
+    остальные 12 — из языковых паков (COMMAND_PACKS). Битый пак пропускается.
+    """
+    from shared.locales import COMMAND_PACKS
+
     ru = [BotCommand(command=c, description=d[0]) for c, d in BOT_COMMANDS.items()]
     en = [BotCommand(command=c, description=d[1]) for c, d in BOT_COMMANDS.items()]
     await bot.set_my_commands(en)  # дефолт для всех языков клиента
     await bot.set_my_commands(ru, language_code="ru")
+
+    for code, pack in COMMAND_PACKS.items():
+        commands = [BotCommand(command=c, description=str(pack[c])[:256])
+                    for c in BOT_COMMANDS if pack.get(c)]
+        if len(commands) != len(BOT_COMMANDS):
+            logger.warning("Меню команд %s неполное (%s/%s) — пропущено",
+                           code, len(commands), len(BOT_COMMANDS))
+            continue
+        try:
+            await bot.set_my_commands(commands, language_code=code)
+        except Exception:
+            logger.exception("Не удалось поставить меню команд для %s", code)
 
 
 @dp.error()

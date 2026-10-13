@@ -22,11 +22,16 @@ from shared.locales import resolve_lang, t
 router = Router()
 logger = logging.getLogger(__name__)
 
+# 14 языков. Порядок задаёт сетку кнопок (по 2 в ряд) — раскладка владельца:
+# English–Español / O'zbekcha–Français / Русский–Português / далее произвольно.
 LANGUAGES = [
-    ("ru", "🇷🇺 Русский"), ("en", "🇺🇸 English"), ("zh", "🇨🇳 中文"), ("hi", "🇮🇳 हिन्दी"),
-    ("es", "🇪🇸 Español"), ("ar", "🇦🇪 العربية"), ("fr", "🇫🇷 Français"), ("bn", "🇧🇩 বাংলা"),
-    ("pt", "🇧🇷 Português"), ("id", "🇮🇩 Indonesia"), ("de", "🇩🇪 Deutsch"), ("it", "🇮🇹 Italiano"),
-    ("pl", "🇵🇱 Polski"),
+    ("en", "🇺🇸 English"), ("es", "🇪🇸 Español"),
+    ("uz", "🇺🇿 O'zbekcha"), ("fr", "🇫🇷 Français"),
+    ("ru", "🇷🇺 Русский"), ("pt", "🇧🇷 Português"),
+    ("de", "🇩🇪 Deutsch"), ("it", "🇮🇹 Italiano"),
+    ("pl", "🇵🇱 Polski"), ("id", "🇮🇩 Indonesia"),
+    ("zh", "🇨🇳 中文"), ("hi", "🇮🇳 हिन्दी"),
+    ("ar", "🇦🇪 العربية"), ("bn", "🇧🇩 বাংলা"),
 ]
 LANGUAGE_CODES = {code for code, _ in LANGUAGES}
 

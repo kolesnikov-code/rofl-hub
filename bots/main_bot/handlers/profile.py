@@ -27,8 +27,15 @@ FONT_PATH = next((p for p in FONT_CANDIDATES if os.path.exists(p)), None)
 # начисления идут через ledger без потери «копеек времени».
 
 
+# DejaVu/Arial не содержат глифов CJK, деванагари, бенгальского и не умеют RTL-шейпинг —
+# подписи на картинке для этих языков рисуем по-английски (тексты бота остаются на языке игрока)
+IMG_FALLBACK_TO_EN_LANGS = {"zh", "hi", "bn", "ar"}
+
+
 def generate_profile_image(user_id: int, username: str, data: dict, lang: str = "ru") -> str:
     """Рендерит сочный неоновый паспорт инвентаря. Шаблоны больше не удаляются!"""
+    if lang in IMG_FALLBACK_TO_EN_LANGS:
+        lang = "en"
     capacity = data["fridge_capacity"]
     template_path = os.path.join(STATIC_DIR, f"fridge_{capacity}.jpg")
     if not os.path.exists(template_path):
