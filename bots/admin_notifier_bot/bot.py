@@ -90,7 +90,9 @@ async def cmd_admin_start(message: types.Message):
         "• /report — Суточный отчёт: DAU, продажи, когорты за 30 дней\n"
         "• /gift [ID] [сумма] — Подарить рофлы игроку (отрицательная сумма — штраф)\n"
         "• /block [ID] — Заблокировать игрока · /unblock [ID] — Разблокировать\n"
-        "• /find [ID или @username] — Досье игрока\n",
+        "• /find [ID или @username] — Досье игрока\n"
+        "• /refund [номер_платежа] — Вернуть Stars игроку по чеку\n"
+        "• /backup — Снимок всех таблиц базы JSON-файлом прямо в этот чат\n",
         parse_mode="HTML"
     )
 
@@ -98,7 +100,16 @@ async def cmd_admin_start(message: types.Message):
 # ============================================================================
 # 🛡️ МОДЕРАЦИЯ И ЭКОНОМИКА (Блок 4): блокировки, подарки, отчёт по запросу
 # ============================================================================
-from shared.db_admin import admin_gift_coins, collect_daily_report, format_daily_report, set_user_blocked  # noqa: E402
+from shared.db_admin import (  # noqa: E402
+    admin_gift_coins,
+    backup_to_json_bytes,
+    collect_daily_report,
+    dump_database,
+    find_payment,
+    format_daily_report,
+    mark_refunded,
+    set_user_blocked,
+)
 from shared.ledger import UserNotFound  # noqa: E402
 
 
@@ -180,6 +191,80 @@ async def admin_gift(message: types.Message):
     await message.answer(
         f"💰 Готово! Игроку <code>{user_id}</code> {'начислено' if amount > 0 else 'списано'} "
         f"<b>{abs(amount)} рофлов</b>. Новый баланс: <b>{new_balance}</b>.", parse_mode="HTML")
+
+
+@dp.message(Command("backup"))
+async def admin_backup(message: types.Message):
+    """Снимок всех таблиц базы JSON-файлом в чат админа (Блок 5: бэкап в один клик)."""
+    if not is_admin(message.from_user.id):
+        return
+    await message.answer("⏳ Собираю снимок базы...")
+    async with db.pool.acquire() as conn:
+        dump = await dump_database(conn)
+    payload = backup_to_json_bytes(dump)
+    rows_total = sum(len(v) for v in dump["tables"].values())
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    document = types.BufferedInputFile(payload, filename=f"rofl_hub_backup_{stamp}.json")
+    await message.answer_document(
+        document,
+        caption=(f"💾 <b>Бэкап базы готов.</b>\n"
+                 f"Таблиц: {len(dump['tables'])} · Строк: {rows_total} · "
+                 f"Размер: {len(payload) // 1024} КБ\n"
+                 f"<i>Храни файл в надёжном месте — это полный снимок экономики.</i>"),
+        parse_mode="HTML")
+
+
+@dp.message(Command("refund"))
+async def admin_refund(message: types.Message):
+    """Возврат Stars по номеру платежа. Делается ГЛАВНЫМ ботом (он принимал оплату)."""
+    if not is_admin(message.from_user.id):
+        return
+    parts = message.text.split()
+    if len(parts) != 2:
+        await message.answer("⚠️ Пример: <code>/refund tg_charge_id_из_чека</code>", parse_mode="HTML")
+        return
+    charge_id = parts[1].strip()
+
+    async with db.pool.acquire() as conn:
+        payment = await find_payment(conn, charge_id)
+    if not payment:
+        await message.answer("❌ Платёж с таким номером не найден в базе.")
+        return
+    if payment["refunded_at"]:
+        await message.answer(f"⚠️ Этот платёж уже был возвращён {payment['refunded_at']:%d.%m.%Y %H:%M} UTC.")
+        return
+    if charge_id.startswith("TEST_"):
+        await message.answer("🧪 Это платёж тест-режима — настоящих Stars за ним нет, возвращать нечего.")
+        return
+
+    if not MAIN_BOT_TOKEN:
+        await message.answer("❌ MAIN_BOT_TOKEN не задан — возврат невозможен.")
+        return
+    main_bot = Bot(token=MAIN_BOT_TOKEN)
+    try:
+        refunded = await main_bot.refund_star_payment(
+            user_id=payment["user_id"], telegram_payment_charge_id=charge_id)
+    except Exception as e:
+        await message.answer(f"❌ Telegram отклонил возврат: {e}")
+        return
+    finally:
+        await main_bot.session.close()
+
+    if not refunded:
+        await message.answer("❌ Telegram не подтвердил возврат. Попробуй позже.")
+        return
+
+    async with db.pool.acquire() as conn:
+        await mark_refunded(conn, charge_id)
+    await notify_user_via_main_bot(
+        payment["user_id"],
+        f"💫 <b>Тебе возвращены {payment['stars_amount']} ★</b> по платежу <code>{charge_id}</code>. "
+        f"Stars уже на твоём счету Telegram.")
+    await message.answer(
+        f"✅ Возврат выполнен: <b>★ {payment['stars_amount']}</b> игроку <code>{payment['user_id']}</code> "
+        f"(товар: {payment['item_payload']}).\n"
+        f"<i>Если товар нужно отобрать — используй /gift с отрицательной суммой или правь вручную.</i>",
+        parse_mode="HTML")
 
 
 @dp.message(Command("find"))

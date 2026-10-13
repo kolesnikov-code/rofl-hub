@@ -7,3 +7,6 @@ __pycache__/
 .idea/
 .vscode/
 *.log
+# Локальные бэкапы базы (не коммитим данные игроков)
+backups/
+static/user_*_profile.jpg

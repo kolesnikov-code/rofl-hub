@@ -24,7 +24,7 @@ ADVERTISED_COMMANDS = {
     "start", "menu", "profile", "my_stats", "farm", "shop", "games",
     "create_team", "my_team", "all_teams", "faq", "rules",
     "rps", "high_low", "quiz", "coin", "dice", "safe",
-    "invite", "transfer",
+    "invite", "transfer", "paysupport",
 }
 
 
@@ -44,3 +44,13 @@ def _registered_commands() -> set[str]:
 def test_every_advertised_command_has_a_handler():
     missing = ADVERTISED_COMMANDS - _registered_commands()
     assert not missing, f"Команды без обработчика: {sorted(missing)}"
+
+
+def test_telegram_blue_menu_commands_have_handlers_and_both_languages():
+    """Синее меню Telegram (set_my_commands) не должно обещать мёртвых команд."""
+    from bots.main_bot.bot import BOT_COMMANDS
+    dead = set(BOT_COMMANDS) - _registered_commands()
+    assert not dead, f"В меню Telegram есть команды без обработчика: {sorted(dead)}"
+    for cmd, (ru, en) in BOT_COMMANDS.items():
+        assert ru and en and ru != en, cmd
+        assert len(ru) <= 256 and len(en) <= 256, cmd  # лимит Telegram на описание

@@ -1,15 +1,22 @@
 """
-Админ-операции над базой (Блок 4): блокировка, подарки монет, суточный отчёт.
+Админ-операции над базой: блокировка, подарки монет, суточный отчёт,
+бэкап всех таблиц в JSON и учёт возвратов Stars.
 
 Без Telegram — только asyncpg-соединение/пул. Используется админ-ботом.
 """
 from __future__ import annotations
 
+import json
 import logging
+from datetime import date, datetime
 
+from shared.economy import utcnow
 from shared.ledger import change_balance
 
 logger = logging.getLogger(__name__)
+
+# Полный список таблиц проекта для бэкапа (порядок = порядок в файле)
+BACKUP_TABLES = ("users", "teams", "miners", "game_stats", "star_payments", "auctions", "ledger")
 
 
 async def set_user_blocked(conn, user_id: int, blocked: bool) -> bool:
@@ -71,6 +78,41 @@ async def collect_daily_report(conn) -> dict:
     report["cohort_f2p"] = max(
         0, report["total_users"] - report["cohort_light"] - report["cohort_normal"] - report["cohort_whale"])
     return report
+
+
+def _jsonable(value):
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    return value
+
+
+async def dump_database(conn) -> dict:
+    """Снимок всех таблиц проекта: {'generated_at': ..., 'tables': {имя: [строки]}}."""
+    dump: dict = {"generated_at": utcnow().isoformat(), "tables": {}}
+    for table in BACKUP_TABLES:
+        rows = await conn.fetch(f"SELECT * FROM {table}")
+        dump["tables"][table] = [{k: _jsonable(v) for k, v in dict(r).items()} for r in rows]
+    logger.info("[BACKUP] снято таблиц: %s, строк: %s",
+                len(BACKUP_TABLES), sum(len(v) for v in dump["tables"].values()))
+    return dump
+
+
+def backup_to_json_bytes(dump: dict) -> bytes:
+    """JSON-файл бэкапа (utf-8, читаемый человеком)."""
+    return json.dumps(dump, ensure_ascii=False, indent=1).encode("utf-8")
+
+
+async def find_payment(conn, charge_id: str):
+    return await conn.fetchrow(
+        "SELECT * FROM star_payments WHERE telegram_charge_id = $1", charge_id)
+
+
+async def mark_refunded(conn, charge_id: str) -> bool:
+    """Помечает платёж возвращённым. False — платёж не найден или уже возвращён."""
+    result = await conn.execute(
+        "UPDATE star_payments SET refunded_at = NOW() "
+        "WHERE telegram_charge_id = $1 AND refunded_at IS NULL", charge_id)
+    return result.endswith("1")
 
 
 def format_daily_report(r: dict) -> str:

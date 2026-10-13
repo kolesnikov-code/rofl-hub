@@ -356,6 +356,42 @@ async def test_admin_block_gift_and_report(conn):
     assert report["coins_mass"] == 1050
 
 
+# ---------------------------------------------------------------- Блок 5: бэкап и возвраты
+async def test_backup_dumps_all_tables_to_valid_json(conn):
+    import json
+    from shared.db_admin import BACKUP_TABLES, backup_to_json_bytes, dump_database
+    await _mk_user(conn, 80, 500)
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, expires_at) VALUES (80, 'junior', NOW() + INTERVAL '30 days')")
+    await conn.execute(
+        "INSERT INTO star_payments (user_id, telegram_charge_id, item_payload, stars_amount) "
+        "VALUES (80, 'ch_backup', 'cutlet_10', 49)")
+
+    dump = await dump_database(conn)
+    restored = json.loads(backup_to_json_bytes(dump).decode("utf-8"))
+
+    assert set(restored["tables"]) == set(BACKUP_TABLES)
+    assert restored["tables"]["users"][0]["user_id"] == 80
+    assert restored["tables"]["miners"][0]["kind"] == "junior"
+    # даты сериализованы строками ISO, а не упали в json.dumps
+    assert "T" in restored["tables"]["users"][0]["created_at"]
+
+
+async def test_refund_marking_is_single_shot(conn):
+    from shared.db_admin import find_payment, mark_refunded
+    await _mk_user(conn, 81, 0)
+    await conn.execute(
+        "INSERT INTO star_payments (user_id, telegram_charge_id, item_payload, stars_amount) "
+        "VALUES (81, 'ch_refund', 'unlimit_24h', 5)")
+
+    payment = await find_payment(conn, "ch_refund")
+    assert payment["refunded_at"] is None
+    assert await mark_refunded(conn, "ch_refund") is True
+    assert await mark_refunded(conn, "ch_refund") is False  # повторный возврат невозможен
+    assert await mark_refunded(conn, "no_such_charge") is False
+    assert (await find_payment(conn, "ch_refund"))["refunded_at"] is not None
+
+
 async def test_counter_migration_moves_robots_to_miners_table_once(conn):
     database = Database()
     await database.connect(TEST_DSN)

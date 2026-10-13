@@ -15,6 +15,7 @@ import logging
 import uuid
 
 from aiogram import Bot, F, Router, types
+from aiogram.filters import Command
 from aiogram.types import LabeledPrice, PreCheckoutQuery
 
 from bots.main_bot.catalog import CatalogError, build_order, item_title, normalize_sku
@@ -109,6 +110,14 @@ async def process_shop_purchase_intent(callback: types.CallbackQuery, bot: Bot, 
     except Exception:
         logger.exception("[STARS_INVOICE_ERROR] user=%s sku=%s", user_id, order["sku"])
         await callback.message.answer(t(user_lang, "pay.invoice_error"))
+
+
+# ============================================================================
+# 1.5 Поддержка платежей: /paysupport обязателен для ботов с цифровыми товарами
+# ============================================================================
+@router.message(Command("paysupport"))
+async def cmd_paysupport(message: types.Message, user_lang: str = "ru"):
+    await message.answer(t(user_lang, "pay.support"), parse_mode="HTML")
 
 
 # ============================================================================

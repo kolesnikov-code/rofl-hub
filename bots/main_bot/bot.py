@@ -9,7 +9,7 @@ import sys
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import ErrorEvent
+from aiogram.types import BotCommand, ErrorEvent
 
 from bots.main_bot.config import BOT_TOKEN, SHOP_TEST_MODE, SHOP_TEST_USER_IDS
 from bots.main_bot.handlers.clans import router as clans_router
@@ -46,6 +46,32 @@ for r in (start_router, payments_router, shop_router, games_router, farm_router,
     dp.include_router(r)
 
 
+# Синее меню команд Telegram (кнопка «/»). Ключ — команда, значения — описания ru/en.
+BOT_COMMANDS: dict[str, tuple[str, str]] = {
+    "menu": ("📱 Главное меню", "📱 Main menu"),
+    "profile": ("👤 Мой профиль и паспорт", "👤 My profile & passport"),
+    "farm": ("🚜 Кибер-ферма и заправка", "🚜 Cyber-farm & refueling"),
+    "shop": ("🏪 Магазин за Telegram Stars", "🏪 Shop (Telegram Stars)"),
+    "games": ("🕹️ Все игры против бота", "🕹️ All games vs the bot"),
+    "quiz": ("🧠 Викторина: 10 секунд на ответ", "🧠 Quiz: 10 seconds to answer"),
+    "my_team": ("🏆 Моя команда и тиммейты", "🏆 My team & teammates"),
+    "invite": ("🤝 Реферальная ссылка: +1000 за друга", "🤝 Referral link: +1000 per friend"),
+    "transfer": ("🔄 Перевести рофлы игроку", "🔄 Send rofls to a player"),
+    "my_stats": ("📊 Моя статистика", "📊 My stats"),
+    "faq": ("📚 Частые вопросы", "📚 FAQ"),
+    "rules": ("📜 Пользовательское соглашение", "📜 User agreement"),
+    "paysupport": ("🛟 Поддержка по платежам", "🛟 Payment support"),
+}
+
+
+async def register_bot_commands(bot: Bot) -> None:
+    """Регистрирует синее меню команд: русский — для ru-клиентов, английский — для всех прочих."""
+    ru = [BotCommand(command=c, description=d[0]) for c, d in BOT_COMMANDS.items()]
+    en = [BotCommand(command=c, description=d[1]) for c, d in BOT_COMMANDS.items()]
+    await bot.set_my_commands(en)  # дефолт для всех языков клиента
+    await bot.set_my_commands(ru, language_code="ru")
+
+
 @dp.error()
 async def on_error(event: ErrorEvent) -> None:
     """Любое необработанное исключение — в лог целиком, игроку — короткий ответ, бот живёт дальше."""
@@ -68,6 +94,11 @@ async def main() -> None:
 
     if SHOP_TEST_MODE:
         logger.warning("SHOP_TEST_MODE=1: бесплатные покупки для %s. На проде выключить!", sorted(SHOP_TEST_USER_IDS))
+
+    try:
+        await register_bot_commands(bot)
+    except Exception:
+        logger.exception("Не удалось зарегистрировать меню команд — бот работает дальше.")
 
     me = await bot.get_me()
     logger.info("Главный бот @%s запущен.", me.username)

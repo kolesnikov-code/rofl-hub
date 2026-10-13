@@ -432,6 +432,20 @@ RU: dict[str, str] = {
     "pay.refunded": "💫 Stars возвращены на твой счёт автоматически.",
     "pay.keep_charge": "Сохрани номер платежа для возврата: <code>{charge}</code>",
     "pay.already": "✅ Этот платёж уже был обработан, товар выдан ранее.",
+    "pay.support": (
+        "🛟 <b>ПОДДЕРЖКА ПО ПЛАТЕЖАМ TELEGRAM STARS</b>\n"
+        "..................................................\n\n"
+        "Все товары ROFL HUB — цифровые и доставляются мгновенно после оплаты.\n\n"
+        "⚙️ <b>Если оплата прошла, а товар не пришёл:</b>\n"
+        "бот автоматически возвращает Stars при сбое доставки. Если этого не случилось — "
+        "пришли сюда номер платежа (он есть в чеке, формат <code>xxxx...</code>) и опиши проблему. "
+        "Администрация проверит платёж по базе и решит вопрос в течение 24 часов.\n\n"
+        "💫 <b>Политика возвратов:</b>\n"
+        "возврат возможен, если товар не был получен или выдан с ошибкой. "
+        "Корректно доставленные цифровые товары возврату не подлежат.\n\n"
+        "..................................................\n"
+        "<i>Этот раздел — официальная точка поддержки покупок по правилам Telegram.</i>"
+    ),
 
     # ---------------- доставка ----------------
     "dlv.cutlets": "🥩 На склад добавлено: <b>{qty} котлет</b>.",
@@ -877,6 +891,20 @@ EN: dict[str, str] = {
     "pay.refunded": "💫 Your Stars were refunded automatically.",
     "pay.keep_charge": "Keep the payment number for a refund: <code>{charge}</code>",
     "pay.already": "✅ This payment was already processed, the item was delivered earlier.",
+    "pay.support": (
+        "🛟 <b>TELEGRAM STARS PAYMENT SUPPORT</b>\n"
+        "..................................................\n\n"
+        "All ROFL HUB items are digital and delivered instantly after payment.\n\n"
+        "⚙️ <b>If you paid but the item didn't arrive:</b>\n"
+        "the bot refunds Stars automatically when delivery fails. If that didn't happen — "
+        "send your payment number here (it's in the receipt, format <code>xxxx...</code>) and describe "
+        "the problem. The administration will check the payment in the database and resolve it within 24 hours.\n\n"
+        "💫 <b>Refund policy:</b>\n"
+        "a refund is possible if the item was not received or was delivered incorrectly. "
+        "Correctly delivered digital items are non-refundable.\n\n"
+        "..................................................\n"
+        "<i>This section is the official purchase support point per Telegram rules.</i>"
+    ),
 
     # ---------------- delivery ----------------
     "dlv.cutlets": "🥩 Added to your inventory: <b>{qty} cutlets</b>.",

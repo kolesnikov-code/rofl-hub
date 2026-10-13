@@ -36,17 +36,30 @@ class Database:
     def is_connected(self) -> bool:
         return self._pool is not None
 
-    async def connect(self, dsn: str | None = None) -> None:
+    async def connect(self, dsn: str | None = None, retries: int = 5, delay: float = 3.0) -> None:
+        """
+        Создаёт пул с ретраями: при рестарте хостинга база может подняться
+        на несколько секунд позже бота — не падаем, а ждём и пробуем снова.
+        """
         dsn = dsn or self.DATABASE_URL
         if not dsn:
             logger.critical("DATABASE_URL не задан в переменных окружения.")
             raise RuntimeError("Переменная DATABASE_URL отсутствует.")
-        try:
-            self._pool = await asyncpg.create_pool(dsn, min_size=2, max_size=10, command_timeout=60)
-        except Exception:
-            logger.exception("Не удалось создать пул PostgreSQL")
-            raise
-        logger.info("Пул PostgreSQL инициализирован.")
+        last_error: Exception | None = None
+        for attempt in range(1, retries + 1):
+            try:
+                self._pool = await asyncpg.create_pool(dsn, min_size=2, max_size=10, command_timeout=60)
+                logger.info("Пул PostgreSQL инициализирован (попытка %s).", attempt)
+                return
+            except Exception as e:
+                last_error = e
+                logger.warning("Попытка %s/%s подключения к PostgreSQL не удалась: %s",
+                               attempt, retries, e)
+                if attempt < retries:
+                    import asyncio
+                    await asyncio.sleep(delay * attempt)
+        logger.critical("Не удалось создать пул PostgreSQL после %s попыток", retries)
+        raise last_error
 
     async def close(self) -> None:
         if self._pool is not None:
@@ -183,6 +196,8 @@ SCHEMA_STATEMENTS: list[str] = [
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS mining_acc BIGINT NOT NULL DEFAULT 0;",
     # Ежедневная бесплатная котлета: время последнего нажатия «ЗАБРАТЬ БОНУС»
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_bonus_claim_at TIMESTAMP WITH TIME ZONE;",
+    # --- Блок 5: отметка возврата Stars по платежу ---
+    "ALTER TABLE star_payments ADD COLUMN IF NOT EXISTS refunded_at TIMESTAMP WITH TIME ZONE;",
     # --- Блок 4: тиммейты, капитанство по старшинству, имена без username ---
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS team_joined_at TIMESTAMP WITH TIME ZONE;",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(128);",
