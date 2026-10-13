@@ -50,7 +50,7 @@ def btn_variants(key: str) -> set[str]:
 RU: dict[str, str] = {
     # ---------------- общее ----------------
     "common.no_profile": "⚠️ Профиль не найден. Нажми /start для регистрации.",
-    "common.btn_menu": "💿 Главное Меню /menu",
+    "common.btn_menu": "💿 Главное Меню",
     "common.blocked": "🚫 Твой аккаунт заблокирован администрацией ROFL HUB.",
 
     # ---------------- /start ----------------
@@ -171,13 +171,13 @@ RU: dict[str, str] = {
         "..................................................\n"
         "👇 <b>КЛИКАЙ ПО КНОПКЕ НИЖЕ ДЛЯ НЕМЕДЛЕННОГО СТАРТА РAУНДA:</b>"
     ),
-    "menu.btn_quiz": "🧠 Викторина (/quiz)",
-    "menu.btn_rps": "🪨 КНБ (/rps)",
-    "menu.btn_hl": "📈 Больше/Меньше (/high_low)",
-    "menu.btn_coin": "🪙 Орёл/Решка (/coin)",
-    "menu.btn_dice": "🎲 Кубики (/dice)",
-    "menu.btn_safe": "🔐 Кибер-Сейф (/safe)",
-    "menu.btn_duel": "⚔️ ДУЭЛИ 1-на-1 (/duel)",
+    "menu.btn_quiz": "🧠 Викторина",
+    "menu.btn_rps": "🪨 КНБ",
+    "menu.btn_hl": "📈 Больше/Меньше",
+    "menu.btn_coin": "🪙 Орёл/Решка",
+    "menu.btn_dice": "🎲 Кубики",
+    "menu.btn_safe": "🔐 Кибер-Сейф",
+    "menu.btn_duel": "⚔️ ДУЭЛИ 1-на-1",
     "app.open": (
         "🎮 <b>ROFL HUB MINI APP</b>\n\n"
         "Паспорт, ферма, команда и топ богачей — на одном неоновом экране. "
@@ -242,13 +242,13 @@ RU: dict[str, str] = {
     "quest.stale": "⏳ Эта сцена уже позади — продолжаем с текущего места!",
     "quest.no_coins": "❌ Не хватает монет для подсказки ({cost}). Загляни на ферму!",
     "quest.not_found": "❌ Квест не найден.",
-    "menu.btn_quests": "🗺️ КВЕСТЫ (/quests)",
+    "menu.btn_quests": "🗺️ КВЕСТЫ",
 
     # ---------------- ферма ----------------
     "farm.btn_bonus": "🎁 ЗАБРАТЬ БОНУС (котлета раз в 24 ч)",
     "farm.btn_load1": "🥩 Заправить 1 шт.",
     "farm.btn_loadall": "⚡ Заправить ВСЕ",
-    "farm.btn_shop": "🏪 Зайти в Магазин /shop",
+    "farm.btn_shop": "🏪 Зайти в Магазин",
     "farm.status_all_fueled": "🟢 Все Кибер-Бурильщики заправлены и добывают монеты!",
     "farm.status_partial": "🟡 Заправлено {fueled} из {total} Кибер-Бурильщиков. Остальные ждут котлет в холодильнике!",
     "farm.status_no_fuel": "🔴 Кибер-Бурильщики остановились! В холодильнике не хватает топлива.",
@@ -302,7 +302,7 @@ RU: dict[str, str] = {
     "profile.team_label": "Команда",
     "profile.clan_label": "Клан",
     "profile.btn_farm": "🚜 Моя Кибер-Ферма",
-    "profile.btn_shop": "🏪 Магазин /shop",
+    "profile.btn_shop": "🏪 Магазин",
     "profile.stats": (
         "📊 <b>ИГРОВАЯ СТАТИСТИКА ДОСТИЖЕНИЙ (30 ДНЕЙ)</b>\n"
         "..................................................\n\n"
@@ -639,7 +639,7 @@ RU: dict[str, str] = {
 EN: dict[str, str] = {
     # ---------------- common ----------------
     "common.no_profile": "⚠️ Profile not found. Press /start to register.",
-    "common.btn_menu": "💿 Main Menu /menu",
+    "common.btn_menu": "💿 Main Menu",
     "common.blocked": "🚫 Your account has been blocked by the ROFL HUB administration.",
 
     # ---------------- /start ----------------
@@ -760,13 +760,13 @@ EN: dict[str, str] = {
         "..................................................\n"
         "👇 <b>TAP A BUTTON BELOW TO START A ROUND RIGHT NOW:</b>"
     ),
-    "menu.btn_quiz": "🧠 Quiz (/quiz)",
-    "menu.btn_rps": "🪨 RPS (/rps)",
-    "menu.btn_hl": "📈 High/Low (/high_low)",
-    "menu.btn_coin": "🪙 Heads/Tails (/coin)",
-    "menu.btn_dice": "🎲 Dice (/dice)",
-    "menu.btn_safe": "🔐 Cyber-Safe (/safe)",
-    "menu.btn_duel": "⚔️ 1-on-1 DUELS (/duel)",
+    "menu.btn_quiz": "🧠 Quiz",
+    "menu.btn_rps": "🪨 RPS",
+    "menu.btn_hl": "📈 High/Low",
+    "menu.btn_coin": "🪙 Heads/Tails",
+    "menu.btn_dice": "🎲 Dice",
+    "menu.btn_safe": "🔐 Cyber-Safe",
+    "menu.btn_duel": "⚔️ 1-on-1 DUELS",
     "app.open": (
         "🎮 <b>ROFL HUB MINI APP</b>\n\n"
         "Your passport, farm, team and the richest players — on one neon screen. "
@@ -832,13 +832,13 @@ EN: dict[str, str] = {
     "quest.stale": "⏳ That scene is already behind you — continuing from the current spot!",
     "quest.no_coins": "❌ Not enough coins for the hint ({cost}). Visit your farm!",
     "quest.not_found": "❌ Quest not found.",
-    "menu.btn_quests": "🗺️ QUESTS (/quests)",
+    "menu.btn_quests": "🗺️ QUESTS",
 
     # ---------------- farm ----------------
     "farm.btn_bonus": "🎁 CLAIM BONUS (a cutlet every 24h)",
     "farm.btn_load1": "🥩 Load 1 cutlet",
     "farm.btn_loadall": "⚡ Load ALL",
-    "farm.btn_shop": "🏪 Open the Shop /shop",
+    "farm.btn_shop": "🏪 Open the Shop",
     "farm.status_all_fueled": "🟢 All Cyber-Drillers are fueled and mining coins!",
     "farm.status_partial": "🟡 {fueled} of {total} Cyber-Drillers are fueled. The rest are waiting for cutlets in the fridge!",
     "farm.status_no_fuel": "🔴 The Cyber-Drillers have stopped! Not enough fuel in the fridge.",
@@ -892,7 +892,7 @@ EN: dict[str, str] = {
     "profile.team_label": "Team",
     "profile.clan_label": "Clan",
     "profile.btn_farm": "🚜 My Cyber-Farm",
-    "profile.btn_shop": "🏪 Shop /shop",
+    "profile.btn_shop": "🏪 Shop",
     "profile.stats": (
         "📊 <b>GAME ACHIEVEMENT STATS (30 DAYS)</b>\n"
         "..................................................\n\n"

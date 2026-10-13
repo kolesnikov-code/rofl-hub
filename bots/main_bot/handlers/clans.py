@@ -84,10 +84,10 @@ async def cmd_clan_hub(message: types.Message | types.CallbackQuery, user_lang: 
         f"👇 <b>ВЫБЕРИ ДЕЙСТВИЕ:</b>"
     )
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🏆 Создать Команду (/create_team)", callback_data="clan_action:start_create")],
+        [types.InlineKeyboardButton(text="🏆 Создать Команду", callback_data="clan_action:start_create")],
         [types.InlineKeyboardButton(text="🔍 Найти Команду по названию", callback_data="clan_action:search_name")],
         [types.InlineKeyboardButton(text="📍 Игровая Рулетка команд СНГ", callback_data="clan_action:search_city")],
-        [types.InlineKeyboardButton(text="💿 Главное Меню /menu", callback_data="refresh_main_menu")]
+        [types.InlineKeyboardButton(text="💿 Главное Меню", callback_data="refresh_main_menu")]
     ])
     await target_msg.answer(welcome_text, reply_markup=keyboard, parse_mode="HTML")
 
@@ -381,7 +381,7 @@ async def process_cancel_fsm_logic(callback: types.CallbackQuery, state: FSMCont
     except Exception:
         pass
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="💿 Открыть Главное Меню /menu", callback_data="refresh_main_menu")]])
+        [types.InlineKeyboardButton(text="💿 Открыть Главное Меню", callback_data="refresh_main_menu")]])
     await callback.message.answer("❌ <b>Процедура создания отменена. Все временные данные удалены.</b>",
                                   reply_markup=kb, parse_mode="HTML")
 
