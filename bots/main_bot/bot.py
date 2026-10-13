@@ -60,7 +60,7 @@ BOT_COMMANDS: dict[str, tuple[str, str]] = {
     "duel": ("⚔️ Дуэль 1-на-1 на ставку", "⚔️ 1-on-1 duel for a stake"),
     "my_team": ("🏆 Моя команда и тиммейты", "🏆 My team & teammates"),
     "invite": ("🤝 Реферальная ссылка: +1000 за друга", "🤝 Referral link: +1000 per friend"),
-    "transfer": ("🔄 Перевести рофлы игроку", "🔄 Send rofls to a player"),
+    "transfer": ("🔄 Перевести монеты игроку", "🔄 Send coins to a player"),
     "my_stats": ("📊 Моя статистика", "📊 My stats"),
     "faq": ("📚 Частые вопросы", "📚 FAQ"),
     "rules": ("📜 Пользовательское соглашение", "📜 User agreement"),

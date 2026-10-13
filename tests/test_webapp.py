@@ -91,7 +91,7 @@ def test_build_me_payload_shape():
                                "next_level": 3, "next_reward": 300}
     farm = payload["farm"]
     assert (farm["junior"], farm["premium"], farm["premium_fueled"]) == (1, 1, 1)
-    # ядерный буст активен: 25 (junior) + 50 (premium) рофлов/час
+    # ядерный буст активен: 25 (junior) + 50 (premium) монет/час
     assert farm["speed_hour"] == 25 + 50
     assert farm["bonus_seconds_left"] == 0
     assert farm["boosts"]["nuclear_until"] and farm["boosts"]["drone_until"] is None

@@ -78,7 +78,7 @@ async def cmd_clan_hub(message: types.Message | types.CallbackQuery, user_lang: 
     welcome_text = (
         f"👥 <b>ЦЕНТРАЛЬНЫЙ ОФИС КОМАНД И КЛАНОВ ROFL HUB</b>\n"
         f"..................................................\n\n"
-        f"Изначально ВСЕГДА создаётся обычная Команда за 100 000 рофлов до 50 человек. "
+        f"Изначально ВСЕГДА создаётся обычная Команда за 100 000 монет до 50 человек. "
         f"И уже затем в магазине /shop её можно прокачать звёздами до уровня КЛАН на 1000 человек!\n\n"
         f"Никаких привязок к реальным школам и городам — полная анонимность от буллинга.\n\n"
         f"👇 <b>ВЫБЕРИ ДЕЙСТВИЕ:</b>"
@@ -294,7 +294,7 @@ async def _begin_team_creation(target: types.Message, user_id: int, state: FSMCo
         return
     if user["balance"] < TEAM_CREATE_COST:
         await target.answer(
-            f"❌ Недостаточно рофлов! Создание стоит {TEAM_CREATE_COST:,}. Твой баланс: {user['balance']:,}".replace(",", " "))
+            f"❌ Недостаточно монет! Создание стоит {TEAM_CREATE_COST:,}. Твой баланс: {user['balance']:,}".replace(",", " "))
         return
 
     await state.set_state(ClanCreationStates.waiting_for_name)
@@ -367,7 +367,7 @@ async def process_fsm_clan_symbol_finalize(message: types.Message, state: FSMCon
         f"💬 Девиз: <i>«{data.get('clan_motto')}»</i>\n"
         f"🔮 Твой символ: {validated_symbol}\n\n"
         f"..................................................\n"
-        f"💳 Списано: <b>100 000 рофлов</b>. Управляй бандой через /my_team!",
+        f"💳 Списано: <b>100 000 монет</b>. Управляй бандой через /my_team!",
         parse_mode="HTML"
     )
 

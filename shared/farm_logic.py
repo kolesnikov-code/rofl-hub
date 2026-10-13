@@ -14,8 +14,8 @@
   Никаких дробных списаний «int() в ноль» — вечный бурильщик больше невозможен;
 - бусты действуют по времени своего сегмента: Азот +40% к базе, Ядерный ×5,
   эффекты складываются (5→7→35, 10→14→70);
-- начисления точные: копим рофло-микросекунды (MINING_ACC_PER_ROFL на 1 рофл),
-  на баланс уходят только целые рофлы, остаток хранится в users.mining_acc.
+- начисления точные: копим монето-микросекунды (MINING_ACC_PER_ROFL на 1 монета),
+  на баланс уходят только целые монеты, остаток хранится в users.mining_acc.
 """
 from __future__ import annotations
 
@@ -55,8 +55,8 @@ class MinerState:
 @dataclass
 class FarmTick:
     """Результат одного ленивого пересчёта."""
-    earned: int                     # целых рофлов к зачислению
-    acc: int                        # новый остаток рофло-микросекунд (< MINING_ACC_PER_ROFL)
+    earned: int                     # целых монет к зачислению
+    acc: int                        # новый остаток монето-микросекунд (< MINING_ACC_PER_ROFL)
     fridge_cutlets: int
     cutlets_consumed: int
     miners: list[MinerState]        # обновлённые состояния (включая сгоревших)
@@ -67,7 +67,7 @@ def integrate_rate_micros(start: datetime, end: datetime, kind: str,
                           nuclear_until: datetime | None,
                           nitrogen_until: datetime | None) -> int:
     """
-    Рофло-микросекунды, заработанные роботом kind за [start, end),
+    Монето-микросекунды, заработанные роботом kind за [start, end),
     с разбиением на сегменты по моментам окончания бустов.
     """
     if end <= start:

@@ -5,7 +5,7 @@
 безлимита (users.unlimit_until), все движения монет — через ledger.
 
 Викторина: таймер 10 секунд (вотчдог-задача; не успел — проигрыш) и прогрессивные
-уровни — уровень N закрывается за N×10 верных ответов и даёт N×100 рофлов.
+уровни — уровень N закрывается за N×10 верных ответов и даёт N×100 монет.
 Все тексты — через shared/locales (ru/en).
 """
 from __future__ import annotations
@@ -172,7 +172,7 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
                     """,
                     user_id, 1 if is_win else 0, today)
 
-            # Прогрессивные уровни викторины: уровень N = N*10 верных ответов → N*100 рофлов
+            # Прогрессивные уровни викторины: уровень N = N*10 верных ответов → N*100 монет
             if is_win and game_type == "quiz":
                 row = await conn.fetchrow(
                     "UPDATE game_stats SET quiz_correct_total = quiz_correct_total + 1, "

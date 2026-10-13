@@ -23,10 +23,10 @@ MAX_PRIZE_PLACES = 10
 
 # Номинации: kind определяет формулу подсчёта по ledger/users за окно битвы
 BATTLE_NOMINATIONS: dict[str, dict] = {
-    "farm_mined": {"title": "⛏️ Больше всех нафармить рофлов фермой",
-                   "kind": "ledger_sum", "reason": "mining", "unit": "рофлов"},
-    "coins_earned": {"title": "💰 Больше всех заработать рофлов (все источники)",
-                     "kind": "ledger_sum_positive", "unit": "рофлов"},
+    "farm_mined": {"title": "⛏️ Больше всех нафармить монет фермой",
+                   "kind": "ledger_sum", "reason": "mining", "unit": "монет"},
+    "coins_earned": {"title": "💰 Больше всех заработать монет (все источники)",
+                     "kind": "ledger_sum_positive", "unit": "монет"},
     "duel_wins": {"title": "⚔️ Больше всех побед в дуэлях",
                   "kind": "ledger_count", "reason": "duel_win", "unit": "побед"},
     "duels_played": {"title": "🎲 Больше всех сыгранных дуэлей",

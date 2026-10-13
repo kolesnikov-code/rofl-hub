@@ -202,12 +202,12 @@ def _auction_text(auction) -> str:
         "..................................................\n\n"
         f"🎁 Лот: <b>{html.escape(auction['item_title'])}</b>\n"
         f"📝 Описание: <i>{html.escape(auction['item_desc'] or '')}</i>\n\n"
-        f"💰 Текущая цена: <b>{auction['current_price']} рофлов</b>\n"
+        f"💰 Текущая цена: <b>{auction['current_price']} монет</b>\n"
         f"👑 Лидер: {leader}\n\n"
         "..................................................\n"
         "⚠️ <b>ПРАВИЛА:</b> <i>Ставка списывается сразу. Если тебя перебили — вся сумма мгновенно "
         "возвращается на баланс. Монеты окончательно списываются только у победителя при закрытии лота. "
-        f"Минимальный шаг: <b>+{auction['min_step']} рофлов</b>.</i>"
+        f"Минимальный шаг: <b>+{auction['min_step']} монет</b>.</i>"
     )
 
 
@@ -231,7 +231,7 @@ async def trigger_inline_auction_window(message: types.Message, auction_id: int)
         await message.answer(
             f"📦 <b>Лот «{html.escape(auction['item_title'])}» закрыт.</b>\n"
             f"Победитель: ID <code>{auction['highest_bidder_id'] or '—'}</code> · "
-            f"Финальная цена: <b>{auction['current_price']} рофлов</b>.", parse_mode="HTML")
+            f"Финальная цена: <b>{auction['current_price']} монет</b>.", parse_mode="HTML")
         return
     await message.answer(_auction_text(auction), reply_markup=_auction_kb(auction), parse_mode="HTML")
 
@@ -264,7 +264,7 @@ async def process_auction_bid_click(callback: types.CallbackQuery):
             if not result.ok:
                 messages = {
                     "closed": "🚨 Лот уже закрыт!",
-                    "insufficient_funds": f"❌ Нужно {result.bidder_charge} рофлов, у тебя {user['balance']}.",
+                    "insufficient_funds": f"❌ Нужно {result.bidder_charge} монет, у тебя {user['balance']}.",
                 }
                 await callback.answer(messages.get(result.reason, "❌ Ставка отклонена."), show_alert=True)
                 return
@@ -283,11 +283,11 @@ async def process_auction_bid_click(callback: types.CallbackQuery):
             await callback.bot.send_message(
                 result.previous_bidder_id,
                 f"⚠️ Твою ставку на лот «{html.escape(auction['item_title'])}» перебили!\n"
-                f"💰 {result.refund_to_previous} рофлов возвращены на баланс.", parse_mode="HTML")
+                f"💰 {result.refund_to_previous} монет возвращены на баланс.", parse_mode="HTML")
         except Exception:
             pass
 
-    await callback.answer(f"💥 Ставка принята! Цена лота: {result.new_price} рофлов.", show_alert=True)
+    await callback.answer(f"💥 Ставка принята! Цена лота: {result.new_price} монет.", show_alert=True)
     await update_auction_view_text(callback, auction_id)
 
 

@@ -384,7 +384,7 @@ async def test_duel_full_cycle_with_burn(conn):
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 91") == 0
     reasons = [r["reason"] for r in await conn.fetch("SELECT reason FROM ledger ORDER BY id")]
     assert reasons == ["duel_stake", "duel_stake", "duel_win"]
-    # 40 рофлов исчезли из оборота навсегда
+    # 40 монет исчезли из оборота навсегда
     assert await conn.fetchval("SELECT SUM(delta) FROM ledger") == -40
 
 

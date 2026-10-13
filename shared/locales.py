@@ -144,14 +144,14 @@ RU: dict[str, str] = {
         "• /games — Инлайн-хаб всех игр против бота\n"
         "• /quiz — Викторина на скорость: 10 секунд на ответ, уровни и бонусы\n"
         "• /duel — ДУЭЛИ 1-на-1 с живыми игроками: столы 10/100/1000\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Быстрые игры на рофлы\n\n"
+        "• /rps, /high_low, /coin, /dice, /safe — Быстрые игры на монеты\n\n"
         "👥 <b>УПРАВЛЕНИЕ БАНДАМИ:</b>\n"
-        "• /create_team — Зарегистрировать свою команду за 100 000 рофлов\n"
+        "• /create_team — Зарегистрировать свою команду за 100 000 монет\n"
         "• /my_team — Дашборд банды и СПИСОК ТИММЕЙТОВ с уровнями 🧠\n"
         "• /all_teams — Игровая рулетка случайных команд СНГ\n\n"
         "💸 <b>ДЕНЬГИ И ДРУЗЬЯ:</b>\n"
-        "• /invite — Твоя реферальная ссылка: +1000 рофлов за друга\n"
-        "• /transfer — Перевести рофлы другому игроку\n\n"
+        "• /invite — Твоя реферальная ссылка: +1000 монет за друга\n"
+        "• /transfer — Перевести монеты другому игроку\n\n"
         "📚 <b>ЮРИДИЧЕСКИЙ БЛОК:</b>\n"
         "• /faq — Часто задаваемые вопросы и ответы\n"
         "• /rules — Пользовательское соглашение и юридический бронежилет\n"
@@ -163,9 +163,9 @@ RU: dict[str, str] = {
         "..................................................\n\n"
         "Здесь ты можешь сразиться с ботом в быстрых дуэлях или пройти "
         "интеллектуальный спринт-тест, чтобы сорвать куш или слить баланс!\n\n"
-        "💸 Победа приносит: <b>+2 рофла</b> (Кибер-Сейф: <b>+5</b>)\n"
-        "💀 Проигрыш или ничья списывает: <b>-1 рофл</b>\n"
-        "🧠 В Викторине — таймер 10 секунд и уровни интеллекта: 1-й уровень — 10 верных ответов и <b>+100 рофлов</b>, "
+        "💸 Победа приносит: <b>+2 монеты</b> (Кибер-Сейф: <b>+5</b>)\n"
+        "💀 Проигрыш или ничья списывает: <b>-1 монета</b>\n"
+        "🧠 В Викторине — таймер 10 секунд и уровни интеллекта: 1-й уровень — 10 верных ответов и <b>+100 монет</b>, "
         "дальше каждый уровень на 10 ответов длиннее, но и награда растёт на 100!\n\n"
         "..................................................\n"
         "👇 <b>КЛИКАЙ ПО КНОПКЕ НИЖЕ ДЛЯ НЕМЕДЛЕННОГО СТАРТА РAУНДA:</b>"
@@ -204,12 +204,12 @@ RU: dict[str, str] = {
         "🚜 <b>ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ ROFL HUB</b>\n"
         "..................................................\n\n"
         "🤖 Активных роботов на заводе: <b>{total} шт.</b>\n"
-        "• Младшие Майнеры ({junior_rate} рофлов/ч): <code>{junior} шт.</code>\n"
-        "• Кибер-Бурильщики ({premium_rate} рофлов/ч): <code>{premium} шт.</code>\n"
+        "• Младшие Майнеры ({junior_rate} монет/ч): <code>{junior} шт.</code>\n"
+        "• Кибер-Бурильщики ({premium_rate} монет/ч): <code>{premium} шт.</code>\n"
         "{burnout}\n"
         "📊 <b>АКТУАЛЬНАЯ СКОРОСТЬ ТВОЕЙ ФЕРМЫ:</b>\n"
-        "• Выработка в час: <b>+{speed_hour} рофлов</b>\n"
-        "• Выработка в сутки: <b>+{speed_day} рофлов</b>\n\n"
+        "• Выработка в час: <b>+{speed_hour} монет</b>\n"
+        "• Выработка в сутки: <b>+{speed_day} монет</b>\n\n"
         "⚡ <b>УСИЛЕНИЯ:</b>\n{boosts}\n\n"
         "📋 <b>СТАТУС ИГРОВОГО ЗАВОДА:</b>\n"
         "{status}\n\n"
@@ -233,10 +233,10 @@ RU: dict[str, str] = {
         "..................................................\n\n"
         "🆔 Твой ID Паспорта: <code>{user_id}</code>\n"
         "{vip}"
-        "💰 Монеты сейчас: <b>{balance} рофлов</b>\n"
+        "💰 Монеты сейчас: <b>{balance} монет</b>\n"
         "🏆 Твой статус: <b>{team}</b>\n"
         "🧠 Уровень интеллекта: <b>{level}</b> · до уровня {next_level}: "
-        "<b>{left}</b> верных ответов в /quiz (награда: +{reward} рофлов)\n\n"
+        "<b>{left}</b> верных ответов в /quiz (награда: +{reward} монет)\n\n"
         "..................................................\n"
         "<i>Здесь показано то, что есть у тебя прямо сейчас. Используй кнопки для перелёта в другие разделы!</i>"
     ),
@@ -257,30 +257,30 @@ RU: dict[str, str] = {
     ),
     "img.passport": "ID ПАСПОРТА: {user_id}",
     "img.owner": "ВОЖАК: @{username}",
-    "img.balance": "Баланс: {balance} рофлов",
+    "img.balance": "Баланс: {balance} монет",
     "img.fridge": "В холодильнике: {fridge} / {capacity} шт.",
     "img.inv": "Котлеты на складе: {inv} шт.",
     "img.junior": "Младшие Майнеры: {count} шт.",
     "img.premium": "Кибер-Бурильщики: {count} шт.",
 
     # ---------------- игры: общий движок ----------------
-    "games.win": "🎉 ПОБЕДА! Начислено: <b>+{reward} рофл.</b>",
-    "games.lose": "💀 ПРОИГРЫШ! Сбор раунда: <b>-{penalty} рофл</b>.",
-    "games.draw": "🤝 НИЧЬЯ! Сбор раунда: <b>-{penalty} рофл</b>.",
+    "games.win": "🎉 ПОБЕДА! Начислено: <b>+{reward} монет.</b>",
+    "games.lose": "💀 ПРОИГРЫШ! Сбор раунда: <b>-{penalty} монета</b>.",
+    "games.draw": "🤝 НИЧЬЯ! Сбор раунда: <b>-{penalty} монета</b>.",
     "games.limit": (
         "🛑 <b>Суточный лимит достигнут!</b>\n\n"
         "В игре {game} ты уже забрал {limit} побед на сегодня. Лимит обновится в 00:00 UTC.\n\n"
         "⚡ Снять лимит на 24 часа — 5 ★, на 30 дней — 99 ★ (раздел «Игровые» в /shop)."
     ),
-    "games.no_coins": "❌ У тебя 0 рофлов — нечем оплатить сбор раунда. Забери доход с фермы в /farm!",
-    "games.balance": "💰 Баланс: <b>{balance} рофлов</b>",
+    "games.no_coins": "❌ У тебя 0 монет — нечем оплатить сбор раунда. Забери доход с фермы в /farm!",
+    "games.balance": "💰 Баланс: <b>{balance} монет</b>",
     "games.btn_retry": "🎮 Сыграть ещё раз!",
     "games.btn_hub": "🕹️ Игровая зона",
     "games.level_up": (
-        "🏅 <b>УРОВЕНЬ ИНТЕЛЛЕКТА ПОВЫШЕН: {level}!</b> Награда: <b>+{bonus} рофлов</b>!\n"
-        "Следующий уровень: {next_required} верных ответов → +{next_reward} рофлов."
+        "🏅 <b>УРОВЕНЬ ИНТЕЛЛЕКТА ПОВЫШЕН: {level}!</b> Награда: <b>+{bonus} монет</b>!\n"
+        "Следующий уровень: {next_required} верных ответов → +{next_reward} монет."
     ),
-    "games.level_progress": "📚 До уровня <b>{level}</b>: ещё <b>{left}</b> верных (награда +{reward} рофлов).",
+    "games.level_progress": "📚 До уровня <b>{level}</b>: ещё <b>{left}</b> верных (награда +{reward} монет).",
     "games.name.rps": "Камень-Ножницы-Бумага",
     "games.name.hl": "Больше/Меньше",
     "games.name.quiz": "Викторина",
@@ -315,7 +315,7 @@ RU: dict[str, str] = {
     "quiz.round": (
         "🧠 <b>ВИКТОРИНА · {category}</b>\n"
         "🏅 Уровень интеллекта: <b>{level}</b> · До уровня {next_level}: "
-        "<b>{progress}/{required}</b> верных (+{reward} рофлов)\n\n"
+        "<b>{progress}/{required}</b> верных (+{reward} монет)\n\n"
         "❓ {question}\n\n"
         "⏱ <b>На ответ — {seconds} секунд!</b> Не успел — проигрыш.\n"
         "<i>Верно: <b>+{win}</b> · Ошибка: <b>-{penalty}</b> · Лимит: <b>{limit}</b> побед</i>"
@@ -352,7 +352,7 @@ RU: dict[str, str] = {
     # ---------------- Сейф ----------------
     "safe.intro": (
         "🔐 <b>КИБЕР-СЕЙФ</b>\n\n"
-        "Внутри — куш <b>{jackpot} рофлов</b>! Дверца заперта кодом от 1 до {codes}. "
+        "Внутри — куш <b>{jackpot} монет</b>! Дверца заперта кодом от 1 до {codes}. "
         "У тебя одна попытка.\n"
         "Вскрыл: <b>+{jackpot}</b> · Сигнализация: <b>-{penalty}</b> · Лимит: <b>{limit}</b> побед"
     ),
@@ -373,21 +373,21 @@ RU: dict[str, str] = {
         "🏆 Победы в дуэлях идут в зачёт твоей команды в Битвах!\n\n"
         "👇 <b>ВЫБЕРИ СТОЛ:</b>"
     ),
-    "duel.btn_table": "⚔️ Стол {stake} рофлов",
+    "duel.btn_table": "⚔️ Стол {stake} монет",
     "duel.btn_cancel": "❌ Покинуть стол (вернуть ставку)",
     "duel.btn_move_rock": "🪨 Камень",
     "duel.btn_move_scissors": "✂️ Ножницы",
     "duel.btn_move_paper": "🧻 Бумага",
     "duel.waiting": (
-        "🪑 <b>Ты за столом {stake} рофлов.</b> Ставка в банке.\n"
+        "🪑 <b>Ты за столом {stake} монет.</b> Ставка в банке.\n"
         "Ждём второго бойца... Как только он сядет — вам обоим придёт выбор жеста!\n"
         "<i>Очередь живёт {ttl} минут, потом ставка вернётся автоматически.</i>"
     ),
-    "duel.cancelled": "🚪 Ты покинул стол. Ставка <b>{stake} рофлов</b> вернулась на баланс.",
-    "duel.expired": "⌛ Соперник за столом {stake} так и не нашёлся. Ставка <b>{stake} рофлов</b> возвращена.",
+    "duel.cancelled": "🚪 Ты покинул стол. Ставка <b>{stake} монет</b> вернулась на баланс.",
+    "duel.expired": "⌛ Соперник за столом {stake} так и не нашёлся. Ставка <b>{stake} монет</b> возвращена.",
     "duel.matched": (
-        "⚔️ <b>СОПЕРНИК НАЙДЕН! Стол {stake} рофлов.</b>\n"
-        "Банк: <b>{bank} рофлов</b> · Победителю: <b>{payout}</b>\n\n"
+        "⚔️ <b>СОПЕРНИК НАЙДЕН! Стол {stake} монет.</b>\n"
+        "Банк: <b>{bank} монет</b> · Победителю: <b>{payout}</b>\n\n"
         "⏱ У тебя <b>{timeout} секунд</b> на выбор жеста!"
     ),
     "duel.move_saved": "✊ Жест принят! Ждём жест соперника...",
@@ -398,19 +398,19 @@ RU: dict[str, str] = {
     "duel.win": (
         "🏆 <b>ДУЭЛЬ ТВОЯ!</b>\n\n"
         "Твой жест {winner_move} бьёт {loser_move}.\n"
-        "💰 Выигрыш: <b>+{payout} рофлов</b> · 🔥 Сгорело в банке: {burned}\n"
-        "💼 Баланс: <b>{balance} рофлов</b>"
+        "💰 Выигрыш: <b>+{payout} монет</b> · 🔥 Сгорело в банке: {burned}\n"
+        "💼 Баланс: <b>{balance} монет</b>"
     ),
     "duel.lose": (
         "💀 <b>ДУЭЛЬ ПРОИГРАНА.</b>\n\n"
         "{winner_move} соперника бьёт твой {loser_move}.\n"
-        "📉 Ставка <b>{stake} рофлов</b> ушла в банк победителя.\n"
+        "📉 Ставка <b>{stake} монет</b> ушла в банк победителя.\n"
         "Реванш?"
     ),
     "duel.reaper_prefix": "⏰ <b>Тайм-аут раунда!</b> Недостающие жесты выбрал генератор случайности.\n\n",
     "duel.bad_table": "❌ Такого стола не существует.",
     "duel.already_in": "⚠️ Ты уже за столом или в бою! Сначала закончи текущую дуэль.",
-    "duel.no_coins": "❌ Для этого стола нужно {stake} рофлов на балансе.",
+    "duel.no_coins": "❌ Для этого стола нужно {stake} монет на балансе.",
     "duel.cancel_impossible": "⚠️ Эту очередь уже нельзя отменить (соперник найден или стол закрыт).",
     "duel.not_active": "⌛ Эта дуэль уже завершена.",
     "duel.not_participant": "🔒 Это не твоя дуэль!",
@@ -425,12 +425,12 @@ RU: dict[str, str] = {
     "ref.text": (
         "🤝 <b>РЕФЕРАЛЬНАЯ ПРОГРАММА ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Приглашай друзей и получай <b>+{bonus} рофлов</b> за каждого, "
+        "Приглашай друзей и получай <b>+{bonus} монет</b> за каждого, "
         "кто зарегистрируется по твоей персональной ссылке!\n\n"
         "🔗 <b>Твоя ссылка (нажми, чтобы скопировать):</b>\n<code>{link}</code>\n\n"
         "📊 <b>ТВОЯ СТАТИСТИКА:</b>\n"
         "👥 Приглашено друзей: <b>{invited} чел.</b>\n"
-        "💰 Заработано на рефералах: <b>{earned} рофлов</b>\n\n"
+        "💰 Заработано на рефералах: <b>{earned} монет</b>\n\n"
         "..................................................\n"
         "<i>Кидай ссылку в чаты класса, друзьям и в соцсети — чем больше банда, тем быстрее растёт твой баланс!</i>"
     ),
@@ -446,22 +446,22 @@ RU: dict[str, str] = {
         "<code>/transfer @username сумма</code> — по юзернейму\n"
         "<code>/transfer ROFL-HUB-777 сумма</code> — по VIP ID с аукциона\n\n"
         "Примеры:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 Минимальная сумма: <b>{min} рофлов</b>"
+        "📌 Минимальная сумма: <b>{min} монет</b>"
     ),
     "tr.not_found": "❌ Получатель не найден. Проверь ID Паспорта или @username — игрок должен быть зарегистрирован в боте.",
     "tr.self": "🤨 Перевести монеты самому себе нельзя — это была бы вечная экономика!",
     "tr.blocked": "🚫 Этот игрок заблокирован — переводы ему недоступны.",
-    "tr.min": "❌ Минимальная сумма перевода — {min} рофлов.",
-    "tr.insufficient": "❌ Недостаточно рофлов! Твой баланс: <b>{balance}</b>.",
-    "tr.err_insufficient": "❌ Недостаточно рофлов на балансе.",
+    "tr.min": "❌ Минимальная сумма перевода — {min} монет.",
+    "tr.insufficient": "❌ Недостаточно монет! Твой баланс: <b>{balance}</b>.",
+    "tr.err_insufficient": "❌ Недостаточно монет на балансе.",
     "tr.confirm": (
         "🔄 <b>ПОДТВЕРДИ ПЕРЕВОД:</b>\n\n"
         "👤 Получатель: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Сумма списания: <b>{amount} рофлов</b>{fee_line}\n"
-        "💰 Адресат получит: <b>{received} рофлов</b>\n\n"
+        "💸 Сумма списания: <b>{amount} монет</b>{fee_line}\n"
+        "💰 Адресат получит: <b>{received} монет</b>\n\n"
         "<i>Переводы отменить нельзя — проверь получателя!</i>"
     ),
-    "tr.fee_line": "\n🔥 Комиссия хаба: <b>{fee} рофлов</b> (сгорит)",
+    "tr.fee_line": "\n🔥 Комиссия хаба: <b>{fee} монет</b> (сгорит)",
     "tr.btn_confirm": "✅ ПОДТВЕРДИТЬ ПЕРЕВОД",
     "tr.btn_cancel": "❌ Отмена",
     "tr.cancelled_toast": "Перевод отменён",
@@ -470,11 +470,11 @@ RU: dict[str, str] = {
     "tr.done_toast": "✅ Перевод выполнен!",
     "tr.done": (
         "✅ <b>ПЕРЕВОД ВЫПОЛНЕН!</b>\n\n"
-        "💸 Отправлено: <b>{amount} рофлов</b> игроку ID <code>{recipient_id}</code>\n"
-        "💰 Твой баланс: <b>{balance} рофлов</b>"
+        "💸 Отправлено: <b>{amount} монет</b> игроку ID <code>{recipient_id}</code>\n"
+        "💰 Твой баланс: <b>{balance} монет</b>"
     ),
     "tr.received": (
-        "💰 <b>Тебе перевели {amount} рофлов!</b>\n"
+        "💰 <b>Тебе перевели {amount} монет!</b>\n"
         "Отправитель: ID <code>{sender_id}</code>. Баланс уже пополнен — проверь /profile!"
     ),
 
@@ -491,7 +491,7 @@ RU: dict[str, str] = {
     "shop.cat_games": (
         "🕹️ <b>МАГАЗИН · ИГРОВЫЕ</b>\n"
         "..................................................\n"
-        "Снятие лимитов побед, паки рофлов и лицензия Мега-Клана.\n"
+        "Снятие лимитов побед, паки монет и лицензия Мега-Клана.\n"
         "..................................................\n"
         "👇 <b>Выбери товар:</b>"
     ),
@@ -526,7 +526,7 @@ RU: dict[str, str] = {
     "dlv.miner_junior": "Младший Майнер",
     "dlv.miner_premium": "Кибер-Бурильщик",
     "dlv.fridge": "📦 Холодильник расширен до <b>{capacity} котлет</b>.",
-    "dlv.coins": "💰 Зачислено <b>+{amount} рофлов</b>.",
+    "dlv.coins": "💰 Зачислено <b>+{amount} монет</b>.",
     "dlv.boost_nuclear": "🔋 Ядерный Разгон x5 активен до <b>{until} UTC</b>.",
     "dlv.boost_nitrogen": "❄️ Азотное Охлаждение +40% активен до <b>{until} UTC</b>.",
     "dlv.drone": "🛸 Мастер-дрон охраняет ферму до <b>{until} UTC</b>.",
@@ -675,14 +675,14 @@ EN: dict[str, str] = {
         "• /games — Inline hub of all games against the bot\n"
         "• /quiz — Speed quiz: 10 seconds per answer, levels and bonuses\n"
         "• /duel — 1-on-1 DUELS with real players: tables 10/100/1000\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Quick games for rofls\n\n"
+        "• /rps, /high_low, /coin, /dice, /safe — Quick games for coins\n\n"
         "👥 <b>CREW MANAGEMENT:</b>\n"
-        "• /create_team — Register your own team for 100,000 rofls\n"
+        "• /create_team — Register your own team for 100,000 coins\n"
         "• /my_team — Crew dashboard and the TEAMMATE LIST with 🧠 levels\n"
         "• /all_teams — Roulette of random teams\n\n"
         "💸 <b>MONEY & FRIENDS:</b>\n"
-        "• /invite — Your referral link: +1000 rofls per friend\n"
-        "• /transfer — Send rofls to another player\n\n"
+        "• /invite — Your referral link: +1000 coins per friend\n"
+        "• /transfer — Send coins to another player\n\n"
         "📚 <b>LEGAL:</b>\n"
         "• /faq — Frequently asked questions\n"
         "• /rules — User agreement\n"
@@ -694,9 +694,9 @@ EN: dict[str, str] = {
         "..................................................\n\n"
         "Fight the bot in quick duels or take the intellectual sprint test "
         "to win big — or lose it all!\n\n"
-        "💸 A win pays: <b>+2 rofls</b> (Cyber-Safe: <b>+5</b>)\n"
-        "💀 A loss or draw costs: <b>-1 rofl</b>\n"
-        "🧠 The Quiz has a 10-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 rofls</b>, "
+        "💸 A win pays: <b>+2 coins</b> (Cyber-Safe: <b>+5</b>)\n"
+        "💀 A loss or draw costs: <b>-1 coin</b>\n"
+        "🧠 The Quiz has a 10-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 coins</b>, "
         "each next level is 10 answers longer — but the reward grows by 100!\n\n"
         "..................................................\n"
         "👇 <b>TAP A BUTTON BELOW TO START A ROUND RIGHT NOW:</b>"
@@ -735,12 +735,12 @@ EN: dict[str, str] = {
         "🚜 <b>ROFL HUB CENTRAL FUEL HUB</b>\n"
         "..................................................\n\n"
         "🤖 Active robots at the plant: <b>{total}</b>\n"
-        "• Miner Bots ({junior_rate} rofls/h): <code>{junior}</code>\n"
-        "• Cyber-Drillers ({premium_rate} rofls/h): <code>{premium}</code>\n"
+        "• Miner Bots ({junior_rate} coins/h): <code>{junior}</code>\n"
+        "• Cyber-Drillers ({premium_rate} coins/h): <code>{premium}</code>\n"
         "{burnout}\n"
         "📊 <b>YOUR FARM'S CURRENT SPEED:</b>\n"
-        "• Output per hour: <b>+{speed_hour} rofls</b>\n"
-        "• Output per day: <b>+{speed_day} rofls</b>\n\n"
+        "• Output per hour: <b>+{speed_hour} coins</b>\n"
+        "• Output per day: <b>+{speed_day} coins</b>\n\n"
         "⚡ <b>BOOSTS:</b>\n{boosts}\n\n"
         "📋 <b>PLANT STATUS:</b>\n"
         "{status}\n\n"
@@ -764,10 +764,10 @@ EN: dict[str, str] = {
         "..................................................\n\n"
         "🆔 Your Passport ID: <code>{user_id}</code>\n"
         "{vip}"
-        "💰 Coins right now: <b>{balance} rofls</b>\n"
+        "💰 Coins right now: <b>{balance} coins</b>\n"
         "🏆 Your status: <b>{team}</b>\n"
         "🧠 Intellect level: <b>{level}</b> · to level {next_level}: "
-        "<b>{left}</b> correct answers in /quiz (reward: +{reward} rofls)\n\n"
+        "<b>{left}</b> correct answers in /quiz (reward: +{reward} coins)\n\n"
         "..................................................\n"
         "<i>This is what you own right now. Use the buttons to jump to other sections!</i>"
     ),
@@ -788,30 +788,30 @@ EN: dict[str, str] = {
     ),
     "img.passport": "PASSPORT ID: {user_id}",
     "img.owner": "LEADER: @{username}",
-    "img.balance": "Balance: {balance} rofls",
+    "img.balance": "Balance: {balance} coins",
     "img.fridge": "In fridge: {fridge} / {capacity}",
     "img.inv": "Cutlets in stock: {inv}",
     "img.junior": "Miner Bots: {count}",
     "img.premium": "Cyber-Drillers: {count}",
 
     # ---------------- games engine ----------------
-    "games.win": "🎉 VICTORY! Awarded: <b>+{reward} rofls.</b>",
-    "games.lose": "💀 DEFEAT! Round fee: <b>-{penalty} rofl</b>.",
-    "games.draw": "🤝 DRAW! Round fee: <b>-{penalty} rofl</b>.",
+    "games.win": "🎉 VICTORY! Awarded: <b>+{reward} coins.</b>",
+    "games.lose": "💀 DEFEAT! Round fee: <b>-{penalty} coin</b>.",
+    "games.draw": "🤝 DRAW! Round fee: <b>-{penalty} coin</b>.",
     "games.limit": (
         "🛑 <b>Daily limit reached!</b>\n\n"
         "You've already taken {limit} wins in {game} today. The limit resets at 00:00 UTC.\n\n"
         "⚡ Remove the limit for 24 hours — 5 ★, for 30 days — 99 ★ (the “Gaming” section in /shop)."
     ),
-    "games.no_coins": "❌ You have 0 rofls — nothing to pay the round fee with. Collect your farm income in /farm!",
-    "games.balance": "💰 Balance: <b>{balance} rofls</b>",
+    "games.no_coins": "❌ You have 0 coins — nothing to pay the round fee with. Collect your farm income in /farm!",
+    "games.balance": "💰 Balance: <b>{balance} coins</b>",
     "games.btn_retry": "🎮 Play again!",
     "games.btn_hub": "🕹️ Game zone",
     "games.level_up": (
-        "🏅 <b>INTELLECT LEVEL UP: {level}!</b> Reward: <b>+{bonus} rofls</b>!\n"
-        "Next level: {next_required} correct answers → +{next_reward} rofls."
+        "🏅 <b>INTELLECT LEVEL UP: {level}!</b> Reward: <b>+{bonus} coins</b>!\n"
+        "Next level: {next_required} correct answers → +{next_reward} coins."
     ),
-    "games.level_progress": "📚 To level <b>{level}</b>: <b>{left}</b> more correct (reward +{reward} rofls).",
+    "games.level_progress": "📚 To level <b>{level}</b>: <b>{left}</b> more correct (reward +{reward} coins).",
     "games.name.rps": "Rock-Paper-Scissors",
     "games.name.hl": "High/Low",
     "games.name.quiz": "Quiz",
@@ -846,7 +846,7 @@ EN: dict[str, str] = {
     "quiz.round": (
         "🧠 <b>QUIZ · {category}</b>\n"
         "🏅 Intellect level: <b>{level}</b> · To level {next_level}: "
-        "<b>{progress}/{required}</b> correct (+{reward} rofls)\n\n"
+        "<b>{progress}/{required}</b> correct (+{reward} coins)\n\n"
         "❓ {question}\n\n"
         "⏱ <b>{seconds} seconds to answer!</b> Too slow — you lose.\n"
         "<i>Correct: <b>+{win}</b> · Mistake: <b>-{penalty}</b> · Limit: <b>{limit}</b> wins</i>\n"
@@ -884,7 +884,7 @@ EN: dict[str, str] = {
     # ---------------- Safe ----------------
     "safe.intro": (
         "🔐 <b>CYBER-SAFE</b>\n\n"
-        "Inside — a <b>{jackpot} rofl</b> jackpot! The door is locked with a code from 1 to {codes}. "
+        "Inside — a <b>{jackpot} coin</b> jackpot! The door is locked with a code from 1 to {codes}. "
         "You get one try.\n"
         "Cracked: <b>+{jackpot}</b> · Alarm: <b>-{penalty}</b> · Limit: <b>{limit}</b> wins"
     ),
@@ -906,21 +906,21 @@ EN: dict[str, str] = {
         "🏆 Duel wins count for your team in Battles!\n\n"
         "👇 <b>PICK A TABLE:</b>"
     ),
-    "duel.btn_table": "⚔️ Table {stake} rofls",
+    "duel.btn_table": "⚔️ Table {stake} coins",
     "duel.btn_cancel": "❌ Leave the table (refund stake)",
     "duel.btn_move_rock": "🪨 Rock",
     "duel.btn_move_scissors": "✂️ Scissors",
     "duel.btn_move_paper": "🧻 Paper",
     "duel.waiting": (
-        "🪑 <b>You're at the {stake} rofl table.</b> Your stake is in the pot.\n"
+        "🪑 <b>You're at the {stake} coin table.</b> Your stake is in the pot.\n"
         "Waiting for a second fighter... Once they sit down, you'll both get the gesture pick!\n"
         "<i>The queue lives {ttl} minutes, then your stake returns automatically.</i>"
     ),
-    "duel.cancelled": "🚪 You left the table. The <b>{stake} rofl</b> stake is back on your balance.",
-    "duel.expired": "⌛ No opponent showed up at the {stake} table. Your <b>{stake} rofl</b> stake was refunded.",
+    "duel.cancelled": "🚪 You left the table. The <b>{stake} coin</b> stake is back on your balance.",
+    "duel.expired": "⌛ No opponent showed up at the {stake} table. Your <b>{stake} coin</b> stake was refunded.",
     "duel.matched": (
-        "⚔️ <b>OPPONENT FOUND! Table {stake} rofls.</b>\n"
-        "Pot: <b>{bank} rofls</b> · Winner takes: <b>{payout}</b>\n\n"
+        "⚔️ <b>OPPONENT FOUND! Table {stake} coins.</b>\n"
+        "Pot: <b>{bank} coins</b> · Winner takes: <b>{payout}</b>\n\n"
         "⏱ You have <b>{timeout} seconds</b> to pick your gesture!"
     ),
     "duel.move_saved": "✊ Gesture locked in! Waiting for your opponent...",
@@ -931,19 +931,19 @@ EN: dict[str, str] = {
     "duel.win": (
         "🏆 <b>THE DUEL IS YOURS!</b>\n\n"
         "Your {winner_move} beats {loser_move}.\n"
-        "💰 Winnings: <b>+{payout} rofls</b> · 🔥 Burned from the pot: {burned}\n"
-        "💼 Balance: <b>{balance} rofls</b>"
+        "💰 Winnings: <b>+{payout} coins</b> · 🔥 Burned from the pot: {burned}\n"
+        "💼 Balance: <b>{balance} coins</b>"
     ),
     "duel.lose": (
         "💀 <b>DUEL LOST.</b>\n\n"
         "The opponent's {winner_move} beats your {loser_move}.\n"
-        "📉 Your <b>{stake} rofl</b> stake went to the winner's pot.\n"
+        "📉 Your <b>{stake} coin</b> stake went to the winner's pot.\n"
         "Rematch?"
     ),
     "duel.reaper_prefix": "⏰ <b>Round timeout!</b> The missing gestures were picked by the random generator.\n\n",
     "duel.bad_table": "❌ No such table exists.",
     "duel.already_in": "⚠️ You're already at a table or in a fight! Finish your current duel first.",
-    "duel.no_coins": "❌ You need {stake} rofls on your balance for this table.",
+    "duel.no_coins": "❌ You need {stake} coins on your balance for this table.",
     "duel.cancel_impossible": "⚠️ This queue can no longer be cancelled (an opponent was found or the table is closed).",
     "duel.not_active": "⌛ This duel is already over.",
     "duel.not_participant": "🔒 This is not your duel!",
@@ -958,12 +958,12 @@ EN: dict[str, str] = {
     "ref.text": (
         "🤝 <b>ROFL HUB REFERRAL PROGRAM</b>\n"
         "..................................................\n\n"
-        "Invite friends and get <b>+{bonus} rofls</b> for everyone "
+        "Invite friends and get <b>+{bonus} coins</b> for everyone "
         "who registers via your personal link!\n\n"
         "🔗 <b>Your link (tap to copy):</b>\n<code>{link}</code>\n\n"
         "📊 <b>YOUR STATS:</b>\n"
         "👥 Friends invited: <b>{invited}</b>\n"
-        "💰 Earned from referrals: <b>{earned} rofls</b>\n\n"
+        "💰 Earned from referrals: <b>{earned} coins</b>\n\n"
         "..................................................\n"
         "<i>Share the link with classmates, friends and socials — the bigger the crew, the faster your balance grows!</i>"
     ),
@@ -979,22 +979,22 @@ EN: dict[str, str] = {
         "<code>/transfer @username amount</code> — by username\n"
         "<code>/transfer ROFL-HUB-777 amount</code> — by an auction VIP ID\n\n"
         "Examples:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 Minimum amount: <b>{min} rofls</b>"
+        "📌 Minimum amount: <b>{min} coins</b>"
     ),
     "tr.not_found": "❌ Recipient not found. Check the Passport ID or @username — the player must be registered in the bot.",
     "tr.self": "🤨 You can't transfer coins to yourself — that would be a perpetual economy!",
     "tr.blocked": "🚫 This player is blocked — transfers to them are unavailable.",
-    "tr.min": "❌ The minimum transfer is {min} rofls.",
-    "tr.insufficient": "❌ Not enough rofls! Your balance: <b>{balance}</b>.",
-    "tr.err_insufficient": "❌ Not enough rofls on your balance.",
+    "tr.min": "❌ The minimum transfer is {min} coins.",
+    "tr.insufficient": "❌ Not enough coins! Your balance: <b>{balance}</b>.",
+    "tr.err_insufficient": "❌ Not enough coins on your balance.",
     "tr.confirm": (
         "🔄 <b>CONFIRM THE TRANSFER:</b>\n\n"
         "👤 Recipient: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Amount to send: <b>{amount} rofls</b>{fee_line}\n"
-        "💰 The recipient gets: <b>{received} rofls</b>\n\n"
+        "💸 Amount to send: <b>{amount} coins</b>{fee_line}\n"
+        "💰 The recipient gets: <b>{received} coins</b>\n\n"
         "<i>Transfers cannot be undone — double-check the recipient!</i>"
     ),
-    "tr.fee_line": "\n🔥 Hub fee: <b>{fee} rofls</b> (burned)",
+    "tr.fee_line": "\n🔥 Hub fee: <b>{fee} coins</b> (burned)",
     "tr.btn_confirm": "✅ CONFIRM TRANSFER",
     "tr.btn_cancel": "❌ Cancel",
     "tr.cancelled_toast": "Transfer cancelled",
@@ -1003,11 +1003,11 @@ EN: dict[str, str] = {
     "tr.done_toast": "✅ Transfer complete!",
     "tr.done": (
         "✅ <b>TRANSFER COMPLETE!</b>\n\n"
-        "💸 Sent: <b>{amount} rofls</b> to player ID <code>{recipient_id}</code>\n"
-        "💰 Your balance: <b>{balance} rofls</b>"
+        "💸 Sent: <b>{amount} coins</b> to player ID <code>{recipient_id}</code>\n"
+        "💰 Your balance: <b>{balance} coins</b>"
     ),
     "tr.received": (
-        "💰 <b>You received {amount} rofls!</b>\n"
+        "💰 <b>You received {amount} coins!</b>\n"
         "Sender: ID <code>{sender_id}</code>. Your balance is already topped up — check /profile!"
     ),
 
@@ -1024,7 +1024,7 @@ EN: dict[str, str] = {
     "shop.cat_games": (
         "🕹️ <b>SHOP · GAMING</b>\n"
         "..................................................\n"
-        "Win-limit removal, rofl packs and the Mega-Clan license.\n"
+        "Win-limit removal, coin packs and the Mega-Clan license.\n"
         "..................................................\n"
         "👇 <b>Pick an item:</b>"
     ),
@@ -1059,7 +1059,7 @@ EN: dict[str, str] = {
     "dlv.miner_junior": "Miner Bot",
     "dlv.miner_premium": "Cyber-Driller",
     "dlv.fridge": "📦 Fridge expanded to <b>{capacity} cutlets</b>.",
-    "dlv.coins": "💰 Credited <b>+{amount} rofls</b>.",
+    "dlv.coins": "💰 Credited <b>+{amount} coins</b>.",
     "dlv.boost_nuclear": "🔋 Nuclear Boost x5 active until <b>{until} UTC</b>.",
     "dlv.boost_nitrogen": "❄️ Nitrogen Cooling +40% active until <b>{until} UTC</b>.",
     "dlv.drone": "🛸 The Master Drone guards your farm until <b>{until} UTC</b>.",

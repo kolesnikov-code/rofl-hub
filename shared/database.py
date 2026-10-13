@@ -135,7 +135,7 @@ SCHEMA_STATEMENTS: list[str] = [
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     """,
-    # --- Журнал движения рофлов ---
+    # --- Журнал движения монет ---
     """
     CREATE TABLE IF NOT EXISTS ledger (
         id BIGSERIAL PRIMARY KEY,
@@ -192,7 +192,7 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS miners_user_idx ON miners (user_id);",
-    # Остаток точного начисления (рофло-микросекунды, см. shared/farm_logic.py)
+    # Остаток точного начисления (монето-микросекунды, см. shared/farm_logic.py)
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS mining_acc BIGINT NOT NULL DEFAULT 0;",
     # Ежедневная бесплатная котлета: время последнего нажатия «ЗАБРАТЬ БОНУС»
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_bonus_claim_at TIMESTAMP WITH TIME ZONE;",

@@ -21,7 +21,7 @@ async def create_new_team_in_db(captain_id: int, team_name: str, city: str, scho
             if user["team_id"] is not None:
                 return False, "⚠️ Ты уже состоишь в команде или клане!"
             if user["balance"] < TEAM_CREATE_COST:
-                return False, (f"❌ Недостаточно рофлов! Твой баланс: {user['balance']:,} из "
+                return False, (f"❌ Недостаточно монет! Твой баланс: {user['balance']:,} из "
                                f"{TEAM_CREATE_COST:,} необходимых.").replace(",", " ")
 
             if await conn.fetchval("SELECT team_id FROM teams WHERE captain_id = $1", captain_id):
@@ -32,7 +32,7 @@ async def create_new_team_in_db(captain_id: int, team_name: str, city: str, scho
             try:
                 await change_balance(conn, captain_id, -TEAM_CREATE_COST, "team_create", team_name)
             except InsufficientFunds:
-                return False, "❌ Недостаточно рофлов."
+                return False, "❌ Недостаточно монет."
 
             team_id = await conn.fetchval(
                 """

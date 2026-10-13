@@ -96,7 +96,7 @@ async def cmd_admin_start(message: types.Message):
         "• /new_auction — Запустить лот и вывесить автоматический анонс в канал юзеров\n"
         "• /close_auction [ID] — Принудительно закрыть торги\n"
         "• /report — Суточный отчёт: DAU, продажи, когорты за 30 дней\n"
-        "• /gift [ID] [сумма] — Подарить рофлы игроку (отрицательная сумма — штраф)\n"
+        "• /gift [ID] [сумма] — Подарить монеты игроку (отрицательная сумма — штраф)\n"
         "• /block [ID] — Заблокировать игрока · /unblock [ID] — Разблокировать\n"
         "• /find [ID или @username] — Досье игрока\n"
         "• /refund [номер_платежа] — Вернуть Stars игроку по чеку\n"
@@ -142,7 +142,7 @@ async def admin_assign_vip(message: types.Message):
         user_id,
         f"💎 <b>Тебе присвоен VIP ID: {alias}!</b>\n"
         f"Теперь это твой равноправный айдишник в экосистеме: другие игроки могут переводить "
-        f"тебе рофлы командой <code>/transfer {alias} сумма</code>, а сам VIP ID красуется в твоём /profile.")
+        f"тебе монеты командой <code>/transfer {alias} сумма</code>, а сам VIP ID красуется в твоём /profile.")
     await message.answer(f"💎 VIP ID <b>{alias}</b> присвоен игроку <code>{user_id}</code>.",
                          parse_mode="HTML")
 
@@ -254,10 +254,10 @@ async def admin_gift(message: types.Message):
 
     if amount > 0:
         await notify_user_via_main_bot(
-            user_id, f"🎁 <b>Администрация ROFL HUB подарила тебе {amount} рофлов!</b> Проверь /profile")
+            user_id, f"🎁 <b>Администрация ROFL HUB подарила тебе {amount} монет!</b> Проверь /profile")
     await message.answer(
         f"💰 Готово! Игроку <code>{user_id}</code> {'начислено' if amount > 0 else 'списано'} "
-        f"<b>{abs(amount)} рофлов</b>. Новый баланс: <b>{new_balance}</b>.", parse_mode="HTML")
+        f"<b>{abs(amount)} монет</b>. Новый баланс: <b>{new_balance}</b>.", parse_mode="HTML")
 
 
 # ============================================================================
@@ -291,9 +291,9 @@ def _prize_mode_kb(place: int) -> types.InlineKeyboardMarkup:
 
 
 def _sku_list_kb() -> types.InlineKeyboardMarkup:
-    buttons = [types.InlineKeyboardButton(text=item["button"], callback_data=f"battle_sku:{sku}")
-               for sku, item in CATALOG.items()]
-    rows = [buttons[i:i + 2] for i in range(0, len(buttons), 2)]
+    # По одной кнопке в ряд — цены не обрезаются на телефоне
+    rows = [[types.InlineKeyboardButton(text=item["button"], callback_data=f"battle_sku:{sku}")]
+            for sku, item in CATALOG.items()]
     return types.InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -770,7 +770,7 @@ async def process_auc_desc(message: types.Message, state: FSMContext):
     if not is_admin(message.from_user.id): return
     await state.update_data(auc_desc=message.text.strip())
     await state.set_state(AuctionCreationStates.waiting_for_price)
-    await message.answer("💰 <b>ШАГ 3 ИЗ 4: СТАРТОВАЯ ЦЕНА</b>\n\nУкажи начальную цену в рофлах:", parse_mode="HTML")
+    await message.answer("💰 <b>ШАГ 3 ИЗ 4: СТАРТОВАЯ ЦЕНА</b>\n\nУкажи начальную цену в монетах:", parse_mode="HTML")
 
 @dp.message(AuctionCreationStates.waiting_for_price)
 async def process_auc_price(message: types.Message, state: FSMContext):
@@ -811,8 +811,8 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
         f"Объявляются официальные торги холдинга экосистемы!\n\n"
         f"🎁 Лот раунда: <b>{data.get('auc_title')}</b>\n"
         f"📝 Детали: <i>{data.get('auc_desc')}</i>\n\n"
-        f"💰 Стартовая цена: <b>{data.get('auc_price')} рофлов</b>\n"
-        f"🚀 Шаг повышения: <b>+{step} рофлов</b>\n\n"
+        f"💰 Стартовая цена: <b>{data.get('auc_price')} монет</b>\n"
+        f"🚀 Шаг повышения: <b>+{step} монет</b>\n\n"
         f"..................................................\n"
         f"⚠️ <i>Ставки возвратные: если тебя перебили, монеты вернутся на баланс. Платит только победитель!</i>\n\n"
         f"👇 <b>КЛИКАЙ ПО ССЫЛКЕ НИЖЕ ДЛЯ ВХОДА И СТАВКИ:</b>\n"
@@ -831,7 +831,7 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
         f"..................................................\n\n"
         f"🆔 ID Лота в базе Railway: <code>{auction_id}</code>\n"
         f"🎁 Название: <b>{data.get('auc_title')}</b>\n"
-        f"💰 Стартовая цена: <b>{data.get('auc_price')} рофлов</b>\n\n"
+        f"💰 Стартовая цена: <b>{data.get('auc_price')} монет</b>\n\n"
         f"..................................................\n\n"
         f"{channel_status}\n\n"
         f"🔗 Ссылка: <code>{deep_link}</code>"
@@ -864,13 +864,13 @@ async def admin_close_auction(message: types.Message, bot: Bot):
         await notify_user_via_main_bot(
                 winner_id,
                 f"🏆 <b>Ты победил в аукционе за лот «{auction['item_title']}»!</b>\n"
-                f"Финальная цена: <b>{auction['current_price']} рофлов</b>. Администрация свяжется с тобой для выдачи приза.",
+                f"Финальная цена: <b>{auction['current_price']} монет</b>. Администрация свяжется с тобой для выдачи приза.",
         )
         try:
             await bot.send_message(
                 USERS_CHANNEL_ID,
                 f"🏁 <b>Аукцион за лот «{auction['item_title']}» завершён!</b>\n"
-                f"👑 Победитель: ID <code>{winner_id}</code> · 💰 {auction['current_price']} рофлов",
+                f"👑 Победитель: ID <code>{winner_id}</code> · 💰 {auction['current_price']} монет",
                 parse_mode="HTML")
         except Exception as e:
             logger.warning("[AUCTION_CLOSE] не удалось опубликовать итог в канал: %s", e)
@@ -879,7 +879,7 @@ async def admin_close_auction(message: types.Message, bot: Bot):
         f"🏁 <b>АУКЦИОН №{auction_id} ЗАКРЫТ ИЗ ШТАБА!</b>\n\n"
         f"🎁 Лот: <b>{auction['item_title']}</b>\n"
         f"👑 Победитель: ID <code>{auction['highest_bidder_id'] if auction['highest_bidder_id'] else 'Ставок нет'}</code>\n"
-        f"💵 Финальная цена: <b>{auction['current_price']} рофлов</b>.",
+        f"💵 Финальная цена: <b>{auction['current_price']} монет</b>.",
         parse_mode="HTML"
     )
 
@@ -952,7 +952,7 @@ async def dynamic_analytics_daemon(bot: Bot):
                         f"🎮 Проведено раундов: <b>{games_played_all} игр</b>\n"
                         f"👑 Одержано побед юзерами: <code>{games_won_all} раз</code>\n\n"
                         f"💵 Валовый кэш Stars: <b>★ {stars_total} XTR</b>\n"
-                        f"🪙 Масса фантиков в СУБД: <code>{coins_total} рофлов</code>\n"
+                        f"🪙 Масса фантиков в СУБД: <code>{coins_total} монет</code>\n"
                         f"..................................................\n"
                         f"<i>⚙️ Следующий системный срез произойдет строго по графику UTC.</i>"
                     )

@@ -55,7 +55,7 @@ def test_translations_are_not_empty_or_identical_dicts():
 # ---------------------------------------------------------------- t()
 def test_t_formats_kwargs():
     assert "5" in t("ru", "games.win", reward=5)
-    assert "rofls" in t("en", "games.win", reward=5)
+    assert "coins" in t("en", "games.win", reward=5)
 
 
 def test_t_falls_back_to_russian_for_unknown_lang():

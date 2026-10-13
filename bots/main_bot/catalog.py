@@ -72,19 +72,19 @@ CATALOG: dict[str, dict] = {
                     "category": CATEGORY_GAMES,
                     "title": "🚀 Безлимитный гейминг на 30 дней", "button": "🚀 Безлимит 30 дней | 99 ★",
                     "title_en": "🚀 Unlimited gaming for 30 days", "button_en": "🚀 Unlimited 30 days | 99 ★"},
-    # --- Казна рофлов ---
+    # --- Казна монет ---
     "coins_5k": {"type": "coins", "coins_amount": 5_000, "stars": 149, "category": CATEGORY_GAMES,
-                 "title": "💰 Пак «Сержант»: 5 000 рофлов", "button": "💰 5 000 рофлов | 149 ★",
-                 "title_en": "💰 “Sergeant” pack: 5,000 rofls", "button_en": "💰 5,000 rofls | 149 ★"},
+                 "title": "💰 Пак «Сержант»: 5 000 монет", "button": "💰 5 000 монет | 149 ★",
+                 "title_en": "💰 “Sergeant” pack: 5,000 coins", "button_en": "💰 5,000 coins | 149 ★"},
     "coins_10k": {"type": "coins", "coins_amount": 10_000, "stars": 299, "category": CATEGORY_GAMES,
-                  "title": "💰 Пак «Ветеран»: 10 000 рофлов", "button": "💰 10 000 рофлов | 299 ★",
-                  "title_en": "💰 “Veteran” pack: 10,000 rofls", "button_en": "💰 10,000 rofls | 299 ★"},
+                  "title": "💰 Пак «Ветеран»: 10 000 монет", "button": "💰 10 000 монет | 299 ★",
+                  "title_en": "💰 “Veteran” pack: 10,000 coins", "button_en": "💰 10,000 coins | 299 ★"},
     "coins_50k": {"type": "coins", "coins_amount": 50_000, "stars": 1299, "category": CATEGORY_GAMES,
-                  "title": "👑 Пак «Генерал»: 50 000 рофлов", "button": "👑 50 000 рофлов | 1299 ★",
-                  "title_en": "👑 “General” pack: 50,000 rofls", "button_en": "👑 50,000 rofls | 1299 ★"},
+                  "title": "👑 Пак «Генерал»: 50 000 монет", "button": "👑 50 000 монет | 1299 ★",
+                  "title_en": "👑 “General” pack: 50,000 coins", "button_en": "👑 50,000 coins | 1299 ★"},
     "coins_100k": {"type": "coins", "coins_amount": 100_000, "stars": 2499, "category": CATEGORY_GAMES,
-                   "title": "👑 Пак «Легенда»: 100 000 рофлов", "button": "👑 100 000 рофлов | 2499 ★",
-                   "title_en": "👑 “Legend” pack: 100,000 rofls", "button_en": "👑 100,000 rofls | 2499 ★"},
+                   "title": "👑 Пак «Легенда»: 100 000 монет", "button": "👑 100 000 монет | 2499 ★",
+                   "title_en": "👑 “Legend” pack: 100,000 coins", "button_en": "👑 100,000 coins | 2499 ★"},
     # --- Мега-клан ---
     "clan_upgrade": {"type": "clan_upgrade", "max_members": MEGA_CLAN_MAX_MEMBERS, "stars": 2499,
                      "category": CATEGORY_GAMES,
@@ -101,21 +101,29 @@ def item_title(item: dict, lang: str = "ru") -> str:
 def item_button(item: dict, lang: str = "ru") -> str:
     return item["button_en"] if lang == "en" and item.get("button_en") else item["button"]
 
-# Порядок кнопок на витрине (ряды по 1–2 кнопки)
+# Порядок кнопок на витрине. СТРОГО по одной кнопке в ряд (решение владельца 13.10:
+# две кнопки в ряду обрезают текст с ценой на телефонах — игроки боятся нажимать).
 SHOP_LAYOUT: dict[str, list[list[str]]] = {
     CATEGORY_FARM: [
-        ["miner_junior", "miner_premium"],
+        ["miner_junior"],
+        ["miner_premium"],
         ["cutlet_10"],
-        ["cutlet_50", "cutlet_100"],
+        ["cutlet_50"],
+        ["cutlet_100"],
         ["fridge_10"],
-        ["fridge_50", "fridge_100"],
-        ["boost_nuclear_30", "boost_nitrogen_30"],
+        ["fridge_50"],
+        ["fridge_100"],
+        ["boost_nuclear_30"],
+        ["boost_nitrogen_30"],
         ["repair_drone_365"],
     ],
     CATEGORY_GAMES: [
-        ["unlimit_24h", "unlimit_30d"],
-        ["coins_5k", "coins_10k"],
-        ["coins_50k", "coins_100k"],
+        ["unlimit_24h"],
+        ["unlimit_30d"],
+        ["coins_5k"],
+        ["coins_10k"],
+        ["coins_50k"],
+        ["coins_100k"],
         ["clan_upgrade"],
     ],
 }

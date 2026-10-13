@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 async def _referral_stats(user_id: int) -> tuple[int, int] | None:
-    """(приглашено друзей, заработано рофлов) или None, если профиля нет."""
+    """(приглашено друзей, заработано монет) или None, если профиля нет."""
     async with db.pool.acquire() as conn:
         exists = await conn.fetchval("SELECT 1 FROM users WHERE user_id = $1", user_id)
         if not exists:

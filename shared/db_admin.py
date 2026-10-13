@@ -29,7 +29,7 @@ async def set_user_blocked(conn, user_id: int, blocked: bool) -> bool:
 
 
 async def admin_gift_coins(conn, user_id: int, amount: int, admin_id: int) -> int:
-    """Дарит (или списывает при amount<0) рофлы от имени администрации. Возвращает новый баланс."""
+    """Дарит (или списывает при amount<0) монеты от имени администрации. Возвращает новый баланс."""
     if amount == 0:
         raise ValueError("amount must be non-zero")
     return await change_balance(conn, user_id, amount, "admin_gift", str(admin_id))
@@ -134,7 +134,7 @@ def format_daily_report(r: dict) -> str:
         f"⚡ Нормы (101–500 ★): <b>{r['cohort_normal']}</b>\n"
         f"👑 Киты (500+ ★): <u>{r['cohort_whale']}</u>\n\n"
         f"🎮 Раундов сыграно: <code>{r['games_played']}</code> · побед: <code>{r['games_won']}</code>\n"
-        f"🪙 Масса рофлов в обороте: <code>{r['coins_mass']}</code>\n"
+        f"🪙 Масса монет в обороте: <code>{r['coins_mass']}</code>\n"
         "..................................................\n"
         "<i>⚙️ Отчёт собран по живым данным СУБД на момент запроса.</i>"
     )

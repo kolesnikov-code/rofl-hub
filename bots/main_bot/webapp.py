@@ -154,7 +154,7 @@ async def handle_bonus(request: web.Request) -> web.Response:
 
 
 async def handle_top(request: web.Request) -> web.Response:
-    """Топ-10 игроков по балансу (витрина богатства и интеллекта)."""
+    """Топ-100 игроков по балансу (витрина богатства и интеллекта)."""
     if await _auth_user_id(request) is None:
         return _unauthorized()
     async with db.pool.acquire() as conn:
@@ -167,7 +167,7 @@ async def handle_top(request: web.Request) -> web.Response:
             LEFT JOIN game_stats g ON g.user_id = u.user_id
             WHERE NOT u.is_blocked
             ORDER BY u.balance DESC, u.user_id ASC
-            LIMIT 10
+            LIMIT 100
             """)
     top = [{
         "name": (f"@{r['username']}" if r["username"] else (r["display_name"] or f"ID {r['user_id']}")),

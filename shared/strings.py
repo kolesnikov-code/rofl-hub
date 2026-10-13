@@ -30,8 +30,8 @@ def format_cutlets(count: int) -> str:
 
 
 def format_coins(count: int) -> str:
-    """Склоняет розничную игровую валюту (рофлы)"""
-    return f"{count} " + get_plural_form(count, "рофл", "рофла", "рофлов")
+    """Склоняет розничную игровую валюту (монеты)"""
+    return f"{count} " + get_plural_form(count, "монета", "монеты", "монет")
 
 
 def format_miners(count: int) -> str:

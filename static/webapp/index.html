@@ -90,17 +90,17 @@
   const I18N = {
     ru: {
       subtitle: "твоя игровая империя в одном экране",
-      passport: "📋 ПАСПОРТ ИГРОКА", rofls: "рофлов",
-      brain: "🧠 Уровень интеллекта", toNext: "до уровня {n}: {left} верных в /quiz (+{reward})",
+      passport: "📋 ПАСПОРТ ИГРОКА", coins: "монет",
+      brain: "🧠 Уровень интеллекта", toNext: "до уровня {n}: {left} верных ответов в викторине (+{reward} монет)",
       farm: "🚜 КИБЕР-ФЕРМА", robots: "Роботы (майнеры / бурильщики)",
       fueled: "Заправлено бурильщиков", speed: "Скорость добычи",
-      perHour: "{v} рофлов/час", fridge: "Холодильник", inv: "Котлет на складе",
+      perHour: "{v} монет/час", fridge: "Холодильник", inv: "Котлет на складе",
       burnout: "Ближайшее сгорание", boosts: "Активные бусты", none: "нет",
       bonusReady: "🎁 ЗАБРАТЬ ЕЖЕДНЕВНУЮ КОТЛЕТУ",
       bonusWait: "⏳ Бонус через {h} ч {m} мин", bonusDone: "🎉 Котлета на складе!",
       team: "🏆 МОЯ КОМАНДА", clan: "КЛАН", teamLabel: "Команда", captain: "👑 Ты капитан!",
-      members: "Состав", noTeam: "Ты пока без команды — собери банду в /my_team!",
-      top: "👑 ТОП-10 БОГАЧЕЙ ЭКОСИСТЕМЫ",
+      members: "Состав", noTeam: "Ты пока без команды — собери свою банду в чате бота!",
+      top: "👑 ТОП-100 БОГАЧЕЙ ЭКОСИСТЕМЫ",
       footer: "Полное управление — в чате бота: /menu",
       noProfile: "Профиль не найден. Открой бота и нажми /start!",
       blocked: "Аккаунт заблокирован администрацией.",
@@ -109,17 +109,17 @@
     },
     en: {
       subtitle: "your game empire on one screen",
-      passport: "📋 PLAYER PASSPORT", rofls: "rofls",
-      brain: "🧠 Intellect level", toNext: "to level {n}: {left} correct in /quiz (+{reward})",
+      passport: "📋 PLAYER PASSPORT", coins: "coins",
+      brain: "🧠 Intellect level", toNext: "to level {n}: {left} correct quiz answers (+{reward} coins)",
       farm: "🚜 CYBER-FARM", robots: "Robots (miners / drillers)",
       fueled: "Drillers fueled", speed: "Mining speed",
-      perHour: "{v} rofls/hour", fridge: "Fridge", inv: "Cutlets in stock",
+      perHour: "{v} coins/hour", fridge: "Fridge", inv: "Cutlets in stock",
       burnout: "Next burnout", boosts: "Active boosts", none: "none",
       bonusReady: "🎁 CLAIM THE DAILY CUTLET",
       bonusWait: "⏳ Bonus in {h}h {m}m", bonusDone: "🎉 Cutlet added!",
       team: "🏆 MY TEAM", clan: "CLAN", teamLabel: "Team", captain: "👑 You are the captain!",
-      members: "Roster", noTeam: "No team yet — build your crew in /my_team!",
-      top: "👑 TOP-10 RICHEST PLAYERS",
+      members: "Roster", noTeam: "No team yet — build your crew in the bot chat!",
+      top: "👑 TOP-100 RICHEST PLAYERS",
       footer: "Full control — in the bot chat: /menu",
       noProfile: "Profile not found. Open the bot and press /start!",
       blocked: "Account blocked by administration.",
@@ -153,7 +153,7 @@
     const vip = me.vip_aliases.map(a => '<span class="vip">💎 ' + esc(a) + '</span>').join(" ");
 
     let passport =
-      '<div class="balance">' + me.balance.toLocaleString("ru-RU") + ' <small>' + L.rofls + '</small></div>' +
+      '<div class="balance">' + me.balance.toLocaleString("ru-RU") + ' <small>' + L.coins + '</small></div>' +
       (vip ? '<div>' + vip + '</div>' : '') +
       '<div class="row"><span class="k">' + L.brain + '</span><span class="v">' + q.level + '</span></div>' +
       '<div class="bar"><i style="width:' + pct + '%"></i></div>' +

@@ -75,7 +75,7 @@ def test_max_prize_places_is_ten():
 # ---------------------------------------------------------------- посты
 def _battle(nom_key="farm_mined"):
     return {"title": "Осенний Кубок", "nomination_key": nom_key,
-            "nomination_text": "⛏️ Больше всех нафармить рофлов фермой",
+            "nomination_text": "⛏️ Больше всех нафармить монет фермой",
             "starts_at": NOW, "ends_at": NOW + timedelta(days=7)}
 
 
