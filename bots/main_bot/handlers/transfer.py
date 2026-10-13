@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 async def _resolve_recipient(conn, raw: str) -> dict | None:
-    """ID или @username → строка users (или None)."""
+    """ID, @username или VIP ID с аукциона → строка users (или None)."""
     raw = raw.strip()
     if raw.startswith("@"):
         return await conn.fetchrow(
@@ -31,7 +31,11 @@ async def _resolve_recipient(conn, raw: str) -> dict | None:
     if raw.isdigit():
         return await conn.fetchrow(
             "SELECT user_id, username, display_name, is_blocked FROM users WHERE user_id = $1", int(raw))
-    return None
+    # VIP ID (например ROFL-HUB-777) — равноправный айдишник для переводов
+    return await conn.fetchrow(
+        "SELECT u.user_id, u.username, u.display_name, u.is_blocked "
+        "FROM vip_aliases v JOIN users u ON u.user_id = v.user_id "
+        "WHERE UPPER(v.alias) = UPPER($1)", raw)
 
 
 def _recipient_label(rec: dict) -> str:
@@ -48,7 +52,7 @@ async def cmd_transfer(message: types.Message, user_lang: str = "ru"):
 
     if len(parts) != 3 or not parts[2].isdigit():
         await message.answer(t(user_lang, "tr.help", min=TRANSFER_MIN_AMOUNT), parse_mode="HTML")
-        return
+        return  # формат: /transfer <ID | @username | VIP ID> <сумма>
     amount = int(parts[2])
 
     async with db.pool.acquire() as conn:

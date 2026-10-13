@@ -27,7 +27,8 @@ async def conn():
     await database.connect(TEST_DSN)
     await database.create_tables()
     async with database.pool.acquire() as c:
-        await c.execute("TRUNCATE users, teams, star_payments, game_stats, auctions, ledger, miners RESTART IDENTITY")
+        await c.execute("TRUNCATE users, teams, star_payments, game_stats, auctions, ledger, "
+                        "miners, duels, battles, vip_aliases RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -354,6 +355,175 @@ async def test_admin_block_gift_and_report(conn):
     assert report["dau"] == 1  # last_seen_at по умолчанию = сейчас
     assert report["cohort_f2p"] == 1
     assert report["coins_mass"] == 1050
+
+
+# ---------------------------------------------------------------- дуэли
+async def test_duel_full_cycle_with_burn(conn):
+    from shared.duels import join_or_create_duel, record_move
+    await _mk_user(conn, 90, 100)
+    await _mk_user(conn, 91, 100)
+
+    async with conn.transaction():
+        r1 = await join_or_create_duel(conn, 90, 100)
+    assert not r1.matched
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 90") == 0  # эскроу
+
+    async with conn.transaction():
+        r2 = await join_or_create_duel(conn, 91, 100)
+    assert r2.matched and r2.opponent_id == 90 and r2.duel_id == r1.duel_id
+
+    async with conn.transaction():
+        m1 = await record_move(conn, r1.duel_id, 90, "rock")
+    assert m1.waiting_opponent
+    async with conn.transaction():
+        m2 = await record_move(conn, r1.duel_id, 91, "scissors")
+
+    assert m2.finished and m2.winner_id == 90 and m2.loser_id == 91
+    assert (m2.payout, m2.burned) == (160, 40)  # сжигание 20% банка
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 90") == 160
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 91") == 0
+    reasons = [r["reason"] for r in await conn.fetch("SELECT reason FROM ledger ORDER BY id")]
+    assert reasons == ["duel_stake", "duel_stake", "duel_win"]
+    # 40 рофлов исчезли из оборота навсегда
+    assert await conn.fetchval("SELECT SUM(delta) FROM ledger") == -40
+
+
+async def test_duel_draw_replays_and_guards(conn):
+    from shared.duels import DuelError, join_or_create_duel, record_move
+    await _mk_user(conn, 92, 50)
+    await _mk_user(conn, 93, 50)
+    async with conn.transaction():
+        r1 = await join_or_create_duel(conn, 92, 10)
+        r2 = await join_or_create_duel(conn, 93, 10)
+    duel_id = r2.duel_id
+
+    # Нельзя сесть за второй стол, пока дуэль активна
+    with pytest.raises(DuelError):
+        async with conn.transaction():
+            await join_or_create_duel(conn, 92, 10)
+
+    async with conn.transaction():
+        await record_move(conn, duel_id, 92, "rock")
+        result = await record_move(conn, duel_id, 93, "rock")
+    assert result.draw_replay and result.rounds == 2  # ничья → переигровка, банк на столе
+
+    duel = await conn.fetchrow("SELECT * FROM duels WHERE duel_id = $1", duel_id)
+    assert duel["move1"] is None and duel["move2"] is None and duel["status"] == "active"
+
+    async with conn.transaction():
+        await record_move(conn, duel_id, 92, "paper")
+        result = await record_move(conn, duel_id, 93, "scissors")
+    assert result.finished and result.winner_id == 93
+
+
+async def test_duel_cancel_and_expire_refund(conn):
+    from shared.duels import cancel_waiting_duel, expire_waiting_duels, join_or_create_duel
+    await _mk_user(conn, 94, 1000)
+    async with conn.transaction():
+        r = await join_or_create_duel(conn, 94, 1000)
+        assert await cancel_waiting_duel(conn, r.duel_id, 94) == 1000
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 94") == 1000
+
+    # Протухшая очередь возвращается жнецом
+    async with conn.transaction():
+        r2 = await join_or_create_duel(conn, 94, 10)
+    await conn.execute("UPDATE duels SET created_at = NOW() - INTERVAL '2 hours' WHERE duel_id = $1",
+                       r2.duel_id)
+    async with conn.transaction():
+        expired = await expire_waiting_duels(conn, 30)
+    assert expired == [(r2.duel_id, 94, 10)]
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 94") == 1000
+
+
+async def test_duel_stuck_round_resolved_by_reaper(conn):
+    from shared.duels import find_stuck_active_duels, join_or_create_duel, record_move, resolve_stuck_duel
+    await _mk_user(conn, 95, 20)
+    await _mk_user(conn, 96, 20)
+    async with conn.transaction():
+        await join_or_create_duel(conn, 95, 10)
+        r = await join_or_create_duel(conn, 96, 10)
+        await record_move(conn, r.duel_id, 95, "rock")  # второй игрок молчит
+    await conn.execute("UPDATE duels SET round_started_at = NOW() - INTERVAL '5 minutes' "
+                       "WHERE duel_id = $1", r.duel_id)
+
+    async with conn.transaction():
+        stuck = await find_stuck_active_duels(conn, 60)
+        assert len(stuck) == 1
+        result = await resolve_stuck_duel(conn, stuck[0])
+    assert result.finished and result.winner_id in (95, 96)
+    total = sum(r["delta"] for r in await conn.fetch("SELECT delta FROM ledger"))
+    assert total == -4  # сжигание 20% банка (20) при любом исходе
+
+
+# ---------------------------------------------------------------- битвы команд
+async def test_battle_team_scores_counts_only_window_and_teams(conn):
+    from datetime import timedelta
+    from shared.battles import battle_team_scores
+    from shared.economy import utcnow
+    now = utcnow()
+    await conn.execute("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Alpha', 100, 2)")
+    await conn.execute("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Beta', 102, 1)")
+    alpha = await conn.fetchval("SELECT team_id FROM teams WHERE team_name = 'Alpha'")
+    beta = await conn.fetchval("SELECT team_id FROM teams WHERE team_name = 'Beta'")
+    await _mk_user(conn, 100, 0, team_id=alpha)
+    await _mk_user(conn, 101, 0, team_id=alpha)
+    await _mk_user(conn, 102, 0, team_id=beta)
+    await _mk_user(conn, 103, 0)  # без команды — не в зачёте
+
+    async def mined(user_id, delta, when):
+        await conn.execute(
+            "INSERT INTO ledger (user_id, delta, reason, created_at) VALUES ($1, $2, 'mining', $3)",
+            user_id, delta, when)
+
+    starts, ends = now - timedelta(days=7), now
+    await mined(100, 300, now - timedelta(days=1))
+    await mined(101, 200, now - timedelta(days=2))   # Alpha суммарно 500
+    await mined(102, 400, now - timedelta(days=3))   # Beta 400
+    await mined(103, 900, now - timedelta(days=1))   # без команды — мимо
+    await mined(100, 999, now - timedelta(days=30))  # вне окна — мимо
+
+    scores = await battle_team_scores(conn, "farm_mined", starts, ends)
+    assert [(s["team_name"], s["score"]) for s in scores] == [("Alpha", 500), ("Beta", 400)]
+
+
+async def test_battle_prize_delivery_to_every_member_is_idempotent(conn):
+    from shared.battles import award_sku_to_team
+    from bots.main_bot.catalog import get_item
+    await conn.execute("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Win', 110, 2)")
+    team_id = await conn.fetchval("SELECT team_id FROM teams WHERE team_name = 'Win'")
+    await _mk_user(conn, 110, 0, team_id=team_id)
+    await _mk_user(conn, 111, 0, team_id=team_id)
+
+    order = {**get_item("cutlet_10"), "stars": 0}  # призы не считаются продажами
+    delivered, skipped = await award_sku_to_team(conn, team_id, "cutlet_10", order, battle_id=1, place=1)
+    assert (delivered, skipped) == (2, 0)
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 110") == 10
+
+    # Повторная выдача (например, повторный вызов finish) не задвоит призы
+    delivered2, skipped2 = await award_sku_to_team(conn, team_id, "cutlet_10", order, battle_id=1, place=1)
+    assert delivered2 == 0 and skipped2 == 2
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 110") == 10
+    assert await conn.fetchval(
+        "SELECT COALESCE(SUM(stars_amount), 0) FROM star_payments") == 0
+
+
+# ---------------------------------------------------------------- VIP ID
+async def test_transfer_by_vip_alias(conn):
+    from shared.transfers import transfer_coins
+    await _mk_user(conn, 120, 500)
+    await _mk_user(conn, 121, 0)
+    await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ('ROFL-HUB-777', 121)")
+
+    # Резолв алиаса — как в обработчике /transfer (регистронезависимый)
+    recipient = await conn.fetchrow(
+        "SELECT u.user_id FROM vip_aliases v JOIN users u ON u.user_id = v.user_id "
+        "WHERE UPPER(v.alias) = UPPER($1)", "rofl-hub-777")
+    assert recipient["user_id"] == 121
+
+    async with conn.transaction():
+        received, _ = await transfer_coins(conn, 120, recipient["user_id"], 100)
+    assert received == 100
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 121") == 100
 
 
 # ---------------------------------------------------------------- Блок 5: бэкап и возвраты

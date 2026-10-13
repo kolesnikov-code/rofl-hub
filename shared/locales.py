@@ -143,7 +143,8 @@ RU: dict[str, str] = {
         "🕹️ <b>ИГРОВАЯ КОМНАТА:</b>\n"
         "• /games — Инлайн-хаб всех игр против бота\n"
         "• /quiz — Викторина на скорость: 10 секунд на ответ, уровни и бонусы\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Быстрые дуэли на рофлы\n\n"
+        "• /duel — ДУЭЛИ 1-на-1 с живыми игроками: столы 10/100/1000\n"
+        "• /rps, /high_low, /coin, /dice, /safe — Быстрые игры на рофлы\n\n"
         "👥 <b>УПРАВЛЕНИЕ БАНДАМИ:</b>\n"
         "• /create_team — Зарегистрировать свою команду за 100 000 рофлов\n"
         "• /my_team — Дашборд банды и СПИСОК ТИММЕЙТОВ с уровнями 🧠\n"
@@ -175,6 +176,7 @@ RU: dict[str, str] = {
     "menu.btn_coin": "🪙 Орёл/Решка (/coin)",
     "menu.btn_dice": "🎲 Кубики (/dice)",
     "menu.btn_safe": "🔐 Кибер-Сейф (/safe)",
+    "menu.btn_duel": "⚔️ ДУЭЛИ 1-на-1 (/duel)",
 
     # ---------------- ферма ----------------
     "farm.btn_bonus": "🎁 ЗАБРАТЬ БОНУС (котлета раз в 24 ч)",
@@ -222,6 +224,7 @@ RU: dict[str, str] = {
         "📋 <b>ЛИЧНЫЙ КАБИНЕТ ИГРОКА ROFL HUB</b>\n"
         "..................................................\n\n"
         "🆔 Твой ID Паспорта: <code>{user_id}</code>\n"
+        "{vip}"
         "💰 Монеты сейчас: <b>{balance} рофлов</b>\n"
         "🏆 Твой статус: <b>{team}</b>\n"
         "🧠 Уровень интеллекта: <b>{level}</b> · до уровня {next_level}: "
@@ -349,6 +352,67 @@ RU: dict[str, str] = {
     "safe.win": "🔓 <b>Сейф вскрыт!</b> Код был: <b>{code}</b>.",
     "safe.lose": "🚨 <b>Сработала сигнализация!</b> Ты набрал {guess}, а код был: <b>{code}</b>.",
 
+    # ---------------- дуэли ----------------
+    "duel.intro": (
+        "⚔️ <b>ДУЭЛИ 1-НА-1: КАМЕНЬ-НОЖНИЦЫ-БУМАГА НА СТАВКУ</b>\n"
+        "..................................................\n\n"
+        "Выбирай стол по карману — как в покере. Ставка списывается сразу, "
+        "соперник — живой игрок ROFL HUB!\n\n"
+        "💰 Банк = обе ставки. Победитель забирает <b>{payout_percent}%</b> банка, "
+        "<b>{burn_percent}%</b> сгорает навсегда (дефляция!).\n"
+        "🤝 Ничья — мгновенная переигровка жестов, банк на столе.\n"
+        "⏱ На жест — <b>{move_timeout} секунд</b>, молчуну жест выберет генератор случайности.\n"
+        "🏆 Победы в дуэлях идут в зачёт твоей команды в Битвах!\n\n"
+        "👇 <b>ВЫБЕРИ СТОЛ:</b>"
+    ),
+    "duel.btn_table": "⚔️ Стол {stake} рофлов",
+    "duel.btn_cancel": "❌ Покинуть стол (вернуть ставку)",
+    "duel.btn_move_rock": "🪨 Камень",
+    "duel.btn_move_scissors": "✂️ Ножницы",
+    "duel.btn_move_paper": "🧻 Бумага",
+    "duel.waiting": (
+        "🪑 <b>Ты за столом {stake} рофлов.</b> Ставка в банке.\n"
+        "Ждём второго бойца... Как только он сядет — вам обоим придёт выбор жеста!\n"
+        "<i>Очередь живёт {ttl} минут, потом ставка вернётся автоматически.</i>"
+    ),
+    "duel.cancelled": "🚪 Ты покинул стол. Ставка <b>{stake} рофлов</b> вернулась на баланс.",
+    "duel.expired": "⌛ Соперник за столом {stake} так и не нашёлся. Ставка <b>{stake} рофлов</b> возвращена.",
+    "duel.matched": (
+        "⚔️ <b>СОПЕРНИК НАЙДЕН! Стол {stake} рофлов.</b>\n"
+        "Банк: <b>{bank} рофлов</b> · Победителю: <b>{payout}</b>\n\n"
+        "⏱ У тебя <b>{timeout} секунд</b> на выбор жеста!"
+    ),
+    "duel.move_saved": "✊ Жест принят! Ждём жест соперника...",
+    "duel.draw_replay": (
+        "🤝 <b>НИЧЬЯ! Раунд {round}.</b> Оба показали одинаковый жест.\n"
+        "Банк на столе. ⏱ Снова {timeout} секунд — выбери жест:"
+    ),
+    "duel.win": (
+        "🏆 <b>ДУЭЛЬ ТВОЯ!</b>\n\n"
+        "Твой жест {winner_move} бьёт {loser_move}.\n"
+        "💰 Выигрыш: <b>+{payout} рофлов</b> · 🔥 Сгорело в банке: {burned}\n"
+        "💼 Баланс: <b>{balance} рофлов</b>"
+    ),
+    "duel.lose": (
+        "💀 <b>ДУЭЛЬ ПРОИГРАНА.</b>\n\n"
+        "{winner_move} соперника бьёт твой {loser_move}.\n"
+        "📉 Ставка <b>{stake} рофлов</b> ушла в банк победителя.\n"
+        "Реванш?"
+    ),
+    "duel.reaper_prefix": "⏰ <b>Тайм-аут раунда!</b> Недостающие жесты выбрал генератор случайности.\n\n",
+    "duel.bad_table": "❌ Такого стола не существует.",
+    "duel.already_in": "⚠️ Ты уже за столом или в бою! Сначала закончи текущую дуэль.",
+    "duel.no_coins": "❌ Для этого стола нужно {stake} рофлов на балансе.",
+    "duel.cancel_impossible": "⚠️ Эту очередь уже нельзя отменить (соперник найден или стол закрыт).",
+    "duel.not_active": "⌛ Эта дуэль уже завершена.",
+    "duel.not_participant": "🔒 Это не твоя дуэль!",
+    "duel.move_already": "✋ Ты уже показал жест в этом раунде. Ждём соперника!",
+    "duel.bad_move": "❌ Неизвестный жест.",
+    "duel.btn_rematch": "⚔️ Реванш (к столам)",
+
+    # ---------------- VIP ID ----------------
+    "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+
     # ---------------- рефералка ----------------
     "ref.text": (
         "🤝 <b>РЕФЕРАЛЬНАЯ ПРОГРАММА ROFL HUB</b>\n"
@@ -371,7 +435,8 @@ RU: dict[str, str] = {
         "..................................................\n\n"
         "Формат команды:\n"
         "<code>/transfer ID сумма</code> — по ID Паспорта (виден в /profile)\n"
-        "<code>/transfer @username сумма</code> — по юзернейму\n\n"
+        "<code>/transfer @username сумма</code> — по юзернейму\n"
+        "<code>/transfer ROFL-HUB-777 сумма</code> — по VIP ID с аукциона\n\n"
         "Примеры:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
         "📌 Минимальная сумма: <b>{min} рофлов</b>"
     ),
@@ -601,7 +666,8 @@ EN: dict[str, str] = {
         "🕹️ <b>GAME ROOM:</b>\n"
         "• /games — Inline hub of all games against the bot\n"
         "• /quiz — Speed quiz: 10 seconds per answer, levels and bonuses\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Quick duels for rofls\n\n"
+        "• /duel — 1-on-1 DUELS with real players: tables 10/100/1000\n"
+        "• /rps, /high_low, /coin, /dice, /safe — Quick games for rofls\n\n"
         "👥 <b>CREW MANAGEMENT:</b>\n"
         "• /create_team — Register your own team for 100,000 rofls\n"
         "• /my_team — Crew dashboard and the TEAMMATE LIST with 🧠 levels\n"
@@ -633,6 +699,7 @@ EN: dict[str, str] = {
     "menu.btn_coin": "🪙 Heads/Tails (/coin)",
     "menu.btn_dice": "🎲 Dice (/dice)",
     "menu.btn_safe": "🔐 Cyber-Safe (/safe)",
+    "menu.btn_duel": "⚔️ 1-on-1 DUELS (/duel)",
 
     # ---------------- farm ----------------
     "farm.btn_bonus": "🎁 CLAIM BONUS (a cutlet every 24h)",
@@ -680,6 +747,7 @@ EN: dict[str, str] = {
         "📋 <b>ROFL HUB PLAYER DASHBOARD</b>\n"
         "..................................................\n\n"
         "🆔 Your Passport ID: <code>{user_id}</code>\n"
+        "{vip}"
         "💰 Coins right now: <b>{balance} rofls</b>\n"
         "🏆 Your status: <b>{team}</b>\n"
         "🧠 Intellect level: <b>{level}</b> · to level {next_level}: "
@@ -808,6 +876,68 @@ EN: dict[str, str] = {
     "safe.win": "🔓 <b>Safe cracked!</b> The code was: <b>{code}</b>.",
     "safe.lose": "🚨 <b>Alarm triggered!</b> You entered {guess}, the code was: <b>{code}</b>.",
 
+    # ---------------- duels ----------------
+    "duel.intro": (
+        "⚔️ <b>1-ON-1 DUELS: ROCK-PAPER-SCISSORS FOR A STAKE</b>\n"
+        "..................................................\n\n"
+        "Pick a table that fits your wallet — just like poker. The stake is taken "
+        "immediately, and your opponent is a real ROFL HUB player!\n\n"
+        "💰 The pot = both stakes. The winner takes <b>{payout_percent}%</b> of the pot, "
+        "<b>{burn_percent}%</b> burns forever (deflation!).\n"
+        "🤝 A draw means an instant gesture replay — the pot stays on the table.\n"
+        "⏱ You get <b>{move_timeout} seconds</b> per gesture; stay silent and the random "
+        "generator picks for you.\n"
+        "🏆 Duel wins count for your team in Battles!\n\n"
+        "👇 <b>PICK A TABLE:</b>"
+    ),
+    "duel.btn_table": "⚔️ Table {stake} rofls",
+    "duel.btn_cancel": "❌ Leave the table (refund stake)",
+    "duel.btn_move_rock": "🪨 Rock",
+    "duel.btn_move_scissors": "✂️ Scissors",
+    "duel.btn_move_paper": "🧻 Paper",
+    "duel.waiting": (
+        "🪑 <b>You're at the {stake} rofl table.</b> Your stake is in the pot.\n"
+        "Waiting for a second fighter... Once they sit down, you'll both get the gesture pick!\n"
+        "<i>The queue lives {ttl} minutes, then your stake returns automatically.</i>"
+    ),
+    "duel.cancelled": "🚪 You left the table. The <b>{stake} rofl</b> stake is back on your balance.",
+    "duel.expired": "⌛ No opponent showed up at the {stake} table. Your <b>{stake} rofl</b> stake was refunded.",
+    "duel.matched": (
+        "⚔️ <b>OPPONENT FOUND! Table {stake} rofls.</b>\n"
+        "Pot: <b>{bank} rofls</b> · Winner takes: <b>{payout}</b>\n\n"
+        "⏱ You have <b>{timeout} seconds</b> to pick your gesture!"
+    ),
+    "duel.move_saved": "✊ Gesture locked in! Waiting for your opponent...",
+    "duel.draw_replay": (
+        "🤝 <b>DRAW! Round {round}.</b> Both showed the same gesture.\n"
+        "The pot stays. ⏱ {timeout} seconds again — pick your gesture:"
+    ),
+    "duel.win": (
+        "🏆 <b>THE DUEL IS YOURS!</b>\n\n"
+        "Your {winner_move} beats {loser_move}.\n"
+        "💰 Winnings: <b>+{payout} rofls</b> · 🔥 Burned from the pot: {burned}\n"
+        "💼 Balance: <b>{balance} rofls</b>"
+    ),
+    "duel.lose": (
+        "💀 <b>DUEL LOST.</b>\n\n"
+        "The opponent's {winner_move} beats your {loser_move}.\n"
+        "📉 Your <b>{stake} rofl</b> stake went to the winner's pot.\n"
+        "Rematch?"
+    ),
+    "duel.reaper_prefix": "⏰ <b>Round timeout!</b> The missing gestures were picked by the random generator.\n\n",
+    "duel.bad_table": "❌ No such table exists.",
+    "duel.already_in": "⚠️ You're already at a table or in a fight! Finish your current duel first.",
+    "duel.no_coins": "❌ You need {stake} rofls on your balance for this table.",
+    "duel.cancel_impossible": "⚠️ This queue can no longer be cancelled (an opponent was found or the table is closed).",
+    "duel.not_active": "⌛ This duel is already over.",
+    "duel.not_participant": "🔒 This is not your duel!",
+    "duel.move_already": "✋ You already showed your gesture this round. Waiting for the opponent!",
+    "duel.bad_move": "❌ Unknown gesture.",
+    "duel.btn_rematch": "⚔️ Rematch (back to tables)",
+
+    # ---------------- VIP ID ----------------
+    "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+
     # ---------------- referral ----------------
     "ref.text": (
         "🤝 <b>ROFL HUB REFERRAL PROGRAM</b>\n"
@@ -830,7 +960,8 @@ EN: dict[str, str] = {
         "..................................................\n\n"
         "Command format:\n"
         "<code>/transfer ID amount</code> — by Passport ID (see /profile)\n"
-        "<code>/transfer @username amount</code> — by username\n\n"
+        "<code>/transfer @username amount</code> — by username\n"
+        "<code>/transfer ROFL-HUB-777 amount</code> — by an auction VIP ID\n\n"
         "Examples:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
         "📌 Minimum amount: <b>{min} rofls</b>"
     ),

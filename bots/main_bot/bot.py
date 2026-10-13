@@ -13,6 +13,7 @@ from aiogram.types import BotCommand, ErrorEvent
 
 from bots.main_bot.config import BOT_TOKEN, SHOP_TEST_MODE, SHOP_TEST_USER_IDS
 from bots.main_bot.handlers.clans import router as clans_router
+from bots.main_bot.handlers.duels import duel_reaper_loop, router as duels_router
 from bots.main_bot.handlers.faq import router as faq_router
 from bots.main_bot.handlers.farm import router as farm_router
 from bots.main_bot.handlers.games import router as games_router
@@ -40,9 +41,9 @@ dp = Dispatcher(storage=MemoryStorage())
 # Блокировка игроков + учёт активности (DAU) — на каждый апдейт
 dp.update.outer_middleware(ActivityMiddleware())
 # Порядок важен: start (регистрация) и payments (деньги) — первыми
-for r in (start_router, payments_router, shop_router, games_router, farm_router, profile_router,
-          clans_router, transfer_router, referral_router, menu_router, faq_router, rules_router,
-          rofl_hub_all_router):
+for r in (start_router, payments_router, shop_router, games_router, duels_router, farm_router,
+          profile_router, clans_router, transfer_router, referral_router, menu_router, faq_router,
+          rules_router, rofl_hub_all_router):
     dp.include_router(r)
 
 
@@ -54,6 +55,7 @@ BOT_COMMANDS: dict[str, tuple[str, str]] = {
     "shop": ("🏪 Магазин за Telegram Stars", "🏪 Shop (Telegram Stars)"),
     "games": ("🕹️ Все игры против бота", "🕹️ All games vs the bot"),
     "quiz": ("🧠 Викторина: 10 секунд на ответ", "🧠 Quiz: 10 seconds to answer"),
+    "duel": ("⚔️ Дуэль 1-на-1 на ставку", "⚔️ 1-on-1 duel for a stake"),
     "my_team": ("🏆 Моя команда и тиммейты", "🏆 My team & teammates"),
     "invite": ("🤝 Реферальная ссылка: +1000 за друга", "🤝 Referral link: +1000 per friend"),
     "transfer": ("🔄 Перевести рофлы игроку", "🔄 Send rofls to a player"),
@@ -99,6 +101,9 @@ async def main() -> None:
         await register_bot_commands(bot)
     except Exception:
         logger.exception("Не удалось зарегистрировать меню команд — бот работает дальше.")
+
+    # Жнец дуэлей: доигрывает зависшие раунды и возвращает ставки протухших очередей
+    asyncio.create_task(duel_reaper_loop(bot))
 
     me = await bot.get_me()
     logger.info("Главный бот @%s запущен.", me.username)

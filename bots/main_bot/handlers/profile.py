@@ -90,6 +90,8 @@ async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
 
             quiz_row = await conn.fetchrow(
                 "SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = $1", user_id)
+            vip_rows = await conn.fetch(
+                "SELECT alias FROM vip_aliases WHERE user_id = $1 ORDER BY created_at", user_id)
 
     counts = farm_counts(miners, now)
     user_data_dict = {
@@ -119,9 +121,14 @@ async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
     next_level = quiz_level + 1
     required = quiz_answers_required(next_level)
 
+    vip_line = ""
+    if vip_rows:
+        aliases = ", ".join(html.escape(r["alias"]) for r in vip_rows)
+        vip_line = t(user_lang, "profile.vip_line", aliases=aliases)
+
     caption_text = t(
         user_lang, "profile.caption",
-        user_id=user_id, balance=user["balance"], team=team_name,
+        user_id=user_id, vip=vip_line, balance=user["balance"], team=team_name,
         level=quiz_level, next_level=next_level, left=required - quiz_progress,
         reward=quiz_level_reward(next_level),
     )

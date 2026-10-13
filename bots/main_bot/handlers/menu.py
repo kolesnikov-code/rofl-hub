@@ -49,6 +49,9 @@ def get_games_inline_keyboard(lang: str = "ru") -> types.InlineKeyboardMarkup:
         ],
         [
             types.InlineKeyboardButton(text=t(lang, "menu.btn_safe"), callback_data="game_retry:safe")
+        ],
+        [
+            types.InlineKeyboardButton(text=t(lang, "menu.btn_duel"), callback_data="duel_tables")
         ]
     ])
 

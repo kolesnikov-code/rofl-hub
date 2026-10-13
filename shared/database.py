@@ -198,6 +198,50 @@ SCHEMA_STATEMENTS: list[str] = [
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_bonus_claim_at TIMESTAMP WITH TIME ZONE;",
     # --- Блок 5: отметка возврата Stars по платежу ---
     "ALTER TABLE star_payments ADD COLUMN IF NOT EXISTS refunded_at TIMESTAMP WITH TIME ZONE;",
+    # --- Дуэли: КНБ 1-на-1 со ставками-эскроу и сжиганием 20% банка ---
+    """
+    CREATE TABLE IF NOT EXISTS duels (
+        duel_id BIGSERIAL PRIMARY KEY,
+        stake INT NOT NULL,
+        player1 BIGINT NOT NULL,
+        player2 BIGINT,
+        move1 VARCHAR(10),
+        move2 VARCHAR(10),
+        rounds INT NOT NULL DEFAULT 1,
+        status VARCHAR(16) NOT NULL DEFAULT 'waiting',
+        winner_id BIGINT,
+        round_started_at TIMESTAMP WITH TIME ZONE,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        finished_at TIMESTAMP WITH TIME ZONE
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS duels_matchmaking_idx ON duels (status, stake);",
+    "CREATE INDEX IF NOT EXISTS duels_players_idx ON duels (player1, player2);",
+    # --- Битвы команд и кланов: событийные состязания, запускаемые владельцем ---
+    """
+    CREATE TABLE IF NOT EXISTS battles (
+        battle_id BIGSERIAL PRIMARY KEY,
+        title VARCHAR(100) NOT NULL,
+        nomination_key VARCHAR(32) NOT NULL,
+        nomination_text VARCHAR(200) NOT NULL,
+        starts_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        ends_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        prizes JSONB NOT NULL DEFAULT '{}'::jsonb,
+        status VARCHAR(16) NOT NULL DEFAULT 'active',
+        results JSONB,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS battles_status_idx ON battles (status, ends_at);",
+    # --- VIP ID с аукционов: равноправный алиас игрока для переводов и понта ---
+    """
+    CREATE TABLE IF NOT EXISTS vip_aliases (
+        alias VARCHAR(32) PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS vip_aliases_user_idx ON vip_aliases (user_id);",
     # --- Блок 4: тиммейты, капитанство по старшинству, имена без username ---
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS team_joined_at TIMESTAMP WITH TIME ZONE;",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(128);",

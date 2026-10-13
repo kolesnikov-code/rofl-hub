@@ -51,7 +51,7 @@ async def collect_daily_report(conn) -> dict:
             (SELECT COALESCE(SUM(stars_amount), 0) FROM star_payments
               WHERE created_at >= NOW() - INTERVAL '24 hours')                                  AS stars_24h,
             (SELECT COUNT(*) FROM star_payments
-              WHERE created_at >= NOW() - INTERVAL '24 hours')                                  AS payments_24h,
+              WHERE created_at >= NOW() - INTERVAL '24 hours' AND stars_amount > 0)             AS payments_24h,
             (SELECT COALESCE(SUM(games_played), 0) FROM game_stats)                             AS games_played,
             (SELECT COALESCE(SUM(games_won), 0) FROM game_stats)                                AS games_won
         """
