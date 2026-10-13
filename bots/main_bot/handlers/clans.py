@@ -8,6 +8,7 @@ from aiogram.fsm.state import State, StatesGroup
 from shared.database import db
 from shared.db_clans import create_new_team_in_db
 from shared.economy import TEAM_CREATE_COST, TEAM_LIST_PAGE_SIZE
+from shared.locales import btn_variants, t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -56,9 +57,9 @@ def get_cancel_keyboard() -> types.InlineKeyboardMarkup:
 # ============================================================================
 @router.message(Command("clan"))
 @router.message(Command("clans"))
-@router.message(F.text == "🏆 КОМАНДЫ И КЛАНЫ")
+@router.message(F.text.in_(btn_variants("teams")))
 @router.callback_query(F.data == "clan_main_menu")
-async def cmd_clan_hub(message: types.Message | types.CallbackQuery):
+async def cmd_clan_hub(message: types.Message | types.CallbackQuery, user_lang: str = "ru"):
     is_callback = isinstance(message, types.CallbackQuery)
     # 🔥 ФИКС 4: Вытягиваем ID строго из from_user, а не из message.from_user (который равен боту при callback)
     user_id = message.from_user.id
@@ -71,7 +72,7 @@ async def cmd_clan_hub(message: types.Message | types.CallbackQuery):
         user = await conn.fetchrow("SELECT team_id FROM users WHERE user_id = $1", user_id)
 
         if user and user["team_id"] is not None:
-            await show_user_team_dashboard(target_msg, user["team_id"], user_id)
+            await show_user_team_dashboard(target_msg, user["team_id"], user_id, user_lang)
             return
 
     welcome_text = (
@@ -95,7 +96,7 @@ async def cmd_clan_hub(message: types.Message | types.CallbackQuery):
 # 👥 2. ВЫЗОВ СВОЕЙ КОМАНДЫ ДАННЫЙ СЕЙЧАС: /my_team
 # ============================================================================
 @router.message(Command("my_team"))
-async def cmd_my_team_isolated(message: types.Message):
+async def cmd_my_team_isolated(message: types.Message, user_lang: str = "ru"):
     user_id = message.from_user.id
 
     async with db.pool.acquire() as conn:
@@ -103,16 +104,15 @@ async def cmd_my_team_isolated(message: types.Message):
 
         if not user or user["team_id"] is None:
             kb = types.InlineKeyboardMarkup(inline_keyboard=[
-                [types.InlineKeyboardButton(text="🏆 Создать Команду за 100к",
+                [types.InlineKeyboardButton(text=t(user_lang, "clan.btn_create"),
                                             callback_data="clan_action:start_create")],
-                [types.InlineKeyboardButton(text="💿 Главное Меню /menu", callback_data="refresh_main_menu")]
+                [types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
+                                            callback_data="refresh_main_menu")]
             ])
-            await message.answer(
-                "⚠️ <b>У тебя пока нет созданной команды!</b>\n\nТы можешь зарегистрировать личную банду прямо сейчас, нажав на кнопку ниже.",
-                reply_markup=kb, parse_mode="HTML")
+            await message.answer(t(user_lang, "clan.no_team"), reply_markup=kb, parse_mode="HTML")
             return
 
-        await show_user_team_dashboard(message, user["team_id"], user_id)
+        await show_user_team_dashboard(message, user["team_id"], user_id, user_lang)
 
 
 def format_member_line(member: dict, captain_id: int) -> str:
@@ -151,7 +151,8 @@ async def _fetch_team_members(conn, team_id: int, captain_id: int, page: int) ->
     return [dict(r) for r in rows]
 
 
-async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_id: int):
+async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_id: int,
+                                   lang: str = "ru"):
     """Рендеринг дашборда банды с титановой защитой от утечки юзернеймов"""
     async with db.pool.acquire() as conn:
         team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1", team_id)
@@ -164,25 +165,23 @@ async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_
     captain_name = f"@{captain_row['username']}" if captain_row and captain_row["username"] \
         else f"ID {team['captain_id']}"
     captain_level = captain_row["quiz_level"] if captain_row else 0
-    status_clan = "👑 СТАТУС: КЛАН ИМПЕРИИ" if team["max_members"] >= 1000 else "👥 СТАТУС: ОБЫЧНАЯ КОМАНДА"
+    status_clan = t(lang, "clan.status_clan" if team["max_members"] >= 1000 else "clan.status_team")
 
-    clan_text = (
-        f"🏆 <b>ИНФОРМАЦИОННЫЙ ДАШБОРД ТВОЕЙ КОМАНДЫ</b>\n"
-        f"..................................................\n\n"
-        f"📌 Название: <b>{team['team_name']}</b>\n"
-        f"⚡ {status_clan}\n"
-        f"👤 Капитан банды: 🧠{captain_level} · <b>{captain_name}</b>\n"
-        f"💬 Девиз: <i>«{team['city']}»</i>\n"
-        f"🔮 Символ эмблемы: {team['school_num']}\n\n"
-        f"👥 Состав участников: <b>{team['members_count']} / {team['max_members']} чел.</b>\n"
-        f"..................................................\n\n"
-        f"👇 <b>НАВИГАЦИЯ:</b>"
+    clan_text = t(
+        lang, "clan.dashboard",
+        name=team["team_name"], status=status_clan,
+        captain_level=captain_level, captain=captain_name,
+        motto=team["city"], symbol=team["school_num"],
+        members=team["members_count"], max_members=team["max_members"],
     )
 
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="👥 СПИСОК ТИММЕЙТОВ", callback_data=f"team_members:{team_id}:0")],
-        [types.InlineKeyboardButton(text="🚪 Покинуть команду / Бросить банду", callback_data=f"clan_leave:{team_id}")],
-        [types.InlineKeyboardButton(text="💿 Главное Меню /menu", callback_data="refresh_main_menu")]
+        [types.InlineKeyboardButton(text=t(lang, "clan.btn_members"),
+                                    callback_data=f"team_members:{team_id}:0")],
+        [types.InlineKeyboardButton(text=t(lang, "clan.btn_leave"),
+                                    callback_data=f"clan_leave:{team_id}")],
+        [types.InlineKeyboardButton(text=t(lang, "common.btn_menu"),
+                                    callback_data="refresh_main_menu")]
     ])
     await message.answer(clan_text, reply_markup=kb, parse_mode="HTML")
 
@@ -191,7 +190,7 @@ async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_
 # 👥 СПИСОК ТИММЕЙТОВ: видят только участники этой же команды, пагинация до 1000
 # ============================================================================
 @router.callback_query(F.data.startswith("team_members:"))
-async def show_team_members_page(callback: types.CallbackQuery):
+async def show_team_members_page(callback: types.CallbackQuery, user_lang: str = "ru"):
     parts = callback.data.split(":")
     if len(parts) != 3 or not (parts[1].isdigit() and parts[2].isdigit()):
         await callback.answer()
@@ -203,11 +202,11 @@ async def show_team_members_page(callback: types.CallbackQuery):
         viewer = await conn.fetchrow("SELECT team_id FROM users WHERE user_id = $1", viewer_id)
         # 🔒 Приватность: состав виден ТОЛЬКО участникам этой же команды
         if not viewer or viewer["team_id"] != team_id:
-            await callback.answer("🔒 Список участников виден только членам этой команды!", show_alert=True)
+            await callback.answer(t(user_lang, "clan.members_only"), show_alert=True)
             return
         team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1", team_id)
         if not team:
-            await callback.answer("❌ Команда уже расформирована.", show_alert=True)
+            await callback.answer(t(user_lang, "clan.members_gone"), show_alert=True)
             return
 
         pages = team_pages_total(team["members_count"])
@@ -217,23 +216,22 @@ async def show_team_members_page(callback: types.CallbackQuery):
     await callback.answer()
     lines = [format_member_line(m, team["captain_id"]) for m in members]
     members_text = (
-        f"👥 <b>СОСТАВ КОМАНДЫ «{team['team_name']}»</b>\n"
-        f"🧠 — уровень игрового интеллекта (прокачивается только в /quiz)\n"
-        f"..................................................\n\n"
-        + "\n".join(lines) +
-        f"\n\n..................................................\n"
-        f"📄 Страница <b>{page + 1} / {pages}</b> · Всего бойцов: <b>{team['members_count']}</b>\n"
-        f"<i>Кликай по @username тиммейта, чтобы написать ему, собрать свой чат "
-        f"и позвать банду на командные состязания!</i>"
+        t(user_lang, "clan.members_header", name=team["team_name"])
+        + "\n".join(lines)
+        + t(user_lang, "clan.members_footer", page=page + 1, pages=pages,
+            members=team["members_count"])
     )
 
     nav_row = []
     if page > 0:
-        nav_row.append(types.InlineKeyboardButton(text="⬅️ Назад", callback_data=f"team_members:{team_id}:{page - 1}"))
+        nav_row.append(types.InlineKeyboardButton(text=t(user_lang, "clan.btn_prev"),
+                                                  callback_data=f"team_members:{team_id}:{page - 1}"))
     if page < pages - 1:
-        nav_row.append(types.InlineKeyboardButton(text="Вперёд ➡️", callback_data=f"team_members:{team_id}:{page + 1}"))
+        nav_row.append(types.InlineKeyboardButton(text=t(user_lang, "clan.btn_next"),
+                                                  callback_data=f"team_members:{team_id}:{page + 1}"))
     kb_rows = [nav_row] if nav_row else []
-    kb_rows.append([types.InlineKeyboardButton(text="🏆 Дашборд команды", callback_data="clan_main_menu")])
+    kb_rows.append([types.InlineKeyboardButton(text=t(user_lang, "clan.btn_dashboard"),
+                                               callback_data="clan_main_menu")])
     kb = types.InlineKeyboardMarkup(inline_keyboard=kb_rows)
 
     try:
@@ -429,7 +427,7 @@ async def process_search_by_user_city(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data.startswith("clan_join:"))
-async def process_clan_join_request(callback: types.CallbackQuery):
+async def process_clan_join_request(callback: types.CallbackQuery, user_lang: str = "ru"):
     await callback.answer()
     user_id = callback.from_user.id
     parts = callback.data.split(":")
@@ -456,15 +454,14 @@ async def process_clan_join_request(callback: types.CallbackQuery):
                 "UPDATE users SET team_id = $1, team_joined_at = NOW() WHERE user_id = $2",
                 team_id, user_id)
     await callback.message.edit_text(
-        f"🎉 <b>ПОЗДРАВЛЯЕМ, ТЫ В ИГРЕ!</b>\n\nТы успешно вступил в команду <b>{team['team_name']}</b>!\n📍 Пиши команду /my_team, чтобы проверить состав!",
-        parse_mode="HTML")
+        t(user_lang, "clan.join_ok", name=team["team_name"]), parse_mode="HTML")
 
 
 # ============================================================================
 # 🚪 5. ТИТАНОВЫЙ КОНТУР ВЫХОДА (С ЗАЩИТОЙ ОТ РАССИНХРОНИЗАЦИИ СЧЕТЧИКОВ)
 # ============================================================================
 @router.callback_query(F.data.startswith("clan_leave:"))
-async def process_clan_leave_logic(callback: types.CallbackQuery):
+async def process_clan_leave_logic(callback: types.CallbackQuery, user_lang: str = "ru"):
     await callback.answer()
     user_id = callback.from_user.id
     parts = callback.data.split(":")
@@ -524,8 +521,7 @@ async def process_clan_leave_logic(callback: types.CallbackQuery):
                 await conn.execute(
                     "UPDATE users SET team_id = NULL, team_joined_at = NULL WHERE user_id = $1", user_id)
                 await callback.message.answer(
-                    f"🚪 Ты успешно покинул команду <b>{team['team_name']}</b>. Теперь ты вольная птица!",
-                    parse_mode="HTML")
+                    t(user_lang, "clan.leave_ok", name=team["team_name"]), parse_mode="HTML")
 
             # Наводим идеальный порядок в чате: удаляем старый дашборд с кнопками
             try:

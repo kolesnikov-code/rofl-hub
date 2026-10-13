@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 from shared.database import db
 from shared.economy import quiz_answers_required, quiz_level_reward, utcnow
 from shared.farm_logic import apply_lazy_farm, farm_counts
+from shared.locales import btn_variants, t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ FONT_PATH = next((p for p in FONT_CANDIDATES if os.path.exists(p)), None)
 # начисления идут через ledger без потери «копеек времени».
 
 
-def generate_profile_image(user_id: int, username: str, data: dict) -> str:
+def generate_profile_image(user_id: int, username: str, data: dict, lang: str = "ru") -> str:
     """Рендерит сочный неоновый паспорт инвентаря. Шаблоны больше не удаляются!"""
     capacity = data["fridge_capacity"]
     template_path = os.path.join(STATIC_DIR, f"fridge_{capacity}.jpg")
@@ -44,15 +45,16 @@ def generate_profile_image(user_id: int, username: str, data: dict) -> str:
             except (IOError, TypeError):
                 font_id = font_data = ImageFont.load_default()
 
-            draw.text((50, 40), f"ID ПАСПОРТА: {user_id}", fill="#00ffff", font=font_id)
-            draw.text((50, 80), f"ВОЖАК: @{username}", fill="#ffffff", font=font_data)
-            draw.text((50, 150), f"Баланс: {data['balance']} рофлов", fill="#ffff00", font=font_id)
-            draw.text((50, 200), f"В холодильнике: {data['fridge_cutlets']} / {capacity} шт.", fill="#ff00ff",
-                      font=font_data)
-            draw.text((50, 240), f"Котлеты на складе: {data['inv_cutlets']} шт.", fill="#ffffff", font=font_data)
-            draw.text((50, 310), f"Младшие Майнеры: {data['miner_junior_count']} шт.", fill="#00ff00", font=font_data)
-            draw.text((50, 350), f"Кибер-Бурильщики: {data['miner_premium_count']} шт.", fill="#ff3300",
-                      font=font_data)
+            draw.text((50, 40), t(lang, "img.passport", user_id=user_id), fill="#00ffff", font=font_id)
+            draw.text((50, 80), t(lang, "img.owner", username=username), fill="#ffffff", font=font_data)
+            draw.text((50, 150), t(lang, "img.balance", balance=data["balance"]), fill="#ffff00", font=font_id)
+            draw.text((50, 200), t(lang, "img.fridge", fridge=data["fridge_cutlets"], capacity=capacity),
+                      fill="#ff00ff", font=font_data)
+            draw.text((50, 240), t(lang, "img.inv", inv=data["inv_cutlets"]), fill="#ffffff", font=font_data)
+            draw.text((50, 310), t(lang, "img.junior", count=data["miner_junior_count"]),
+                      fill="#00ff00", font=font_data)
+            draw.text((50, 350), t(lang, "img.premium", count=data["miner_premium_count"]),
+                      fill="#ff3300", font=font_data)
             img.save(output_path, "JPEG")
             return output_path
     except Exception as e:
@@ -64,8 +66,8 @@ def generate_profile_image(user_id: int, username: str, data: dict) -> str:
 # 👤 ТЕКУЩИЙ ЛИЧНЫЙ КАБИНЕТ: /profile ИЛИ НАЖАТИЕ НИЖНЕЙ КНОПКИ
 # ============================================================================
 @router.message(Command("profile"))
-@router.message(F.text == "👤 МОЙ ПРОФИЛЬ")
-async def cmd_profile_stats(message: types.Message):
+@router.message(F.text.in_(btn_variants("profile")))
+async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
     user_id = message.from_user.id
     username = html.escape(message.from_user.username or f"user_{user_id}")
 
@@ -74,15 +76,16 @@ async def cmd_profile_stats(message: types.Message):
         async with conn.transaction():
             user, miners = await apply_lazy_farm(conn, user_id, now)
             if not user:
-                await message.answer("⚠️ Профиль не найден. Прожми /start")
+                await message.answer(t(user_lang, "common.no_profile"))
                 return
 
-            team_name = "Нет команды"
+            team_name = t(user_lang, "profile.no_team")
             if user["team_id"] is not None:
                 t_row = await conn.fetchrow("SELECT team_name, max_members FROM teams WHERE team_id = $1",
                                             user["team_id"])
                 if t_row:
-                    status_team = "Клан" if t_row["max_members"] >= 1000 else "Команда"
+                    status_team = t(user_lang, "profile.clan_label") if t_row["max_members"] >= 1000 \
+                        else t(user_lang, "profile.team_label")
                     team_name = f"{status_team} «{t_row['team_name']}»"
 
             quiz_row = await conn.fetchrow(
@@ -96,15 +99,18 @@ async def cmd_profile_stats(message: types.Message):
         "boost_level": user["boost_level"]
     }
 
-    photo_path = generate_profile_image(user_id, username, user_data_dict)
+    photo_path = generate_profile_image(user_id, username, user_data_dict, user_lang)
 
     profile_keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [
-            types.InlineKeyboardButton(text="🚜 Моя Кибер-Ферма", callback_data="open_farm_from_profile"),
-            types.InlineKeyboardButton(text="🏪 Магазин /shop", callback_data="open_shop_from_farm")
+            types.InlineKeyboardButton(text=t(user_lang, "profile.btn_farm"),
+                                       callback_data="open_farm_from_profile"),
+            types.InlineKeyboardButton(text=t(user_lang, "profile.btn_shop"),
+                                       callback_data="open_shop_from_farm")
         ],
         [
-            types.InlineKeyboardButton(text="💿 Главное Меню /menu", callback_data="refresh_main_menu")
+            types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
+                                       callback_data="refresh_main_menu")
         ]
     ])
 
@@ -113,17 +119,11 @@ async def cmd_profile_stats(message: types.Message):
     next_level = quiz_level + 1
     required = quiz_answers_required(next_level)
 
-    caption_text = (
-        f"📋 <b>ЛИЧНЫЙ КАБИНЕТ ИГРОКА ROFL HUB</b>\n"
-        f"..................................................\n\n"
-        f"🆔 Твой ID Паспорта: <code>{user_id}</code>\n"
-        f"💰 Монеты сейчас: <b>{user['balance']} рофлов</b>\n"
-        f"🏆 Твой статус: <b>{team_name}</b>\n"
-        f"🧠 Уровень интеллекта: <b>{quiz_level}</b> · до уровня {next_level}: "
-        f"<b>{required - quiz_progress}</b> верных ответов в /quiz "
-        f"(награда: +{quiz_level_reward(next_level)} рофлов)\n\n"
-        f"..................................................\n"
-        f"<i>Здесь показано то, что есть у тебя прямо сейчас. Используй кнопки для перелёта в другие разделы!</i>"
+    caption_text = t(
+        user_lang, "profile.caption",
+        user_id=user_id, balance=user["balance"], team=team_name,
+        level=quiz_level, next_level=next_level, left=required - quiz_progress,
+        reward=quiz_level_reward(next_level),
     )
 
     photo_file = FSInputFile(photo_path)
@@ -141,7 +141,7 @@ async def cmd_profile_stats(message: types.Message):
 # 📊 ЧИСТАЯ СТАТИСТИКА ДОСТИЖЕНИЙ ЗА 30 ДНЕЙ: /my_stats
 # ============================================================================
 @router.message(Command("my_stats"))
-async def cmd_historical_stats(message: types.Message):
+async def cmd_historical_stats(message: types.Message, user_lang: str = "ru"):
     user_id = message.from_user.id
 
     async with db.pool.acquire() as conn:
@@ -150,24 +150,17 @@ async def cmd_historical_stats(message: types.Message):
             "FROM game_stats WHERE user_id = $1", user_id)
         ref_count = await conn.fetchval("SELECT COUNT(*) FROM users WHERE referred_by = $1", user_id)
 
-    played = g_row["games_played"] if g_row else 0
-    won = g_row["games_won"] if g_row else 0
-    quiz_level = g_row["quiz_level"] if g_row else 0
-    quiz_total = g_row["quiz_correct_total"] if g_row else 0
-
-    stats_text = (
-        f"📊 <b>ИГРОВАЯ СТАТИСТИКА ДОСТИЖЕНИЙ (30 ДНЕЙ)</b>\n"
-        f"..................................................\n\n"
-        f"🧠 Уровень игрового интеллекта: <b>{quiz_level}</b> "
-        f"(всего верных ответов: {quiz_total})\n"
-        f"🎮 Проведено раундов в дуэлях: <b>{played} игр</b>\n"
-        f"🏆 Одержано побед над соперниками: <code>{won} раз</code>\n"
-        f"👥 Приглашено активных друзей: <b>{ref_count} чел.</b>\n\n"
-        f"..................................................\n"
-        f"<i>Статистика хранит твои исторические заслуги и прошлые достижения, даже если выигранные монеты уже были потрачены в маркете!</i>"
+    stats_text = t(
+        user_lang, "profile.stats",
+        level=g_row["quiz_level"] if g_row else 0,
+        total=g_row["quiz_correct_total"] if g_row else 0,
+        played=g_row["games_played"] if g_row else 0,
+        won=g_row["games_won"] if g_row else 0,
+        refs=ref_count,
     )
 
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="💿 Главное Меню /menu", callback_data="refresh_main_menu")]
+        [types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
+                                    callback_data="refresh_main_menu")]
     ])
     await message.answer(stats_text, reply_markup=kb, parse_mode="HTML")

@@ -17,11 +17,12 @@ import uuid
 from aiogram import Bot, F, Router, types
 from aiogram.types import LabeledPrice, PreCheckoutQuery
 
-from bots.main_bot.catalog import CatalogError, build_order, normalize_sku
+from bots.main_bot.catalog import CatalogError, build_order, item_title, normalize_sku
 from bots.main_bot.config import ADMIN_SECRET_CHANNEL_ID, is_shop_tester
 from shared.database import db
 from shared.delivery import DeliveryError, already_delivered, deliver_order
 from shared.farm_logic import apply_lazy_farm
+from shared.locales import t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -46,19 +47,20 @@ async def _precheck_deliverable(conn, user_id: int, order: dict) -> str | None:
     return None
 
 
-async def _deliver_in_transaction(user_id: int, order: dict, charge_id: str) -> tuple[bool, str]:
+async def _deliver_in_transaction(user_id: int, order: dict, charge_id: str,
+                                  lang: str = "ru") -> tuple[bool, str]:
     """(True, текст) при успехе; (False, причина) если доставить нельзя. Исключения БД — наружу."""
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             if await already_delivered(conn, charge_id):
-                return True, "✅ Этот платёж уже был обработан, товар выдан ранее."
+                return True, t(lang, "pay.already")
             # Сначала закрываем прошлое время по старым ставкам: купленный буст,
             # дрон или робот действует строго вперёд, а не задним числом.
             user, _ = await apply_lazy_farm(conn, user_id)
             if not user:
-                return False, "Профиль не найден."
+                return False, t(lang, "common.no_profile")
             try:
-                text = await deliver_order(conn, user_id, order, charge_id)
+                text = await deliver_order(conn, user_id, order, charge_id, lang=lang)
             except DeliveryError as e:
                 return False, str(e)
             return True, text
@@ -68,7 +70,7 @@ async def _deliver_in_transaction(user_id: int, order: dict, charge_id: str) -> 
 # 1. Нажатие кнопки товара: валидация и инвойс (или тест-выдача)
 # ============================================================================
 @router.callback_query(F.data.startswith("buy_"))
-async def process_shop_purchase_intent(callback: types.CallbackQuery, bot: Bot):
+async def process_shop_purchase_intent(callback: types.CallbackQuery, bot: Bot, user_lang: str = "ru"):
     user_id = callback.from_user.id
     payload = normalize_sku(callback.data)
 
@@ -88,24 +90,25 @@ async def process_shop_purchase_intent(callback: types.CallbackQuery, bot: Bot):
 
     if is_shop_tester(user_id):
         charge_id = f"TEST_{uuid.uuid4().hex[:16]}"
-        ok, text = await _deliver_in_transaction(user_id, order, charge_id)
+        ok, text = await _deliver_in_transaction(user_id, order, charge_id, user_lang)
         prefix = "🧪 <b>ТЕСТ-РЕЖИМ: товар выдан без оплаты</b>\n" if ok else "❌ <b>ТЕСТ-РЕЖИМ: доставка не удалась</b>\n"
         await callback.message.answer(f"{prefix}{text}\n<code>{charge_id}</code>", parse_mode="HTML")
         return
 
+    title = item_title(order, user_lang)
     try:
         await bot.send_invoice(
             chat_id=user_id,
-            title=order["title"],
-            description="Мгновенная доставка внутриигрового контента ROFL HUB.",
-            prices=[LabeledPrice(label=order["title"], amount=order["stars"])],
+            title=title,
+            description=t(user_lang, "pay.invoice_desc"),
+            prices=[LabeledPrice(label=title, amount=order["stars"])],
             provider_token="",
             currency="XTR",
             payload=f"{order['sku']}:{order['stars']}",
         )
     except Exception:
         logger.exception("[STARS_INVOICE_ERROR] user=%s sku=%s", user_id, order["sku"])
-        await callback.message.answer("⚠️ Не удалось сформировать счёт Telegram Stars. Попробуй позже.")
+        await callback.message.answer(t(user_lang, "pay.invoice_error"))
 
 
 # ============================================================================
@@ -144,7 +147,7 @@ async def process_pre_checkout_query(pre_checkout_query: PreCheckoutQuery):
 # 3. Успешная оплата: доставка, идемпотентность, авто-возврат при сбое
 # ============================================================================
 @router.message(F.successful_payment)
-async def process_successful_payment(message: types.Message, bot: Bot):
+async def process_successful_payment(message: types.Message, bot: Bot, user_lang: str = "ru"):
     user_id = message.from_user.id
     payment = message.successful_payment
     charge_id = payment.telegram_payment_charge_id
@@ -153,19 +156,16 @@ async def process_successful_payment(message: types.Message, bot: Bot):
     try:
         async with db.pool.acquire() as conn:
             order = await _load_order_for_user(conn, user_id, payload)
-        ok, text = await _deliver_in_transaction(user_id, order, charge_id)
+        ok, text = await _deliver_in_transaction(user_id, order, charge_id, user_lang)
     except Exception:
         logger.exception("[PAYMENT_DELIVERY_CRASH] user=%s charge=%s payload=%s", user_id, charge_id, payload)
         await _alert_admin(bot, f"🚨 Сбой доставки после оплаты!\nuser={user_id}\ncharge={charge_id}\npayload={payload}")
-        await message.answer(
-            "🚨 Оплата прошла, но доставка временно не удалась. Мы уже в курсе.\n"
-            f"Сохрани номер платежа: <code>{charge_id}</code>", parse_mode="HTML")
+        await message.answer(t(user_lang, "pay.crash", charge=charge_id), parse_mode="HTML")
         return
 
     if ok:
         await message.answer(
-            "🎉 <b>Платёж подтверждён!</b>\n"
-            f"🧾 <code>{charge_id}</code>\n💵 Списано: <b>{payment.total_amount} ★</b>\n\n{text}",
+            t(user_lang, "pay.success", charge=charge_id, stars=payment.total_amount, text=text),
             parse_mode="HTML")
         return
 
@@ -177,8 +177,8 @@ async def process_successful_payment(message: types.Message, bot: Bot):
         logger.exception("[REFUND_FAILED] user=%s charge=%s", user_id, charge_id)
     await _alert_admin(bot, f"⚠️ Доставка отклонена: {text}\nuser={user_id}\ncharge={charge_id}\nrefund={refunded}")
     await message.answer(
-        f"⚠️ {text}\n\n" + ("💫 Stars возвращены на твой счёт автоматически." if refunded
-                           else f"Сохрани номер платежа для возврата: <code>{charge_id}</code>"),
+        f"⚠️ {text}\n\n" + (t(user_lang, "pay.refunded") if refunded
+                           else t(user_lang, "pay.keep_charge", charge=charge_id)),
         parse_mode="HTML")
 
 

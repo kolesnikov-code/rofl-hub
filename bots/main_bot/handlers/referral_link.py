@@ -13,6 +13,7 @@ from aiogram.filters import Command
 
 from shared.database import db
 from shared.economy import REFERRAL_SIGNUP_BONUS
+from shared.locales import t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -31,50 +32,42 @@ async def _referral_stats(user_id: int) -> tuple[int, int] | None:
     return invited, earned
 
 
-def referral_text(link: str, invited: int, earned: int) -> str:
-    return (
-        f"🤝 <b>РЕФЕРАЛЬНАЯ ПРОГРАММА ROFL HUB</b>\n"
-        f"..................................................\n\n"
-        f"Приглашай друзей и получай <b>+{REFERRAL_SIGNUP_BONUS} рофлов</b> за каждого, "
-        f"кто зарегистрируется по твоей персональной ссылке!\n\n"
-        f"🔗 <b>Твоя ссылка (нажми, чтобы скопировать):</b>\n"
-        f"<code>{link}</code>\n\n"
-        f"📊 <b>ТВОЯ СТАТИСТИКА:</b>\n"
-        f"👥 Приглашено друзей: <b>{invited} чел.</b>\n"
-        f"💰 Заработано на рефералах: <b>{earned} рофлов</b>\n\n"
-        f"..................................................\n"
-        f"<i>Кидай ссылку в чаты класса, друзьям и в соцсети — чем больше банда, "
-        f"тем быстрее растёт твой баланс!</i>"
-    )
-
-
 @router.message(Command("invite"))
 @router.message(Command("ref"))
-async def cmd_invite(message: types.Message, bot: Bot):
+async def cmd_invite(message: types.Message, bot: Bot, user_lang: str = "ru"):
     user_id = message.from_user.id
     stats = await _referral_stats(user_id)
     if stats is None:
-        await message.answer("⚠️ Профиль не найден. Нажми /start для регистрации.")
+        await message.answer(t(user_lang, "common.no_profile"))
         return
 
     me = await bot.me()
     link = f"https://t.me/{me.username}?start={user_id}"
+    invited, earned = stats
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(
-            text="📣 Поделиться ссылкой",
-            url=f"https://t.me/share/url?url={link}&text=Залетай в игровую экосистему ROFL HUB!")],
-        [types.InlineKeyboardButton(text="💿 Главное Меню /menu", callback_data="refresh_main_menu")],
+            text=t(user_lang, "ref.btn_share"),
+            url=f"https://t.me/share/url?url={link}&text={t(user_lang, 'ref.share_text')}")],
+        [types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
+                                    callback_data="refresh_main_menu")],
     ])
-    await message.answer(referral_text(link, *stats), reply_markup=kb, parse_mode="HTML")
+    await message.answer(
+        t(user_lang, "ref.text", link=link, invited=invited, earned=earned,
+          bonus=REFERRAL_SIGNUP_BONUS),
+        reply_markup=kb, parse_mode="HTML")
 
 
 @router.callback_query(F.data == "open_referral")
-async def open_referral_callback(callback: types.CallbackQuery, bot: Bot):
+async def open_referral_callback(callback: types.CallbackQuery, bot: Bot, user_lang: str = "ru"):
     await callback.answer()
     stats = await _referral_stats(callback.from_user.id)
     if stats is None:
-        await callback.message.answer("⚠️ Профиль не найден. Нажми /start для регистрации.")
+        await callback.message.answer(t(user_lang, "common.no_profile"))
         return
     me = await bot.me()
     link = f"https://t.me/{me.username}?start={callback.from_user.id}"
-    await callback.message.answer(referral_text(link, *stats), parse_mode="HTML")
+    invited, earned = stats
+    await callback.message.answer(
+        t(user_lang, "ref.text", link=link, invited=invited, earned=earned,
+          bonus=REFERRAL_SIGNUP_BONUS),
+        parse_mode="HTML")

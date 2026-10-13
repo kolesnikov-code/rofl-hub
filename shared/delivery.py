@@ -4,7 +4,8 @@
 Контракт:
 - deliver_order() вызывается внутри транзакции, строка users уже заблокирована FOR UPDATE;
 - у КАЖДОГО типа товара из каталога есть обработчик в DELIVERY_HANDLERS (проверяется тестом);
-- повторная доставка по тому же charge_id невозможна: сначала проверяем star_payments.
+- повторная доставка по тому же charge_id невозможна: сначала проверяем star_payments;
+- тексты для игрока — на его языке (lang передаёт платёжный контур).
 """
 from __future__ import annotations
 
@@ -14,6 +15,7 @@ from typing import Awaitable, Callable
 
 from shared.economy import MINER_LICENSE_DAYS, extend_expiry, extend_expiry_hours, utcnow
 from shared.ledger import change_balance
+from shared.locales import t
 
 logger = logging.getLogger(__name__)
 
@@ -22,38 +24,37 @@ class DeliveryError(Exception):
     """Товар нельзя выдать (например, Мега-клан без команды)."""
 
 
-Handler = Callable[[object, int, dict, datetime], Awaitable[str]]
+Handler = Callable[[object, int, dict, datetime, str], Awaitable[str]]
 
 
-async def _deliver_cutlets(conn, user_id: int, order: dict, now: datetime) -> str:
+async def _deliver_cutlets(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
     await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $1 WHERE user_id = $2",
                        order["qty"], user_id)
-    return f"🥩 На склад добавлено: <b>{order['qty']} котлет</b>."
+    return t(lang, "dlv.cutlets", qty=order["qty"])
 
 
-async def _deliver_miner(conn, user_id: int, order: dict, now: datetime) -> str:
+async def _deliver_miner(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
     expires_at = now + timedelta(days=MINER_LICENSE_DAYS)
     await conn.execute(
         "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES ($1, $2, $3, $4)",
         user_id, order["kind"], now, expires_at,
     )
-    name = "Младший Майнер" if order["kind"] == "junior" else "Кибер-Бурильщик"
-    return (f"🤖 Робот <b>«{name}»</b> доставлен на твою ферму.\n"
-            f"⏳ Срок службы: до <b>{expires_at:%d.%m.%Y %H:%M} UTC</b>.")
+    name = t(lang, "dlv.miner_junior" if order["kind"] == "junior" else "dlv.miner_premium")
+    return t(lang, "dlv.miner", name=name, until=f"{expires_at:%d.%m.%Y %H:%M}")
 
 
-async def _deliver_fridge(conn, user_id: int, order: dict, now: datetime) -> str:
+async def _deliver_fridge(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
     current = await conn.fetchval("SELECT fridge_capacity FROM users WHERE user_id = $1", user_id)
     if current is not None and order["capacity"] <= current:
-        raise DeliveryError("У тебя уже холодильник такого или большего объёма.")
+        raise DeliveryError(t(lang, "dlv.err_fridge"))
     await conn.execute("UPDATE users SET fridge_capacity = $1 WHERE user_id = $2",
                        order["capacity"], user_id)
-    return f"📦 Холодильник расширен до <b>{order['capacity']} котлет</b>."
+    return t(lang, "dlv.fridge", capacity=order["capacity"])
 
 
-async def _deliver_coins(conn, user_id: int, order: dict, now: datetime) -> str:
+async def _deliver_coins(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
     await change_balance(conn, user_id, order["coins_amount"], "shop_coins", order["sku"])
-    return f"💰 Зачислено <b>+{order['coins_amount']:,} рофлов</b>.".replace(",", " ")
+    return t(lang, "dlv.coins", amount=f"{order['coins_amount']:,}".replace(",", " "))
 
 
 async def _extend_column(conn, user_id: int, column: str, *, days: int | None = None,
@@ -67,32 +68,32 @@ async def _extend_column(conn, user_id: int, column: str, *, days: int | None = 
     return new_until
 
 
-async def _deliver_farm_boost(conn, user_id: int, order: dict, now: datetime) -> str:
+async def _deliver_farm_boost(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
     column = {"nuclear": "boost_nuclear_until", "nitrogen": "boost_nitrogen_until"}[order["kind"]]
     until = await _extend_column(conn, user_id, column, days=order["days"], now=now)
-    label = "🔋 Ядерный Разгон x5" if order["kind"] == "nuclear" else "❄️ Азотное Охлаждение +40%"
-    return f"{label} активен до <b>{until:%d.%m.%Y %H:%M} UTC</b>."
+    key = "dlv.boost_nuclear" if order["kind"] == "nuclear" else "dlv.boost_nitrogen"
+    return t(lang, key, until=f"{until:%d.%m.%Y %H:%M}")
 
 
-async def _deliver_vip_character(conn, user_id: int, order: dict, now: datetime) -> str:
+async def _deliver_vip_character(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
     until = await _extend_column(conn, user_id, "drone_until", days=order["days"], now=now)
-    return f"🛸 Мастер-дрон охраняет ферму до <b>{until:%d.%m.%Y} UTC</b>."
+    return t(lang, "dlv.drone", until=f"{until:%d.%m.%Y}")
 
 
-async def _deliver_game_unlimit(conn, user_id: int, order: dict, now: datetime) -> str:
+async def _deliver_game_unlimit(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
     until = await _extend_column(conn, user_id, "unlimit_until", hours=order["hours"], now=now)
-    return f"⚡ Лимиты побед сняты до <b>{until:%d.%m.%Y %H:%M} UTC</b>."
+    return t(lang, "dlv.unlimit", until=f"{until:%d.%m.%Y %H:%M}")
 
 
-async def _deliver_clan_upgrade(conn, user_id: int, order: dict, now: datetime) -> str:
+async def _deliver_clan_upgrade(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
     team = await conn.fetchrow("SELECT team_id, max_members FROM teams WHERE captain_id = $1 FOR UPDATE", user_id)
     if not team:
-        raise DeliveryError("У тебя нет созданной команды. Сначала создай её через /create_team.")
+        raise DeliveryError(t(lang, "dlv.err_no_team"))
     if team["max_members"] >= order["max_members"]:
-        raise DeliveryError("Твоя команда уже имеет статус Мега-Клана.")
+        raise DeliveryError(t(lang, "dlv.err_mega"))
     await conn.execute("UPDATE teams SET max_members = $1 WHERE team_id = $2",
                        order["max_members"], team["team_id"])
-    return f"🏆 Команда получила статус <b>МЕГА-КЛАН</b>: до {order['max_members']} мест."
+    return t(lang, "dlv.clan", max=order["max_members"])
 
 
 DELIVERY_HANDLERS: dict[str, Handler] = {
@@ -111,17 +112,18 @@ async def already_delivered(conn, charge_id: str) -> bool:
     return bool(await conn.fetchval("SELECT 1 FROM star_payments WHERE telegram_charge_id = $1", charge_id))
 
 
-async def deliver_order(conn, user_id: int, order: dict, charge_id: str, now: datetime | None = None) -> str:
+async def deliver_order(conn, user_id: int, order: dict, charge_id: str,
+                        now: datetime | None = None, lang: str = "ru") -> str:
     """
     Выдаёт товар и фиксирует платёж. Вызывать внутри транзакции с заблокированной строкой users.
-    Возвращает текст для игрока. Бросает DeliveryError / KeyError(неизвестный тип).
+    Возвращает текст для игрока (на его языке). Бросает DeliveryError / KeyError(неизвестный тип).
     """
     now = now or utcnow()
     handler = DELIVERY_HANDLERS.get(order["type"])
     if handler is None:
         raise DeliveryError(f"Нет обработчика доставки для типа {order['type']}")
 
-    message = await handler(conn, user_id, order, now)
+    message = await handler(conn, user_id, order, now, lang)
 
     await conn.execute(
         """

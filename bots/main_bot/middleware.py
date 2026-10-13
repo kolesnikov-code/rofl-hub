@@ -16,6 +16,7 @@ from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message, TelegramObject
 
 from shared.database import db
+from shared.locales import resolve_lang, t
 
 logger = logging.getLogger(__name__)
 
@@ -36,18 +37,24 @@ class ActivityMiddleware(BaseMiddleware):
     ) -> Any:
         user = data.get("event_from_user")
         if user is None or not db.is_connected:
+            if user is not None:
+                data["user_lang"] = resolve_lang(getattr(user, "language_code", None))
             return await handler(event, data)
 
         now = time.monotonic()
+        # Язык по умолчанию — из клиента Telegram (до регистрации), после — из профиля
+        data["user_lang"] = resolve_lang(getattr(user, "language_code", None))
         try:
-            is_blocked = await db.pool.fetchval(
-                "SELECT is_blocked FROM users WHERE user_id = $1", user.id)
+            row = await db.pool.fetchrow(
+                "SELECT is_blocked, lang FROM users WHERE user_id = $1", user.id)
+            if row:
+                data["user_lang"] = resolve_lang(row["lang"])
 
-            if is_blocked:
-                await self._notify_blocked(event, user.id, now)
+            if row and row["is_blocked"]:
+                await self._notify_blocked(event, user.id, now, data["user_lang"])
                 return None  # апдейт не доходит до обработчиков
 
-            if now - self._last_seen_written.get(user.id, 0.0) >= LAST_SEEN_WRITE_INTERVAL:
+            if row and now - self._last_seen_written.get(user.id, 0.0) >= LAST_SEEN_WRITE_INTERVAL:
                 self._last_seen_written[user.id] = now
                 await db.pool.execute(
                     "UPDATE users SET last_seen_at = NOW() WHERE user_id = $1", user.id)
@@ -56,16 +63,16 @@ class ActivityMiddleware(BaseMiddleware):
 
         return await handler(event, data)
 
-    async def _notify_blocked(self, event: TelegramObject, user_id: int, now: float) -> None:
+    async def _notify_blocked(self, event: TelegramObject, user_id: int, now: float,
+                              lang: str = "ru") -> None:
         if now - self._block_notified.get(user_id, 0.0) < BLOCK_NOTICE_INTERVAL:
             return
         self._block_notified[user_id] = now
         try:
             update = event  # на dp.update событие — Update
             if isinstance(getattr(update, "callback_query", None), CallbackQuery):
-                await update.callback_query.answer(
-                    "🚫 Твой аккаунт заблокирован администрацией.", show_alert=True)
+                await update.callback_query.answer(t(lang, "common.blocked"), show_alert=True)
             elif isinstance(getattr(update, "message", None), Message):
-                await update.message.answer("🚫 Твой аккаунт заблокирован администрацией ROFL HUB.")
+                await update.message.answer(t(lang, "common.blocked"))
         except Exception:
             pass

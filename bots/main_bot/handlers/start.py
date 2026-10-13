@@ -17,6 +17,7 @@ from shared.auction_logic import compute_bid
 from shared.database import db
 from shared.economy import REFERRAL_SIGNUP_BONUS, START_BALANCE, START_CUTLETS_INVENTORY
 from shared.ledger import change_balance
+from shared.locales import resolve_lang, t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -114,13 +115,14 @@ async def cmd_start(message: types.Message, state: FSMContext):
             reply_markup=get_language_selection_keyboard(ref_part, auc_part), parse_mode="HTML")
         return
 
+    lang = resolve_lang(user["lang"])
     await state.clear()
     if auction_id:
         await trigger_inline_auction_window(message, auction_id)
         return
     await message.answer(
-        f"👋 <b>С возвращением, @{username}!</b>\nТвой прогресс на месте. Панель навигации — внизу экрана.",
-        reply_markup=get_reply_main_keyboard(), parse_mode="HTML")
+        t(lang, "start.welcome_back", username=username),
+        reply_markup=get_reply_main_keyboard(lang), parse_mode="HTML")
 
 
 # ============================================================================
@@ -146,108 +148,44 @@ async def process_language_binding(callback: types.CallbackQuery, state: FSMCont
             await register_user(conn, user_id, username, lang, referrer_id,
                                 display_name=callback.from_user.full_name)
 
-    start_text = (
-        "👋 <b>Привет! Я — ROFL HUB BOT, главный бот игровой экосистемы ROFL HUB. "
-        "Это познавательно-развлекательный хаб нового поколения!</b>\n\n"
-        "<b>Здесь ты можешь:</b>\n"
-        "🎮 Сыграть в чат-бот игры против бота и других игроков\n"
-        "💸 Получить игровую валюту за победы или запустить ферму и добывать её круглосуточно\n"
-        "🤼 Создать команду и залететь в ТОП рейтинга\n"
-        "🏆 Прокачать команду до клана и бороться в международном рейтинге\n"
-        "💰 Вместе со своей бандой сорвать куш в миллион монет\n"
-        "👑 Купить публикацию на главной странице в соцсетях или на сайте, чтобы продвинуть себя или свой блог\n\n"
-        "<b>Этот чат-бот умеет:</b>\n"
-        "🎮 Показывать список всех игр, каналов и сайтов ROFL HUB\n"
-        "⚡ Начислять монеты в играх, битвах команд и кланов, за достижения, активность и рефералов\n"
-        "🔄 Переводить игровые монеты другому игроку ROFL HUB\n"
-        "💎 Продавать публикации на сайте и VIP-места для персон и блогеров\n"
-        "🚀 Продавать ускорители, звания, статусы и многое другое...\n\n"
-        "<i>Жми «ПРОДОЛЖИТЬ», и я расскажу подробнее 👇</i>"
-    )
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🛸 ПРОДОЛЖИТЬ", callback_data=f"intro_step_2:{auc_part}")]])
-    await callback.message.edit_text(start_text, reply_markup=kb, parse_mode="HTML")
+        [types.InlineKeyboardButton(text=t(lang, "start.btn_continue"),
+                                    callback_data=f"intro_step_2:{auc_part}")]])
+    await callback.message.edit_text(t(lang, "start.intro1"), reply_markup=kb, parse_mode="HTML")
 
 
 @router.callback_query(F.data.startswith("intro_step_2"))
-async def cmd_start_step_2(callback: types.CallbackQuery):
+async def cmd_start_step_2(callback: types.CallbackQuery, user_lang: str = "ru"):
     await callback.answer()
     auc_part = callback.data.split(":")[1] if ":" in callback.data else "none"
-    bonus_text = (
-        "🎁 <b>ДЕРЖИ СВОИ ПЕРВЫЕ НАГРАДЫ ЗА РЕГИСТРАЦИЮ!</b>\n"
-        "..................................................\n"
-        f"💸 Тебе начислено: <b>{START_BALANCE} монет</b>\n"
-        f"🥩 Тебе начислено: <b>{START_CUTLETS_INVENTORY} кибер-котлета</b>\n"
-        "..................................................\n"
-        "Это твой стартовый бонус за вступление в клуб ROFL HUB.\n\n"
-        "🔒 <i>Бонус выдаётся только один раз в момент регистрации.</i>\n\n"
-        "Монеты можно потратить разными способами, они — основа экономики хаба. Береги их...\n\n"
-        "⁉️ <b>Но у тебя наверняка возник вопрос:</b> Что за котлета? Кого ей кормить?"
-    )
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="Что за кибер-котлета?🥩🤔", callback_data=f"intro_step_3:{auc_part}")]])
-    await callback.message.edit_text(bonus_text, reply_markup=kb, parse_mode="HTML")
+        [types.InlineKeyboardButton(text=t(user_lang, "start.btn_cutlet"),
+                                    callback_data=f"intro_step_3:{auc_part}")]])
+    await callback.message.edit_text(
+        t(user_lang, "start.intro2", balance=START_BALANCE, cutlets=START_CUTLETS_INVENTORY),
+        reply_markup=kb, parse_mode="HTML")
 
 
 @router.callback_query(F.data.startswith("intro_step_3"))
-async def cmd_start_step_3(callback: types.CallbackQuery):
+async def cmd_start_step_3(callback: types.CallbackQuery, user_lang: str = "ru"):
     await callback.answer()
     auc_part = callback.data.split(":")[1] if ":" in callback.data else "none"
-    miner_text = (
-        "<b>СНАЧАЛА НУЖНО ПОНЯТЬ, ПОЧЕМУ ТАК ВАЖНЫ ИГРОВЫЕ МОНЕТЫ?</b>\n\n"
-        "Монеты — это основа всей торговли, состязаний и покупок в <b>ROFL HUB</b>. "
-        "Это почти единственная игровая валюта в мире, которую можно добывать бесплатно!\n"
-        "..................................................\n"
-        "<b>Сделать это можно разными способами:</b>\n"
-        "- Приглашать друзей по реферальной ссылке\n"
-        "- Побеждать в играх против бота\n"
-        "- Побеждать в дуэлях с другими игроками\n"
-        "- Участвовать в командных и клановых битвах\n"
-        "- Получать бонус за ежедневный вход и задания\n"
-        "- Завести робота для круглосуточной добычи монет (робот-майнер / кибер-бурильщик)\n"
-        "..................................................\n"
-        "<b>Если ты завёл робота второго уровня (кибер-бурильщик) — его нужно кормить каждый день. "
-        "Вот здесь и пригодится кибер-котлета — топливо для автоматической добычи, "
-        "которое выдаётся бесплатно каждый день! Твоя задача простая — зайти и покормить робота.</b>\n\n"
-        "Если не покормить вовремя — робот разряжается и добыча останавливается.\n\n"
-        "Робот-майнер (первый уровень) топлива не требует. "
-        "Важно! Любой робот покупается на 30 дней — потом его нужно купить заново или завести Мастер-дрона. "
-        "Разберёшься по ходу:) Не будем отвлекаться.\n\n"
-        "Хочу рассказать ещё немного о <b>ROFL HUB</b>, чтобы было понятно, как здесь всё устроено.\n\n"
-        "🛑 <b>Это последнее сообщение нашего знакомства. Дальше только в бой:)</b>"
-    )
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="Расскажи скорее и в БОЙ!", callback_data=f"intro_step_4:{auc_part}")]])
-    await callback.message.edit_text(miner_text, reply_markup=kb, parse_mode="HTML")
+        [types.InlineKeyboardButton(text=t(user_lang, "start.btn_fight"),
+                                    callback_data=f"intro_step_4:{auc_part}")]])
+    await callback.message.edit_text(t(user_lang, "start.intro3"), reply_markup=kb, parse_mode="HTML")
 
 
 @router.callback_query(F.data.startswith("intro_step_4"))
-async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext):
+async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext, user_lang: str = "ru"):
     await callback.answer()
     auc_part = callback.data.split(":")[1] if ":" in callback.data else "none"
     auction_id = _auction_id_from(auc_part)
 
-    finish_text = (
-        "<b>РАССКАЗЫВАЮ ОЧЕНЬ КРАТКО. ROFL HUB — это:</b>\n"
-        "- Чат-бот-игры на любой вкус\n"
-        "- Возможность создать команду (до 50 человек)\n"
-        "- Возможность прокачать её до клана (до 1000 человек)\n"
-        "- Командные и клановые битвы за призы\n"
-        "- Познавательно-развлекательный канал ROFL HUB CHANNEL\n"
-        "- Страница в Instagram — rofl_hub_global\n"
-        "- Сайт rofl-hub.com для общения и продвижения без регистрации\n"
-        "- Тысячи игроков по всему миру, среди которых могут быть твои новые друзья!\n"
-        "..................................................\n"
-        "<b>Как и обещал, это завершающее сообщение. Дальше только в бой! Полезные команды:</b>\n\n"
-        "/menu — быстрое управление функциями\n"
-        "/games — список всех игр\n"
-        "/faq — часто задаваемые вопросы\n"
-        "/rules — пользовательское соглашение\n"
-    )
-    await callback.message.edit_text(finish_text, parse_mode="HTML")
+    await callback.message.edit_text(t(user_lang, "start.intro4"), parse_mode="HTML")
     await callback.message.answer(
-        "🚀 <b>Консоль управления активирована! Используй кнопки внизу экрана.</b>",
-        reply_markup=get_reply_main_keyboard(), parse_mode="HTML")
+        t(user_lang, "start.console"),
+        reply_markup=get_reply_main_keyboard(user_lang), parse_mode="HTML")
 
     if auction_id:
         await state.clear()
