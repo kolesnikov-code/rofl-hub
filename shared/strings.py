@@ -35,8 +35,8 @@ def format_coins(count: int) -> str:
 
 
 def format_miners(count: int) -> str:
-    """Склоняет роботов-майнеров на заводе"""
-    return f"{count} " + get_plural_form(count, "робот-майнер", "робота-майнера", "роботов-майнеров")
+    """Склоняет Младших Майнеров на заводе (нейминг строго как в каталоге магазина)"""
+    return f"{count} " + get_plural_form(count, "Младший Майнер", "Младших Майнера", "Младших Майнеров")
 
 
 def format_members(count: int) -> str:

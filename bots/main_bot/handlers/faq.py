@@ -1,6 +1,16 @@
+"""
+/faq: короткая выжимка в чате + кнопка полного справочника в Mini App.
+
+Полный FAQ — static/webapp/faq.html (решение владельца 13.10: простыни текста
+в чат-боте нечитаемы, объёмные документы живут в Mini App).
+"""
 import logging
+
 from aiogram import Router, types, F
 from aiogram.filters import Command
+
+from bots.main_bot.config import WEBAPP_URL
+from shared.locales import t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -8,31 +18,15 @@ logger = logging.getLogger(__name__)
 
 @router.message(Command("faq"))
 @router.message(F.text == "📚 Справка и FAQ")
-async def cmd_faq(message: types.Message):
-    """Выводит кристально понятные правила экономики для ребенка"""
-    faq_text = (
-        "📚 <b>БAЗA ЗНAНИЙ И СНAЙПEРСКИЙ FAQ ЭКOСИСТEМЫ</b>\n"
-        "..................................................\n\n"
-        "❓ <b>Как здесь зарабатывать монеты?</b>\n"
-        "Монеты (монеты) капают на твой баланс автоматически каждую секунду! "
-        "Скорость зависит от твоих роботов на заводе. Младший Майнер приносит "
-        "5 монет в час, а мощный Кибер-Бурильщик — 10 монет в час!\n\n"
-        "❓ <b>Зачем заправлять Холодильник?</b>\n"
-        "Младшие Майнеры работают автономно и бесплатно. А вот Кибер-Бурильщики "
-        "требуют еды — каждый из них автоматически съедает по 1 котлете в сутки. "
-        "Если холодильник опустеет, Бурильщики остановятся и прекратят добычу!\n\n"
-        "❓ <b>Зачем нужны Команды и Кланы?</b>\n"
-        "Ты можешь создать свою Команду за 100 000 монет, придумать сочный девиз "
-        "и эмблему! Объединяйся с друзьями, копите монеты на общих счетах "
-        "и залетайте в ТОП СНГ! Апгрейд команды до уровня КЛАН расширяет лимит до 1000 мест.\n\n"
-        "❓ <b>Что делать, если робот сломался?</b>\n"
-        "Всё оборудование покупается ровно на 30 дней. Когда срок истечёт, робот "
-        "заснёт. Заходи в магазин /shop ➡️ Инженерная Мастерская и продлевай лицензию!\n"
-        "..................................................\n"
-        "<i>⚙️ Твой прогресс обновляется в реальном времени при каждом вызове /profile!</i>"
-    )
-
-    kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="💿 Открыть Главное Меню", callback_data="refresh_main_menu")]
-    ])
-    await message.answer(faq_text, reply_markup=kb, parse_mode="HTML")
+async def cmd_faq(message: types.Message, user_lang: str = "ru"):
+    """Короткая выжимка + полный справочник кнопкой."""
+    rows = []
+    if WEBAPP_URL:
+        rows.append([types.InlineKeyboardButton(
+            text=t(user_lang, "faq.btn_open"),
+            web_app=types.WebAppInfo(url=f"{WEBAPP_URL}/faq"))])
+    rows.append([types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
+                                            callback_data="refresh_main_menu")])
+    await message.answer(t(user_lang, "faq.teaser"),
+                         reply_markup=types.InlineKeyboardMarkup(inline_keyboard=rows),
+                         parse_mode="HTML")
