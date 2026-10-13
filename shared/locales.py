@@ -190,8 +190,8 @@ RU: dict[str, str] = {
         "..................................................\n\n"
         "Коротко о главном:\n"
         "🚜 Роботы добывают монеты круглосуточно: Младший Майнер — 5/ч без топлива, "
-        "Кибер-Бурильщик — 10/ч и ест 1 кибер-котлету в сутки. Все роботы живут 30 дней "
-        "(Мастер-дрон замораживает износ).\n"
+        "Кибер-Бурильщик — 10/ч, и КАЖДЫЙ Бурильщик ест свою 1 кибер-котлету в сутки. "
+        "Все роботы живут 30 дней (Мастер-дрон замораживает износ).\n"
         "🧠 Викторина: 10 секунд на ответ, уровни интеллекта с растущими наградами.\n"
         "⚔️ Дуэли с живыми игроками на столах 10/100/1000 монет.\n"
         "🏆 Команды до 50 бойцов (Мега-Клан — до 1000) и событийные Битвы с призами каждому.\n\n"
@@ -233,8 +233,8 @@ RU: dict[str, str] = {
         "💼 Котлеты на складе инвентаря: <code>{inv} шт.</code>\n\n"
         "..................................................\n\n"
         "<i>💿 Важно: роботы живут 30 дней (Мастер-дрон приостанавливает износ). "
-        "Кибер-Бурильщик списывает целую котлету из холодильника на каждые 24 часа работы. "
-        "Следи за заправкой!</i>"
+        "КАЖДЫЙ Кибер-Бурильщик списывает СВОЮ целую котлету из холодильника на каждые "
+        "24 часа работы: 3 робота — 3 котлеты в сутки. Следи за заправкой!</i>"
     ),
     "farm.bonus_ok": "🎁 Кибер-котлета зачислена на склад! Возвращайся через 24 часа.",
     "farm.bonus_wait": "⏳ Бонус уже забран! Следующая котлета через {hours} ч {minutes} мин.",
@@ -735,8 +735,8 @@ EN: dict[str, str] = {
         "..................................................\n\n"
         "The short version:\n"
         "🚜 Robots mine coins around the clock: Miner Bot — 5/h fuel-free, "
-        "Cyber-Driller — 10/h and eats 1 cyber-cutlet per day. All robots live 30 days "
-        "(the Master Drone pauses wear).\n"
+        "Cyber-Driller — 10/h, and EVERY Driller eats its own cyber-cutlet per day. "
+        "All robots live 30 days (the Master Drone pauses wear).\n"
         "🧠 Quiz: 10 seconds per answer, intellect levels with growing rewards.\n"
         "⚔️ Duels against real players at 10/100/1000 coin tables.\n"
         "🏆 Teams up to 50 fighters (Mega-Clan — up to 1000) and Battle events with prizes for everyone.\n\n"
@@ -778,8 +778,8 @@ EN: dict[str, str] = {
         "💼 Cutlets in inventory: <code>{inv}</code>\n\n"
         "..................................................\n\n"
         "<i>💿 Important: robots live 30 days (the Master Drone pauses wear). "
-        "A Cyber-Driller burns one whole cutlet from the fridge per 24 hours of work. "
-        "Keep an eye on the fuel!</i>"
+        "EVERY Cyber-Driller burns its OWN whole cutlet from the fridge per 24 hours of work: "
+        "3 robots — 3 cutlets a day. Keep an eye on the fuel!</i>"
     ),
     "farm.bonus_ok": "🎁 A cyber-cutlet was added to your inventory! Come back in 24 hours.",
     "farm.bonus_wait": "⏳ Bonus already claimed! Next cutlet in {hours}h {minutes}m.",
