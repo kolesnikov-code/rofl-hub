@@ -28,7 +28,7 @@ async def conn():
     await database.create_tables()
     async with database.pool.acquire() as c:
         await c.execute("TRUNCATE users, teams, star_payments, game_stats, auctions, ledger, "
-                        "miners, duels, battles, vip_aliases RESTART IDENTITY")
+                        "miners, duels, battles, vip_aliases, quest_progress RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -524,6 +524,50 @@ async def test_transfer_by_vip_alias(conn):
         received, _ = await transfer_coins(conn, 120, recipient["user_id"], 100)
     assert received == 100
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 121") == 100
+
+
+# ---------------------------------------------------------------- квесты
+async def test_quest_reward_only_for_first_win(conn):
+    from shared.ledger import change_balance
+    await _mk_user(conn, 140, 0)
+    # Имитация движка: первая победа — награда + completed_at
+    await conn.execute(
+        "INSERT INTO quest_progress (user_id, quest_id, scene, flags) "
+        "VALUES (140, 'golden_cutlet', 'end_win', '[]'::jsonb)")
+    completed = await conn.fetchval(
+        "SELECT completed_at FROM quest_progress WHERE user_id = 140 AND quest_id = 'golden_cutlet'")
+    assert completed is None
+    async with conn.transaction():
+        await change_balance(conn, 140, 150, "quest_reward", "golden_cutlet")
+        await conn.execute(
+            "UPDATE quest_progress SET completed_at = NOW() WHERE user_id = 140 AND quest_id = 'golden_cutlet'")
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 140") == 150
+    row = await conn.fetchrow(
+        "SELECT reason, ref FROM ledger WHERE user_id = 140 AND reason = 'quest_reward'")
+    assert row["ref"] == "golden_cutlet"
+    # Повторная победа: completed_at уже стоит — движок награду не выдаёт
+    completed = await conn.fetchval(
+        "SELECT completed_at FROM quest_progress WHERE user_id = 140 AND quest_id = 'golden_cutlet'")
+    assert completed is not None
+
+
+async def test_quest_progress_upsert_resets_scene_but_keeps_completion(conn):
+    await _mk_user(conn, 141, 0)
+    await conn.execute(
+        "INSERT INTO quest_progress (user_id, quest_id, scene, flags, completed_at) "
+        "VALUES (141, 'locked_safe', 'end_win', '[\"digit_a\"]'::jsonb, NOW())")
+    # Рестарт квеста (как quest_start): сцена и флаги сбрасываются, completed_at живёт
+    await conn.execute(
+        """
+        INSERT INTO quest_progress (user_id, quest_id, scene, flags, updated_at)
+        VALUES (141, 'locked_safe', 'intro', '[]'::jsonb, NOW())
+        ON CONFLICT (user_id, quest_id)
+        DO UPDATE SET scene = 'intro', flags = '[]'::jsonb, updated_at = NOW()
+        """)
+    row = await conn.fetchrow(
+        "SELECT scene, flags, completed_at FROM quest_progress WHERE user_id = 141")
+    assert row["scene"] == "intro"
+    assert row["completed_at"] is not None  # отметка первой победы не теряется
 
 
 # ---------------------------------------------------------------- Блок 5: бэкап и возвраты

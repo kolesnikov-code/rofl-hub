@@ -144,6 +144,7 @@ RU: dict[str, str] = {
         "• /games — Инлайн-хаб всех игр против бота\n"
         "• /quiz — Викторина на скорость: 10 секунд на ответ, уровни и бонусы\n"
         "• /duel — ДУЭЛИ 1-на-1 с живыми игроками: столы 10/100/1000\n"
+        "• /quests — КВЕСТЫ: детективы, комедии и головоломки с наградами\n"
         "• /rps, /high_low, /coin, /dice, /safe — Быстрые игры на монеты\n\n"
         "👥 <b>УПРАВЛЕНИЕ БАНДАМИ:</b>\n"
         "• /create_team — Зарегистрировать свою команду за 100 000 монет\n"
@@ -214,6 +215,34 @@ RU: dict[str, str] = {
         "<i>⚖️ Используя бота, ты подтверждаешь согласие с условиями.</i>"
     ),
     "rules.btn_open": "📜 ОТКРЫТЬ ПОЛНОЕ СОГЛАШЕНИЕ",
+    "quest.list_header": (
+        "🗺️ <b>КВЕСТЫ ROFL HUB</b>\n"
+        "..................................................\n\n"
+        "Интерактивные истории с выборами и развилками: детективы, комедии, головоломки. "
+        "Первая победа в каждом квесте приносит монеты, переигрывать можно сколько угодно!\n\n"
+        "👇 <b>Выбери историю:</b>"
+    ),
+    "quest.card": (
+        "{title}\n"
+        "🎭 {genre} · ⏱ {minutes} мин · 🏆 +{reward} монет за первую победу\n"
+        "..................................................\n\n"
+        "{teaser}\n\n{status}"
+    ),
+    "quest.card_done": "✅ <i>Квест пройден, награда получена. Переигрывай в своё удовольствие!</i>",
+    "quest.card_progress": "⏯ <i>У тебя есть незаконченное прохождение.</i>",
+    "quest.card_new": "🆕 <i>Ты ещё не проходил эту историю.</i>",
+    "quest.btn_start": "▶️ НАЧАТЬ КВЕСТ",
+    "quest.btn_restart": "🔄 НАЧАТЬ ЗАНОВО",
+    "quest.btn_resume": "⏯ ПРОДОЛЖИТЬ",
+    "quest.btn_list": "🗺️ К списку квестов",
+    "quest.btn_replay": "🔄 Пройти ещё раз",
+    "quest.win_first": "\n\n🏆 <b>КВЕСТ ПРОЙДЕН! Награда: +{coins} монет.</b>",
+    "quest.win_repeat": "\n\n✅ <b>Пройдено снова!</b> Награда за этот квест уже была получена ранее.",
+    "quest.fail_footer": "\n\n💀 <i>Концовка не из лучших... но историю всегда можно переиграть!</i>",
+    "quest.stale": "⏳ Эта сцена уже позади — продолжаем с текущего места!",
+    "quest.no_coins": "❌ Не хватает монет для подсказки ({cost}). Загляни на ферму!",
+    "quest.not_found": "❌ Квест не найден.",
+    "menu.btn_quests": "🗺️ КВЕСТЫ (/quests)",
 
     # ---------------- ферма ----------------
     "farm.btn_bonus": "🎁 ЗАБРАТЬ БОНУС (котлета раз в 24 ч)",
@@ -704,6 +733,7 @@ EN: dict[str, str] = {
         "• /games — Inline hub of all games against the bot\n"
         "• /quiz — Speed quiz: 10 seconds per answer, levels and bonuses\n"
         "• /duel — 1-on-1 DUELS with real players: tables 10/100/1000\n"
+        "• /quests — QUESTS: detectives, comedies and puzzles with rewards\n"
         "• /rps, /high_low, /coin, /dice, /safe — Quick games for coins\n\n"
         "👥 <b>CREW MANAGEMENT:</b>\n"
         "• /create_team — Register your own team for 100,000 coins\n"
@@ -774,6 +804,35 @@ EN: dict[str, str] = {
         "<i>⚖️ By using the bot you confirm your acceptance of the terms.</i>"
     ),
     "rules.btn_open": "📜 OPEN THE FULL AGREEMENT",
+    "quest.list_header": (
+        "🗺️ <b>ROFL HUB QUESTS</b>\n"
+        "..................................................\n\n"
+        "Interactive stories with choices and branches: detectives, comedies, puzzles. "
+        "The first victory in each quest pays coins, and you can replay as much as you like!\n"
+        "🌐 <i>Quest stories are in Russian for now — the English pack is coming.</i>\n\n"
+        "👇 <b>Pick a story:</b>"
+    ),
+    "quest.card": (
+        "{title}\n"
+        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} coins for the first victory\n"
+        "..................................................\n\n"
+        "{teaser}\n\n{status}"
+    ),
+    "quest.card_done": "✅ <i>Quest completed, reward claimed. Replay for fun anytime!</i>",
+    "quest.card_progress": "⏯ <i>You have an unfinished playthrough.</i>",
+    "quest.card_new": "🆕 <i>You haven't played this story yet.</i>",
+    "quest.btn_start": "▶️ START THE QUEST",
+    "quest.btn_restart": "🔄 START OVER",
+    "quest.btn_resume": "⏯ CONTINUE",
+    "quest.btn_list": "🗺️ Back to quest list",
+    "quest.btn_replay": "🔄 Play again",
+    "quest.win_first": "\n\n🏆 <b>QUEST COMPLETED! Reward: +{coins} coins.</b>",
+    "quest.win_repeat": "\n\n✅ <b>Completed again!</b> The reward for this quest was already claimed.",
+    "quest.fail_footer": "\n\n💀 <i>Not the best ending... but you can always replay the story!</i>",
+    "quest.stale": "⏳ That scene is already behind you — continuing from the current spot!",
+    "quest.no_coins": "❌ Not enough coins for the hint ({cost}). Visit your farm!",
+    "quest.not_found": "❌ Quest not found.",
+    "menu.btn_quests": "🗺️ QUESTS (/quests)",
 
     # ---------------- farm ----------------
     "farm.btn_bonus": "🎁 CLAIM BONUS (a cutlet every 24h)",

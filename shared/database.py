@@ -233,6 +233,18 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS battles_status_idx ON battles (status, ends_at);",
+    # --- Квесты: прогресс игрока по сценариям (сценарии — JSON в data/quests) ---
+    """
+    CREATE TABLE IF NOT EXISTS quest_progress (
+        user_id BIGINT NOT NULL,
+        quest_id VARCHAR(64) NOT NULL,
+        scene VARCHAR(64) NOT NULL,
+        flags JSONB NOT NULL DEFAULT '[]'::jsonb,
+        completed_at TIMESTAMP WITH TIME ZONE,
+        updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, quest_id)
+    );
+    """,
     # --- VIP ID с аукционов: равноправный алиас игрока для переводов и понта ---
     """
     CREATE TABLE IF NOT EXISTS vip_aliases (
