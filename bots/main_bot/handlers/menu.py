@@ -2,10 +2,24 @@ import logging
 from aiogram import Router, types, F
 from aiogram.filters import Command
 
+from bots.main_bot.config import WEBAPP_URL
 from shared.locales import btn, btn_variants, t
 
 router = Router()
 logger = logging.getLogger(__name__)
+
+
+@router.message(Command("app"))
+async def cmd_open_app(message: types.Message, user_lang: str = "ru"):
+    """Кнопка запуска Telegram Mini App (работает только с HTTPS-адресом сервера)."""
+    if not WEBAPP_URL:
+        await message.answer(t(user_lang, "app.unavailable"))
+        return
+    kb = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text=t(user_lang, "app.btn"),
+                                    web_app=types.WebAppInfo(url=WEBAPP_URL))]
+    ])
+    await message.answer(t(user_lang, "app.open"), reply_markup=kb, parse_mode="HTML")
 
 
 def get_reply_main_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:

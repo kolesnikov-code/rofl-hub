@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ROFL HUB</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --card: #141a2e;
+    --card2: #1a2240;
+    --neon: #00ffe1;
+    --accent: #ffd93d;
+    --pink: #ff4d8d;
+    --text: #e8ecff;
+    --muted: #8a93b8;
+    --ok: #37e85f;
+    --bad: #ff5555;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 28px;
+    min-height: 100vh;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 22px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon);
+    text-shadow: 0 0 18px rgba(0, 255, 225, .45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  .card {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0, 255, 225, .14);
+    border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .35);
+  }
+  .card h2 { font-size: 13px; letter-spacing: 1.5px; color: var(--neon); margin-bottom: 10px; }
+  .balance { font-size: 34px; font-weight: 900; color: var(--accent); line-height: 1.1; }
+  .balance small { font-size: 14px; color: var(--muted); font-weight: 500; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 14px; }
+  .row .k { color: var(--muted); }
+  .row .v { font-weight: 700; }
+  .vip {
+    display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 999px;
+    background: rgba(255, 77, 141, .15); border: 1px solid var(--pink);
+    color: var(--pink); font-size: 12px; font-weight: 800; letter-spacing: 1px;
+  }
+  .bar { height: 10px; background: #0d1326; border-radius: 999px; overflow: hidden; margin: 8px 0 4px; }
+  .bar i {
+    display: block; height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--neon), var(--accent));
+    transition: width .6s ease;
+  }
+  .hint { color: var(--muted); font-size: 12px; }
+  .btn {
+    width: 100%; margin-top: 10px; padding: 13px; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 800; letter-spacing: .5px; cursor: pointer;
+    background: linear-gradient(90deg, var(--neon), #00b3ff); color: #04121c;
+    box-shadow: 0 0 18px rgba(0, 255, 225, .35);
+  }
+  .btn:disabled { background: #2a3354; color: var(--muted); box-shadow: none; }
+  .status-ok { color: var(--ok); } .status-bad { color: var(--bad); }
+  .top-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; border-bottom: 1px dashed rgba(138,147,184,.18); }
+  .top-row:last-child { border-bottom: none; }
+  .top-row .place { width: 28px; font-weight: 900; color: var(--accent); }
+  .top-row .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .top-row .brain { color: var(--neon); font-weight: 700; }
+  .top-row .bal { font-weight: 800; }
+  .loading { text-align: center; color: var(--muted); padding: 50px 0; font-size: 15px; }
+  .err { text-align: center; color: var(--bad); padding: 40px 10px; font-size: 15px; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <div class="logo">⚡ ROFL HUB</div>
+  <div class="sub" id="subtitle">Mini App</div>
+  <div id="app"><div class="loading" id="loader">⏳ ...</div></div>
+  <footer id="footer"></footer>
+
+<script>
+(function () {
+  const tg = window.Telegram ? window.Telegram.WebApp : null;
+  if (tg) { tg.ready(); tg.expand(); }
+  const initData = tg ? tg.initData : "";
+
+  const I18N = {
+    ru: {
+      subtitle: "твоя игровая империя в одном экране",
+      passport: "📋 ПАСПОРТ ИГРОКА", rofls: "рофлов",
+      brain: "🧠 Уровень интеллекта", toNext: "до уровня {n}: {left} верных в /quiz (+{reward})",
+      farm: "🚜 КИБЕР-ФЕРМА", robots: "Роботы (майнеры / бурильщики)",
+      fueled: "Заправлено бурильщиков", speed: "Скорость добычи",
+      perHour: "{v} рофлов/час", fridge: "Холодильник", inv: "Котлет на складе",
+      burnout: "Ближайшее сгорание", boosts: "Активные бусты", none: "нет",
+      bonusReady: "🎁 ЗАБРАТЬ ЕЖЕДНЕВНУЮ КОТЛЕТУ",
+      bonusWait: "⏳ Бонус через {h} ч {m} мин", bonusDone: "🎉 Котлета на складе!",
+      team: "🏆 МОЯ КОМАНДА", clan: "КЛАН", teamLabel: "Команда", captain: "👑 Ты капитан!",
+      members: "Состав", noTeam: "Ты пока без команды — собери банду в /my_team!",
+      top: "👑 ТОП-10 БОГАЧЕЙ ЭКОСИСТЕМЫ",
+      footer: "Полное управление — в чате бота: /menu",
+      noProfile: "Профиль не найден. Открой бота и нажми /start!",
+      blocked: "Аккаунт заблокирован администрацией.",
+      error: "Не удалось загрузить данные. Попробуй позже.",
+      outside: "Открой это приложение из Telegram-бота ROFL HUB."
+    },
+    en: {
+      subtitle: "your game empire on one screen",
+      passport: "📋 PLAYER PASSPORT", rofls: "rofls",
+      brain: "🧠 Intellect level", toNext: "to level {n}: {left} correct in /quiz (+{reward})",
+      farm: "🚜 CYBER-FARM", robots: "Robots (miners / drillers)",
+      fueled: "Drillers fueled", speed: "Mining speed",
+      perHour: "{v} rofls/hour", fridge: "Fridge", inv: "Cutlets in stock",
+      burnout: "Next burnout", boosts: "Active boosts", none: "none",
+      bonusReady: "🎁 CLAIM THE DAILY CUTLET",
+      bonusWait: "⏳ Bonus in {h}h {m}m", bonusDone: "🎉 Cutlet added!",
+      team: "🏆 MY TEAM", clan: "CLAN", teamLabel: "Team", captain: "👑 You are the captain!",
+      members: "Roster", noTeam: "No team yet — build your crew in /my_team!",
+      top: "👑 TOP-10 RICHEST PLAYERS",
+      footer: "Full control — in the bot chat: /menu",
+      noProfile: "Profile not found. Open the bot and press /start!",
+      blocked: "Account blocked by administration.",
+      error: "Failed to load data. Try again later.",
+      outside: "Open this app from the ROFL HUB Telegram bot."
+    }
+  };
+  let L = I18N.ru;
+  const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k]);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  async function api(path, opts) {
+    const res = await fetch(path, Object.assign({
+      headers: { "X-Telegram-Init-Data": initData, "Content-Type": "application/json" }
+    }, opts || {}));
+    if (!res.ok) throw { status: res.status, body: await res.json().catch(() => ({})) };
+    return res.json();
+  }
+
+  function card(title, inner) {
+    return '<div class="card"><h2>' + title + '</h2>' + inner + '</div>';
+  }
+
+  function render(me, top) {
+    L = I18N[me.lang] || I18N.ru;
+    document.getElementById("subtitle").textContent = L.subtitle;
+    document.getElementById("footer").textContent = L.footer;
+
+    const q = me.quiz, f = me.farm;
+    const pct = Math.min(100, Math.round(q.progress / q.required * 100));
+    const vip = me.vip_aliases.map(a => '<span class="vip">💎 ' + esc(a) + '</span>').join(" ");
+
+    let passport =
+      '<div class="balance">' + me.balance.toLocaleString("ru-RU") + ' <small>' + L.rofls + '</small></div>' +
+      (vip ? '<div>' + vip + '</div>' : '') +
+      '<div class="row"><span class="k">' + L.brain + '</span><span class="v">' + q.level + '</span></div>' +
+      '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="hint">' + fmt(L.toNext, { n: q.next_level, left: q.required - q.progress, reward: q.next_reward }) + '</div>';
+
+    const boosts = [];
+    if (f.boosts.nuclear_until) boosts.push("🔋 x5");
+    if (f.boosts.nitrogen_until) boosts.push("❄️ +40%");
+    if (f.boosts.drone_until) boosts.push("🛸");
+    const burnout = f.nearest_burnout
+      ? new Date(f.nearest_burnout).toLocaleString(me.lang === "ru" ? "ru-RU" : "en-GB",
+          { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+      : "—";
+    const fuelCls = f.premium === 0 || f.premium_fueled === f.premium ? "status-ok" : "status-bad";
+
+    let farm =
+      '<div class="row"><span class="k">' + L.robots + '</span><span class="v">🤖 ' + f.junior + ' / ⚡ ' + f.premium + '</span></div>' +
+      '<div class="row"><span class="k">' + L.fueled + '</span><span class="v ' + fuelCls + '">' + f.premium_fueled + ' / ' + f.premium + '</span></div>' +
+      '<div class="row"><span class="k">' + L.speed + '</span><span class="v">' + fmt(L.perHour, { v: "+" + f.speed_hour }) + '</span></div>' +
+      '<div class="row"><span class="k">' + L.fridge + '</span><span class="v">🥩 ' + f.fridge + ' / ' + f.fridge_capacity + '</span></div>' +
+      '<div class="row"><span class="k">' + L.inv + '</span><span class="v">' + f.inv_cutlets + '</span></div>' +
+      '<div class="row"><span class="k">' + L.burnout + '</span><span class="v">🔥 ' + burnout + '</span></div>' +
+      '<div class="row"><span class="k">' + L.boosts + '</span><span class="v">' + (boosts.join(" ") || L.none) + '</span></div>' +
+      '<button class="btn" id="bonusBtn"></button>';
+
+    let teamHtml;
+    if (me.team) {
+      teamHtml =
+        '<div class="row"><span class="k">' + (me.team.is_clan ? "👑 " + L.clan : L.teamLabel) + '</span>' +
+        '<span class="v">' + esc(me.team.team_name) + '</span></div>' +
+        '<div class="row"><span class="k">' + L.members + '</span><span class="v">' +
+        me.team.members_count + ' / ' + me.team.max_members + '</span></div>' +
+        (me.team.i_am_captain ? '<div class="hint">' + L.captain + '</div>' : '');
+    } else {
+      teamHtml = '<div class="hint">' + L.noTeam + '</div>';
+    }
+
+    const topHtml = top.top.map((p, i) =>
+      '<div class="top-row"><span class="place">' + (["🥇", "🥈", "🥉"][i] || (i + 1) + ".") + '</span>' +
+      '<span class="nm">' + esc(p.name) + (p.vip ? ' <span class="vip">💎</span>' : '') + '</span>' +
+      '<span class="brain">🧠' + p.quiz_level + '</span>' +
+      '<span class="bal">' + p.balance.toLocaleString("ru-RU") + '</span></div>'
+    ).join("") || '<div class="hint">—</div>';
+
+    document.getElementById("app").innerHTML =
+      card(L.passport, passport) + card(L.farm, farm) + card(L.team, teamHtml) + card(L.top, topHtml);
+
+    setupBonusButton(f.bonus_seconds_left);
+  }
+
+  function setupBonusButton(secondsLeft) {
+    const btn = document.getElementById("bonusBtn");
+    function show(left) {
+      if (left <= 0) {
+        btn.disabled = false;
+        btn.textContent = L.bonusReady;
+      } else {
+        btn.disabled = true;
+        btn.textContent = fmt(L.bonusWait, { h: Math.floor(left / 3600), m: Math.floor(left % 3600 / 60) });
+      }
+    }
+    show(secondsLeft);
+    btn.onclick = async () => {
+      btn.disabled = true;
+      try {
+        const res = await api("/api/bonus", { method: "POST", body: "{}" });
+        if (res.ok) {
+          btn.textContent = L.bonusDone;
+          if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+          setTimeout(load, 1200);
+        } else {
+          show(res.seconds_left);
+        }
+      } catch (e) { show(1); }
+    };
+  }
+
+  async function load() {
+    try {
+      const [me, top] = await Promise.all([api("/api/me"), api("/api/top")]);
+      render(me, top);
+    } catch (e) {
+      const lang = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user &&
+                    tg.initDataUnsafe.user.language_code === "ru") ? "ru" : "ru";
+      L = I18N[lang];
+      let msg = L.error;
+      if (e.status === 401) msg = L.outside;
+      else if (e.status === 404) msg = L.noProfile;
+      else if (e.status === 403) msg = L.blocked;
+      document.getElementById("app").innerHTML = '<div class="err">' + msg + '</div>';
+    }
+  }
+
+  if (!initData) {
+    document.getElementById("app").innerHTML = '<div class="err">' + I18N.ru.outside + '</div>';
+  } else {
+    load();
+  }
+})();
+</script>
+</body>
+</html>

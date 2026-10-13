@@ -55,6 +55,7 @@ python -m bots.admin_notifier_bot.bot
 | `MAIN_BOT_USERNAME` | — | ✅ | Юзернейм главного бота без @ (для диплинков) |
 | `SHOP_TEST_MODE` | ❌ НЕ задавать | — | На проде тест-режим магазина должен быть ВЫКЛЮЧЕН |
 | `SHOP_TEST_USER_IDS` | ❌ НЕ задавать | — | — |
+| `WEBAPP_URL` | ✅ (после шага 5а) | — | Публичный HTTPS-адрес Mini App — см. шаг 5а |
 
 ⚠️ Важно: `DATABASE_URL` бери через Variable Reference на сервис Postgres —
 тогда внутри Railway боты ходят в базу по приватной сети.
@@ -69,6 +70,23 @@ python -m bots.admin_notifier_bot.bot
 3. ⚠️ Останови локально запущенных ботов! Два экземпляра одного бота
    (polling) конфликтуют: Telegram вернёт `Conflict: terminated by other getUpdates`.
 4. Прогони чек-лист `BLOCK5_CHECKLIST.md` на проде с тестового аккаунта.
+
+## Шаг 5а. Включить Mini App (🎮 кнопка в чате)
+
+Mini App живёт внутри сервиса `main-bot` (тот же процесс, порт берётся из `PORT`).
+
+1. У сервиса `main-bot`: **Settings → Networking → Generate Domain** —
+   Railway выдаст адрес вида `https://main-bot-production-xxxx.up.railway.app`.
+2. Добавь переменную `WEBAPP_URL` = этот адрес (с https://, без слэша в конце).
+3. После редеплоя бот сам поставит кнопку «🎮 ROFL HUB» в меню чата,
+   а команда /app начнёт выдавать кнопку запуска.
+4. Проверка: открой `https://<домен>/health` в браузере — должно ответить `{"ok": true}`.
+5. (Опционально) В @BotFather: Bot Settings → Menu Button / Configure Mini App —
+   можно привязать тот же адрес, чтобы Mini App открывался и по прямой ссылке
+   `https://t.me/<бот>/app`.
+
+⚠️ Mini App работает только по HTTPS — локально кнопка в Telegram не откроется,
+но API можно проверить браузером: `http://localhost:8080/health`.
 
 ## Шаг 6. Как это живёт дальше
 

@@ -9,9 +9,10 @@ import sys
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import BotCommand, ErrorEvent
+from aiogram.types import BotCommand, ErrorEvent, MenuButtonWebApp, WebAppInfo
 
-from bots.main_bot.config import BOT_TOKEN, SHOP_TEST_MODE, SHOP_TEST_USER_IDS
+from bots.main_bot.config import BOT_TOKEN, SHOP_TEST_MODE, SHOP_TEST_USER_IDS, WEBAPP_PORT, WEBAPP_URL
+from bots.main_bot.webapp import start_webapp_server
 from bots.main_bot.handlers.clans import router as clans_router
 from bots.main_bot.handlers.duels import duel_reaper_loop, router as duels_router
 from bots.main_bot.handlers.faq import router as faq_router
@@ -49,6 +50,7 @@ for r in (start_router, payments_router, shop_router, games_router, duels_router
 
 # Синее меню команд Telegram (кнопка «/»). Ключ — команда, значения — описания ru/en.
 BOT_COMMANDS: dict[str, tuple[str, str]] = {
+    "app": ("🎮 Открыть Mini App", "🎮 Open the Mini App"),
     "menu": ("📱 Главное меню", "📱 Main menu"),
     "profile": ("👤 Мой профиль и паспорт", "👤 My profile & passport"),
     "farm": ("🚜 Кибер-ферма и заправка", "🚜 Cyber-farm & refueling"),
@@ -104,6 +106,20 @@ async def main() -> None:
 
     # Жнец дуэлей: доигрывает зависшие раунды и возвращает ставки протухших очередей
     asyncio.create_task(duel_reaper_loop(bot))
+
+    # Mini App: веб-сервер (статика + API) и кнопка меню чата
+    try:
+        await start_webapp_server(BOT_TOKEN, WEBAPP_PORT)
+    except OSError as e:
+        logger.warning("Mini App сервер не стартовал (порт %s занят?): %s — бот работает дальше.",
+                       WEBAPP_PORT, e)
+    if WEBAPP_URL:
+        try:
+            await bot.set_chat_menu_button(
+                menu_button=MenuButtonWebApp(text="🎮 ROFL HUB", web_app=WebAppInfo(url=WEBAPP_URL)))
+            logger.info("Кнопка Mini App установлена: %s", WEBAPP_URL)
+        except Exception:
+            logger.exception("Не удалось установить кнопку Mini App — бот работает дальше.")
 
     me = await bot.get_me()
     logger.info("Главный бот @%s запущен.", me.username)

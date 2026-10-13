@@ -24,7 +24,7 @@ ADVERTISED_COMMANDS = {
     "start", "menu", "profile", "my_stats", "farm", "shop", "games",
     "create_team", "my_team", "all_teams", "faq", "rules",
     "rps", "high_low", "quiz", "coin", "dice", "safe",
-    "invite", "transfer", "paysupport", "duel",
+    "invite", "transfer", "paysupport", "duel", "app",
 }
 
 

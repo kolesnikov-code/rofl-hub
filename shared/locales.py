@@ -177,6 +177,14 @@ RU: dict[str, str] = {
     "menu.btn_dice": "🎲 Кубики (/dice)",
     "menu.btn_safe": "🔐 Кибер-Сейф (/safe)",
     "menu.btn_duel": "⚔️ ДУЭЛИ 1-на-1 (/duel)",
+    "app.open": (
+        "🎮 <b>ROFL HUB MINI APP</b>\n\n"
+        "Паспорт, ферма, команда и топ богачей — на одном неоновом экране. "
+        "Ежедневную котлету можно забирать прямо оттуда!\n\n"
+        "👇 Жми кнопку:"
+    ),
+    "app.btn": "🎮 ОТКРЫТЬ MINI APP",
+    "app.unavailable": "⚙️ Mini App ещё подключается к серверам экосистемы. Загляни чуть позже!",
 
     # ---------------- ферма ----------------
     "farm.btn_bonus": "🎁 ЗАБРАТЬ БОНУС (котлета раз в 24 ч)",
@@ -700,6 +708,14 @@ EN: dict[str, str] = {
     "menu.btn_dice": "🎲 Dice (/dice)",
     "menu.btn_safe": "🔐 Cyber-Safe (/safe)",
     "menu.btn_duel": "⚔️ 1-on-1 DUELS (/duel)",
+    "app.open": (
+        "🎮 <b>ROFL HUB MINI APP</b>\n\n"
+        "Your passport, farm, team and the richest players — on one neon screen. "
+        "You can claim the daily cutlet right from there!\n\n"
+        "👇 Tap the button:"
+    ),
+    "app.btn": "🎮 OPEN THE MINI APP",
+    "app.unavailable": "⚙️ The Mini App is still connecting to the ecosystem servers. Check back soon!",
 
     # ---------------- farm ----------------
     "farm.btn_bonus": "🎁 CLAIM BONUS (a cutlet every 24h)",

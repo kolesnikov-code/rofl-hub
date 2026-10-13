@@ -25,6 +25,12 @@ ADMIN_SECRET_CHANNEL_ID: int | None = int(_secret) if _secret.lstrip("-").isdigi
 
 ADMIN_IDS: frozenset[int] = _parse_ids(os.getenv("ADMIN_ID", ""))
 
+# Mini App: публичный HTTPS-адрес (на хостинге), без него кнопки Mini App не показываются
+WEBAPP_URL: str | None = os.getenv("WEBAPP_URL", "").strip() or None
+# Порт веб-сервера Mini App (хостинг подставляет PORT сам)
+_port = os.getenv("PORT", "") or os.getenv("WEBAPP_PORT", "8080")
+WEBAPP_PORT: int = int(_port) if _port.isdigit() else 8080
+
 
 def is_shop_tester(user_id: int) -> bool:
     return SHOP_TEST_MODE and user_id in SHOP_TEST_USER_IDS
