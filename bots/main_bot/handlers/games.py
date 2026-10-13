@@ -20,6 +20,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
+from bots.main_bot.guards import feature_enabled
 from bots.main_bot.utils.questions_loader import get_question_by_id, get_random_question
 from shared.analytics import qualify_referral_if_due, track
 from shared.database import db
@@ -263,6 +264,8 @@ def rps_intro_text(lang: str) -> str:
 
 @router.message(Command("rps"))
 async def cmd_rps_start(message: types.Message, user_lang: str = "ru"):
+    if not await feature_enabled(message, "games", user_lang):
+        return
     await message.answer(rps_intro_text(user_lang), reply_markup=get_rps_keyboard(user_lang), parse_mode="HTML")
 
 
@@ -309,6 +312,8 @@ def _hl_round(lang: str) -> tuple[str, types.InlineKeyboardMarkup]:
 
 @router.message(Command("high_low"))
 async def cmd_high_low(message: types.Message, user_lang: str = "ru"):
+    if not await feature_enabled(message, "games", user_lang):
+        return
     text, kb = _hl_round(user_lang)
     await message.answer(text, reply_markup=kb, parse_mode="HTML")
 
@@ -420,6 +425,8 @@ async def _start_quiz(target: types.Message, state: FSMContext, user_id: int, ed
 
 @router.message(Command("quiz"))
 async def cmd_quiz_start(message: types.Message, state: FSMContext, user_lang: str = "ru"):
+    if not await feature_enabled(message, "games", user_lang):
+        return
     await _start_quiz(message, state, message.from_user.id, edit=False, lang=user_lang)
 
 
@@ -481,6 +488,8 @@ def coin_intro_text(lang: str) -> str:
 
 @router.message(Command("coin"))
 async def cmd_coin_start(message: types.Message, user_lang: str = "ru"):
+    if not await feature_enabled(message, "games", user_lang):
+        return
     await message.answer(coin_intro_text(user_lang), reply_markup=get_coin_keyboard(user_lang),
                          parse_mode="HTML")
 
@@ -520,6 +529,8 @@ def get_dice_keyboard(lang: str) -> types.InlineKeyboardMarkup:
 
 @router.message(Command("dice"))
 async def cmd_dice_start(message: types.Message, user_lang: str = "ru"):
+    if not await feature_enabled(message, "games", user_lang):
+        return
     await message.answer(dice_intro_text(user_lang), reply_markup=get_dice_keyboard(user_lang),
                          parse_mode="HTML")
 
@@ -562,6 +573,8 @@ def _safe_round(lang: str) -> tuple[str, types.InlineKeyboardMarkup]:
 
 @router.message(Command("safe"))
 async def cmd_safe_start(message: types.Message, user_lang: str = "ru"):
+    if not await feature_enabled(message, "games", user_lang):
+        return
     text, kb = _safe_round(user_lang)
     await message.answer(text, reply_markup=kb, parse_mode="HTML")
 
@@ -589,6 +602,8 @@ async def process_safe_guess(callback: types.CallbackQuery, user_lang: str = "ru
 @router.callback_query(F.data.startswith("game_retry:"))
 async def process_game_retry_inline(callback: types.CallbackQuery, state: FSMContext,
                                     user_lang: str = "ru"):
+    if not await feature_enabled(callback, "games", user_lang):
+        return
     await callback.answer()
     game_type = callback.data.split(":", 1)[1]
     if game_type == "rps":

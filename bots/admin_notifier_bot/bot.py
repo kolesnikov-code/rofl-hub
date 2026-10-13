@@ -42,10 +42,12 @@ if not ADMIN_BOT_TOKEN:
 if not ADMIN_IDS or USERS_CHANNEL_ID == 0 or ADMIN_SECRET_CHANNEL_ID == 0:
     raise RuntimeError("🚨 ОШИБКА БЕЗОПАСНОСТИ: Ключи лимитов или список ADMIN_IDS не заданы в .env!")
 
+from bots.main_bot.utils.quest_loader import all_quests, load_quests
 from shared import metrics
 from shared.analytics import purge_old_events
 from shared.database import db
 from shared.economy import PROMOTER_CODE_MAX_LEN
+from shared.feature_flags import FLAG_TITLES, all_feature_flags, get_flag, toggle_flag
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -111,7 +113,11 @@ async def cmd_admin_start(message: types.Message):
         "• /finish_battle [ID] — Принудительно подвести итоги битвы\n"
         "• /assign_vip [ID] [АЛИАС] — Выдать VIP ID победителю аукциона · /revoke_vip [АЛИАС]\n"
         "• /metrics [day|week|month] — Продуктовые метрики по запросу\n"
-        "• /add_promoter [код] [имя] — Промоутер (ссылка ?start=p_код) · /promoters — отчёт\n",
+        "• /add_promoter [код] [имя] — Промоутер (ссылка ?start=p_код) · /promoters — отчёт\n"
+        "\n🎛 <b>ПУЛЬТ ЭКОСИСТЕМЫ:</b>\n"
+        "• /features — Тумблеры разделов: игры, дуэли, квесты, магазин, переводы, техработы\n"
+        "• /quests_admin — Ротация квестов: скрыть/показать + статистика прохождений\n"
+        "• /broadcast [текст] — Объявление всем игрокам (с предпросмотром и подтверждением)\n",
         parse_mode="HTML"
     )
 
@@ -895,6 +901,163 @@ async def admin_close_auction(message: types.Message, bot: Bot):
 # ============================================================================
 # 📊 2. АВТОНОМНЫЙ ДЕМОН СКВОЗНОЙ АНАЛИТИКИ ПО ЧАСАМ UTC (00, 06, 12, 18)
 # ============================================================================
+# ============================================================================
+# 🎛 ПУЛЬТ ЭКОСИСТЕМЫ: тумблеры разделов, видимость квестов, рассылка
+# ============================================================================
+def _features_kb(flags: dict[str, bool]) -> types.InlineKeyboardMarkup:
+    rows = [[types.InlineKeyboardButton(
+        text=f"{'🟢' if enabled else '🔴'} {FLAG_TITLES.get(key, key)}",
+        callback_data=f"feat_toggle:{key}")] for key, enabled in flags.items()]
+    return types.InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+async def _features_text() -> str:
+    return ("🎛 <b>ПУЛЬТ ЭКОСИСТЕМЫ ROFL HUB</b>\n"
+            "..................................................\n\n"
+            "Нажми на тумблер, чтобы включить/выключить раздел.\n"
+            "Выключенный раздел отвечает игрокам «на техобслуживании»;\n"
+            "начатые раунды и квесты всегда доигрываются.\n\n"
+            "⚠️ «Режим техработ» глушит ВЕСЬ главный бот (вкл. магазин).")
+
+
+@dp.message(Command("features"))
+async def cmd_features(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    flags = await all_feature_flags()
+    await message.answer(await _features_text(), reply_markup=_features_kb(flags),
+                         parse_mode="HTML")
+
+
+@dp.callback_query(F.data.startswith("feat_toggle:"))
+async def feat_toggle(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer()
+        return
+    key = callback.data.split(":", 1)[1]
+    if key not in FLAG_TITLES:
+        await callback.answer("Неизвестный тумблер")
+        return
+    new_value = await toggle_flag(key)
+    await callback.answer(f"{FLAG_TITLES[key]}: {'ВКЛ 🟢' if new_value else 'ВЫКЛ 🔴'}")
+    try:
+        await callback.message.edit_reply_markup(reply_markup=_features_kb(await all_feature_flags()))
+    except Exception:
+        pass
+
+
+async def _quests_admin_view() -> tuple[str, types.InlineKeyboardMarkup]:
+    load_quests()
+    async with db.pool.acquire() as conn:
+        stats = {r["quest_id"]: (r["started"], r["done"]) for r in await conn.fetch(
+            """SELECT quest_id, COUNT(*) AS started,
+                      COUNT(*) FILTER (WHERE completed_at IS NOT NULL) AS done
+               FROM quest_progress GROUP BY quest_id""")}
+    lines, rows = [], []
+    for q in all_quests():
+        visible = await get_flag(f"quest:{q['id']}")
+        started, done = stats.get(q["id"], (0, 0))
+        lines.append(f"{'🟢' if visible else '⚫'} <b>{q['title']}</b> — "
+                     f"начинали: {started}, прошли: {done}")
+        rows.append([types.InlineKeyboardButton(
+            text=f"{'🟢 Скрыть' if visible else '⚫ Показать'}: {q['title'][:30]}",
+            callback_data=f"quest_toggle:{q['id']}")])
+    text = ("🗺 <b>РОТАЦИЯ КВЕСТОВ</b>\n"
+            "..................................................\n\n"
+            + "\n".join(lines) +
+            "\n\n<i>⚫ Скрытый квест пропадает из списка у игроков; кто начал — доиграет.</i>")
+    return text, types.InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+@dp.message(Command("quests_admin"))
+async def cmd_quests_admin(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    text, kb = await _quests_admin_view()
+    await message.answer(text, reply_markup=kb, parse_mode="HTML")
+
+
+@dp.callback_query(F.data.startswith("quest_toggle:"))
+async def quest_toggle(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer()
+        return
+    quest_id = callback.data.split(":", 1)[1]
+    new_value = await toggle_flag(f"quest:{quest_id}")
+    await callback.answer(f"Квест {'показан 🟢' if new_value else 'скрыт ⚫'}")
+    try:
+        text, kb = await _quests_admin_view()
+        await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
+    except Exception:
+        pass
+
+
+# Черновики рассылки: admin_id → текст (подтверждение кнопкой, чтобы не разослать случайно)
+_pending_broadcast: dict[int, str] = {}
+
+
+@dp.message(Command("broadcast"))
+async def cmd_broadcast(message: types.Message):
+    """/broadcast <текст> — объявление всем незаблокированным игрокам (с подтверждением)."""
+    if not is_admin(message.from_user.id):
+        return
+    text = (message.text or "").split(maxsplit=1)
+    if len(text) < 2 or not text[1].strip():
+        await message.answer("Формат: /broadcast <текст объявления>\n"
+                             "Поддерживается HTML-разметка. Перед отправкой будет предпросмотр.")
+        return
+    _pending_broadcast[message.from_user.id] = text[1].strip()
+    total = await db.pool.fetchval("SELECT COUNT(*) FROM users WHERE is_blocked = FALSE")
+    kb = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text=f"✅ Отправить {total} игрокам", callback_data="bc_confirm")],
+        [types.InlineKeyboardButton(text="❌ Отмена", callback_data="bc_cancel")],
+    ])
+    await message.answer("📢 <b>ПРЕДПРОСМОТР РАССЫЛКИ:</b>\n"
+                         "..................................................\n\n" + text[1].strip(),
+                         reply_markup=kb, parse_mode="HTML")
+
+
+@dp.callback_query(F.data == "bc_cancel")
+async def bc_cancel(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    _pending_broadcast.pop(callback.from_user.id, None)
+    await callback.answer("Рассылка отменена")
+    await callback.message.edit_text("❌ Рассылка отменена.")
+
+
+@dp.callback_query(F.data == "bc_confirm")
+async def bc_confirm(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    text = _pending_broadcast.pop(callback.from_user.id, None)
+    if not text:
+        await callback.answer("Черновик не найден — отправь /broadcast заново", show_alert=True)
+        return
+    await callback.answer("Рассылка пошла!")
+    await callback.message.edit_text("📤 Рассылка запущена, отчёт придёт по завершении...")
+
+    async with db.pool.acquire() as conn:
+        user_ids = [r["user_id"] for r in await conn.fetch(
+            "SELECT user_id FROM users WHERE is_blocked = FALSE ORDER BY user_id")]
+
+    sent = failed = 0
+    main_bot = Bot(token=MAIN_BOT_TOKEN)
+    try:
+        for uid in user_ids:
+            try:
+                await main_bot.send_message(uid, text, parse_mode="HTML")
+                sent += 1
+            except Exception:
+                failed += 1   # игрок заблокировал бота и т.п. — это нормально
+            await asyncio.sleep(0.05)   # ~20 сообщений/сек, лимиты Telegram
+    finally:
+        await main_bot.session.close()
+    await callback.message.answer(
+        f"📬 <b>Рассылка завершена.</b>\nДоставлено: {sent} · Недоставлено: {failed}",
+        parse_mode="HTML")
+
+
 # ============================================================================
 # 📊 ПРОДУКТОВЫЕ МЕТРИКИ: снапшоты, дельты, отчёты по расписанию и по запросу
 # ============================================================================

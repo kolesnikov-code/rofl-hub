@@ -20,8 +20,10 @@ from aiogram.types import LabeledPrice, PreCheckoutQuery
 
 from bots.main_bot.catalog import CatalogError, build_order, item_title, normalize_sku
 from bots.main_bot.config import ADMIN_SECRET_CHANNEL_ID, is_shop_tester
+from bots.main_bot.guards import feature_enabled
 from shared.analytics import track
 from shared.database import db
+from shared.feature_flags import get_flag
 from shared.delivery import DeliveryError, already_delivered, deliver_order
 from shared.farm_logic import apply_lazy_farm
 from shared.locales import t
@@ -73,6 +75,8 @@ async def _deliver_in_transaction(user_id: int, order: dict, charge_id: str,
 # ============================================================================
 @router.callback_query(F.data.startswith("buy_"))
 async def process_shop_purchase_intent(callback: types.CallbackQuery, bot: Bot, user_lang: str = "ru"):
+    if not await feature_enabled(callback, "shop", user_lang):
+        return
     user_id = callback.from_user.id
     payload = normalize_sku(callback.data)
 
@@ -128,6 +132,10 @@ async def cmd_paysupport(message: types.Message, user_lang: str = "ru"):
 async def process_pre_checkout_query(pre_checkout_query: PreCheckoutQuery):
     user_id = pre_checkout_query.from_user.id
     payload = pre_checkout_query.invoice_payload
+
+    if not await get_flag("shop"):   # магазин выключен с пульта — не берём деньги
+        await pre_checkout_query.answer(ok=False, error_message=t("ru", "common.feature_off"))
+        return
 
     try:
         async with db.pool.acquire() as conn:

@@ -36,6 +36,8 @@ STRINGS = {
     "common.no_profile": "⚠️ 未找到个人资料。点按 /start 注册。",
     "common.btn_menu": "💿 主菜单",
     "common.blocked": "🚫 你的账号已被 ROFL HUB 管理员封禁。",
+    "common.feature_off": "⚙️ 该板块正在维护中，请稍后再来！",
+    "common.maintenance": "🛠 ROFL HUB 正在快速维护，马上回来——你的金币和进度都安然无恙！",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>欢迎回来，@{username}！</b>\n你的进度都还在。导航面板在屏幕底部。",

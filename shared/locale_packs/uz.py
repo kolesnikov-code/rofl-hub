@@ -35,6 +35,8 @@ STRINGS: dict[str, str] = {
     "common.no_profile": "⚠️ Profil topilmadi. Ro'yxatdan o'tish uchun /start ni bos.",
     "common.btn_menu": "💿 Bosh Menyu",
     "common.blocked": "🚫 Akkauntingni ROFL HUB ma'muriyati bloklagan.",
+    "common.feature_off": "⚙️ Bu bo'lim vaqtincha texnik xizmatda. Birozdan keyin qaytib ko'r!",
+    "common.maintenance": "🛠 ROFL HUB qisqa texnik ishlarda. Tez orada qaytamiz — tangalaring va yutuqlaring xavfsiz!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Yana xush kelibsan, @{username}!</b>\nProgressing joyida. Navigatsiya paneli — ekranning pastida.",

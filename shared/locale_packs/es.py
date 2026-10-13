@@ -35,6 +35,8 @@ STRINGS: dict[str, str] = {
     "common.no_profile": "⚠️ Perfil no encontrado. Pulsa /start para registrarte.",
     "common.btn_menu": "💿 Menú Principal",
     "common.blocked": "🚫 Tu cuenta fue bloqueada por la administración de ROFL HUB.",
+    "common.feature_off": "⚙️ Esta sección está en mantenimiento. ¡Vuelve un poco más tarde!",
+    "common.maintenance": "🛠 ROFL HUB está en mantenimiento rápido. ¡Volvemos pronto — tus monedas y tu progreso están a salvo!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>¡Qué bueno tenerte de vuelta, @{username}!</b>\nTu progreso está a salvo. El panel de navegación está en la parte inferior de la pantalla.",

@@ -17,6 +17,7 @@ from aiogram.types import CallbackQuery, Message, TelegramObject
 
 from shared.analytics import mark_daily_activity
 from shared.database import db
+from shared.feature_flags import get_flag
 from shared.locales import resolve_lang, t
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ class ActivityMiddleware(BaseMiddleware):
     def __init__(self) -> None:
         self._last_seen_written: dict[int, float] = {}
         self._block_notified: dict[int, float] = {}
+        self._maintenance_notified: dict[int, float] = {}
 
     async def __call__(
         self,
@@ -45,6 +47,17 @@ class ActivityMiddleware(BaseMiddleware):
         now = time.monotonic()
         # Язык по умолчанию — из клиента Telegram (до регистрации), после — из профиля
         data["user_lang"] = resolve_lang(getattr(user, "language_code", None))
+
+        # 🛠 Режим техработ (тумблер владельца в админ-боте): бот отвечает заглушкой
+        try:
+            if await get_flag("maintenance"):
+                if now - self._maintenance_notified.get(user.id, 0.0) >= 60:
+                    self._maintenance_notified[user.id] = now
+                    await self._reply_to_event(event, t(data["user_lang"], "common.maintenance"))
+                return None
+        except Exception:
+            logger.exception("[ACTIVITY_MW] сбой проверки maintenance — пускаю апдейт")
+
         try:
             row = await db.pool.fetchrow(
                 "SELECT is_blocked, lang FROM users WHERE user_id = $1", user.id)
@@ -67,16 +80,21 @@ class ActivityMiddleware(BaseMiddleware):
 
         return await handler(event, data)
 
+    @staticmethod
+    async def _reply_to_event(event: TelegramObject, text: str) -> None:
+        """Отвечает на апдейт (message или callback) переданным текстом. Сбои глотает."""
+        try:
+            update = event  # на dp.update событие — Update
+            if isinstance(getattr(update, "callback_query", None), CallbackQuery):
+                await update.callback_query.answer(text, show_alert=True)
+            elif isinstance(getattr(update, "message", None), Message):
+                await update.message.answer(text)
+        except Exception:
+            pass
+
     async def _notify_blocked(self, event: TelegramObject, user_id: int, now: float,
                               lang: str = "ru") -> None:
         if now - self._block_notified.get(user_id, 0.0) < BLOCK_NOTICE_INTERVAL:
             return
         self._block_notified[user_id] = now
-        try:
-            update = event  # на dp.update событие — Update
-            if isinstance(getattr(update, "callback_query", None), CallbackQuery):
-                await update.callback_query.answer(t(lang, "common.blocked"), show_alert=True)
-            elif isinstance(getattr(update, "message", None), Message):
-                await update.message.answer(t(lang, "common.blocked"))
-        except Exception:
-            pass
+        await self._reply_to_event(event, t(lang, "common.blocked"))

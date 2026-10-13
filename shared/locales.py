@@ -62,6 +62,8 @@ RU: dict[str, str] = {
     "common.no_profile": "⚠️ Профиль не найден. Нажми /start для регистрации.",
     "common.btn_menu": "💿 Главное меню",
     "common.blocked": "🚫 Твой аккаунт заблокирован администрацией ROFL HUB.",
+    "common.feature_off": "⚙️ Раздел временно на техобслуживании. Загляни чуть позже!",
+    "common.maintenance": "🛠 ROFL HUB на коротких техработах. Скоро вернёмся — монеты и прогресс в сохранности!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>С возвращением, @{username}!</b>\nТвой прогресс на месте. Панель навигации — внизу экрана.",
@@ -664,6 +666,8 @@ EN: dict[str, str] = {
     "common.no_profile": "⚠️ Profile not found. Press /start to register.",
     "common.btn_menu": "💿 Main Menu",
     "common.blocked": "🚫 Your account has been blocked by the ROFL HUB administration.",
+    "common.feature_off": "⚙️ This section is under maintenance. Check back a bit later!",
+    "common.maintenance": "🛠 ROFL HUB is under quick maintenance. Back soon — your coins and progress are safe!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Welcome back, @{username}!</b>\nYour progress is safe. The navigation panel is at the bottom of the screen.",

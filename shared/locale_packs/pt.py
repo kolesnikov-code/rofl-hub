@@ -35,6 +35,8 @@ STRINGS = {
     "common.no_profile": "⚠️ Perfil não encontrado. Toque em /start para se registrar.",
     "common.btn_menu": "💿 Menu Principal",
     "common.blocked": "🚫 Sua conta foi bloqueada pela administração do ROFL HUB.",
+    "common.feature_off": "⚙️ Esta seção está em manutenção. Volte um pouco mais tarde!",
+    "common.maintenance": "🛠 O ROFL HUB está em manutenção rápida. Voltamos logo — suas moedas e seu progresso estão seguros!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Que bom te ver de volta, @{username}!</b>\nSeu progresso está intacto. O painel de navegação fica na parte de baixo da tela.",

@@ -778,6 +778,34 @@ async def test_metrics_match_hand_computed_values(conn):
     assert cohort_b["size"] == 1 and cohort_b["d1_pct"] == 0.0
 
 
+async def test_feature_flags_set_toggle_and_cache():
+    """Тумблер переключается, значение переживает сброс кэша (живёт в БД)."""
+    from shared import feature_flags as ff
+    from shared.database import db as global_db
+
+    await global_db.connect(TEST_DSN)
+    try:
+        await global_db.create_tables()
+        async with global_db.pool.acquire() as c:
+            await c.execute("TRUNCATE feature_flags")
+        ff.invalidate_cache()
+
+        assert await ff.get_flag("games") is True          # дефолт
+        await ff.set_flag("games", False)
+        assert await ff.get_flag("games") is False
+        ff.invalidate_cache()
+        assert await ff.get_flag("games") is False         # прочитано из БД, не из кэша
+
+        assert await ff.toggle_flag("quest:golden_cutlet") is False   # был виден → скрыт
+        assert await ff.get_flag("quest:golden_cutlet") is False
+        assert await ff.toggle_flag("quest:golden_cutlet") is True
+
+        await ff.set_flag("games", True)                   # вернуть как было
+    finally:
+        ff.invalidate_cache()
+        await global_db.close()
+
+
 async def test_purge_old_events_removes_only_stale_rows():
     from datetime import timedelta
 

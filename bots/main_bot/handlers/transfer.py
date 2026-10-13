@@ -12,6 +12,7 @@ import logging
 from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 
+from bots.main_bot.guards import feature_enabled
 from shared.database import db
 from shared.economy import TRANSFER_MIN_AMOUNT, transfer_fee
 from shared.locales import resolve_lang, t
@@ -47,6 +48,8 @@ def _recipient_label(rec: dict) -> str:
 @router.message(Command("transfer"))
 @router.message(Command("send"))
 async def cmd_transfer(message: types.Message, user_lang: str = "ru"):
+    if not await feature_enabled(message, "transfers", user_lang):
+        return
     sender_id = message.from_user.id
     parts = (message.text or "").split()
 

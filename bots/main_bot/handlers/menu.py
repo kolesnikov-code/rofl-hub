@@ -3,6 +3,7 @@ from aiogram import Router, types, F
 from aiogram.filters import Command
 
 from bots.main_bot.config import WEBAPP_URL
+from bots.main_bot.guards import feature_enabled
 from shared.locales import btn, btn_variants, t
 
 router = Router()
@@ -92,12 +93,16 @@ async def cmd_main_menu(message: types.Message, user_lang: str = "ru"):
 @router.message(F.text.in_(btn_variants("games_zone")))
 async def cmd_games_hub(message: types.Message, user_lang: str = "ru"):
     """Выводит красивую инлайн-панель выбора игр без дублирования основного меню"""
+    if not await feature_enabled(message, "games", user_lang):
+        return
     await message.answer(t(user_lang, "menu.games_hub"),
                          reply_markup=get_games_inline_keyboard(user_lang), parse_mode="HTML")
 
 
 @router.callback_query(F.data == "games_hub")
 async def games_hub_callback(callback: types.CallbackQuery, user_lang: str = "ru"):
+    if not await feature_enabled(callback, "games", user_lang):
+        return
     await callback.answer()
     await cmd_games_hub(callback.message, user_lang=user_lang)
 

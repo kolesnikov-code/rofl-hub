@@ -14,8 +14,10 @@ import logging
 from aiogram import F, Router, types
 from aiogram.filters import Command
 
+from bots.main_bot.guards import feature_enabled
 from bots.main_bot.utils.quest_loader import all_quests, get_quest, visible_choices
 from shared.database import db
+from shared.feature_flags import get_flag
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
 
@@ -33,14 +35,30 @@ def _is_finished(quest: dict, scene_key: str) -> bool:
     return bool(scene and scene.get("end"))
 
 
-def _list_kb(completed: set[str], lang: str) -> types.InlineKeyboardMarkup:
+async def _visible_quests() -> list[dict]:
+    """Квесты, включённые владельцем с пульта (тумблеры quest:<id> в админ-боте)."""
+    return [q for q in all_quests() if await get_flag(f"quest:{q['id']}")]
+
+
+def _list_kb(completed: set[str], lang: str, quests: list[dict]) -> types.InlineKeyboardMarkup:
     rows = [[types.InlineKeyboardButton(
         text=f"{'✅ ' if q['id'] in completed else ''}{q['title']} · {q['minutes']} мин",
         callback_data=f"quest_info:{q['id']}")]
-        for q in all_quests()]
+        for q in quests]
     rows.append([types.InlineKeyboardButton(text=t(lang, "common.btn_menu"),
                                             callback_data="refresh_main_menu")])
     return types.InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+async def _quest_accessible(quest_id: str, user_id: int) -> bool:
+    """Скрытый квест доступен лишь тем, кто его уже начал (доигрывание в ротации)."""
+    if await get_flag(f"quest:{quest_id}"):
+        return True
+    async with db.pool.acquire() as conn:
+        started = await conn.fetchval(
+            "SELECT 1 FROM quest_progress WHERE user_id = $1 AND quest_id = $2",
+            user_id, quest_id)
+    return bool(started)
 
 
 def _scene_kb(quest: dict, scene_key: str, flags: set[str], lang: str) -> types.InlineKeyboardMarkup:
@@ -77,24 +95,29 @@ async def _completed_ids(user_id: int) -> set[str]:
 
 @router.message(Command("quests"))
 async def cmd_quests(message: types.Message, user_lang: str = "ru"):
+    if not await feature_enabled(message, "quests", user_lang):
+        return
     completed = await _completed_ids(message.from_user.id)
     await message.answer(t(user_lang, "quest.list_header"),
-                         reply_markup=_list_kb(completed, user_lang), parse_mode="HTML")
+                         reply_markup=_list_kb(completed, user_lang, await _visible_quests()),
+                         parse_mode="HTML")
 
 
 @router.callback_query(F.data == "quest_list")
 async def quest_list_callback(callback: types.CallbackQuery, user_lang: str = "ru"):
+    if not await feature_enabled(callback, "quests", user_lang):
+        return
     await callback.answer()
     completed = await _completed_ids(callback.from_user.id)
     await _safe_edit(callback.message, t(user_lang, "quest.list_header"),
-                     _list_kb(completed, user_lang))
+                     _list_kb(completed, user_lang, await _visible_quests()))
 
 
 @router.callback_query(F.data.startswith("quest_info:"))
 async def quest_info(callback: types.CallbackQuery, user_lang: str = "ru"):
     await callback.answer()
     quest = get_quest(callback.data.split(":", 1)[1])
-    if not quest:
+    if not quest or not await _quest_accessible(quest["id"], callback.from_user.id):
         await callback.answer(t(user_lang, "quest.not_found"), show_alert=True)
         return
 
@@ -136,7 +159,7 @@ async def quest_info(callback: types.CallbackQuery, user_lang: str = "ru"):
 async def quest_start(callback: types.CallbackQuery, user_lang: str = "ru"):
     await callback.answer()
     quest = get_quest(callback.data.split(":", 1)[1])
-    if not quest:
+    if not quest or not await _quest_accessible(quest["id"], callback.from_user.id):
         return
     async with db.pool.acquire() as conn:
         await conn.execute(

@@ -315,6 +315,14 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS metrics_snapshots_kind_idx ON metrics_snapshots (kind, taken_at);",
+    # --- Пульт владельца: фиче-тумблеры без деплоя ---
+    """
+    CREATE TABLE IF NOT EXISTS feature_flags (
+        key VARCHAR(64) PRIMARY KEY,
+        enabled BOOLEAN NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS source VARCHAR(32) NOT NULL DEFAULT 'organic';",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS qualified_at TIMESTAMP WITH TIME ZONE;",
     "CREATE INDEX IF NOT EXISTS users_created_idx ON users (created_at);",

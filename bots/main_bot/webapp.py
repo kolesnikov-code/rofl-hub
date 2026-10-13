@@ -191,6 +191,14 @@ async def handle_shop(request: web.Request) -> web.Response:
 
 
 async def handle_invoice(request: web.Request) -> web.Response:
+    """Создание Stars-инвойса из Mini App. При выключенном магазине — 503."""
+    from shared.feature_flags import get_flag
+    if not await get_flag("shop"):
+        return web.json_response({"error": "shop_disabled"}, status=503)
+    return await _handle_invoice_impl(request)
+
+
+async def _handle_invoice_impl(request: web.Request) -> web.Response:
     """
     Создаёт Stars-инвойс для покупки из Mini App (createInvoiceLink).
     Оплата и доставка идут через обычный платёжный контур бота:

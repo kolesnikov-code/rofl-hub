@@ -14,6 +14,7 @@ import logging
 from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 
+from bots.main_bot.guards import feature_enabled
 from shared.database import db
 from shared.duels import (
     DuelError,
@@ -78,6 +79,8 @@ def _rematch_kb(lang: str) -> types.InlineKeyboardMarkup:
 
 @router.message(Command("duel"))
 async def cmd_duel(message: types.Message, user_lang: str = "ru"):
+    if not await feature_enabled(message, "duels", user_lang):
+        return
     await message.answer(duel_intro_text(user_lang),
                          reply_markup=duel_tables_keyboard(user_lang), parse_mode="HTML")
 
@@ -98,6 +101,8 @@ async def duel_tables_callback(callback: types.CallbackQuery, user_lang: str = "
 # ============================================================================
 @router.callback_query(F.data.startswith("duel_join:"))
 async def duel_join(callback: types.CallbackQuery, bot: Bot, user_lang: str = "ru"):
+    if not await feature_enabled(callback, "duels", user_lang):
+        return
     parts = callback.data.split(":")
     if len(parts) != 2 or not parts[1].isdigit():
         await callback.answer()

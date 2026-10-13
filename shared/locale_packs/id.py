@@ -35,6 +35,8 @@ STRINGS = {
     "common.no_profile": "⚠️ Profil tidak ditemukan. Tekan /start untuk mendaftar.",
     "common.btn_menu": "💿 Menu Utama",
     "common.blocked": "🚫 Akunmu diblokir oleh admin ROFL HUB.",
+    "common.feature_off": "⚙️ Bagian ini sedang dalam perawatan. Coba lagi nanti ya!",
+    "common.maintenance": "🛠 ROFL HUB sedang perawatan singkat. Segera kembali — koin dan progresmu aman!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Selamat datang kembali, @{username}!</b>\nProgresmu aman. Panel navigasi ada di bagian bawah layar.",
