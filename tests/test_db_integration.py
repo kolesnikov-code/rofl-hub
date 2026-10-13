@@ -28,7 +28,8 @@ async def conn():
     await database.create_tables()
     async with database.pool.acquire() as c:
         await c.execute("TRUNCATE users, teams, star_payments, game_stats, auctions, ledger, "
-                        "miners, duels, battles, vip_aliases, quest_progress RESTART IDENTITY")
+                        "miners, duels, battles, vip_aliases, quest_progress, events, "
+                        "daily_activity, promoters, metrics_snapshots RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -619,3 +620,183 @@ async def test_counter_migration_moves_robots_to_miners_table_once(conn):
         assert (u["miner_junior_count"], u["miner_premium_count"]) == (0, 0)
     finally:
         await database.close()
+
+
+# ============================================================================
+# Продуктовая аналитика: квалификация рефералов, события, метрики
+# ============================================================================
+async def test_referral_qualification_pays_exactly_once_under_race():
+    """Две конкурентные транзакции доводят друга до 30 раундов — бонус строго один."""
+    import asyncio
+    from shared.analytics import qualify_referral_if_due
+    from shared.economy import REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFY_ROUNDS
+
+    database = Database()
+    await database.connect(TEST_DSN)
+    await database.create_tables()
+    try:
+        async with database.pool.acquire() as c:
+            await c.execute("TRUNCATE users, ledger, events, daily_activity RESTART IDENTITY")
+            await _mk_user(c, 100, 0)
+            await _mk_user(c, 101, 0, referred_by=100)
+
+        async def attempt():
+            async with database.pool.acquire() as c:
+                async with c.transaction():
+                    return await qualify_referral_if_due(c, 101, REFERRAL_QUALIFY_ROUNDS)
+
+        results = await asyncio.gather(attempt(), attempt())
+        assert sorted(r is not None for r in results) == [False, True]
+
+        async with database.pool.acquire() as c:
+            rows = await c.fetch(
+                "SELECT delta, reason FROM ledger WHERE user_id = 100 ORDER BY id")
+            assert [(r["delta"], r["reason"]) for r in rows] == \
+                   [(REFERRAL_QUALIFIED_BONUS, "referral_qualified")]
+            assert await c.fetchval("SELECT balance FROM users WHERE user_id = 100") == \
+                   REFERRAL_QUALIFIED_BONUS
+            assert await c.fetchval("SELECT qualified_at FROM users WHERE user_id = 101") is not None
+    finally:
+        await database.close()
+
+
+async def test_referral_qualification_needs_threshold_and_referrer(conn):
+    from shared.analytics import qualify_referral_if_due
+    from shared.economy import REFERRAL_QUALIFY_ROUNDS
+
+    await _mk_user(conn, 110, 0)
+    await _mk_user(conn, 111, 0, referred_by=110)
+    assert await qualify_referral_if_due(conn, 111, REFERRAL_QUALIFY_ROUNDS - 1) is None
+    await _mk_user(conn, 112, 0)   # игрок без реферера
+    assert await qualify_referral_if_due(conn, 112, 999) is None
+    assert await conn.fetchval(
+        "SELECT COUNT(*) FROM ledger WHERE reason = 'referral_qualified'") == 0
+
+
+async def test_track_and_daily_activity_write_rows():
+    """track() пишет событие, mark_daily_activity() не плодит дублей за день."""
+    from shared import analytics
+    from shared.database import db as global_db
+
+    await global_db.connect(TEST_DSN)
+    try:
+        await global_db.create_tables()
+        async with global_db.pool.acquire() as c:
+            await c.execute("TRUNCATE users, events, daily_activity RESTART IDENTITY")
+            await _mk_user(c, 120, 0)
+        analytics._daily_marked.clear()
+        await analytics.track(120, "game_round", game="rps", result="win")
+        await analytics.mark_daily_activity(120)
+        await analytics.mark_daily_activity(120)
+        async with global_db.pool.acquire() as c:
+            ev = await c.fetchrow("SELECT event, props->>'game' AS game FROM events")
+            assert (ev["event"], ev["game"]) == ("game_round", "rps")
+            assert await c.fetchval(
+                "SELECT COUNT(*) FROM daily_activity WHERE user_id = 120") == 1
+    finally:
+        await global_db.close()
+
+
+async def test_metrics_match_hand_computed_values(conn):
+    """Фикстурные данные → метрики сверяются с посчитанными вручную числами."""
+    from datetime import timedelta
+    from shared import metrics
+    from shared.economy import utcnow
+
+    now = utcnow()
+
+    def d(days):
+        return now - timedelta(days=days)
+
+    # Игроки: A — органика 10 дней назад; B и C — рефералы A (B квалифицирован)
+    await _mk_user(conn, 200, 0, created_at=d(10), source="organic")
+    await _mk_user(conn, 201, 0, created_at=d(5), source="referral",
+                   referred_by=200, qualified_at=d(1))
+    await _mk_user(conn, 202, 0, created_at=d(4), source="p_blog", referred_by=200)
+
+    # Активность: A вчера и сегодня, B сегодня
+    await conn.execute(
+        "INSERT INTO daily_activity (user_id, day) VALUES "
+        "(200, $1), (200, $2), (201, $2)", d(1).date(), now.date())
+
+    # Платежи: B купил безлимит сегодня (5 звёзд); A — пак 2 дня назад (149);
+    # возврат и TEST-чек в выручку не попадают
+    await conn.execute(
+        """INSERT INTO star_payments (user_id, telegram_charge_id, item_payload,
+                                      stars_amount, created_at, refunded_at) VALUES
+           (201, 'ch1', 'unlimit_24h', 5, $1, NULL),
+           (200, 'ch2', 'coins_5k', 149, $2, NULL),
+           (200, 'ch3', 'coins_100k', 999, $1, $1),
+           (201, 'TEST_ch4', 'coins_5k', 777, $1, NULL)""", d(0), d(2))
+
+    # События: B упёрся в лимит (купил безлимит < 24 ч спустя), 3 раунда викторины
+    await conn.execute(
+        """INSERT INTO events (user_id, event, props, created_at) VALUES
+           (201, 'daily_limit_hit', '{"game": "quiz"}', $1),
+           (200, 'game_round', '{"game": "quiz", "result": "win"}', $1),
+           (201, 'game_round', '{"game": "quiz", "result": "win"}', $1),
+           (201, 'game_round', '{"game": "quiz", "result": "lose"}', $2)""",
+        now - timedelta(hours=20), now - timedelta(hours=2))
+
+    # Монеты: эмиссия +100 (ферма), сжигание -30 (проигрыши)
+    await conn.execute(
+        """INSERT INTO ledger (user_id, delta, reason, created_at) VALUES
+           (200, 100, 'mining', $1), (201, -30, 'game_loss:quiz', $1)""", d(1))
+    await conn.execute("UPDATE users SET balance = 70 WHERE user_id = 200")
+
+    activity = await metrics.fetch_activity(conn, now.date())
+    assert (activity["dau"], activity["wau"], activity["mau"]) == (2, 2, 2)
+    assert activity["stickiness_pct"] == 100.0
+
+    vir = await metrics.fetch_virality(conn, d(11), now)
+    assert vir["cohort_size"] == 3
+    assert vir["k_raw"] == round(2 / 3, 3)
+    assert vir["k_qualified"] == round(1 / 3, 3)
+    assert vir["inviter_share_pct"] == 33.3
+
+    mon = await metrics.fetch_monetization(conn, d(1), now + timedelta(seconds=1))
+    assert mon["revenue_stars"] == 5 and mon["payers"] == 1
+    assert mon["by_sku"] == [{"sku": "unlimit_24h", "n": 1, "stars": 5}]
+    assert mon["cr_base_pct"] == round(100 / 3, 2)
+    assert mon["limit_hit_users"] == 1 and mon["limit_to_unlimit_pct"] == 100.0
+    assert mon["repeat_buyers_pct"] == 0.0     # у каждого платящего по одной покупке
+
+    eco = await metrics.fetch_coin_economy(conn, d(2), now)
+    assert (eco["emission"], eco["burn"], eco["net_inflation"]) == (100, 30, 70)
+    assert eco["coin_supply"] == 70
+
+    gf = await metrics.fetch_games_farm(conn, d(1), now)
+    assert gf["games"] == [{"game": "quiz", "rounds": 3, "winrate_pct": 66.7}]
+    assert gf["limit_hits"] == [{"game": "quiz", "n": 1}]
+
+    funnel = await metrics.fetch_activation_funnel(conn, d(11), now)
+    assert funnel["registered"] == 3
+    assert funnel["played"] == 0       # первые игры были позже 24 ч от регистрации
+
+    retention = await metrics.fetch_retention_cohorts(conn, last_n=7)
+    cohort_b = next(c for c in retention if c["cohort"] == d(5).date().isoformat())
+    assert cohort_b["size"] == 1 and cohort_b["d1_pct"] == 0.0
+
+
+async def test_purge_old_events_removes_only_stale_rows():
+    from datetime import timedelta
+
+    from shared import analytics
+    from shared.database import db as global_db
+    from shared.economy import utcnow
+
+    await global_db.connect(TEST_DSN)
+    try:
+        await global_db.create_tables()
+        async with global_db.pool.acquire() as c:
+            await c.execute("TRUNCATE events RESTART IDENTITY")
+            await c.execute(
+                "INSERT INTO events (user_id, event, created_at) VALUES "
+                "(1, 'old', $1), (1, 'fresh', $2)",
+                utcnow() - timedelta(days=200), utcnow())
+        deleted = await analytics.purge_old_events()
+        assert deleted == 1
+        async with global_db.pool.acquire() as c:
+            assert await c.fetchval("SELECT event FROM events") == "fresh"
+    finally:
+        await global_db.close()

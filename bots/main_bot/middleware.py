@@ -15,6 +15,7 @@ from typing import Any, Awaitable, Callable
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message, TelegramObject
 
+from shared.analytics import mark_daily_activity
 from shared.database import db
 from shared.locales import resolve_lang, t
 
@@ -58,6 +59,9 @@ class ActivityMiddleware(BaseMiddleware):
                 self._last_seen_written[user.id] = now
                 await db.pool.execute(
                     "UPDATE users SET last_seen_at = NOW() WHERE user_id = $1", user.id)
+            if row:
+                # База DAU/WAU/MAU/retention; сама глотает ошибки и кэширует «уже отмечен»
+                await mark_daily_activity(user.id)
         except Exception:
             logger.exception("[ACTIVITY_MW] сбой middleware, апдейт пропущен дальше")
 

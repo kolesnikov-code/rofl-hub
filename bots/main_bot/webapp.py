@@ -15,6 +15,7 @@ from pathlib import Path
 from aiohttp import web
 
 from bots.main_bot.catalog import CATALOG, CatalogError, SHOP_LAYOUT, build_order, item_button, item_title
+from shared.analytics import track
 from shared.database import db
 from shared.economy import (
     daily_bonus_seconds_left,
@@ -161,6 +162,7 @@ async def handle_bonus(request: web.Request) -> web.Response:
             await conn.execute(
                 "UPDATE users SET inv_cutlets = inv_cutlets + 1, last_bonus_claim_at = $2 "
                 "WHERE user_id = $1", user_id, now)
+    await track(user_id, "bonus_claimed", source="webapp")
     return web.json_response({"ok": True, "seconds_left": 0})
 
 
@@ -184,6 +186,7 @@ async def handle_shop(request: web.Request) -> web.Response:
         return _unauthorized()
     async with db.pool.acquire() as conn:
         lang = await conn.fetchval("SELECT lang FROM users WHERE user_id = $1", user_id)
+    await track(user_id, "shop_opened", category="webapp")
     return web.json_response(build_shop_payload(resolve_lang(lang)))
 
 

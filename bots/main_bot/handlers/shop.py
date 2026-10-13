@@ -12,6 +12,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 from bots.main_bot.catalog import CATALOG, CATEGORY_FARM, CATEGORY_GAMES, SHOP_LAYOUT, item_button
+from shared.analytics import track
 from shared.database import db
 from shared.locales import btn, btn_variants, t
 
@@ -67,6 +68,7 @@ async def _show_category(message: types.Message, state: FSMContext, category: st
     sent = await message.answer(_category_text(category, capacity, lang),
                                 reply_markup=get_catalog_keyboard(category, lang), parse_mode="HTML")
     await state.update_data(shop_message_id=sent.message_id)
+    await track(user_id, "shop_opened", category=category)
 
 
 @router.message(Command("shop"))

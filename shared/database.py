@@ -279,6 +279,47 @@ SCHEMA_STATEMENTS: list[str] = [
         END IF;
     END $$;
     """,
+    # --- Продуктовая аналитика (13.10 вечер): события, активность, трафик, снапшоты ---
+    """
+    CREATE TABLE IF NOT EXISTS events (
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        event VARCHAR(64) NOT NULL,
+        props JSONB NOT NULL DEFAULT '{}',
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS events_event_created_idx ON events (event, created_at);",
+    "CREATE INDEX IF NOT EXISTS events_user_created_idx ON events (user_id, created_at);",
+    """
+    CREATE TABLE IF NOT EXISTS daily_activity (
+        user_id BIGINT NOT NULL,
+        day DATE NOT NULL,
+        PRIMARY KEY (user_id, day)
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS daily_activity_day_idx ON daily_activity (day);",
+    """
+    CREATE TABLE IF NOT EXISTS promoters (
+        code VARCHAR(32) PRIMARY KEY,
+        name VARCHAR(64) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS metrics_snapshots (
+        id BIGSERIAL PRIMARY KEY,
+        taken_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        kind VARCHAR(16) NOT NULL,
+        data JSONB NOT NULL DEFAULT '{}'
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS metrics_snapshots_kind_idx ON metrics_snapshots (kind, taken_at);",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS source VARCHAR(32) NOT NULL DEFAULT 'organic';",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS qualified_at TIMESTAMP WITH TIME ZONE;",
+    "CREATE INDEX IF NOT EXISTS users_created_idx ON users (created_at);",
+    "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",
+    "CREATE INDEX IF NOT EXISTS star_payments_created_idx ON star_payments (created_at);",
 ]
 
 

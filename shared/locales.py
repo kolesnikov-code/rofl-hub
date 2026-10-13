@@ -509,6 +509,14 @@ RU: dict[str, str] = {
     ),
     "ref.btn_share": "📣 Поделиться ссылкой",
     "ref.share_text": "Залетай в игровую экосистему ROFL HUB!",
+    "ref.qualified_line": (
+        "⭐ <b>Двойная выгода:</b> когда приглашённый друг сыграет {rounds} раундов — "
+        "тебе прилетит ещё <b>+{bonus} монет</b>!"
+    ),
+    "ref.qualified_notify": (
+        "🤝 <b>Твой друг разыгрался: уже {rounds} раундов!</b>\n"
+        "За квалифицированного реферала начислено <b>+{bonus} монет</b>. Зови ещё!"
+    ),
 
     # ---------------- переводы ----------------
     "tr.help": (
@@ -1105,6 +1113,14 @@ EN: dict[str, str] = {
     ),
     "ref.btn_share": "📣 Share the link",
     "ref.share_text": "Join the ROFL HUB gaming ecosystem!",
+    "ref.qualified_line": (
+        "⭐ <b>Double reward:</b> when an invited friend plays {rounds} rounds, "
+        "you get another <b>+{bonus} coins</b>!"
+    ),
+    "ref.qualified_notify": (
+        "🤝 <b>Your friend is hooked: {rounds} rounds already!</b>\n"
+        "You've earned <b>+{bonus} coins</b> for a qualified referral. Invite more!"
+    ),
 
     # ---------------- transfers ----------------
     "tr.help": (

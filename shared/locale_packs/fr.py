@@ -484,6 +484,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Partager le lien",
     "ref.share_text": "Rejoins l'écosystème de jeu ROFL HUB !",
+    "ref.qualified_line": ("⭐ <b>Double récompense :</b> quand un ami invité joue {rounds} "
+                           "manches, tu reçois encore <b>+{bonus} pièces</b> !"),
+    "ref.qualified_notify": ("🤝 <b>Ton ami est accro : déjà {rounds} manches !</b>\n"
+                             "Tu gagnes <b>+{bonus} pièces</b> pour un filleul qualifié. "
+                             "Invites-en d'autres !"),
 
     # ---------------- transferts ----------------
     "tr.help": (

@@ -483,6 +483,11 @@ STRINGS: dict[str, str] = {
     ),
     "ref.btn_share": "📣 Compartir el enlace",
     "ref.share_text": "¡Únete al ecosistema de juegos ROFL HUB!",
+    "ref.qualified_line": ("⭐ <b>Doble recompensa:</b> cuando un amigo invitado juegue {rounds} "
+                           "rondas, ¡recibes otras <b>+{bonus} monedas</b>!"),
+    "ref.qualified_notify": ("🤝 <b>¡Tu amigo se enganchó: ya lleva {rounds} rondas!</b>\n"
+                             "Ganaste <b>+{bonus} monedas</b> por un referido calificado. "
+                             "¡Invita a más!"),
 
     # ---------------- переводы ----------------
     "tr.help": (

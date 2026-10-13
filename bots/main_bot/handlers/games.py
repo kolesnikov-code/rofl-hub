@@ -15,18 +15,21 @@ import asyncio
 import logging
 import random
 
-from aiogram import F, Router, types
+from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from bots.main_bot.utils.questions_loader import get_question_by_id, get_random_question
+from shared.analytics import qualify_referral_if_due, track
 from shared.database import db
 from shared.economy import (
     DAILY_WIN_LIMITS,
     DEFAULT_DAILY_WIN_LIMIT,
     LOSE_PENALTY,
     QUIZ_ANSWER_SECONDS,
+    REFERRAL_QUALIFIED_BONUS,
+    REFERRAL_QUALIFY_ROUNDS,
     SAFE_CODES_COUNT,
     SAFE_WIN_REWARD,
     WIN_REWARD,
@@ -37,7 +40,7 @@ from shared.economy import (
     win_reward_for,
 )
 from shared.ledger import InsufficientFunds, change_balance
-from shared.locales import t
+from shared.locales import resolve_lang, t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -105,11 +108,41 @@ def safe_outcome(guess: int, code: int) -> bool:
 # Единый движок результата раунда
 # ============================================================================
 async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
-                                   is_draw: bool = False, lang: str = "ru") -> tuple[bool, str, int]:
+                                   is_draw: bool = False, lang: str = "ru",
+                                   bot: Bot | None = None) -> tuple[bool, str, int]:
     """
     Возвращает (успех, текст, новый баланс). Успех=False означает: раунд не засчитан
     (лимит, нет монет, нет профиля) — текст объясняет почему.
+
+    Аналитика (events) пишется ПОСЛЕ транзакции — сбой записи события не может
+    откатить монеты. Квалификация реферала (30 раундов → +1000 рефереру) — ВНУТРИ
+    транзакции: это игровая механика, бонус начисляется строго один раз.
     """
+    events: list[tuple[str, dict]] = []
+    ok, text, balance, qualified_referrer = await _payout_in_tx(
+        user_id, is_win, game_type, is_draw, lang, events)
+    for name, props in events:
+        await track(user_id, name, **props)
+    if qualified_referrer is not None and bot is not None:
+        await _notify_referrer_qualified(bot, qualified_referrer)
+    return ok, text, balance
+
+
+async def _notify_referrer_qualified(bot: Bot, referrer_id: int) -> None:
+    """ЛС рефереру о +1000 за квалифицированного друга. Любой сбой — только в лог."""
+    try:
+        row = await db.pool.fetchrow("SELECT lang FROM users WHERE user_id = $1", referrer_id)
+        lang = resolve_lang(row["lang"]) if row else "ru"
+        await bot.send_message(
+            referrer_id, t(lang, "ref.qualified_notify",
+                           bonus=REFERRAL_QUALIFIED_BONUS, rounds=REFERRAL_QUALIFY_ROUNDS),
+            parse_mode="HTML")
+    except Exception:
+        logger.info("[REFERRAL_QUALIFIED] реферер %s недоступен для ЛС", referrer_id)
+
+
+async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: bool, lang: str,
+                        events: list[tuple[str, dict]]) -> tuple[bool, str, int, int | None]:
     now = utcnow()
     today = now.date()
     column = WIN_COLUMNS.get(game_type, "daily_wins_rps")
@@ -121,7 +154,7 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
             user = await conn.fetchrow(
                 "SELECT balance, unlimit_until FROM users WHERE user_id = $1 FOR UPDATE", user_id)
             if not user:
-                return False, t(lang, "common.no_profile"), 0
+                return False, t(lang, "common.no_profile"), 0, None
 
             stats = await conn.fetchrow(
                 "SELECT * FROM game_stats WHERE user_id = $1 FOR UPDATE", user_id)
@@ -131,9 +164,10 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
             unlimited = is_active(user["unlimit_until"], now)
 
             if is_win and not unlimited and wins_today >= max_limit:
+                events.append(("daily_limit_hit", {"game": game_type}))
                 return False, t(lang, "games.limit",
                                 game=t(lang, GAME_TITLES.get(game_type, "games.name.rps")),
-                                limit=max_limit), user["balance"]
+                                limit=max_limit), user["balance"], None
 
             if is_win:
                 new_balance = await change_balance(conn, user_id, reward, f"game_win:{game_type}")
@@ -142,12 +176,12 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
                 try:
                     new_balance = await change_balance(conn, user_id, -LOSE_PENALTY, f"game_loss:{game_type}")
                 except InsufficientFunds:
-                    return False, t(lang, "games.no_coins"), user["balance"]
+                    return False, t(lang, "games.no_coins"), user["balance"], None
                 status = t(lang, "games.draw" if is_draw else "games.lose", penalty=LOSE_PENALTY)
 
             # Счётчики: при смене дня все суточные колонки обнуляются
             if same_day:
-                await conn.execute(
+                games_played = await conn.fetchval(
                     f"""
                     INSERT INTO game_stats (user_id, games_played, games_won, {column}, last_game_date)
                     VALUES ($1, 1, $2, $2, $3)
@@ -156,11 +190,12 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
                         games_won = game_stats.games_won + $2,
                         {column} = game_stats.{column} + $2,
                         last_game_date = $3
+                    RETURNING games_played
                     """,
                     user_id, 1 if is_win else 0, today)
             else:
                 zero_all = ", ".join(f"{c} = 0" for c in _ALL_WIN_COLUMNS if c != column)
-                await conn.execute(
+                games_played = await conn.fetchval(
                     f"""
                     INSERT INTO game_stats (user_id, games_played, games_won, {column}, last_game_date)
                     VALUES ($1, 1, $2, $2, $3)
@@ -170,8 +205,16 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
                         {zero_all},
                         {column} = $2,
                         last_game_date = $3
+                    RETURNING games_played
                     """,
                     user_id, 1 if is_win else 0, today)
+
+            # Квалификация реферала: друг доиграл до 30 раундов → рефереру +1000 (один раз)
+            qualified_referrer = await qualify_referral_if_due(conn, user_id, games_played or 0)
+            events.append(("game_round", {
+                "game": game_type,
+                "result": "win" if is_win else ("draw" if is_draw else "lose"),
+            }))
 
             # Прогрессивные уровни викторины: уровень N = N*10 верных ответов → N*100 монет
             if is_win and game_type == "quiz":
@@ -192,7 +235,7 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
                                          next_required=quiz_answers_required(next_level + 1),
                                          next_reward=quiz_level_reward(next_level + 1))
 
-            return True, status, new_balance
+            return True, status, new_balance, qualified_referrer
 
 
 def _retry_kb(lang: str, game_type: str, label: str | None = None) -> types.InlineKeyboardMarkup:
@@ -242,7 +285,7 @@ async def process_rps_choice(callback: types.CallbackQuery, user_lang: str = "ru
         headline = t(user_lang, "rps.lose", user=user_name, bot=bot_name)
 
     ok, text, balance = await execute_solo_game_payout(
-        callback.from_user.id, is_win, "rps", is_draw=is_draw, lang=user_lang)
+        callback.from_user.id, is_win, "rps", is_draw=is_draw, lang=user_lang, bot=callback.bot)
     body = text if not ok else (f"{headline}\n\n{text}\n"
                                 + t(user_lang, "games.balance", balance=balance))
     await _safe_edit(callback.message, body, _retry_kb(user_lang, "rps"))
@@ -278,7 +321,8 @@ async def process_high_low_choice(callback: types.CallbackQuery, user_lang: str 
         return
     direction, base, secret = parts[1], int(parts[2]), int(parts[3])
     is_win = hl_outcome(direction, base, secret)
-    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "hl", lang=user_lang)
+    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "hl",
+                                                       lang=user_lang, bot=callback.bot)
     body = text if not ok else (t(user_lang, "hl.result", base=base, secret=secret)
                                 + f"\n\n{text}\n" + t(user_lang, "games.balance", balance=balance))
     await _safe_edit(callback.message, body, _retry_kb(user_lang, "hl"))
@@ -343,7 +387,8 @@ async def _quiz_timeout_watchdog(message: types.Message, state: FSMContext, toke
         if data.get("quiz_token") != token:
             return  # уже другой вопрос
         await state.clear()
-        ok, text, balance = await execute_solo_game_payout(user_id, False, "quiz", lang=lang)
+        ok, text, balance = await execute_solo_game_payout(user_id, False, "quiz", lang=lang,
+                                                           bot=message.bot)
         body = t(lang, "quiz.timeout", correct=correct_answer)
         if ok:
             body += "\n" + await _quiz_result_tail(user_id, lang, balance, lost_line=True)
@@ -396,7 +441,8 @@ async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext, 
         return
 
     is_win = chosen == data.get("quiz_correct")
-    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "quiz", lang=user_lang)
+    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "quiz",
+                                                       lang=user_lang, bot=callback.bot)
     if not ok:
         await _safe_edit(callback.message, text, _retry_kb(user_lang, "quiz", t(user_lang, "quiz.btn_new")))
         return
@@ -447,7 +493,8 @@ async def process_coin_choice(callback: types.CallbackQuery, user_lang: str = "r
         return
     result = random.choice(("heads", "tails"))
     is_win = coin_outcome(choice, result)
-    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "coin", lang=user_lang)
+    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "coin",
+                                                       lang=user_lang, bot=callback.bot)
     headline = t(user_lang, "coin.result",
                  result=coin_name(user_lang, result), choice=coin_name(user_lang, choice))
     body = text if not ok else (f"{headline}\n\n{text}\n"
@@ -492,7 +539,7 @@ async def process_dice_roll(callback: types.CallbackQuery, user_lang: str = "ru"
     player, bot_roll = player_msg.dice.value, bot_msg.dice.value
     is_win, is_draw = dice_outcome(player, bot_roll)
     ok, text, balance = await execute_solo_game_payout(
-        callback.from_user.id, is_win, "dice", is_draw=is_draw, lang=user_lang)
+        callback.from_user.id, is_win, "dice", is_draw=is_draw, lang=user_lang, bot=callback.bot)
     headline = t(user_lang, "dice.result", player=player, bot=bot_roll)
     body = text if not ok else (f"{headline}\n\n{text}\n"
                                 + t(user_lang, "games.balance", balance=balance))
@@ -527,7 +574,8 @@ async def process_safe_guess(callback: types.CallbackQuery, user_lang: str = "ru
         return
     guess, code = int(parts[1]), int(parts[2])
     is_win = safe_outcome(guess, code)
-    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "safe", lang=user_lang)
+    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "safe",
+                                                       lang=user_lang, bot=callback.bot)
     headline = t(user_lang, "safe.win", code=code) if is_win else \
         t(user_lang, "safe.lose", guess=guess, code=code)
     body = text if not ok else (f"{headline}\n\n{text}\n"

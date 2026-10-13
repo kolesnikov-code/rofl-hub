@@ -484,6 +484,9 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 分享链接",
     "ref.share_text": "快来加入 ROFL HUB 游戏生态系统！",
+    "ref.qualified_line": "⭐ <b>双重奖励：</b>受邀好友玩满 {rounds} 局后，你再得 <b>+{bonus} 金币</b>！",
+    "ref.qualified_notify": ("🤝 <b>你的好友玩上瘾了：已经 {rounds} 局！</b>\n"
+                             "合格推荐奖励 <b>+{bonus} 金币</b> 已到账。继续邀请吧！"),
 
     # ---------------- переводы ----------------
     "tr.help": (

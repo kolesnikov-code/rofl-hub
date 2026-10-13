@@ -20,6 +20,7 @@ from aiogram.types import LabeledPrice, PreCheckoutQuery
 
 from bots.main_bot.catalog import CatalogError, build_order, item_title, normalize_sku
 from bots.main_bot.config import ADMIN_SECRET_CHANNEL_ID, is_shop_tester
+from shared.analytics import track
 from shared.database import db
 from shared.delivery import DeliveryError, already_delivered, deliver_order
 from shared.farm_logic import apply_lazy_farm
@@ -173,6 +174,7 @@ async def process_successful_payment(message: types.Message, bot: Bot, user_lang
         return
 
     if ok:
+        await track(user_id, "purchase", sku=order["sku"], stars=payment.total_amount)
         await message.answer(
             t(user_lang, "pay.success", charge=charge_id, stars=payment.total_amount, text=text),
             parse_mode="HTML")

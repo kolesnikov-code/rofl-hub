@@ -483,6 +483,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Condividi il link",
     "ref.share_text": "Entra nell'ecosistema di gioco ROFL HUB!",
+    "ref.qualified_line": ("⭐ <b>Ricompensa doppia:</b> quando un amico invitato gioca {rounds} "
+                           "round, ricevi altre <b>+{bonus} monete</b>!"),
+    "ref.qualified_notify": ("🤝 <b>Il tuo amico ci ha preso gusto: già {rounds} round!</b>\n"
+                             "Hai guadagnato <b>+{bonus} monete</b> per un invitato qualificato. "
+                             "Invitane altri!"),
 
     # ---------------- переводы ----------------
     "tr.help": (

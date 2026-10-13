@@ -5,6 +5,7 @@ from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from shared.analytics import track
 from shared.database import db
 from shared.db_clans import create_new_team_in_db
 from shared.economy import TEAM_CREATE_COST, TEAM_LIST_PAGE_SIZE
@@ -359,6 +360,7 @@ async def process_fsm_clan_symbol_finalize(message: types.Message, state: FSMCon
     if not success:
         await message.answer(f"❌ {status}")
         return
+    await track(message.from_user.id, "team_joined", role="captain")
 
     await message.answer(
         f"👑 <b>КОМАНДА УСПЕШНО ЗАРЕГИСТРИРОВАНА!</b>\n"
@@ -453,6 +455,7 @@ async def process_clan_join_request(callback: types.CallbackQuery, user_lang: st
             await conn.execute(
                 "UPDATE users SET team_id = $1, team_joined_at = NOW() WHERE user_id = $2",
                 team_id, user_id)
+    await track(user_id, "team_joined", team_id=team_id)
     await callback.message.edit_text(
         t(user_lang, "clan.join_ok", name=team["team_name"]), parse_mode="HTML")
 

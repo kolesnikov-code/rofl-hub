@@ -483,6 +483,11 @@ STRINGS: dict[str, str] = {
     ),
     "ref.btn_share": "📣 Havolani ulashish",
     "ref.share_text": "ROFL HUB o'yin ekotizimiga qo'shil!",
+    "ref.qualified_line": ("⭐ <b>Ikki karra foyda:</b> taklif qilingan do'sting {rounds} raund "
+                           "o'ynasa — senga yana <b>+{bonus} tanga</b> keladi!"),
+    "ref.qualified_notify": ("🤝 <b>Do'sting o'yinga berilib ketdi: allaqachon {rounds} raund!</b>\n"
+                             "Malakali referal uchun senga <b>+{bonus} tanga</b> yozildi. "
+                             "Yana chaqir!"),
 
     # ---------------- переводы ----------------
     "tr.help": (

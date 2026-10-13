@@ -4,6 +4,7 @@ from datetime import datetime
 from aiogram import Router, types, F
 from aiogram.filters import Command
 
+from shared.analytics import track
 from shared.database import db
 from shared.economy import (
     daily_bonus_seconds_left,
@@ -127,6 +128,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
     now = utcnow()
     toast: str | None = None
     extra_message: str | None = None
+    bonus_given = False
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
@@ -147,6 +149,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
                         "WHERE user_id = $1",
                         user_id, now)
                     toast = t(user_lang, "farm.bonus_ok")
+                    bonus_given = True
 
             elif action == "load_1":
                 if user["inv_cutlets"] <= 0:
@@ -176,6 +179,11 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
             # уходят в баки бурильщиков, экран показывает честный статус.
             now = utcnow()
             user, miners = await apply_lazy_farm(conn, user_id, now)
+
+    if bonus_given:
+        await track(user_id, "bonus_claimed", source="bot")
+    elif action in ("load_1", "load_all") and not extra_message:
+        await track(user_id, "farm_refuel", mode=action)
 
     await callback.answer(toast, show_alert=bool(toast and "⏳" in toast))
     if extra_message:

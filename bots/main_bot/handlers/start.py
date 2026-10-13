@@ -13,6 +13,8 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
 from bots.main_bot.handlers.menu import get_reply_main_keyboard
+from shared import analytics
+from shared.analytics import track
 from shared.auction_logic import compute_bid
 from shared.database import db
 from shared.economy import REFERRAL_SIGNUP_BONUS, START_BALANCE, START_CUTLETS_INVENTORY
@@ -36,26 +38,47 @@ LANGUAGES = [
 LANGUAGE_CODES = {code for code, _ in LANGUAGES}
 
 
-def get_language_selection_keyboard(ref_part: str, auc_part: str) -> types.InlineKeyboardMarkup:
-    buttons = [types.InlineKeyboardButton(text=label, callback_data=f"set_lang:{code}:{ref_part}:{auc_part}")
+def get_language_selection_keyboard(ref_part: str, auc_part: str,
+                                    src_part: str = "none") -> types.InlineKeyboardMarkup:
+    buttons = [types.InlineKeyboardButton(
+                   text=label, callback_data=f"set_lang:{code}:{ref_part}:{auc_part}:{src_part}")
                for code, label in LANGUAGES]
     rows = [buttons[i:i + 2] for i in range(0, len(buttons), 2)]
     return types.InlineKeyboardMarkup(inline_keyboard=rows)
 
 
-def parse_start_args(text: str | None, user_id: int) -> tuple[int | None, int | None]:
-    """Возвращает (referrer_id, auction_id) из текста команды /start."""
+def parse_start_args(text: str | None, user_id: int) -> tuple[int | None, int | None, str | None]:
+    """Возвращает (referrer_id, auction_id, raw_arg) из текста команды /start."""
     if not text:
-        return None, None
+        return None, None, None
     parts = text.split(maxsplit=1)
     if len(parts) < 2:
-        return None, None
+        return None, None, None
     arg = parts[1].strip()
     if arg.startswith("auction_") and arg[8:].isdigit():
-        return None, int(arg[8:])
+        return None, int(arg[8:]), arg
     if arg.isdigit() and int(arg) != user_id:
-        return int(arg), None
-    return None, None
+        return int(arg), None, arg
+    return None, None, arg
+
+
+def _source_to_cb(source: str) -> str:
+    """Источник → компактный тег для callback_data (лимит 64 байта)."""
+    if source == analytics.SOURCE_TG_AFFILIATE:
+        return "tgr"
+    if source.startswith(("p_", "c_")):
+        return source
+    return "none"   # organic и referral восстанавливаются из ref_part
+
+
+def _source_from_cb(tag: str, referrer_id: int | None) -> str:
+    if referrer_id is not None:
+        return analytics.SOURCE_REFERRAL
+    if tag == "tgr":
+        return analytics.SOURCE_TG_AFFILIATE
+    if tag.startswith(("p_", "c_")):
+        return tag
+    return analytics.SOURCE_ORGANIC
 
 
 def _auction_id_from(cb_part: str) -> int | None:
@@ -65,7 +88,7 @@ def _auction_id_from(cb_part: str) -> int | None:
 
 
 async def register_user(conn, user_id: int, username: str, lang: str, referrer_id: int | None,
-                        display_name: str | None = None) -> bool:
+                        display_name: str | None = None, source: str = "organic") -> bool:
     """Создаёт профиль, если его нет. Начисляет бонус рефереру. Возвращает True, если создан."""
     exists = await conn.fetchval("SELECT 1 FROM users WHERE user_id = $1", user_id)
     if exists:
@@ -74,15 +97,17 @@ async def register_user(conn, user_id: int, username: str, lang: str, referrer_i
         referrer_exists = await conn.fetchval("SELECT 1 FROM users WHERE user_id = $1", referrer_id)
         if not referrer_exists:
             referrer_id = None
+            if source == analytics.SOURCE_REFERRAL:
+                source = analytics.SOURCE_ORGANIC
 
     await conn.execute(
         """
         INSERT INTO users (user_id, username, balance, referred_by, fridge_capacity, fridge_cutlets,
-                           inv_cutlets, lang, display_name)
-        VALUES ($1, $2, $3, $4, 1, 0, $5, $6, $7)
+                           inv_cutlets, lang, display_name, source)
+        VALUES ($1, $2, $3, $4, 1, 0, $5, $6, $7, $8)
         """,
         user_id, username, START_BALANCE, referrer_id, START_CUTLETS_INVENTORY, lang,
-        (display_name or "")[:128] or None,
+        (display_name or "")[:128] or None, source[:32],
     )
     await conn.execute("INSERT INTO ledger (user_id, delta, reason) VALUES ($1, $2, 'signup_bonus')",
                        user_id, START_BALANCE)
@@ -101,7 +126,8 @@ async def register_user(conn, user_id: int, username: str, lang: str, referrer_i
 async def cmd_start(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     username = html.escape(message.from_user.username or f"user_{user_id}")
-    referrer_id, auction_id = parse_start_args(message.text, user_id)
+    referrer_id, auction_id, raw_arg = parse_start_args(message.text, user_id)
+    source = analytics.parse_source(raw_arg, referrer_id)
 
     async with db.pool.acquire() as conn:
         user = await conn.fetchrow("SELECT lang FROM users WHERE user_id = $1", user_id)
@@ -117,7 +143,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
     if not user:
         await message.answer(
             "🌐 <b>Select your language / Выберите язык:</b>",
-            reply_markup=get_language_selection_keyboard(ref_part, auc_part), parse_mode="HTML")
+            reply_markup=get_language_selection_keyboard(ref_part, auc_part, _source_to_cb(source)),
+            parse_mode="HTML")
         return
 
     lang = resolve_lang(user["lang"])
@@ -140,18 +167,22 @@ async def process_language_binding(callback: types.CallbackQuery, state: FSMCont
     username = callback.from_user.username or f"user_{user_id}"
 
     parts = callback.data.split(":")
-    if len(parts) != 4:
+    if len(parts) not in (4, 5):   # 4 — старые кнопки, выданные до появления source
         return
-    _, lang, ref_part, auc_part = parts
+    _, lang, ref_part, auc_part = parts[:4]
+    src_part = parts[4] if len(parts) == 5 else "none"
     if lang not in LANGUAGE_CODES:
         lang = "ru"
     referrer_id = int(ref_part) if ref_part.isdigit() and int(ref_part) != user_id else None
     auction_id = _auction_id_from(auc_part)
+    source = _source_from_cb(src_part, referrer_id)
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
-            await register_user(conn, user_id, username, lang, referrer_id,
-                                display_name=callback.from_user.full_name)
+            created = await register_user(conn, user_id, username, lang, referrer_id,
+                                          display_name=callback.from_user.full_name, source=source)
+    if created:
+        await track(user_id, "registered", source=source, lang=lang)
 
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text=t(lang, "start.btn_continue"),
@@ -191,6 +222,7 @@ async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext, use
     await callback.message.answer(
         t(user_lang, "start.console"),
         reply_markup=get_reply_main_keyboard(user_lang), parse_mode="HTML")
+    await track(callback.from_user.id, "onboarding_done")
 
     if auction_id:
         await state.clear()
@@ -282,6 +314,8 @@ async def process_auction_bid_click(callback: types.CallbackQuery):
                 "UPDATE auctions SET current_price = $1, highest_bidder_id = $2, previous_bidder_id = $3 "
                 "WHERE auction_id = $4",
                 result.new_price, user_id, result.previous_bidder_id, auction_id)
+
+    await track(user_id, "auction_bid", auction_id=auction_id, amount=result.bidder_charge)
 
     if result.previous_bidder_id:
         try:

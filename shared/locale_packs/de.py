@@ -483,6 +483,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Link teilen",
     "ref.share_text": "Komm ins Spiele-Ökosystem von ROFL HUB!",
+    "ref.qualified_line": ("⭐ <b>Doppelte Belohnung:</b> Wenn ein eingeladener Freund {rounds} "
+                           "Runden spielt, bekommst du weitere <b>+{bonus} Münzen</b>!"),
+    "ref.qualified_notify": ("🤝 <b>Dein Freund ist am Ball: schon {rounds} Runden!</b>\n"
+                             "Du hast <b>+{bonus} Münzen</b> für einen qualifizierten Freund "
+                             "erhalten. Lade noch mehr ein!"),
 
     # ---------------- Überweisungen ----------------
     "tr.help": (

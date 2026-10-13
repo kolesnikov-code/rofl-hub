@@ -483,6 +483,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Bagikan link",
     "ref.share_text": "Gabung ke ekosistem game ROFL HUB!",
+    "ref.qualified_line": ("⭐ <b>Hadiah ganda:</b> saat teman yang kamu undang main {rounds} "
+                           "ronde, kamu dapat <b>+{bonus} koin</b> lagi!"),
+    "ref.qualified_notify": ("🤝 <b>Temanmu ketagihan: sudah {rounds} ronde!</b>\n"
+                             "Kamu dapat <b>+{bonus} koin</b> untuk referral berkualitas. "
+                             "Undang lagi!"),
 
     # ---------------- transfer ----------------
     "tr.help": (

@@ -1,7 +1,10 @@
 import asyncio
+import html
+import json
 import logging
 import os
-from datetime import datetime, timezone
+import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types, F
@@ -39,7 +42,10 @@ if not ADMIN_BOT_TOKEN:
 if not ADMIN_IDS or USERS_CHANNEL_ID == 0 or ADMIN_SECRET_CHANNEL_ID == 0:
     raise RuntimeError("🚨 ОШИБКА БЕЗОПАСНОСТИ: Ключи лимитов или список ADMIN_IDS не заданы в .env!")
 
+from shared import metrics
+from shared.analytics import purge_old_events
 from shared.database import db
+from shared.economy import PROMOTER_CODE_MAX_LEN
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -103,7 +109,9 @@ async def cmd_admin_start(message: types.Message):
         "• /backup — Снимок всех таблиц базы JSON-файлом прямо в этот чат\n"
         "• /new_battle — Запустить БИТВУ команд и кланов (событие!) · /battles — список\n"
         "• /finish_battle [ID] — Принудительно подвести итоги битвы\n"
-        "• /assign_vip [ID] [АЛИАС] — Выдать VIP ID победителю аукциона · /revoke_vip [АЛИАС]\n",
+        "• /assign_vip [ID] [АЛИАС] — Выдать VIP ID победителю аукциона · /revoke_vip [АЛИАС]\n"
+        "• /metrics [day|week|month] — Продуктовые метрики по запросу\n"
+        "• /add_promoter [код] [имя] — Промоутер (ссылка ?start=p_код) · /promoters — отчёт\n",
         parse_mode="HTML"
     )
 
@@ -887,6 +895,122 @@ async def admin_close_auction(message: types.Message, bot: Bot):
 # ============================================================================
 # 📊 2. АВТОНОМНЫЙ ДЕМОН СКВОЗНОЙ АНАЛИТИКИ ПО ЧАСАМ UTC (00, 06, 12, 18)
 # ============================================================================
+# ============================================================================
+# 📊 ПРОДУКТОВЫЕ МЕТРИКИ: снапшоты, дельты, отчёты по расписанию и по запросу
+# ============================================================================
+async def _previous_snapshot(conn) -> dict | None:
+    """Последний сохранённый срез любого вида — все срезы считаются за rolling-сутки."""
+    row = await conn.fetchrow("SELECT data FROM metrics_snapshots ORDER BY taken_at DESC LIMIT 1")
+    if not row:
+        return None
+    data = row["data"]
+    return json.loads(data) if isinstance(data, str) else data
+
+
+async def send_scheduled_report(bot: Bot, hour: int) -> None:
+    """Экспресс (06/12/18) или полный суточный (00) отчёт в Тайную Комнату + снапшот."""
+    kind = metrics.report_kind_for_hour(hour)
+    if kind is None:
+        return
+    now = datetime.now(timezone.utc)
+    since = now - timedelta(days=1)
+    async with db.pool.acquire() as conn:
+        snap = await metrics.collect_snapshot(conn, since, now)
+        prev = await _previous_snapshot(conn)
+        if kind == "daily":
+            retention = await metrics.fetch_retention_cohorts(conn, last_n=7)
+            spend = await metrics.fetch_spend_cohorts(conn)
+            text = metrics.build_daily_report(snap, prev, retention, spend)
+        else:
+            text = metrics.build_express_report(snap, prev, hour)
+        await conn.execute("INSERT INTO metrics_snapshots (kind, data) VALUES ($1, $2::jsonb)",
+                           kind, metrics.snapshot_to_json(snap))
+    for part in metrics.split_message(text):
+        await bot.send_message(ADMIN_SECRET_CHANNEL_ID, part, parse_mode="HTML")
+    logger.info("🟢 Отчёт '%s' (%02d:00 UTC) отправлен в Тайную Комнату.", kind, hour)
+
+    if kind == "daily":
+        deleted = await purge_old_events()
+        if deleted:
+            logger.info("[ANALYTICS] полночная очистка: удалено %s старых событий", deleted)
+
+
+@dp.message(Command("metrics"))
+async def cmd_metrics(message: types.Message):
+    """Отчёт по запросу: /metrics [day|week|month] (по умолчанию day)."""
+    if not is_admin(message.from_user.id):
+        return
+    arg = (message.text.split(maxsplit=1) + [""])[1].strip().lower() or "day"
+    days = {"day": 1, "week": 7, "month": 30}.get(arg)
+    if days is None:
+        await message.answer("Формат: /metrics day | week | month")
+        return
+    now = datetime.now(timezone.utc)
+    async with db.pool.acquire() as conn:
+        snap = await metrics.collect_snapshot(conn, now - timedelta(days=days), now)
+        retention = await metrics.fetch_retention_cohorts(conn, last_n=7)
+        spend = await metrics.fetch_spend_cohorts(conn)
+    text = metrics.build_daily_report(snap, None, retention, spend).replace(
+        "ПОЛНЫЙ СУТОЧНЫЙ СРЕЗ (00:00 UTC)", f"МЕТРИКИ ПО ЗАПРОСУ (за {days} дн.)")
+    for part in metrics.split_message(text):
+        await message.answer(part, parse_mode="HTML")
+
+
+@dp.message(Command("add_promoter"))
+async def cmd_add_promoter(message: types.Message):
+    """/add_promoter <код> <имя>: код даёт ссылку t.me/<бот>?start=p_<код>."""
+    if not is_admin(message.from_user.id):
+        return
+    parts = (message.text or "").split(maxsplit=2)
+    if len(parts) < 3:
+        await message.answer("Формат: /add_promoter <код> <имя>\nКод: латиница/цифры/_-, до 16 знаков.")
+        return
+    code, name = parts[1].lower(), parts[2].strip()[:64]
+    if not re.fullmatch(r"[a-z0-9_-]{1,%d}" % PROMOTER_CODE_MAX_LEN, code):
+        await message.answer("❌ Код: только [a-z 0-9 _ -], до 16 знаков.")
+        return
+    async with db.pool.acquire() as conn:
+        await conn.execute(
+            """INSERT INTO promoters (code, name) VALUES ($1, $2)
+               ON CONFLICT (code) DO UPDATE SET name = $2""", code, name)
+    link = f"https://t.me/{MAIN_BOT_USERNAME}?start=p_{code}"
+    await message.answer(
+        f"✅ Промоутер <b>{html.escape(name)}</b> сохранён.\n"
+        f"Ссылка: <code>{link}</code>\n"
+        f"Для рекламного канала/поста используй тот же формат с префиксом c_: "
+        f"<code>https://t.me/{MAIN_BOT_USERNAME}?start=c_{code}</code>",
+        parse_mode="HTML")
+
+
+@dp.message(Command("promoters"))
+async def cmd_promoters(message: types.Message):
+    """Отчёт по промоутерам и рекламным каналам: регистрации и квалифицированные."""
+    if not is_admin(message.from_user.id):
+        return
+    async with db.pool.acquire() as conn:
+        rows = await conn.fetch(
+            """
+            SELECT u.source, p.name,
+                   COUNT(*) AS regs,
+                   COUNT(*) FILTER (WHERE u.qualified_at IS NOT NULL) AS qualified
+            FROM users u
+            LEFT JOIN promoters p ON 'p_' || p.code = u.source OR 'c_' || p.code = u.source
+            WHERE u.source LIKE 'p\\_%' OR u.source LIKE 'c\\_%' OR u.source = 'tg_affiliate'
+            GROUP BY u.source, p.name ORDER BY qualified DESC, regs DESC LIMIT 50
+            """)
+    if not rows:
+        await message.answer("Пока ни одной регистрации по промо-ссылкам.\n"
+                             "Создай промоутера: /add_promoter <код> <имя>")
+        return
+    lines = [f"• <code>{html.escape(r['source'])}</code>"
+             f"{' — ' + html.escape(r['name']) if r['name'] else ''}: "
+             f"{r['qualified']} квалифицированных из {r['regs']} регистраций"
+             for r in rows]
+    text = "📣 <b>ИСТОЧНИКИ ТРАФИКА (промоутеры/каналы)</b>\n\n" + "\n".join(lines)
+    for part in metrics.split_message(text):
+        await message.answer(part, parse_mode="HTML")
+
+
 async def dynamic_analytics_daemon(bot: Bot):
     """
     Фоновый демон сбора метрик холдинга ROFL HUB CORE.
@@ -921,84 +1045,7 @@ async def dynamic_analytics_daemon(bot: Bot):
 
                 last_triggered_hour = current_hour
                 logger.info(f"📊 Наступила контрольная точка времени: {current_hour}:00 UTC. Сбор данных...")
-
-                async with db.pool.acquire() as conn:
-                    # Сбор базовых агрегатных метрик со всей базы Railway
-                    total_users = await conn.fetchval("SELECT COUNT(*) FROM users")
-                    total_clans = await conn.fetchval("SELECT COUNT(*) FROM teams")
-                    total_stars_revenue = await conn.fetchval("SELECT SUM(stars_amount) FROM star_payments")
-                    total_coins_mass = await conn.fetchval("SELECT SUM(balance) FROM users")
-
-                    total_played = await conn.fetchval("SELECT SUM(games_played) FROM game_stats")
-                    total_won = await conn.fetchval("SELECT SUM(games_won) FROM game_stats")
-                    total_wins_rps = await conn.fetchval("SELECT SUM(daily_wins_rps) FROM game_stats")
-                    total_wins_hl = await conn.fetchval("SELECT SUM(daily_wins_hl) FROM game_stats")
-                    total_wins_quiz = await conn.fetchval("SELECT SUM(daily_wins_quiz) FROM game_stats")
-
-                stars_total = total_stars_revenue if total_stars_revenue else 0
-                coins_total = total_coins_mass if total_coins_mass else 0
-                games_played_all = total_played if total_played else 0
-                games_won_all = total_won if total_won else 0
-
-                # ====================================================================
-                # 📢 ВЫДАЧА ЭКСПРЕСС-ОТЧЕТОВ (В 06:00, 12:00, 18:00 UTC)
-                # ====================================================================
-                if current_hour in (0, 6, 12, 18) and current_minute == 0:
-                    express_text = (
-                        f"⏱️ <b>ЭКСПРЕСС-АНАЛИТИКА ЭКОСИСТЕМЫ ({current_hour}:00 UTC)</b>\n"
-                        f"..................................................\n\n"
-                        f"👥 Всего игроков в СУБД: <b>{total_users} чел.</b>\n"
-                        f"🏆 Активных Кланов/Команд: <b>{total_clans} банд</b>\n\n"
-                        f"🎮 Проведено раундов: <b>{games_played_all} игр</b>\n"
-                        f"👑 Одержано побед юзерами: <code>{games_won_all} раз</code>\n\n"
-                        f"💵 Валовый кэш Stars: <b>★ {stars_total} XTR</b>\n"
-                        f"🪙 Масса фантиков в СУБД: <code>{coins_total} монет</code>\n"
-                        f"..................................................\n"
-                        f"<i>⚙️ Следующий системный срез произойдет строго по графику UTC.</i>"
-                    )
-                    await bot.send_message(chat_id=ADMIN_SECRET_CHANNEL_ID, text=express_text, parse_mode="HTML")
-                    logger.info(f"🟢 Экспресс-отчет {current_hour}:00 UTC отправлен в Тайную Комнату.")
-
-                # ====================================================================
-                # 👑 ПОЛНОЧНЫЙ ИТОГОВЫЙ СРЕЗ И КОГОРТНЫЙ АНАЛИЗ (СТРОГО В 00:00 UTC)
-                # ====================================================================
-                if current_hour == 0:
-                    async with db.pool.acquire() as conn:
-                        cohort_data = await conn.fetchrow("""
-                                                          WITH user_spend
-                                                                   AS (SELECT user_id, COALESCE(SUM(stars_amount), 0) as total_spend
-                                                                       FROM star_payments
-                                                                       GROUP BY user_id)
-                                                          SELECT COUNT(CASE WHEN total_spend = 0 THEN 1 END)                          as f2p_count,
-                                                                 COUNT(CASE WHEN total_spend > 0 AND total_spend <= 100 THEN 1 END)   as light_count,
-                                                                 COUNT(CASE WHEN total_spend > 100 AND total_spend <= 500 THEN 1 END) as normal_count,
-                                                                 COUNT(CASE WHEN total_spend > 500 THEN 1 END)                        as whale_count
-                                                          FROM user_spend;
-                                                          """)
-
-                    f2p = cohort_data["f2p_count"] if cohort_data else 0
-                    light = cohort_data["light_count"] if cohort_data else 0
-                    normal = cohort_data["normal_count"] if cohort_data else 0
-                    whale = cohort_data["whale_count"] if cohort_data else 0
-                    non_paying_total = max(0, total_users - (light + normal + whale))
-
-                    daily_text = (
-                        f"👑 <b>ИТОГОВЫЙ СУТОЧНЫЙ ОТЧЕТ ХОЛДИНГА (00:00 UTC)</b>\n"
-                        f"..................................................\n\n"
-                        f"📊 <b>КОГОРТНЫЙ АНАЛИЗ ПСИХОЛОГИИ И ТРАТ (LTV):</b>\n"
-                        f"🛑 <b>F2P Халявщики (0 ★):</b> <code>{non_paying_total} чел.</code>\n"
-                        f"🪵 <b>Микро-донатеры (до 100 ★):</b> <b>{light} чел.</b>\n"
-                        f"⚡ <b>Нормы (100-500 ★):</b> <b>{normal} чел.</b>\n"
-                        f"👑 <b>КИТЫ ЭКОСИСТЕМЫ (500+ ★):</b> <u>{whale} чел.</u>\n\n"
-                        f"🎯 <b>АКТИВНОСТЬ ПО ТИПАМ ИГР ЗА ВСЕ ВРЕМЯ:</b>\n"
-                        f"• Раундов в КНБ: <code>{total_wins_rps if total_wins_rps else 0} раундов</code>\n"
-                        f"• Раундов в Больше/Меньше: <code>{total_wins_hl if total_wins_hl else 0} раундов</code>\n"
-                        f"• Пройдено тестов Викторины: <code>{total_wins_quiz if total_wins_quiz else 0} вопросов</code>\n\n"
-                        f"..................................................\n"
-                        f"<i>📈 Суточный срез зафиксирован под елочкой в канале навсегда. Данные СУБД синхронизированы.</i>"
-                    )
-                    await bot.send_message(chat_id=ADMIN_SECRET_CHANNEL_ID, text=daily_text, parse_mode="HTML")
-                    logger.info("👑 Суточный глубокий когортный отчет успешно опубликован в 00:00 UTC!")
+                await send_scheduled_report(bot, current_hour)
 
             # Сброс триггера блокировки часов, когда целевая минута прошла
             if current_minute != 0:
