@@ -43,8 +43,9 @@ def get_reply_main_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
                 types.KeyboardButton(text=btn(lang, "shop"))
             ]
         ],
+        # БЕЗ is_persistent (решение владельца 15.10): игрок сам прячет/открывает панель
+        # нативной кнопкой Telegram ⊞ у поля ввода; persistent разворачивал её насильно.
         resize_keyboard=True,
-        is_persistent=True
     )
 
 

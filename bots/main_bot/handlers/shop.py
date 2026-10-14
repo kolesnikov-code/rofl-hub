@@ -28,8 +28,8 @@ def get_shop_reply_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
              types.KeyboardButton(text=btn(lang, "shop_cat_games"))],
             [types.KeyboardButton(text=btn(lang, "main_menu"))],
         ],
+        # БЕЗ is_persistent: уважает нативную кнопку Telegram «спрятать клавиатуру»
         resize_keyboard=True,
-        is_persistent=True,
     )
 
 
