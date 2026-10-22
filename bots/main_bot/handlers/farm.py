@@ -1,5 +1,4 @@
 import logging
-import os
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -19,6 +18,7 @@ from shared.economy import (
 )
 from shared.farm_logic import MinerState, apply_lazy_farm, farm_counts
 from shared.locales import btn_variants, t
+from shared.economy import ARMOR_BONUS_PER_LEVEL, STATION_BONUS_PER_LEVEL, farm_bonus_percent
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -45,10 +45,17 @@ def _robot_art(kind: str):
     return FSInputFile(path) if path.exists() else None
 
 
+async def station_level_for(conn, user) -> int:
+    """Уровень станции команды игрока (бонус к добыче всем участникам)."""
+    if user["team_id"] is None:
+        return 0
+    return await conn.fetchval("SELECT level FROM team_stations WHERE team_id = $1", user["team_id"]) or 0
+
+
 async def send_farm(target: types.Message, user, miners: list[MinerState], now: datetime,
-                    lang: str) -> None:
+                    lang: str, station_level: int = 0) -> None:
     """Дашборд фермы: с фото флагманского робота, если арт есть и подпись влезает."""
-    text = render_farm_text(user, miners, now, lang)
+    text = render_farm_text(user, miners, now, lang, station_level)
     kb = get_farm_keyboard(lang, user["intern_claimed"])
     kind = flagship_kind(farm_counts(miners, now))
     art = _robot_art(kind) if kind else None
@@ -110,12 +117,16 @@ def get_farm_keyboard(lang: str = "ru", intern_claimed: bool = True) -> types.In
             types.InlineKeyboardButton(text=t(lang, "farm.btn_market"), callback_data="open_market")
         ],
         [
+            types.InlineKeyboardButton(text=t(lang, "farm.btn_workshop"), callback_data="open_workshop")
+        ],
+        [
             types.InlineKeyboardButton(text=t(lang, "farm.btn_shop"), callback_data="open_shop_from_farm")
         ]
     ])
 
 
-def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = "ru") -> str:
+def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = "ru",
+                     station_level: int = 0) -> str:
     """Единый текст дашборда фермы: роботы из таблицы miners, ставки с бустами."""
     counts = farm_counts(miners, now)
     junior_count = counts["junior"]
@@ -124,8 +135,11 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
 
     nuclear = is_active(user["boost_nuclear_until"], now)
     nitrogen = is_active(user["boost_nitrogen_until"], now)
-    junior_rate = miner_hourly_rate("junior", nuclear_active=nuclear, nitrogen_active=nitrogen)
-    premium_rate = miner_hourly_rate("premium", nuclear_active=nuclear, nitrogen_active=nitrogen)
+    bonus = farm_bonus_percent(user["farm_armor_level"], station_level)
+    junior_rate = miner_hourly_rate("junior", nuclear_active=nuclear, nitrogen_active=nitrogen,
+                                    bonus_percent=bonus)
+    premium_rate = miner_hourly_rate("premium", nuclear_active=nuclear, nitrogen_active=nitrogen,
+                                     bonus_percent=bonus)
 
     # В «актуальной скорости» бурильщики считаются только заправленные
     speed_per_hour = junior_count * junior_rate + fueled_count * premium_rate
@@ -137,6 +151,12 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
         boosts.append(t(lang, "farm.boost_nitrogen", until=f"{user['boost_nitrogen_until']:%d.%m %H:%M}"))
     if is_active(user["drone_until"], now):
         boosts.append(t(lang, "farm.boost_drone", until=f"{user['drone_until']:%d.%m.%Y}"))
+    if user["farm_armor_level"]:
+        boosts.append(t(lang, "farm.boost_armor", level=user["farm_armor_level"],
+                        percent=user["farm_armor_level"] * ARMOR_BONUS_PER_LEVEL))
+    if station_level:
+        boosts.append(t(lang, "farm.boost_station", level=station_level,
+                        percent=station_level * STATION_BONUS_PER_LEVEL))
     boosts_block = "\n".join(boosts) if boosts else t(lang, "farm.no_boosts")
 
     if premium_count > 0:
@@ -155,7 +175,8 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
     if mortal:
         nearest = min(m.expires_at for m in mortal)
         burnout_line = t(lang, "farm.burnout", until=f"{nearest:%d.%m.%Y %H:%M}")
-    intern_rate = miner_hourly_rate("intern", nuclear_active=nuclear, nitrogen_active=nitrogen)
+    intern_rate = miner_hourly_rate("intern", nuclear_active=nuclear, nitrogen_active=nitrogen,
+                                    bonus_percent=bonus)
     if counts["intern"] > 0:
         burnout_line = t(lang, "farm.intern_line", count=counts["intern"], rate=intern_rate) + "\n" + burnout_line
     elif not user["intern_claimed"]:
@@ -191,12 +212,13 @@ async def cmd_farm(message: types.Message, override_user_id: int = None, user_la
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             user, miners = await apply_lazy_farm(conn, user_id, now)
+            station_level = await station_level_for(conn, user) if user else 0
 
     if not user:
         await message.answer(t(user_lang, "common.no_profile"))
         return
 
-    await send_farm(message, user, miners, now, user_lang)
+    await send_farm(message, user, miners, now, user_lang, station_level)
 
 
 # ============================================================================
@@ -273,6 +295,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
             # уходят в баки бурильщиков, экран показывает честный статус.
             now = utcnow()
             user, miners = await apply_lazy_farm(conn, user_id, now)
+            station_level = await station_level_for(conn, user)
 
     if intern_activated:
         await track(user_id, "intern_activated")
@@ -285,13 +308,20 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
     if extra_message:
         await callback.message.answer(extra_message)
 
-    await edit_farm(callback.message, render_farm_text(user, miners, now, user_lang),
+    await edit_farm(callback.message, render_farm_text(user, miners, now, user_lang, station_level),
                     get_farm_keyboard(user_lang, user["intern_claimed"]))
 
 
 # ============================================================================
 # 🎯 3. БЕСШОВНОЕ ОТКРЫТИЕ ДАШБОРДА ФЕРМЫ ИЗ ПРОФИЛЯ
 # ============================================================================
+@router.callback_query(F.data == "open_farm")
+async def open_farm_callback(callback: types.CallbackQuery, user_lang: str = "ru"):
+    """Переход на ферму из мастерской/целей: исходный экран не удаляем."""
+    await callback.answer()
+    await cmd_farm(callback.message, override_user_id=callback.from_user.id, user_lang=user_lang)
+
+
 @router.callback_query(F.data == "open_farm_from_profile")
 async def open_farm_from_profile_callback(callback: types.CallbackQuery, user_lang: str = "ru"):
     """Перехватывает клик по кнопке фермы под паспортом, вычищая контекст бота"""

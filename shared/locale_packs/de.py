@@ -18,6 +18,13 @@
 # квесты -> Quests
 # уровень интеллекта -> Intelligenz-Level
 # банда -> Crew; банк (дуэли) -> Pot; жест -> Zeichen; ставка -> Einsatz
+# биржа котлет -> Kotelett-Börse
+# ресурсы (волна 22.10): Металл -> Metall; Водород -> Wasserstoff; Кристаллы -> Kristalle;
+#   Детали -> Bauteile; Мастерская -> Werkstatt; Кибер-броня -> Cyber-Panzerung; Шаттл -> Shuttle;
+#   Налёт -> Raid (глагол: überfallen); вылет -> Flug; Стойка обороны -> Abwehrhaltung;
+#   Разведка -> Aufklärung; Реванш -> Revanche; Щит -> Schild (Raid-Schild); Сундук -> Truhe;
+#   Серия -> Serie; Станция команды -> Team-Station; кулдаун/перезарядка -> Abklingzeit/Aufladen;
+#   добыча фермы -> (Farm-)Ertrag; вклад в станцию -> Beitrag/beisteuern; боец -> Kämpfer
 
 BUTTONS = {
     "main_menu": "📱 HAUPTMENÜ",
@@ -619,6 +626,171 @@ STRINGS = {
     "mk.err_insufficient": "❌ Nicht genug Münzen: {total} nötig.",
     "farm.btn_market": "📈 Kotelett-Börse",
 
+    # ---------------- Ressourcen (Welle 22.10, Abend) ----------------
+    "res.metal": "Metall",
+    "res.hydrogen": "Wasserstoff",
+    "res.crystal": "Kristalle",
+    "res.parts": "Bauteile",
+    "res.none": "noch leer",
+    "games.resource_gain": "{icon} Geschürft: <b>+{qty} {name}</b> (gesamt {total}) → /workshop",
+    "duel.metal_gain": "⛏ Duell-Trophäe: <b>+{metal} Metall</b> → /workshop",
+    "quest.win_resources": "\n📦 Dazu ein Ressourcen-Paket: je <b>{qty}</b> von jeder Sorte → /workshop",
+    "profile.resources_line": "🧰 Ressourcen: {stock}\n",
+    "menu.btn_goals": "🎯 Tagesziele",
+    "menu.btn_raids": "🏴‍☠️ Raids",
+    "menu.btn_workshop": "🔧 Werkstatt",
+    "farm.btn_workshop": "🔧 Werkstatt",
+    "farm.boost_armor": "🛡 Cyber-Panzerung Level {level}: +{percent}% Ertrag für immer",
+    "farm.boost_station": "🛰 Team-Station Level {level}: +{percent}% Ertrag",
+    "clan.btn_station": "🛰 Team-Station",
+
+    # ---------------- Werkstatt ----------------
+    "ws.header": (
+        "🔧 <b>WERKSTATT</b>\n"
+        "..................................................\n\n"
+        "🧰 Deine Ressourcen: {stock}\n"
+        "⛏ Metall — SSP & Duelle · 💧 Wasserstoff — Höher/Tiefer · "
+        "💎 Kristalle — Quiz · ⚙️ Bauteile — Cyber-Tresor. Quests bringen ein ganzes Paket.\n\n"
+        "🛡 Cyber-Panzerung: <b>Level {armor}/{armor_max}</b> (+{armor_pct}% Ertrag pro Level, für immer)\n"
+        "🚀 Shuttle: <b>{shuttle}</b> — Börsengebühr {shuttle_fee}%, bis zu {shuttle_qty} Frikadellen pro Order\n\n"
+        "<i>✅ — genug Ressourcen, 🔒 — noch nicht. Ein Tipp — und fertig.</i>"
+    ),
+    "ws.shuttle_yes": "gebaut",
+    "ws.shuttle_no": "nicht gebaut",
+    "ws.recipe_nitro_6h": "Stickstoff-Kühlung für 6 Std.",
+    "ws.recipe_nuclear_3h": "Nuklear-Boost für 3 Std.",
+    "ws.recipe_drone_24h": "Master-Drohne für 24 Std.",
+    "ws.recipe_shield_24h": "Raid-Schild für 24 Std.",
+    "ws.recipe_cutlet": "Cyber-Frikadelle synthetisieren",
+    "ws.recipe_armor": "Cyber-Panzerung Level {level}",
+    "ws.recipe_shuttle": "Shuttle bauen",
+    "ws.btn_shuttle_owned": "🚀 Shuttle gebaut",
+    "ws.btn_armor_max": "🛡 Cyber-Panzerung: Maximum",
+    "ws.btn_refresh": "🔄 Aktualisieren",
+    "ws.btn_farm": "🚜 Zur Farm",
+    "ws.noop": "Schon auf Maximum",
+    "ws.toast": "Fertig!",
+    "ws.done_nitrogen": "❄️ <b>Stickstoff-Kühlung +40%</b> aktiv bis {until} UTC.",
+    "ws.done_nuclear": "☢️ <b>Nuklear-Boost x5</b> aktiv bis {until} UTC. Die Bohrer fressen jetzt ×3 Frikadellen!",
+    "ws.done_drone": "🛸 <b>Master-Drohne</b> schont deine Roboter bis {until} UTC.",
+    "ws.done_shield": "🛡 <b>Raid-Schild</b> hält bis {until} UTC. Deine Ressourcen sind geschützt.",
+    "ws.done_cutlet": "🥩 Synthetisiert: <b>+{qty} Cyber-Frikadelle</b> im Lager. Auftanken in /farm!",
+    "ws.done_armor": "🛡 <b>Cyber-Panzerung Level {level}!</b> Farm-Ertrag: <b>+{percent}%</b> für immer.",
+    "ws.done_shuttle": "🚀 <b>Shuttle gebaut!</b> Börsengebühr jetzt {fee}%, bis zu {qty} Frikadellen pro Order. Für immer.",
+    "ws.err_unknown": "❌ Dieses Rezept gibt es nicht.",
+    "ws.err_resources": "🔒 Zu wenig: {kind} — {need} nötig, {have} vorhanden. Schürf mehr in den Spielen!",
+    "ws.err_shuttle_owned": "🚀 Das Shuttle ist schon gebaut — es gibt nur eins pro Spieler.",
+    "ws.err_armor_max": "🛡 Die Panzerung ist schon auf dem Maximallevel ({max}).",
+
+    # ---------------- Raids ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>RAIDS</b>\n"
+        "..................................................\n\n"
+        "💧 Wasserstoff: <b>{hydrogen}</b> (ein Flug kostet {fuel})\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ Abwehrhaltung: <b>{stance}</b>\n\n"
+        "📊 Raids: <b>{attacks}</b> ({attack_wins} erfolgreich) · abgewehrt: <b>{holds}/{defenses}</b>\n\n"
+        "<i>Beute sind nur Ressourcen: {percent}% vom Vorrat des Ziels, höchstens {cap} pro Ressource. "
+        "Münzen, Roboter und Frikadellen bleiben unangetastet. Dein Zeichen gegen die Haltung des Ziels — "
+        "Entscheidung gegen Entscheidung. Ein Flug alle {cooldown} Std.; Revanche ist gratis.</i>"
+    ),
+    "raid.ready_line": "Schiff startklar",
+    "raid.cooldown_line": "Aufladen: noch {minutes} Min.",
+    "raid.shield_on": "Schild aktiv bis {until} UTC",
+    "raid.shield_newbie": "Neulingsschutz (die ersten {days} Tage)",
+    "raid.shield_off": "Kein Schild — bau eins in /workshop",
+    "raid.stance_random": "zufällig (wähl eine im Menü!)",
+    "raid.btn_scout": "🔭 AUFKLÄRUNG: Ziele finden",
+    "raid.btn_revenge": "⚔️ Revanche: {name}",
+    "raid.btn_stance": "✊ Abwehrhaltung",
+    "raid.btn_workshop": "🛡 Schild bauen",
+    "raid.btn_refresh": "🔄 Aktualisieren",
+    "raid.btn_back": "← Zurück",
+    "raid.btn_open": "🏴‍☠️ Raids öffnen",
+    "raid.btn_again": "🏴‍☠️ Zu den Raids",
+    "raid.stance_pick": "✊ <b>Abwehrhaltung</b>\nSie zeigt sich erst im Ergebnis eines fremden Raids: das Zeichen des Angreifers gegen deine Haltung. Wechsle sie ab und zu — wer berechenbar ist, wird ausgeraubt.",
+    "raid.stance_saved": "Haltung: {stance}",
+    "raid.scout": "🔭 <b>Die Aufklärung hat Ziele gefunden.</b> Ein Flug kostet {fuel} 💧. Wähl aus:",
+    "raid.btn_target": "🎯 {name} · Ressourcen ≈{total}",
+    "raid.no_targets": "🔭 Die Aufklärung hat niemanden gefunden: gerade keine passenden Ziele (Schilde, Abklingzeiten, Neulinge). Schau später wieder rein.",
+    "raid.pick_move": "✊ <b>Dein Zeichen?</b> Es spielt gegen die Abwehrhaltung des Ziels. Flug: −{fuel} 💧.",
+    "raid.pick_move_revenge": "⚔️ <b>Revanche! Dein Zeichen?</b> Der Flug ist gratis und ohne Abklingzeit.",
+    "raid.result_win": "🏴‍☠️ <b>RAID GEGLÜCKT!</b>\n{move} gegen {stance} bei {name}.\nBeute: <b>{loot}</b>",
+    "raid.result_draw": "😐 <b>Unentschieden.</b> {move} gegen {stance} bei {name}. Das Schiff kam leer zurück, der Treibstoff ist verbrannt.",
+    "raid.result_lose": "💥 <b>DIE ABWEHR HAT GEHALTEN.</b> {move} gegen {stance} bei {name}.\nDas Ziel bekommt: <b>{loot}</b>",
+    "raid.result_footer": "<i>Deine Ressourcen findest du in /workshop. Ein Schild schützt vor der Retourkutsche.</i>",
+    "raid.victim_lost": "🚨 <b>Du wurdest überfallen!</b> {name}: {move} gegen deine Haltung {stance}.\nVerloren: <b>{loot}</b>\n\n⚔️ Gratis-Revanche innerhalb von {hours} Std. Schild — in /workshop.",
+    "raid.victim_draw": "🛡 <b>Raid unentschieden abgewehrt.</b> {name}: {move} gegen deine Haltung {stance}. Nichts verloren.",
+    "raid.victim_held": "🛡 <b>Deine Abwehr hat gehalten!</b> {name}: {move} gegen deine Haltung {stance}.\nAbwehr-Trophäe: <b>{loot}</b>",
+    "raid.err_stance": "❌ Unbekanntes Zeichen.",
+    "raid.err_self": "🤨 Ein Raid auf dich selbst? Nein.",
+    "raid.err_gone": "❌ Ziel nicht verfügbar.",
+    "raid.err_teammate": "🤝 Eigene Leute überfallen wir nicht — das ist ein Teammate.",
+    "raid.err_shielded": "🛡 Das Ziel hat einen Schild. Wähl ein anderes.",
+    "raid.err_revenge_gone": "❌ Das Revanche-Fenster ist geschlossen.",
+    "raid.err_cooldown": "⏳ Aufladen: noch {minutes} Min.",
+    "raid.err_victim_cooldown": "⏳ Dieses Ziel wurde erst kürzlich überfallen (Pause {hours} Std.).",
+    "raid.err_fuel": "💧 Zu wenig Wasserstoff: {need} nötig, {have} vorhanden. Den gibt es in Höher/Tiefer.",
+
+    # ---------------- Tagesziele ----------------
+    "goal.header": (
+        "🎯 <b>ZIELE FÜR HEUTE</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 Truhe: <b>+{coins} Münzen</b> und <b>+{res}</b> einer zufälligen Ressource\n"
+        "🔥 Serie: <b>{streak}</b> Tage · jeder {every}. Tag in Folge legt +{bonus} Münzen in die Truhe\n\n"
+        "<i>Die Ziele werden um 00:00 UTC erneuert.</i>"
+    ),
+    "goal.status_progress": "⏳ Schaff alle drei — und die Truhe gehört dir.",
+    "goal.status_ready": "✅ <b>Alle Ziele geschafft! Hol dir die Truhe.</b>",
+    "goal.status_claimed": "🎁 Die Truhe für heute ist schon abgeholt. Morgen gibt's neue Ziele!",
+    "goal.btn_claim": "🎁 TRUHE ABHOLEN",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 Aktualisieren",
+    "goal.toast": "Truhe geöffnet!",
+    "goal.chest": "🎁 <b>TRUHE GEÖFFNET!</b>\n💰 +{coins} Münzen · {icon} +{qty} {name}\n🔥 Serie: {streak} Tage",
+    "goal.err_claimed": "🎁 Heute schon abgeholt.",
+    "goal.err_not_done": "⏳ Noch nicht alle Ziele geschafft.",
+    "goal.win_quiz": "{n} Quiz-Runden gewinnen",
+    "goal.win_rps": "{n} SSP-Runden gewinnen",
+    "goal.win_hl": "{n} Runden Höher/Tiefer gewinnen",
+    "goal.win_safe": "Den Cyber-Tresor {n}-mal knacken",
+    "goal.play_rounds": "{n} Runden in beliebigen Spielen",
+    "goal.duel": "Ein Duell spielen",
+    "goal.bonus": "Tägliche Frikadelle auf der Farm abholen",
+    "goal.craft": "Etwas in der Werkstatt bauen",
+    "goal.raid": "Einen Raid fliegen",
+    "goal.market_deal": "Einen Deal an der Börse abschließen",
+    "goal.donate": "Ressourcen in die Team-Station stecken",
+
+    # ---------------- Team-Station ----------------
+    "st.header": (
+        "🛰 <b>TEAM-STATION „{team}“</b>\n"
+        "..................................................\n\n"
+        "Level: <b>{level}/{max}</b> → jeder Kämpfer bekommt <b>+{percent}%</b> Farm-Ertrag "
+        "(+{per_level}% pro Level)\n\n"
+        "📦 Bis zum nächsten Level:\n{progress}\n\n"
+        "🧾 Letzte Beiträge:\n{feed}\n\n"
+        "🧰 Deine Ressourcen: {stock}\n"
+        "<i>Die Station gehört allen: Das ganze Team baut, alle bekommen den Bonus. Team verlassen — Bonus weg.</i>"
+    ),
+    "st.max_level": "🏁 Station fertiggestellt — Maximallevel!",
+    "st.feed_empty": "noch hat niemand beigesteuert — mach den Anfang",
+    "st.no_team": "🛰 Die Station baut ein Team. Tritt einem bei oder gründe dein eigenes — und baut gemeinsam.",
+    "st.btn_find_team": "🏆 Teams & Clans",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ Alles: {qty} {icon} {name}",
+    "st.btn_refresh": "🔄 Aktualisieren",
+    "st.btn_team": "🏆 Zum Team",
+    "st.toast": "Beigesteuert: +{qty} {icon}",
+    "st.level_up": "🛰 <b>Die Team-Station ist auf Level {level} gestiegen!</b> Alle Kämpfer bekommen jetzt +{percent}% Farm-Ertrag.",
+    "st.err_qty": "❌ Ungültige Menge.",
+    "st.err_no_team": "❌ Du bist in keinem Team.",
+    "st.err_max": "🏁 Die Station ist schon fertiggestellt (Level {max}).",
+    "st.err_resources": "🔒 Zu wenig von dieser Ressource: {have} vorhanden.",
+
     # ---------------- Teams/Clans (Hauptoberflächen) ----------------
     "clan.no_team": "⚠️ <b>Du hast noch kein eigenes Team!</b>\n\nDu kannst deine eigene Crew sofort registrieren — tippe auf den Button unten.",
     "clan.btn_create": "🏆 Team für 100k erstellen",
@@ -705,6 +877,8 @@ MINIAPP = {
     "blocked": "Account von der Administration gesperrt.",
     "error": "Daten konnten nicht geladen werden. Versuch es später noch mal.",
     "outside": "Öffne diese App über den Telegram-Bot von ROFL HUB.",
+    "resources": "🧰 Ressourcen", "bonusPct": "Dauerhafter Schürf-Bonus", "shuttle": "🚀 Shuttle gebaut",
+    "resHint": "Metall — SSP, Wasserstoff — Höher/Tiefer, Kristalle — Quiz, Bauteile — Tresor. Einsetzen kannst du sie in der Werkstatt im Bot-Chat.",
 }
 
 COMMANDS = {
@@ -726,4 +900,8 @@ COMMANDS = {
     "faq": "📚 Häufige Fragen",
     "rules": "📜 Nutzungsvereinbarung",
     "paysupport": "🛟 Zahlungs-Support",
+    "workshop": "🔧 Werkstatt: Ressourcen in Upgrades",
+    "raid": "🏴‍☠️ Raids: Aufklärung und Revanche",
+    "goals": "🎯 Tagesziele und Truhe",
+    "station": "🛰 Team-Station: gemeinsames Projekt",
 }

@@ -17,12 +17,10 @@ from __future__ import annotations
 import logging
 
 from shared.economy import (
-    MARKET_FEE_PERCENT,
-    MARKET_MAX_OPEN_ORDERS,
     MARKET_MAX_PRICE,
-    MARKET_MAX_QTY,
     MARKET_MIN_PRICE,
     market_fee,
+    market_limits,
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
@@ -42,26 +40,28 @@ class MarketError(Exception):
         return t(lang, self.key, **self.kwargs)
 
 
-def validate_order(qty: int, price: int) -> None:
-    if qty <= 0 or qty > MARKET_MAX_QTY:
-        raise MarketError("mk.err_qty", max=MARKET_MAX_QTY)
+def validate_order(qty: int, price: int, shuttle: bool = False) -> None:
+    max_qty, _ = market_limits(shuttle)
+    if qty <= 0 or qty > max_qty:
+        raise MarketError("mk.err_qty", max=max_qty)
     if price < MARKET_MIN_PRICE or price > MARKET_MAX_PRICE:
         raise MarketError("mk.err_price", min=MARKET_MIN_PRICE, max=MARKET_MAX_PRICE)
 
 
 async def place_sell_order(conn, seller_id: int, qty: int, price: int) -> int:
     """Выставляет котлеты со склада на продажу. Возвращает id ордера."""
-    validate_order(qty, price)
     user = await conn.fetchrow(
-        "SELECT inv_cutlets, is_blocked FROM users WHERE user_id = $1 FOR UPDATE", seller_id)
+        "SELECT inv_cutlets, is_blocked, has_shuttle FROM users WHERE user_id = $1 FOR UPDATE", seller_id)
     if not user:
         raise MarketError("common.no_profile")
+    max_qty, max_orders = market_limits(user["has_shuttle"])
+    validate_order(qty, price, shuttle=user["has_shuttle"])
     if user["inv_cutlets"] < qty:
         raise MarketError("mk.err_no_cutlets", have=user["inv_cutlets"])
     open_orders = await conn.fetchval(
         "SELECT COUNT(*) FROM market_orders WHERE seller_id = $1 AND status = 'open'", seller_id)
-    if open_orders >= MARKET_MAX_OPEN_ORDERS:
-        raise MarketError("mk.err_too_many", max=MARKET_MAX_OPEN_ORDERS)
+    if open_orders >= max_orders:
+        raise MarketError("mk.err_too_many", max=max_orders)
 
     await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets - $2 WHERE user_id = $1",
                        seller_id, qty)
@@ -90,7 +90,7 @@ async def buy_from_order(conn, buyer_id: int, order_id: int, qty: int) -> dict:
     Бросает MarketError.
     """
     if qty <= 0:
-        raise MarketError("mk.err_qty", max=MARKET_MAX_QTY)
+        raise MarketError("mk.err_qty", max=market_limits(False)[0])
     order = await conn.fetchrow(
         "SELECT seller_id, qty, price, status FROM market_orders WHERE id = $1 FOR UPDATE", order_id)
     if not order or order["status"] != "open":
@@ -102,14 +102,16 @@ async def buy_from_order(conn, buyer_id: int, order_id: int, qty: int) -> dict:
 
     seller_id = order["seller_id"]
     rows = await conn.fetch(
-        "SELECT user_id, is_blocked FROM users WHERE user_id = ANY($1::bigint[]) "
+        "SELECT user_id, is_blocked, has_shuttle FROM users WHERE user_id = ANY($1::bigint[]) "
         "ORDER BY user_id FOR UPDATE", [buyer_id, seller_id])
     by_id = {r["user_id"]: r for r in rows}
     if buyer_id not in by_id:
         raise MarketError("common.no_profile")
 
     total = qty * order["price"]
-    fee = market_fee(total)
+    # Шаттл у ЛЮБОЙ стороны сделки — льготная комиссия (мастерская окупается на бирже)
+    shuttle = any(bool(r["has_shuttle"]) for r in rows)
+    fee = market_fee(total, shuttle=shuttle)
     try:
         await change_balance(conn, buyer_id, -total, "market_buy", str(order_id))
     except InsufficientFunds:
@@ -127,7 +129,7 @@ async def buy_from_order(conn, buyer_id: int, order_id: int, qty: int) -> dict:
         "WHERE id = $1", order_id, remaining)
     logger.info("[MARKET] buy #%s: buyer=%s qty=%s total=%s fee=%s", order_id, buyer_id, qty, total, fee)
     return {"qty": qty, "price": order["price"], "total": total, "fee": fee,
-            "seller_id": seller_id, "seller_got": seller_got}
+            "seller_id": seller_id, "seller_got": seller_got, "shuttle": shuttle}
 
 
 async def list_open_orders(conn, limit: int = 10, exclude_user: int | None = None) -> list[dict]:

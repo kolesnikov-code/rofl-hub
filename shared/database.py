@@ -351,6 +351,80 @@ SCHEMA_STATEMENTS: list[str] = [
     # Робот Стажёр активирован (бесплатный вечный робот, один на игрока при старте)
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS intern_claimed BOOLEAN NOT NULL DEFAULT FALSE;",
     "CREATE INDEX IF NOT EXISTS users_created_idx ON users (created_at);",
+    # --- Волна 22.10 (вечер): ресурсы, мастерская, налёты, цели, станция команды ---
+    """
+    CREATE TABLE IF NOT EXISTS user_resources (
+        user_id BIGINT NOT NULL,
+        kind VARCHAR(16) NOT NULL,
+        qty INT NOT NULL DEFAULT 0 CHECK (qty >= 0),
+        PRIMARY KEY (user_id, kind)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS resource_ledger (
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        kind VARCHAR(16) NOT NULL,
+        delta INT NOT NULL,
+        reason VARCHAR(64) NOT NULL,
+        ref VARCHAR(128),
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS resource_ledger_user_idx ON resource_ledger (user_id, created_at);",
+    "CREATE INDEX IF NOT EXISTS resource_ledger_reason_idx ON resource_ledger (reason, created_at);",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS raid_shield_until TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS raid_stance VARCHAR(10);",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_raid_at TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS has_shuttle BOOLEAN NOT NULL DEFAULT FALSE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS farm_armor_level INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS goal_streak INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS goal_last_claim DATE;",
+    """
+    CREATE TABLE IF NOT EXISTS raids (
+        id BIGSERIAL PRIMARY KEY,
+        attacker_id BIGINT NOT NULL,
+        defender_id BIGINT NOT NULL,
+        attack_move VARCHAR(10) NOT NULL,
+        stance VARCHAR(10) NOT NULL,
+        result VARCHAR(8) NOT NULL,
+        loot JSONB NOT NULL DEFAULT '{}'::jsonb,
+        is_revenge BOOLEAN NOT NULL DEFAULT FALSE,
+        revenged BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS raids_defender_idx ON raids (defender_id, created_at);",
+    "CREATE INDEX IF NOT EXISTS raids_attacker_idx ON raids (attacker_id, created_at);",
+    """
+    CREATE TABLE IF NOT EXISTS daily_goal_claims (
+        user_id BIGINT NOT NULL,
+        day DATE NOT NULL,
+        PRIMARY KEY (user_id, day)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS team_stations (
+        team_id INT PRIMARY KEY,
+        level INT NOT NULL DEFAULT 0,
+        metal INT NOT NULL DEFAULT 0,
+        hydrogen INT NOT NULL DEFAULT 0,
+        crystal INT NOT NULL DEFAULT 0,
+        parts INT NOT NULL DEFAULT 0,
+        updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS team_donations (
+        id BIGSERIAL PRIMARY KEY,
+        team_id INT NOT NULL,
+        user_id BIGINT NOT NULL,
+        kind VARCHAR(16) NOT NULL,
+        qty INT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS team_donations_team_idx ON team_donations (team_id, created_at);",
     "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",
     "CREATE INDEX IF NOT EXISTS star_payments_created_idx ON star_payments (created_at);",
 ]

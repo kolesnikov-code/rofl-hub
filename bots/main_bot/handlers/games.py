@@ -45,6 +45,7 @@ from shared.economy import (
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import resolve_lang, t
+from shared.resources import RESOURCE_ICONS, change_resource, game_resource_gain
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -161,6 +162,14 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
             if is_win:
                 new_balance = await change_balance(conn, user_id, reward, f"game_win:{game_type}")
                 status = t(lang, "games.win", reward=reward)
+                # Ресурс игры за победу (волна 22.10): КНБ → металл, Б/М → водород,
+                # викторина → кристаллы, сейф → детали
+                gain = game_resource_gain(game_type)
+                if gain is not None:
+                    kind, qty = gain
+                    stock = await change_resource(conn, user_id, kind, qty, f"game_win:{game_type}")
+                    status += "\n" + t(lang, "games.resource_gain", icon=RESOURCE_ICONS[kind],
+                                        qty=qty, name=t(lang, f"res.{kind}"), total=stock)
             else:
                 try:
                     new_balance = await change_balance(conn, user_id, -LOSE_PENALTY, f"game_loss:{game_type}")

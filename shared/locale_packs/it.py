@@ -18,6 +18,12 @@
 # квесты -> quest (le quest)
 # уровень интеллекта -> livello di intelligenza
 # КНБ -> Morra Cinese (Sasso / Forbici / Carta)
+# Больше/Меньше -> Alto/Basso
+# ресурсы: Металл -> Metallo; Водород -> Idrogeno; Кристаллы -> Cristalli; Детали -> Componenti
+# Мастерская -> Officina; Кибер-броня -> Cyber-Armatura; Шаттл -> Shuttle
+# Налёт -> Incursione; Стойка обороны -> Posizione di difesa; Разведка -> Ricognizione
+# Реванш -> Rivincita; Щит -> Scudo; Сундук -> Forziere; Серия -> Serie
+# Станция команды -> Stazione della squadra; боец (член команды) -> combattente
 
 BUTTONS = {
     "main_menu": "📱 MENU PRINCIPALE",
@@ -619,6 +625,171 @@ STRINGS = {
     "mk.err_insufficient": "❌ Monete insufficienti: servono {total}.",
     "farm.btn_market": "📈 Borsa delle cotolette",
 
+    # ---------------- ресурсы (волна 22.10, вечер) ----------------
+    "res.metal": "Metallo",
+    "res.hydrogen": "Idrogeno",
+    "res.crystal": "Cristalli",
+    "res.parts": "Componenti",
+    "res.none": "ancora vuoto",
+    "games.resource_gain": "{icon} Estratto: <b>+{qty} {name}</b> (totale {total}) → /workshop",
+    "duel.metal_gain": "⛏ Trofeo del duello: <b>+{metal} Metallo</b> → /workshop",
+    "quest.win_resources": "\n📦 In più un set di risorse: <b>{qty}</b> di ciascuna → /workshop",
+    "profile.resources_line": "🧰 Risorse: {stock}\n",
+    "menu.btn_goals": "🎯 Obiettivi del giorno",
+    "menu.btn_raids": "🏴‍☠️ Incursioni",
+    "menu.btn_workshop": "🔧 Officina",
+    "farm.btn_workshop": "🔧 Officina",
+    "farm.boost_armor": "🛡 Cyber-Armatura liv. {level}: +{percent}% all'estrazione per sempre",
+    "farm.boost_station": "🛰 Stazione della squadra liv. {level}: +{percent}% all'estrazione",
+    "clan.btn_station": "🛰 Stazione della squadra",
+
+    # ---------------- мастерская ----------------
+    "ws.header": (
+        "🔧 <b>OFFICINA</b>\n"
+        "..................................................\n\n"
+        "🧰 Le tue risorse: {stock}\n"
+        "⛏ Metallo — Morra Cinese e duelli · 💧 Idrogeno — Alto/Basso · "
+        "💎 Cristalli — Quiz · ⚙️ Componenti — Cyber-Cassaforte. Le quest danno un set completo.\n\n"
+        "🛡 Cyber-Armatura: <b>livello {armor}/{armor_max}</b> (+{armor_pct}% all'estrazione per livello, per sempre)\n"
+        "🚀 Shuttle: <b>{shuttle}</b> — commissione della borsa {shuttle_fee}%, fino a {shuttle_qty} cotolette per ordine\n\n"
+        "<i>✅ — risorse sufficienti, 🔒 — non ancora. Un tocco ed è fatta.</i>"
+    ),
+    "ws.shuttle_yes": "costruito",
+    "ws.shuttle_no": "non costruito",
+    "ws.recipe_nitro_6h": "Raffreddamento ad Azoto per 6 h",
+    "ws.recipe_nuclear_3h": "Boost Nucleare per 3 h",
+    "ws.recipe_drone_24h": "Master Drone per 24 h",
+    "ws.recipe_shield_24h": "Scudo anti-incursioni per 24 h",
+    "ws.recipe_cutlet": "Sintesi di una cyber-cotoletta",
+    "ws.recipe_armor": "Cyber-Armatura liv. {level}",
+    "ws.recipe_shuttle": "Costruisci lo Shuttle",
+    "ws.btn_shuttle_owned": "🚀 Shuttle costruito",
+    "ws.btn_armor_max": "🛡 Cyber-Armatura: al massimo",
+    "ws.btn_refresh": "🔄 Aggiorna",
+    "ws.btn_farm": "🚜 Alla fattoria",
+    "ws.noop": "Già al massimo",
+    "ws.toast": "Fatto!",
+    "ws.done_nitrogen": "❄️ <b>Raffreddamento ad Azoto +40%</b> attivo fino alle {until} UTC.",
+    "ws.done_nuclear": "☢️ <b>Boost Nucleare x5</b> attivo fino alle {until} UTC. Le Trivelle mangiano ×3 cotolette!",
+    "ws.done_drone": "🛸 <b>Master Drone</b> protegge i robot fino alle {until} UTC.",
+    "ws.done_shield": "🛡 <b>Scudo anti-incursioni</b> attivo fino alle {until} UTC. Le tue risorse sono al sicuro.",
+    "ws.done_cutlet": "🥩 Sintetizzata: <b>+{qty} cyber-cotoletta</b> nell'inventario. Rifornisci in /farm!",
+    "ws.done_armor": "🛡 <b>Cyber-Armatura livello {level}!</b> Estrazione della fattoria: <b>+{percent}%</b> per sempre.",
+    "ws.done_shuttle": "🚀 <b>Shuttle costruito!</b> La commissione della borsa ora è del {fee}%, fino a {qty} cotolette per ordine. Per sempre.",
+    "ws.err_unknown": "❌ Questa ricetta non esiste.",
+    "ws.err_resources": "🔒 Non basta: {kind} — servono {need}, ne hai {have}. Estraine nei giochi!",
+    "ws.err_shuttle_owned": "🚀 Lo Shuttle è già costruito — uno solo per giocatore.",
+    "ws.err_armor_max": "🛡 L'armatura è già al livello massimo ({max}).",
+
+    # ---------------- налёты ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>INCURSIONI</b>\n"
+        "..................................................\n\n"
+        "💧 Idrogeno: <b>{hydrogen}</b> (un decollo costa {fuel})\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ Posizione di difesa: <b>{stance}</b>\n\n"
+        "📊 Incursioni: <b>{attacks}</b> (riuscite {attack_wins}) · respinte: <b>{holds}/{defenses}</b>\n\n"
+        "<i>Il bottino è solo in risorse: il {percent}% della scorta del bersaglio, massimo {cap} per risorsa. "
+        "Monete, robot e cotolette sono intoccabili. La tua mossa contro la posizione del bersaglio: "
+        "decisione contro decisione. Un decollo ogni {cooldown} h; la rivincita è gratis.</i>"
+    ),
+    "raid.ready_line": "Nave pronta al decollo",
+    "raid.cooldown_line": "Ricarica: ancora {minutes} min",
+    "raid.shield_on": "Scudo attivo fino alle {until} UTC",
+    "raid.shield_newbie": "Protezione principiante (primi {days} giorni)",
+    "raid.shield_off": "Nessuno scudo — costruiscilo in /workshop",
+    "raid.stance_random": "casuale (scegline una nel menu!)",
+    "raid.btn_scout": "🔭 RICOGNIZIONE: trova bersagli",
+    "raid.btn_revenge": "⚔️ Rivincita: {name}",
+    "raid.btn_stance": "✊ Posizione di difesa",
+    "raid.btn_workshop": "🛡 Costruisci uno scudo",
+    "raid.btn_refresh": "🔄 Aggiorna",
+    "raid.btn_back": "← Indietro",
+    "raid.btn_open": "🏴‍☠️ Apri le incursioni",
+    "raid.btn_again": "🏴‍☠️ Alle incursioni",
+    "raid.stance_pick": "✊ <b>Posizione di difesa</b>\nLa rivela solo l'esito di un'incursione altrui: la mossa dell'attaccante contro la tua posizione. Cambiala ogni tanto — chi è prevedibile viene derubato.",
+    "raid.stance_saved": "Posizione: {stance}",
+    "raid.scout": "🔭 <b>La ricognizione ha trovato dei bersagli.</b> Il decollo costa {fuel} 💧. Scegli:",
+    "raid.btn_target": "🎯 {name} · risorse ≈{total}",
+    "raid.no_targets": "🔭 La ricognizione non ha trovato nessuno: al momento non ci sono bersagli adatti (scudi, ricariche, principianti). Ripassa più tardi.",
+    "raid.pick_move": "✊ <b>La tua mossa?</b> Giocherà contro la posizione di difesa del bersaglio. Decollo: −{fuel} 💧.",
+    "raid.pick_move_revenge": "⚔️ <b>Rivincita! La tua mossa?</b> Il decollo è gratis e senza ricarica.",
+    "raid.result_win": "🏴‍☠️ <b>INCURSIONE RIUSCITA!</b>\n{move} contro {stance} di {name}.\nBottino: <b>{loot}</b>",
+    "raid.result_draw": "😐 <b>Pareggio.</b> {move} contro {stance} di {name}. La nave è tornata vuota, il carburante è andato.",
+    "raid.result_lose": "💥 <b>LA DIFESA HA RETTO.</b> {move} contro {stance} di {name}.\nAl bersaglio è andato: <b>{loot}</b>",
+    "raid.result_footer": "<i>Le risorse sono in /workshop. Uno scudo ti protegge dalla ritorsione.</i>",
+    "raid.victim_lost": "🚨 <b>Hai subito un'incursione!</b> {name}: {move} contro la tua posizione {stance}.\nPerso: <b>{loot}</b>\n\n⚔️ Rivincita gratis entro {hours} h. Lo scudo è in /workshop.",
+    "raid.victim_draw": "🛡 <b>Incursione finita in pareggio.</b> {name}: {move} contro la tua posizione {stance}. Non hai perso nulla.",
+    "raid.victim_held": "🛡 <b>La difesa ha retto!</b> {name}: {move} contro la tua posizione {stance}.\nTrofeo della difesa: <b>{loot}</b>",
+    "raid.err_stance": "❌ Mossa sconosciuta.",
+    "raid.err_self": "🤨 Un'incursione contro di te? No.",
+    "raid.err_gone": "❌ Bersaglio non disponibile.",
+    "raid.err_teammate": "🤝 Non si deruba la propria gente — è un compagno di squadra.",
+    "raid.err_shielded": "🛡 Il bersaglio ha uno scudo. Scegline un altro.",
+    "raid.err_revenge_gone": "❌ La finestra per la rivincita è chiusa.",
+    "raid.err_cooldown": "⏳ Ricarica: ancora {minutes} min.",
+    "raid.err_victim_cooldown": "⏳ Questo bersaglio è stato derubato da poco (pausa di {hours} h).",
+    "raid.err_fuel": "💧 Idrogeno insufficiente: ne servono {need}, ne hai {have}. Si estrae in Alto/Basso.",
+
+    # ---------------- ежедневные цели ----------------
+    "goal.header": (
+        "🎯 <b>OBIETTIVI DI OGGI</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 Forziere: <b>+{coins} monete</b> e <b>+{res}</b> di una risorsa a caso\n"
+        "🔥 Serie: <b>{streak}</b> gg · ogni {every}° giorno di fila +{bonus} monete nel forziere\n\n"
+        "<i>Gli obiettivi si rinnovano alle 00:00 UTC.</i>"
+    ),
+    "goal.status_progress": "⏳ Completa tutti e tre e il forziere è tuo.",
+    "goal.status_ready": "✅ <b>Tutti gli obiettivi completati! Ritira il forziere.</b>",
+    "goal.status_claimed": "🎁 Il forziere di oggi è già stato ritirato. Domani nuovi obiettivi!",
+    "goal.btn_claim": "🎁 RITIRA IL FORZIERE",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 Aggiorna",
+    "goal.toast": "Forziere aperto!",
+    "goal.chest": "🎁 <b>FORZIERE APERTO!</b>\n💰 +{coins} monete · {icon} +{qty} {name}\n🔥 Serie: {streak} gg",
+    "goal.err_claimed": "🎁 Già ritirato oggi.",
+    "goal.err_not_done": "⏳ Non hai ancora completato tutti gli obiettivi.",
+    "goal.win_quiz": "Vinci {n} round di quiz",
+    "goal.win_rps": "Vinci {n} round di Morra Cinese",
+    "goal.win_hl": "Vinci {n} round di Alto/Basso",
+    "goal.win_safe": "Apri la Cyber-Cassaforte {n} volte",
+    "goal.play_rounds": "Gioca {n} round in qualsiasi gioco",
+    "goal.duel": "Gioca un duello",
+    "goal.bonus": "Ritira la cotoletta giornaliera in fattoria",
+    "goal.craft": "Costruisci qualcosa in officina",
+    "goal.raid": "Compi un'incursione",
+    "goal.market_deal": "Concludi un affare in borsa",
+    "goal.donate": "Investi risorse nella stazione della squadra",
+
+    # ---------------- станция команды ----------------
+    "st.header": (
+        "🛰 <b>STAZIONE DELLA SQUADRA “{team}”</b>\n"
+        "..................................................\n\n"
+        "Livello: <b>{level}/{max}</b> → ogni combattente riceve <b>+{percent}%</b> all'estrazione della fattoria "
+        "(+{per_level}% per livello)\n\n"
+        "📦 Al prossimo livello:\n{progress}\n\n"
+        "🧾 Ultimi contributi:\n{feed}\n\n"
+        "🧰 Le tue risorse: {stock}\n"
+        "<i>La stazione è di tutti: la costruisce l'intera squadra, il bonus va a ciascuno. Lasci la squadra — perdi il bonus.</i>"
+    ),
+    "st.max_level": "🏁 Stazione completata — livello massimo!",
+    "st.feed_empty": "nessun contributo finora — fai la prima mossa",
+    "st.no_team": "🛰 La stazione la costruisce una squadra. Entra in una squadra o crea la tua — e costruite insieme.",
+    "st.btn_find_team": "🏆 Squadre e clan",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ Tutto: {qty} {icon} {name}",
+    "st.btn_refresh": "🔄 Aggiorna",
+    "st.btn_team": "🏆 Alla squadra",
+    "st.toast": "Investito +{qty} {icon}",
+    "st.level_up": "🛰 <b>La stazione della squadra è salita al livello {level}!</b> Ora ogni combattente ha +{percent}% all'estrazione della fattoria.",
+    "st.err_qty": "❌ Quantità non valida.",
+    "st.err_no_team": "❌ Non sei in una squadra.",
+    "st.err_max": "🏁 La stazione è già completata (livello {max}).",
+    "st.err_resources": "🔒 Risorsa insufficiente: ne hai {have}.",
+
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>Non hai ancora una squadra!</b>\n\nPuoi registrare la tua banda personale proprio ora, toccando il pulsante qui sotto.",
     "clan.btn_create": "🏆 Crea una Squadra per 100k",
@@ -720,6 +891,10 @@ MINIAPP = {
     "blocked": "Account bloccato dall'amministrazione.",
     "error": "Impossibile caricare i dati. Riprova più tardi.",
     "outside": "Apri questa app dal bot Telegram di ROFL HUB.",
+    "resources": "🧰 Risorse",
+    "bonusPct": "Bonus permanente all'estrazione",
+    "shuttle": "🚀 Shuttle costruito",
+    "resHint": "Metallo — Morra Cinese, idrogeno — Alto/Basso, cristalli — quiz, componenti — cassaforte. Usali nell'officina nella chat del bot.",
 }
 
 COMMANDS = {
@@ -741,4 +916,8 @@ COMMANDS = {
     "faq": "📚 Domande frequenti",
     "rules": "📜 Accordo utente",
     "paysupport": "🛟 Supporto pagamenti",
+    "workshop": "🔧 Officina: risorse in potenziamenti",
+    "raid": "🏴‍☠️ Incursioni: ricognizione e rivincita",
+    "goals": "🎯 Obiettivi del giorno e forziere",
+    "station": "🛰 Stazione della squadra: progetto comune",
 }

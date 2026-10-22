@@ -10,6 +10,7 @@ from shared.economy import quiz_answers_required, quiz_level_reward, utcnow
 from shared.farm_logic import apply_lazy_farm, farm_counts
 from shared.locales import btn_variants, t
 from shared.ranks import rank_label
+from shared.resources import RESOURCE_ICONS, get_resources
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -137,6 +138,10 @@ async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
         aliases = ", ".join(html.escape(r["alias"]) for r in vip_rows)
         vip_line += t(user_lang, "profile.vip_line", aliases=aliases)
 
+    async with db.pool.acquire() as conn:
+        stock = await get_resources(conn, user_id)
+    vip_line += t(user_lang, "profile.resources_line",
+                  stock="  ".join(f"{RESOURCE_ICONS[k]} {stock[k]}" for k in stock))
     caption_text = t(
         user_lang, "profile.caption",
         user_id=user_id, vip=vip_line, balance=user["balance"], team=team_name,

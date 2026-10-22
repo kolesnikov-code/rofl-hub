@@ -18,6 +18,12 @@
 # квесты -> misi
 # уровень интеллекта -> Level Kecerdasan
 # команда -> tim, клан -> klan, банда -> geng, викторина -> Kuis
+# ресурсы -> sumber daya: Металл -> Logam, Водород -> Hidrogen, Кристаллы -> Kristal, Детали -> Komponen
+# Мастерская -> Bengkel, Кибер-броня -> Zirah Siber, Шаттл -> Shuttle
+# Налёт -> Serbuan, Стойка обороны -> Kuda-kuda pertahanan, Разведка -> Pengintaian,
+# Реванш -> Balas dendam, Щит -> Perisai
+# Ежедневные цели -> Target harian, Сундук -> Peti, Серия -> Rentetan
+# Станция команды -> Stasiun Tim
 
 BUTTONS = {
     "main_menu": "📱 MENU UTAMA",
@@ -619,6 +625,171 @@ STRINGS = {
     "mk.err_insufficient": "❌ Koin kurang: butuh {total}.",
     "farm.btn_market": "📈 Bursa patty",
 
+    # ---------------- sumber daya (gelombang 22.10, malam) ----------------
+    "res.metal": "Logam",
+    "res.hydrogen": "Hidrogen",
+    "res.crystal": "Kristal",
+    "res.parts": "Komponen",
+    "res.none": "masih kosong",
+    "games.resource_gain": "{icon} Didapat: <b>+{qty} {name}</b> (total {total}) → /workshop",
+    "duel.metal_gain": "⛏ Trofi duel: <b>+{metal} Logam</b> → /workshop",
+    "quest.win_resources": "\n📦 Plus paket sumber daya: <b>{qty}</b> dari tiap jenis → /workshop",
+    "profile.resources_line": "🧰 Sumber daya: {stock}\n",
+    "menu.btn_goals": "🎯 Target harian",
+    "menu.btn_raids": "🏴‍☠️ Serbuan",
+    "menu.btn_workshop": "🔧 Bengkel",
+    "farm.btn_workshop": "🔧 Bengkel",
+    "farm.boost_armor": "🛡 Zirah Siber level {level}: +{percent}% penambangan selamanya",
+    "farm.boost_station": "🛰 Stasiun Tim level {level}: +{percent}% penambangan",
+    "clan.btn_station": "🛰 Stasiun Tim",
+
+    # ---------------- bengkel ----------------
+    "ws.header": (
+        "🔧 <b>BENGKEL</b>\n"
+        "..................................................\n\n"
+        "🧰 Sumber dayamu: {stock}\n"
+        "⛏ Logam — Suit & duel · 💧 Hidrogen — Besar/Kecil · "
+        "💎 Kristal — Kuis · ⚙️ Komponen — Brankas Siber. Misi memberi paket lengkap.\n\n"
+        "🛡 Zirah Siber: <b>level {armor}/{armor_max}</b> (+{armor_pct}% penambangan per level, selamanya)\n"
+        "🚀 Shuttle: <b>{shuttle}</b> — biaya bursa {shuttle_fee}%, maks {shuttle_qty} kotlet per order\n\n"
+        "<i>✅ — sumber daya cukup, 🔒 — belum cukup. Sekali ketuk, langsung jadi.</i>"
+    ),
+    "ws.shuttle_yes": "sudah dibangun",
+    "ws.shuttle_no": "belum dibangun",
+    "ws.recipe_nitro_6h": "Pendingin Nitrogen selama 6 jam",
+    "ws.recipe_nuclear_3h": "Boost Nuklir selama 3 jam",
+    "ws.recipe_drone_24h": "Drone Master selama 24 jam",
+    "ws.recipe_shield_24h": "Perisai anti-serbuan 24 jam",
+    "ws.recipe_cutlet": "Sintesis kotlet siber",
+    "ws.recipe_armor": "Zirah Siber level {level}",
+    "ws.recipe_shuttle": "Bangun Shuttle",
+    "ws.btn_shuttle_owned": "🚀 Shuttle sudah dibangun",
+    "ws.btn_armor_max": "🛡 Zirah Siber: maksimal",
+    "ws.btn_refresh": "🔄 Perbarui",
+    "ws.btn_farm": "🚜 Ke ladang",
+    "ws.noop": "Sudah maksimal",
+    "ws.toast": "Selesai!",
+    "ws.done_nitrogen": "❄️ <b>Pendingin Nitrogen +40%</b> aktif sampai {until} UTC.",
+    "ws.done_nuclear": "☢️ <b>Boost Nuklir x5</b> aktif sampai {until} UTC. Para Pengebor makan kotlet ×3!",
+    "ws.done_drone": "🛸 <b>Drone Master</b> menjaga robotmu sampai {until} UTC.",
+    "ws.done_shield": "🛡 <b>Perisai anti-serbuan</b> bertahan sampai {until} UTC. Sumber dayamu aman.",
+    "ws.done_cutlet": "🥩 Hasil sintesis: <b>+{qty} kotlet siber</b> masuk gudang. Isi bahan bakar di /farm!",
+    "ws.done_armor": "🛡 <b>Zirah Siber level {level}!</b> Penambangan ladang: <b>+{percent}%</b> selamanya.",
+    "ws.done_shuttle": "🚀 <b>Shuttle selesai dibangun!</b> Biaya bursa kini {fee}%, maks {qty} kotlet per order. Berlaku selamanya.",
+    "ws.err_unknown": "❌ Resep itu tidak ada.",
+    "ws.err_resources": "🔒 Tidak cukup: {kind} butuh {need}, punya {have}. Kumpulkan di game!",
+    "ws.err_shuttle_owned": "🚀 Shuttle sudah dibangun — satu per pemain.",
+    "ws.err_armor_max": "🛡 Zirah sudah di level maksimal ({max}).",
+
+    # ---------------- serbuan ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>SERBUAN</b>\n"
+        "..................................................\n\n"
+        "💧 Hidrogen: <b>{hydrogen}</b> (sekali terbang butuh {fuel})\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ Kuda-kuda pertahanan: <b>{stance}</b>\n\n"
+        "📊 Serbuan: <b>{attacks}</b> (berhasil {attack_wins}) · ditahan: <b>{holds}/{defenses}</b>\n\n"
+        "<i>Jarahan hanya sumber daya: {percent}% dari stok target, maks {cap} per jenis. "
+        "Koin, robot, dan kotlet tidak bisa disentuh. Gesturmu melawan kuda-kuda target — "
+        "keputusan lawan keputusan. Satu penerbangan tiap {cooldown} jam; balas dendam gratis.</i>"
+    ),
+    "raid.ready_line": "Kapal siap terbang",
+    "raid.cooldown_line": "Pengisian ulang: {minutes} mnt lagi",
+    "raid.shield_on": "Perisai aktif sampai {until} UTC",
+    "raid.shield_newbie": "Perlindungan pemula ({days} hari pertama)",
+    "raid.shield_off": "Tanpa perisai — bangun di /workshop",
+    "raid.stance_random": "acak (pilih di menu!)",
+    "raid.btn_scout": "🔭 INTAI: cari target",
+    "raid.btn_revenge": "⚔️ Balas dendam: {name}",
+    "raid.btn_stance": "✊ Kuda-kuda pertahanan",
+    "raid.btn_workshop": "🛡 Bangun perisai",
+    "raid.btn_refresh": "🔄 Perbarui",
+    "raid.btn_back": "← Kembali",
+    "raid.btn_open": "🏴‍☠️ Buka serbuan",
+    "raid.btn_again": "🏴‍☠️ Ke serbuan",
+    "raid.stance_pick": "✊ <b>Kuda-kuda pertahanan</b>\nHanya terlihat dari hasil serbuan orang lain: gestur penyerang melawan kuda-kudamu. Sesekali ganti — yang mudah ditebak bakal dijarah.",
+    "raid.stance_saved": "Kuda-kuda: {stance}",
+    "raid.scout": "🔭 <b>Pengintaian menemukan target.</b> Penerbangan memakan {fuel} 💧. Pilih:",
+    "raid.btn_target": "🎯 {name} · sumber daya ≈{total}",
+    "raid.no_targets": "🔭 Pengintaian tidak menemukan siapa pun: belum ada target yang cocok (perisai, pengisian ulang, pemula). Coba lagi nanti.",
+    "raid.pick_move": "✊ <b>Gesturmu?</b> Akan diadu dengan kuda-kuda pertahanan target. Penerbangan: −{fuel} 💧.",
+    "raid.pick_move_revenge": "⚔️ <b>Balas dendam! Gesturmu?</b> Penerbangan gratis dan tanpa pengisian ulang.",
+    "raid.result_win": "🏴‍☠️ <b>SERBUAN BERHASIL!</b>\n{move} lawan {stance} milik {name}.\nJarahan: <b>{loot}</b>",
+    "raid.result_draw": "😐 <b>Seri.</b> {move} lawan {stance} milik {name}. Kapal pulang kosong, bahan bakar terbakar.",
+    "raid.result_lose": "💥 <b>PERTAHANAN KOKOH.</b> {move} lawan {stance} milik {name}.\nTarget mendapat: <b>{loot}</b>",
+    "raid.result_footer": "<i>Sumber daya ada di /workshop. Perisai melindungimu dari serangan balasan.</i>",
+    "raid.victim_lost": "🚨 <b>Kamu diserbu!</b> {name}: {move} lawan kuda-kudamu {stance}.\nHilang: <b>{loot}</b>\n\n⚔️ Balas dendam gratis dalam {hours} jam. Perisai — di /workshop.",
+    "raid.victim_draw": "🛡 <b>Serbuan berakhir seri.</b> {name}: {move} lawan kuda-kudamu {stance}. Tidak ada yang hilang.",
+    "raid.victim_held": "🛡 <b>Pertahananmu kokoh!</b> {name}: {move} lawan kuda-kudamu {stance}.\nTrofi pertahanan: <b>{loot}</b>",
+    "raid.err_stance": "❌ Gestur tidak dikenal.",
+    "raid.err_self": "🤨 Menyerbu diri sendiri? Tidak.",
+    "raid.err_gone": "❌ Target tidak tersedia.",
+    "raid.err_teammate": "🤝 Kita tidak menjarah kawan sendiri — itu rekan tim.",
+    "raid.err_shielded": "🛡 Target punya perisai. Pilih yang lain.",
+    "raid.err_revenge_gone": "❌ Waktu balas dendam sudah habis.",
+    "raid.err_cooldown": "⏳ Pengisian ulang: {minutes} mnt lagi.",
+    "raid.err_victim_cooldown": "⏳ Target ini baru saja dijarah (jeda {hours} jam).",
+    "raid.err_fuel": "💧 Hidrogen kurang: butuh {need}, punya {have}. Dapatkan di Besar/Kecil.",
+
+    # ---------------- target harian ----------------
+    "goal.header": (
+        "🎯 <b>TARGET HARI INI</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 Peti: <b>+{coins} koin</b> dan <b>+{res}</b> sumber daya acak\n"
+        "🔥 Rentetan: <b>{streak}</b> hari · tiap hari ke-{every} berturut-turut +{bonus} koin ke peti\n\n"
+        "<i>Target diperbarui pukul 00:00 UTC.</i>"
+    ),
+    "goal.status_progress": "⏳ Selesaikan ketiganya — petinya jadi milikmu.",
+    "goal.status_ready": "✅ <b>Semua target selesai! Ambil petimu.</b>",
+    "goal.status_claimed": "🎁 Peti hari ini sudah diambil. Besok ada target baru!",
+    "goal.btn_claim": "🎁 AMBIL PETI",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 Perbarui",
+    "goal.toast": "Peti terbuka!",
+    "goal.chest": "🎁 <b>PETI TERBUKA!</b>\n💰 +{coins} koin · {icon} +{qty} {name}\n🔥 Rentetan: {streak} hari",
+    "goal.err_claimed": "🎁 Hari ini sudah diambil.",
+    "goal.err_not_done": "⏳ Belum semua target selesai.",
+    "goal.win_quiz": "Menangkan {n} ronde kuis",
+    "goal.win_rps": "Menangkan {n} ronde Suit",
+    "goal.win_hl": "Menangkan {n} ronde Besar/Kecil",
+    "goal.win_safe": "Bobol Brankas Siber {n} kali",
+    "goal.play_rounds": "Mainkan {n} ronde game apa saja",
+    "goal.duel": "Mainkan satu duel",
+    "goal.bonus": "Ambil kotlet harian di ladang",
+    "goal.craft": "Buat sesuatu di bengkel",
+    "goal.raid": "Lakukan satu serbuan",
+    "goal.market_deal": "Tutup satu transaksi di bursa",
+    "goal.donate": "Sumbangkan sumber daya ke stasiun tim",
+
+    # ---------------- stasiun tim ----------------
+    "st.header": (
+        "🛰 <b>STASIUN TIM “{team}”</b>\n"
+        "..................................................\n\n"
+        "Level: <b>{level}/{max}</b> → tiap petarung dapat <b>+{percent}%</b> penambangan ladang "
+        "(+{per_level}% per level)\n\n"
+        "📦 Menuju level berikutnya:\n{progress}\n\n"
+        "🧾 Sumbangan terakhir:\n{feed}\n\n"
+        "🧰 Sumber dayamu: {stock}\n"
+        "<i>Stasiun milik bersama: dibangun seluruh tim, bonusnya untuk semua. Keluar dari tim — bonus hilang.</i>"
+    ),
+    "st.max_level": "🏁 Stasiun rampung — level maksimal!",
+    "st.feed_empty": "belum ada yang menyumbang — jadilah yang pertama",
+    "st.no_team": "🛰 Stasiun dibangun oleh tim. Gabung tim atau buat sendiri — lalu bangun bersama.",
+    "st.btn_find_team": "🏆 Tim & klan",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ Semua: {qty} {icon} {name}",
+    "st.btn_refresh": "🔄 Perbarui",
+    "st.btn_team": "🏆 Ke tim",
+    "st.toast": "Disumbangkan +{qty} {icon}",
+    "st.level_up": "🛰 <b>Stasiun tim naik ke level {level}!</b> Semua petarung kini dapat +{percent}% penambangan ladang.",
+    "st.err_qty": "❌ Jumlah tidak valid.",
+    "st.err_no_team": "❌ Kamu belum punya tim.",
+    "st.err_max": "🏁 Stasiun sudah rampung (level {max}).",
+    "st.err_resources": "🔒 Sumber daya kurang: punya {have}.",
+
     # ---------------- tim/klan (permukaan utama) ----------------
     "clan.no_team": "⚠️ <b>Kamu belum punya tim!</b>\n\nKamu bisa mendaftarkan geng pribadimu sekarang juga dengan menekan tombol di bawah.",
     "clan.btn_create": "🏆 Buat Tim seharga 100k",
@@ -705,6 +876,10 @@ MINIAPP = {
     "blocked": "Akun diblokir oleh admin.",
     "error": "Gagal memuat data. Coba lagi nanti.",
     "outside": "Buka aplikasi ini dari bot Telegram ROFL HUB.",
+    "resources": "🧰 Sumber daya",
+    "bonusPct": "Bonus penambangan permanen",
+    "shuttle": "🚀 Shuttle sudah dibangun",
+    "resHint": "Logam — Suit, hidrogen — Besar/Kecil, kristal — kuis, komponen — brankas. Gunakan di bengkel lewat chat bot.",
 }
 
 COMMANDS = {
@@ -726,4 +901,8 @@ COMMANDS = {
     "faq": "📚 Pertanyaan umum",
     "rules": "📜 Perjanjian pengguna",
     "paysupport": "🛟 Dukungan pembayaran",
+    "workshop": "🔧 Bengkel: sumber daya jadi peningkatan",
+    "raid": "🏴‍☠️ Serbuan: pengintaian & balas dendam",
+    "goals": "🎯 Target harian & peti",
+    "station": "🛰 Stasiun tim: proyek bersama",
 }

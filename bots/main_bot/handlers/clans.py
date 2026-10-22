@@ -183,6 +183,8 @@ async def show_user_team_dashboard(message: types.Message, team_id: int, viewer_
     kb = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text=t(lang, "clan.btn_members"),
                                     callback_data=f"team_members:{team_id}:0")],
+        [types.InlineKeyboardButton(text=t(lang, "clan.btn_station"),
+                                    callback_data="open_station")],
         [types.InlineKeyboardButton(text=t(lang, "clan.btn_leave"),
                                     callback_data=f"clan_leave:{team_id}")],
         [types.InlineKeyboardButton(text=t(lang, "common.btn_menu"),

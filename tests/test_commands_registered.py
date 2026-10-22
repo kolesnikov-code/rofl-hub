@@ -12,11 +12,12 @@ os.environ.setdefault("MAIN_BOT_TOKEN", "123456:TEST")
 from aiogram.filters import Command  # noqa: E402
 
 from bots.main_bot.handlers import (  # noqa: E402
-    clans, duels, faq, farm, games, market, menu, payments, profile, quests, referral_link, rofl_hub_all,
-    rules, shop, start, transfer,
+    clans, duels, faq, farm, games, goals, market, menu, payments, profile, quests, raids, referral_link,
+    rofl_hub_all, rules, shop, start, station, transfer, workshop,
 )
 
 ROUTERS = [start.router, payments.router, shop.router, games.router, duels.router, quests.router, market.router,
+           workshop.router, raids.router, goals.router, station.router,
            farm.router, profile.router, clans.router, transfer.router, referral_link.router,
            menu.router, faq.router, rules.router, rofl_hub_all.router]
 
@@ -25,6 +26,7 @@ ADVERTISED_COMMANDS = {
     "create_team", "my_team", "all_teams", "faq", "rules",
     "rps", "high_low", "quiz", "safe",
     "invite", "transfer", "paysupport", "duel", "app", "quests", "market", "sell",
+    "workshop", "raid", "goals", "station",
 }
 
 

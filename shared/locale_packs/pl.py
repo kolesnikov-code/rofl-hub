@@ -18,6 +18,11 @@
 # квесты -> questy
 # уровень интеллекта -> poziom intelektu
 # команда/банда -> drużyna/ekipa; бусты -> wzmocnienia
+# ресурсы -> surowce: Металл -> Metal, Водород -> Wodór, Кристаллы -> Kryształy, Детали -> Części
+# Мастерская -> Warsztat; Кибер-броня -> Cyber-pancerz; Шаттл -> Wahadłowiec
+# Налёт -> Najazd; Стойка обороны -> Postawa obronna; Разведка -> Zwiad; Реванш -> Rewanż
+# Щит -> Tarcza; Сундук -> Skrzynia; Серия -> Seria; Станция команды -> Stacja drużyny
+# КНБ -> Kamień-Papier-Nożyce; Больше/Меньше -> Wyżej/Niżej
 
 BUTTONS: dict[str, str] = {
     "main_menu": "📱 MENU GŁÓWNE",
@@ -619,6 +624,171 @@ STRINGS: dict[str, str] = {
     "mk.err_insufficient": "❌ Za mało monet: potrzeba {total}.",
     "farm.btn_market": "📈 Giełda kotletów",
 
+    # ---------------- ресурсы (волна 22.10, вечер) ----------------
+    "res.metal": "Metal",
+    "res.hydrogen": "Wodór",
+    "res.crystal": "Kryształy",
+    "res.parts": "Części",
+    "res.none": "na razie pusto",
+    "games.resource_gain": "{icon} Wydobyto: <b>+{qty} {name}</b> (łącznie {total}) → /workshop",
+    "duel.metal_gain": "⛏ Trofeum pojedynku: <b>+{metal} Metal</b> → /workshop",
+    "quest.win_resources": "\n📦 Plus zestaw surowców: po <b>{qty}</b> każdego → /workshop",
+    "profile.resources_line": "🧰 Surowce: {stock}\n",
+    "menu.btn_goals": "🎯 Cele dnia",
+    "menu.btn_raids": "🏴‍☠️ Najazdy",
+    "menu.btn_workshop": "🔧 Warsztat",
+    "farm.btn_workshop": "🔧 Warsztat",
+    "farm.boost_armor": "🛡 Cyber-pancerz poz. {level}: +{percent}% do wydobycia na zawsze",
+    "farm.boost_station": "🛰 Stacja drużyny poz. {level}: +{percent}% do wydobycia",
+    "clan.btn_station": "🛰 Stacja drużyny",
+
+    # ---------------- мастерская ----------------
+    "ws.header": (
+        "🔧 <b>WARSZTAT</b>\n"
+        "..................................................\n\n"
+        "🧰 Twoje surowce: {stock}\n"
+        "⛏ Metal — Kamień-Papier-Nożyce i pojedynki · 💧 Wodór — Wyżej/Niżej · "
+        "💎 Kryształy — Quiz · ⚙️ Części — Cyber-Sejf. Questy dają cały zestaw.\n\n"
+        "🛡 Cyber-pancerz: <b>poziom {armor}/{armor_max}</b> (+{armor_pct}% do wydobycia za poziom, na zawsze)\n"
+        "🚀 Wahadłowiec: <b>{shuttle}</b> — prowizja giełdy {shuttle_fee}%, do {shuttle_qty} kotletów w zleceniu\n\n"
+        "<i>✅ — surowców wystarczy, 🔒 — jeszcze nie. Jedno tapnięcie i gotowe.</i>"
+    ),
+    "ws.shuttle_yes": "zbudowany",
+    "ws.shuttle_no": "niezbudowany",
+    "ws.recipe_nitro_6h": "Azotowe Chłodzenie na 6 godz.",
+    "ws.recipe_nuclear_3h": "Nuklearne Przyspieszenie na 3 godz.",
+    "ws.recipe_drone_24h": "Mistrzowski Dron na dobę",
+    "ws.recipe_shield_24h": "Tarcza przed najazdami na dobę",
+    "ws.recipe_cutlet": "Synteza cyber-kotleta",
+    "ws.recipe_armor": "Cyber-pancerz poz. {level}",
+    "ws.recipe_shuttle": "Zbuduj Wahadłowiec",
+    "ws.btn_shuttle_owned": "🚀 Wahadłowiec zbudowany",
+    "ws.btn_armor_max": "🛡 Cyber-pancerz: maksimum",
+    "ws.btn_refresh": "🔄 Odśwież",
+    "ws.btn_farm": "🚜 Do farmy",
+    "ws.noop": "Już na maksimum",
+    "ws.toast": "Gotowe!",
+    "ws.done_nitrogen": "❄️ <b>Azotowe Chłodzenie +40%</b> aktywne do {until} UTC.",
+    "ws.done_nuclear": "☢️ <b>Nuklearne Przyspieszenie x5</b> aktywne do {until} UTC. Wiertacze zjadają ×3 kotletów!",
+    "ws.done_drone": "🛸 <b>Mistrzowski Dron</b> chroni roboty do {until} UTC.",
+    "ws.done_shield": "🛡 <b>Tarcza przed najazdami</b> trzyma do {until} UTC. Surowce są bezpieczne.",
+    "ws.done_cutlet": "🥩 Zsyntetyzowano: <b>+{qty} cyber-kotlet</b> do magazynu. Tankuj w /farm!",
+    "ws.done_armor": "🛡 <b>Cyber-pancerz poziom {level}!</b> Wydobycie farmy: <b>+{percent}%</b> na zawsze.",
+    "ws.done_shuttle": "🚀 <b>Wahadłowiec zbudowany!</b> Prowizja na giełdzie wynosi teraz {fee}%, w zleceniu do {qty} kotletów. Na zawsze.",
+    "ws.err_unknown": "❌ Nie ma takiego przepisu.",
+    "ws.err_resources": "🔒 Za mało: {kind} — potrzeba {need}, masz {have}. Wydobywaj w grach!",
+    "ws.err_shuttle_owned": "🚀 Wahadłowiec jest już zbudowany — jeden na gracza.",
+    "ws.err_armor_max": "🛡 Pancerz jest już na maksymalnym poziomie ({max}).",
+
+    # ---------------- налёты ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>NAJAZDY</b>\n"
+        "..................................................\n\n"
+        "💧 Wodór: <b>{hydrogen}</b> (wylot kosztuje {fuel})\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ Postawa obronna: <b>{stance}</b>\n\n"
+        "📊 Najazdów: <b>{attacks}</b> (udanych {attack_wins}) · odpartych: <b>{holds}/{defenses}</b>\n\n"
+        "<i>Łup to wyłącznie surowce: {percent}% zapasu celu, nie więcej niż {cap} na surowiec. "
+        "Monety, roboty i kotlety są nietykalne. Twój gest przeciwko postawie celu — "
+        "decyzja kontra decyzja. Jeden wylot na {cooldown} godz.; rewanż — za darmo.</i>"
+    ),
+    "raid.ready_line": "Statek gotowy do wylotu",
+    "raid.cooldown_line": "Ładowanie: jeszcze {minutes} min",
+    "raid.shield_on": "Tarcza aktywna do {until} UTC",
+    "raid.shield_newbie": "Ochrona nowicjusza (pierwsze {days} dni)",
+    "raid.shield_off": "Brak tarczy — zbuduj ją w /workshop",
+    "raid.stance_random": "losowa (wybierz w menu!)",
+    "raid.btn_scout": "🔭 ZWIAD: znajdź cele",
+    "raid.btn_revenge": "⚔️ Rewanż: {name}",
+    "raid.btn_stance": "✊ Postawa obronna",
+    "raid.btn_workshop": "🛡 Zbuduj tarczę",
+    "raid.btn_refresh": "🔄 Odśwież",
+    "raid.btn_back": "← Wstecz",
+    "raid.btn_open": "🏴‍☠️ Otwórz najazdy",
+    "raid.btn_again": "🏴‍☠️ Do najazdów",
+    "raid.stance_pick": "✊ <b>Postawa obronna</b>\nUjawni ją dopiero wynik cudzego najazdu: gest atakującego przeciwko twojej postawie. Zmieniaj ją od czasu do czasu — przewidywalnych się okrada.",
+    "raid.stance_saved": "Postawa: {stance}",
+    "raid.scout": "🔭 <b>Zwiad znalazł cele.</b> Wylot pobierze {fuel} 💧. Wybieraj:",
+    "raid.btn_target": "🎯 {name} · surowców ≈{total}",
+    "raid.no_targets": "🔭 Zwiad nikogo nie znalazł: nie ma teraz odpowiednich celów (tarcze, ładowanie, nowicjusze). Zajrzyj później.",
+    "raid.pick_move": "✊ <b>Twój gest?</b> Zagra przeciwko postawie obronnej celu. Wylot: −{fuel} 💧.",
+    "raid.pick_move_revenge": "⚔️ <b>Rewanż! Twój gest?</b> Wylot jest darmowy i bez ładowania.",
+    "raid.result_win": "🏴‍☠️ <b>NAJAZD UDANY!</b>\n{move} przeciwko {stance} u {name}.\nŁup: <b>{loot}</b>",
+    "raid.result_draw": "😐 <b>Remis.</b> {move} przeciwko {stance} u {name}. Statek wrócił pusty, paliwo spłonęło.",
+    "raid.result_lose": "💥 <b>OBRONA WYTRZYMAŁA.</b> {move} przeciwko {stance} u {name}.\nCel zgarnął: <b>{loot}</b>",
+    "raid.result_footer": "<i>Surowce są w /workshop. Tarcza ochroni cię przed odwetem.</i>",
+    "raid.victim_lost": "🚨 <b>Najechano cię!</b> {name}: {move} przeciwko twojej postawie {stance}.\nStracono: <b>{loot}</b>\n\n⚔️ Darmowy rewanż w ciągu {hours} godz. Tarcza — w /workshop.",
+    "raid.victim_draw": "🛡 <b>Najazd odparty remisem.</b> {name}: {move} przeciwko twojej postawie {stance}. Nic nie stracono.",
+    "raid.victim_held": "🛡 <b>Obrona wytrzymała!</b> {name}: {move} przeciwko twojej postawie {stance}.\nTrofeum obrony: <b>{loot}</b>",
+    "raid.err_stance": "❌ Nieznany gest.",
+    "raid.err_self": "🤨 Najazd na samego siebie? Nie.",
+    "raid.err_gone": "❌ Cel niedostępny.",
+    "raid.err_teammate": "🤝 Swoich nie okradamy — to ktoś z twojej drużyny.",
+    "raid.err_shielded": "🛡 Cel ma tarczę. Wybierz inny.",
+    "raid.err_revenge_gone": "❌ Okno rewanżu jest zamknięte.",
+    "raid.err_cooldown": "⏳ Ładowanie: jeszcze {minutes} min.",
+    "raid.err_victim_cooldown": "⏳ Ten cel był niedawno najechany (pauza {hours} godz.).",
+    "raid.err_fuel": "💧 Za mało wodoru: potrzeba {need}, masz {have}. Wydobywa się go w Wyżej/Niżej.",
+
+    # ---------------- ежедневные цели ----------------
+    "goal.header": (
+        "🎯 <b>CELE NA DZIŚ</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 Skrzynia: <b>+{coins} monet</b> i <b>+{res}</b> losowego surowca\n"
+        "🔥 Seria: <b>{streak}</b> dn. · każdy {every}. dzień z rzędu daje +{bonus} monet do skrzyni\n\n"
+        "<i>Cele odnawiają się o 00:00 UTC.</i>"
+    ),
+    "goal.status_progress": "⏳ Zamknij wszystkie trzy — i skrzynia jest twoja.",
+    "goal.status_ready": "✅ <b>Wszystkie cele zamknięte! Odbierz skrzynię.</b>",
+    "goal.status_claimed": "🎁 Dzisiejsza skrzynia już odebrana. Jutro — nowe cele!",
+    "goal.btn_claim": "🎁 ODBIERZ SKRZYNIĘ",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 Odśwież",
+    "goal.toast": "Skrzynia otwarta!",
+    "goal.chest": "🎁 <b>SKRZYNIA OTWARTA!</b>\n💰 +{coins} monet · {icon} +{qty} {name}\n🔥 Seria: {streak} dn.",
+    "goal.err_claimed": "🎁 Dziś już odebrano.",
+    "goal.err_not_done": "⏳ Jeszcze nie wszystkie cele są zamknięte.",
+    "goal.win_quiz": "Wygraj {n} rund quizu",
+    "goal.win_rps": "Wygraj {n} rund Kamień-Papier-Nożyce",
+    "goal.win_hl": "Wygraj {n} rund Wyżej/Niżej",
+    "goal.win_safe": "Otwórz Cyber-Sejf {n} razy",
+    "goal.play_rounds": "Zagraj {n} rund w dowolne gry",
+    "goal.duel": "Rozegraj pojedynek",
+    "goal.bonus": "Odbierz codzienny kotlet na farmie",
+    "goal.craft": "Zbuduj coś w warsztacie",
+    "goal.raid": "Przeprowadź najazd",
+    "goal.market_deal": "Zawrzyj transakcję na giełdzie",
+    "goal.donate": "Wnieś surowce do stacji drużyny",
+
+    # ---------------- станция команды ----------------
+    "st.header": (
+        "🛰 <b>STACJA DRUŻYNY „{team}”</b>\n"
+        "..................................................\n\n"
+        "Poziom: <b>{level}/{max}</b> → każdy wojownik dostaje <b>+{percent}%</b> do wydobycia farmy "
+        "(+{per_level}% za poziom)\n\n"
+        "📦 Do następnego poziomu:\n{progress}\n\n"
+        "🧾 Ostatnie wkłady:\n{feed}\n\n"
+        "🧰 Twoje surowce: {stock}\n"
+        "<i>Stacja jest wspólna: buduje ją cała drużyna, bonus dostaje każdy. Opuścisz drużynę — stracisz bonus.</i>"
+    ),
+    "st.max_level": "🏁 Stacja ukończona — maksymalny poziom!",
+    "st.feed_empty": "nikt jeszcze nic nie wniósł — bądź pierwszy(a)",
+    "st.no_team": "🛰 Stację buduje drużyna. Dołącz do drużyny albo załóż własną — i budujcie razem.",
+    "st.btn_find_team": "🏆 Drużyny i klany",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ Wszystko: {qty} {icon} {name}",
+    "st.btn_refresh": "🔄 Odśwież",
+    "st.btn_team": "🏆 Do drużyny",
+    "st.toast": "Wniesiono +{qty} {icon}",
+    "st.level_up": "🛰 <b>Stacja drużyny osiągnęła poziom {level}!</b> Wszyscy wojownicy mają teraz +{percent}% do wydobycia farmy.",
+    "st.err_qty": "❌ Nieprawidłowa ilość.",
+    "st.err_no_team": "❌ Nie jesteś w drużynie.",
+    "st.err_max": "🏁 Stacja jest już ukończona (poziom {max}).",
+    "st.err_resources": "🔒 Za mało surowca: masz {have}.",
+
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>Nie masz jeszcze drużyny!</b>\n\nMożesz zarejestrować własną ekipę już teraz, naciskając przycisk poniżej.",
     "clan.btn_create": "🏆 Załóż Drużynę za 100k",
@@ -720,6 +890,10 @@ MINIAPP: dict[str, str] = {
     "blocked": "Konto zablokowane przez administrację.",
     "error": "Nie udało się załadować danych. Spróbuj później.",
     "outside": "Otwórz tę aplikację z Telegram-bota ROFL HUB.",
+    "resources": "🧰 Surowce",
+    "bonusPct": "Stały bonus do wydobycia",
+    "shuttle": "🚀 Wahadłowiec zbudowany",
+    "resHint": "Metal — Kamień-Papier-Nożyce, wodór — Wyżej/Niżej, kryształy — quiz, części — sejf. Wykorzystaj je w warsztacie w czacie bota.",
 }
 
 COMMANDS: dict[str, str] = {
@@ -741,4 +915,8 @@ COMMANDS: dict[str, str] = {
     "faq": "📚 Najczęstsze pytania",
     "rules": "📜 Regulamin użytkownika",
     "paysupport": "🛟 Wsparcie płatności",
+    "workshop": "🔧 Warsztat: surowce w ulepszenia",
+    "raid": "🏴‍☠️ Najazdy: zwiad i rewanż",
+    "goals": "🎯 Cele dnia i skrzynia",
+    "station": "🛰 Stacja drużyny: wspólny projekt",
 }

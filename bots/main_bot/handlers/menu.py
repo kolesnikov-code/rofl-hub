@@ -67,6 +67,15 @@ def get_games_inline_keyboard(lang: str = "ru") -> types.InlineKeyboardMarkup:
         ],
         [
             types.InlineKeyboardButton(text=t(lang, "menu.btn_quests"), callback_data="quest_list")
+        ],
+        [
+            types.InlineKeyboardButton(text=t(lang, "menu.btn_goals"), callback_data="open_goals")
+        ],
+        [
+            types.InlineKeyboardButton(text=t(lang, "menu.btn_raids"), callback_data="open_raids")
+        ],
+        [
+            types.InlineKeyboardButton(text=t(lang, "menu.btn_workshop"), callback_data="open_workshop")
         ]
     ])
 

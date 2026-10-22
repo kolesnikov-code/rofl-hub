@@ -18,6 +18,12 @@
 # квесты -> kvestlar
 # уровень интеллекта -> intellekt darajasi
 # ставка -> garov; банк -> bank; жест -> ishora; ничья -> durang; награда -> mukofot
+# биржа котлет -> Kotlet birjasi; ордер -> buyurtma; комиссия -> komissiya
+# ресурсы (волна 22.10): Металл -> Metall; Водород -> Vodorod; Кристаллы -> Kristallar;
+#   Детали -> Detallar; Мастерская -> Ustaxona; Кибер-броня -> Kiber-zirh; Шаттл -> Shattl;
+#   Налёт -> Bosqin; Стойка обороны -> Himoya pozitsiyasi; Разведка -> Razvedka;
+#   Реванш -> Revansh; Щит -> Qalqon; Сундук -> Sandiq; Серия -> Seriya;
+#   Станция команды -> Jamoa stansiyasi; вылет -> parvoz; трофей/добыча -> o'lja
 
 BUTTONS: dict[str, str] = {
     "main_menu": "📱 BOSH MENYU",
@@ -619,6 +625,171 @@ STRINGS: dict[str, str] = {
     "mk.err_insufficient": "❌ Tanga yetmaydi: {total} kerak.",
     "farm.btn_market": "📈 Kotlet birjasi",
 
+    # ---------------- ресурсы (волна 22.10, вечер) ----------------
+    "res.metal": "Metall",
+    "res.hydrogen": "Vodorod",
+    "res.crystal": "Kristallar",
+    "res.parts": "Detallar",
+    "res.none": "hozircha bo'sh",
+    "games.resource_gain": "{icon} Qazildi: <b>+{qty} {name}</b> (jami {total}) → /workshop",
+    "duel.metal_gain": "⛏ Duel o'ljasi: <b>+{metal} Metall</b> → /workshop",
+    "quest.win_resources": "\n📦 Qo'shimcha resurs to'plami: har biridan <b>{qty}</b> tadan → /workshop",
+    "profile.resources_line": "🧰 Resurslar: {stock}\n",
+    "menu.btn_goals": "🎯 Kundalik maqsadlar",
+    "menu.btn_raids": "🏴‍☠️ Bosqinlar",
+    "menu.btn_workshop": "🔧 Ustaxona",
+    "farm.btn_workshop": "🔧 Ustaxona",
+    "farm.boost_armor": "🛡 Kiber-zirh {level}-dar.: qazib olishga abadiy +{percent}%",
+    "farm.boost_station": "🛰 Jamoa stansiyasi {level}-dar.: qazib olishga +{percent}%",
+    "clan.btn_station": "🛰 Jamoa stansiyasi",
+
+    # ---------------- мастерская ----------------
+    "ws.header": (
+        "🔧 <b>USTAXONA</b>\n"
+        "..................................................\n\n"
+        "🧰 Resurslaring: {stock}\n"
+        "⛏ Metall — Tosh-Qaychi va duellar · 💧 Vodorod — Katta/Kichik · "
+        "💎 Kristallar — Viktorina · ⚙️ Detallar — Kiber-Seyf. Kvestlar to'plam beradi.\n\n"
+        "🛡 Kiber-zirh: daraja <b>{armor}/{armor_max}</b> (har daraja qazib olishga +{armor_pct}%, abadiy)\n"
+        "🚀 Shattl: <b>{shuttle}</b> — birja komissiyasi {shuttle_fee}%, bitta buyurtmada {shuttle_qty} tagacha kotlet\n\n"
+        "<i>✅ — resurs yetarli, 🔒 — hozircha yo'q. Bir bosish — va tayyor.</i>"
+    ),
+    "ws.shuttle_yes": "yig'ilgan",
+    "ws.shuttle_no": "yig'ilmagan",
+    "ws.recipe_nitro_6h": "Azotli Sovutish 6 soatga",
+    "ws.recipe_nuclear_3h": "Yadroviy Tezlatish 3 soatga",
+    "ws.recipe_drone_24h": "Master-Dron bir sutkaga",
+    "ws.recipe_shield_24h": "Bosqinlardan qalqon bir sutkaga",
+    "ws.recipe_cutlet": "Kiber-kotlet sintezi",
+    "ws.recipe_armor": "Kiber-zirh {level}-dar.",
+    "ws.recipe_shuttle": "Shattlni yig'ish",
+    "ws.btn_shuttle_owned": "🚀 Shattl yig'ilgan",
+    "ws.btn_armor_max": "🛡 Kiber-zirh: maksimum",
+    "ws.btn_refresh": "🔄 Yangilash",
+    "ws.btn_farm": "🚜 Fermaga",
+    "ws.noop": "Allaqachon maksimumda",
+    "ws.toast": "Tayyor!",
+    "ws.done_nitrogen": "❄️ <b>Azotli Sovutish +40%</b> {until} UTC gacha faol.",
+    "ws.done_nuclear": "☢️ <b>Yadroviy Tezlatish x5</b> {until} UTC gacha faol. Burg'ulovchilar ×3 kotlet yeydi!",
+    "ws.done_drone": "🛸 <b>Master-Dron</b> robotlarni {until} UTC gacha asraydi.",
+    "ws.done_shield": "🛡 <b>Bosqinlardan qalqon</b> {until} UTC gacha turadi. Resurslaring himoyada.",
+    "ws.done_cutlet": "🥩 Sintez qilindi: omborga <b>+{qty} kiber-kotlet</b>. /farm da yoqilg'i quy!",
+    "ws.done_armor": "🛡 <b>Kiber-zirh {level}-daraja!</b> Ferma qazib olishi: abadiy <b>+{percent}%</b>.",
+    "ws.done_shuttle": "🚀 <b>Shattl yig'ildi!</b> Birja komissiyasi endi {fee}%, bitta buyurtmada {qty} tagacha kotlet. Bu abadiy.",
+    "ws.err_unknown": "❌ Bunday retsept yo'q.",
+    "ws.err_resources": "🔒 Yetmaydi: {kind} {need} ta kerak, senda {have} ta. O'yinlarda qazib ol!",
+    "ws.err_shuttle_owned": "🚀 Shattl allaqachon yig'ilgan — har o'yinchiga bittadan.",
+    "ws.err_armor_max": "🛡 Zirh allaqachon maksimal darajada ({max}).",
+
+    # ---------------- налёты ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>BOSQINLAR</b>\n"
+        "..................................................\n\n"
+        "💧 Vodorod: <b>{hydrogen}</b> (bitta parvoz {fuel} turadi)\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ Himoya pozitsiyasi: <b>{stance}</b>\n\n"
+        "📊 Bosqinlar: <b>{attacks}</b> (muvaffaqiyatli {attack_wins}) · qaytarilgan: <b>{holds}/{defenses}</b>\n\n"
+        "<i>O'lja — faqat resurslar: nishon zaxirasining {percent}%, har resursdan ko'pi bilan {cap} ta. "
+        "Tangalar, robotlar va kotletlarga tegilmaydi. Sening ishorang nishonning pozitsiyasiga qarshi — "
+        "qarorga qarshi qaror. Har {cooldown} soatda bitta parvoz; revansh — bepul.</i>"
+    ),
+    "raid.ready_line": "Kema parvozga tayyor",
+    "raid.cooldown_line": "Qayta zaryadlash: yana {minutes} daqiqa",
+    "raid.shield_on": "Qalqon {until} UTC gacha faol",
+    "raid.shield_newbie": "Yangi o'yinchi himoyasi (dastlabki {days} kun)",
+    "raid.shield_off": "Qalqon yo'q — /workshop da yig'",
+    "raid.stance_random": "tasodifiy (menyudan tanla!)",
+    "raid.btn_scout": "🔭 RAZVEDKA: nishon topish",
+    "raid.btn_revenge": "⚔️ Revansh: {name}",
+    "raid.btn_stance": "✊ Himoya pozitsiyasi",
+    "raid.btn_workshop": "🛡 Qalqon yig'ish",
+    "raid.btn_refresh": "🔄 Yangilash",
+    "raid.btn_back": "← Orqaga",
+    "raid.btn_open": "🏴‍☠️ Bosqinlarni ochish",
+    "raid.btn_again": "🏴‍☠️ Bosqinlarga",
+    "raid.stance_pick": "✊ <b>Himoya pozitsiyasi</b>\nUni faqat birovning bosqini natijasi ko'rsatadi: hujumchi ishorasi sening pozitsiyangga qarshi. Vaqti-vaqti bilan o'zgartirib tur — oldindan bilsa bo'ladiganlarni talashadi.",
+    "raid.stance_saved": "Pozitsiya: {stance}",
+    "raid.scout": "🔭 <b>Razvedka nishonlarni topdi.</b> Parvoz {fuel} 💧 yechadi. Tanla:",
+    "raid.btn_target": "🎯 {name} · resurslar ≈{total}",
+    "raid.no_targets": "🔭 Razvedka hech kimni topmadi: hozir mos nishon yo'q (qalqonlar, kuldaunlar, yangilar). Keyinroq kirib ko'r.",
+    "raid.pick_move": "✊ <b>Ishorang?</b> U nishonning himoya pozitsiyasiga qarshi o'ynaydi. Parvoz: −{fuel} 💧.",
+    "raid.pick_move_revenge": "⚔️ <b>Revansh! Ishorang?</b> Parvoz bepul va qayta zaryadlashsiz.",
+    "raid.result_win": "🏴‍☠️ <b>BOSQIN MUVAFFAQIYATLI!</b>\nNishon {name}: {move} {stance}ga qarshi.\nO'lja: <b>{loot}</b>",
+    "raid.result_draw": "😐 <b>Durang.</b> Nishon {name}: {move} {stance}ga qarshi. Kema bo'sh qaytdi, yoqilg'i kuydi.",
+    "raid.result_lose": "💥 <b>MUDOFAA CHIDAB BERDI.</b> Nishon {name}: {move} {stance}ga qarshi.\nNishonga tegdi: <b>{loot}</b>",
+    "raid.result_footer": "<i>Resurslar — /workshop da. Qalqon javob zarbasidan himoya qiladi.</i>",
+    "raid.victim_lost": "🚨 <b>Senga bosqin qilishdi!</b> {name}: {move} sening {stance} pozitsiyangga qarshi.\nYo'qotildi: <b>{loot}</b>\n\n⚔️ {hours} soat ichida revansh bepul. Qalqon — /workshop da.",
+    "raid.victim_draw": "🛡 <b>Bosqin durang bilan qaytarildi.</b> {name}: {move} sening {stance} pozitsiyangga qarshi. Hech narsa yo'qotilmadi.",
+    "raid.victim_held": "🛡 <b>Mudofaa chidab berdi!</b> {name}: {move} sening {stance} pozitsiyangga qarshi.\nMudofaa o'ljasi: <b>{loot}</b>",
+    "raid.err_stance": "❌ Noma'lum ishora.",
+    "raid.err_self": "🤨 O'zingga bosqin? Yo'q.",
+    "raid.err_gone": "❌ Nishon mavjud emas.",
+    "raid.err_teammate": "🤝 O'zimiznikilarni talamaymiz — bu jamoadosh.",
+    "raid.err_shielded": "🛡 Nishonda qalqon bor. Boshqasini tanla.",
+    "raid.err_revenge_gone": "❌ Revansh oynasi yopildi.",
+    "raid.err_cooldown": "⏳ Qayta zaryadlash: yana {minutes} daqiqa.",
+    "raid.err_victim_cooldown": "⏳ Bu nishon yaqinda talangan ({hours} soat tanaffus).",
+    "raid.err_fuel": "💧 Vodorod yetmaydi: {need} kerak, senda {have}. U Katta/Kichikda qaziladi.",
+
+    # ---------------- ежедневные цели ----------------
+    "goal.header": (
+        "🎯 <b>BUGUNGI MAQSADLAR</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 Sandiq: <b>+{coins} tanga</b> va tasodifiy resursdan <b>+{res}</b> ta\n"
+        "🔥 Seriya: <b>{streak}</b> kun · ketma-ket har {every}-kun sandiqqa +{bonus} tanga qo'shadi\n\n"
+        "<i>Maqsadlar 00:00 UTC da yangilanadi.</i>"
+    ),
+    "goal.status_progress": "⏳ Uchalasini bajar — sandiq seniki.",
+    "goal.status_ready": "✅ <b>Barcha maqsadlar bajarildi! Sandiqni ol.</b>",
+    "goal.status_claimed": "🎁 Bugungi sandiq allaqachon olingan. Ertaga — yangi maqsadlar!",
+    "goal.btn_claim": "🎁 SANDIQNI OLISH",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 Yangilash",
+    "goal.toast": "Sandiq ochildi!",
+    "goal.chest": "🎁 <b>SANDIQ OCHILDI!</b>\n💰 +{coins} tanga · {icon} +{qty} {name}\n🔥 Seriya: {streak} kun",
+    "goal.err_claimed": "🎁 Bugun allaqachon olgansan.",
+    "goal.err_not_done": "⏳ Hali hamma maqsad bajarilmagan.",
+    "goal.win_quiz": "Viktorinada {n} raund yutish",
+    "goal.win_rps": "Tosh-Qaychida {n} raund yutish",
+    "goal.win_hl": "Katta/Kichikda {n} raund yutish",
+    "goal.win_safe": "Kiber-Seyfni {n} marta ochish",
+    "goal.play_rounds": "Istalgan o'yinda {n} raund o'ynash",
+    "goal.duel": "Duel o'ynash",
+    "goal.bonus": "Fermada kundalik kotletni olish",
+    "goal.craft": "Ustaxonada biror narsa yig'ish",
+    "goal.raid": "Bosqin qilish",
+    "goal.market_deal": "Birjada bitim tuzish",
+    "goal.donate": "Jamoa stansiyasiga resurs qo'shish",
+
+    # ---------------- станция команды ----------------
+    "st.header": (
+        "🛰 <b>«{team}» JAMOA STANSIYASI</b>\n"
+        "..................................................\n\n"
+        "Daraja: <b>{level}/{max}</b> → har bir jangchiga ferma qazib olishiga <b>+{percent}%</b> "
+        "(har daraja +{per_level}%)\n\n"
+        "📦 Keyingi darajagacha:\n{progress}\n\n"
+        "🧾 So'nggi hissalar:\n{feed}\n\n"
+        "🧰 Resurslaring: {stock}\n"
+        "<i>Stansiya umumiy: butun jamoa quradi, bonusni har kim oladi. Jamoadan chiqding — bonus yo'qoldi.</i>"
+    ),
+    "st.max_level": "🏁 Stansiya qurib bitkazildi — maksimal daraja!",
+    "st.feed_empty": "hali hech kim hissa qo'shmagan — birinchi bo'l",
+    "st.no_team": "🛰 Stansiyani jamoa quradi. Jamoaga qo'shil yoki o'zingnikini tuz — va birga quringlar.",
+    "st.btn_find_team": "🏆 Jamoa va klanlar",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ Hammasi: {qty} {icon} {name}",
+    "st.btn_refresh": "🔄 Yangilash",
+    "st.btn_team": "🏆 Jamoaga",
+    "st.toast": "Qo'shildi +{qty} {icon}",
+    "st.level_up": "🛰 <b>Jamoa stansiyasi {level}-darajaga o'sdi!</b> Endi barcha jangchilarda ferma qazib olishiga +{percent}%.",
+    "st.err_qty": "❌ Noto'g'ri miqdor.",
+    "st.err_no_team": "❌ Sen jamoada emassan.",
+    "st.err_max": "🏁 Stansiya allaqachon qurib bitkazilgan ({max}-daraja).",
+    "st.err_resources": "🔒 Resurs yetmaydi: senda {have} ta.",
+
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>Senda hali tuzilgan jamoa yo'q!</b>\n\nPastdagi tugmani bosib, hoziroq o'z jamoangni ro'yxatdan o'tkazishing mumkin.",
     "clan.btn_create": "🏆 100k ga Jamoa tuzish",
@@ -705,6 +876,8 @@ MINIAPP: dict[str, str] = {
     "blocked": "Akkaunt ma'muriyat tomonidan bloklangan.",
     "error": "Ma'lumotlarni yuklab bo'lmadi. Keyinroq urinib ko'r.",
     "outside": "Bu ilovani ROFL HUB Telegram-botidan och.",
+    "resources": "🧰 Resurslar", "bonusPct": "Qazib olishga doimiy bonus", "shuttle": "🚀 Shattl yig'ilgan",
+    "resHint": "Metall — Tosh-Qaychi, vodorod — Katta/Kichik, kristallar — viktorina, detallar — seyf. Ularni bot chatidagi ustaxonada ishlat.",
 }
 
 COMMANDS: dict[str, str] = {
@@ -726,4 +899,8 @@ COMMANDS: dict[str, str] = {
     "faq": "📚 Ko'p so'raladigan savollar",
     "rules": "📜 Foydalanuvchi shartnomasi",
     "paysupport": "🛟 To'lovlar bo'yicha yordam",
+    "workshop": "🔧 Ustaxona: resurslardan kuchaytirgichlar",
+    "raid": "🏴‍☠️ Bosqinlar: razvedka va revansh",
+    "goals": "🎯 Kundalik maqsadlar va sandiq",
+    "station": "🛰 Jamoa stansiyasi: umumiy loyiha",
 }

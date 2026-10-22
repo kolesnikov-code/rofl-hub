@@ -16,7 +16,9 @@ import random
 from dataclasses import dataclass
 
 from shared.economy import DUEL_TABLES, duel_payout
+from shared.economy import DUEL_RESOURCE_REWARD
 from shared.ledger import InsufficientFunds, change_balance
+from shared.resources import change_resource
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +54,7 @@ class MoveResult:
     payout: int = 0
     burned: int = 0
     rounds: int = 1
+    metal: int = 0              # ⛏ Металл победителю (ресурсы, волна 22.10)
 
 
 async def active_duel_of(conn, user_id: int):
@@ -163,6 +166,9 @@ async def _resolve_round(conn, duel) -> MoveResult:
 
     payout, burned = duel_payout(duel["stake"])
     await change_balance(conn, winner_id, payout, "duel_win", str(duel["duel_id"]))
+    metal = DUEL_RESOURCE_REWARD.get(duel["stake"], 0)
+    if metal:
+        await change_resource(conn, winner_id, "metal", metal, "duel_win", str(duel["duel_id"]))
     await conn.execute(
         "UPDATE duels SET status = 'finished', winner_id = $2, finished_at = NOW() WHERE duel_id = $1",
         duel["duel_id"], winner_id)
@@ -181,7 +187,7 @@ async def _resolve_round(conn, duel) -> MoveResult:
                 duel["duel_id"], duel["stake"], winner_id, payout, burned)
     return MoveResult(finished=True, winner_id=winner_id, loser_id=loser_id,
                       winner_move=winner_move, loser_move=loser_move,
-                      payout=payout, burned=burned, rounds=duel["rounds"])
+                      payout=payout, burned=burned, rounds=duel["rounds"], metal=metal)
 
 
 async def find_stuck_active_duels(conn, older_than_seconds: int):

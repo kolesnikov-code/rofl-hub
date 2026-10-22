@@ -18,6 +18,7 @@ from bots.main_bot.catalog import CATALOG, CatalogError, SHOP_LAYOUT, build_orde
 from shared.analytics import track
 from shared.database import db
 from shared.economy import (
+    farm_bonus_percent,
     daily_bonus_seconds_left,
     is_active,
     miner_hourly_rate,
@@ -28,6 +29,7 @@ from shared.economy import (
 from shared.farm_logic import apply_lazy_farm, farm_counts
 from shared.locales import resolve_lang, t
 from shared.ranks import rank_label
+from shared.resources import get_resources
 from shared.webapp_auth import validate_init_data
 
 logger = logging.getLogger(__name__)
@@ -39,14 +41,19 @@ def _iso(moment: datetime | None) -> str | None:
     return moment.isoformat() if moment else None
 
 
-def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now) -> dict:
+def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now,
+                     resources: dict | None = None, station_level: int = 0) -> dict:
     """Чистый сборщик ответа /api/me — на нём юнит-тесты без aiohttp."""
     counts = farm_counts(miners, now)
     nuclear = is_active(user["boost_nuclear_until"], now)
     nitrogen = is_active(user["boost_nitrogen_until"], now)
-    junior_rate = miner_hourly_rate("junior", nuclear_active=nuclear, nitrogen_active=nitrogen)
-    premium_rate = miner_hourly_rate("premium", nuclear_active=nuclear, nitrogen_active=nitrogen)
-    intern_rate = miner_hourly_rate("intern", nuclear_active=nuclear, nitrogen_active=nitrogen)
+    bonus = farm_bonus_percent(user["farm_armor_level"], station_level)
+    junior_rate = miner_hourly_rate("junior", nuclear_active=nuclear, nitrogen_active=nitrogen,
+                                    bonus_percent=bonus)
+    premium_rate = miner_hourly_rate("premium", nuclear_active=nuclear, nitrogen_active=nitrogen,
+                                     bonus_percent=bonus)
+    intern_rate = miner_hourly_rate("intern", nuclear_active=nuclear, nitrogen_active=nitrogen,
+                                    bonus_percent=bonus)
     speed_hour = (counts["intern"] * intern_rate + counts["junior"] * junior_rate
                   + counts["premium_fueled"] * premium_rate)
     lang = resolve_lang(user["lang"])
@@ -63,6 +70,11 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now) -> dict
         "balance": user["balance"],
         "rank": rank_label(lang, user["created_at"], now),
         "vip_aliases": list(vip_aliases),
+        "resources": dict(resources or {}),
+        "armor_level": user["farm_armor_level"],
+        "has_shuttle": bool(user["has_shuttle"]),
+        "station_level": station_level,
+        "bonus_percent": bonus,
         "quiz": {
             "level": quiz_level,
             "progress": quiz_progress,
@@ -150,8 +162,14 @@ async def handle_me(request: web.Request) -> web.Response:
                     "FROM teams WHERE team_id = $1", user["team_id"], user_id)
             vip = [r["alias"] for r in await conn.fetch(
                 "SELECT alias FROM vip_aliases WHERE user_id = $1 ORDER BY created_at", user_id)]
+            resources = await get_resources(conn, user_id)
+            station_level = 0
+            if user["team_id"] is not None:
+                station_level = await conn.fetchval(
+                    "SELECT level FROM team_stations WHERE team_id = $1", user["team_id"]) or 0
 
-    return web.json_response(build_me_payload(user, miners, quiz_row, team_row, vip, now))
+    return web.json_response(build_me_payload(user, miners, quiz_row, team_row, vip, now,
+                                              resources=resources, station_level=station_level))
 
 
 async def handle_bonus(request: web.Request) -> web.Response:

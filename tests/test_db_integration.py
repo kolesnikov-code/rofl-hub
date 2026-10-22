@@ -29,7 +29,9 @@ async def conn():
     async with database.pool.acquire() as c:
         await c.execute("TRUNCATE users, teams, star_payments, game_stats, auctions, ledger, "
                         "miners, duels, battles, vip_aliases, quest_progress, events, "
-                        "daily_activity, promoters, metrics_snapshots, market_orders RESTART IDENTITY")
+                        "daily_activity, promoters, metrics_snapshots, market_orders, "
+                        "user_resources, resource_ledger, raids, daily_goal_claims, "
+                        "team_stations, team_donations RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -871,7 +873,8 @@ async def test_market_sell_buy_cancel_with_burned_fee(conn):
     assert e.value.key == "mk.err_own"
 
     deal = await buy_from_order(conn, 401, order_id, 4)    # 4 × 50 = 200, комиссия 20
-    assert deal == {"qty": 4, "price": 50, "total": 200, "fee": 20, "seller_id": 400, "seller_got": 180}
+    assert deal == {"qty": 4, "price": 50, "total": 200, "fee": 20, "seller_id": 400, "seller_got": 180,
+                    "shuttle": False}
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 401") == 800
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 400") == 180
     assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 401") == 4
@@ -916,3 +919,182 @@ async def test_purge_old_events_removes_only_stale_rows():
             assert await c.fetchval("SELECT event FROM events") == "fresh"
     finally:
         await global_db.close()
+
+
+# ---------------------------------------------------------------- волна 22.10 (вечер): ресурсы и механики
+async def test_game_win_mines_resource_and_ledger_blocks_negative(conn, global_db):
+    pytest.importorskip("aiogram")
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    from shared.resources import InsufficientResources, change_resource, get_resources
+    await _mk_user(conn, 500, 100)
+
+    ok, text, _ = await execute_solo_game_payout(500, True, "safe")
+    assert ok and "⚙️" in text
+    stock = await get_resources(conn, 500)
+    assert stock == {"metal": 0, "hydrogen": 0, "crystal": 0, "parts": 3}
+    ok, _, _ = await execute_solo_game_payout(500, False, "rps")   # проигрыш — ресурса нет
+    assert ok and (await get_resources(conn, 500))["metal"] == 0
+
+    with pytest.raises(InsufficientResources):
+        await change_resource(conn, 500, "parts", -4, "test")
+    assert (await get_resources(conn, 500))["parts"] == 3
+    rows = await conn.fetch("SELECT kind, delta, reason FROM resource_ledger WHERE user_id = 500")
+    assert [(r["kind"], r["delta"], r["reason"]) for r in rows] == [("parts", 3, "game_win:safe")]
+
+
+async def test_workshop_crafts_spend_all_or_nothing(conn):
+    from datetime import timedelta
+    from shared.economy import ARMOR_MAX_LEVEL, utcnow
+    from shared.resources import get_resources, grant_bundle
+    from shared.workshop import WorkshopError, craft
+    now = utcnow()
+    await _mk_user(conn, 510, 0)
+    await grant_bundle(conn, 510, {"metal": 20, "hydrogen": 19}, "test")
+
+    with pytest.raises(WorkshopError) as e:
+        await craft(conn, 510, "nitro_6h", now)             # водорода 19 из 20
+    assert e.value.key == "ws.err_resources"
+    assert (await get_resources(conn, 510))["metal"] == 20  # ничего не списано
+
+    await grant_bundle(conn, 510, {"hydrogen": 1}, "test")
+    result = await craft(conn, 510, "nitro_6h", now)
+    assert result.until == now + timedelta(hours=6)
+    assert (await get_resources(conn, 510)) == {"metal": 0, "hydrogen": 0, "crystal": 0, "parts": 0}
+    assert await conn.fetchval("SELECT boost_nitrogen_until FROM users WHERE user_id = 510") == result.until
+
+    # Броня: цена растёт по уровням, после максимума — отказ; Шаттл — один на игрока
+    await grant_bundle(conn, 510, {k: 5000 for k in ("metal", "hydrogen", "crystal", "parts")}, "test")
+    for lvl in range(1, ARMOR_MAX_LEVEL + 1):
+        assert (await craft(conn, 510, "armor", now)).level == lvl
+    with pytest.raises(WorkshopError) as e:
+        await craft(conn, 510, "armor", now)
+    assert e.value.key == "ws.err_armor_max"
+    await craft(conn, 510, "shuttle", now)
+    with pytest.raises(WorkshopError) as e:
+        await craft(conn, 510, "shuttle", now)
+    assert e.value.key == "ws.err_shuttle_owned"
+    row = await conn.fetchrow("SELECT farm_armor_level, has_shuttle FROM users WHERE user_id = 510")
+    assert (row["farm_armor_level"], row["has_shuttle"]) == (ARMOR_MAX_LEVEL, True)
+    assert (await craft(conn, 510, "cutlet", now)).qty == 1
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 510") == 1
+
+
+async def test_armor_and_station_bonus_reach_the_farm_engine(conn):
+    from datetime import timedelta
+    from shared.economy import utcnow
+    from shared.farm_logic import apply_lazy_farm
+    now = utcnow()
+    await conn.execute("INSERT INTO teams (team_id, team_name, captain_id) VALUES (7, 'Bonus', 520)")
+    await conn.execute("INSERT INTO team_stations (team_id, level) VALUES (7, 5)")
+    await _mk_user(conn, 520, 0, team_id=7, farm_armor_level=3, last_update_time=now - timedelta(hours=10))
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES (520, 'junior', $1, $2)",
+        now - timedelta(days=1), now + timedelta(days=29))
+    user, _ = await apply_lazy_farm(conn, 520, now)
+    assert user["balance"] == 70       # 10 ч × 5 монет × (1 + 30% брони + 10% станции)
+
+
+async def test_raid_moves_only_resources_and_respects_rules(conn):
+    from datetime import timedelta
+    from shared.economy import RAID_FUEL_HYDROGEN, utcnow
+    from shared.raids import RaidError, execute_raid, find_targets, revenge_options
+    from shared.resources import get_resources, grant_bundle
+    now = utcnow()
+    old = now - timedelta(days=10)
+    await _mk_user(conn, 600, 500, created_at=old, last_seen_at=now)              # атакующий
+    await _mk_user(conn, 601, 500, created_at=old, last_seen_at=now, raid_stance="scissors")  # цель
+    await _mk_user(conn, 602, 500, created_at=now)                                 # новичок
+    await grant_bundle(conn, 600, {"hydrogen": 10, "metal": 100}, "test")
+    await grant_bundle(conn, 601, {"metal": 100, "crystal": 5}, "test")
+    await grant_bundle(conn, 602, {"metal": 100}, "test")
+
+    targets = await find_targets(conn, 600, None, now)
+    assert [tg["user_id"] for tg in targets] == [601]          # новичок под защитой, сам — нет
+
+    with pytest.raises(RaidError) as e:
+        await execute_raid(conn, 600, 602, "rock", now)
+    assert e.value.key == "raid.err_shielded"
+
+    result = await execute_raid(conn, 600, 601, "rock", now)   # камень бьёт ножницы
+    assert result.result == "win" and result.loot == {"metal": 20, "crystal": 1}
+    assert (await get_resources(conn, 600))["hydrogen"] == 10 - RAID_FUEL_HYDROGEN
+    assert (await get_resources(conn, 600))["metal"] == 120
+    assert (await get_resources(conn, 601))["metal"] == 80
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 601") == 500   # монеты неприкосновенны
+
+    with pytest.raises(RaidError) as e:                        # кулдаун атакующего
+        await execute_raid(conn, 600, 601, "rock", now + timedelta(minutes=5))
+    assert e.value.key == "raid.err_cooldown"
+
+    # Реванш жертвы: бесплатно, без кулдауна; стойка атакующего не задана → случайная
+    options = await revenge_options(conn, 601, now + timedelta(hours=1))
+    assert [o["raid_id"] for o in options] == [result.raid_id]
+    revenge = await execute_raid(conn, 601, 600, "paper", now + timedelta(hours=1), revenge_of=result.raid_id)
+    assert revenge.is_revenge and revenge.result in ("win", "draw", "lose")
+    fuel_rows = await conn.fetchval(
+        "SELECT COUNT(*) FROM resource_ledger WHERE user_id = 601 AND reason = 'raid_fuel'")
+    assert fuel_rows == 0                                                       # топливо не списано
+    assert await revenge_options(conn, 601, now + timedelta(hours=2)) == []     # один реванш на налёт
+    with pytest.raises(RaidError):
+        await execute_raid(conn, 601, 600, "paper", now + timedelta(hours=1), revenge_of=result.raid_id)
+
+
+async def test_daily_goals_chest_once_per_day_with_streak(conn):
+    from datetime import timedelta
+    from shared.daily_goals import GoalsError, Goal, claim_chest, goal_progress
+    from shared.economy import DAILY_CHEST_COINS, DAILY_CHEST_RESOURCE, utcnow
+    from shared.ledger import change_balance
+    from shared.resources import get_resources
+    now = utcnow()
+    today = now.date()
+    await _mk_user(conn, 700, 100, goal_streak=3, goal_last_claim=today - timedelta(days=1))
+    goals = [Goal("win_rps", 2, "games"), Goal("bonus", 1)]
+
+    with pytest.raises(GoalsError) as e:
+        await claim_chest(conn, 700, goals, today)
+    assert e.value.key == "goal.err_not_done"
+    await conn.execute("DELETE FROM daily_goal_claims WHERE user_id = 700")   # в проде откат делает транзакция
+
+    await change_balance(conn, 700, 2, "game_win:rps")
+    await change_balance(conn, 700, 2, "game_win:rps")
+    await conn.execute("UPDATE users SET last_bonus_claim_at = $1 WHERE user_id = 700", now)
+    assert await goal_progress(conn, 700, goals, today) == {"win_rps": 2, "bonus": 1}
+
+    chest = await claim_chest(conn, 700, goals, today)
+    assert chest["coins"] == DAILY_CHEST_COINS and chest["streak"] == 4
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 700") == 104 + DAILY_CHEST_COINS
+    assert (await get_resources(conn, 700))[chest["kind"]] == DAILY_CHEST_RESOURCE
+    with pytest.raises(GoalsError) as e:
+        await claim_chest(conn, 700, goals, today)
+    assert e.value.key == "goal.err_claimed"
+
+
+async def test_team_station_donations_level_up_for_everyone(conn):
+    from shared.economy import RESOURCE_KINDS, station_level_cost
+    from shared.resources import get_resources, grant_bundle
+    from shared.team_station import StationError, donate, get_station, station_level
+    await conn.execute("INSERT INTO teams (team_id, team_name, captain_id) VALUES (9, 'Orbit', 800)")
+    await _mk_user(conn, 800, 0, team_id=9)
+    await _mk_user(conn, 801, 0, team_id=9)
+    await _mk_user(conn, 802, 0)                                   # без команды
+    cost = station_level_cost(1)
+    await grant_bundle(conn, 800, {k: cost for k in RESOURCE_KINDS}, "test")
+    await grant_bundle(conn, 802, {"metal": 10}, "test")
+
+    with pytest.raises(StationError) as e:
+        await donate(conn, 802, "metal", 10)
+    assert e.value.key == "st.err_no_team"
+    with pytest.raises(StationError) as e:
+        await donate(conn, 801, "metal", 1)
+    assert e.value.key == "st.err_resources"
+
+    for k in RESOURCE_KINDS[:-1]:
+        res = await donate(conn, 800, k, cost)
+        assert res.level == 0
+    res = await donate(conn, 800, "parts", cost)
+    assert res.level == 1 and res.levels_gained == 1
+    assert await station_level(conn, 9) == 1 and await station_level(conn, None) == 0
+    station = await get_station(conn, 9)
+    assert all(station[k] == 0 for k in RESOURCE_KINDS)        # уровень закрыт, остаток 0
+    assert all(v == 0 for v in (await get_resources(conn, 800)).values())
+    assert await conn.fetchval("SELECT COUNT(*) FROM team_donations WHERE team_id = 9") == 4

@@ -140,9 +140,128 @@ MARKET_MAX_OPEN_ORDERS = 5     # открытых ордеров на игрок
 MARKET_SHOWCASE_LIMIT = 6      # ордеров на витрине /market (по одной кнопке в ряд)
 
 
-def market_fee(total: int) -> int:
-    return total * MARKET_FEE_PERCENT // 100
+def market_fee(total: int, shuttle: bool = False) -> int:
+    """Комиссия сделки на бирже; у владельцев Шаттла (мастерская) — льготная."""
+    percent = SHUTTLE_MARKET_FEE_PERCENT if shuttle else MARKET_FEE_PERCENT
+    return total * percent // 100
 DUEL_BURN_PERCENT = 20
+
+
+# --------------------------------------------------------------------------
+# РЕСУРСЫ (волна 22.10, вечер): в каждой игре добывается свой ресурс — клей экосистемы.
+# Ресурсы не покупаются за Stars и не продаются за монеты: только добыча и мастерская.
+# --------------------------------------------------------------------------
+RESOURCE_KINDS = ("metal", "hydrogen", "crystal", "parts")
+GAME_RESOURCE = {          # игра → ресурс за победу
+    "rps": "metal",        # ⛏ Металл — КНБ (и дуэли)
+    "hl": "hydrogen",      # 💧 Водород — Больше/Меньше
+    "quiz": "crystal",     # 💎 Кристаллы — Викторина
+    "safe": "parts",       # ⚙️ Детали — Кибер-Сейф (шанс 1 из 4 — даём больше)
+}
+RESOURCE_PER_WIN = {"rps": 1, "hl": 1, "quiz": 1, "safe": 3}
+DUEL_RESOURCE_REWARD = {10: 2, 100: 4, 1000: 8}   # ⛏ Металл победителю дуэли по столу
+QUEST_RESOURCE_BUNDLE = 5     # каждого ресурса за ПЕРВОЕ прохождение квеста
+RESOURCE_MAX_STOCK = 100_000  # потолок запаса на ресурс (защита от переполнения)
+
+# --------------------------------------------------------------------------
+# МАСТЕРСКАЯ: рецепты из ресурсов. id → цена {ресурс: кол-во} и эффект.
+# Временные эффекты — часы существующих лицензий (ничего не выдаётся «задним числом»:
+# прошлое время фермы закрывается ДО продления). Постоянные — уровни брони и Шаттл.
+# --------------------------------------------------------------------------
+WORKSHOP_RECIPES: dict[str, dict] = {
+    "nitro_6h": {"cost": {"metal": 20, "hydrogen": 20}, "effect": "nitrogen", "hours": 6},
+    "nuclear_3h": {"cost": {"metal": 40, "hydrogen": 30, "parts": 10}, "effect": "nuclear", "hours": 3},
+    "drone_24h": {"cost": {"metal": 25, "parts": 25}, "effect": "drone", "hours": 24},
+    "shield_24h": {"cost": {"metal": 10, "crystal": 10}, "effect": "shield", "hours": 24},
+    "cutlet": {"cost": {"hydrogen": 15, "parts": 10}, "effect": "cutlet", "qty": 1},
+    "armor": {"cost": None, "effect": "armor"},       # цена зависит от уровня (ARMOR_LEVEL_COSTS)
+    "shuttle": {"cost": {"metal": 150, "hydrogen": 150, "crystal": 100, "parts": 100},
+                "effect": "shuttle"},
+}
+# Кибер-броня роботов: постоянный бонус к добыче, 3 уровня по +10%
+ARMOR_BONUS_PER_LEVEL = 10
+ARMOR_MAX_LEVEL = 3
+ARMOR_LEVEL_COSTS = {
+    1: {"metal": 100, "parts": 50},
+    2: {"metal": 250, "crystal": 100, "parts": 120},
+    3: {"metal": 500, "hydrogen": 200, "crystal": 200, "parts": 250},
+}
+# Шаттл: постоянная льгота на бирже (комиссия 10% → 5%) и логистика побольше
+SHUTTLE_MARKET_FEE_PERCENT = 5
+SHUTTLE_MARKET_MAX_QTY = 500
+SHUTTLE_MARKET_MAX_OPEN_ORDERS = 10
+
+# --------------------------------------------------------------------------
+# НАЛЁТЫ: решение против решения — жест атакующего против оборонительной стойки цели.
+# Добыча — ТОЛЬКО ресурсы (монеты, роботы и котлеты неприкосновенны).
+# --------------------------------------------------------------------------
+RAID_FUEL_HYDROGEN = 5            # 💧 на вылет (реванш — бесплатно)
+RAID_ATTACK_COOLDOWN_HOURS = 3    # между вылетами одного игрока
+RAID_VICTIM_COOLDOWN_HOURS = 12   # одну цель нельзя грабить чаще
+RAID_LOOT_PERCENT = 20            # доля каждого ресурса цели при победе…
+RAID_LOOT_CAP = 30                # …но не больше этого за ресурс
+RAID_FAIL_PERCENT = 10            # проигравший атакующий отдаёт цели долю своих…
+RAID_FAIL_CAP = 15                # …но не больше этого за ресурс
+RAID_MIN_TARGET_RESOURCES = 10    # цели беднее не показываются (нечего брать)
+RAID_TARGET_ACTIVE_DAYS = 7       # цель — активный игрок (last_seen_at)
+RAID_NEWBIE_SHIELD_DAYS = 3       # новичков не трогают первые дни
+RAID_CANDIDATES = 3               # «разведка» показывает столько целей
+RAID_REVENGE_HOURS = 24           # окно реванша после удачного налёта на тебя
+
+# --------------------------------------------------------------------------
+# ЕЖЕДНЕВНЫЕ ЦЕЛИ: 3 цели на день (детерминированно по игроку и дате), сундук за все три
+# --------------------------------------------------------------------------
+DAILY_GOALS_PER_DAY = 3
+DAILY_CHEST_COINS = 50
+DAILY_CHEST_RESOURCE = 10         # случайного ресурса в сундуке
+DAILY_STREAK_BONUS_EVERY = 7      # каждый 7-й день подряд…
+DAILY_STREAK_BONUS_COINS = 200    # …сундук жирнее на столько монет
+
+# --------------------------------------------------------------------------
+# СТАНЦИЯ КОМАНДЫ: общий проект — вклад ресурсов всей команды, уровень даёт
+# всем участникам постоянный бонус к добыче (мотивация звать актив).
+# --------------------------------------------------------------------------
+STATION_MAX_LEVEL = 5
+STATION_BONUS_PER_LEVEL = 2       # +2% к добыче каждому участнику за уровень (макс +10%)
+STATION_LEVEL_BASE_COST = 300     # уровень L стоит L×300 КАЖДОГО ресурса
+STATION_DONATE_OPTIONS = (10, 50)  # кнопки вклада (+ «всё»)
+STATION_FEED_LIMIT = 5            # последних вкладов в ленте
+
+
+def station_level_cost(level: int) -> int:
+    """Сколько каждого ресурса нужно вложить, чтобы закрыть уровень level."""
+    if level <= 0:
+        raise ValueError("level must be positive")
+    return level * STATION_LEVEL_BASE_COST
+
+
+def armor_cost(next_level: int) -> dict[str, int] | None:
+    """Цена следующего уровня брони или None, если максимум."""
+    return ARMOR_LEVEL_COSTS.get(next_level)
+
+
+def farm_bonus_percent(armor_level: int, station_level: int) -> int:
+    """Постоянный бонус к добыче: личная броня + станция команды."""
+    armor = max(0, min(armor_level, ARMOR_MAX_LEVEL)) * ARMOR_BONUS_PER_LEVEL
+    station = max(0, min(station_level, STATION_MAX_LEVEL)) * STATION_BONUS_PER_LEVEL
+    return armor + station
+
+
+def raid_loot(defender_stock: int) -> int:
+    """Сколько ресурса уходит атакующему при победе."""
+    return min(RAID_LOOT_CAP, max(0, defender_stock) * RAID_LOOT_PERCENT // 100)
+
+
+def raid_fail_loss(attacker_stock: int) -> int:
+    """Сколько ресурса атакующий отдаёт цели при провале."""
+    return min(RAID_FAIL_CAP, max(0, attacker_stock) * RAID_FAIL_PERCENT // 100)
+
+
+def market_limits(shuttle: bool) -> tuple[int, int]:
+    """(макс. котлет в ордере, макс. открытых ордеров) — с Шаттлом логистика шире."""
+    if shuttle:
+        return SHUTTLE_MARKET_MAX_QTY, SHUTTLE_MARKET_MAX_OPEN_ORDERS
+    return MARKET_MAX_QTY, MARKET_MAX_OPEN_ORDERS
 TOURNAMENT_ENTRY_FEE = 5000
 TOURNAMENT_WINNERS_PERCENT = 1
 
@@ -218,16 +337,21 @@ def rank_key_for(created_at: datetime | None, now: datetime) -> str | None:
     return key
 
 
-def miner_hourly_rate(kind: str, *, nuclear_active: bool = False, nitrogen_active: bool = False) -> int:
+def miner_hourly_rate(kind: str, *, nuclear_active: bool = False, nitrogen_active: bool = False,
+                      bonus_percent: int = 0) -> int:
     """
     Ставка робота в монетах/час с учётом бустов. Эффекты складываются:
     Азот +40% к базе (5→7, 10→14), затем Ядерный разгон ×5 (7→35, 14→70).
+    bonus_percent (броня + станция команды) — для ВИТРИН, округление вниз;
+    точное начисление с бонусом делает движок фермы в микросекундах.
     """
     rate = MINER_RATE_PER_HOUR[kind]
     if nitrogen_active:
         rate = rate * (100 + NITROGEN_BONUS_PERCENT) // 100
     if nuclear_active:
         rate *= NUCLEAR_SPEED_MULTIPLIER
+    if bonus_percent:
+        rate = rate * (100 + bonus_percent) // 100
     return rate
 
 

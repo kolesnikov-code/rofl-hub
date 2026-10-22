@@ -18,6 +18,10 @@ from bots.main_bot.handlers.duels import duel_reaper_loop, router as duels_route
 from bots.main_bot.handlers.faq import router as faq_router
 from bots.main_bot.handlers.farm import router as farm_router
 from bots.main_bot.handlers.games import router as games_router
+from bots.main_bot.handlers.goals import router as goals_router
+from bots.main_bot.handlers.raids import router as raids_router
+from bots.main_bot.handlers.station import router as station_router
+from bots.main_bot.handlers.workshop import router as workshop_router
 from bots.main_bot.handlers.market import router as market_router
 from bots.main_bot.handlers.menu import router as menu_router
 from bots.main_bot.handlers.payments import router as payments_router
@@ -46,7 +50,8 @@ dp = Dispatcher(storage=MemoryStorage())
 dp.update.outer_middleware(ActivityMiddleware())
 # Порядок важен: start (регистрация) и payments (деньги) — первыми
 for r in (start_router, payments_router, shop_router, games_router, duels_router, quests_router,
-          market_router, farm_router, profile_router, clans_router, transfer_router, referral_router, menu_router,
+          market_router, workshop_router, raids_router, goals_router, station_router,
+          farm_router, profile_router, clans_router, transfer_router, referral_router, menu_router,
           faq_router, rules_router, rofl_hub_all_router):
     dp.include_router(r)
 
@@ -66,6 +71,10 @@ BOT_COMMANDS: dict[str, tuple[str, str]] = {
     "invite": ("🤝 Реферальная ссылка: +1000 за друга", "🤝 Referral link: +1000 per friend"),
     "transfer": ("🔄 Перевести монеты игроку", "🔄 Send coins to a player"),
     "market": ("📈 Биржа котлет: купить или продать", "📈 Cutlet market: buy or sell"),
+    "workshop": ("🔧 Мастерская: ресурсы в усиления", "🔧 Workshop: resources into upgrades"),
+    "raid": ("🏴‍☠️ Налёты: разведка и реванш", "🏴‍☠️ Raids: scouting & revenge"),
+    "goals": ("🎯 Ежедневные цели и сундук", "🎯 Daily goals & chest"),
+    "station": ("🛰 Станция команды: общий проект", "🛰 Team station: shared project"),
     "my_stats": ("📊 Моя статистика", "📊 My stats"),
     "faq": ("📚 Частые вопросы", "📚 FAQ"),
     "rules": ("📜 Пользовательское соглашение", "📜 User agreement"),

@@ -29,6 +29,10 @@ FLAG_DEFAULTS: dict[str, bool] = {
     "shop": True,
     "transfers": True,
     "market": True,
+    "workshop": True,
+    "raids": True,
+    "goals": True,
+    "station": True,
 }
 # Человеческие подписи для пульта в админ-боте
 FLAG_TITLES: dict[str, str] = {
@@ -39,6 +43,10 @@ FLAG_TITLES: dict[str, str] = {
     "shop": "🏪 Магазин и покупки Stars",
     "transfers": "🔄 Переводы монет",
     "market": "📈 Биржа котлет",
+    "workshop": "🔧 Мастерская (ресурсы)",
+    "raids": "🏴‍☠️ Налёты",
+    "goals": "🎯 Ежедневные цели",
+    "station": "🛰 Станция команды",
 }
 
 _CACHE_TTL = 20.0

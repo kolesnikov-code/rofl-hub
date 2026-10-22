@@ -19,6 +19,12 @@
 # уровень интеллекта -> niveau d'intelligence
 # викторина -> Quiz; КНБ -> Chifoumi (Pierre-Feuille-Ciseaux)
 # команда -> équipe; клан -> clan; банда -> bande
+# ресурсы: Металл -> Métal; Водород -> Hydrogène; Кристаллы -> Cristaux; Детали -> Composants
+#   (не «pièces» — это монеты)
+# Мастерская -> Atelier; Кибер-броня -> Cyber-Armure; Шаттл -> Navette (ж.р.: assemblée)
+# Налёт -> Raid; вылет -> vol; Стойка обороны -> Posture de défense; Разведка -> Reconnaissance (кнопка: RECO)
+# Реванш -> Revanche; Щит -> Bouclier (anti-raids); Сундук -> Coffret (не Coffre — это Кибер-Сейф)
+# Серия -> Série; Станция команды -> Station d'équipe; биржа котлет -> Bourse des côtelettes
 
 BUTTONS = {
     "main_menu": "📱 MENU PRINCIPAL",
@@ -620,6 +626,171 @@ STRINGS = {
     "mk.err_insufficient": "❌ Pas assez de pièces : il en faut {total}.",
     "farm.btn_market": "📈 Bourse des côtelettes",
 
+    # ---------------- ressources (vague 22.10, soir) ----------------
+    "res.metal": "Métal",
+    "res.hydrogen": "Hydrogène",
+    "res.crystal": "Cristaux",
+    "res.parts": "Composants",
+    "res.none": "rien pour l'instant",
+    "games.resource_gain": "{icon} Récolté : <b>+{qty} {name}</b> (total {total}) → /workshop",
+    "duel.metal_gain": "⛏ Trophée de duel : <b>+{metal} Métal</b> → /workshop",
+    "quest.win_resources": "\n📦 En plus, un lot de ressources : <b>{qty}</b> de chaque → /workshop",
+    "profile.resources_line": "🧰 Ressources : {stock}\n",
+    "menu.btn_goals": "🎯 Objectifs du jour",
+    "menu.btn_raids": "🏴‍☠️ Raids",
+    "menu.btn_workshop": "🔧 Atelier",
+    "farm.btn_workshop": "🔧 Atelier",
+    "farm.boost_armor": "🛡 Cyber-Armure niv. {level} : +{percent}% de minage pour toujours",
+    "farm.boost_station": "🛰 Station d'équipe niv. {level} : +{percent}% de minage",
+    "clan.btn_station": "🛰 Station d'équipe",
+
+    # ---------------- atelier ----------------
+    "ws.header": (
+        "🔧 <b>ATELIER</b>\n"
+        "..................................................\n\n"
+        "🧰 Tes ressources : {stock}\n"
+        "⛏ Métal — Chifoumi et duels · 💧 Hydrogène — Plus/Moins · "
+        "💎 Cristaux — Quiz · ⚙️ Composants — Cyber-Coffre. Les quêtes donnent un lot complet.\n\n"
+        "🛡 Cyber-Armure : <b>niveau {armor}/{armor_max}</b> (+{armor_pct}% de minage par niveau, pour toujours)\n"
+        "🚀 Navette : <b>{shuttle}</b> — commission de la bourse {shuttle_fee}%, jusqu'à {shuttle_qty} côtelettes par ordre\n\n"
+        "<i>✅ — assez de ressources, 🔒 — pas encore. Une pression et c'est fait.</i>"
+    ),
+    "ws.shuttle_yes": "assemblée",
+    "ws.shuttle_no": "pas encore assemblée",
+    "ws.recipe_nitro_6h": "Refroidissement à l'Azote pour 6 h",
+    "ws.recipe_nuclear_3h": "Boost Nucléaire pour 3 h",
+    "ws.recipe_drone_24h": "Maître-Drone pour 24 h",
+    "ws.recipe_shield_24h": "Bouclier anti-raids pour 24 h",
+    "ws.recipe_cutlet": "Synthèse d'une cyber-côtelette",
+    "ws.recipe_armor": "Cyber-Armure niv. {level}",
+    "ws.recipe_shuttle": "Assembler la Navette",
+    "ws.btn_shuttle_owned": "🚀 Navette assemblée",
+    "ws.btn_armor_max": "🛡 Cyber-Armure : au max",
+    "ws.btn_refresh": "🔄 Actualiser",
+    "ws.btn_farm": "🚜 Vers la ferme",
+    "ws.noop": "Déjà au maximum",
+    "ws.toast": "C'est fait !",
+    "ws.done_nitrogen": "❄️ <b>Refroidissement à l'Azote +40%</b> actif jusqu'à {until} UTC.",
+    "ws.done_nuclear": "☢️ <b>Boost Nucléaire x5</b> actif jusqu'à {until} UTC. Les Foreurs mangent ×3 côtelettes !",
+    "ws.done_drone": "🛸 Le <b>Maître-Drone</b> protège tes robots jusqu'à {until} UTC.",
+    "ws.done_shield": "🛡 Le <b>Bouclier anti-raids</b> tient jusqu'à {until} UTC. Tes ressources sont à l'abri.",
+    "ws.done_cutlet": "🥩 Synthétisé : <b>+{qty} cyber-côtelette</b> dans ton entrepôt. Ravitaille dans /farm !",
+    "ws.done_armor": "🛡 <b>Cyber-Armure niveau {level} !</b> Minage de la ferme : <b>+{percent}%</b> pour toujours.",
+    "ws.done_shuttle": "🚀 <b>Navette assemblée !</b> La commission de la bourse passe à {fee}%, jusqu'à {qty} côtelettes par ordre. Et c'est définitif.",
+    "ws.err_unknown": "❌ Cette recette n'existe pas.",
+    "ws.err_resources": "🔒 Pas assez : {kind} — il en faut {need}, tu en as {have}. Récolte-en dans les jeux !",
+    "ws.err_shuttle_owned": "🚀 La Navette est déjà assemblée — une seule par joueur.",
+    "ws.err_armor_max": "🛡 L'armure est déjà au niveau maximum ({max}).",
+
+    # ---------------- raids ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>RAIDS</b>\n"
+        "..................................................\n\n"
+        "💧 Hydrogène : <b>{hydrogen}</b> (un vol coûte {fuel})\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ Posture de défense : <b>{stance}</b>\n\n"
+        "📊 Raids : <b>{attacks}</b> ({attack_wins} réussis) · repoussés : <b>{holds}/{defenses}</b>\n\n"
+        "<i>Le butin, c'est uniquement des ressources : {percent}% du stock de la cible, {cap} max par ressource. "
+        "Pièces, robots et côtelettes sont intouchables. Ton geste contre la posture de la cible — "
+        "décision contre décision. Un vol toutes les {cooldown} h ; la revanche est gratuite.</i>"
+    ),
+    "raid.ready_line": "Vaisseau prêt au décollage",
+    "raid.cooldown_line": "Recharge : encore {minutes} min",
+    "raid.shield_on": "Bouclier actif jusqu'à {until} UTC",
+    "raid.shield_newbie": "Protection des débutants ({days} premiers jours)",
+    "raid.shield_off": "Pas de bouclier — assemble-en un dans /workshop",
+    "raid.stance_random": "aléatoire (choisis-la dans le menu !)",
+    "raid.btn_scout": "🔭 RECO : trouver des cibles",
+    "raid.btn_revenge": "⚔️ Revanche : {name}",
+    "raid.btn_stance": "✊ Posture de défense",
+    "raid.btn_workshop": "🛡 Assembler un bouclier",
+    "raid.btn_refresh": "🔄 Actualiser",
+    "raid.btn_back": "← Retour",
+    "raid.btn_open": "🏴‍☠️ Ouvrir les raids",
+    "raid.btn_again": "🏴‍☠️ Retour aux raids",
+    "raid.stance_pick": "✊ <b>Posture de défense</b>\nSeul le résultat d'un raid adverse la révèle : le geste de l'attaquant contre ta posture. Change-la de temps en temps — les prévisibles se font piller.",
+    "raid.stance_saved": "Posture : {stance}",
+    "raid.scout": "🔭 <b>La reco a trouvé des cibles.</b> Le vol coûtera {fuel} 💧. À toi de choisir :",
+    "raid.btn_target": "🎯 {name} · ressources ≈{total}",
+    "raid.no_targets": "🔭 La reco n'a trouvé personne : aucune cible valable pour l'instant (boucliers, recharges, débutants). Repasse plus tard.",
+    "raid.pick_move": "✊ <b>Ton geste ?</b> Il jouera contre la posture de défense de la cible. Vol : −{fuel} 💧.",
+    "raid.pick_move_revenge": "⚔️ <b>Revanche ! Ton geste ?</b> Le vol est gratuit et sans recharge.",
+    "raid.result_win": "🏴‍☠️ <b>RAID RÉUSSI !</b>\n{move} contre {stance} chez {name}.\nButin : <b>{loot}</b>",
+    "raid.result_draw": "😐 <b>Égalité.</b> {move} contre {stance} chez {name}. Le vaisseau est rentré à vide, le carburant est parti en fumée.",
+    "raid.result_lose": "💥 <b>LA DÉFENSE A TENU.</b> {move} contre {stance} chez {name}.\nLa cible a récupéré : <b>{loot}</b>",
+    "raid.result_footer": "<i>Les ressources sont dans /workshop. Un bouclier te protège des représailles.</i>",
+    "raid.victim_lost": "🚨 <b>Ta base a été attaquée !</b> {name} : {move} contre ta posture {stance}.\nPerdu : <b>{loot}</b>\n\n⚔️ Revanche gratuite pendant {hours} h. Le bouclier, c'est dans /workshop.",
+    "raid.victim_draw": "🛡 <b>Raid repoussé sur égalité.</b> {name} : {move} contre ta posture {stance}. Rien de perdu.",
+    "raid.victim_held": "🛡 <b>Ta défense a tenu !</b> {name} : {move} contre ta posture {stance}.\nTrophée de défense : <b>{loot}</b>",
+    "raid.err_stance": "❌ Geste inconnu.",
+    "raid.err_self": "🤨 Un raid contre toi-même ? Non.",
+    "raid.err_gone": "❌ Cible indisponible.",
+    "raid.err_teammate": "🤝 On ne pille pas les siens — c'est quelqu'un de ton équipe.",
+    "raid.err_shielded": "🛡 La cible a un bouclier. Choisis-en une autre.",
+    "raid.err_revenge_gone": "❌ La fenêtre de revanche est fermée.",
+    "raid.err_cooldown": "⏳ Recharge : encore {minutes} min.",
+    "raid.err_victim_cooldown": "⏳ Cette cible a déjà été pillée récemment (pause de {hours} h).",
+    "raid.err_fuel": "💧 Pas assez d'hydrogène : il en faut {need}, tu en as {have}. Il se récolte dans Plus/Moins.",
+
+    # ---------------- objectifs du jour ----------------
+    "goal.header": (
+        "🎯 <b>OBJECTIFS DU JOUR</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 Coffret : <b>+{coins} pièces</b> et <b>+{res}</b> d'une ressource au hasard\n"
+        "🔥 Série : <b>{streak}</b> j. · chaque {every}e jour d'affilée ajoute +{bonus} pièces au coffret\n\n"
+        "<i>Les objectifs se renouvellent à 00:00 UTC.</i>"
+    ),
+    "goal.status_progress": "⏳ Boucle les trois et le coffret est à toi.",
+    "goal.status_ready": "✅ <b>Tous les objectifs sont bouclés ! Récupère le coffret.</b>",
+    "goal.status_claimed": "🎁 Le coffret du jour est déjà récupéré. De nouveaux objectifs demain !",
+    "goal.btn_claim": "🎁 RÉCUPÉRER LE COFFRET",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 Actualiser",
+    "goal.toast": "Coffret ouvert !",
+    "goal.chest": "🎁 <b>COFFRET OUVERT !</b>\n💰 +{coins} pièces · {icon} +{qty} {name}\n🔥 Série : {streak} j.",
+    "goal.err_claimed": "🎁 Déjà récupéré aujourd'hui.",
+    "goal.err_not_done": "⏳ Tous les objectifs ne sont pas encore bouclés.",
+    "goal.win_quiz": "Gagner {n} manches de Quiz",
+    "goal.win_rps": "Gagner {n} manches de Chifoumi",
+    "goal.win_hl": "Gagner {n} manches de Plus/Moins",
+    "goal.win_safe": "Ouvrir le Cyber-Coffre {n} fois",
+    "goal.play_rounds": "Jouer {n} manches, tous jeux confondus",
+    "goal.duel": "Jouer un duel",
+    "goal.bonus": "Récupérer la côtelette du jour à la ferme",
+    "goal.craft": "Fabriquer quelque chose à l'atelier",
+    "goal.raid": "Lancer un raid",
+    "goal.market_deal": "Conclure une transaction à la bourse",
+    "goal.donate": "Investir des ressources dans la station d'équipe",
+
+    # ---------------- station d'équipe ----------------
+    "st.header": (
+        "🛰 <b>STATION DE L'ÉQUIPE « {team} »</b>\n"
+        "..................................................\n\n"
+        "Niveau : <b>{level}/{max}</b> → chaque combattant reçoit <b>+{percent}%</b> de minage à la ferme "
+        "(+{per_level}% par niveau)\n\n"
+        "📦 Jusqu'au prochain niveau :\n{progress}\n\n"
+        "🧾 Dernières contributions :\n{feed}\n\n"
+        "🧰 Tes ressources : {stock}\n"
+        "<i>La station est commune : toute l'équipe la construit, chacun touche le bonus. Qui quitte l'équipe perd le bonus.</i>"
+    ),
+    "st.max_level": "🏁 Station achevée — niveau maximum !",
+    "st.feed_empty": "personne n'a encore contribué — ouvre le bal",
+    "st.no_team": "🛰 La station se construit en équipe. Rejoins une équipe ou crée la tienne — et bâtissez ensemble.",
+    "st.btn_find_team": "🏆 Équipes et clans",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ Tout : {qty} {icon} {name}",
+    "st.btn_refresh": "🔄 Actualiser",
+    "st.btn_team": "🏆 Vers l'équipe",
+    "st.toast": "Investi +{qty} {icon}",
+    "st.level_up": "🛰 <b>La station de l'équipe passe au niveau {level} !</b> Tous les combattants ont maintenant +{percent}% de minage à la ferme.",
+    "st.err_qty": "❌ Quantité invalide.",
+    "st.err_no_team": "❌ Tu n'es dans aucune équipe.",
+    "st.err_max": "🏁 La station est déjà achevée (niveau {max}).",
+    "st.err_resources": "🔒 Pas assez de cette ressource : tu en as {have}.",
+
     # ---------------- équipes/clans (surfaces principales) ----------------
     "clan.no_team": "⚠️ <b>Tu n'as pas encore d'équipe !</b>\n\nTu peux enregistrer ta propre bande dès maintenant en tapant sur le bouton ci-dessous.",
     "clan.btn_create": "🏆 Créer une Équipe pour 100k",
@@ -721,6 +892,10 @@ MINIAPP = {
     "blocked": "Compte bloqué par l'administration.",
     "error": "Impossible de charger les données. Réessaie plus tard.",
     "outside": "Ouvre cette application depuis le bot Telegram ROFL HUB.",
+    "resources": "🧰 Ressources",
+    "bonusPct": "Bonus de minage permanent",
+    "shuttle": "🚀 Navette assemblée",
+    "resHint": "Métal — Chifoumi, hydrogène — Plus/Moins, cristaux — Quiz, composants — Cyber-Coffre. À utiliser dans l'atelier, dans le chat du bot.",
 }
 
 COMMANDS = {
@@ -742,4 +917,8 @@ COMMANDS = {
     "faq": "📚 Questions fréquentes",
     "rules": "📜 Conditions d'utilisation",
     "paysupport": "🛟 Assistance paiements",
+    "workshop": "🔧 Atelier : des ressources en améliorations",
+    "raid": "🏴‍☠️ Raids : reco et revanche",
+    "goals": "🎯 Objectifs du jour et coffret",
+    "station": "🛰 Station d'équipe : projet commun",
 }

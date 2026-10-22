@@ -648,6 +648,171 @@ RU: dict[str, str] = {
     "mk.err_insufficient": "❌ Не хватает монет: нужно {total}.",
     "farm.btn_market": "📈 Биржа котлет",
 
+    # ---------------- ресурсы (волна 22.10, вечер) ----------------
+    "res.metal": "Металл",
+    "res.hydrogen": "Водород",
+    "res.crystal": "Кристаллы",
+    "res.parts": "Детали",
+    "res.none": "пока пусто",
+    "games.resource_gain": "{icon} Добыто: <b>+{qty} {name}</b> (всего {total}) → /workshop",
+    "duel.metal_gain": "⛏ Трофей дуэли: <b>+{metal} Металл</b> → /workshop",
+    "quest.win_resources": "\n📦 Плюс набор ресурсов: по <b>{qty}</b> каждого → /workshop",
+    "profile.resources_line": "🧰 Ресурсы: {stock}\n",
+    "menu.btn_goals": "🎯 Ежедневные цели",
+    "menu.btn_raids": "🏴‍☠️ Налёты",
+    "menu.btn_workshop": "🔧 Мастерская",
+    "farm.btn_workshop": "🔧 Мастерская",
+    "farm.boost_armor": "🛡 Кибер-броня ур. {level}: +{percent}% к добыче навсегда",
+    "farm.boost_station": "🛰 Станция команды ур. {level}: +{percent}% к добыче",
+    "clan.btn_station": "🛰 Станция команды",
+
+    # ---------------- мастерская ----------------
+    "ws.header": (
+        "🔧 <b>МАСТЕРСКАЯ</b>\n"
+        "..................................................\n\n"
+        "🧰 Твои ресурсы: {stock}\n"
+        "⛏ Металл — КНБ и дуэли · 💧 Водород — Больше/Меньше · "
+        "💎 Кристаллы — Викторина · ⚙️ Детали — Кибер-Сейф. Квесты дают набор.\n\n"
+        "🛡 Кибер-броня: <b>уровень {armor}/{armor_max}</b> (+{armor_pct}% к добыче за уровень, навсегда)\n"
+        "🚀 Шаттл: <b>{shuttle}</b> — комиссия биржи {shuttle_fee}%, до {shuttle_qty} котлет в ордере\n\n"
+        "<i>✅ — хватает ресурсов, 🔒 — пока нет. Одно нажатие — и готово.</i>"
+    ),
+    "ws.shuttle_yes": "собран",
+    "ws.shuttle_no": "не собран",
+    "ws.recipe_nitro_6h": "Азотное Охлаждение на 6 ч",
+    "ws.recipe_nuclear_3h": "Ядерный Разгон на 3 ч",
+    "ws.recipe_drone_24h": "Мастер-дрон на сутки",
+    "ws.recipe_shield_24h": "Щит от налётов на сутки",
+    "ws.recipe_cutlet": "Синтез кибер-котлеты",
+    "ws.recipe_armor": "Кибер-броня ур. {level}",
+    "ws.recipe_shuttle": "Собрать Шаттл",
+    "ws.btn_shuttle_owned": "🚀 Шаттл собран",
+    "ws.btn_armor_max": "🛡 Кибер-броня: максимум",
+    "ws.btn_refresh": "🔄 Обновить",
+    "ws.btn_farm": "🚜 К ферме",
+    "ws.noop": "Уже на максимуме",
+    "ws.toast": "Готово!",
+    "ws.done_nitrogen": "❄️ <b>Азотное Охлаждение +40%</b> активно до {until} UTC.",
+    "ws.done_nuclear": "☢️ <b>Ядерный Разгон x5</b> активен до {until} UTC. Бурильщики едят ×3 котлет!",
+    "ws.done_drone": "🛸 <b>Мастер-дрон</b> бережёт роботов до {until} UTC.",
+    "ws.done_shield": "🛡 <b>Щит от налётов</b> держится до {until} UTC. Ресурсы под защитой.",
+    "ws.done_cutlet": "🥩 Синтезировано: <b>+{qty} кибер-котлета</b> на склад. Заправляй в /farm!",
+    "ws.done_armor": "🛡 <b>Кибер-броня уровня {level}!</b> Добыча фермы: <b>+{percent}%</b> навсегда.",
+    "ws.done_shuttle": "🚀 <b>Шаттл собран!</b> Комиссия на бирже теперь {fee}%, в ордере до {qty} котлет. Это навсегда.",
+    "ws.err_unknown": "❌ Такого рецепта нет.",
+    "ws.err_resources": "🔒 Не хватает: {kind} нужно {need}, есть {have}. Добывай в играх!",
+    "ws.err_shuttle_owned": "🚀 Шаттл уже собран — он один на игрока.",
+    "ws.err_armor_max": "🛡 Броня уже максимального уровня ({max}).",
+
+    # ---------------- налёты ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>НАЛЁТЫ</b>\n"
+        "..................................................\n\n"
+        "💧 Водород: <b>{hydrogen}</b> (вылет стоит {fuel})\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ Стойка обороны: <b>{stance}</b>\n\n"
+        "📊 Налётов: <b>{attacks}</b> (удачных {attack_wins}) · отбито: <b>{holds}/{defenses}</b>\n\n"
+        "<i>Добыча — только ресурсы: {percent}% запаса цели, не больше {cap} за ресурс. "
+        "Монеты, роботы и котлеты неприкосновенны. Твой жест против стойки цели — "
+        "решение против решения. Один вылет в {cooldown} ч; реванш — бесплатно.</i>"
+    ),
+    "raid.ready_line": "Корабль готов к вылету",
+    "raid.cooldown_line": "Перезарядка: ещё {minutes} мин",
+    "raid.shield_on": "Щит активен до {until} UTC",
+    "raid.shield_newbie": "Защита новичка (первые {days} дня)",
+    "raid.shield_off": "Щита нет — собери в /workshop",
+    "raid.stance_random": "случайная (выбери в меню!)",
+    "raid.btn_scout": "🔭 РАЗВЕДКА: найти цели",
+    "raid.btn_revenge": "⚔️ Реванш: {name}",
+    "raid.btn_stance": "✊ Стойка обороны",
+    "raid.btn_workshop": "🛡 Собрать щит",
+    "raid.btn_refresh": "🔄 Обновить",
+    "raid.btn_back": "← Назад",
+    "raid.btn_open": "🏴‍☠️ Открыть налёты",
+    "raid.btn_again": "🏴‍☠️ К налётам",
+    "raid.stance_pick": "✊ <b>Стойка обороны</b>\nЕё увидит только исход чужого налёта: атакующий жест против твоей стойки. Меняй иногда — предсказуемых грабят.",
+    "raid.stance_saved": "Стойка: {stance}",
+    "raid.scout": "🔭 <b>Разведка нашла цели.</b> Вылет спишет {fuel} 💧. Выбирай:",
+    "raid.btn_target": "🎯 {name} · ресурсов ≈{total}",
+    "raid.no_targets": "🔭 Разведка никого не нашла: подходящих целей сейчас нет (щиты, кулдауны, новички). Загляни позже.",
+    "raid.pick_move": "✊ <b>Твой жест?</b> Он сыграет против стойки обороны цели. Вылет: −{fuel} 💧.",
+    "raid.pick_move_revenge": "⚔️ <b>Реванш! Твой жест?</b> Вылет бесплатный и без перезарядки.",
+    "raid.result_win": "🏴‍☠️ <b>НАЛЁТ УДАЛСЯ!</b>\n{move} против {stance} у {name}.\nТрофеи: <b>{loot}</b>",
+    "raid.result_draw": "😐 <b>Ничья.</b> {move} против {stance} у {name}. Корабль вернулся пустым, топливо сгорело.",
+    "raid.result_lose": "💥 <b>ОБОРОНА ВЫСТОЯЛА.</b> {move} против {stance} у {name}.\nЦели досталось: <b>{loot}</b>",
+    "raid.result_footer": "<i>Ресурсы — в /workshop. Щит защитит от ответки.</i>",
+    "raid.victim_lost": "🚨 <b>На тебя налетели!</b> {name}: {move} против твоей стойки {stance}.\nПотеряно: <b>{loot}</b>\n\n⚔️ Реванш бесплатно в течение {hours} ч. Щит — в /workshop.",
+    "raid.victim_draw": "🛡 <b>Налёт отбит вничью.</b> {name}: {move} против твоей стойки {stance}. Ничего не потеряно.",
+    "raid.victim_held": "🛡 <b>Оборона выстояла!</b> {name}: {move} против твоей стойки {stance}.\nТрофей обороны: <b>{loot}</b>",
+    "raid.err_stance": "❌ Неизвестный жест.",
+    "raid.err_self": "🤨 Налёт на самого себя? Нет.",
+    "raid.err_gone": "❌ Цель недоступна.",
+    "raid.err_teammate": "🤝 Своих не грабим — это тиммейт.",
+    "raid.err_shielded": "🛡 У цели щит. Выбери другую.",
+    "raid.err_revenge_gone": "❌ Окно реванша закрыто.",
+    "raid.err_cooldown": "⏳ Перезарядка: ещё {minutes} мин.",
+    "raid.err_victim_cooldown": "⏳ Эту цель уже грабили недавно (пауза {hours} ч).",
+    "raid.err_fuel": "💧 Не хватает водорода: нужно {need}, есть {have}. Он добывается в Больше/Меньше.",
+
+    # ---------------- ежедневные цели ----------------
+    "goal.header": (
+        "🎯 <b>ЦЕЛИ НА СЕГОДНЯ</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 Сундук: <b>+{coins} монет</b> и <b>+{res}</b> случайного ресурса\n"
+        "🔥 Серия: <b>{streak}</b> дн. · каждый {every}-й день подряд +{bonus} монет к сундуку\n\n"
+        "<i>Цели обновляются в 00:00 UTC.</i>"
+    ),
+    "goal.status_progress": "⏳ Закрой все три — и сундук твой.",
+    "goal.status_ready": "✅ <b>Все цели закрыты! Забирай сундук.</b>",
+    "goal.status_claimed": "🎁 Сундук за сегодня уже забран. Завтра — новые цели!",
+    "goal.btn_claim": "🎁 ЗАБРАТЬ СУНДУК",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 Обновить",
+    "goal.toast": "Сундук открыт!",
+    "goal.chest": "🎁 <b>СУНДУК ОТКРЫТ!</b>\n💰 +{coins} монет · {icon} +{qty} {name}\n🔥 Серия: {streak} дн.",
+    "goal.err_claimed": "🎁 Сегодня уже забирал(а).",
+    "goal.err_not_done": "⏳ Ещё не все цели закрыты.",
+    "goal.win_quiz": "Выиграть {n} раундов викторины",
+    "goal.win_rps": "Выиграть {n} раундов КНБ",
+    "goal.win_hl": "Выиграть {n} раундов Больше/Меньше",
+    "goal.win_safe": "Вскрыть Кибер-Сейф {n} раза",
+    "goal.play_rounds": "Сыграть {n} раундов в любые игры",
+    "goal.duel": "Сыграть дуэль",
+    "goal.bonus": "Забрать ежедневную котлету на ферме",
+    "goal.craft": "Собрать что-нибудь в мастерской",
+    "goal.raid": "Совершить налёт",
+    "goal.market_deal": "Заключить сделку на бирже",
+    "goal.donate": "Вложить ресурсы в станцию команды",
+
+    # ---------------- станция команды ----------------
+    "st.header": (
+        "🛰 <b>СТАНЦИЯ КОМАНДЫ «{team}»</b>\n"
+        "..................................................\n\n"
+        "Уровень: <b>{level}/{max}</b> → каждому бойцу <b>+{percent}%</b> к добыче фермы "
+        "(+{per_level}% за уровень)\n\n"
+        "📦 До следующего уровня:\n{progress}\n\n"
+        "🧾 Последние вклады:\n{feed}\n\n"
+        "🧰 Твои ресурсы: {stock}\n"
+        "<i>Станция общая: строит вся команда, бонус получает каждый. Вышел из команды — бонус пропал.</i>"
+    ),
+    "st.max_level": "🏁 Станция достроена — максимальный уровень!",
+    "st.feed_empty": "пока никто не вкладывал — будь первым(ой)",
+    "st.no_team": "🛰 Станция строится командой. Вступи в команду или создай свою — и стройте вместе.",
+    "st.btn_find_team": "🏆 Команды и кланы",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ Всё: {qty} {icon} {name}",
+    "st.btn_refresh": "🔄 Обновить",
+    "st.btn_team": "🏆 К команде",
+    "st.toast": "Вложено +{qty} {icon}",
+    "st.level_up": "🛰 <b>Станция команды выросла до уровня {level}!</b> У всех бойцов теперь +{percent}% к добыче фермы.",
+    "st.err_qty": "❌ Неверное количество.",
+    "st.err_no_team": "❌ Ты не в команде.",
+    "st.err_max": "🏁 Станция уже достроена (уровень {max}).",
+    "st.err_resources": "🔒 Не хватает ресурса: есть {have}.",
+
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>У тебя пока нет созданной команды!</b>\n\nТы можешь зарегистрировать личную банду прямо сейчас, нажав на кнопку ниже.",
     "clan.btn_create": "🏆 Создать команду за 100к",
@@ -1282,6 +1447,171 @@ EN: dict[str, str] = {
     "mk.err_own": "🤨 You can't buy your own order.",
     "mk.err_insufficient": "❌ Not enough coins: {total} needed.",
     "farm.btn_market": "📈 Cutlet market",
+
+    # ---------------- resources (wave 22.10, evening) ----------------
+    "res.metal": "Metal",
+    "res.hydrogen": "Hydrogen",
+    "res.crystal": "Crystals",
+    "res.parts": "Parts",
+    "res.none": "empty for now",
+    "games.resource_gain": "{icon} Mined: <b>+{qty} {name}</b> ({total} total) → /workshop",
+    "duel.metal_gain": "⛏ Duel trophy: <b>+{metal} Metal</b> → /workshop",
+    "quest.win_resources": "\n📦 Plus a resource bundle: <b>{qty}</b> of each → /workshop",
+    "profile.resources_line": "🧰 Resources: {stock}\n",
+    "menu.btn_goals": "🎯 Daily goals",
+    "menu.btn_raids": "🏴‍☠️ Raids",
+    "menu.btn_workshop": "🔧 Workshop",
+    "farm.btn_workshop": "🔧 Workshop",
+    "farm.boost_armor": "🛡 Cyber-armor lvl {level}: +{percent}% mining forever",
+    "farm.boost_station": "🛰 Team station lvl {level}: +{percent}% mining",
+    "clan.btn_station": "🛰 Team station",
+
+    # ---------------- workshop ----------------
+    "ws.header": (
+        "🔧 <b>WORKSHOP</b>\n"
+        "..................................................\n\n"
+        "🧰 Your resources: {stock}\n"
+        "⛏ Metal — RPS & duels · 💧 Hydrogen — High/Low · "
+        "💎 Crystals — Quiz · ⚙️ Parts — Cyber-Safe. Quests give a bundle.\n\n"
+        "🛡 Cyber-armor: <b>level {armor}/{armor_max}</b> (+{armor_pct}% mining per level, forever)\n"
+        "🚀 Shuttle: <b>{shuttle}</b> — market fee {shuttle_fee}%, up to {shuttle_qty} cutlets per order\n\n"
+        "<i>✅ — enough resources, 🔒 — not yet. One tap and it's done.</i>"
+    ),
+    "ws.shuttle_yes": "built",
+    "ws.shuttle_no": "not built",
+    "ws.recipe_nitro_6h": "Nitrogen Cooling for 6 h",
+    "ws.recipe_nuclear_3h": "Nuclear Overclock for 3 h",
+    "ws.recipe_drone_24h": "Master Drone for 24 h",
+    "ws.recipe_shield_24h": "Raid shield for 24 h",
+    "ws.recipe_cutlet": "Synthesize a cyber-cutlet",
+    "ws.recipe_armor": "Cyber-armor lvl {level}",
+    "ws.recipe_shuttle": "Build the Shuttle",
+    "ws.btn_shuttle_owned": "🚀 Shuttle built",
+    "ws.btn_armor_max": "🛡 Cyber-armor: maxed",
+    "ws.btn_refresh": "🔄 Refresh",
+    "ws.btn_farm": "🚜 To the farm",
+    "ws.noop": "Already maxed",
+    "ws.toast": "Done!",
+    "ws.done_nitrogen": "❄️ <b>Nitrogen Cooling +40%</b> active until {until} UTC.",
+    "ws.done_nuclear": "☢️ <b>Nuclear Overclock x5</b> active until {until} UTC. Drillers eat ×3 cutlets!",
+    "ws.done_drone": "🛸 <b>Master Drone</b> protects your robots until {until} UTC.",
+    "ws.done_shield": "🛡 <b>Raid shield</b> holds until {until} UTC. Your resources are safe.",
+    "ws.done_cutlet": "🥩 Synthesized: <b>+{qty} cyber-cutlet</b> in your inventory. Refuel in /farm!",
+    "ws.done_armor": "🛡 <b>Cyber-armor level {level}!</b> Farm mining: <b>+{percent}%</b> forever.",
+    "ws.done_shuttle": "🚀 <b>Shuttle built!</b> Market fee is now {fee}%, up to {qty} cutlets per order. Permanent.",
+    "ws.err_unknown": "❌ No such recipe.",
+    "ws.err_resources": "🔒 Not enough: {kind} needs {need}, you have {have}. Mine it in the games!",
+    "ws.err_shuttle_owned": "🚀 Shuttle already built — one per player.",
+    "ws.err_armor_max": "🛡 Armor is already at max level ({max}).",
+
+    # ---------------- raids ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>RAIDS</b>\n"
+        "..................................................\n\n"
+        "💧 Hydrogen: <b>{hydrogen}</b> (a sortie costs {fuel})\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ Defense stance: <b>{stance}</b>\n\n"
+        "📊 Raids: <b>{attacks}</b> ({attack_wins} successful) · held: <b>{holds}/{defenses}</b>\n\n"
+        "<i>Loot is resources only: {percent}% of the target's stock, max {cap} per resource. "
+        "Coins, robots and cutlets are untouchable. Your gesture vs the target's stance — "
+        "decision against decision. One sortie per {cooldown} h; revenge is free.</i>"
+    ),
+    "raid.ready_line": "Ship ready for launch",
+    "raid.cooldown_line": "Recharging: {minutes} min left",
+    "raid.shield_on": "Shield active until {until} UTC",
+    "raid.shield_newbie": "Rookie protection (first {days} days)",
+    "raid.shield_off": "No shield — build one in /workshop",
+    "raid.stance_random": "random (pick one in the menu!)",
+    "raid.btn_scout": "🔭 SCOUT: find targets",
+    "raid.btn_revenge": "⚔️ Revenge: {name}",
+    "raid.btn_stance": "✊ Defense stance",
+    "raid.btn_workshop": "🛡 Build a shield",
+    "raid.btn_refresh": "🔄 Refresh",
+    "raid.btn_back": "← Back",
+    "raid.btn_open": "🏴‍☠️ Open raids",
+    "raid.btn_again": "🏴‍☠️ Back to raids",
+    "raid.stance_pick": "✊ <b>Defense stance</b>\nOnly the outcome of someone's raid reveals it: their gesture vs your stance. Change it now and then — predictable players get robbed.",
+    "raid.stance_saved": "Stance: {stance}",
+    "raid.scout": "🔭 <b>Scouting found targets.</b> A sortie costs {fuel} 💧. Pick one:",
+    "raid.btn_target": "🎯 {name} · resources ≈{total}",
+    "raid.no_targets": "🔭 Scouting found no one: no suitable targets right now (shields, cooldowns, rookies). Try later.",
+    "raid.pick_move": "✊ <b>Your gesture?</b> It plays against the target's defense stance. Sortie: −{fuel} 💧.",
+    "raid.pick_move_revenge": "⚔️ <b>Revenge! Your gesture?</b> The sortie is free and skips the cooldown.",
+    "raid.result_win": "🏴‍☠️ <b>RAID SUCCESSFUL!</b>\n{move} vs {stance} at {name}.\nLoot: <b>{loot}</b>",
+    "raid.result_draw": "😐 <b>Draw.</b> {move} vs {stance} at {name}. The ship came back empty, fuel burned.",
+    "raid.result_lose": "💥 <b>THE DEFENSE HELD.</b> {move} vs {stance} at {name}.\nThe target took: <b>{loot}</b>",
+    "raid.result_footer": "<i>Resources are in /workshop. A shield protects you from payback.</i>",
+    "raid.victim_lost": "🚨 <b>You've been raided!</b> {name}: {move} vs your stance {stance}.\nLost: <b>{loot}</b>\n\n⚔️ Free revenge within {hours} h. Shield — in /workshop.",
+    "raid.victim_draw": "🛡 <b>Raid ended in a draw.</b> {name}: {move} vs your stance {stance}. Nothing lost.",
+    "raid.victim_held": "🛡 <b>Your defense held!</b> {name}: {move} vs your stance {stance}.\nDefense trophy: <b>{loot}</b>",
+    "raid.err_stance": "❌ Unknown gesture.",
+    "raid.err_self": "🤨 Raiding yourself? No.",
+    "raid.err_gone": "❌ Target unavailable.",
+    "raid.err_teammate": "🤝 We don't raid our own — that's a teammate.",
+    "raid.err_shielded": "🛡 The target has a shield. Pick another.",
+    "raid.err_revenge_gone": "❌ The revenge window is closed.",
+    "raid.err_cooldown": "⏳ Recharging: {minutes} min left.",
+    "raid.err_victim_cooldown": "⏳ This target was raided recently ({hours} h pause).",
+    "raid.err_fuel": "💧 Not enough hydrogen: need {need}, have {have}. It's mined in High/Low.",
+
+    # ---------------- daily goals ----------------
+    "goal.header": (
+        "🎯 <b>TODAY'S GOALS</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 Chest: <b>+{coins} coins</b> and <b>+{res}</b> of a random resource\n"
+        "🔥 Streak: <b>{streak}</b> days · every {every}th day in a row adds +{bonus} coins to the chest\n\n"
+        "<i>Goals reset at 00:00 UTC.</i>"
+    ),
+    "goal.status_progress": "⏳ Complete all three and the chest is yours.",
+    "goal.status_ready": "✅ <b>All goals done! Claim the chest.</b>",
+    "goal.status_claimed": "🎁 Today's chest is already claimed. New goals tomorrow!",
+    "goal.btn_claim": "🎁 CLAIM THE CHEST",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 Refresh",
+    "goal.toast": "Chest opened!",
+    "goal.chest": "🎁 <b>CHEST OPENED!</b>\n💰 +{coins} coins · {icon} +{qty} {name}\n🔥 Streak: {streak} days",
+    "goal.err_claimed": "🎁 Already claimed today.",
+    "goal.err_not_done": "⏳ Not all goals are done yet.",
+    "goal.win_quiz": "Win {n} quiz rounds",
+    "goal.win_rps": "Win {n} RPS rounds",
+    "goal.win_hl": "Win {n} High/Low rounds",
+    "goal.win_safe": "Crack the Cyber-Safe {n} times",
+    "goal.play_rounds": "Play {n} rounds of any games",
+    "goal.duel": "Play a duel",
+    "goal.bonus": "Claim the daily cutlet on the farm",
+    "goal.craft": "Build something in the workshop",
+    "goal.raid": "Carry out a raid",
+    "goal.market_deal": "Close a deal on the market",
+    "goal.donate": "Donate resources to the team station",
+
+    # ---------------- team station ----------------
+    "st.header": (
+        "🛰 <b>TEAM STATION “{team}”</b>\n"
+        "..................................................\n\n"
+        "Level: <b>{level}/{max}</b> → every fighter gets <b>+{percent}%</b> farm mining "
+        "(+{per_level}% per level)\n\n"
+        "📦 To the next level:\n{progress}\n\n"
+        "🧾 Latest donations:\n{feed}\n\n"
+        "🧰 Your resources: {stock}\n"
+        "<i>The station is shared: the whole team builds it, everyone gets the bonus. Leave the team — lose the bonus.</i>"
+    ),
+    "st.max_level": "🏁 The station is complete — max level!",
+    "st.feed_empty": "no donations yet — be the first",
+    "st.no_team": "🛰 The station is built by a team. Join one or create your own — and build together.",
+    "st.btn_find_team": "🏆 Teams & clans",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ All: {qty} {icon} {name}",
+    "st.btn_refresh": "🔄 Refresh",
+    "st.btn_team": "🏆 To the team",
+    "st.toast": "Donated +{qty} {icon}",
+    "st.level_up": "🛰 <b>Your team station reached level {level}!</b> Every fighter now gets +{percent}% farm mining.",
+    "st.err_qty": "❌ Invalid amount.",
+    "st.err_no_team": "❌ You're not in a team.",
+    "st.err_max": "🏁 The station is already complete (level {max}).",
+    "st.err_resources": "🔒 Not enough of that resource: you have {have}.",
 
     # ---------------- teams/clans (main surfaces) ----------------
     "clan.no_team": "⚠️ <b>You don't have a team yet!</b>\n\nYou can register your own crew right now by tapping the button below.",

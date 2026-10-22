@@ -19,6 +19,11 @@
 # викторина -> 竞答
 # уровень интеллекта -> 智力等级
 # команда -> 战队 · клан -> 公会 · ставка -> 押注 · банк -> 奖池
+# биржа котлет -> 肉排交易所
+# ресурсы (волна 22.10): Металл -> 金属 · Водород -> 氢气 · Кристаллы -> 晶体 · Детали -> 零件
+# Мастерская -> 工坊 · Кибер-броня -> 赛博装甲 · Шаттл -> 穿梭机 · Щит -> 护盾
+# Налёт -> 突袭 · Стойка обороны -> 防御姿态 · Разведка -> 侦察 · Реванш -> 复仇战
+# Сундук -> 宝箱 · Серия -> 连续（天数） · Станция команды -> 战队空间站 · добыча -> 产量
 
 BUTTONS = {
     "main_menu": "📱 主菜单",
@@ -618,6 +623,171 @@ STRINGS = {
     "mk.err_insufficient": "❌ 金币不足：需要 {total}。",
     "farm.btn_market": "📈 肉饼交易所",
 
+    # ---------------- ресурсы (волна 22.10, вечер) ----------------
+    "res.metal": "金属",
+    "res.hydrogen": "氢气",
+    "res.crystal": "晶体",
+    "res.parts": "零件",
+    "res.none": "暂时为空",
+    "games.resource_gain": "{icon} 获得资源：<b>+{qty} {name}</b>（共 {total}）→ /workshop",
+    "duel.metal_gain": "⛏ 对决战利品：<b>+{metal} 金属</b> → /workshop",
+    "quest.win_resources": "\n📦 另有一套资源：每种 <b>{qty}</b> → /workshop",
+    "profile.resources_line": "🧰 资源：{stock}\n",
+    "menu.btn_goals": "🎯 每日目标",
+    "menu.btn_raids": "🏴‍☠️ 突袭",
+    "menu.btn_workshop": "🔧 工坊",
+    "farm.btn_workshop": "🔧 工坊",
+    "farm.boost_armor": "🛡 赛博装甲 {level} 级：产量永久 +{percent}%",
+    "farm.boost_station": "🛰 战队空间站 {level} 级：产量 +{percent}%",
+    "clan.btn_station": "🛰 战队空间站",
+
+    # ---------------- мастерская ----------------
+    "ws.header": (
+        "🔧 <b>工坊</b>\n"
+        "..................................................\n\n"
+        "🧰 你的资源：{stock}\n"
+        "⛏ 金属——石头剪刀布与对决 · 💧 氢气——比大小 · "
+        "💎 晶体——竞答 · ⚙️ 零件——赛博保险箱。冒险任务送一整套。\n\n"
+        "🛡 赛博装甲：<b>{armor}/{armor_max} 级</b>（每级产量永久 +{armor_pct}%）\n"
+        "🚀 穿梭机：<b>{shuttle}</b>——交易所手续费 {shuttle_fee}%，每单最多 {shuttle_qty} 份肉排\n\n"
+        "<i>✅ ——资源足够，🔒 ——暂时不够。一键即成。</i>"
+    ),
+    "ws.shuttle_yes": "已建成",
+    "ws.shuttle_no": "未建成",
+    "ws.recipe_nitro_6h": "液氮冷却 6 小时",
+    "ws.recipe_nuclear_3h": "核能加速 3 小时",
+    "ws.recipe_drone_24h": "大师无人机 24 小时",
+    "ws.recipe_shield_24h": "突袭护盾 24 小时",
+    "ws.recipe_cutlet": "合成赛博肉排",
+    "ws.recipe_armor": "赛博装甲 {level} 级",
+    "ws.recipe_shuttle": "建造穿梭机",
+    "ws.btn_shuttle_owned": "🚀 穿梭机已建成",
+    "ws.btn_armor_max": "🛡 赛博装甲：已满级",
+    "ws.btn_refresh": "🔄 刷新",
+    "ws.btn_farm": "🚜 去农场",
+    "ws.noop": "已经是最高级",
+    "ws.toast": "完成！",
+    "ws.done_nitrogen": "❄️ <b>液氮冷却 +40%</b> 生效至 {until} UTC。",
+    "ws.done_nuclear": "☢️ <b>核能加速 x5</b> 生效至 {until} UTC。钻机的肉排消耗 ×3！",
+    "ws.done_drone": "🛸 <b>大师无人机</b>守护机器人至 {until} UTC。",
+    "ws.done_shield": "🛡 <b>突袭护盾</b>持续至 {until} UTC。资源受到保护。",
+    "ws.done_cutlet": "🥩 合成完毕：<b>+{qty} 份赛博肉排</b>已入仓库。去 /farm 加燃料吧！",
+    "ws.done_armor": "🛡 <b>赛博装甲 {level} 级！</b>农场产量：永久 <b>+{percent}%</b>。",
+    "ws.done_shuttle": "🚀 <b>穿梭机建成！</b>交易所手续费降为 {fee}%，每单最多 {qty} 份肉排。永久有效。",
+    "ws.err_unknown": "❌ 没有这个配方。",
+    "ws.err_resources": "🔒 资源不足：{kind} 需要 {need}，现有 {have}。去游戏里挖吧！",
+    "ws.err_shuttle_owned": "🚀 穿梭机已建成——每位玩家只能有一艘。",
+    "ws.err_armor_max": "🛡 装甲已达最高级（{max}）。",
+
+    # ---------------- налёты ----------------
+    "raid.header": (
+        "🏴‍☠️ <b>突袭</b>\n"
+        "..................................................\n\n"
+        "💧 氢气：<b>{hydrogen}</b>（每次出击消耗 {fuel}）\n"
+        "🚀 {ready}\n"
+        "🛡 {shield}\n"
+        "✊ 防御姿态：<b>{stance}</b>\n\n"
+        "📊 突袭：<b>{attacks}</b> 次（成功 {attack_wins} 次）· 守住：<b>{holds}/{defenses}</b>\n\n"
+        "<i>战利品只有资源：目标库存的 {percent}%，每种资源最多 {cap}。"
+        "金币、机器人和肉排不受影响。你的手势对阵目标的防御姿态——"
+        "决策对决策。每 {cooldown} 小时可出击一次；复仇战免费。</i>"
+    ),
+    "raid.ready_line": "飞船已准备好出击",
+    "raid.cooldown_line": "冷却中：还需 {minutes} 分钟",
+    "raid.shield_on": "护盾生效至 {until} UTC",
+    "raid.shield_newbie": "新手保护（前 {days} 天）",
+    "raid.shield_off": "没有护盾——去 /workshop 建造",
+    "raid.stance_random": "随机（在菜单里选一个！）",
+    "raid.btn_scout": "🔭 侦察：寻找目标",
+    "raid.btn_revenge": "⚔️ 复仇战：{name}",
+    "raid.btn_stance": "✊ 防御姿态",
+    "raid.btn_workshop": "🛡 建造护盾",
+    "raid.btn_refresh": "🔄 刷新",
+    "raid.btn_back": "← 返回",
+    "raid.btn_open": "🏴‍☠️ 打开突袭",
+    "raid.btn_again": "🏴‍☠️ 回到突袭",
+    "raid.stance_pick": "✊ <b>防御姿态</b>\n只有别人突袭你的结果才会揭示它：对方的手势对阵你的姿态。偶尔换一换——太好猜的人容易被抢。",
+    "raid.stance_saved": "姿态：{stance}",
+    "raid.scout": "🔭 <b>侦察发现了目标。</b>出击消耗 {fuel} 💧。选一个：",
+    "raid.btn_target": "🎯 {name} · 资源 ≈{total}",
+    "raid.no_targets": "🔭 侦察一无所获：目前没有合适的目标（护盾、冷却、新手）。稍后再来。",
+    "raid.pick_move": "✊ <b>你出什么手势？</b>它将对阵目标的防御姿态。出击：−{fuel} 💧。",
+    "raid.pick_move_revenge": "⚔️ <b>复仇战！你出什么手势？</b>本次出击免费，不计冷却。",
+    "raid.result_win": "🏴‍☠️ <b>突袭成功！</b>\n对 {name}：{move} 对阵 {stance}。\n战利品：<b>{loot}</b>",
+    "raid.result_draw": "😐 <b>平局。</b>对 {name}：{move} 对阵 {stance}。飞船空手而归，燃料已烧掉。",
+    "raid.result_lose": "💥 <b>防御守住了。</b>对 {name}：{move} 对阵 {stance}。\n目标反而获得：<b>{loot}</b>",
+    "raid.result_footer": "<i>资源在 /workshop。护盾可防对方报复。</i>",
+    "raid.victim_lost": "🚨 <b>你被突袭了！</b>{name}：{move} 对阵你的姿态 {stance}。\n损失：<b>{loot}</b>\n\n⚔️ {hours} 小时内可免费复仇。护盾——见 /workshop。",
+    "raid.victim_draw": "🛡 <b>突袭打成平局。</b>{name}：{move} 对阵你的姿态 {stance}。没有损失。",
+    "raid.victim_held": "🛡 <b>防御守住了！</b>{name}：{move} 对阵你的姿态 {stance}。\n防御战利品：<b>{loot}</b>",
+    "raid.err_stance": "❌ 未知手势。",
+    "raid.err_self": "🤨 突袭自己？不行。",
+    "raid.err_gone": "❌ 目标不可用。",
+    "raid.err_teammate": "🤝 自己人不抢——那是队友。",
+    "raid.err_shielded": "🛡 目标有护盾。换一个吧。",
+    "raid.err_revenge_gone": "❌ 复仇窗口已关闭。",
+    "raid.err_cooldown": "⏳ 冷却中：还需 {minutes} 分钟。",
+    "raid.err_victim_cooldown": "⏳ 该目标最近刚被抢过（暂停 {hours} 小时）。",
+    "raid.err_fuel": "💧 氢气不足：需要 {need}，现有 {have}。氢气在比大小中获得。",
+
+    # ---------------- ежедневные цели ----------------
+    "goal.header": (
+        "🎯 <b>今日目标</b>\n"
+        "..................................................\n\n"
+        "{goals}\n\n"
+        "{status}\n"
+        "🎁 宝箱：<b>+{coins} 金币</b>和 <b>+{res}</b> 随机资源\n"
+        "🔥 连续：<b>{streak}</b> 天 · 每连续第 {every} 天宝箱额外 +{bonus} 金币\n\n"
+        "<i>目标在 00:00 UTC 刷新。</i>"
+    ),
+    "goal.status_progress": "⏳ 完成全部三项——宝箱就是你的。",
+    "goal.status_ready": "✅ <b>全部目标完成！快领宝箱。</b>",
+    "goal.status_claimed": "🎁 今天的宝箱已经领过了。明天有新目标！",
+    "goal.btn_claim": "🎁 领取宝箱",
+    "goal.btn_go": "→ {goal}",
+    "goal.btn_refresh": "🔄 刷新",
+    "goal.toast": "宝箱已打开！",
+    "goal.chest": "🎁 <b>宝箱已打开！</b>\n💰 +{coins} 金币 · {icon} +{qty} {name}\n🔥 连续：{streak} 天",
+    "goal.err_claimed": "🎁 今天已经领过了。",
+    "goal.err_not_done": "⏳ 还有目标没完成。",
+    "goal.win_quiz": "赢得 {n} 局竞答",
+    "goal.win_rps": "赢得 {n} 局石头剪刀布",
+    "goal.win_hl": "赢得 {n} 局比大小",
+    "goal.win_safe": "打开赛博保险箱 {n} 次",
+    "goal.play_rounds": "任意游戏玩 {n} 局",
+    "goal.duel": "打一场对决",
+    "goal.bonus": "在农场领取每日肉排",
+    "goal.craft": "在工坊里造点什么",
+    "goal.raid": "发动一次突袭",
+    "goal.market_deal": "在交易所完成一笔交易",
+    "goal.donate": "向战队空间站投入资源",
+
+    # ---------------- станция команды ----------------
+    "st.header": (
+        "🛰 <b>战队空间站「{team}」</b>\n"
+        "..................................................\n\n"
+        "等级：<b>{level}/{max}</b> → 每位队员农场产量 <b>+{percent}%</b>"
+        "（每级 +{per_level}%）\n\n"
+        "📦 距下一级：\n{progress}\n\n"
+        "🧾 最近投入：\n{feed}\n\n"
+        "🧰 你的资源：{stock}\n"
+        "<i>空间站属于全队：大家一起建，人人享加成。退出战队——加成消失。</i>"
+    ),
+    "st.max_level": "🏁 空间站已建成——最高级！",
+    "st.feed_empty": "还没有人投入——做第一个吧",
+    "st.no_team": "🛰 空间站由战队共同建造。加入一支战队或创建自己的——一起来建。",
+    "st.btn_find_team": "🏆 战队与公会",
+    "st.btn_donate": "➕ {qty} {icon} {name}",
+    "st.btn_donate_all": "➕ 全部：{qty} {icon} {name}",
+    "st.btn_refresh": "🔄 刷新",
+    "st.btn_team": "🏆 回到战队",
+    "st.toast": "已投入 +{qty} {icon}",
+    "st.level_up": "🛰 <b>战队空间站升到 {level} 级！</b>全体队员农场产量现在 +{percent}%。",
+    "st.err_qty": "❌ 数量无效。",
+    "st.err_no_team": "❌ 你不在任何战队。",
+    "st.err_max": "🏁 空间站已建成（{max} 级）。",
+    "st.err_resources": "🔒 资源不足：现有 {have}。",
+
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>你还没有自己的战队！</b>\n\n点按下方按钮，现在就注册属于你的队伍。",
     "clan.btn_create": "🏆 创建战队（10 万金币）",
@@ -719,6 +889,10 @@ MINIAPP = {
     "blocked": "账号已被管理员封禁。",
     "error": "数据加载失败。稍后再试。",
     "outside": "请从 ROFL HUB 的 Telegram 机器人打开此应用。",
+    "resources": "🧰 资源",
+    "bonusPct": "永久产量加成",
+    "shuttle": "🚀 穿梭机已建成",
+    "resHint": "金属——石头剪刀布，氢气——比大小，晶体——竞答，零件——保险箱。在机器人聊天的工坊里使用。",
 }
 
 COMMANDS = {
@@ -740,4 +914,8 @@ COMMANDS = {
     "faq": "📚 常见问题",
     "rules": "📜 用户协议",
     "paysupport": "🛟 付款支持",
+    "workshop": "🔧 工坊：资源换强化",
+    "raid": "🏴‍☠️ 突袭：侦察与复仇战",
+    "goals": "🎯 每日目标与宝箱",
+    "station": "🛰 战队空间站：共同项目",
 }

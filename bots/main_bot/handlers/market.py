@@ -189,15 +189,17 @@ async def cmd_sell(message: types.Message, user_lang: str = "ru"):
               max_orders=MARKET_MAX_OPEN_ORDERS), parse_mode="HTML")
         return
     qty, price = int(parts[1]), int(parts[2])
+    async with db.pool.acquire() as conn:
+        row = await conn.fetchrow("SELECT inv_cutlets, has_shuttle FROM users WHERE user_id = $1",
+                                  message.from_user.id)
+    if row is None:
+        await message.answer(t(user_lang, "common.no_profile"))
+        return
+    inv = row["inv_cutlets"]
     try:
-        validate_order(qty, price)
+        validate_order(qty, price, shuttle=bool(row["has_shuttle"]))
     except MarketError as e:
         await message.answer(e.localized(user_lang))
-        return
-    async with db.pool.acquire() as conn:
-        inv = await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = $1", message.from_user.id)
-    if inv is None:
-        await message.answer(t(user_lang, "common.no_profile"))
         return
     if inv < qty:
         await message.answer(t(user_lang, "mk.err_no_cutlets", have=inv))
