@@ -1093,7 +1093,7 @@
     else status = "⏳ " + L.license;
     const idle = kind === "premium" && fueled === 0 ? " idle" : "";   // серые — только при полной остановке
     return '<div class="unit ' + kind + idle + '">' +
-      '<img src="/img/robots/' + kind + '.png" alt="" onerror="this.onerror=null;this.src=\'/img/robots/' + kind + '.svg\'">' +
+      '<img src="/img/robots/' + kind + '.jpg" alt="" onerror="this.onerror=null;this.src=\'/img/robots/' + kind + '.svg\'">' +
       '<div class="cnt">×' + n + '</div><div class="unm">' + L["unit_" + kind] + '</div>' +
       '<div class="ust">' + status + '</div></div>';
   }

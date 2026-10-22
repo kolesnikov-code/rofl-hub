@@ -1,8 +1,12 @@
 import logging
+import os
+import re
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from aiogram import Router, types, F
 from aiogram.filters import Command
+from aiogram.types import FSInputFile
 
 from shared.analytics import track
 from shared.database import db
@@ -18,6 +22,65 @@ from shared.locales import btn_variants, t
 
 router = Router()
 logger = logging.getLogger(__name__)
+
+# Арты роботов владельца (22.10): флагман фермы показывается фото в /farm
+ROBOT_ART_DIR = Path(__file__).resolve().parents[3] / "static" / "webapp" / "img" / "robots"
+CAPTION_LIMIT = 1024          # лимит подписи к фото в Telegram
+_art_file_ids: dict[str, str] = {}   # kind → file_id после первой отправки (не грузить файл каждый раз)
+
+
+def flagship_kind(counts: dict) -> str | None:
+    """Самый крутой робот на ферме: Бурильщик > Майнер > Стажёр."""
+    for kind in ("premium", "junior", "intern"):
+        if counts.get(kind, 0) > 0:
+            return kind
+    return None
+
+
+def _robot_art(kind: str):
+    cached = _art_file_ids.get(kind)
+    if cached:
+        return cached
+    path = ROBOT_ART_DIR / f"{kind}.jpg"
+    return FSInputFile(path) if path.exists() else None
+
+
+async def send_farm(target: types.Message, user, miners: list[MinerState], now: datetime,
+                    lang: str) -> None:
+    """Дашборд фермы: с фото флагманского робота, если арт есть и подпись влезает."""
+    text = render_farm_text(user, miners, now, lang)
+    kb = get_farm_keyboard(lang, user["intern_claimed"])
+    kind = flagship_kind(farm_counts(miners, now))
+    art = _robot_art(kind) if kind else None
+    if art is not None:
+        # Telegram считает лимит подписи без HTML-тегов; держим запас
+        fits = len(re.sub(r"<[^>]+>", "", text)) <= CAPTION_LIMIT - 24
+        name_key = {"junior": "dlv.miner_junior", "premium": "dlv.miner_premium"}.get(kind)
+        short = f"🤖 <b>{t(lang, name_key)}</b>" if name_key else None
+        try:
+            sent = await target.answer_photo(photo=art, caption=text if fits else short,
+                                             reply_markup=kb if fits else None, parse_mode="HTML")
+            if sent.photo:
+                _art_file_ids[kind] = sent.photo[-1].file_id
+            if fits:
+                return
+        except Exception:
+            logger.warning("[FARM] фото робота %s не отправилось — шлю текст", kind, exc_info=True)
+    await target.answer(text, reply_markup=kb, parse_mode="HTML")
+
+
+async def edit_farm(message: types.Message, text: str, kb: types.InlineKeyboardMarkup) -> None:
+    """Обновляет дашборд: подпись у фото или текст у обычного сообщения."""
+    try:
+        if message.photo:
+            if len(text) <= CAPTION_LIMIT:
+                await message.edit_caption(caption=text, reply_markup=kb, parse_mode="HTML")
+            else:
+                await message.answer(text, reply_markup=kb, parse_mode="HTML")
+        else:
+            await message.edit_text(text, reply_markup=kb, parse_mode="HTML")
+    except Exception:
+        pass  # текст не изменился — Telegram кидает ошибку, это не сбой
 
 
 async def activate_intern(conn, user_id: int, now: datetime) -> None:
@@ -133,9 +196,7 @@ async def cmd_farm(message: types.Message, override_user_id: int = None, user_la
         await message.answer(t(user_lang, "common.no_profile"))
         return
 
-    await message.answer(render_farm_text(user, miners, now, user_lang),
-                         reply_markup=get_farm_keyboard(user_lang, user["intern_claimed"]),
-                         parse_mode="HTML")
+    await send_farm(message, user, miners, now, user_lang)
 
 
 # ============================================================================
@@ -224,12 +285,8 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
     if extra_message:
         await callback.message.answer(extra_message)
 
-    try:
-        await callback.message.edit_text(render_farm_text(user, miners, now, user_lang),
-                                         reply_markup=get_farm_keyboard(user_lang, user["intern_claimed"]),
-                                         parse_mode="HTML")
-    except Exception:
-        pass  # текст не изменился — Telegram кидает ошибку, это не сбой
+    await edit_farm(callback.message, render_farm_text(user, miners, now, user_lang),
+                    get_farm_keyboard(user_lang, user["intern_claimed"]))
 
 
 # ============================================================================
