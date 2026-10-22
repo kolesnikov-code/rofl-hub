@@ -89,6 +89,40 @@
   .rank { font-size: 11px; font-weight: 700; color: var(--accent); opacity: .85; }
   .top-row .bal { font-weight: 800; }
   .loading { text-align: center; color: var(--muted); padding: 50px 0; font-size: 15px; }
+  .hidden { display: none !important; }
+  .made-by { margin-top: 6px; }
+  .made-by a { color: var(--neon); text-decoration: none; font-weight: 700; }
+  .scene-btn { background: linear-gradient(90deg, var(--accent), #ff9d3d); color: #1a1200; box-shadow: 0 0 18px rgba(255,217,61,.35); }
+  .scene-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .scene-head h2 { font-size: 14px; letter-spacing: 1.5px; color: var(--neon); }
+  .back { padding: 8px 12px; border: 1px solid rgba(0,255,225,.35); border-radius: 10px; background: #0d1326; color: var(--text); font-weight: 700; cursor: pointer; }
+  .mine { position: relative; height: 340px; border-radius: 16px; overflow: hidden; margin-bottom: 12px;
+    background: linear-gradient(180deg, #070a16 0%, #0e1430 55%, #2b1b12 56%, #1a1009 100%);
+    border: 1px solid rgba(0,255,225,.14); box-shadow: 0 4px 24px rgba(0,0,0,.4); }
+  .sky i { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: .7; animation: twinkle 2.8s infinite; }
+  @keyframes twinkle { 0%,100% { opacity: .2 } 50% { opacity: 1 } }
+  .moon { position: absolute; right: 24px; top: 22px; width: 42px; height: 42px; border-radius: 50%; background: #ffe9a3; box-shadow: 0 0 30px rgba(255,233,163,.55); }
+  .hill { position: absolute; left: -10%; right: -10%; top: 46%; height: 60px; background: #1d1326; border-radius: 50% 50% 0 0; }
+  .arch { position: absolute; left: 50%; top: 32%; transform: translateX(-50%); width: 96px; height: 70px;
+    background: #090612; border: 4px solid #6b4a2a; border-bottom: none; border-radius: 48px 48px 0 0; display: flex; align-items: flex-end; justify-content: center; font-size: 22px; padding-bottom: 6px; }
+  .rails { position: absolute; left: 0; right: 0; top: 56%; height: 6px; background: repeating-linear-gradient(90deg, #8a93b8 0 14px, transparent 14px 26px); opacity: .5; }
+  .units { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 10px; padding: 0 10px; flex-wrap: wrap; }
+  .unit { width: 96px; text-align: center; background: rgba(13,19,38,.78); border: 1px solid rgba(0,255,225,.22); border-radius: 12px; padding: 6px 4px 6px; backdrop-filter: blur(2px); }
+  .unit img { width: 64px; height: 64px; display: block; margin: 0 auto; animation: bob 2.2s ease-in-out infinite; }
+  .unit.junior img { animation-duration: 1.9s; }
+  .unit.premium img { animation: drill .22s linear infinite; }
+  .unit.premium.idle img { animation: none; filter: grayscale(.8) brightness(.7); }
+  @keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+  @keyframes drill { 0% { transform: translate(0,0) } 25% { transform: translate(1px,-1px) } 50% { transform: translate(-1px,1px) } 75% { transform: translate(1px,1px) } 100% { transform: translate(0,0) } }
+  .unit .cnt { font-weight: 900; color: var(--accent); font-size: 15px; }
+  .unit .unm { font-size: 11px; color: var(--text); font-weight: 700; margin-top: 2px; }
+  .unit .ust { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); font-size: 13px; padding: 20px 30px; }
+  .fx { position: absolute; inset: 0; pointer-events: none; }
+  .coin { position: absolute; bottom: 120px; font-size: 18px; animation: rise 1.8s ease-out forwards; }
+  @keyframes rise { 0% { transform: translateY(0) scale(.8); opacity: 0 } 15% { opacity: 1 } 100% { transform: translateY(-150px) scale(1.15); opacity: 0 } }
+  .mined { color: var(--ok); font-variant-numeric: tabular-nums; }
+  .bar.fridge i { background: linear-gradient(90deg, #ff9d3d, var(--pink)); }
   .err { text-align: center; color: var(--bad); padding: 40px 10px; font-size: 15px; }
   footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 10px; }
 </style>
@@ -97,6 +131,7 @@
   <div class="logo">⚡ ROFL HUB</div>
   <div class="sub" id="subtitle">Mini App</div>
   <div id="app"><div class="loading" id="loader">⏳ ...</div></div>
+  <div id="scene" class="hidden"></div>
   <footer id="footer"></footer>
 
 <script>
@@ -113,6 +148,12 @@
       farm: "🚜 КИБЕР-ФЕРМА", robots: "Роботы (майнеры / бурильщики)",
       intern: "Роботы Стажёры (1 монета/ч, вечные)", activateIntern: "🚀 АКТИВИРОВАТЬ РОБОТА СТАЖЁРА",
       internDone: "🤖 Робот Стажёр вышел на смену!", rank: "🎖 Звание",
+      openFarm: "🏭 ОТКРЫТЬ ФЕРМУ", farmScene: "🏭 ТВОЯ ФЕРМА", back: "← Назад",
+      minedVisit: "добыто за этот визит", unit_intern: "Робот Стажёр", unit_junior: "Младший Майнер",
+      unit_premium: "Кибер-Бурильщик", eternal: "вечный", fueledAll: "заправлены",
+      fueledPart: "{a} из {b} с топливом", license: "лицензия 30 дней",
+      emptyFarm: "Шахта пуста. Активируй Робота Стажёра или заведи роботов в магазине!",
+      madeBy: "Хочешь такого же бота для своего проекта? Пиши @mister_telebot",
       fueled: "Заправлено бурильщиков", speed: "Скорость добычи",
       perHour: "{v} монет/час", fridge: "Холодильник", inv: "Котлет на складе",
       burnout: "Ближайшее сгорание", boosts: "Активные бусты", none: "нет",
@@ -143,6 +184,12 @@
       farm: "🚜 CYBER-FARM", robots: "Robots (miners / drillers)",
       intern: "Intern Bots (1 coin/h, eternal)", activateIntern: "🚀 ACTIVATE YOUR INTERN BOT",
       internDone: "🤖 Your Intern Bot is on shift!", rank: "🎖 Rank",
+      openFarm: "🏭 OPEN THE FARM", farmScene: "🏭 YOUR FARM", back: "← Back",
+      minedVisit: "mined during this visit", unit_intern: "Intern Bot", unit_junior: "Miner Bot",
+      unit_premium: "Cyber-Driller", eternal: "eternal", fueledAll: "fueled",
+      fueledPart: "{a} of {b} fueled", license: "30-day license",
+      emptyFarm: "The mine is empty. Activate your Intern Bot or get robots in the shop!",
+      madeBy: "Want a bot like this for your project? Message @mister_telebot",
       fueled: "Drillers fueled", speed: "Mining speed",
       perHour: "{v} coins/hour", fridge: "Fridge", inv: "Cutlets in stock",
       burnout: "Next burnout", boosts: "Active boosts", none: "none",
@@ -187,6 +234,19 @@
     "activateIntern": "🚀 تفعيل روبوت المتدرّب",
     "internDone": "🤖 روبوت المتدرّب بدأ نوبته!",
     "rank": "🎖 الرتبة",
+    "openFarm": "🏭 افتح المزرعة",
+    "farmScene": "🏭 مزرعتك",
+    "back": "← رجوع",
+    "minedVisit": "تم استخراجه خلال هذه الزيارة",
+    "unit_intern": "روبوت المتدرّب",
+    "unit_junior": "روبوت التعدين",
+    "unit_premium": "الحفّار السيبراني",
+    "eternal": "دائم",
+    "fueledAll": "مزوّدة بالوقود",
+    "fueledPart": "{a} من {b} مزوّدة بالوقود",
+    "license": "رخصة 30 يومًا",
+    "emptyFarm": "المنجم فارغ. فعّل روبوت المتدرّب أو احصل على روبوتات من المتجر!",
+    "madeBy": "تريد روبوتًا كهذا لمشروعك؟ راسل @mister_telebot",
     "boosts": "المعزّزات النشطة",
     "none": "لا شيء",
     "bonusReady": "🎁 استلم كفتة اليوم",
@@ -234,6 +294,19 @@
     "activateIntern": "🚀 ইন্টার্ন রোবট চালু করো",
     "internDone": "🤖 ইন্টার্ন রোবট শিফটে নেমেছে!",
     "rank": "🎖 র‍্যাঙ্ক",
+    "openFarm": "🏭 খামার খোলো",
+    "farmScene": "🏭 তোমার খামার",
+    "back": "← পিছনে",
+    "minedVisit": "এই ভিজিটে তোলা হয়েছে",
+    "unit_intern": "ইন্টার্ন রোবট",
+    "unit_junior": "জুনিয়র মাইনার",
+    "unit_premium": "সাইবার-ড্রিলার",
+    "eternal": "চিরস্থায়ী",
+    "fueledAll": "জ্বালানি আছে",
+    "fueledPart": "{b}টির মধ্যে {a}টিতে জ্বালানি আছে",
+    "license": "৩০ দিনের লাইসেন্স",
+    "emptyFarm": "খনি খালি। ইন্টার্ন রোবট চালু করো বা দোকান থেকে রোবট নাও!",
+    "madeBy": "নিজের প্রজেক্টের জন্য এমন বট চাও? @mister_telebot কে লেখো",
     "boosts": "চালু বুস্ট",
     "none": "নেই",
     "bonusReady": "🎁 দৈনিক কাটলেট নাও",
@@ -283,6 +356,19 @@
     "activateIntern": "🚀 PRAKTIKANTEN-BOT AKTIVIEREN",
     "internDone": "🤖 Dein Praktikanten-Bot ist im Dienst!",
     "rank": "🎖 Rang",
+    "openFarm": "🏭 FARM ÖFFNEN",
+    "farmScene": "🏭 DEINE FARM",
+    "back": "← Zurück",
+    "minedVisit": "in diesem Besuch geschürft",
+    "unit_intern": "Praktikanten-Bot",
+    "unit_junior": "Miner-Bot",
+    "unit_premium": "Cyber-Bohrer",
+    "eternal": "ewig",
+    "fueledAll": "betankt",
+    "fueledPart": "{a} von {b} betankt",
+    "license": "30-Tage-Lizenz",
+    "emptyFarm": "Die Mine ist leer. Aktiviere deinen Praktikanten-Bot oder hol dir Roboter im Shop!",
+    "madeBy": "Willst du so einen Bot für dein Projekt? Schreib an @mister_telebot",
     "bonusReady": "🎁 TÄGLICHE FRIKADELLE ABHOLEN",
     "bonusWait": "⏳ Bonus in {h} Std. {m} Min.",
     "bonusDone": "🎉 Frikadelle im Lager!",
@@ -328,6 +414,19 @@
     "activateIntern": "🚀 ACTIVAR ROBOT BECARIO",
     "internDone": "🤖 ¡Tu Robot Becario entró en turno!",
     "rank": "🎖 Rango",
+    "openFarm": "🏭 ABRIR LA GRANJA",
+    "farmScene": "🏭 TU GRANJA",
+    "back": "← Atrás",
+    "minedVisit": "minado en esta visita",
+    "unit_intern": "Robot Becario",
+    "unit_junior": "Robot Minero",
+    "unit_premium": "Cyber-Perforador",
+    "eternal": "eterno",
+    "fueledAll": "con combustible",
+    "fueledPart": "{a} de {b} con combustible",
+    "license": "licencia de 30 días",
+    "emptyFarm": "La mina está vacía. ¡Activa tu Robot Becario o consigue robots en la tienda!",
+    "madeBy": "¿Quieres un bot así para tu proyecto? Escribe a @mister_telebot",
     "boosts": "Mejoras activas",
     "none": "ninguna",
     "bonusReady": "🎁 RECLAMAR LA CHULETA DIARIA",
@@ -375,6 +474,19 @@
     "activateIntern": "🚀 ACTIVER LE ROBOT STAGIAIRE",
     "internDone": "🤖 Ton Robot Stagiaire prend son poste !",
     "rank": "🎖 Grade",
+    "openFarm": "🏭 OUVRIR LA FERME",
+    "farmScene": "🏭 TA FERME",
+    "back": "← Retour",
+    "minedVisit": "miné pendant cette visite",
+    "unit_intern": "Robot Stagiaire",
+    "unit_junior": "Robot Mineur",
+    "unit_premium": "Cyber-Foreuse",
+    "eternal": "éternel",
+    "fueledAll": "ravitaillés",
+    "fueledPart": "{a} sur {b} ravitaillés",
+    "license": "licence 30 jours",
+    "emptyFarm": "La mine est vide. Active ton Robot Stagiaire ou achète des robots dans la boutique !",
+    "madeBy": "Tu veux un bot comme celui-ci pour ton projet ? Écris à @mister_telebot",
     "boosts": "Boosts actifs",
     "none": "aucun",
     "bonusReady": "🎁 RÉCUPÉRER LA CÔTELETTE DU JOUR",
@@ -422,6 +534,19 @@
     "activateIntern": "🚀 इंटर्न रोबोट एक्टिवेट करो",
     "internDone": "🤖 इंटर्न रोबोट शिफ्ट पर आ गया!",
     "rank": "🎖 रैंक",
+    "openFarm": "🏭 फ़ार्म खोलो",
+    "farmScene": "🏭 तुम्हारा फ़ार्म",
+    "back": "← पीछे",
+    "minedVisit": "इस विज़िट में निकाला",
+    "unit_intern": "इंटर्न रोबोट",
+    "unit_junior": "जूनियर माइनर",
+    "unit_premium": "साइबर-ड्रिलर",
+    "eternal": "हमेशा के लिए",
+    "fueledAll": "ईंधन भरा है",
+    "fueledPart": "{b} में से {a} में ईंधन है",
+    "license": "30 दिन का लाइसेंस",
+    "emptyFarm": "खदान खाली है। इंटर्न रोबोट एक्टिवेट करो या दुकान से रोबोट लो!",
+    "madeBy": "अपने प्रोजेक्ट के लिए ऐसा ही बॉट चाहिए? @mister_telebot को लिखो",
     "boosts": "एक्टिव बूस्ट",
     "none": "कोई नहीं",
     "bonusReady": "🎁 रोज़ाना की कटलेट लो",
@@ -471,6 +596,19 @@
     "activateIntern": "🚀 AKTIFKAN ROBOT MAGANG",
     "internDone": "🤖 Robot Magang-mu mulai bekerja!",
     "rank": "🎖 Pangkat",
+    "openFarm": "🏭 BUKA FARM",
+    "farmScene": "🏭 FARM-MU",
+    "back": "← Kembali",
+    "minedVisit": "ditambang selama kunjungan ini",
+    "unit_intern": "Robot Magang",
+    "unit_junior": "Robot Penambang",
+    "unit_premium": "Cyber-Bor",
+    "eternal": "abadi",
+    "fueledAll": "terisi bahan bakar",
+    "fueledPart": "{a} dari {b} terisi",
+    "license": "lisensi 30 hari",
+    "emptyFarm": "Tambang kosong. Aktifkan Robot Magang-mu atau beli robot di toko!",
+    "madeBy": "Mau bot seperti ini untuk proyekmu? Hubungi @mister_telebot",
     "bonusReady": "🎁 KLAIM KOTLET HARIAN",
     "bonusWait": "⏳ Bonus dalam {h} jam {m} mnt",
     "bonusDone": "🎉 Kotlet masuk gudang!",
@@ -516,6 +654,19 @@
     "activateIntern": "🚀 ATTIVA IL ROBOT STAGISTA",
     "internDone": "🤖 Il tuo Robot Stagista è in turno!",
     "rank": "🎖 Grado",
+    "openFarm": "🏭 APRI LA FATTORIA",
+    "farmScene": "🏭 LA TUA FATTORIA",
+    "back": "← Indietro",
+    "minedVisit": "estratto in questa visita",
+    "unit_intern": "Robot Stagista",
+    "unit_junior": "Robot Minatore",
+    "unit_premium": "Cyber-Trivella",
+    "eternal": "eterno",
+    "fueledAll": "riforniti",
+    "fueledPart": "{a} su {b} riforniti",
+    "license": "licenza di 30 giorni",
+    "emptyFarm": "La miniera è vuota. Attiva il tuo Robot Stagista o compra robot nel negozio!",
+    "madeBy": "Vuoi un bot così per il tuo progetto? Scrivi a @mister_telebot",
     "boosts": "Boost attivi",
     "none": "nessuno",
     "bonusReady": "🎁 RITIRA LA COTOLETTA GIORNALIERA",
@@ -563,6 +714,19 @@
     "activateIntern": "🚀 AKTYWUJ ROBOTA STAŻYSTĘ",
     "internDone": "🤖 Twój Robot Stażysta zaczął zmianę!",
     "rank": "🎖 Ranga",
+    "openFarm": "🏭 OTWÓRZ FARMĘ",
+    "farmScene": "🏭 TWOJA FARMA",
+    "back": "← Wstecz",
+    "minedVisit": "wydobyte podczas tej wizyty",
+    "unit_intern": "Robot Stażysta",
+    "unit_junior": "Robot Górnik",
+    "unit_premium": "Cyber-Wiertło",
+    "eternal": "wieczny",
+    "fueledAll": "zatankowane",
+    "fueledPart": "{a} z {b} zatankowanych",
+    "license": "licencja na 30 dni",
+    "emptyFarm": "Kopalnia jest pusta. Aktywuj Robota Stażystę albo kup roboty w sklepie!",
+    "madeBy": "Chcesz takiego bota dla swojego projektu? Napisz do @mister_telebot",
     "boosts": "Aktywne wzmocnienia",
     "none": "brak",
     "bonusReady": "🎁 ODBIERZ CODZIENNY KOTLET",
@@ -610,6 +774,19 @@
     "activateIntern": "🚀 ATIVAR ROBÔ ESTAGIÁRIO",
     "internDone": "🤖 Seu Robô Estagiário entrou no turno!",
     "rank": "🎖 Patente",
+    "openFarm": "🏭 ABRIR A FAZENDA",
+    "farmScene": "🏭 SUA FAZENDA",
+    "back": "← Voltar",
+    "minedVisit": "minerado nesta visita",
+    "unit_intern": "Robô Estagiário",
+    "unit_junior": "Robô Minerador",
+    "unit_premium": "Cyber-Perfurador",
+    "eternal": "eterno",
+    "fueledAll": "abastecidos",
+    "fueledPart": "{a} de {b} abastecidos",
+    "license": "licença de 30 dias",
+    "emptyFarm": "A mina está vazia. Ative seu Robô Estagiário ou compre robôs na loja!",
+    "madeBy": "Quer um bot assim para o seu projeto? Fale com @mister_telebot",
     "boosts": "Boosts ativos",
     "none": "nenhum",
     "bonusReady": "🎁 PEGAR O BIFE DIÁRIO",
@@ -659,6 +836,19 @@
     "activateIntern": "🚀 STAJYOR ROBOTNI FAOLLASHTIRISH",
     "internDone": "🤖 Stajyor Robot smenaga chiqdi!",
     "rank": "🎖 Unvon",
+    "openFarm": "🏭 FERMANI OCHISH",
+    "farmScene": "🏭 SENING FERMANG",
+    "back": "← Orqaga",
+    "minedVisit": "shu tashrifda qazildi",
+    "unit_intern": "Stajyor Robot",
+    "unit_junior": "Kichik Mayner",
+    "unit_premium": "Kiber-Burg'ulovchi",
+    "eternal": "abadiy",
+    "fueledAll": "yoqilg'i bor",
+    "fueledPart": "{b} tadan {a} tasida yoqilg'i bor",
+    "license": "30 kunlik litsenziya",
+    "emptyFarm": "Shaxta bo'sh. Stajyor Robotni faollashtir yoki do'kondan robot ol!",
+    "madeBy": "O'z loyihang uchun shunday bot kerakmi? @mister_telebot ga yoz",
     "bonusReady": "🎁 KUNDALIK KOTLETNI OLISH",
     "bonusWait": "⏳ Bonus {h} soat {m} daqiqadan keyin",
     "bonusDone": "🎉 Kotlet omborda!",
@@ -704,6 +894,19 @@
     "activateIntern": "🚀 激活实习机器人",
     "internDone": "🤖 实习机器人上岗了！",
     "rank": "🎖 称号",
+    "openFarm": "🏭 打开农场",
+    "farmScene": "🏭 你的农场",
+    "back": "← 返回",
+    "minedVisit": "本次访问已挖到",
+    "unit_intern": "实习机器人",
+    "unit_junior": "初级矿工",
+    "unit_premium": "赛博钻机",
+    "eternal": "永久",
+    "fueledAll": "燃料充足",
+    "fueledPart": "{b} 台中 {a} 台有燃料",
+    "license": "30 天许可",
+    "emptyFarm": "矿井空空如也。激活实习机器人，或去商店购买机器人！",
+    "madeBy": "想为自己的项目做一个这样的机器人？联系 @mister_telebot",
     "boosts": "生效中的强化",
     "none": "无",
     "bonusReady": "🎁 领取每日肉排",
@@ -756,7 +959,10 @@
   function render(me, top, shop) {
     L = I18N[me.lang] || I18N.ru;
     document.getElementById("subtitle").textContent = L.subtitle;
-    document.getElementById("footer").textContent = L.footer;
+    document.getElementById("footer").innerHTML = esc(L.footer) +
+      '<div class="made-by">' + esc(L.madeBy).replace("@mister_telebot",
+        '<a href="https://t.me/mister_telebot">@mister_telebot</a>') + '</div>';
+    currentMe = me;
 
     const q = me.quiz, f = me.farm;
     const pct = Math.min(100, Math.round(q.progress / q.required * 100));
@@ -790,6 +996,7 @@
       '<div class="row"><span class="k">' + L.burnout + '</span><span class="v">🔥 ' + burnout + '</span></div>' +
       '<div class="row"><span class="k">' + L.boosts + '</span><span class="v">' + (boosts.join(" ") || L.none) + '</span></div>' +
       buildCta(f) +
+      '<button class="btn scene-btn" id="openFarmBtn">' + L.openFarm + '</button>' +
       (f.intern_claimed ? '' : '<button class="btn" id="internBtn">' + L.activateIntern + '</button>') +
       '<button class="btn" id="bonusBtn"></button>';
 
@@ -825,6 +1032,8 @@
 
     setupBonusButton(f.bonus_seconds_left);
     setupInternButton();
+    const openBtn = document.getElementById("openFarmBtn");
+    if (openBtn) openBtn.onclick = function () { openScene(me); };
     document.querySelectorAll(".shop-item").forEach(btn => {
       btn.onclick = () => buy(btn.dataset.sku, btn);
     });
@@ -872,6 +1081,91 @@
       const msg = (e.body && e.body.error && e.status === 400) ? e.body.error : L.payFail;
       if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg);
     }
+  }
+
+  // ================= ВИЗУАЛЬНАЯ ФЕРМА: шахта, юниты, живой счётчик =================
+  let currentMe = null, sceneTimer = null, coinTimer = null, minedVisit = 0;
+
+  function unitCard(kind, n, fueled) {
+    let status;
+    if (kind === "premium") status = fueled === n ? "⚡ " + L.fueledAll : "🔴 " + fmt(L.fueledPart, { a: fueled, b: n });
+    else if (kind === "intern") status = "♾ " + L.eternal;
+    else status = "⏳ " + L.license;
+    const idle = kind === "premium" && fueled === 0 ? " idle" : "";   // серые — только при полной остановке
+    return '<div class="unit ' + kind + idle + '">' +
+      '<img src="/img/robots/' + kind + '.png" alt="" onerror="this.onerror=null;this.src=\'/img/robots/' + kind + '.svg\'">' +
+      '<div class="cnt">×' + n + '</div><div class="unm">' + L["unit_" + kind] + '</div>' +
+      '<div class="ust">' + status + '</div></div>';
+  }
+
+  function openScene(me) {
+    const f = me.farm;
+    let units = "";
+    if (f.premium) units += unitCard("premium", f.premium, f.premium_fueled);
+    if (f.junior) units += unitCard("junior", f.junior, f.junior);
+    if (f.intern) units += unitCard("intern", f.intern, f.intern);
+    if (!units) units = '<div class="empty">' + L.emptyFarm + '</div>';
+    const fridgePct = f.fridge_capacity ? Math.round(f.fridge / f.fridge_capacity * 100) : 0;
+    const stars = Array.from({ length: 26 }, function (_, i) {
+      return '<i style="left:' + ((i * 37) % 100) + '%;top:' + ((i * 53) % 55) + '%;animation-delay:' + (i % 7) * .4 + 's"></i>';
+    }).join("");
+    document.getElementById("scene").innerHTML =
+      '<div class="scene-head"><button class="back" id="sceneBack">' + L.back + '</button><h2>' + L.farmScene + '</h2></div>' +
+      '<div class="mine"><div class="sky">' + stars + '</div><div class="moon"></div>' +
+      '<div class="hill"></div><div class="arch"><span>⛏</span></div><div class="rails"></div>' +
+      '<div class="units" id="units">' + units + '</div><div class="fx" id="coinsFx"></div></div>' +
+      '<div class="card scene-stats">' +
+      '<div class="row"><span class="k">' + L.speed + '</span><span class="v">' + fmt(L.perHour, { v: "+" + f.speed_hour }) + '</span></div>' +
+      '<div class="row"><span class="k">' + L.minedVisit + '</span><span class="v mined" id="minedVisit">+0.00</span></div>' +
+      '<div class="row"><span class="k">' + L.fridge + '</span><span class="v">🥩 ' + f.fridge + ' / ' + f.fridge_capacity + '</span></div>' +
+      '<div class="bar fridge"><i style="width:' + fridgePct + '%"></i></div>' +
+      '<div class="row"><span class="k">' + L.inv + '</span><span class="v">' + f.inv_cutlets + '</span></div>' +
+      buildCta(f) +
+      (f.intern_claimed ? '' : '<button class="btn" id="internBtn2">' + L.activateIntern + '</button>') +
+      '</div>';
+    document.getElementById("app").classList.add("hidden");
+    document.getElementById("scene").classList.remove("hidden");
+    window.scrollTo(0, 0);
+    document.getElementById("sceneBack").onclick = closeScene;
+    if (tg && tg.BackButton) { tg.BackButton.show(); tg.BackButton.onClick(closeScene); }
+    const ib = document.getElementById("internBtn2");
+    if (ib) ib.onclick = async function () {
+      ib.disabled = true;
+      try { await api("/api/intern", { method: "POST" }); ib.textContent = L.internDone; setTimeout(function () { closeScene(); load(); }, 900); }
+      catch (e) { ib.disabled = false; }
+    };
+    document.querySelectorAll("#scene .goShop").forEach(function (b) {
+      b.onclick = function () { closeScene(); setTimeout(function () { document.getElementById("shop").scrollIntoView({ behavior: "smooth" }); }, 50); };
+    });
+    // Живой счётчик: монеты капают на глазах, пока открыта сцена
+    minedVisit = 0;
+    const perTick = f.speed_hour / 3600 / 10;
+    clearInterval(sceneTimer);
+    sceneTimer = setInterval(function () {
+      minedVisit += perTick;
+      const el = document.getElementById("minedVisit");
+      if (el) el.textContent = "+" + minedVisit.toFixed(2);
+    }, 100);
+    clearInterval(coinTimer);
+    if (f.speed_hour > 0) coinTimer = setInterval(spawnCoin, Math.max(350, 5000 / (f.speed_hour / 5 + 1)));
+  }
+
+  function spawnCoin() {
+    const box = document.getElementById("coinsFx");
+    if (!box) return;
+    const c = document.createElement("span");
+    c.className = "coin";
+    c.textContent = "🪙";
+    c.style.left = (10 + Math.random() * 80) + "%";
+    box.appendChild(c);
+    setTimeout(function () { c.remove(); }, 1800);
+  }
+
+  function closeScene() {
+    clearInterval(sceneTimer); clearInterval(coinTimer);
+    document.getElementById("scene").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    if (tg && tg.BackButton) { tg.BackButton.offClick(closeScene); tg.BackButton.hide(); }
   }
 
   function setupInternButton() {

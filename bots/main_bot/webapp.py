@@ -9,7 +9,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from aiohttp import web
@@ -82,6 +82,12 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now) -> dict
             "inv_cutlets": user["inv_cutlets"],
             "nearest_burnout": _iso(min(
                 (m.expires_at for m in alive if m.kind != "intern"), default=None)),
+            # Юниты для визуальной сцены фермы в Mini App (без ID — только тип и состояние)
+            "units": [{
+                "kind": m.kind,
+                "fueled": m.kind != "premium" or (m.fuel_until is not None and m.fuel_until > now),
+                "eternal": m.expires_at > now + timedelta(days=3650),
+            } for m in alive],
             "bonus_seconds_left": daily_bonus_seconds_left(user["last_bonus_claim_at"], now),
             "boosts": {
                 "nuclear_until": _iso(user["boost_nuclear_until"]) if nuclear else None,
@@ -320,6 +326,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app.router.add_get("/api/shop", handle_shop)
     app.router.add_post("/api/invoice", handle_invoice)
     app.router.add_get("/health", lambda r: web.json_response({"ok": True}))
+    # Арты роботов для сцены фермы: img/robots/<kind>.png (арты владельца) или .svg (заглушки)
+    app.router.add_static("/img", WEBAPP_DIR / "img")
     return app
 
 
