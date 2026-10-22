@@ -23,7 +23,7 @@ ROUTERS = [start.router, payments.router, shop.router, games.router, duels.route
 ADVERTISED_COMMANDS = {
     "start", "menu", "profile", "my_stats", "farm", "shop", "games",
     "create_team", "my_team", "all_teams", "faq", "rules",
-    "rps", "high_low", "quiz", "coin", "dice", "safe",
+    "rps", "high_low", "quiz", "safe",
     "invite", "transfer", "paysupport", "duel", "app", "quests",
 }
 

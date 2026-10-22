@@ -238,22 +238,22 @@ async def test_safe_win_pays_increased_reward(conn, global_db):
     assert await conn.fetchval("SELECT daily_wins_safe FROM game_stats WHERE user_id = 31") == 1
 
 
-async def test_new_day_resets_all_six_win_counters(conn, global_db):
+async def test_new_day_resets_all_win_counters(conn, global_db):
     pytest.importorskip("aiogram")
     from datetime import date, timedelta
     from bots.main_bot.handlers.games import execute_solo_game_payout
     await _mk_user(conn, 32, 0)
     await conn.execute(
         "INSERT INTO game_stats (user_id, daily_wins_rps, daily_wins_hl, daily_wins_quiz, "
-        "daily_wins_coin, daily_wins_dice, daily_wins_safe, last_game_date) "
-        "VALUES (32, 15, 15, 30, 15, 15, 15, $1)", date.today() - timedelta(days=1))
+        "daily_wins_safe, last_game_date) "
+        "VALUES (32, 15, 15, 30, 15, $1)", date.today() - timedelta(days=1))
 
-    ok, text, balance = await execute_solo_game_payout(32, True, "coin")  # вчерашний лимит не мешает
+    ok, text, balance = await execute_solo_game_payout(32, True, "safe")  # вчерашний лимит не мешает
 
-    assert ok and balance == 2
+    assert ok and balance == 5
     stats = await conn.fetchrow("SELECT * FROM game_stats WHERE user_id = 32")
-    assert stats["daily_wins_coin"] == 1
-    for col in ("daily_wins_rps", "daily_wins_hl", "daily_wins_quiz", "daily_wins_dice", "daily_wins_safe"):
+    assert stats["daily_wins_safe"] == 1
+    for col in ("daily_wins_rps", "daily_wins_hl", "daily_wins_quiz"):
         assert stats[col] == 0, col
 
 

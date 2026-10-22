@@ -130,7 +130,7 @@ STRINGS: dict[str, str] = {
         "• /quiz — Trivia de velocidad: 15 segundos por respuesta, niveles y bonos\n"
         "• /duel — DUELOS 1 contra 1 con jugadores reales: mesas de 10/100/1000\n"
         "• /quests — MISIONES: historias de detectives, comedias y acertijos con recompensas\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Juegos rápidos por monedas\n\n"
+        "• /rps, /high_low, /safe — Juegos rápidos por monedas\n\n"
         "👥 <b>GESTIÓN DE BANDAS:</b>\n"
         "• /create_team — Registrar tu propio equipo por 100 000 monedas\n"
         "• /my_team — Panel de la banda y la LISTA DE COMPAÑEROS con niveles 🧠\n"
@@ -159,8 +159,6 @@ STRINGS: dict[str, str] = {
     "menu.btn_quiz": "🧠 Trivia",
     "menu.btn_rps": "🪨 PPT",
     "menu.btn_hl": "📈 Mayor/Menor",
-    "menu.btn_coin": "🪙 Cara o Cruz",
-    "menu.btn_dice": "🎲 Dados",
     "menu.btn_safe": "🔐 Ciber-Caja Fuerte",
     "menu.btn_duel": "⚔️ DUELOS 1 vs 1",
     "app.open": (
@@ -327,8 +325,6 @@ STRINGS: dict[str, str] = {
     "games.name.rps": "Piedra-Papel-Tijera",
     "games.name.hl": "Mayor/Menor",
     "games.name.quiz": "Trivia",
-    "games.name.coin": "Cara o Cruz",
-    "games.name.dice": "Dados",
     "games.name.safe": "Caja Fuerte",
 
     # ---------------- КНБ ----------------
@@ -378,25 +374,7 @@ STRINGS: dict[str, str] = {
         "Límite: {limit} victorias al día</i>"
     ),
 
-    # ---------------- Орёл/Решка ----------------
-    "coin.intro": (
-        "🪙 <b>CARA O CRUZ</b>\n\n"
-        "El bot lanza una ciber-moneda. ¡Adivina de qué lado caerá!\n"
-        "Victoria: <b>+{reward}</b> · Derrota: <b>-{penalty}</b> · Límite: <b>{limit}</b> victorias"
-    ),
-    "coin.heads": "🦅 Cara",
-    "coin.tails": "🪙 Cruz",
-    "coin.result": "🪙 La moneda gira... ¡salió <b>{result}</b>! Tu apuesta: {choice}.",
 
-    # ---------------- Кубики ----------------
-    "dice.intro": (
-        "🎲 <b>DADOS</b>\n\n"
-        "Tú y el bot lanzan un dado cada uno. ¡Quien saque más puntos se lleva la ronda!\n"
-        "Victoria: <b>+{reward}</b> · Derrota/empate: <b>-{penalty}</b> · Límite: <b>{limit}</b> victorias"
-    ),
-    "dice.btn_roll": "🎲 LANZAR LOS DADOS",
-    "dice.toast": "¡Dados lanzados!",
-    "dice.result": "🎲 Tu dado (el primero): <b>{player}</b> · Dado del bot: <b>{bot}</b>",
 
     # ---------------- Сейф ----------------
     "safe.intro": (

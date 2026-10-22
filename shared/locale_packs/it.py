@@ -130,7 +130,7 @@ STRINGS = {
         "• /quiz — Quiz a tempo: 15 secondi per rispondere, livelli e bonus\n"
         "• /duel — DUELLI 1 contro 1 con giocatori veri: tavoli 10/100/1000\n"
         "• /quests — QUEST: gialli, commedie e rompicapi con ricompense\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Giochi rapidi a monete\n\n"
+        "• /rps, /high_low, /safe — Giochi rapidi a monete\n\n"
         "👥 <b>GESTIONE DELLA BANDA:</b>\n"
         "• /create_team — Registra la tua squadra per 100.000 monete\n"
         "• /my_team — Dashboard della banda e LISTA COMPAGNI con livelli 🧠\n"
@@ -159,8 +159,6 @@ STRINGS = {
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 Morra Cinese",
     "menu.btn_hl": "📈 Alto/Basso",
-    "menu.btn_coin": "🪙 Testa o Croce",
-    "menu.btn_dice": "🎲 Dadi",
     "menu.btn_safe": "🔐 Cyber-Cassaforte",
     "menu.btn_duel": "⚔️ DUELLI 1 contro 1",
     "app.open": (
@@ -327,8 +325,6 @@ STRINGS = {
     "games.name.rps": "Morra Cinese",
     "games.name.hl": "Alto/Basso",
     "games.name.quiz": "Quiz",
-    "games.name.coin": "Testa o Croce",
-    "games.name.dice": "Dadi",
     "games.name.safe": "Cassaforte",
 
     # ---------------- КНБ ----------------
@@ -378,25 +374,7 @@ STRINGS = {
         "Limite: {limit} vittorie al giorno</i>"
     ),
 
-    # ---------------- Орёл/Решка ----------------
-    "coin.intro": (
-        "🪙 <b>TESTA O CROCE</b>\n\n"
-        "Il bot lancia una cyber-moneta. Indovina su quale lato cadrà!\n"
-        "Vittoria: <b>+{reward}</b> · Sconfitta: <b>-{penalty}</b> · Limite: <b>{limit}</b> vittorie"
-    ),
-    "coin.heads": "🦅 Testa",
-    "coin.tails": "🪙 Croce",
-    "coin.result": "🪙 La moneta gira... è uscita <b>{result}</b>! La tua puntata: {choice}.",
 
-    # ---------------- Кубики ----------------
-    "dice.intro": (
-        "🎲 <b>DADI</b>\n\n"
-        "Tu e il bot lanciate un dado a testa. Chi fa più punti si prende il round!\n"
-        "Vittoria: <b>+{reward}</b> · Sconfitta/pareggio: <b>-{penalty}</b> · Limite: <b>{limit}</b> vittorie"
-    ),
-    "dice.btn_roll": "🎲 LANCIA I DADI",
-    "dice.toast": "Dadi lanciati!",
-    "dice.result": "🎲 Il tuo dado (il primo): <b>{player}</b> · Dado del bot: <b>{bot}</b>",
 
     # ---------------- Сейф ----------------
     "safe.intro": (

@@ -130,7 +130,7 @@ STRINGS: dict[str, str] = {
         "• /quiz — Quiz na czas: 15 sekund na odpowiedź, poziomy i bonusy\n"
         "• /duel — POJEDYNKI 1 na 1 z żywymi graczami: stoły 10/100/1000\n"
         "• /quests — QUESTY: kryminały, komedie i łamigłówki z nagrodami\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Szybkie gry o monety\n\n"
+        "• /rps, /high_low, /safe — Szybkie gry o monety\n\n"
         "👥 <b>ZARZĄDZANIE EKIPĄ:</b>\n"
         "• /create_team — Zarejestruj własną drużynę za 100 000 monet\n"
         "• /my_team — Panel ekipy i SKŁAD DRUŻYNY z poziomami 🧠\n"
@@ -159,8 +159,6 @@ STRINGS: dict[str, str] = {
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 KPN",
     "menu.btn_hl": "📈 Wyżej/Niżej",
-    "menu.btn_coin": "🪙 Orzeł/Reszka",
-    "menu.btn_dice": "🎲 Kości",
     "menu.btn_safe": "🔐 Cyber-Sejf",
     "menu.btn_duel": "⚔️ POJEDYNKI 1 na 1",
     "app.open": (
@@ -327,8 +325,6 @@ STRINGS: dict[str, str] = {
     "games.name.rps": "Kamień-Papier-Nożyce",
     "games.name.hl": "Wyżej/Niżej",
     "games.name.quiz": "Quiz",
-    "games.name.coin": "Orzeł/Reszka",
-    "games.name.dice": "Kości",
     "games.name.safe": "Sejf",
 
     # ---------------- КНБ ----------------
@@ -378,25 +374,7 @@ STRINGS: dict[str, str] = {
         "Limit: {limit} zwycięstw na dobę</i>"
     ),
 
-    # ---------------- Орёл/Решка ----------------
-    "coin.intro": (
-        "🪙 <b>ORZEŁ CZY RESZKA</b>\n\n"
-        "Bot podrzuca cyber-monetę. Zgadnij, którą stroną upadnie!\n"
-        "Zwycięstwo: <b>+{reward}</b> · Porażka: <b>-{penalty}</b> · Limit: <b>{limit}</b> zwycięstw"
-    ),
-    "coin.heads": "🦅 Orzeł",
-    "coin.tails": "🪙 Reszka",
-    "coin.result": "🪙 Moneta wiruje... wypada <b>{result}</b>! Twój typ: {choice}.",
 
-    # ---------------- Кубики ----------------
-    "dice.intro": (
-        "🎲 <b>KOŚCI</b>\n\n"
-        "Ty i bot rzucacie po jednej kości. Kto ma więcej oczek, zgarnia rundę!\n"
-        "Zwycięstwo: <b>+{reward}</b> · Porażka/remis: <b>-{penalty}</b> · Limit: <b>{limit}</b> zwycięstw"
-    ),
-    "dice.btn_roll": "🎲 RZUĆ KOŚĆMI",
-    "dice.toast": "Kości rzucone!",
-    "dice.result": "🎲 Twoja kość (pierwsza): <b>{player}</b> · Kość bota: <b>{bot}</b>",
 
     # ---------------- Сейф ----------------
     "safe.intro": (

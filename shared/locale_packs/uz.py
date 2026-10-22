@@ -130,7 +130,7 @@ STRINGS: dict[str, str] = {
         "• /quiz — Tezkor viktorina: javobga 15 soniya, darajalar va bonuslar\n"
         "• /duel — Jonli o'yinchilar bilan YAKKAMA-YAKKA DUELLAR: 10/100/1000 stollari\n"
         "• /quests — KVESTLAR: mukofotli detektivlar, komediyalar va boshqotirmalar\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Tanga uchun tezkor o'yinlar\n\n"
+        "• /rps, /high_low, /safe — Tanga uchun tezkor o'yinlar\n\n"
         "👥 <b>JAMOALARNI BOSHQARISH:</b>\n"
         "• /create_team — 100 000 tangaga o'z jamoangni ro'yxatdan o'tkazish\n"
         "• /my_team — Jamoa dashbordi va 🧠 darajali JAMOADOSHLAR RO'YXATI\n"
@@ -159,8 +159,6 @@ STRINGS: dict[str, str] = {
     "menu.btn_quiz": "🧠 Viktorina",
     "menu.btn_rps": "🪨 Tosh-Qaychi",
     "menu.btn_hl": "📈 Katta/Kichik",
-    "menu.btn_coin": "🪙 Gerb/Raqam",
-    "menu.btn_dice": "🎲 Zarlar",
     "menu.btn_safe": "🔐 Kiber-Seyf",
     "menu.btn_duel": "⚔️ Yakkama-yakka DUELLAR",
     "app.open": (
@@ -327,8 +325,6 @@ STRINGS: dict[str, str] = {
     "games.name.rps": "Tosh-Qaychi-Qog'oz",
     "games.name.hl": "Katta/Kichik",
     "games.name.quiz": "Viktorina",
-    "games.name.coin": "Gerb/Raqam",
-    "games.name.dice": "Zarlar",
     "games.name.safe": "Seyf",
 
     # ---------------- КНБ ----------------
@@ -378,25 +374,7 @@ STRINGS: dict[str, str] = {
         "Limit: kuniga {limit} g'alaba</i>"
     ),
 
-    # ---------------- Орёл/Решка ----------------
-    "coin.intro": (
-        "🪙 <b>GERB YOKI RAQAM</b>\n\n"
-        "Bot kiber-tangani otadi. Qaysi tomoni bilan tushishini top!\n"
-        "G'alaba: <b>+{reward}</b> · Mag'lubiyat: <b>-{penalty}</b> · Limit: <b>{limit}</b> g'alaba"
-    ),
-    "coin.heads": "🦅 Gerb",
-    "coin.tails": "🪙 Raqam",
-    "coin.result": "🪙 Tanga aylanyapti... <b>{result}</b> tushdi! Sening tanloving: {choice}.",
 
-    # ---------------- Кубики ----------------
-    "dice.intro": (
-        "🎲 <b>ZARLAR</b>\n\n"
-        "Sen va bot bittadan zar tashlaysizlar. Kimning ochkosi ko'p — raund o'shaniki!\n"
-        "G'alaba: <b>+{reward}</b> · Mag'lubiyat/durang: <b>-{penalty}</b> · Limit: <b>{limit}</b> g'alaba"
-    ),
-    "dice.btn_roll": "🎲 ZARLARNI TASHLASH",
-    "dice.toast": "Zarlar tashlandi!",
-    "dice.result": "🎲 Sening zaring (birinchisi): <b>{player}</b> · Bot zari: <b>{bot}</b>",
 
     # ---------------- Сейф ----------------
     "safe.intro": (

@@ -1,5 +1,6 @@
 """
-Соло-игры против бота: КНБ, Больше/Меньше, Викторина, Орёл/Решка, Кубики, Сейф.
+Соло-игры против бота: КНБ, Больше/Меньше, Викторина, Сейф
+(Орёл/Решка и Кубики удалены 22.10 — чистая случайность без решений игрока).
 
 Единый движок execute_solo_game_payout(): лимиты побед по UTC-дате, учёт купленного
 безлимита (users.unlimit_until), все движения монет — через ledger.
@@ -46,14 +47,12 @@ from shared.locales import resolve_lang, t
 router = Router()
 logger = logging.getLogger(__name__)
 
-GAME_TYPES = ("rps", "hl", "quiz", "coin", "dice", "safe")
+GAME_TYPES = ("rps", "hl", "quiz", "safe")
 GAME_TITLES = {g: f"games.name.{g}" for g in GAME_TYPES}  # ключи локалей
 WIN_COLUMNS = {
     "rps": "daily_wins_rps",
     "hl": "daily_wins_hl",
     "quiz": "daily_wins_quiz",
-    "coin": "daily_wins_coin",
-    "dice": "daily_wins_dice",
     "safe": "daily_wins_safe",
 }
 _ALL_WIN_COLUMNS = tuple(WIN_COLUMNS.values())
@@ -77,10 +76,6 @@ def rps_name(lang: str, choice: str) -> str:
     return t(lang, f"rps.{choice}")
 
 
-def coin_name(lang: str, side: str) -> str:
-    return t(lang, f"coin.{side}")
-
-
 def rps_outcome(user_choice: str, bot_choice: str) -> tuple[bool, bool]:
     """(победа, ничья) для КНБ."""
     if user_choice == bot_choice:
@@ -90,15 +85,6 @@ def rps_outcome(user_choice: str, bot_choice: str) -> tuple[bool, bool]:
 
 def hl_outcome(direction: str, base: int, secret: int) -> bool:
     return (direction == "up" and secret > base) or (direction == "down" and secret < base)
-
-
-def coin_outcome(choice: str, result: str) -> bool:
-    return choice == result
-
-
-def dice_outcome(player: int, bot: int) -> tuple[bool, bool]:
-    """(победа, ничья) для Кубиков: больше очков — победа."""
-    return player > bot, player == bot
 
 
 def safe_outcome(guess: int, code: int) -> bool:
@@ -473,91 +459,6 @@ async def process_quiz_answer_stale(callback: types.CallbackQuery, user_lang: st
 
 
 # ============================================================================
-# Игра 4: Орёл / Решка
-# ============================================================================
-def get_coin_keyboard(lang: str) -> types.InlineKeyboardMarkup:
-    return types.InlineKeyboardMarkup(inline_keyboard=[[
-        types.InlineKeyboardButton(text=t(lang, "coin.heads"), callback_data="coin_play:heads"),
-        types.InlineKeyboardButton(text=t(lang, "coin.tails"), callback_data="coin_play:tails"),
-    ]])
-
-
-def coin_intro_text(lang: str) -> str:
-    return t(lang, "coin.intro", reward=WIN_REWARD, penalty=LOSE_PENALTY, limit=limit_for("coin"))
-
-
-@router.message(Command("coin"))
-async def cmd_coin_start(message: types.Message, user_lang: str = "ru"):
-    if not await feature_enabled(message, "games", user_lang):
-        return
-    await message.answer(coin_intro_text(user_lang), reply_markup=get_coin_keyboard(user_lang),
-                         parse_mode="HTML")
-
-
-@router.callback_query(F.data.startswith("coin_play:"))
-async def process_coin_choice(callback: types.CallbackQuery, user_lang: str = "ru"):
-    await callback.answer()
-    choice = callback.data.split(":", 1)[1]
-    if choice not in ("heads", "tails"):
-        return
-    result = random.choice(("heads", "tails"))
-    is_win = coin_outcome(choice, result)
-    ok, text, balance = await execute_solo_game_payout(callback.from_user.id, is_win, "coin",
-                                                       lang=user_lang, bot=callback.bot)
-    headline = t(user_lang, "coin.result",
-                 result=coin_name(user_lang, result), choice=coin_name(user_lang, choice))
-    body = text if not ok else (f"{headline}\n\n{text}\n"
-                                + t(user_lang, "games.balance", balance=balance))
-    await _safe_edit(callback.message, body, _retry_kb(user_lang, "coin"))
-
-
-# ============================================================================
-# Игра 5: Кубики (анимированные 🎲 Telegram)
-# ============================================================================
-DICE_ANIMATION_SECONDS = 3.2  # длительность анимации 🎲 в клиентах Telegram
-
-
-def dice_intro_text(lang: str) -> str:
-    return t(lang, "dice.intro", reward=WIN_REWARD, penalty=LOSE_PENALTY, limit=limit_for("dice"))
-
-
-def get_dice_keyboard(lang: str) -> types.InlineKeyboardMarkup:
-    return types.InlineKeyboardMarkup(inline_keyboard=[[
-        types.InlineKeyboardButton(text=t(lang, "dice.btn_roll"), callback_data="dice_play"),
-    ]])
-
-
-@router.message(Command("dice"))
-async def cmd_dice_start(message: types.Message, user_lang: str = "ru"):
-    if not await feature_enabled(message, "games", user_lang):
-        return
-    await message.answer(dice_intro_text(user_lang), reply_markup=get_dice_keyboard(user_lang),
-                         parse_mode="HTML")
-
-
-@router.callback_query(F.data == "dice_play")
-async def process_dice_roll(callback: types.CallbackQuery, user_lang: str = "ru"):
-    await callback.answer(t(user_lang, "dice.toast"))
-    try:
-        await callback.message.edit_reply_markup(reply_markup=None)  # защита от даблклика
-    except Exception:
-        pass
-
-    player_msg = await callback.message.answer_dice(emoji="🎲")
-    bot_msg = await callback.message.answer_dice(emoji="🎲")
-    await asyncio.sleep(DICE_ANIMATION_SECONDS)
-
-    player, bot_roll = player_msg.dice.value, bot_msg.dice.value
-    is_win, is_draw = dice_outcome(player, bot_roll)
-    ok, text, balance = await execute_solo_game_payout(
-        callback.from_user.id, is_win, "dice", is_draw=is_draw, lang=user_lang, bot=callback.bot)
-    headline = t(user_lang, "dice.result", player=player, bot=bot_roll)
-    body = text if not ok else (f"{headline}\n\n{text}\n"
-                                + t(user_lang, "games.balance", balance=balance))
-    await callback.message.answer(body, reply_markup=_retry_kb(user_lang, "dice"), parse_mode="HTML")
-
-
-# ============================================================================
 # Игра 6: Сейф — подбери код из 4 вариантов, куш больше
 # ============================================================================
 def _safe_round(lang: str) -> tuple[str, types.InlineKeyboardMarkup]:
@@ -613,10 +514,6 @@ async def process_game_retry_inline(callback: types.CallbackQuery, state: FSMCon
         await _safe_edit(callback.message, text, kb)
     elif game_type == "quiz":
         await _start_quiz(callback.message, state, callback.from_user.id, edit=True, lang=user_lang)
-    elif game_type == "coin":
-        await _safe_edit(callback.message, coin_intro_text(user_lang), get_coin_keyboard(user_lang))
-    elif game_type == "dice":
-        await _safe_edit(callback.message, dice_intro_text(user_lang), get_dice_keyboard(user_lang))
     elif game_type == "safe":
         text, kb = _safe_round(user_lang)
         await _safe_edit(callback.message, text, kb)

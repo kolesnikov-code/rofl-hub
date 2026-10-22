@@ -60,10 +60,6 @@ def get_games_inline_keyboard(lang: str = "ru") -> types.InlineKeyboardMarkup:
             types.InlineKeyboardButton(text=t(lang, "menu.btn_hl"), callback_data="game_retry:hl")
         ],
         [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_coin"), callback_data="game_retry:coin"),
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_dice"), callback_data="game_retry:dice")
-        ],
-        [
             types.InlineKeyboardButton(text=t(lang, "menu.btn_safe"), callback_data="game_retry:safe")
         ],
         [

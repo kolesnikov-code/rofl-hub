@@ -131,7 +131,7 @@ STRINGS = {
         "• /quiz — 限时竞答：15 秒作答，等级与奖励\n"
         "• /duel — 与真人玩家 1对1 对决：10/100/1000 金币桌\n"
         "• /quests — 冒险任务：侦探、喜剧和谜题，通关有奖\n"
-        "• /rps, /high_low, /coin, /dice, /safe — 赚金币的快速小游戏\n\n"
+        "• /rps, /high_low, /safe — 赚金币的快速小游戏\n\n"
         "👥 <b>战队管理：</b>\n"
         "• /create_team — 花 10 万金币注册自己的战队\n"
         "• /my_team — 战队仪表盘和带 🧠 等级的队友名单\n"
@@ -160,8 +160,6 @@ STRINGS = {
     "menu.btn_quiz": "🧠 竞答",
     "menu.btn_rps": "🪨 石头剪刀布",
     "menu.btn_hl": "📈 比大小",
-    "menu.btn_coin": "🪙 猜硬币",
-    "menu.btn_dice": "🎲 骰子",
     "menu.btn_safe": "🔐 赛博保险箱",
     "menu.btn_duel": "⚔️ 1对1 对决",
     "app.open": (
@@ -328,8 +326,6 @@ STRINGS = {
     "games.name.rps": "石头剪刀布",
     "games.name.hl": "比大小",
     "games.name.quiz": "竞答",
-    "games.name.coin": "猜硬币",
-    "games.name.dice": "骰子",
     "games.name.safe": "保险箱",
 
     # ---------------- КНБ ----------------
@@ -379,25 +375,7 @@ STRINGS = {
         "上限：每日 {limit} 场胜利</i>"
     ),
 
-    # ---------------- Орёл/Решка ----------------
-    "coin.intro": (
-        "🪙 <b>猜硬币</b>\n\n"
-        "机器人抛出一枚赛博硬币。猜猜它落下时哪一面朝上！\n"
-        "获胜：<b>+{reward}</b> · 失败：<b>-{penalty}</b> · 上限：<b>{limit}</b> 场胜利"
-    ),
-    "coin.heads": "🦅 正面",
-    "coin.tails": "🪙 反面",
-    "coin.result": "🪙 硬币旋转中……开出<b>{result}</b>！你押的是：{choice}。",
 
-    # ---------------- Кубики ----------------
-    "dice.intro": (
-        "🎲 <b>骰子</b>\n\n"
-        "你和机器人各掷一枚骰子。点数大的拿下本局！\n"
-        "获胜：<b>+{reward}</b> · 失败/平局：<b>-{penalty}</b> · 上限：<b>{limit}</b> 场胜利"
-    ),
-    "dice.btn_roll": "🎲 掷骰子",
-    "dice.toast": "骰子掷出去了！",
-    "dice.result": "🎲 你的骰子（第一枚）：<b>{player}</b> · 机器人的骰子：<b>{bot}</b>",
 
     # ---------------- Сейф ----------------
     "safe.intro": (

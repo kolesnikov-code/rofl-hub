@@ -11,8 +11,6 @@ os.environ.setdefault("MAIN_BOT_TOKEN", "123456:TEST")
 from bots.main_bot.handlers.games import (  # noqa: E402
     GAME_TITLES,
     WIN_COLUMNS,
-    coin_outcome,
-    dice_outcome,
     hl_outcome,
     limit_for,
     rps_outcome,
@@ -32,15 +30,15 @@ from shared.economy import (  # noqa: E402
 
 # ---------------------------------------------------------------- каталог игр
 def test_every_game_has_title_column_and_limit():
-    assert set(GAME_TITLES) == set(WIN_COLUMNS) == {"rps", "hl", "quiz", "coin", "dice", "safe"}
+    assert set(GAME_TITLES) == set(WIN_COLUMNS) == {"rps", "hl", "quiz", "safe"}
     assert limit_for("quiz") == 30
-    for game in ("rps", "hl", "coin", "dice", "safe"):
+    for game in ("rps", "hl", "safe"):
         assert limit_for(game) == 15
 
 
 def test_win_rewards():
     assert win_reward_for("safe") == SAFE_WIN_REWARD == 5
-    for game in ("rps", "hl", "quiz", "coin", "dice"):
+    for game in ("rps", "hl", "quiz"):
         assert win_reward_for(game) == WIN_REWARD == 2
 
 
@@ -73,29 +71,6 @@ def test_hl_outcome(direction, base, secret, win):
     assert hl_outcome(direction, base, secret) == win
 
 
-# ---------------------------------------------------------------- Орёл/Решка
-@pytest.mark.parametrize("choice,result,win", [
-    ("heads", "heads", True),
-    ("heads", "tails", False),
-    ("tails", "tails", True),
-    ("tails", "heads", False),
-])
-def test_coin_outcome(choice, result, win):
-    assert coin_outcome(choice, result) == win
-
-
-# ---------------------------------------------------------------- Кубики
-@pytest.mark.parametrize("player,bot,win,draw", [
-    (6, 1, True, False),
-    (1, 6, False, False),
-    (3, 3, False, True),
-    (4, 3, True, False),
-    (1, 1, False, True),
-])
-def test_dice_outcome(player, bot, win, draw):
-    assert dice_outcome(player, bot) == (win, draw)
-
-
 # ---------------------------------------------------------------- Сейф
 def test_safe_outcome():
     assert safe_outcome(3, 3) is True
@@ -103,8 +78,8 @@ def test_safe_outcome():
     assert SAFE_CODES_COUNT == 4
 
 
-def test_safe_expected_value_matches_coin():
-    """Баланс экономики: EV сейфа (шанс 1/4, куш 5) равен EV орла/решки (1/2, 2)."""
+def test_safe_expected_value_is_half_coin():
+    """Баланс экономики: EV сейфа (шанс 1/4, куш 5) = +0.5 монеты за раунд, как у базовых игр."""
     ev_safe = SAFE_WIN_REWARD / SAFE_CODES_COUNT - 1 * (SAFE_CODES_COUNT - 1) / SAFE_CODES_COUNT
     ev_coin = WIN_REWARD / 2 - 1 / 2
     assert ev_safe == ev_coin == 0.5

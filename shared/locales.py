@@ -157,7 +157,7 @@ RU: dict[str, str] = {
         "• /quiz — Викторина на скорость: 15 секунд на ответ, уровни и бонусы\n"
         "• /duel — ДУЭЛИ 1-на-1 с живыми игроками: столы 10/100/1000\n"
         "• /quests — КВЕСТЫ: детективы, комедии и головоломки с наградами\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Быстрые игры на монеты\n\n"
+        "• /rps, /high_low, /safe — Быстрые игры на монеты\n\n"
         "👥 <b>УПРАВЛЕНИЕ БАНДАМИ:</b>\n"
         "• /create_team — Зарегистрировать свою команду за 100 000 монет\n"
         "• /my_team — Дашборд банды и СПИСОК ТИММЕЙТОВ с уровнями 🧠\n"
@@ -186,8 +186,6 @@ RU: dict[str, str] = {
     "menu.btn_quiz": "🧠 Викторина",
     "menu.btn_rps": "🪨 КНБ",
     "menu.btn_hl": "📈 Больше/Меньше",
-    "menu.btn_coin": "🪙 Орёл/Решка",
-    "menu.btn_dice": "🎲 Кубики",
     "menu.btn_safe": "🔐 Кибер-Сейф",
     "menu.btn_duel": "⚔️ ДУЭЛИ 1-на-1",
     "app.open": (
@@ -353,8 +351,6 @@ RU: dict[str, str] = {
     "games.name.rps": "Камень-Ножницы-Бумага",
     "games.name.hl": "Больше/Меньше",
     "games.name.quiz": "Викторина",
-    "games.name.coin": "Орёл/Решка",
-    "games.name.dice": "Кубики",
     "games.name.safe": "Сейф",
 
     # ---------------- КНБ ----------------
@@ -404,25 +400,7 @@ RU: dict[str, str] = {
         "Лимит: {limit} побед в сутки</i>"
     ),
 
-    # ---------------- Орёл/Решка ----------------
-    "coin.intro": (
-        "🪙 <b>ОРЁЛ ИЛИ РЕШКА</b>\n\n"
-        "Бот подбрасывает кибер-монету. Угадай, какой стороной она упадёт!\n"
-        "Победа: <b>+{reward}</b> · Проигрыш: <b>-{penalty}</b> · Лимит: <b>{limit}</b> побед"
-    ),
-    "coin.heads": "🦅 Орёл",
-    "coin.tails": "🪙 Решка",
-    "coin.result": "🪙 Монета крутится... выпал <b>{result}</b>! Твоя ставка: {choice}.",
 
-    # ---------------- Кубики ----------------
-    "dice.intro": (
-        "🎲 <b>КУБИКИ</b>\n\n"
-        "Ты и бот бросаете по кубику. У кого больше очков — тот забирает раунд!\n"
-        "Победа: <b>+{reward}</b> · Проигрыш/ничья: <b>-{penalty}</b> · Лимит: <b>{limit}</b> побед"
-    ),
-    "dice.btn_roll": "🎲 БРОСИТЬ КУБИКИ",
-    "dice.toast": "Кубики брошены!",
-    "dice.result": "🎲 Твой кубик (первый): <b>{player}</b> · Кубик бота: <b>{bot}</b>",
 
     # ---------------- Сейф ----------------
     "safe.intro": (
@@ -761,7 +739,7 @@ EN: dict[str, str] = {
         "• /quiz — Speed quiz: 15 seconds per answer, levels and bonuses\n"
         "• /duel — 1-on-1 DUELS with real players: tables 10/100/1000\n"
         "• /quests — QUESTS: detectives, comedies and puzzles with rewards\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Quick games for coins\n\n"
+        "• /rps, /high_low, /safe — Quick games for coins\n\n"
         "👥 <b>CREW MANAGEMENT:</b>\n"
         "• /create_team — Register your own team for 100,000 coins\n"
         "• /my_team — Crew dashboard and the TEAMMATE LIST with 🧠 levels\n"
@@ -790,8 +768,6 @@ EN: dict[str, str] = {
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 RPS",
     "menu.btn_hl": "📈 High/Low",
-    "menu.btn_coin": "🪙 Heads/Tails",
-    "menu.btn_dice": "🎲 Dice",
     "menu.btn_safe": "🔐 Cyber-Safe",
     "menu.btn_duel": "⚔️ 1-on-1 DUELS",
     "app.open": (
@@ -958,8 +934,6 @@ EN: dict[str, str] = {
     "games.name.rps": "Rock-Paper-Scissors",
     "games.name.hl": "High/Low",
     "games.name.quiz": "Quiz",
-    "games.name.coin": "Heads/Tails",
-    "games.name.dice": "Dice",
     "games.name.safe": "Safe",
 
     # ---------------- RPS ----------------
@@ -1009,25 +983,7 @@ EN: dict[str, str] = {
         "Limit: {limit} wins per day</i>"
     ),
 
-    # ---------------- Heads/Tails ----------------
-    "coin.intro": (
-        "🪙 <b>HEADS OR TAILS</b>\n\n"
-        "The bot flips a cyber-coin. Guess which side it lands on!\n"
-        "Win: <b>+{reward}</b> · Loss: <b>-{penalty}</b> · Limit: <b>{limit}</b> wins"
-    ),
-    "coin.heads": "🦅 Heads",
-    "coin.tails": "🪙 Tails",
-    "coin.result": "🪙 The coin spins... it's <b>{result}</b>! Your bet: {choice}.",
 
-    # ---------------- Dice ----------------
-    "dice.intro": (
-        "🎲 <b>DICE</b>\n\n"
-        "You and the bot each roll a die. Higher roll takes the round!\n"
-        "Win: <b>+{reward}</b> · Loss/draw: <b>-{penalty}</b> · Limit: <b>{limit}</b> wins"
-    ),
-    "dice.btn_roll": "🎲 ROLL THE DICE",
-    "dice.toast": "Dice rolled!",
-    "dice.result": "🎲 Your die (first): <b>{player}</b> · Bot's die: <b>{bot}</b>",
 
     # ---------------- Safe ----------------
     "safe.intro": (

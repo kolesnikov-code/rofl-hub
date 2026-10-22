@@ -130,7 +130,7 @@ STRINGS = {
         "• /quiz — Quiz de velocidade: 15 segundos por resposta, níveis e bônus\n"
         "• /duel — DUELOS 1x1 com jogadores reais: mesas 10/100/1000\n"
         "• /quests — MISSÕES: histórias de detetive, comédias e enigmas com recompensas\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Jogos rápidos valendo moedas\n\n"
+        "• /rps, /high_low, /safe — Jogos rápidos valendo moedas\n\n"
         "👥 <b>GESTÃO DA TROPA:</b>\n"
         "• /create_team — Registrar sua equipe por 100.000 moedas\n"
         "• /my_team — Painel da tropa e LISTA DE MEMBROS com níveis 🧠\n"
@@ -159,8 +159,6 @@ STRINGS = {
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 Jokenpô",
     "menu.btn_hl": "📈 Maior/Menor",
-    "menu.btn_coin": "🪙 Cara/Coroa",
-    "menu.btn_dice": "🎲 Dados",
     "menu.btn_safe": "🔐 Ciber-Cofre",
     "menu.btn_duel": "⚔️ DUELOS 1x1",
     "app.open": (
@@ -327,8 +325,6 @@ STRINGS = {
     "games.name.rps": "Pedra-Papel-Tesoura",
     "games.name.hl": "Maior/Menor",
     "games.name.quiz": "Quiz",
-    "games.name.coin": "Cara/Coroa",
-    "games.name.dice": "Dados",
     "games.name.safe": "Cofre",
 
     # ---------------- PPT ----------------
@@ -378,25 +374,7 @@ STRINGS = {
         "Limite: {limit} vitórias por dia</i>"
     ),
 
-    # ---------------- Cara/Coroa ----------------
-    "coin.intro": (
-        "🪙 <b>CARA OU COROA</b>\n\n"
-        "O bot joga uma ciber-moeda para o alto. Adivinhe de que lado ela vai cair!\n"
-        "Vitória: <b>+{reward}</b> · Derrota: <b>-{penalty}</b> · Limite: <b>{limit}</b> vitórias"
-    ),
-    "coin.heads": "🦅 Cara",
-    "coin.tails": "🪙 Coroa",
-    "coin.result": "🪙 A moeda está girando... deu <b>{result}</b>! Sua aposta: {choice}.",
 
-    # ---------------- Dados ----------------
-    "dice.intro": (
-        "🎲 <b>DADOS</b>\n\n"
-        "Você e o bot jogam um dado cada um. Quem tirar mais pontos leva a rodada!\n"
-        "Vitória: <b>+{reward}</b> · Derrota/empate: <b>-{penalty}</b> · Limite: <b>{limit}</b> vitórias"
-    ),
-    "dice.btn_roll": "🎲 JOGAR OS DADOS",
-    "dice.toast": "Dados lançados!",
-    "dice.result": "🎲 Seu dado (o primeiro): <b>{player}</b> · Dado do bot: <b>{bot}</b>",
 
     # ---------------- Cofre ----------------
     "safe.intro": (

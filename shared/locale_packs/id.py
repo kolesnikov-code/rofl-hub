@@ -130,7 +130,7 @@ STRINGS = {
         "• /quiz — Kuis kecepatan: 15 detik per jawaban, level dan bonus\n"
         "• /duel — DUEL 1-lawan-1 dengan pemain sungguhan: meja 10/100/1000\n"
         "• /quests — MISI: cerita detektif, komedi, dan teka-teki berhadiah\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Game cepat berhadiah koin\n\n"
+        "• /rps, /high_low, /safe — Game cepat berhadiah koin\n\n"
         "👥 <b>MANAJEMEN GENG:</b>\n"
         "• /create_team — Daftarkan tim sendiri seharga 100.000 koin\n"
         "• /my_team — Dasbor geng dan DAFTAR REKAN TIM dengan level 🧠\n"
@@ -159,8 +159,6 @@ STRINGS = {
     "menu.btn_quiz": "🧠 Kuis",
     "menu.btn_rps": "🪨 Suit",
     "menu.btn_hl": "📈 Besar/Kecil",
-    "menu.btn_coin": "🪙 Gambar/Angka",
-    "menu.btn_dice": "🎲 Dadu",
     "menu.btn_safe": "🔐 Brankas Siber",
     "menu.btn_duel": "⚔️ DUEL 1-lawan-1",
     "app.open": (
@@ -327,8 +325,6 @@ STRINGS = {
     "games.name.rps": "Batu-Gunting-Kertas",
     "games.name.hl": "Besar/Kecil",
     "games.name.quiz": "Kuis",
-    "games.name.coin": "Gambar/Angka",
-    "games.name.dice": "Dadu",
     "games.name.safe": "Brankas",
 
     # ---------------- suit (BGK) ----------------
@@ -378,25 +374,7 @@ STRINGS = {
         "Batas: {limit} kemenangan per hari</i>"
     ),
 
-    # ---------------- Gambar/Angka ----------------
-    "coin.intro": (
-        "🪙 <b>GAMBAR ATAU ANGKA</b>\n\n"
-        "Bot melempar koin siber. Tebak sisi mana yang muncul!\n"
-        "Menang: <b>+{reward}</b> · Kalah: <b>-{penalty}</b> · Batas: <b>{limit}</b> kemenangan"
-    ),
-    "coin.heads": "🦅 Gambar",
-    "coin.tails": "🪙 Angka",
-    "coin.result": "🪙 Koin berputar... hasilnya <b>{result}</b>! Taruhanmu: {choice}.",
 
-    # ---------------- Dadu ----------------
-    "dice.intro": (
-        "🎲 <b>DADU</b>\n\n"
-        "Kamu dan bot masing-masing melempar satu dadu. Angka tertinggi mengambil ronde!\n"
-        "Menang: <b>+{reward}</b> · Kalah/seri: <b>-{penalty}</b> · Batas: <b>{limit}</b> kemenangan"
-    ),
-    "dice.btn_roll": "🎲 LEMPAR DADU",
-    "dice.toast": "Dadu dilempar!",
-    "dice.result": "🎲 Dadumu (yang pertama): <b>{player}</b> · Dadu bot: <b>{bot}</b>",
 
     # ---------------- Brankas ----------------
     "safe.intro": (

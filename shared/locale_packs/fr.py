@@ -131,7 +131,7 @@ STRINGS = {
         "• /quiz — Quiz de vitesse : 15 secondes par réponse, niveaux et bonus\n"
         "• /duel — DUELS 1 contre 1 avec de vrais joueurs : tables 10/100/1000\n"
         "• /quests — QUÊTES : polars, comédies et énigmes avec récompenses\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Jeux rapides pour des pièces\n\n"
+        "• /rps, /high_low, /safe — Jeux rapides pour des pièces\n\n"
         "👥 <b>GESTION DE TA BANDE :</b>\n"
         "• /create_team — Enregistrer ta propre équipe pour 100 000 pièces\n"
         "• /my_team — Tableau de bord de la bande et LISTE DES COÉQUIPIERS avec niveaux 🧠\n"
@@ -160,8 +160,6 @@ STRINGS = {
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 Chifoumi",
     "menu.btn_hl": "📈 Plus/Moins",
-    "menu.btn_coin": "🪙 Pile ou Face",
-    "menu.btn_dice": "🎲 Dés",
     "menu.btn_safe": "🔐 Cyber-Coffre",
     "menu.btn_duel": "⚔️ DUELS 1v1",
     "app.open": (
@@ -328,8 +326,6 @@ STRINGS = {
     "games.name.rps": "Pierre-Feuille-Ciseaux",
     "games.name.hl": "Plus/Moins",
     "games.name.quiz": "Quiz",
-    "games.name.coin": "Pile ou Face",
-    "games.name.dice": "Dés",
     "games.name.safe": "Coffre",
 
     # ---------------- Chifoumi ----------------
@@ -379,25 +375,7 @@ STRINGS = {
         "Limite : {limit} victoires par jour</i>"
     ),
 
-    # ---------------- Pile ou Face ----------------
-    "coin.intro": (
-        "🪙 <b>PILE OU FACE</b>\n\n"
-        "Le bot lance une cyber-pièce. Devine de quel côté elle va tomber !\n"
-        "Victoire : <b>+{reward}</b> · Défaite : <b>-{penalty}</b> · Limite : <b>{limit}</b> victoires"
-    ),
-    "coin.heads": "🦅 Face",
-    "coin.tails": "🪙 Pile",
-    "coin.result": "🪙 La pièce tourne... c'est <b>{result}</b> ! Ton pari : {choice}.",
 
-    # ---------------- Dés ----------------
-    "dice.intro": (
-        "🎲 <b>DÉS</b>\n\n"
-        "Le bot et toi lancez chacun un dé. Le plus haut score remporte la manche !\n"
-        "Victoire : <b>+{reward}</b> · Défaite/égalité : <b>-{penalty}</b> · Limite : <b>{limit}</b> victoires"
-    ),
-    "dice.btn_roll": "🎲 LANCER LES DÉS",
-    "dice.toast": "Les dés sont jetés !",
-    "dice.result": "🎲 Ton dé (le premier) : <b>{player}</b> · Dé du bot : <b>{bot}</b>",
 
     # ---------------- Coffre ----------------
     "safe.intro": (

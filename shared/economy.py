@@ -58,14 +58,12 @@ MINING_ACC_PER_ROFL = 3600 * 1_000_000  # µs работы на 1 монета �
 # --------------------------------------------------------------------------
 WIN_REWARD = 2
 LOSE_PENALTY = 1
-SAFE_WIN_REWARD = 5       # Сейф: шанс 1 из 4, выигрыш больше (EV как у Орла/Решки)
+SAFE_WIN_REWARD = 5       # Сейф: шанс 1 из 4, выигрыш больше (EV = +0.5 монеты за раунд)
 SAFE_CODES_COUNT = 4      # вариантов кода на дверце сейфа
 DAILY_WIN_LIMITS = {
     "quiz": 30,
     "rps": 15,
     "hl": 15,
-    "coin": 15,
-    "dice": 15,
     "safe": 15,
 }
 DEFAULT_DAILY_WIN_LIMIT = 15

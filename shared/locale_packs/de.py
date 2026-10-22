@@ -130,7 +130,7 @@ STRINGS = {
         "• /quiz — Speed-Quiz: 15 Sekunden pro Antwort, Level und Boni\n"
         "• /duel — 1-gegen-1-DUELLE mit echten Spielern: Tische 10/100/1000\n"
         "• /quests — QUESTS: Krimis, Komödien und Rätsel mit Belohnungen\n"
-        "• /rps, /high_low, /coin, /dice, /safe — Schnelle Spiele um Münzen\n\n"
+        "• /rps, /high_low, /safe — Schnelle Spiele um Münzen\n\n"
         "👥 <b>CREW-VERWALTUNG:</b>\n"
         "• /create_team — Eigenes Team für 100.000 Münzen registrieren\n"
         "• /my_team — Crew-Dashboard und TEAMMATE-LISTE mit 🧠-Leveln\n"
@@ -159,8 +159,6 @@ STRINGS = {
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 SSP",
     "menu.btn_hl": "📈 Höher/Tiefer",
-    "menu.btn_coin": "🪙 Kopf/Zahl",
-    "menu.btn_dice": "🎲 Würfel",
     "menu.btn_safe": "🔐 Cyber-Tresor",
     "menu.btn_duel": "⚔️ 1-gegen-1-DUELLE",
     "app.open": (
@@ -327,8 +325,6 @@ STRINGS = {
     "games.name.rps": "Schere-Stein-Papier",
     "games.name.hl": "Höher/Tiefer",
     "games.name.quiz": "Quiz",
-    "games.name.coin": "Kopf/Zahl",
-    "games.name.dice": "Würfel",
     "games.name.safe": "Tresor",
 
     # ---------------- SSP ----------------
@@ -378,25 +374,7 @@ STRINGS = {
         "Limit: {limit} Siege pro Tag</i>"
     ),
 
-    # ---------------- Kopf/Zahl ----------------
-    "coin.intro": (
-        "🪙 <b>KOPF ODER ZAHL</b>\n\n"
-        "Der Bot wirft eine Cyber-Münze. Rate, auf welcher Seite sie landet!\n"
-        "Sieg: <b>+{reward}</b> · Niederlage: <b>-{penalty}</b> · Limit: <b>{limit}</b> Siege"
-    ),
-    "coin.heads": "🦅 Kopf",
-    "coin.tails": "🪙 Zahl",
-    "coin.result": "🪙 Die Münze dreht sich... es ist <b>{result}</b>! Dein Tipp: {choice}.",
 
-    # ---------------- Würfel ----------------
-    "dice.intro": (
-        "🎲 <b>WÜRFEL</b>\n\n"
-        "Du und der Bot werft je einen Würfel. Wer mehr Punkte hat, holt die Runde!\n"
-        "Sieg: <b>+{reward}</b> · Niederlage/Unentschieden: <b>-{penalty}</b> · Limit: <b>{limit}</b> Siege"
-    ),
-    "dice.btn_roll": "🎲 WÜRFEL WERFEN",
-    "dice.toast": "Würfel geworfen!",
-    "dice.result": "🎲 Dein Würfel (der erste): <b>{player}</b> · Würfel des Bots: <b>{bot}</b>",
 
     # ---------------- Tresor ----------------
     "safe.intro": (
