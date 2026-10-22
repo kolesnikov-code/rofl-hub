@@ -60,10 +60,18 @@ async def test_db_constraint_rejects_negative_balance_even_with_raw_sql(conn):
 
 
 # ---------------------------------------------------------------- delivery
-async def test_all_18_items_deliver(conn):
+async def test_all_19_items_deliver(conn):
     from bots.main_bot.catalog import CATALOG
+    from shared.economy import permanent_expiry, utcnow
     await _mk_user(conn, 3, 0)
     await conn.execute("INSERT INTO teams (team_name, captain_id) VALUES ('t', 3)")
+    # Условия апгрейда Стажёра: сам Стажёр + 3 квалифицированных друга
+    now = utcnow()
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES (3, 'intern', $1, $2)",
+        now, permanent_expiry(now))
+    for uid in (31, 32, 33):
+        await _mk_user(conn, uid, 0, referred_by=3, qualified_at=now)
     capacity = 1
     for sku in CATALOG:
         order = build_order(sku, current_capacity=capacity)
@@ -77,12 +85,12 @@ async def test_all_18_items_deliver(conn):
     assert u["fridge_capacity"] == 100
     kinds = [r["kind"] for r in await conn.fetch(
         "SELECT kind FROM miners WHERE user_id = 3 ORDER BY kind")]
-    assert kinds == ["junior", "premium"]
+    assert kinds == ["junior", "junior", "premium"]   # Стажёр стал вечным Майнером
     expiry = await conn.fetchval("SELECT MIN(expires_at - purchased_at) FROM miners WHERE user_id = 3")
     assert expiry.days == 30
     assert u["boost_nuclear_until"] and u["boost_nitrogen_until"] and u["drone_until"] and u["unlimit_until"]
     assert await conn.fetchval("SELECT max_members FROM teams WHERE captain_id = 3") == 1000
-    assert await conn.fetchval("SELECT COUNT(*) FROM star_payments WHERE user_id = 3") == 18
+    assert await conn.fetchval("SELECT COUNT(*) FROM star_payments WHERE user_id = 3") == 19
 
 
 async def test_delivery_is_idempotent_per_charge_id(conn):
