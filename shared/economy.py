@@ -36,9 +36,17 @@ PROMOTER_CODE_MAX_LEN = 16        # код промоутера/канала: [a
 # Ферма: роботы
 # --------------------------------------------------------------------------
 MINER_RATE_PER_HOUR = {
+    "intern": 1,    # Робот Стажёр: бесплатный, вечный, без топлива (решение владельца 22.10)
     "junior": 5,    # Младший Майнер, топливо не нужно
     "premium": 10,  # Кибер-Бурильщик, ест котлеты
 }
+# Робот Стажёр: один выдаётся каждому при активации в /farm, ещё по одному — за каждый
+# уровень интеллекта, кратный INTERN_LEVEL_STEP (10, 20, 30…). Ставка фиксированная.
+INTERN_LEVEL_STEP = 10
+# Апгрейд Стажёра до ВЕЧНОГО Младшего Майнера (999 ★): нужно не меньше
+# INTERN_UPGRADE_REFERRALS квалифицированных друзей (сыгравших 30 раундов).
+INTERN_UPGRADE_REFERRALS = 3
+PERMANENT_ROBOT_YEARS = 100   # «вечный» робот = срок службы 100 лет
 MINER_LICENSE_DAYS = 30
 CUTLET_ENERGY_SECONDS = 24 * 3600   # одна котлета = 24 часа работы одного бурильщика
 PREMIUM_CUTLETS_PER_CYCLE_BASE = 1  # котлет на цикл 24ч без буста
@@ -157,6 +165,42 @@ def extend_expiry_hours(current: datetime | None, now: datetime, hours: int) -> 
 
 def is_active(expiry: datetime | None, now: datetime) -> bool:
     return expiry is not None and expiry > now
+
+
+def permanent_expiry(now: datetime) -> datetime:
+    """Дата сгорания «вечного» робота (Стажёр, апгрейд до вечного Майнера)."""
+    return now.replace(year=now.year + PERMANENT_ROBOT_YEARS)
+
+
+def interns_for_level(level: int) -> int:
+    """Сколько Роботов Стажёров положено за интеллект: по одному за каждые 10 уровней."""
+    return max(0, level) // INTERN_LEVEL_STEP
+
+
+# --------------------------------------------------------------------------
+# Звания по стажу в экосистеме (решение владельца 22.10): справа от имени игрока.
+# От низшего к крутейшему; ROFL/LMAO/DEAD — латиницей на всех языках.
+# --------------------------------------------------------------------------
+RANKS: tuple[tuple[int, str], ...] = (
+    (1, "rookie"),      # 1 день
+    (7, "fighter"),     # неделя
+    (30, "legend"),     # месяц
+    (90, "rofl"),       # 3 месяца
+    (180, "lmao"),      # полгода
+    (365, "dead"),      # год и больше
+)
+
+
+def rank_key_for(created_at: datetime | None, now: datetime) -> str | None:
+    """Ключ звания по стажу или None (меньше суток в экосистеме)."""
+    if created_at is None:
+        return None
+    days = (now - created_at).total_seconds() / 86400
+    key = None
+    for threshold_days, rank in RANKS:
+        if days >= threshold_days:
+            key = rank
+    return key
 
 
 def miner_hourly_rate(kind: str, *, nuclear_active: bool = False, nitrogen_active: bool = False) -> int:

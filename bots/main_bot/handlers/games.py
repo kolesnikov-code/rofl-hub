@@ -28,6 +28,7 @@ from shared.database import db
 from shared.economy import (
     DAILY_WIN_LIMITS,
     DEFAULT_DAILY_WIN_LIMIT,
+    INTERN_LEVEL_STEP,
     LOSE_PENALTY,
     QUIZ_ANSWER_SECONDS,
     REFERRAL_QUALIFIED_BONUS,
@@ -36,6 +37,7 @@ from shared.economy import (
     SAFE_WIN_REWARD,
     WIN_REWARD,
     is_active,
+    permanent_expiry,
     quiz_answers_required,
     quiz_level_reward,
     utcnow,
@@ -221,6 +223,14 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                     status += "\n\n" + t(lang, "games.level_up", level=next_level, bonus=bonus,
                                          next_required=quiz_answers_required(next_level + 1),
                                          next_reward=quiz_level_reward(next_level + 1))
+                    if next_level % INTERN_LEVEL_STEP == 0:
+                        # Каждый 10-й уровень интеллекта — ещё один Робот Стажёр на ферму
+                        await conn.execute(
+                            "INSERT INTO miners (user_id, kind, purchased_at, expires_at) "
+                            "VALUES ($1, 'intern', $2, $3)", user_id, now, permanent_expiry(now))
+                        interns = await conn.fetchval(
+                            "SELECT COUNT(*) FROM miners WHERE user_id = $1 AND kind = 'intern'", user_id)
+                        status += "\n" + t(lang, "games.intern_bonus", level=next_level, count=interns)
 
             return True, status, new_balance, qualified_referrer
 

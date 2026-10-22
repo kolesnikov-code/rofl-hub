@@ -242,6 +242,11 @@ STRINGS = {
     "farm.boost_drone": "🛸 Master-Drohne verlängert das Roboterleben bis {until} UTC",
     "farm.no_boosts": "Keine aktiven Boosts — schau im /shop vorbei.",
     "farm.burnout": "🔥 Nächster Roboter-Ablauf: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Praktikanten-Bot aktivieren (kostenlos)",
+    "farm.intern_activated": "🤖 Dein Praktikanten-Bot hat die Schicht angetreten! +1 Münze pro Stunde für immer – ohne Treibstoff, ohne Ablauf.",
+    "farm.intern_already": "🤖 Dein Praktikanten-Bot arbeitet bereits.",
+    "farm.intern_line": "🤖 Praktikanten-Bots ({rate} Münze/h, ewig): <code>{count}</code>",
+    "farm.intern_hint": "🎁 Du hast einen kostenlosen Praktikanten-Bot! Tippe auf den Button unten – er schürft für immer 1 Münze pro Stunde.",
     "farm.dashboard": (
         "🚜 <b>ROFL HUB ZENTRALER TREIBSTOFF-HUB</b>\n"
         "..................................................\n\n"
@@ -323,6 +328,7 @@ STRINGS = {
         "Nächstes Level: {next_required} richtige Antworten → +{next_reward} Münzen."
     ),
     "games.name.rps": "Schere-Stein-Papier",
+    "games.intern_bonus": "🤖 Level {level}! Ein weiterer Praktikanten-Bot ist auf deiner Farm – jetzt hast du {count}.",
     "games.name.hl": "Höher/Tiefer",
     "games.name.quiz": "Quiz",
     "games.name.safe": "Tresor",
@@ -447,6 +453,13 @@ STRINGS = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Rang: <b>{rank}</b>\n",
+    "rank.rookie": "Neuling",
+    "rank.fighter": "Kämpfer",
+    "rank.legend": "Legende",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- Einladungsprogramm ----------------
     "ref.text": (
@@ -567,6 +580,9 @@ STRINGS = {
     "dlv.err_fridge": "Du hast schon einen Kühlschrank dieser Größe oder größer.",
     "dlv.err_no_team": "Du hast noch kein Team. Erstelle zuerst eins mit /create_team.",
     "dlv.err_mega": "Dein Team hat den Mega-Clan-Status bereits.",
+    "dlv.intern_upgrade": "♾ Dein Praktikanten-Bot wurde zum <b>EWIGEN Miner-Bot</b> befördert: 5 Münzen pro Stunde, ohne Ablauf!",
+    "dlv.err_no_intern": "Kein aktivierter Praktikanten-Bot – aktiviere ihn zuerst in /farm.",
+    "dlv.err_intern_refs": "Das Upgrade braucht {need} qualifizierte Freunde (je 30 Runden); du hast {have}.",
 
     # ---------------- Teams/Clans (Hauptoberflächen) ----------------
     "clan.no_team": "⚠️ <b>Du hast noch kein eigenes Team!</b>\n\nDu kannst deine eigene Crew sofort registrieren — tippe auf den Button unten.",
@@ -618,6 +634,10 @@ MINIAPP = {
     "fueled": "Bohrer aufgetankt", "speed": "Schürf-Tempo",
     "perHour": "{v} Münzen/Std.", "fridge": "Kühlschrank", "inv": "Frikadellen im Lager",
     "burnout": "Nächster Ablauf", "boosts": "Aktive Boosts", "none": "keine",
+    "intern": "Praktikanten-Bots (1 Münze/h, ewig)",
+    "activateIntern": "🚀 PRAKTIKANTEN-BOT AKTIVIEREN",
+    "internDone": "🤖 Dein Praktikanten-Bot ist im Dienst!",
+    "rank": "🎖 Rang",
     "bonusReady": "🎁 TÄGLICHE FRIKADELLE ABHOLEN",
     "bonusWait": "⏳ Bonus in {h} Std. {m} Min.", "bonusDone": "🎉 Frikadelle im Lager!",
     "team": "🏆 MEIN TEAM", "clan": "CLAN", "teamLabel": "Team", "captain": "👑 Du hast das Kommando!",

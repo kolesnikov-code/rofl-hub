@@ -76,6 +76,7 @@ def test_build_me_payload_shape():
         "balance": 5000, "fridge_cutlets": 3, "fridge_capacity": 10, "inv_cutlets": 7,
         "boost_nuclear_until": now + timedelta(days=1), "boost_nitrogen_until": None,
         "drone_until": None, "last_bonus_claim_at": now - timedelta(hours=25),
+        "created_at": now - timedelta(days=10), "intern_claimed": False,
     }
     miners = [
         MinerState(1, "junior", now - timedelta(days=1), now + timedelta(days=29)),
@@ -110,8 +111,8 @@ def test_build_shop_payload_mirrors_catalog():
     ru = build_shop_payload("ru")
     en = build_shop_payload("en")
 
-    # Все 18 товаров на витрине, ни один не потерян
-    assert len(ru["farm"]) + len(ru["games"]) == len(CATALOG) == 18
+    # Все 19 товаров на витрине, ни один не потерян
+    assert len(ru["farm"]) + len(ru["games"]) == len(CATALOG) == 19
     skus = {i["sku"] for i in ru["farm"] + ru["games"]}
     assert skus == set(CATALOG)
 

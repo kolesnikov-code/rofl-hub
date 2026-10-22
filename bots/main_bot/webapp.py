@@ -27,6 +27,7 @@ from shared.economy import (
 )
 from shared.farm_logic import apply_lazy_farm, farm_counts
 from shared.locales import resolve_lang, t
+from shared.ranks import rank_label
 from shared.webapp_auth import validate_init_data
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,10 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now) -> dict
     nitrogen = is_active(user["boost_nitrogen_until"], now)
     junior_rate = miner_hourly_rate("junior", nuclear_active=nuclear, nitrogen_active=nitrogen)
     premium_rate = miner_hourly_rate("premium", nuclear_active=nuclear, nitrogen_active=nitrogen)
-    speed_hour = counts["junior"] * junior_rate + counts["premium_fueled"] * premium_rate
+    intern_rate = miner_hourly_rate("intern", nuclear_active=nuclear, nitrogen_active=nitrogen)
+    speed_hour = (counts["intern"] * intern_rate + counts["junior"] * junior_rate
+                  + counts["premium_fueled"] * premium_rate)
+    lang = resolve_lang(user["lang"])
 
     quiz_level = quiz_row["quiz_level"] if quiz_row else 0
     quiz_progress = quiz_row["quiz_level_progress"] if quiz_row else 0
@@ -54,9 +58,10 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now) -> dict
 
     return {
         "user_id": user["user_id"],
-        "lang": resolve_lang(user["lang"]),
+        "lang": lang,
         "display_name": user["display_name"] or user["username"] or f"ID {user['user_id']}",
         "balance": user["balance"],
+        "rank": rank_label(lang, user["created_at"], now),
         "vip_aliases": list(vip_aliases),
         "quiz": {
             "level": quiz_level,
@@ -66,6 +71,8 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now) -> dict
             "next_reward": quiz_level_reward(next_level),
         },
         "farm": {
+            "intern": counts["intern"],
+            "intern_claimed": bool(user["intern_claimed"]),
             "junior": counts["junior"],
             "premium": counts["premium"],
             "premium_fueled": counts["premium_fueled"],
@@ -73,7 +80,8 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now) -> dict
             "fridge": user["fridge_cutlets"],
             "fridge_capacity": user["fridge_capacity"],
             "inv_cutlets": user["inv_cutlets"],
-            "nearest_burnout": _iso(min((m.expires_at for m in alive), default=None)),
+            "nearest_burnout": _iso(min(
+                (m.expires_at for m in alive if m.kind != "intern"), default=None)),
             "bonus_seconds_left": daily_bonus_seconds_left(user["last_bonus_claim_at"], now),
             "boosts": {
                 "nuclear_until": _iso(user["boost_nuclear_until"]) if nuclear else None,
@@ -249,14 +257,37 @@ async def _handle_invoice_impl(request: web.Request) -> web.Response:
     return web.json_response({"link": link})
 
 
-async def handle_top(request: web.Request) -> web.Response:
-    """Топ-100 игроков по балансу (витрина богатства и интеллекта)."""
-    if await _auth_user_id(request) is None:
+async def handle_intern(request: web.Request) -> web.Response:
+    """Активация бесплатного Робота Стажёра из Mini App (та же логика, что кнопка в /farm)."""
+    user_id = await _auth_user_id(request)
+    if user_id is None:
         return _unauthorized()
+    from bots.main_bot.handlers.farm import activate_intern
+    now = utcnow()
     async with db.pool.acquire() as conn:
+        async with conn.transaction():
+            user, _ = await apply_lazy_farm(conn, user_id, now)
+            if not user:
+                return web.json_response({"error": "no_profile"}, status=404)
+            if user["intern_claimed"]:
+                return web.json_response({"ok": False, "error": "already"})
+            await activate_intern(conn, user_id, now)
+    await track(user_id, "intern_activated", source="webapp")
+    return web.json_response({"ok": True})
+
+
+async def handle_top(request: web.Request) -> web.Response:
+    """Топ-100 игроков по балансу (витрина богатства, интеллекта и званий)."""
+    viewer_id = await _auth_user_id(request)
+    if viewer_id is None:
+        return _unauthorized()
+    now = utcnow()
+    async with db.pool.acquire() as conn:
+        viewer_lang = resolve_lang(await conn.fetchval(
+            "SELECT lang FROM users WHERE user_id = $1", viewer_id))
         rows = await conn.fetch(
             """
-            SELECT u.user_id, u.username, u.display_name, u.balance,
+            SELECT u.user_id, u.username, u.display_name, u.balance, u.created_at,
                    COALESCE(g.quiz_level, 0) AS quiz_level,
                    (SELECT STRING_AGG(alias, ', ') FROM vip_aliases v WHERE v.user_id = u.user_id) AS vip
             FROM users u
@@ -270,6 +301,7 @@ async def handle_top(request: web.Request) -> web.Response:
         "balance": r["balance"],
         "quiz_level": r["quiz_level"],
         "vip": r["vip"],
+        "rank": rank_label(viewer_lang, r["created_at"], now),
     } for r in rows]
     return web.json_response({"top": top})
 
@@ -283,6 +315,7 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app.router.add_get("/rules", handle_rules)
     app.router.add_get("/api/me", handle_me)
     app.router.add_post("/api/bonus", handle_bonus)
+    app.router.add_post("/api/intern", handle_intern)
     app.router.add_get("/api/top", handle_top)
     app.router.add_get("/api/shop", handle_shop)
     app.router.add_post("/api/invoice", handle_invoice)

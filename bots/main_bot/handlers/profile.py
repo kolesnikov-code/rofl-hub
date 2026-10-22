@@ -9,6 +9,7 @@ from shared.database import db
 from shared.economy import quiz_answers_required, quiz_level_reward, utcnow
 from shared.farm_logic import apply_lazy_farm, farm_counts
 from shared.locales import btn_variants, t
+from shared.ranks import rank_label
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -129,9 +130,12 @@ async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
     required = quiz_answers_required(next_level)
 
     vip_line = ""
+    rank = rank_label(user_lang, user["created_at"], now)
+    if rank:
+        vip_line += t(user_lang, "profile.rank_line", rank=rank)
     if vip_rows:
         aliases = ", ".join(html.escape(r["alias"]) for r in vip_rows)
-        vip_line = t(user_lang, "profile.vip_line", aliases=aliases)
+        vip_line += t(user_lang, "profile.vip_line", aliases=aliases)
 
     caption_text = t(
         user_lang, "profile.caption",

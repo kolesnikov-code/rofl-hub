@@ -242,6 +242,11 @@ STRINGS: dict[str, str] = {
     "farm.boost_drone": "🛸 El Dron Maestro extiende la vida de los robots hasta el {until} UTC",
     "farm.no_boosts": "No hay mejoras activas; date una vuelta por /shop.",
     "farm.burnout": "🔥 Próximo robot en quemarse: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Activar tu Robot Becario (gratis)",
+    "farm.intern_activated": "🤖 ¡Tu Robot Becario entró en turno! +1 moneda por hora para siempre, sin combustible ni caducidad.",
+    "farm.intern_already": "🤖 Tu Robot Becario ya está trabajando.",
+    "farm.intern_line": "🤖 Robots Becarios ({rate} moneda/h, eternos): <code>{count}</code>",
+    "farm.intern_hint": "🎁 ¡Tienes un Robot Becario gratis! Pulsa el botón de abajo y minará 1 moneda por hora para siempre.",
     "farm.dashboard": (
         "🚜 <b>HUB CENTRAL DE COMBUSTIBLE DE ROFL HUB</b>\n"
         "..................................................\n\n"
@@ -323,6 +328,7 @@ STRINGS: dict[str, str] = {
         "Siguiente nivel: {next_required} respuestas correctas → +{next_reward} monedas."
     ),
     "games.name.rps": "Piedra-Papel-Tijera",
+    "games.intern_bonus": "🤖 ¡Nivel {level}! Otro Robot Becario llegó a tu granja: ahora tienes {count}.",
     "games.name.hl": "Mayor/Menor",
     "games.name.quiz": "Trivia",
     "games.name.safe": "Caja Fuerte",
@@ -447,6 +453,13 @@ STRINGS: dict[str, str] = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Rango: <b>{rank}</b>\n",
+    "rank.rookie": "Novato",
+    "rank.fighter": "Luchador",
+    "rank.legend": "Leyenda",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- рефералка ----------------
     "ref.text": (
@@ -567,6 +580,9 @@ STRINGS: dict[str, str] = {
     "dlv.err_fridge": "Ya tienes un refrigerador de ese tamaño o más grande.",
     "dlv.err_no_team": "Todavía no tienes un equipo creado. Primero créalo con /create_team.",
     "dlv.err_mega": "Tu equipo ya tiene el estatus de Mega-Clan.",
+    "dlv.intern_upgrade": "♾ Tu Robot Becario ascendió a <b>Robot Minero ETERNO</b>: ¡5 monedas por hora sin caducidad!",
+    "dlv.err_no_intern": "No tienes un Robot Becario activado: actívalo primero en /farm.",
+    "dlv.err_intern_refs": "La mejora necesita {need} amigos calificados (30 rondas cada uno); tienes {have}.",
 
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>¡Todavía no tienes un equipo creado!</b>\n\nPuedes registrar tu propia banda ahora mismo tocando el botón de abajo.",
@@ -624,6 +640,10 @@ MINIAPP: dict[str, str] = {
     "fridge": "Refrigerador",
     "inv": "Chuletas en inventario",
     "burnout": "Próximo en quemarse",
+    "intern": "Robots Becarios (1 moneda/h, eternos)",
+    "activateIntern": "🚀 ACTIVAR ROBOT BECARIO",
+    "internDone": "🤖 ¡Tu Robot Becario entró en turno!",
+    "rank": "🎖 Rango",
     "boosts": "Mejoras activas",
     "none": "ninguna",
     "bonusReady": "🎁 RECLAMAR LA CHULETA DIARIA",

@@ -15,7 +15,7 @@ NOW = datetime(2026, 11, 1, 12, 0, tzinfo=timezone.utc)
 
 
 def test_tz_constants():
-    assert economy.MINER_RATE_PER_HOUR == {"junior": 5, "premium": 10}
+    assert economy.MINER_RATE_PER_HOUR == {"intern": 1, "junior": 5, "premium": 10}
     assert economy.MINER_LICENSE_DAYS == 30
     assert economy.DAILY_WIN_LIMITS["quiz"] == 30
     assert economy.TEAM_CREATE_COST == 100_000

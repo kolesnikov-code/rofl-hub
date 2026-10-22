@@ -46,7 +46,7 @@ def _micros(td: timedelta) -> int:
 class MinerState:
     """Снимок одной строки таблицы miners."""
     miner_id: int
-    kind: str                       # 'junior' | 'premium'
+    kind: str                       # 'intern' | 'junior' | 'premium'
     purchased_at: datetime
     expires_at: datetime
     fuel_until: datetime | None = None
@@ -117,8 +117,8 @@ def simulate_farm(*, last_update: datetime, now: datetime, fridge_cutlets: int,
 
             work_end = min(now, m.expires_at)
 
-            if m.kind == "junior":
-                acc += integrate_rate_micros(start, work_end, "junior",
+            if m.kind in ("junior", "intern"):   # без топлива: Майнер и Стажёр
+                acc += integrate_rate_micros(start, work_end, m.kind,
                                              nuclear_until, nitrogen_until)
                 continue
 
@@ -168,6 +168,7 @@ def farm_counts(miners: list[MinerState], now: datetime) -> dict[str, int]:
     premium = [m for m in alive if m.kind == "premium"]
     fueled = [m for m in premium if m.fuel_until is not None and m.fuel_until > now]
     return {
+        "intern": sum(1 for m in alive if m.kind == "intern"),
         "junior": sum(1 for m in alive if m.kind == "junior"),
         "premium": len(premium),
         "premium_fueled": len(fueled),

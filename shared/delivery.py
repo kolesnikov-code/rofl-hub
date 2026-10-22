@@ -13,7 +13,14 @@ import logging
 from datetime import datetime, timedelta
 from typing import Awaitable, Callable
 
-from shared.economy import MINER_LICENSE_DAYS, extend_expiry, extend_expiry_hours, utcnow
+from shared.economy import (
+    INTERN_UPGRADE_REFERRALS,
+    MINER_LICENSE_DAYS,
+    extend_expiry,
+    extend_expiry_hours,
+    permanent_expiry,
+    utcnow,
+)
 from shared.ledger import change_balance
 from shared.locales import t
 
@@ -96,7 +103,30 @@ async def _deliver_clan_upgrade(conn, user_id: int, order: dict, now: datetime, 
     return t(lang, "dlv.clan", max=order["max_members"])
 
 
+async def qualified_referrals_count(conn, user_id: int) -> int:
+    """Друзья игрока, доигравшие до квалификации (30 раундов) — условие апгрейда Стажёра."""
+    return int(await conn.fetchval(
+        "SELECT COUNT(*) FROM users WHERE referred_by = $1 AND qualified_at IS NOT NULL", user_id) or 0)
+
+
+async def _deliver_intern_upgrade(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
+    """Робот Стажёр → ВЕЧНЫЙ Младший Майнер (5 монет/ч, без срока). Условие: 3 квалифицированных друга."""
+    have = await qualified_referrals_count(conn, user_id)
+    if have < INTERN_UPGRADE_REFERRALS:
+        raise DeliveryError(t(lang, "dlv.err_intern_refs", need=INTERN_UPGRADE_REFERRALS, have=have))
+    intern_id = await conn.fetchval(
+        "SELECT miner_id FROM miners WHERE user_id = $1 AND kind = 'intern' "
+        "ORDER BY miner_id LIMIT 1 FOR UPDATE", user_id)
+    if intern_id is None:
+        raise DeliveryError(t(lang, "dlv.err_no_intern"))
+    await conn.execute(
+        "UPDATE miners SET kind = 'junior', expires_at = $2, purchased_at = $3 WHERE miner_id = $1",
+        intern_id, permanent_expiry(now), now)
+    return t(lang, "dlv.intern_upgrade")
+
+
 DELIVERY_HANDLERS: dict[str, Handler] = {
+    "intern_upgrade": _deliver_intern_upgrade,
     "cutlets": _deliver_cutlets,
     "miner": _deliver_miner,
     "fridge_upgrade": _deliver_fridge,

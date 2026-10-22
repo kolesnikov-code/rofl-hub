@@ -242,6 +242,11 @@ STRINGS: dict[str, str] = {
     "farm.boost_drone": "🛸 Master-Dron robotlar umrini {until} UTC gacha uzaytiradi",
     "farm.no_boosts": "Faol kuchaytirgichlar yo'q — /shop'ga kirib chiq.",
     "farm.burnout": "🔥 Keyingi robot kuyishi: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Stajyor Robotni faollashtirish (bepul)",
+    "farm.intern_activated": "🤖 Stajyor Robot smenaga chiqdi! Abadiy soatiga +1 tanga — yoqilg'isiz va muddatsiz.",
+    "farm.intern_already": "🤖 Stajyor Roboting allaqachon ishlayapti.",
+    "farm.intern_line": "🤖 Stajyor Robotlar ({rate} tanga/soat, abadiy): <code>{count} dona</code>",
+    "farm.intern_hint": "🎁 Senda bepul Stajyor Robot bor! Pastdagi tugmani bos — u abadiy soatiga 1 tanga qazib beradi.",
     "farm.dashboard": (
         "🚜 <b>ROFL HUB MARKAZIY YOQILG'I HUBI</b>\n"
         "..................................................\n\n"
@@ -323,6 +328,7 @@ STRINGS: dict[str, str] = {
         "Keyingi daraja: {next_required} to'g'ri javob → +{next_reward} tanga."
     ),
     "games.name.rps": "Tosh-Qaychi-Qog'oz",
+    "games.intern_bonus": "🤖 {level}-daraja! Fermaga yana bitta Stajyor Robot keldi — endi ular {count} ta.",
     "games.name.hl": "Katta/Kichik",
     "games.name.quiz": "Viktorina",
     "games.name.safe": "Seyf",
@@ -447,6 +453,13 @@ STRINGS: dict[str, str] = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Unvon: <b>{rank}</b>\n",
+    "rank.rookie": "Yangi",
+    "rank.fighter": "Jangchi",
+    "rank.legend": "Afsona",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- рефералка ----------------
     "ref.text": (
@@ -567,6 +580,9 @@ STRINGS: dict[str, str] = {
     "dlv.err_fridge": "Senda allaqachon shu yoki kattaroq hajmdagi muzlatkich bor.",
     "dlv.err_no_team": "Senda tuzilgan jamoa yo'q. Avval /create_team orqali uni tuz.",
     "dlv.err_mega": "Jamoang allaqachon Mega-Klan statusiga ega.",
+    "dlv.intern_upgrade": "♾ Stajyor Robot <b>ABADIY Kichik Maynerga</b> ko'tarildi: soatiga 5 tanga, muddatsiz!",
+    "dlv.err_no_intern": "Faollashtirilgan Stajyor Robot yo'q — avval uni /farm da faollashtir.",
+    "dlv.err_intern_refs": "Yangilash uchun {need} ta malakali do'st kerak (har biri 30 raund); senda {have} ta.",
 
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>Senda hali tuzilgan jamoa yo'q!</b>\n\nPastdagi tugmani bosib, hoziroq o'z jamoangni ro'yxatdan o'tkazishing mumkin.",
@@ -618,6 +634,10 @@ MINIAPP: dict[str, str] = {
     "fueled": "To'ldirilgan burg'ulovchilar", "speed": "Qazib olish tezligi",
     "perHour": "{v} tanga/soat", "fridge": "Muzlatkich", "inv": "Ombordagi kotletlar",
     "burnout": "Eng yaqin kuyish", "boosts": "Faol kuchaytirgichlar", "none": "yo'q",
+    "intern": "Stajyor Robotlar (1 tanga/soat, abadiy)",
+    "activateIntern": "🚀 STAJYOR ROBOTNI FAOLLASHTIRISH",
+    "internDone": "🤖 Stajyor Robot smenaga chiqdi!",
+    "rank": "🎖 Unvon",
     "bonusReady": "🎁 KUNDALIK KOTLETNI OLISH",
     "bonusWait": "⏳ Bonus {h} soat {m} daqiqadan keyin", "bonusDone": "🎉 Kotlet omborda!",
     "team": "🏆 MENING JAMOAM", "clan": "KLAN", "teamLabel": "Jamoa", "captain": "👑 Sen sardorsan!",

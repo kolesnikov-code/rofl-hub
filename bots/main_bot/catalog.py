@@ -1,5 +1,5 @@
 """
-Каталог магазина ROFL HUB: 18 позиций, две категории (ферма / игровые).
+Каталог магазина ROFL HUB: 19 позиций, две категории (ферма / игровые).
 
 Это ДАННЫЕ, а не код: витрина, инвойс и доставка читают один и тот же словарь.
 Ключ словаря = SKU = callback_data кнопки без префикса «buy_».
@@ -58,6 +58,11 @@ CATALOG: dict[str, dict] = {
                           "button": "❄️ Азотное Охлаждение +40% | 299 ★",
                           "title_en": "❄️ Nitrogen Cooling +40% (30 days)",
                           "button_en": "❄️ Nitrogen Cooling +40% | 299 ★"},
+    # --- Апгрейд Робота Стажёра до ВЕЧНОГО Младшего Майнера (условие: 3 квалифицированных друга) ---
+    "intern_upgrade": {"type": "intern_upgrade", "stars": 999, "category": CATEGORY_FARM,
+                       "title": "♾ Вечный Майнер: апгрейд Робота Стажёра", "button": "♾ Вечный Майнер | 999 ★",
+                       "title_en": "♾ Eternal Miner: upgrade your Intern Bot",
+                       "button_en": "♾ Eternal Miner | 999 ★"},
     # --- Мастер-дрон ---
     "repair_drone_365": {"type": "vip_character", "kind": "drone", "days": DRONE_DAYS, "stars": 999,
                          "category": CATEGORY_FARM,
@@ -117,6 +122,7 @@ SHOP_LAYOUT: dict[str, list[list[str]]] = {
         ["boost_nuclear_30"],
         ["boost_nitrogen_30"],
         ["repair_drone_365"],
+        ["intern_upgrade"],
     ],
     CATEGORY_GAMES: [
         ["unlimit_24h"],

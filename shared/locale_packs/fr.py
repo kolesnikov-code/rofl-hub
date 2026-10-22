@@ -243,6 +243,11 @@ STRINGS = {
     "farm.boost_drone": "🛸 Le Maître-Drone prolonge la vie des robots jusqu'à {until} UTC",
     "farm.no_boosts": "Aucun boost actif — fais un tour dans /shop.",
     "farm.burnout": "🔥 Prochaine expiration de robot : <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Activer ton Robot Stagiaire (gratuit)",
+    "farm.intern_activated": "🤖 Ton Robot Stagiaire prend son poste ! +1 pièce par heure pour toujours, sans carburant ni expiration.",
+    "farm.intern_already": "🤖 Ton Robot Stagiaire travaille déjà.",
+    "farm.intern_line": "🤖 Robots Stagiaires ({rate} pièce/h, éternels) : <code>{count}</code>",
+    "farm.intern_hint": "🎁 Tu as un Robot Stagiaire gratuit ! Appuie sur le bouton ci-dessous : il minera 1 pièce par heure pour toujours.",
     "farm.dashboard": (
         "🚜 <b>HUB CARBURANT CENTRAL ROFL HUB</b>\n"
         "..................................................\n\n"
@@ -324,6 +329,7 @@ STRINGS = {
         "Niveau suivant : {next_required} bonnes réponses → +{next_reward} pièces."
     ),
     "games.name.rps": "Pierre-Feuille-Ciseaux",
+    "games.intern_bonus": "🤖 Niveau {level} ! Un nouveau Robot Stagiaire rejoint ta ferme : tu en as maintenant {count}.",
     "games.name.hl": "Plus/Moins",
     "games.name.quiz": "Quiz",
     "games.name.safe": "Coffre",
@@ -448,6 +454,13 @@ STRINGS = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID : <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Grade : <b>{rank}</b>\n",
+    "rank.rookie": "Débutant",
+    "rank.fighter": "Combattant",
+    "rank.legend": "Légende",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- parrainage ----------------
     "ref.text": (
@@ -568,6 +581,9 @@ STRINGS = {
     "dlv.err_fridge": "Tu as déjà un frigo de cette taille ou plus grand.",
     "dlv.err_no_team": "Tu n'as pas encore créé d'équipe. Crée-la d'abord via /create_team.",
     "dlv.err_mega": "Ton équipe a déjà le statut Méga-Clan.",
+    "dlv.intern_upgrade": "♾ Ton Robot Stagiaire est promu <b>Robot Mineur ÉTERNEL</b> : 5 pièces par heure, sans expiration !",
+    "dlv.err_no_intern": "Aucun Robot Stagiaire activé : active-le d'abord dans /farm.",
+    "dlv.err_intern_refs": "L'amélioration exige {need} amis qualifiés (30 manches chacun) ; tu en as {have}.",
 
     # ---------------- équipes/clans (surfaces principales) ----------------
     "clan.no_team": "⚠️ <b>Tu n'as pas encore d'équipe !</b>\n\nTu peux enregistrer ta propre bande dès maintenant en tapant sur le bouton ci-dessous.",
@@ -625,6 +641,10 @@ MINIAPP = {
     "fridge": "Frigo",
     "inv": "Côtelettes en stock",
     "burnout": "Prochaine expiration",
+    "intern": "Robots Stagiaires (1 pièce/h, éternels)",
+    "activateIntern": "🚀 ACTIVER LE ROBOT STAGIAIRE",
+    "internDone": "🤖 Ton Robot Stagiaire prend son poste !",
+    "rank": "🎖 Grade",
     "boosts": "Boosts actifs",
     "none": "aucun",
     "bonusReady": "🎁 RÉCUPÉRER LA CÔTELETTE DU JOUR",

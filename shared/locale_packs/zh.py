@@ -243,6 +243,11 @@ STRINGS = {
     "farm.boost_drone": "🛸 大师无人机延长机器人寿命，持续到 {until} UTC",
     "farm.no_boosts": "暂无生效的强化——去 /shop 看看吧。",
     "farm.burnout": "🔥 下一次机器人报废：<b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 激活实习机器人（免费）",
+    "farm.intern_activated": "🤖 实习机器人上岗了！永久每小时 +1 金币——不吃燃料，没有期限。",
+    "farm.intern_already": "🤖 你的实习机器人已经在工作了。",
+    "farm.intern_line": "🤖 实习机器人（{rate} 金币/小时，永久）：<code>{count} 台</code>",
+    "farm.intern_hint": "🎁 你有一台免费的实习机器人！点下方按钮，它将永久每小时挖 1 金币。",
     "farm.dashboard": (
         "🚜 <b>ROFL HUB 中央燃料中心</b>\n"
         "..................................................\n\n"
@@ -324,6 +329,7 @@ STRINGS = {
         "下一级：答对 {next_required} 题 → +{next_reward} 金币。"
     ),
     "games.name.rps": "石头剪刀布",
+    "games.intern_bonus": "🤖 {level} 级！又一台实习机器人加入你的农场——现在共有 {count} 台。",
     "games.name.hl": "比大小",
     "games.name.quiz": "竞答",
     "games.name.safe": "保险箱",
@@ -448,6 +454,13 @@ STRINGS = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID：<b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 称号：<b>{rank}</b>\n",
+    "rank.rookie": "新手",
+    "rank.fighter": "战士",
+    "rank.legend": "传奇",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- рефералка ----------------
     "ref.text": (
@@ -566,6 +579,9 @@ STRINGS = {
     "dlv.err_fridge": "你已经拥有同容量或更大的冰箱了。",
     "dlv.err_no_team": "你还没有创建战队。先用 /create_team 创建一个吧。",
     "dlv.err_mega": "你的战队已经是超级公会了。",
+    "dlv.intern_upgrade": "♾ 实习机器人晋升为<b>永久初级矿工</b>：每小时 5 金币，没有期限！",
+    "dlv.err_no_intern": "还没有激活的实习机器人——先在 /farm 里激活它。",
+    "dlv.err_intern_refs": "升级需要 {need} 位合格好友（各玩 30 局），你目前有 {have} 位。",
 
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>你还没有自己的战队！</b>\n\n点按下方按钮，现在就注册属于你的队伍。",
@@ -623,6 +639,10 @@ MINIAPP = {
     "fridge": "冰箱",
     "inv": "仓库肉排",
     "burnout": "下次报废",
+    "intern": "实习机器人（1 金币/小时，永久）",
+    "activateIntern": "🚀 激活实习机器人",
+    "internDone": "🤖 实习机器人上岗了！",
+    "rank": "🎖 称号",
     "boosts": "生效中的强化",
     "none": "无",
     "bonusReady": "🎁 领取每日肉排",

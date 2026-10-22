@@ -479,11 +479,11 @@ def test_farm_counts():
         junior(1), junior(2, expires=T0 - timedelta(hours=1)),
         premium(3, fuel_until=h(5)), premium(4), premium(5, fuel_until=T0 - timedelta(hours=1)),
     ]
-    assert farm_counts(miners, T0) == {"junior": 1, "premium": 3, "premium_fueled": 1}
+    assert farm_counts(miners, T0) == {"intern": 0, "junior": 1, "premium": 3, "premium_fueled": 1}
 
 
 def test_farm_counts_empty():
-    assert farm_counts([], T0) == {"junior": 0, "premium": 0, "premium_fueled": 0}
+    assert farm_counts([], T0) == {"intern": 0, "junior": 0, "premium": 0, "premium_fueled": 0}
 
 
 @pytest.mark.parametrize("last_claim,expected", [

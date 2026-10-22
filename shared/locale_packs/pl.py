@@ -242,6 +242,11 @@ STRINGS: dict[str, str] = {
     "farm.boost_drone": "🛸 Mistrzowski Dron przedłuża życie robotów do {until} UTC",
     "farm.no_boosts": "Brak aktywnych wzmocnień — zajrzyj do /shop.",
     "farm.burnout": "🔥 Najbliższe wypalenie robota: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Aktywuj Robota Stażystę (za darmo)",
+    "farm.intern_activated": "🤖 Twój Robot Stażysta zaczął zmianę! +1 moneta na godzinę na zawsze — bez paliwa i bez terminu.",
+    "farm.intern_already": "🤖 Twój Robot Stażysta już pracuje.",
+    "farm.intern_line": "🤖 Roboty Stażyści ({rate} moneta/h, wieczne): <code>{count}</code>",
+    "farm.intern_hint": "🎁 Masz darmowego Robota Stażystę! Naciśnij przycisk poniżej — będzie wydobywać 1 monetę na godzinę na zawsze.",
     "farm.dashboard": (
         "🚜 <b>CENTRALNY HUB PALIWOWY ROFL HUB</b>\n"
         "..................................................\n\n"
@@ -323,6 +328,7 @@ STRINGS: dict[str, str] = {
         "Następny poziom: {next_required} poprawnych odpowiedzi → +{next_reward} monet."
     ),
     "games.name.rps": "Kamień-Papier-Nożyce",
+    "games.intern_bonus": "🤖 Poziom {level}! Na farmę przybył kolejny Robot Stażysta — masz ich już {count}.",
     "games.name.hl": "Wyżej/Niżej",
     "games.name.quiz": "Quiz",
     "games.name.safe": "Sejf",
@@ -447,6 +453,13 @@ STRINGS: dict[str, str] = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Ranga: <b>{rank}</b>\n",
+    "rank.rookie": "Nowicjusz",
+    "rank.fighter": "Wojownik",
+    "rank.legend": "Legenda",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- рефералка ----------------
     "ref.text": (
@@ -567,6 +580,9 @@ STRINGS: dict[str, str] = {
     "dlv.err_fridge": "Masz już lodówkę tej lub większej pojemności.",
     "dlv.err_no_team": "Nie masz jeszcze drużyny. Najpierw załóż ją przez /create_team.",
     "dlv.err_mega": "Twoja drużyna ma już status Mega-Klanu.",
+    "dlv.intern_upgrade": "♾ Twój Robot Stażysta awansował na <b>WIECZNEGO Robota Górnika</b>: 5 monet na godzinę, bez terminu!",
+    "dlv.err_no_intern": "Brak aktywowanego Robota Stażysty — najpierw aktywuj go w /farm.",
+    "dlv.err_intern_refs": "Ulepszenie wymaga {need} kwalifikowanych znajomych (po 30 rund); masz {have}.",
 
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>Nie masz jeszcze drużyny!</b>\n\nMożesz zarejestrować własną ekipę już teraz, naciskając przycisk poniżej.",
@@ -624,6 +640,10 @@ MINIAPP: dict[str, str] = {
     "fridge": "Lodówka",
     "inv": "Kotlety w magazynie",
     "burnout": "Najbliższe wypalenie",
+    "intern": "Roboty Stażyści (1 moneta/h, wieczne)",
+    "activateIntern": "🚀 AKTYWUJ ROBOTA STAŻYSTĘ",
+    "internDone": "🤖 Twój Robot Stażysta zaczął zmianę!",
+    "rank": "🎖 Ranga",
     "boosts": "Aktywne wzmocnienia",
     "none": "brak",
     "bonusReady": "🎁 ODBIERZ CODZIENNY KOTLET",

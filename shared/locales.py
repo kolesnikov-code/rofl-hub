@@ -268,6 +268,11 @@ RU: dict[str, str] = {
     "farm.boost_drone": "🛸 Мастер-дрон продлевает жизнь роботов до {until} UTC",
     "farm.no_boosts": "Нет активных усилений — загляни в /shop.",
     "farm.burnout": "🔥 Ближайшее сгорание робота: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Активировать Робота Стажёра (бесплатно)",
+    "farm.intern_activated": "🤖 Робот Стажёр вышел на смену! +1 монета в час навсегда — без топлива и срока службы.",
+    "farm.intern_already": "🤖 Твой Робот Стажёр уже работает.",
+    "farm.intern_line": "🤖 Роботы Стажёры ({rate} монета/ч, вечные): <code>{count} шт.</code>",
+    "farm.intern_hint": "🎁 У тебя есть бесплатный Робот Стажёр! Нажми кнопку ниже — он начнёт добывать 1 монету в час навсегда.",
     "farm.dashboard": (
         "🚜 <b>ЦЕНТРАЛЬНЫЙ ТОПЛИВНЫЙ ХАБ ROFL HUB</b>\n"
         "..................................................\n\n"
@@ -349,6 +354,7 @@ RU: dict[str, str] = {
         "Следующий уровень: {next_required} верных ответов → +{next_reward} монет."
     ),
     "games.name.rps": "Камень-Ножницы-Бумага",
+    "games.intern_bonus": "🤖 Уровень {level}! На ферму прибыл ещё один Робот Стажёр — теперь их {count}.",
     "games.name.hl": "Больше/Меньше",
     "games.name.quiz": "Викторина",
     "games.name.safe": "Сейф",
@@ -473,6 +479,13 @@ RU: dict[str, str] = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Звание: <b>{rank}</b>\n",
+    "rank.rookie": "Новичок",
+    "rank.fighter": "Боец",
+    "rank.legend": "Легенда",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- рефералка ----------------
     "ref.text": (
@@ -596,6 +609,9 @@ RU: dict[str, str] = {
     "dlv.err_fridge": "У тебя уже холодильник такого или большего объёма.",
     "dlv.err_no_team": "У тебя нет созданной команды. Сначала создай её через /create_team.",
     "dlv.err_mega": "Твоя команда уже имеет статус Мега-Клана.",
+    "dlv.intern_upgrade": "♾ Робот Стажёр повышен до <b>ВЕЧНОГО Младшего Майнера</b>: 5 монет в час без срока службы!",
+    "dlv.err_no_intern": "Нет активированного Робота Стажёра — сначала активируй его в /farm.",
+    "dlv.err_intern_refs": "Для апгрейда нужно {need} квалифицированных друга (по 30 раундов), у тебя {have}.",
 
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>У тебя пока нет созданной команды!</b>\n\nТы можешь зарегистрировать личную банду прямо сейчас, нажав на кнопку ниже.",
@@ -851,6 +867,11 @@ EN: dict[str, str] = {
     "farm.boost_drone": "🛸 Master Drone extends robot life until {until} UTC",
     "farm.no_boosts": "No active boosts — check out /shop.",
     "farm.burnout": "🔥 Next robot burnout: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Activate your Intern Bot (free)",
+    "farm.intern_activated": "🤖 Your Intern Bot is on shift! +1 coin per hour forever — no fuel, no expiry.",
+    "farm.intern_already": "🤖 Your Intern Bot is already working.",
+    "farm.intern_line": "🤖 Intern Bots ({rate} coin/h, eternal): <code>{count}</code>",
+    "farm.intern_hint": "🎁 You have a free Intern Bot! Tap the button below — it will mine 1 coin per hour forever.",
     "farm.dashboard": (
         "🚜 <b>ROFL HUB CENTRAL FUEL HUB</b>\n"
         "..................................................\n\n"
@@ -932,6 +953,7 @@ EN: dict[str, str] = {
         "Next level: {next_required} correct answers → +{next_reward} coins."
     ),
     "games.name.rps": "Rock-Paper-Scissors",
+    "games.intern_bonus": "🤖 Level {level}! Another Intern Bot joined your farm — you now have {count}.",
     "games.name.hl": "High/Low",
     "games.name.quiz": "Quiz",
     "games.name.safe": "Safe",
@@ -1057,6 +1079,13 @@ EN: dict[str, str] = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Rank: <b>{rank}</b>\n",
+    "rank.rookie": "Rookie",
+    "rank.fighter": "Fighter",
+    "rank.legend": "Legend",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- referral ----------------
     "ref.text": (
@@ -1180,6 +1209,9 @@ EN: dict[str, str] = {
     "dlv.err_fridge": "You already own a fridge of this size or bigger.",
     "dlv.err_no_team": "You don't have a team yet. Create one first via /create_team.",
     "dlv.err_mega": "Your team already has the Mega-Clan status.",
+    "dlv.intern_upgrade": "♾ Your Intern Bot was promoted to an <b>ETERNAL Miner Bot</b>: 5 coins per hour, no expiry!",
+    "dlv.err_no_intern": "No activated Intern Bot — activate it in /farm first.",
+    "dlv.err_intern_refs": "The upgrade needs {need} qualified friends (30 rounds each); you have {have}.",
 
     # ---------------- teams/clans (main surfaces) ----------------
     "clan.no_team": "⚠️ <b>You don't have a team yet!</b>\n\nYou can register your own crew right now by tapping the button below.",

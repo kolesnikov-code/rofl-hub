@@ -17,14 +17,14 @@ EXPECTED_PRICES = {
     "fridge_10": 99, "fridge_50": 499, "fridge_100": 999,
     "boost_nuclear_30": 199, "boost_nitrogen_30": 299,
     "unlimit_24h": 5, "unlimit_30d": 99,
-    "repair_drone_365": 999,
+    "repair_drone_365": 999, "intern_upgrade": 999,
     "coins_5k": 149, "coins_10k": 299, "coins_50k": 1299, "coins_100k": 2499,
     "clan_upgrade": 2499,
 }
 
 
 def test_catalog_has_exactly_18_items_with_tz_prices():
-    assert len(CATALOG) == 18
+    assert len(CATALOG) == 19   # 18 товаров ТЗ + апгрейд Робота Стажёра (22.10)
     assert {sku: item["stars"] for sku, item in CATALOG.items()} == EXPECTED_PRICES
 
 

@@ -242,6 +242,11 @@ STRINGS = {
     "farm.boost_drone": "🛸 Il Master Drone prolunga la vita dei robot fino a {until} UTC",
     "farm.no_boosts": "Nessun boost attivo — dai un'occhiata a /shop.",
     "farm.burnout": "🔥 Prossimo robot a esaurirsi: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Attiva il tuo Robot Stagista (gratis)",
+    "farm.intern_activated": "🤖 Il tuo Robot Stagista è entrato in turno! +1 moneta all'ora per sempre, senza carburante e senza scadenza.",
+    "farm.intern_already": "🤖 Il tuo Robot Stagista sta già lavorando.",
+    "farm.intern_line": "🤖 Robot Stagisti ({rate} moneta/h, eterni): <code>{count}</code>",
+    "farm.intern_hint": "🎁 Hai un Robot Stagista gratis! Premi il pulsante qui sotto: estrarrà 1 moneta all'ora per sempre.",
     "farm.dashboard": (
         "🚜 <b>HUB CENTRALE DEL CARBURANTE ROFL HUB</b>\n"
         "..................................................\n\n"
@@ -323,6 +328,7 @@ STRINGS = {
         "Prossimo livello: {next_required} risposte esatte → +{next_reward} monete."
     ),
     "games.name.rps": "Morra Cinese",
+    "games.intern_bonus": "🤖 Livello {level}! Un altro Robot Stagista è arrivato nella tua fattoria: ora ne hai {count}.",
     "games.name.hl": "Alto/Basso",
     "games.name.quiz": "Quiz",
     "games.name.safe": "Cassaforte",
@@ -447,6 +453,13 @@ STRINGS = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Grado: <b>{rank}</b>\n",
+    "rank.rookie": "Novellino",
+    "rank.fighter": "Combattente",
+    "rank.legend": "Leggenda",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- рефералка ----------------
     "ref.text": (
@@ -567,6 +580,9 @@ STRINGS = {
     "dlv.err_fridge": "Hai già un frigo di questa capienza o più grande.",
     "dlv.err_no_team": "Non hai ancora creato una squadra. Prima creala con /create_team.",
     "dlv.err_mega": "La tua squadra ha già lo status di Mega-Clan.",
+    "dlv.intern_upgrade": "♾ Il tuo Robot Stagista è stato promosso a <b>Robot Minatore ETERNO</b>: 5 monete all'ora, senza scadenza!",
+    "dlv.err_no_intern": "Nessun Robot Stagista attivato: attivalo prima in /farm.",
+    "dlv.err_intern_refs": "L'upgrade richiede {need} amici qualificati (30 round ciascuno); tu ne hai {have}.",
 
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>Non hai ancora una squadra!</b>\n\nPuoi registrare la tua banda personale proprio ora, toccando il pulsante qui sotto.",
@@ -624,6 +640,10 @@ MINIAPP = {
     "fridge": "Frigo",
     "inv": "Cotolette nell'inventario",
     "burnout": "Prossimo esaurimento",
+    "intern": "Robot Stagisti (1 moneta/h, eterni)",
+    "activateIntern": "🚀 ATTIVA IL ROBOT STAGISTA",
+    "internDone": "🤖 Il tuo Robot Stagista è in turno!",
+    "rank": "🎖 Grado",
     "boosts": "Boost attivi",
     "none": "nessuno",
     "bonusReady": "🎁 RITIRA LA COTOLETTA GIORNALIERA",

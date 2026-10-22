@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from aiogram import Router, types, F
 from aiogram.filters import Command
@@ -10,6 +10,7 @@ from shared.economy import (
     daily_bonus_seconds_left,
     is_active,
     miner_hourly_rate,
+    permanent_expiry,
     utcnow,
 )
 from shared.farm_logic import MinerState, apply_lazy_farm, farm_counts
@@ -19,9 +20,21 @@ router = Router()
 logger = logging.getLogger(__name__)
 
 
-def get_farm_keyboard(lang: str = "ru") -> types.InlineKeyboardMarkup:
-    """Кнопки фермы: ежедневный бонус, заправка и переход в магазин."""
-    return types.InlineKeyboardMarkup(inline_keyboard=[
+async def activate_intern(conn, user_id: int, now: datetime) -> None:
+    """Выдаёт стартового Робота Стажёра (вечный, 1 монета/ч). Вызывать в транзакции с FOR UPDATE."""
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES ($1, 'intern', $2, $3)",
+        user_id, now, permanent_expiry(now))
+    await conn.execute("UPDATE users SET intern_claimed = TRUE WHERE user_id = $1", user_id)
+
+
+def get_farm_keyboard(lang: str = "ru", intern_claimed: bool = True) -> types.InlineKeyboardMarkup:
+    """Кнопки фермы: активация Стажёра (пока не забран), бонус, заправка, магазин."""
+    rows = []
+    if not intern_claimed:
+        rows.append([types.InlineKeyboardButton(text=t(lang, "farm.btn_activate_intern"),
+                                                callback_data="farm_action:activate_intern")])
+    return types.InlineKeyboardMarkup(inline_keyboard=rows + [
         [
             types.InlineKeyboardButton(text=t(lang, "farm.btn_bonus"),
                                        callback_data="farm_action:daily_bonus")
@@ -70,15 +83,22 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
     else:
         status_work = t(lang, "farm.status_no_drills")
 
-    alive = [m for m in miners if m.expires_at > now]
+    # Сгорание считаем только по срочным роботам: Стажёры и вечные Майнеры не горят
+    mortal = [m for m in miners if m.expires_at > now and m.expires_at < now + timedelta(days=3650)]
     burnout_line = ""
-    if alive:
-        nearest = min(m.expires_at for m in alive)
+    if mortal:
+        nearest = min(m.expires_at for m in mortal)
         burnout_line = t(lang, "farm.burnout", until=f"{nearest:%d.%m.%Y %H:%M}")
+    intern_rate = miner_hourly_rate("intern", nuclear_active=nuclear, nitrogen_active=nitrogen)
+    if counts["intern"] > 0:
+        burnout_line = t(lang, "farm.intern_line", count=counts["intern"], rate=intern_rate) + "\n" + burnout_line
+    elif not user["intern_claimed"]:
+        burnout_line = t(lang, "farm.intern_hint") + "\n" + burnout_line
+    speed_per_hour += counts["intern"] * intern_rate
 
     return t(
         lang, "farm.dashboard",
-        total=junior_count + premium_count,
+        total=junior_count + premium_count + counts["intern"],
         junior=junior_count, premium=premium_count,
         junior_rate=junior_rate, premium_rate=premium_rate,
         burnout=burnout_line,
@@ -111,7 +131,8 @@ async def cmd_farm(message: types.Message, override_user_id: int = None, user_la
         return
 
     await message.answer(render_farm_text(user, miners, now, user_lang),
-                         reply_markup=get_farm_keyboard(user_lang), parse_mode="HTML")
+                         reply_markup=get_farm_keyboard(user_lang, user["intern_claimed"]),
+                         parse_mode="HTML")
 
 
 # ============================================================================
@@ -129,6 +150,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
     toast: str | None = None
     extra_message: str | None = None
     bonus_given = False
+    intern_activated = False
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
@@ -138,7 +160,15 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
                 await callback.answer(t(user_lang, "common.no_profile"), show_alert=True)
                 return
 
-            if action == "daily_bonus":
+            if action == "activate_intern":
+                if user["intern_claimed"]:
+                    toast = t(user_lang, "farm.intern_already")
+                else:
+                    await activate_intern(conn, user_id, now)
+                    toast = t(user_lang, "farm.intern_activated")
+                    intern_activated = True
+
+            elif action == "daily_bonus":
                 seconds_left = daily_bonus_seconds_left(user["last_bonus_claim_at"], now)
                 if seconds_left > 0:
                     hours, rem = divmod(seconds_left, 3600)
@@ -180,18 +210,21 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
             now = utcnow()
             user, miners = await apply_lazy_farm(conn, user_id, now)
 
+    if intern_activated:
+        await track(user_id, "intern_activated")
     if bonus_given:
         await track(user_id, "bonus_claimed", source="bot")
     elif action in ("load_1", "load_all") and not extra_message:
         await track(user_id, "farm_refuel", mode=action)
 
-    await callback.answer(toast, show_alert=bool(toast and "⏳" in toast))
+    await callback.answer(toast, show_alert=bool(toast and ("⏳" in toast or intern_activated)))
     if extra_message:
         await callback.message.answer(extra_message)
 
     try:
         await callback.message.edit_text(render_farm_text(user, miners, now, user_lang),
-                                         reply_markup=get_farm_keyboard(user_lang), parse_mode="HTML")
+                                         reply_markup=get_farm_keyboard(user_lang, user["intern_claimed"]),
+                                         parse_mode="HTML")
     except Exception:
         pass  # текст не изменился — Telegram кидает ошибку, это не сбой
 

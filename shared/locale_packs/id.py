@@ -242,6 +242,11 @@ STRINGS = {
     "farm.boost_drone": "🛸 Drone Master memperpanjang umur robot sampai {until} UTC",
     "farm.no_boosts": "Tidak ada boost aktif — cek /shop.",
     "farm.burnout": "🔥 Robot berikutnya hangus pada: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Aktifkan Robot Magang-mu (gratis)",
+    "farm.intern_activated": "🤖 Robot Magang-mu mulai bekerja! +1 koin per jam selamanya — tanpa bahan bakar, tanpa kedaluwarsa.",
+    "farm.intern_already": "🤖 Robot Magang-mu sudah bekerja.",
+    "farm.intern_line": "🤖 Robot Magang ({rate} koin/jam, abadi): <code>{count}</code>",
+    "farm.intern_hint": "🎁 Kamu punya Robot Magang gratis! Tekan tombol di bawah — dia akan menambang 1 koin per jam selamanya.",
     "farm.dashboard": (
         "🚜 <b>HUB BAHAN BAKAR PUSAT ROFL HUB</b>\n"
         "..................................................\n\n"
@@ -323,6 +328,7 @@ STRINGS = {
         "Level berikutnya: {next_required} jawaban benar → +{next_reward} koin."
     ),
     "games.name.rps": "Batu-Gunting-Kertas",
+    "games.intern_bonus": "🤖 Level {level}! Satu Robot Magang lagi datang ke farm-mu — sekarang ada {count}.",
     "games.name.hl": "Besar/Kecil",
     "games.name.quiz": "Kuis",
     "games.name.safe": "Brankas",
@@ -447,6 +453,13 @@ STRINGS = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Pangkat: <b>{rank}</b>\n",
+    "rank.rookie": "Pemula",
+    "rank.fighter": "Petarung",
+    "rank.legend": "Legenda",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- referal ----------------
     "ref.text": (
@@ -567,6 +580,9 @@ STRINGS = {
     "dlv.err_fridge": "Kamu sudah punya kulkas sebesar ini atau lebih besar.",
     "dlv.err_no_team": "Kamu belum punya tim. Buat dulu lewat /create_team.",
     "dlv.err_mega": "Timmu sudah berstatus Mega-Klan.",
+    "dlv.intern_upgrade": "♾ Robot Magang-mu naik jadi <b>Robot Penambang ABADI</b>: 5 koin per jam, tanpa kedaluwarsa!",
+    "dlv.err_no_intern": "Belum ada Robot Magang aktif — aktifkan dulu di /farm.",
+    "dlv.err_intern_refs": "Upgrade butuh {need} teman berkualitas (30 ronde masing-masing); kamu punya {have}.",
 
     # ---------------- tim/klan (permukaan utama) ----------------
     "clan.no_team": "⚠️ <b>Kamu belum punya tim!</b>\n\nKamu bisa mendaftarkan geng pribadimu sekarang juga dengan menekan tombol di bawah.",
@@ -618,6 +634,10 @@ MINIAPP = {
     "fueled": "Pengebor terisi", "speed": "Kecepatan menambang",
     "perHour": "{v} koin/jam", "fridge": "Kulkas", "inv": "Kotlet di gudang",
     "burnout": "Hangus berikutnya", "boosts": "Boost aktif", "none": "tidak ada",
+    "intern": "Robot Magang (1 koin/jam, abadi)",
+    "activateIntern": "🚀 AKTIFKAN ROBOT MAGANG",
+    "internDone": "🤖 Robot Magang-mu mulai bekerja!",
+    "rank": "🎖 Pangkat",
     "bonusReady": "🎁 KLAIM KOTLET HARIAN",
     "bonusWait": "⏳ Bonus dalam {h} jam {m} mnt", "bonusDone": "🎉 Kotlet masuk gudang!",
     "team": "🏆 TIMKU", "clan": "KLAN", "teamLabel": "Tim", "captain": "👑 Kamu kaptennya!",

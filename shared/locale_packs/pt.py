@@ -242,6 +242,11 @@ STRINGS = {
     "farm.boost_drone": "🛸 O Drone Mestre prolonga a vida dos robôs até {until} UTC",
     "farm.no_boosts": "Nenhum boost ativo — dê uma olhada no /shop.",
     "farm.burnout": "🔥 Próxima queima de robô: <b>{until} UTC</b>\n",
+    "farm.btn_activate_intern": "🚀 Ativar seu Robô Estagiário (grátis)",
+    "farm.intern_activated": "🤖 Seu Robô Estagiário entrou no turno! +1 moeda por hora para sempre, sem combustível e sem validade.",
+    "farm.intern_already": "🤖 Seu Robô Estagiário já está trabalhando.",
+    "farm.intern_line": "🤖 Robôs Estagiários ({rate} moeda/h, eternos): <code>{count}</code>",
+    "farm.intern_hint": "🎁 Você tem um Robô Estagiário grátis! Toque no botão abaixo e ele vai minerar 1 moeda por hora para sempre.",
     "farm.dashboard": (
         "🚜 <b>HUB CENTRAL DE COMBUSTÍVEL DO ROFL HUB</b>\n"
         "..................................................\n\n"
@@ -323,6 +328,7 @@ STRINGS = {
         "Próximo nível: {next_required} respostas certas → +{next_reward} moedas."
     ),
     "games.name.rps": "Pedra-Papel-Tesoura",
+    "games.intern_bonus": "🤖 Nível {level}! Mais um Robô Estagiário chegou à sua fazenda: agora são {count}.",
     "games.name.hl": "Maior/Menor",
     "games.name.quiz": "Quiz",
     "games.name.safe": "Cofre",
@@ -447,6 +453,13 @@ STRINGS = {
 
     # ---------------- VIP ID ----------------
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
+    "profile.rank_line": "🎖 Patente: <b>{rank}</b>\n",
+    "rank.rookie": "Novato",
+    "rank.fighter": "Lutador",
+    "rank.legend": "Lenda",
+    "rank.rofl": "ROFL",
+    "rank.lmao": "LMAO",
+    "rank.dead": "DEAD",
 
     # ---------------- indicações ----------------
     "ref.text": (
@@ -567,6 +580,9 @@ STRINGS = {
     "dlv.err_fridge": "Você já tem uma geladeira desse tamanho ou maior.",
     "dlv.err_no_team": "Você ainda não criou uma equipe. Crie primeiro com /create_team.",
     "dlv.err_mega": "Sua equipe já tem o status de Mega-Clã.",
+    "dlv.intern_upgrade": "♾ Seu Robô Estagiário foi promovido a <b>Robô Minerador ETERNO</b>: 5 moedas por hora, sem validade!",
+    "dlv.err_no_intern": "Nenhum Robô Estagiário ativado: ative-o primeiro em /farm.",
+    "dlv.err_intern_refs": "O upgrade exige {need} amigos qualificados (30 rodadas cada); você tem {have}.",
 
     # ---------------- equipes/clãs (superfícies principais) ----------------
     "clan.no_team": "⚠️ <b>Você ainda não criou uma equipe!</b>\n\nVocê pode registrar sua própria tropa agora mesmo tocando no botão abaixo.",
@@ -624,6 +640,10 @@ MINIAPP = {
     "fridge": "Geladeira",
     "inv": "Bifes no estoque",
     "burnout": "Próxima queima",
+    "intern": "Robôs Estagiários (1 moeda/h, eternos)",
+    "activateIntern": "🚀 ATIVAR ROBÔ ESTAGIÁRIO",
+    "internDone": "🤖 Seu Robô Estagiário entrou no turno!",
+    "rank": "🎖 Patente",
     "boosts": "Boosts ativos",
     "none": "nenhum",
     "bonusReady": "🎁 PEGAR O BIFE DIÁRIO",

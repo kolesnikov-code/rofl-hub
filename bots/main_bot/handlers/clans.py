@@ -1,6 +1,8 @@
 import logging
 import re
 import html
+from datetime import datetime
+
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -8,8 +10,9 @@ from aiogram.fsm.state import State, StatesGroup
 from shared.analytics import track
 from shared.database import db
 from shared.db_clans import create_new_team_in_db
-from shared.economy import TEAM_CREATE_COST, TEAM_LIST_PAGE_SIZE
+from shared.economy import TEAM_CREATE_COST, TEAM_LIST_PAGE_SIZE, utcnow
 from shared.locales import btn_variants, t
+from shared.ranks import name_with_rank
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -115,10 +118,11 @@ async def cmd_my_team_isolated(message: types.Message, user_lang: str = "ru"):
         await show_user_team_dashboard(message, user["team_id"], user_id, user_lang)
 
 
-def format_member_line(member: dict, captain_id: int) -> str:
+def format_member_line(member: dict, captain_id: int, lang: str = "ru",
+                       now: datetime | None = None) -> str:
     """
-    Строка тиммейта: 🧠уровень интеллекта + кликабельный @username,
-    а у кого username нет — имя без ссылки. Капитан помечен короной.
+    Строка тиммейта: 🧠уровень интеллекта + кликабельный @username (или имя без
+    ссылки) + 🎖 звание по стажу справа. Капитан помечен короной.
     """
     level = member.get("quiz_level") or 0
     crown = "👑 " if member["user_id"] == captain_id else ""
@@ -127,6 +131,7 @@ def format_member_line(member: dict, captain_id: int) -> str:
     else:
         display = member.get("display_name") or f"Игрок {member['user_id']}"
         name = f"<b>{html.escape(display)}</b>"
+    name = name_with_rank(name, lang, member.get("created_at"), now or utcnow())
     return f"🧠{level} · {crown}{name}"
 
 
@@ -138,7 +143,7 @@ async def _fetch_team_members(conn, team_id: int, captain_id: int, page: int) ->
     """Капитан всегда первым, дальше — ветераны по старшинству вступления."""
     rows = await conn.fetch(
         """
-        SELECT u.user_id, u.username, u.display_name,
+        SELECT u.user_id, u.username, u.display_name, u.created_at,
                COALESCE(g.quiz_level, 0) AS quiz_level
         FROM users u
         LEFT JOIN game_stats g ON g.user_id = u.user_id
@@ -214,7 +219,8 @@ async def show_team_members_page(callback: types.CallbackQuery, user_lang: str =
         members = await _fetch_team_members(conn, team_id, team["captain_id"], page)
 
     await callback.answer()
-    lines = [format_member_line(m, team["captain_id"]) for m in members]
+    now = utcnow()
+    lines = [format_member_line(m, team["captain_id"], user_lang, now) for m in members]
     members_text = (
         t(user_lang, "clan.members_header", name=team["team_name"])
         + "\n".join(lines)

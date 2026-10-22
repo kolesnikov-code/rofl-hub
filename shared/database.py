@@ -335,6 +335,8 @@ SCHEMA_STATEMENTS: list[str] = [
     """,
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS source VARCHAR(32) NOT NULL DEFAULT 'organic';",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS qualified_at TIMESTAMP WITH TIME ZONE;",
+    # Робот Стажёр активирован (бесплатный вечный робот, один на игрока при старте)
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS intern_claimed BOOLEAN NOT NULL DEFAULT FALSE;",
     "CREATE INDEX IF NOT EXISTS users_created_idx ON users (created_at);",
     "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",
     "CREATE INDEX IF NOT EXISTS star_payments_created_idx ON star_payments (created_at);",

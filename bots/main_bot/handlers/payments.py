@@ -24,7 +24,8 @@ from bots.main_bot.guards import feature_enabled
 from shared.analytics import track
 from shared.database import db
 from shared.feature_flags import get_flag
-from shared.delivery import DeliveryError, already_delivered, deliver_order
+from shared.delivery import DeliveryError, already_delivered, deliver_order, qualified_referrals_count
+from shared.economy import INTERN_UPGRADE_REFERRALS
 from shared.farm_logic import apply_lazy_farm
 from shared.locales import t
 
@@ -48,6 +49,15 @@ async def _precheck_deliverable(conn, user_id: int, order: dict) -> str | None:
             return "Мега-Клан можно купить только капитану уже созданной команды. Сначала /create_team."
         if team["max_members"] >= order["max_members"]:
             return "Твоя команда уже имеет статус Мега-Клана."
+    if order["type"] == "intern_upgrade":
+        has_intern = await conn.fetchval(
+            "SELECT 1 FROM miners WHERE user_id = $1 AND kind = 'intern' LIMIT 1", user_id)
+        if not has_intern:
+            return "Сначала активируй Робота Стажёра в /farm — апгрейдить пока некого."
+        have = await qualified_referrals_count(conn, user_id)
+        if have < INTERN_UPGRADE_REFERRALS:
+            return (f"Для вечного Майнера нужно {INTERN_UPGRADE_REFERRALS} друга, сыгравших по 30 раундов "
+                    f"(у тебя {have}). Пригласи друзей через /invite.")
     return None
 
 

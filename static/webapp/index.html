@@ -86,6 +86,7 @@
   .top-row .place { width: 28px; font-weight: 900; color: var(--accent); }
   .top-row .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .top-row .brain { color: var(--neon); font-weight: 700; }
+  .rank { font-size: 11px; font-weight: 700; color: var(--accent); opacity: .85; }
   .top-row .bal { font-weight: 800; }
   .loading { text-align: center; color: var(--muted); padding: 50px 0; font-size: 15px; }
   .err { text-align: center; color: var(--bad); padding: 40px 10px; font-size: 15px; }
@@ -110,6 +111,8 @@
       passport: "📋 ПАСПОРТ ИГРОКА", coins: "монет",
       brain: "🧠 Уровень интеллекта", toNext: "до уровня {n}: {left} верных ответов в викторине (+{reward} монет)",
       farm: "🚜 КИБЕР-ФЕРМА", robots: "Роботы (майнеры / бурильщики)",
+      intern: "Роботы Стажёры (1 монета/ч, вечные)", activateIntern: "🚀 АКТИВИРОВАТЬ РОБОТА СТАЖЁРА",
+      internDone: "🤖 Робот Стажёр вышел на смену!", rank: "🎖 Звание",
       fueled: "Заправлено бурильщиков", speed: "Скорость добычи",
       perHour: "{v} монет/час", fridge: "Холодильник", inv: "Котлет на складе",
       burnout: "Ближайшее сгорание", boosts: "Активные бусты", none: "нет",
@@ -138,6 +141,8 @@
       passport: "📋 PLAYER PASSPORT", coins: "coins",
       brain: "🧠 Intellect level", toNext: "to level {n}: {left} correct quiz answers (+{reward} coins)",
       farm: "🚜 CYBER-FARM", robots: "Robots (miners / drillers)",
+      intern: "Intern Bots (1 coin/h, eternal)", activateIntern: "🚀 ACTIVATE YOUR INTERN BOT",
+      internDone: "🤖 Your Intern Bot is on shift!", rank: "🎖 Rank",
       fueled: "Drillers fueled", speed: "Mining speed",
       perHour: "{v} coins/hour", fridge: "Fridge", inv: "Cutlets in stock",
       burnout: "Next burnout", boosts: "Active boosts", none: "none",
@@ -178,6 +183,10 @@
     "fridge": "الثلاجة",
     "inv": "كفتات في المخزون",
     "burnout": "أقرب احتراق",
+    "intern": "روبوتات المتدرّبين (عملة/ساعة، دائمة)",
+    "activateIntern": "🚀 تفعيل روبوت المتدرّب",
+    "internDone": "🤖 روبوت المتدرّب بدأ نوبته!",
+    "rank": "🎖 الرتبة",
     "boosts": "المعزّزات النشطة",
     "none": "لا شيء",
     "bonusReady": "🎁 استلم كفتة اليوم",
@@ -221,6 +230,10 @@
     "fridge": "ফ্রিজ",
     "inv": "গুদামে কাটলেট",
     "burnout": "পরের মেয়াদ শেষ",
+    "intern": "ইন্টার্ন রোবট (১ কয়েন/ঘণ্টা, চিরস্থায়ী)",
+    "activateIntern": "🚀 ইন্টার্ন রোবট চালু করো",
+    "internDone": "🤖 ইন্টার্ন রোবট শিফটে নেমেছে!",
+    "rank": "🎖 র‍্যাঙ্ক",
     "boosts": "চালু বুস্ট",
     "none": "নেই",
     "bonusReady": "🎁 দৈনিক কাটলেট নাও",
@@ -266,6 +279,10 @@
     "burnout": "Nächster Ablauf",
     "boosts": "Aktive Boosts",
     "none": "keine",
+    "intern": "Praktikanten-Bots (1 Münze/h, ewig)",
+    "activateIntern": "🚀 PRAKTIKANTEN-BOT AKTIVIEREN",
+    "internDone": "🤖 Dein Praktikanten-Bot ist im Dienst!",
+    "rank": "🎖 Rang",
     "bonusReady": "🎁 TÄGLICHE FRIKADELLE ABHOLEN",
     "bonusWait": "⏳ Bonus in {h} Std. {m} Min.",
     "bonusDone": "🎉 Frikadelle im Lager!",
@@ -307,6 +324,10 @@
     "fridge": "Refrigerador",
     "inv": "Chuletas en inventario",
     "burnout": "Próximo en quemarse",
+    "intern": "Robots Becarios (1 moneda/h, eternos)",
+    "activateIntern": "🚀 ACTIVAR ROBOT BECARIO",
+    "internDone": "🤖 ¡Tu Robot Becario entró en turno!",
+    "rank": "🎖 Rango",
     "boosts": "Mejoras activas",
     "none": "ninguna",
     "bonusReady": "🎁 RECLAMAR LA CHULETA DIARIA",
@@ -350,6 +371,10 @@
     "fridge": "Frigo",
     "inv": "Côtelettes en stock",
     "burnout": "Prochaine expiration",
+    "intern": "Robots Stagiaires (1 pièce/h, éternels)",
+    "activateIntern": "🚀 ACTIVER LE ROBOT STAGIAIRE",
+    "internDone": "🤖 Ton Robot Stagiaire prend son poste !",
+    "rank": "🎖 Grade",
     "boosts": "Boosts actifs",
     "none": "aucun",
     "bonusReady": "🎁 RÉCUPÉRER LA CÔTELETTE DU JOUR",
@@ -393,6 +418,10 @@
     "fridge": "फ़्रिज",
     "inv": "भंडार में कटलेट",
     "burnout": "अगला बर्नआउट",
+    "intern": "इंटर्न रोबोट (1 सिक्का/घंटा, हमेशा के लिए)",
+    "activateIntern": "🚀 इंटर्न रोबोट एक्टिवेट करो",
+    "internDone": "🤖 इंटर्न रोबोट शिफ्ट पर आ गया!",
+    "rank": "🎖 रैंक",
     "boosts": "एक्टिव बूस्ट",
     "none": "कोई नहीं",
     "bonusReady": "🎁 रोज़ाना की कटलेट लो",
@@ -438,6 +467,10 @@
     "burnout": "Hangus berikutnya",
     "boosts": "Boost aktif",
     "none": "tidak ada",
+    "intern": "Robot Magang (1 koin/jam, abadi)",
+    "activateIntern": "🚀 AKTIFKAN ROBOT MAGANG",
+    "internDone": "🤖 Robot Magang-mu mulai bekerja!",
+    "rank": "🎖 Pangkat",
     "bonusReady": "🎁 KLAIM KOTLET HARIAN",
     "bonusWait": "⏳ Bonus dalam {h} jam {m} mnt",
     "bonusDone": "🎉 Kotlet masuk gudang!",
@@ -479,6 +512,10 @@
     "fridge": "Frigo",
     "inv": "Cotolette nell'inventario",
     "burnout": "Prossimo esaurimento",
+    "intern": "Robot Stagisti (1 moneta/h, eterni)",
+    "activateIntern": "🚀 ATTIVA IL ROBOT STAGISTA",
+    "internDone": "🤖 Il tuo Robot Stagista è in turno!",
+    "rank": "🎖 Grado",
     "boosts": "Boost attivi",
     "none": "nessuno",
     "bonusReady": "🎁 RITIRA LA COTOLETTA GIORNALIERA",
@@ -522,6 +559,10 @@
     "fridge": "Lodówka",
     "inv": "Kotlety w magazynie",
     "burnout": "Najbliższe wypalenie",
+    "intern": "Roboty Stażyści (1 moneta/h, wieczne)",
+    "activateIntern": "🚀 AKTYWUJ ROBOTA STAŻYSTĘ",
+    "internDone": "🤖 Twój Robot Stażysta zaczął zmianę!",
+    "rank": "🎖 Ranga",
     "boosts": "Aktywne wzmocnienia",
     "none": "brak",
     "bonusReady": "🎁 ODBIERZ CODZIENNY KOTLET",
@@ -565,6 +606,10 @@
     "fridge": "Geladeira",
     "inv": "Bifes no estoque",
     "burnout": "Próxima queima",
+    "intern": "Robôs Estagiários (1 moeda/h, eternos)",
+    "activateIntern": "🚀 ATIVAR ROBÔ ESTAGIÁRIO",
+    "internDone": "🤖 Seu Robô Estagiário entrou no turno!",
+    "rank": "🎖 Patente",
     "boosts": "Boosts ativos",
     "none": "nenhum",
     "bonusReady": "🎁 PEGAR O BIFE DIÁRIO",
@@ -610,6 +655,10 @@
     "burnout": "Eng yaqin kuyish",
     "boosts": "Faol kuchaytirgichlar",
     "none": "yo'q",
+    "intern": "Stajyor Robotlar (1 tanga/soat, abadiy)",
+    "activateIntern": "🚀 STAJYOR ROBOTNI FAOLLASHTIRISH",
+    "internDone": "🤖 Stajyor Robot smenaga chiqdi!",
+    "rank": "🎖 Unvon",
     "bonusReady": "🎁 KUNDALIK KOTLETNI OLISH",
     "bonusWait": "⏳ Bonus {h} soat {m} daqiqadan keyin",
     "bonusDone": "🎉 Kotlet omborda!",
@@ -651,6 +700,10 @@
     "fridge": "冰箱",
     "inv": "仓库肉排",
     "burnout": "下次报废",
+    "intern": "实习机器人（1 金币/小时，永久）",
+    "activateIntern": "🚀 激活实习机器人",
+    "internDone": "🤖 实习机器人上岗了！",
+    "rank": "🎖 称号",
     "boosts": "生效中的强化",
     "none": "无",
     "bonusReady": "🎁 领取每日肉排",
@@ -712,6 +765,7 @@
     let passport =
       '<div class="balance">' + me.balance.toLocaleString("ru-RU") + ' <small>' + L.coins + '</small></div>' +
       (vip ? '<div>' + vip + '</div>' : '') +
+      (me.rank ? '<div class="row"><span class="k">' + L.rank + '</span><span class="v">' + esc(me.rank) + '</span></div>' : '') +
       '<div class="row"><span class="k">' + L.brain + '</span><span class="v">' + q.level + '</span></div>' +
       '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="hint">' + fmt(L.toNext, { n: q.next_level, left: q.required - q.progress, reward: q.next_reward }) + '</div>';
@@ -727,6 +781,7 @@
     const fuelCls = f.premium === 0 || f.premium_fueled === f.premium ? "status-ok" : "status-bad";
 
     let farm =
+      '<div class="row"><span class="k">' + L.intern + '</span><span class="v">🤖 ' + f.intern + '</span></div>' +
       '<div class="row"><span class="k">' + L.robots + '</span><span class="v">🤖 ' + f.junior + ' / ⚡ ' + f.premium + '</span></div>' +
       '<div class="row"><span class="k">' + L.fueled + '</span><span class="v ' + fuelCls + '">' + f.premium_fueled + ' / ' + f.premium + '</span></div>' +
       '<div class="row"><span class="k">' + L.speed + '</span><span class="v">' + fmt(L.perHour, { v: "+" + f.speed_hour }) + '</span></div>' +
@@ -735,6 +790,7 @@
       '<div class="row"><span class="k">' + L.burnout + '</span><span class="v">🔥 ' + burnout + '</span></div>' +
       '<div class="row"><span class="k">' + L.boosts + '</span><span class="v">' + (boosts.join(" ") || L.none) + '</span></div>' +
       buildCta(f) +
+      (f.intern_claimed ? '' : '<button class="btn" id="internBtn">' + L.activateIntern + '</button>') +
       '<button class="btn" id="bonusBtn"></button>';
 
     let teamHtml;
@@ -751,7 +807,8 @@
 
     const topHtml = top.top.map((p, i) =>
       '<div class="top-row"><span class="place">' + (["🥇", "🥈", "🥉"][i] || (i + 1) + ".") + '</span>' +
-      '<span class="nm">' + esc(p.name) + (p.vip ? ' <span class="vip">💎</span>' : '') + '</span>' +
+      '<span class="nm">' + esc(p.name) + (p.vip ? ' <span class="vip">💎</span>' : '') +
+      (p.rank ? ' <span class="rank">' + esc(p.rank) + '</span>' : '') + '</span>' +
       '<span class="brain">🧠' + p.quiz_level + '</span>' +
       '<span class="bal">' + p.balance.toLocaleString("ru-RU") + '</span></div>'
     ).join("") || '<div class="hint">—</div>';
@@ -767,6 +824,7 @@
       card(L.team, teamHtml) + card(L.top, topHtml);
 
     setupBonusButton(f.bonus_seconds_left);
+    setupInternButton();
     document.querySelectorAll(".shop-item").forEach(btn => {
       btn.onclick = () => buy(btn.dataset.sku, btn);
     });
@@ -814,6 +872,21 @@
       const msg = (e.body && e.body.error && e.status === 400) ? e.body.error : L.payFail;
       if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg);
     }
+  }
+
+  function setupInternButton() {
+    const btn = document.getElementById("internBtn");
+    if (!btn) return;
+    btn.onclick = async function () {
+      btn.disabled = true;
+      try {
+        const res = await api("/api/intern", { method: "POST" });
+        if (res.ok || res.error === "already") {
+          btn.textContent = L.internDone;
+          setTimeout(load, 900);
+        } else { btn.disabled = false; }
+      } catch (e) { btn.disabled = false; }
+    };
   }
 
   function setupBonusButton(secondsLeft) {

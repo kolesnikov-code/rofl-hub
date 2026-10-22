@@ -806,6 +806,46 @@ async def test_feature_flags_set_toggle_and_cache():
         await global_db.close()
 
 
+async def test_intern_upgrade_requires_three_qualified_referrals(conn):
+    """Апгрейд Стажёра: без 3 квалифицированных друзей — отказ; с ними — вечный Майнер."""
+    from datetime import timedelta
+    from shared.economy import permanent_expiry, utcnow
+    now = utcnow()
+    await _mk_user(conn, 300, 0)
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES (300, 'intern', $1, $2)",
+        now, permanent_expiry(now))
+    order = build_order("intern_upgrade")
+    for i in range(2):   # два квалифицированных — мало
+        await _mk_user(conn, 301 + i, 0, referred_by=300, qualified_at=now)
+    with pytest.raises(DeliveryError):
+        async with conn.transaction():
+            await deliver_order(conn, 300, order, "charge_up_fail")
+    await _mk_user(conn, 303, 0, referred_by=300, qualified_at=now)   # третий — достаточно
+    await _mk_user(conn, 304, 0, referred_by=300)                      # незавершённый не считается
+    async with conn.transaction():
+        text = await deliver_order(conn, 300, order, "charge_up_ok")
+    assert "ВЕЧНОГО" in text
+    robot = await conn.fetchrow("SELECT kind, expires_at FROM miners WHERE user_id = 300")
+    assert robot["kind"] == "junior"
+    assert robot["expires_at"] > now + timedelta(days=365 * 50)
+    assert await conn.fetchval("SELECT COUNT(*) FROM star_payments WHERE user_id = 300") == 1
+
+
+async def test_tenth_intellect_level_grants_extra_intern(conn, global_db):
+    """Закрытие 10-го уровня викторины выдаёт ещё одного Робота Стажёра."""
+    pytest.importorskip("aiogram")
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    await _mk_user(conn, 310, 0)
+    await conn.execute(
+        "INSERT INTO game_stats (user_id, quiz_level, quiz_level_progress) VALUES (310, 9, 99)")
+    ok, text, _ = await execute_solo_game_payout(310, True, "quiz")
+    assert ok and "Стажёр" in text
+    interns = await conn.fetch("SELECT kind FROM miners WHERE user_id = 310")
+    assert [r["kind"] for r in interns] == ["intern"]
+    assert await conn.fetchval("SELECT quiz_level FROM game_stats WHERE user_id = 310") == 10
+
+
 async def test_purge_old_events_removes_only_stale_rows():
     from datetime import timedelta
 
