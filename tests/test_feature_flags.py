@@ -15,7 +15,7 @@ from shared.feature_flags import (
 
 def test_defaults_are_safe():
     assert FLAG_DEFAULTS["maintenance"] is False   # техработы по умолчанию ВЫКЛЮЧЕНЫ
-    for key in ("games", "duels", "quests", "shop", "transfers"):
+    for key in ("games", "duels", "quests", "shop", "transfers", "market"):
         assert FLAG_DEFAULTS[key] is True          # разделы по умолчанию ВКЛЮЧЕНЫ
     assert _default_for("quest:golden_cutlet") is True   # квесты видимы, пока не скрыты
     assert _default_for("unknown_key") is True

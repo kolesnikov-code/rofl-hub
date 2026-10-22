@@ -127,6 +127,21 @@ TRANSFER_FEE_PERCENT = 0      # комиссия сжигается; на ста
 
 def transfer_fee(amount: int) -> int:
     return amount * TRANSFER_FEE_PERCENT // 100
+
+
+# --------------------------------------------------------------------------
+# Биржа котлет (решение владельца 22.10): P2P котлеты за монеты, комиссия сжигается
+# --------------------------------------------------------------------------
+MARKET_FEE_PERCENT = 10        # сгорает с каждой продажи — дефляция монет
+MARKET_MIN_PRICE = 1           # монет за котлету
+MARKET_MAX_PRICE = 100_000
+MARKET_MAX_QTY = 100           # котлет в одном ордере
+MARKET_MAX_OPEN_ORDERS = 5     # открытых ордеров на игрока
+MARKET_SHOWCASE_LIMIT = 6      # ордеров на витрине /market (по одной кнопке в ряд)
+
+
+def market_fee(total: int) -> int:
+    return total * MARKET_FEE_PERCENT // 100
 DUEL_BURN_PERCENT = 20
 TOURNAMENT_ENTRY_FEE = 5000
 TOURNAMENT_WINNERS_PERCENT = 1

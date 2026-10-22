@@ -323,6 +323,19 @@ SCHEMA_STATEMENTS: list[str] = [
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     """,
+    # --- Биржа котлет (22.10): ордера на продажу, котлеты в эскроу ---
+    """
+    CREATE TABLE IF NOT EXISTS market_orders (
+        id BIGSERIAL PRIMARY KEY,
+        seller_id BIGINT NOT NULL,
+        qty INT NOT NULL CHECK (qty >= 0),
+        price INT NOT NULL CHECK (price > 0),
+        status VARCHAR(12) NOT NULL DEFAULT 'open',
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS market_open_idx ON market_orders (status, price, created_at);",
+    "CREATE INDEX IF NOT EXISTS market_seller_idx ON market_orders (seller_id, status);",
     # Квесты №4–10 приезжают СКРЫТЫМИ (запас под ротацию); владелец включает их
     # в /quests_admin. ON CONFLICT DO NOTHING: повторный деплой не перетирает решение.
     """

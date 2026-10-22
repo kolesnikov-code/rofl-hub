@@ -29,7 +29,7 @@ async def conn():
     async with database.pool.acquire() as c:
         await c.execute("TRUNCATE users, teams, star_payments, game_stats, auctions, ledger, "
                         "miners, duels, battles, vip_aliases, quest_progress, events, "
-                        "daily_activity, promoters, metrics_snapshots RESTART IDENTITY")
+                        "daily_activity, promoters, metrics_snapshots, market_orders RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -852,6 +852,46 @@ async def test_tenth_intellect_level_grants_extra_intern(conn, global_db):
     interns = await conn.fetch("SELECT kind FROM miners WHERE user_id = 310")
     assert [r["kind"] for r in interns] == ["intern"]
     assert await conn.fetchval("SELECT quiz_level FROM game_stats WHERE user_id = 310") == 10
+
+
+async def test_market_sell_buy_cancel_with_burned_fee(conn):
+    """Эскроу котлет, покупка с комиссией (сгорает), частичная сделка, снятие ордера."""
+    from shared.market import MarketError, buy_from_order, cancel_order, list_open_orders, place_sell_order
+    await _mk_user(conn, 400, 0, inv_cutlets=20)      # продавец
+    await _mk_user(conn, 401, 1000)                   # покупатель
+    await conn.execute("TRUNCATE market_orders RESTART IDENTITY")
+
+    order_id = await place_sell_order(conn, 400, 10, 50)   # 10 котлет по 50
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 400") == 10  # эскроу
+    with pytest.raises(MarketError) as e:
+        await place_sell_order(conn, 400, 11, 50)      # на складе осталось 10
+    assert e.value.key == "mk.err_no_cutlets"
+    with pytest.raises(MarketError) as e:
+        await buy_from_order(conn, 400, order_id, 1)   # свой ордер
+    assert e.value.key == "mk.err_own"
+
+    deal = await buy_from_order(conn, 401, order_id, 4)    # 4 × 50 = 200, комиссия 20
+    assert deal == {"qty": 4, "price": 50, "total": 200, "fee": 20, "seller_id": 400, "seller_got": 180}
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 401") == 800
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 400") == 180
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 401") == 4
+    burned = await conn.fetchval(
+        "SELECT -SUM(delta) FROM ledger WHERE reason IN ('market_buy', 'market_sell')")
+    assert burned == 20                                     # 200 списано, 180 зачислено
+    assert (await list_open_orders(conn))[0]["qty"] == 6
+
+    # покупатель без монет
+    await _mk_user(conn, 402, 10)
+    with pytest.raises(MarketError) as e:
+        await buy_from_order(conn, 402, order_id, 1)
+    assert e.value.key == "mk.err_insufficient"
+
+    qty_back = await cancel_order(conn, 400, order_id)
+    assert qty_back == 6
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 400") == 16
+    assert await conn.fetchval("SELECT status FROM market_orders WHERE id = $1", order_id) == "cancelled"
+    with pytest.raises(MarketError):
+        await cancel_order(conn, 400, order_id)             # второй раз — уже снят
 
 
 async def test_purge_old_events_removes_only_stale_rows():

@@ -44,6 +44,9 @@ def get_farm_keyboard(lang: str = "ru", intern_claimed: bool = True) -> types.In
             types.InlineKeyboardButton(text=t(lang, "farm.btn_loadall"), callback_data="farm_action:load_all")
         ],
         [
+            types.InlineKeyboardButton(text=t(lang, "farm.btn_market"), callback_data="open_market")
+        ],
+        [
             types.InlineKeyboardButton(text=t(lang, "farm.btn_shop"), callback_data="open_shop_from_farm")
         ]
     ])
