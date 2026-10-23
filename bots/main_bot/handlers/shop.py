@@ -12,6 +12,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 from bots.main_bot.catalog import CATALOG, CATEGORY_FARM, CATEGORY_GAMES, SHOP_LAYOUT, item_button
+from bots.main_bot.config import WEBAPP_URL
 from shared.analytics import track
 from shared.database import db
 from shared.locales import btn, btn_variants, t
@@ -35,6 +36,11 @@ def get_shop_reply_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
 
 def get_catalog_keyboard(category: str, lang: str = "ru") -> types.InlineKeyboardMarkup:
     rows = []
+    # Первой строкой — «Что даёт каждый товар» (раздел FAQ в приложении), если оно настроено
+    if WEBAPP_URL:
+        rows.append([types.InlineKeyboardButton(
+            text=t(lang, "shop.btn_info"),
+            web_app=types.WebAppInfo(url=f"{WEBAPP_URL.rstrip('/')}/faq?s=shop-items"))])
     for row in SHOP_LAYOUT[category]:
         rows.append([
             types.InlineKeyboardButton(text=item_button(CATALOG[sku], lang), callback_data=f"buy_{sku}")

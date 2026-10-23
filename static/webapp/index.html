@@ -196,6 +196,8 @@
   .stres { margin-top: 8px; } .donrow { display: flex; flex-wrap: wrap; gap: 6px; }
   .idxrow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
   .card.hot { border-color: rgba(255,157,61,.55); box-shadow: 0 0 22px rgba(255,157,61,.18); }
+  .swapcard { padding: 10px 12px; margin: 8px 0; border-radius: 12px; background: rgba(13,19,38,.7); border: 1px solid rgba(0,255,225,.18); }
+  .swapcard .mini { width: 100%; margin-top: 8px; padding: 10px; }
   .card.hot h2 { color: #ffb15c; }
   .recipe.weekly { border-color: rgba(255,157,61,.35); }
   .reflink { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #0d1326; border: 1px dashed rgba(0,255,225,.4);
@@ -326,7 +328,7 @@
       mk_side_sell: "продаю", mk_side_buy: "покупаю", mk_listedBid: "Заявка размещена! Монеты заморожены до сделки.",
       mk_sold: "Продано {q}, получено {g} 🪙 после комиссии", mk_shuttleNote: "🚀 Твой Шаттл: комиссия {f}% на твои продажи",
       sw_title: "🔄 ОБМЕН РЕСУРСАМИ", sw_hint: "Отдай лишнее — получи нужное. Без монет и без комиссии.",
-      sw_give: "Отдаю", sw_want: "Хочу получить", sw_qty: "Сколько", sw_create: "Предложить обмен", sw_take: "Обменять",
+      sw_give: "Ты отдаёшь", sw_want: "Хочешь получить", sw_qty: "Сколько", sw_create: "Предложить обмен", sw_take: "Обменять",
       sw_empty: "Предложений обмена пока нет", sw_mine: "Мои предложения", sw_done: "Обмен состоялся!",
       sw_created: "Предложение выставлено, ресурсы отложены", sw_cancelled: "Предложение снято, ресурсы вернулись",
       ws_armorUntil: "🛡 Броня действует до {t}",
@@ -338,6 +340,9 @@
       ref_topHint: "✅ — активные друзья (сыграли 30 раундов), 👥 — все приглашённые", ref_empty: "Рейтинг пока пуст — стань первым(ой)!",
       wk_title: "🔥 РЕЦЕПТЫ НЕДЕЛИ", wk_hint: "Временные рецепты: появляются по решению хаба и исчезают. Успей собрать!",
       wk_left: "осталось сборок на этой неделе: {n} из {m}", st_cap: "📦 Склад: до {c} каждого ресурса — излишек добычи пропадает",
+      shop_info: "ℹ️ Что даёт каждый товар", sw_youGet: "Тебе дают", sw_youGive: "Взамен отдаёшь",
+      sw_takeBtn: "Обменять — отдать {x}", sw_mineLine: "Ты отдаёшь {g} → хочешь {w}",
+      sw_qtyErr: "Укажи количество больше нуля в обоих полях",
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
@@ -436,7 +441,7 @@
       mk_side_sell: "selling", mk_side_buy: "buying", mk_listedBid: "Buy order placed! Coins are frozen until a deal.",
       mk_sold: "Sold {q}, received {g} 🪙 after the fee", mk_shuttleNote: "🚀 Your Shuttle: {f}% fee on your sales",
       sw_title: "🔄 RESOURCE SWAPS", sw_hint: "Give what you don't need — get what you do. No coins, no fee.",
-      sw_give: "I give", sw_want: "I want", sw_qty: "How many", sw_create: "Offer a swap", sw_take: "Swap",
+      sw_give: "You give", sw_want: "You want", sw_qty: "How many", sw_create: "Offer a swap", sw_take: "Swap",
       sw_empty: "No swap offers yet", sw_mine: "My offers", sw_done: "Swap completed!",
       sw_created: "Offer listed, resources set aside", sw_cancelled: "Offer withdrawn, resources returned",
       ws_armorUntil: "🛡 Armor active until {t}",
@@ -448,6 +453,9 @@
       ref_topHint: "✅ — active friends (played 30 rounds), 👥 — everyone invited", ref_empty: "The ranking is empty — be the first!",
       wk_title: "🔥 RECIPES OF THE WEEK", wk_hint: "Limited recipes: they appear when the hub decides and then vanish. Craft them in time!",
       wk_left: "crafts left this week: {n} of {m}", st_cap: "📦 Storage: up to {c} of each resource — extra loot is lost",
+      shop_info: "ℹ️ What each item gives", sw_youGet: "You get", sw_youGive: "You give in return",
+      sw_takeBtn: "Swap — give {x}", sw_mineLine: "You give {g} → you want {w}",
+      sw_qtyErr: "Enter an amount above zero in both fields",
       featureOff: "⚙️ This section is under maintenance", done: "Done!", loading: "⏳ Loading…"
     }
   };
@@ -633,11 +641,17 @@
     "mk_shuttleNote": "🚀 مكوكك: عمولة {f}% على مبيعاتك",
     "sw_title": "🔄 مقايضة الموارد",
     "sw_hint": "أعطِ ما يزيد عن حاجتك — واحصل على ما تحتاجه. بلا عملات وبلا عمولة.",
-    "sw_give": "أعطي",
-    "sw_want": "أريد",
+    "sw_give": "أنت تعطي",
+    "sw_want": "تريد الحصول على",
     "sw_qty": "الكمية",
     "sw_create": "اقترح مقايضة",
     "sw_take": "قايِض",
+    "shop_info": "ℹ️ ماذا يمنح كل منتج",
+    "sw_youGet": "تحصل على",
+    "sw_youGive": "في المقابل تعطي",
+    "sw_takeBtn": "قايِض — أعطِ {x}",
+    "sw_mineLine": "أنت تعطي {g} ← تريد {w}",
+    "sw_qtyErr": "أدخل كمية أكبر من صفر في الحقلين",
     "sw_empty": "لا عروض مقايضة بعد",
     "sw_mine": "عروضي",
     "sw_done": "تمت المقايضة!",
@@ -867,8 +881,14 @@
     "mk_shuttleNote": "🚀 তোমার শাটল: তোমার বিক্রিতে {f}% ফি",
     "sw_title": "🔄 রিসোর্স বিনিময়",
     "sw_hint": "বাড়তিটা দাও — দরকারিটা নাও। কয়েন ছাড়া, ফি ছাড়া।",
-    "sw_give": "দিচ্ছি",
-    "sw_want": "চাই",
+    "sw_give": "তুমি দিচ্ছ",
+    "sw_want": "তুমি চাও",
+    "shop_info": "ℹ️ কোন পণ্যে কী পাবে",
+    "sw_youGet": "তুমি পাবে",
+    "sw_youGive": "বদলে দেবে",
+    "sw_takeBtn": "বিনিময় করো — দেবে {x}",
+    "sw_mineLine": "তুমি দিচ্ছ {g} → চাও {w}",
+    "sw_qtyErr": "দুটো ঘরেই শূন্যের বেশি পরিমাণ দাও",
     "sw_qty": "কতটা",
     "sw_create": "বিনিময়ের প্রস্তাব দাও",
     "sw_take": "বিনিময় করো",
@@ -1097,11 +1117,17 @@
     "mk_shuttleNote": "🚀 Dein Shuttle: {f}% Gebühr auf deine Verkäufe",
     "sw_title": "🔄 RESSOURCEN-TAUSCH",
     "sw_hint": "Gib ab, was du übrig hast — hol dir, was du brauchst. Ohne Münzen, ohne Gebühr.",
-    "sw_give": "Ich gebe",
-    "sw_want": "Ich will",
+    "sw_give": "Du gibst ab",
+    "sw_want": "Du willst bekommen",
     "sw_qty": "Wie viele",
     "sw_create": "Tausch anbieten",
     "sw_take": "Tauschen",
+    "shop_info": "ℹ️ Was jeder Artikel bringt",
+    "sw_youGet": "Du bekommst",
+    "sw_youGive": "Dafür gibst du ab",
+    "sw_takeBtn": "Tauschen – {x} abgeben",
+    "sw_mineLine": "Du gibst {g} ab → willst {w}",
+    "sw_qtyErr": "Gib in beiden Feldern eine Menge über null an",
     "sw_empty": "Noch keine Tauschangebote",
     "sw_mine": "Meine Angebote",
     "sw_done": "Tausch abgeschlossen!",
@@ -1366,11 +1392,17 @@
     "mk_shuttleNote": "🚀 Tu Transbordador: comisión del {f}% en tus ventas",
     "sw_title": "🔄 INTERCAMBIO DE RECURSOS",
     "sw_hint": "Da lo que te sobra y recibe lo que necesitas. Sin monedas y sin comisión.",
-    "sw_give": "Doy",
-    "sw_want": "Quiero recibir",
+    "sw_give": "Tú das",
+    "sw_want": "Quieres recibir",
     "sw_qty": "Cuánto",
     "sw_create": "Proponer intercambio",
     "sw_take": "Intercambiar",
+    "shop_info": "ℹ️ Qué da cada artículo",
+    "sw_youGet": "Recibes",
+    "sw_youGive": "A cambio das",
+    "sw_takeBtn": "Intercambiar: dar {x}",
+    "sw_mineLine": "Das {g} → quieres {w}",
+    "sw_qtyErr": "Indica una cantidad mayor que cero en ambos campos",
     "sw_empty": "Aún no hay propuestas de intercambio",
     "sw_mine": "Mis propuestas",
     "sw_done": "¡Intercambio realizado!",
@@ -1561,11 +1593,17 @@
     "mk_shuttleNote": "🚀 Ta Navette : commission de {f}% sur tes ventes",
     "sw_title": "🔄 ÉCHANGE DE RESSOURCES",
     "sw_hint": "Donne ce qui est en trop, reçois ce qu'il te faut. Sans pièces ni commission.",
-    "sw_give": "Je donne",
-    "sw_want": "Je veux",
+    "sw_give": "Tu donnes",
+    "sw_want": "Tu veux recevoir",
     "sw_qty": "Combien",
     "sw_create": "Proposer un échange",
     "sw_take": "Échanger",
+    "shop_info": "ℹ️ Ce que donne chaque article",
+    "sw_youGet": "Tu reçois",
+    "sw_youGive": "En échange, tu donnes",
+    "sw_takeBtn": "Échanger — donner {x}",
+    "sw_mineLine": "Tu donnes {g} → tu veux {w}",
+    "sw_qtyErr": "Indique une quantité supérieure à zéro dans les deux champs",
     "sw_empty": "Aucune offre d'échange pour l'instant",
     "sw_mine": "Mes offres",
     "sw_done": "Échange conclu !",
@@ -1812,11 +1850,17 @@
     "mk_shuttleNote": "🚀 तुम्हारा शटल: तुम्हारी बिक्री पर {f}% फ़ीस",
     "sw_title": "🔄 संसाधनों की अदला-बदली",
     "sw_hint": "फ़ालतू दो — ज़रूरी लो। बिना सिक्कों और बिना फ़ीस के।",
-    "sw_give": "देना है",
-    "sw_want": "चाहिए",
+    "sw_give": "तुम दे रहे हो",
+    "sw_want": "तुम्हें चाहिए",
     "sw_qty": "कितने",
     "sw_create": "अदला-बदली का ऑफ़र दो",
     "sw_take": "बदलो",
+    "shop_info": "ℹ️ हर आइटम से क्या मिलता है",
+    "sw_youGet": "तुम्हें मिलेगा",
+    "sw_youGive": "बदले में तुम दोगे",
+    "sw_takeBtn": "बदलो — {x} दो",
+    "sw_mineLine": "तुम {g} दे रहे हो → तुम्हें {w} चाहिए",
+    "sw_qtyErr": "दोनों खानों में शून्य से ज़्यादा मात्रा लिखो",
     "sw_empty": "अभी अदला-बदली का कोई ऑफ़र नहीं",
     "sw_mine": "मेरे ऑफ़र",
     "sw_done": "अदला-बदली हो गई!",
@@ -2043,11 +2087,17 @@
     "mk_shuttleNote": "🚀 Shuttle-mu: biaya {f}% untuk penjualanmu",
     "sw_title": "🔄 TUKAR SUMBER DAYA",
     "sw_hint": "Berikan yang berlebih — dapatkan yang dibutuhkan. Tanpa koin, tanpa biaya.",
-    "sw_give": "Kuberikan",
-    "sw_want": "Ingin dapat",
+    "sw_give": "Kamu berikan",
+    "sw_want": "Ingin kamu dapat",
     "sw_qty": "Berapa",
     "sw_create": "Tawarkan tukar",
     "sw_take": "Tukar",
+    "shop_info": "ℹ️ Apa isi tiap barang",
+    "sw_youGet": "Kamu dapat",
+    "sw_youGive": "Sebagai gantinya kamu berikan",
+    "sw_takeBtn": "Tukar — berikan {x}",
+    "sw_mineLine": "Kamu berikan {g} → ingin {w}",
+    "sw_qtyErr": "Isi jumlah di atas nol di kedua kolom",
     "sw_empty": "Belum ada tawaran tukar",
     "sw_mine": "Tawaranku",
     "sw_done": "Tukar berhasil!",
@@ -2276,11 +2326,17 @@
     "mk_shuttleNote": "🚀 Il tuo Shuttle: commissione del {f}% sulle tue vendite",
     "sw_title": "🔄 SCAMBIO DI RISORSE",
     "sw_hint": "Dai ciò che ti avanza, ricevi ciò che ti serve. Senza monete e senza commissioni.",
-    "sw_give": "Do",
-    "sw_want": "Voglio",
+    "sw_give": "Tu dai",
+    "sw_want": "Vuoi ricevere",
     "sw_qty": "Quantità",
     "sw_create": "Proponi uno scambio",
     "sw_take": "Scambia",
+    "shop_info": "ℹ️ Cosa dà ogni articolo",
+    "sw_youGet": "Ricevi",
+    "sw_youGive": "In cambio dai",
+    "sw_takeBtn": "Scambia — dai {x}",
+    "sw_mineLine": "Dai {g} → vuoi {w}",
+    "sw_qtyErr": "Indica una quantità maggiore di zero in entrambi i campi",
     "sw_empty": "Ancora nessuna proposta di scambio",
     "sw_mine": "Le mie proposte",
     "sw_done": "Scambio concluso!",
@@ -2526,11 +2582,17 @@
     "mk_shuttleNote": "🚀 Twój Wahadłowiec: prowizja {f}% od twoich sprzedaży",
     "sw_title": "🔄 WYMIANA SUROWCÓW",
     "sw_hint": "Oddaj nadmiar — weź to, czego potrzebujesz. Bez monet i bez prowizji.",
-    "sw_give": "Oddaję",
-    "sw_want": "Chcę dostać",
+    "sw_give": "Oddajesz",
+    "sw_want": "Chcesz dostać",
     "sw_qty": "Ile",
     "sw_create": "Zaproponuj wymianę",
     "sw_take": "Wymień",
+    "shop_info": "ℹ️ Co daje każdy produkt",
+    "sw_youGet": "Dostajesz",
+    "sw_youGive": "W zamian oddajesz",
+    "sw_takeBtn": "Wymień — oddaj {x}",
+    "sw_mineLine": "Oddajesz {g} → chcesz dostać {w}",
+    "sw_qtyErr": "Podaj ilość większą od zera w obu polach",
     "sw_empty": "Na razie brak propozycji wymiany",
     "sw_mine": "Moje propozycje",
     "sw_done": "Wymiana zrealizowana!",
@@ -2739,11 +2801,17 @@
     "mk_shuttleNote": "🚀 Seu Shuttle: taxa de {f}% nas suas vendas",
     "sw_title": "🔄 TROCA DE RECURSOS",
     "sw_hint": "Dê o que sobra — receba o que falta. Sem moedas e sem taxa.",
-    "sw_give": "Dou",
-    "sw_want": "Quero receber",
+    "sw_give": "Você dá",
+    "sw_want": "Você quer receber",
     "sw_qty": "Quantos",
     "sw_create": "Propor troca",
     "sw_take": "Trocar",
+    "shop_info": "ℹ️ O que cada item dá",
+    "sw_youGet": "Você recebe",
+    "sw_youGive": "Em troca, você dá",
+    "sw_takeBtn": "Trocar — dar {x}",
+    "sw_mineLine": "Você dá {g} → quer receber {w}",
+    "sw_qtyErr": "Informe uma quantidade maior que zero nos dois campos",
     "sw_empty": "Ainda não há propostas de troca",
     "sw_mine": "Minhas propostas",
     "sw_done": "Troca concluída!",
@@ -2953,11 +3021,17 @@
     "mk_shuttleNote": "🚀 Shattling: sotuvlaringga {f}% komissiya",
     "sw_title": "🔄 RESURS ALMASHUVI",
     "sw_hint": "Ortiqchasini ber — keraklisini ol. Tangasiz va komissiyasiz.",
-    "sw_give": "Beraman",
-    "sw_want": "Olmoqchiman",
+    "sw_give": "Siz berasiz",
+    "sw_want": "Siz olmoqchisiz",
     "sw_qty": "Nechta",
     "sw_create": "Almashuv taklif qilish",
     "sw_take": "Almashish",
+    "shop_info": "ℹ️ Har bir mahsulot nima beradi",
+    "sw_youGet": "Sizga beriladi",
+    "sw_youGive": "Evaziga berasiz",
+    "sw_takeBtn": "Almashish — {x} berish",
+    "sw_mineLine": "Siz {g} berasiz → {w} olmoqchisiz",
+    "sw_qtyErr": "Ikkala maydonda ham noldan katta miqdor kiriting",
     "sw_empty": "Hozircha almashuv takliflari yo'q",
     "sw_mine": "Mening takliflarim",
     "sw_done": "Almashuv amalga oshdi!",
@@ -3203,11 +3277,17 @@
     "mk_shuttleNote": "🚀 你的穿梭机：你出售时手续费 {f}%",
     "sw_title": "🔄 资源交换",
     "sw_hint": "拿出多余的，换来需要的。不用金币，没有手续费。",
-    "sw_give": "我付出",
-    "sw_want": "我想要",
+    "sw_give": "你付出",
+    "sw_want": "你想要",
     "sw_qty": "数量",
     "sw_create": "发起交换",
     "sw_take": "交换",
+    "shop_info": "ℹ️ 各商品有什么用",
+    "sw_youGet": "你得到",
+    "sw_youGive": "你需付出",
+    "sw_takeBtn": "交换——付出 {x}",
+    "sw_mineLine": "你付出 {g} → 想要 {w}",
+    "sw_qtyErr": "两个数量都需大于零",
     "sw_empty": "还没有交换提议",
     "sw_mine": "我的提议",
     "sw_done": "交换完成！",
@@ -3606,11 +3686,15 @@
       '<div class="hint" id="' + id + 'V"></div>' +
       '<button class="btn" id="' + id + 'B"' + (disabled ? ' disabled' : '') + '>' + btn + '</button>');
     const resOpts = sel => RES.map(k => '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + A_ICON[k] + ' ' + L["as_" + k] + '</option>').join("");
-    const swaps = m.swaps.map(s => '<div class="offer"><div class="ol">' + s.give_qty + ' ' + A_ICON[s.give_kind] + ' → ' +
-      s.want_qty + ' ' + A_ICON[s.want_kind] + '</div><button class="mini swapTake" data-id="' + s.id + '">' + L.sw_take + '</button></div>').join("") ||
+    const amt = (q, k) => q + ' ' + A_ICON[k] + ' ' + L["as_" + k];
+    const swaps = m.swaps.map(s => '<div class="swapcard">' +
+      '<div class="row"><span class="k">' + L.sw_youGet + '</span><span class="v status-ok">+' + amt(s.give_qty, s.give_kind) + '</span></div>' +
+      '<div class="row"><span class="k">' + L.sw_youGive + '</span><span class="v">−' + amt(s.want_qty, s.want_kind) + '</span></div>' +
+      '<button class="mini swapTake" data-id="' + s.id + '">' + fmt(L.sw_takeBtn, { x: amt(s.want_qty, s.want_kind) }) + '</button></div>').join("") ||
       '<div class="hint">' + L.sw_empty + '</div>';
-    const mySwaps = m.my_swaps.map(s => '<div class="offer"><div class="ol">' + s.give_qty + ' ' + A_ICON[s.give_kind] + ' → ' +
-      s.want_qty + ' ' + A_ICON[s.want_kind] + '</div><button class="mini ghost swapCancel" data-id="' + s.id + '">' + L.mk_cancel + '</button></div>').join("");
+    const mySwaps = m.my_swaps.map(s => '<div class="offer"><div class="ol">' +
+      fmt(L.sw_mineLine, { g: amt(s.give_qty, s.give_kind), w: amt(s.want_qty, s.want_kind) }) +
+      '</div><button class="mini ghost swapCancel" data-id="' + s.id + '">' + L.mk_cancel + '</button></div>').join("");
     box.innerHTML =
       card(L.mk_index, '<div class="idxrow">' + ASSETS.map(x => idxChip(x, m.index[x])).join("") + '</div>' +
         '<div class="balance small">' + icon + ' ' + name + '</div>' +
@@ -3643,7 +3727,7 @@
     preview();
     const place = (side, btnId, msg) => {
       const b = document.getElementById(btnId), pre = side === "sell" ? "sell" : "bid";
-      b.onclick = () => act(b, "/api/market/order", { asset: a, side: side, qty: val(pre + "Q"), price: val(pre + "P") },
+      b.onclick = () => (val(pre + "Q") <= 0 || val(pre + "P") <= 0) ? notify(L.sw_qtyErr, false) : act(b, "/api/market/order", { asset: a, side: side, qty: val(pre + "Q"), price: val(pre + "P") },
         async () => { notify(msg); await refreshMe(); go("market"); });
     };
     place("sell", "sellB", L.mk_listed);
@@ -3672,7 +3756,7 @@
         async () => { notify(L.mk_cancelledMsg); await refreshMe(); go("market"); });
     });
     const sb = document.getElementById("swB");
-    sb.onclick = () => act(sb, "/api/swap/create", {
+    sb.onclick = () => (val("swGQ") <= 0 || val("swWQ") <= 0) ? notify(L.sw_qtyErr, false) : act(sb, "/api/swap/create", {
       give_kind: document.getElementById("swG").value, give_qty: val("swGQ"),
       want_kind: document.getElementById("swW").value, want_qty: val("swWQ")
     }, async () => { notify(L.sw_created); go("market"); });
@@ -3764,10 +3848,12 @@
   async function viewShop(box) {
     const shop = await api("/api/shop");
     const btn = item => '<button class="shop-item" data-sku="' + esc(item.sku) + '">' + esc(item.label) + '</button>';
-    box.innerHTML = card(L.shop, '<div class="hint">' + L.shopHint + '</div>' +
+    box.innerHTML = card(L.shop, '<button class="btn ghost" id="shopInfo">' + L.shop_info + '</button>' +
+      '<div class="hint">' + L.shopHint + '</div>' +
       '<div class="shop-sub">' + L.shopFarm + '</div>' + shop.farm.map(btn).join("") +
       '<div class="shop-sub">' + L.shopGames + '</div>' + shop.games.map(btn).join(""));
     document.querySelectorAll(".shop-item").forEach(b => { b.onclick = () => buy(b.dataset.sku, b); });
+    document.getElementById("shopInfo").onclick = () => { location.href = "/faq?s=shop-items"; };
   }
   async function buy(sku, btn) {
     if (!tg || !tg.openInvoice) return notify(L.oldClient, false);

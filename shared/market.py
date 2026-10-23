@@ -306,7 +306,7 @@ def validate_swap(give_kind: str, give_qty: int, want_kind: str, want_qty: int) 
     if give_kind == want_kind:
         raise MarketError("sw.err_same")
     if not (0 < give_qty <= SWAP_MAX_QTY and 0 < want_qty <= SWAP_MAX_QTY):
-        raise MarketError("mk.err_qty", max=SWAP_MAX_QTY)
+        raise MarketError("sw.err_qty", max=SWAP_MAX_QTY)
 
 
 async def create_swap(conn, maker_id: int, give_kind: str, give_qty: int, want_kind: str, want_qty: int) -> int:

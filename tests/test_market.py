@@ -104,7 +104,19 @@ def test_swap_validation():
     from shared.market import validate_swap
     validate_swap("metal", 10, "hydrogen", 5)
     for args, key in ((("metal", 10, "metal", 5), "sw.err_same"), (("gold", 1, "metal", 1), "mk.err_asset"),
-                      (("metal", 0, "parts", 1), "mk.err_qty")):
+                      (("metal", 0, "parts", 1), "sw.err_qty"), (("metal", 1, "hydrogen", 0), "sw.err_qty")):
         with pytest.raises(MarketError) as e:
             validate_swap(*args)
         assert e.value.key == key
+
+
+def test_swap_qty_error_is_about_swaps_not_cutlets():
+    """Регрессия 25.10: при обмене 1 металла на 0 водорода игрок видел текст про «котлеты в ордере»."""
+    from shared.locales import t
+    from shared.market import validate_swap
+    with pytest.raises(MarketError) as e:
+        validate_swap("metal", 1, "hydrogen", 0)
+    for lang in ("ru", "en"):
+        text = e.value.localized(lang)
+        assert "котлет" not in text and "cutlet" not in text
+    assert "котлет" not in t("ru", "mk.err_qty", max=1000)
