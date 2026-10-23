@@ -56,6 +56,8 @@ _cache: dict[str, tuple[bool, float]] = {}
 def _default_for(key: str) -> bool:
     if key.startswith("quest:"):
         return True
+    if key.startswith("recipe:"):
+        return False   # рецепты недели запускает только владелец (/recipes)
     return FLAG_DEFAULTS.get(key, True)
 
 

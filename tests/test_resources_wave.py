@@ -55,7 +55,7 @@ def test_format_bundle_orders_by_kind_and_skips_zero():
 # ---------------------------------------------------------------- мастерская
 def test_recipes_have_prices_and_known_effects():
     for rid, recipe in WORKSHOP_RECIPES.items():
-        assert recipe["effect"] in ("nitrogen", "nuclear", "drone", "shield", "cutlet", "armor", "shuttle")
+        assert recipe["effect"] in ("nitrogen", "nuclear", "drone", "shield", "cutlet", "armor", "storage", "shuttle")
         cost = recipe_cost(rid)
         assert cost and all(k in RESOURCE_KINDS and v > 0 for k, v in cost.items()), rid
         if recipe["effect"] in ("nitrogen", "nuclear", "drone", "shield"):
@@ -232,5 +232,48 @@ def test_new_sections_exist_in_ru_and_en():
         for g in GOAL_POOL:
             assert "{n}" in STRINGS[lang][f"goal.{g.key}"] or g.target == 1, (lang, g.key)
         for rid in WORKSHOP_RECIPES:
-            t(lang, f"ws.recipe_{rid}", level=1)
+            t(lang, f"ws.recipe_{rid}", level=1, cap=1000)
     assert "рофл" not in " ".join(STRINGS["ru"].values()).lower()
+
+
+# ---------------------------------------------------------------- 25.10: рецепты недели и склад с лимитом
+def test_weekly_recipes_catalog_is_rich_and_sane():
+    from shared.economy import RES_CAPACITY_BASE
+    from shared.weekly_recipes import HOURS_COLUMNS, WEEKLY_RECIPES, recipe_title
+    assert 30 <= len(WEEKLY_RECIPES) <= 50
+    for rid, r in WEEKLY_RECIPES.items():
+        assert len(f"recipe_toggle:{rid}:9") <= 64, rid                       # callback админ-бота
+        assert r["limit"] >= 1 and r["effects"], rid
+        assert all(k in RESOURCE_KINDS and 0 < v <= RES_CAPACITY_BASE for k, v in r["cost"].items()), rid
+        for e in r["effects"]:
+            assert e["type"] in (*HOURS_COLUMNS, "cutlet", "resource"), rid
+        for lang in ("ru", "en"):
+            assert recipe_title(lang, rid).strip(), (lang, rid)
+        # котлеты из рецептов недели — не чаще одной-двух в неделю (топливо — право магазина)
+        if any(e["type"] == "cutlet" for e in r["effects"]):
+            assert r["limit"] == 1, rid
+
+
+def test_week_starts_on_monday_utc():
+    from shared.weekly_recipes import week_start
+    sunday = datetime(2026, 11, 1, 23, 59, tzinfo=timezone.utc)      # воскресенье
+    assert week_start(sunday) == datetime(2026, 10, 26, tzinfo=timezone.utc)
+    assert week_start(datetime(2026, 11, 2, 0, 0, tzinfo=timezone.utc)) == datetime(2026, 11, 2, tzinfo=timezone.utc)
+
+
+def test_weekly_recipes_are_off_by_default():
+    from shared.feature_flags import _default_for
+    assert _default_for("recipe:w_nitro_12h") is False
+
+
+def test_storage_levels_are_reachable():
+    """Каждое расширение склада можно оплатить, не превышая текущую вместимость."""
+    from shared.economy import RES_CAPACITY_BASE, STORAGE_LEVELS, next_storage_level
+    cap = RES_CAPACITY_BASE
+    for new_cap, cost in STORAGE_LEVELS:
+        assert new_cap > cap and all(v <= cap for v in cost.values())
+        assert next_storage_level(cap) == (new_cap, cost)
+        cap = new_cap
+    assert next_storage_level(cap) is None
+    # Шаттл (по 1000 каждого) требует расширенного склада — синергия
+    assert max(WORKSHOP_RECIPES["shuttle"]["cost"].values()) > RES_CAPACITY_BASE

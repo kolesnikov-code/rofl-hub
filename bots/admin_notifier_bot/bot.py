@@ -118,6 +118,7 @@ async def cmd_admin_start(message: types.Message):
         "• /features — Тумблеры разделов: игры, дуэли, квесты, магазин, переводы, биржа, "
         "мастерская, налёты, цели, станция команды, техработы\n"
         "• /quests_admin — Ротация квестов: скрыть/показать + статистика прохождений\n"
+        "• /recipes — Рецепты недели: 40 временных рецептов мастерской, включай по 2–4\n"
         "• /broadcast [текст] — Объявление всем игрокам (с предпросмотром и подтверждением)\n",
         parse_mode="HTML"
     )
@@ -988,6 +989,80 @@ async def quest_toggle(callback: types.CallbackQuery):
     await callback.answer(f"Квест {'показан 🟢' if new_value else 'скрыт ⚫'}")
     try:
         text, kb = await _quests_admin_view()
+        await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
+    except Exception:
+        pass
+
+
+# ============================================================================
+# 🔥 РЕЦЕПТЫ НЕДЕЛИ: владелец включает временные рецепты мастерской (/recipes)
+# ============================================================================
+RECIPES_PAGE = 10
+
+
+async def _recipes_view(page: int = 0) -> tuple[str, types.InlineKeyboardMarkup]:
+    from shared.economy import utcnow
+    from shared.weekly_recipes import WEEKLY_RECIPES, recipe_title, week_start
+    ids = list(WEEKLY_RECIPES)
+    pages = max(1, -(-len(ids) // RECIPES_PAGE))
+    page = max(0, min(page, pages - 1))
+    since = week_start(utcnow())
+    async with db.pool.acquire() as conn:
+        crafted = {r["recipe_id"]: r["n"] for r in await conn.fetch(
+            "SELECT recipe_id, COUNT(*) AS n FROM weekly_crafts WHERE created_at >= $1 GROUP BY recipe_id", since)}
+    active = [rid for rid in ids if await get_flag(f"recipe:{rid}")]
+    rows = []
+    for rid in ids[page * RECIPES_PAGE:(page + 1) * RECIPES_PAGE]:
+        on = rid in active
+        cost = " ".join(f"{q}{ {'metal': '⛏', 'hydrogen': '💧', 'crystal': '💎', 'parts': '⚙️'}[k]}"
+                        for k, q in WEEKLY_RECIPES[rid]["cost"].items())
+        label = f"{'🟢' if on else '⚫'} {recipe_title('ru', rid)} ← {cost}"
+        rows.append([types.InlineKeyboardButton(text=label[:64], callback_data=f"recipe_toggle:{rid}:{page}")])
+    nav = []
+    if page > 0:
+        nav.append(types.InlineKeyboardButton(text="⬅️", callback_data=f"recipes_page:{page - 1}"))
+    if page < pages - 1:
+        nav.append(types.InlineKeyboardButton(text="➡️", callback_data=f"recipes_page:{page + 1}"))
+    if nav:
+        rows.append(nav)
+    rows.append([types.InlineKeyboardButton(text="⚫ Выключить все", callback_data=f"recipes_off:{page}")])
+    lines = [f"🟢 {recipe_title('ru', rid)} — собрали на этой неделе: {crafted.get(rid, 0)}" for rid in active]
+    text = ("🔥 <b>РЕЦЕПТЫ НЕДЕЛИ</b>\n..................................................\n\n"
+            "Нажми на рецепт, чтобы включить/выключить его в мастерской у всех игроков. "
+            "Лимит сборок на игрока сбрасывается в понедельник 00:00 UTC.\n\n"
+            f"<b>Сейчас включено: {len(active)} из {len(ids)}</b>\n" + ("\n".join(lines) or "— ни одного —")
+            + f"\n\n<i>Страница {page + 1} из {pages}. Совет: 2–4 рецепта в неделю — «событие», а не рутина.</i>")
+    return text, types.InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+@dp.message(Command("recipes"))
+async def cmd_recipes(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    text, kb = await _recipes_view()
+    await message.answer(text, reply_markup=kb, parse_mode="HTML")
+
+
+@dp.callback_query(F.data.startswith("recipe_toggle:") | F.data.startswith("recipes_page:") | F.data.startswith("recipes_off:"))
+async def recipes_actions(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer()
+        return
+    from shared.feature_flags import set_flag
+    from shared.weekly_recipes import WEEKLY_RECIPES
+    parts = callback.data.split(":")
+    page = int(parts[-1]) if parts[-1].isdigit() else 0
+    if parts[0] == "recipe_toggle" and parts[1] in WEEKLY_RECIPES:
+        new_value = await toggle_flag(f"recipe:{parts[1]}")
+        await callback.answer("Рецепт включён 🟢" if new_value else "Рецепт выключен ⚫")
+    elif parts[0] == "recipes_off":
+        for rid in WEEKLY_RECIPES:
+            await set_flag(f"recipe:{rid}", False)
+        await callback.answer("Все рецепты недели выключены")
+    else:
+        await callback.answer()
+    try:
+        text, kb = await _recipes_view(page)
         await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
     except Exception:
         pass

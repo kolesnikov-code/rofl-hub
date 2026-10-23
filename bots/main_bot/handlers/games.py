@@ -32,6 +32,7 @@ from shared.economy import (
     LOSE_PENALTY,
     QUIZ_ANSWER_SECONDS,
     REFERRAL_QUALIFIED_BONUS,
+    REFERRAL_QUALIFIED_CUTLETS,
     REFERRAL_QUALIFY_ROUNDS,
     SAFE_CODES_COUNT,
     SAFE_WIN_REWARD,
@@ -45,7 +46,7 @@ from shared.economy import (
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import resolve_lang, t
-from shared.resources import RESOURCE_ICONS, change_resource, game_resource_gain
+from shared.resources import RESOURCE_ICONS, change_resource, game_resource_gain, resource_capacity
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -125,7 +126,8 @@ async def _notify_referrer_qualified(bot: Bot, referrer_id: int) -> None:
         lang = resolve_lang(row["lang"]) if row else "ru"
         await bot.send_message(
             referrer_id, t(lang, "ref.qualified_notify",
-                           bonus=REFERRAL_QUALIFIED_BONUS, rounds=REFERRAL_QUALIFY_ROUNDS),
+                           bonus=REFERRAL_QUALIFIED_BONUS, rounds=REFERRAL_QUALIFY_ROUNDS,
+                           cutlets=REFERRAL_QUALIFIED_CUTLETS),
             parse_mode="HTML")
     except Exception:
         logger.info("[REFERRAL_QUALIFIED] реферер %s недоступен для ЛС", referrer_id)
@@ -167,9 +169,12 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                 gain = game_resource_gain(game_type)
                 if gain is not None:
                     kind, qty = gain
-                    stock = await change_resource(conn, user_id, kind, qty, f"game_win:{game_type}")
+                    cap = await resource_capacity(conn, user_id)
+                    stock = await change_resource(conn, user_id, kind, qty, f"game_win:{game_type}", cap=cap)
                     status += "\n" + t(lang, "games.resource_gain", icon=RESOURCE_ICONS[kind],
                                         qty=qty, name=t(lang, f"res.{kind}"), total=stock)
+                    if stock >= cap:
+                        status += "\n" + t(lang, "games.resource_full", icon=RESOURCE_ICONS[kind], cap=cap)
             else:
                 try:
                     new_balance = await change_balance(conn, user_id, -LOSE_PENALTY, f"game_loss:{game_type}")

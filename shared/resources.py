@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import logging
 
-from shared.economy import GAME_RESOURCE, RESOURCE_KINDS, RESOURCE_MAX_STOCK, RESOURCE_PER_WIN
+from shared.economy import GAME_RESOURCE, RES_CAPACITY_BASE, RESOURCE_KINDS, RESOURCE_MAX_STOCK, RESOURCE_PER_WIN
 from shared.locales import t
 
 logger = logging.getLogger(__name__)
@@ -68,12 +68,21 @@ async def lock_resources(conn, user_id: int) -> dict[str, int]:
     return stock
 
 
+async def resource_capacity(conn, user_id: int) -> int:
+    """Вместимость склада игрока на КАЖДЫЙ ресурс."""
+    cap = await conn.fetchval("SELECT res_capacity FROM users WHERE user_id = $1", user_id)
+    return int(cap or RES_CAPACITY_BASE)
+
+
 async def change_resource(conn, user_id: int, kind: str, delta: int, reason: str,
-                          ref: str | None = None) -> int:
+                          ref: str | None = None, cap: int | None = None) -> int:
     """
     Атомарно меняет запас ресурса kind на delta, пишет resource_ledger.
     Возвращает новый запас. Бросает InsufficientResources при уходе в минус.
-    Прибавка сверх RESOURCE_MAX_STOCK обрезается (потолок — защита от переполнения).
+    cap — вместимость склада для ДОБЫЧИ (игры, сундук, квесты, трофеи): излишек пропадает,
+    уже лежащее сверх лимита не отнимается. Переводы между игроками (биржа, обмен, возвраты
+    эскроу) вызывают без cap — место проверяется до сделки. Технический потолок —
+    RESOURCE_MAX_STOCK.
     """
     if kind not in RESOURCE_KINDS:
         raise ValueError(f"unknown resource {kind}")
@@ -81,13 +90,19 @@ async def change_resource(conn, user_id: int, kind: str, delta: int, reason: str
         return (await get_resources(conn, user_id))[kind]
 
     if delta > 0:
+        limit = min(cap, RESOURCE_MAX_STOCK) if cap is not None else RESOURCE_MAX_STOCK
+        old = await conn.fetchval(
+            "SELECT qty FROM user_resources WHERE user_id = $1 AND kind = $2 FOR UPDATE", user_id, kind) or 0
+        gained = max(0, min(old + delta, max(limit, old)) - old)
+        if gained == 0:
+            return old     # склад полон — добыча пропала, в журнал нечего писать
+        delta = gained
         new_qty = await conn.fetchval(
             """
-            INSERT INTO user_resources (user_id, kind, qty) VALUES ($1, $2, LEAST($3::int, $4::int))
-            ON CONFLICT (user_id, kind) DO UPDATE
-                SET qty = LEAST(user_resources.qty + $3::int, $4::int)
+            INSERT INTO user_resources (user_id, kind, qty) VALUES ($1, $2, $3::int)
+            ON CONFLICT (user_id, kind) DO UPDATE SET qty = user_resources.qty + $3::int
             RETURNING qty
-            """, user_id, kind, delta, RESOURCE_MAX_STOCK)
+            """, user_id, kind, delta)
     else:
         new_qty = await conn.fetchval(
             """
@@ -123,10 +138,17 @@ async def spend_bundle(conn, user_id: int, bundle: dict[str, int], reason: str,
 
 
 async def grant_bundle(conn, user_id: int, bundle: dict[str, int], reason: str,
-                       ref: str | None = None) -> None:
+                       ref: str | None = None, cap: int | None = None) -> None:
     for kind, qty in bundle.items():
         if qty > 0:
-            await change_resource(conn, user_id, kind, qty, reason, ref)
+            await change_resource(conn, user_id, kind, qty, reason, ref, cap=cap)
+
+
+async def free_space(conn, user_id: int, kind: str) -> int:
+    """Сколько ресурса ещё влезет на склад (для проверок перед покупкой/обменом)."""
+    cap = await resource_capacity(conn, user_id)
+    have = (await get_resources(conn, user_id))[kind]
+    return max(0, cap - have)
 
 
 def total_resources(stock: dict[str, int]) -> int:

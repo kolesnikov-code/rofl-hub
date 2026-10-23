@@ -21,7 +21,7 @@ from shared.feature_flags import get_flag
 from shared.economy import QUEST_RESOURCE_BUNDLE, RESOURCE_KINDS
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
-from shared.resources import grant_bundle
+from shared.resources import grant_bundle, resource_capacity
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -257,7 +257,7 @@ async def quest_choice(callback: types.CallbackQuery, user_lang: str = "ru"):
                     await conn.execute("SELECT 1 FROM users WHERE user_id = $1 FOR UPDATE", user_id)
                     await change_balance(conn, user_id, quest["reward_coins"], "quest_reward", qid)
                     await grant_bundle(conn, user_id, {k: QUEST_RESOURCE_BUNDLE for k in RESOURCE_KINDS},
-                                       "quest_reward", qid)
+                                       "quest_reward", qid, cap=await resource_capacity(conn, user_id))
                     footer = (t(user_lang, "quest.win_first", coins=quest["reward_coins"])
                               + t(user_lang, "quest.win_resources", qty=QUEST_RESOURCE_BUNDLE))
                     await conn.execute(

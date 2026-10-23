@@ -16,6 +16,7 @@ import asyncio
 import html
 import json
 import logging
+import os
 import re
 import time
 
@@ -25,6 +26,13 @@ from shared.analytics import track
 from shared.daily_goals import GoalsError, all_done, chest_coins, claim_chest, claimed_today, goal_progress, goals_for
 from shared.database import db
 from shared.economy import (
+    REFERRAL_QUALIFIED_BONUS,
+    REFERRAL_QUALIFIED_CUTLETS,
+    REFERRAL_QUALIFY_ROUNDS,
+    REFERRAL_SIGNUP_BONUS,
+    REFERRAL_TOP_LIMIT,
+    RES_CAPACITY_BASE,
+    next_storage_level,
     ARMOR_DAYS,
     armor_level_active,
     ARMOR_BONUS_PER_LEVEL,
@@ -93,10 +101,11 @@ from shared.resources import get_resources
 from shared.team_station import StationError, donate, get_station, progress_to_next, recent_donations, team_member_ids
 from shared.webapp_auth import validate_init_data
 from shared.workshop import WorkshopError, can_afford, craft, recipe_coins, recipe_cost
+from shared.weekly_recipes import WEEKLY_RECIPES, WeeklyError, active_weekly_ids, craft_weekly, crafted_this_week, recipe_title
 
 logger = logging.getLogger(__name__)
 
-RECIPE_ORDER = ("nitro_6h", "nuclear_3h", "drone_24h", "shield_24h", "cutlet", "armor", "shuttle")
+RECIPE_ORDER = ("nitro_6h", "nuclear_3h", "drone_24h", "shield_24h", "cutlet", "armor", "storage", "shuttle")
 SCOUT_TTL_SECONDS = 15 * 60
 _scout_slots: dict[int, tuple[float, list[int]]] = {}   # атакующий → (время, [id целей по слотам])
 _TAG = re.compile(r"<[^>]+>")
@@ -165,19 +174,21 @@ def resource_labels(lang: str) -> dict[str, str]:
 # Мастерская
 # ============================================================================
 def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lang: str,
-                           balance: int = 0, armor_until=None) -> dict:
+                           balance: int = 0, armor_until=None, capacity: int = RES_CAPACITY_BASE,
+                           weekly: list | None = None) -> dict:
     """Чистый сборщик витрины мастерской (юнит-тесты без aiohttp). armor_level — действующий."""
     recipes = []
     for rid in RECIPE_ORDER:
         recipe = WORKSHOP_RECIPES[rid]
         effect = recipe["effect"]
-        done = effect == "shuttle" and has_shuttle
-        cost = None if done else recipe_cost(rid, armor_level)
+        done = (effect == "shuttle" and has_shuttle) or (effect == "storage" and next_storage_level(capacity) is None)
+        cost = None if done else recipe_cost(rid, armor_level, capacity)
         coins = recipe_coins(rid)
         recipes.append({
             "id": rid,
             "effect": effect,
-            "title": t(lang, f"ws.recipe_{rid}", level=min(armor_level + 1, ARMOR_MAX_LEVEL)),
+            "title": t(lang, f"ws.recipe_{rid}", level=min(armor_level + 1, ARMOR_MAX_LEVEL),
+                       cap=(next_storage_level(capacity) or (capacity, None))[0]),
             "cost": cost or {},
             "coins": coins,
             "hours": recipe.get("hours"),
@@ -191,6 +202,8 @@ def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lan
         "res_names": resource_labels(lang),
         "armor_level": armor_level,
         "armor_until": armor_until.isoformat() if armor_until and armor_level else None,
+        "capacity": capacity,
+        "weekly": weekly or [],
         "armor_max": ARMOR_MAX_LEVEL,
         "armor_pct": ARMOR_BONUS_PER_LEVEL,
         "has_shuttle": has_shuttle,
@@ -209,10 +222,92 @@ async def handle_workshop(request: web.Request) -> web.Response:
     async with db.pool.acquire() as conn:
         stock = await get_resources(conn, ctx.user_id)
         user = await conn.fetchrow(
-            "SELECT farm_armor_level, armor_until, has_shuttle, balance FROM users WHERE user_id = $1", ctx.user_id)
-    armor = armor_level_active(user["farm_armor_level"], user["armor_until"], utcnow())
+            "SELECT farm_armor_level, armor_until, has_shuttle, balance, res_capacity FROM users WHERE user_id = $1",
+            ctx.user_id)
+        now = utcnow()
+        weekly = []
+        for rid in await active_weekly_ids():
+            recipe = WEEKLY_RECIPES[rid]
+            done = await crafted_this_week(conn, ctx.user_id, rid, now)
+            weekly.append({"id": rid, "title": recipe_title(ctx.lang, rid), "cost": recipe["cost"],
+                           "limit": recipe["limit"], "left": max(0, recipe["limit"] - done),
+                           "affordable": can_afford(stock, recipe["cost"]) and done < recipe["limit"]})
+    armor = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
     return web.json_response(build_workshop_payload(stock, armor, bool(user["has_shuttle"]), ctx.lang,
-                                                    balance=user["balance"], armor_until=user["armor_until"]))
+                                                    balance=user["balance"], armor_until=user["armor_until"],
+                                                    capacity=user["res_capacity"], weekly=weekly))
+
+
+async def handle_craft_weekly(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    if off := await _feature_off("workshop", ctx.lang):
+        return off
+    rid = str((await _json(request)).get("recipe", ""))[:32]
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                res = await craft_weekly(conn, ctx.user_id, rid, utcnow())
+    except WeeklyError as e:
+        return fail(e.localized(ctx.lang))
+    await track(ctx.user_id, "craft_weekly", recipe=rid, source="webapp")
+    return web.json_response({"ok": True, "left": res["left"]})
+
+
+# ============================================================================
+# 🤝 Друзья: реферальная ссылка, статистика, рейтинг «у кого больше друзей»
+# ============================================================================
+_bot_username: str | None = None
+
+
+async def _bot_name(request: web.Request) -> str:
+    global _bot_username
+    if _bot_username:
+        return _bot_username
+    bot = request.app.get("bot")
+    if bot is not None:
+        try:
+            _bot_username = (await bot.me()).username
+            return _bot_username
+        except Exception:
+            pass
+    return os.getenv("MAIN_BOT_USERNAME", "").lstrip("@")
+
+
+async def handle_referral(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    now = utcnow()
+    async with db.pool.acquire() as conn:
+        stats = await conn.fetchrow(
+            """SELECT COUNT(*) AS invited, COUNT(*) FILTER (WHERE qualified_at IS NOT NULL) AS qualified
+               FROM users WHERE referred_by = $1""", ctx.user_id)
+        earned = await conn.fetchval(
+            "SELECT COALESCE(SUM(delta), 0) FROM ledger WHERE user_id = $1 "
+            "AND reason IN ('referral_signup', 'referral_qualified')", ctx.user_id)
+        rows = await conn.fetch(
+            """SELECT r.user_id, r.username, r.display_name, r.created_at,
+                      COUNT(*) FILTER (WHERE u.qualified_at IS NOT NULL) AS qualified, COUNT(*) AS invited
+               FROM users u JOIN users r ON r.user_id = u.referred_by
+               WHERE NOT r.is_blocked
+               GROUP BY r.user_id HAVING COUNT(*) > 0
+               ORDER BY qualified DESC, invited DESC, r.user_id ASC LIMIT $1""", REFERRAL_TOP_LIMIT)
+    username = await _bot_name(request)
+    link = f"https://t.me/{username}?start={ctx.user_id}" if username else ""
+    return web.json_response({
+        "link": link,
+        "share_text": plain(t(ctx.lang, "ref.share_text")),
+        "invited": int(stats["invited"]), "qualified": int(stats["qualified"]),
+        "earned": int(earned), "cutlets": int(stats["qualified"]) * REFERRAL_QUALIFIED_CUTLETS,
+        "rules": {"signup": REFERRAL_SIGNUP_BONUS, "qualified": REFERRAL_QUALIFIED_BONUS,
+                  "rounds": REFERRAL_QUALIFY_ROUNDS, "cutlets": REFERRAL_QUALIFIED_CUTLETS},
+        "top": [{"name": f"@{r['username']}" if r["username"] else (r["display_name"] or "#" + str(r["user_id"])[-4:]),
+                 "rank": rank_label(ctx.lang, r["created_at"], now),
+                 "qualified": int(r["qualified"]), "invited": int(r["invited"]),
+                 "me": r["user_id"] == ctx.user_id} for r in rows],
+    })
 
 
 async def handle_craft(request: web.Request) -> web.Response:
@@ -755,6 +850,8 @@ async def handle_refuel(request: web.Request) -> web.Response:
 def register_game_routes(app: web.Application) -> None:
     app.router.add_get("/api/workshop", handle_workshop)
     app.router.add_post("/api/craft", handle_craft)
+    app.router.add_post("/api/craft_weekly", handle_craft_weekly)
+    app.router.add_get("/api/referral", handle_referral)
     app.router.add_get("/api/raids", handle_raids)
     app.router.add_post("/api/raid/stance", handle_raid_stance)
     app.router.add_post("/api/raid/scout", handle_raid_scout)

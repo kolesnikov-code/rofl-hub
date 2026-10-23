@@ -195,6 +195,13 @@
     background: #0d1326; color: var(--text); font-size: 16px; font-weight: 700; }
   .stres { margin-top: 8px; } .donrow { display: flex; flex-wrap: wrap; gap: 6px; }
   .idxrow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .card.hot { border-color: rgba(255,157,61,.55); box-shadow: 0 0 22px rgba(255,157,61,.18); }
+  .card.hot h2 { color: #ffb15c; }
+  .recipe.weekly { border-color: rgba(255,157,61,.35); }
+  .reflink { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #0d1326; border: 1px dashed rgba(0,255,225,.4);
+    font-family: monospace; font-size: 13px; word-break: break-all; user-select: all; }
+  .res-grid.three { grid-template-columns: repeat(3, 1fr); }
+  .top-row.me { background: rgba(255,217,61,.08); border-radius: 8px; }
   .idx { padding: 7px 10px; border-radius: 999px; border: 1px solid rgba(0,255,225,.25); background: #0d1326;
     color: var(--text); font-weight: 800; font-size: 12px; cursor: pointer; }
   .idx.on { border-color: var(--accent); box-shadow: 0 0 10px rgba(255,217,61,.35); }
@@ -242,7 +249,7 @@
       perHour: "{v} 🪙/ч", fridge: "Холодильник", inv: "Котлет на складе",
       burnout: "Ближайшее сгорание", boosts: "Активные бусты", none: "нет",
       resources: "🧰 Ресурсы", bonusPct: "Постоянный бонус к добыче", shuttle: "🚀 Шаттл собран",
-      resHint: "Каждая победа приносит ресурс своей игры. Трать их в мастерской.",
+      resHint: "Каждая победа приносит ресурс своей игры, с Безлимитом — без ограничений. Трать их в мастерской.",
       bonusReady: "🎁 ЗАБРАТЬ ЕЖЕДНЕВНУЮ КОТЛЕТУ",
       bonusWait: "⏳ Бонус через {h} ч {m} мин", bonusDone: "🎉 Котлета на складе!",
       team: "🏆 МОЯ КОМАНДА", clan: "КЛАН", teamLabel: "Команда", captain: "👑 Ты капитан!",
@@ -273,7 +280,7 @@
       eff_nitrogen: "+40% к добыче всех роботов", eff_nuclear: "×5 к добыче, Бурильщики едят ×3 котлет",
       eff_drone: "роботы не стареют", eff_shield: "налёты на тебя невозможны",
       eff_cutlet: "1 кибер-котлета на склад (дорого: топливо выгоднее в магазине)", eff_armor: "+10% к добыче за уровень на 30 дней",
-      eff_shuttle: "только твой: комиссия 5% на твои продажи и ордера до 500 котлет — навсегда",
+      eff_storage: "больше места для ресурсов — навсегда", eff_shuttle: "только твой: комиссия 5% на твои продажи и ордера до 500 котлет — навсегда",
       raid_title: "🏴‍☠️ НАЛЁТЫ", raid_how: "📖 Как это работает",
       raid_rule1: "Ты выбираешь жест, у цели заранее выставлена стойка обороны. Исход решает камень-ножницы-бумага: это дуэль решений, а не лотерея.",
       raid_rule2: "Победа: забираешь {pct}% каждого ресурса цели, до {cap} за ресурс. Провал: отдаёшь цели {fpct}% своих, до {fcap}. Ничья: топливо сгорело.",
@@ -323,6 +330,14 @@
       sw_empty: "Предложений обмена пока нет", sw_mine: "Мои предложения", sw_done: "Обмен состоялся!",
       sw_created: "Предложение выставлено, ресурсы отложены", sw_cancelled: "Предложение снято, ресурсы вернулись",
       ws_armorUntil: "🛡 Броня действует до {t}",
+      tab_friends: "🤝 Друзья", ref_title: "🤝 ПРИГЛАШАЙ ДРУЗЕЙ",
+      ref_rules: "За каждого друга +{s} 🪙 сразу. Когда друг сыграет {r} раундов — ещё +{q} 🪙 и {c} 🥩 кибер-котлета.",
+      ref_copy: "📋 Скопировать", ref_copied: "Ссылка скопирована!", ref_share: "📤 Поделиться",
+      ref_stats: "📊 ТВОЯ БАЗА", ref_invited: "приглашено", ref_qualified: "активных", ref_earned: "заработано",
+      ref_cutlets: "🥩 Получено котлет за активных друзей: {n}", ref_top: "🏆 У КОГО БОЛЬШЕ ДРУЗЕЙ",
+      ref_topHint: "✅ — активные друзья (сыграли 30 раундов), 👥 — все приглашённые", ref_empty: "Рейтинг пока пуст — стань первым(ой)!",
+      wk_title: "🔥 РЕЦЕПТЫ НЕДЕЛИ", wk_hint: "Временные рецепты: появляются по решению хаба и исчезают. Успей собрать!",
+      wk_left: "осталось сборок на этой неделе: {n} из {m}", st_cap: "📦 Склад: до {c} каждого ресурса — излишек добычи пропадает",
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
@@ -344,7 +359,7 @@
       perHour: "{v} 🪙/h", fridge: "Fridge", inv: "Cutlets in stock",
       burnout: "Next burnout", boosts: "Active boosts", none: "none",
       resources: "🧰 Resources", bonusPct: "Permanent mining bonus", shuttle: "🚀 Shuttle built",
-      resHint: "Every win brings its game's resource. Spend them in the workshop.",
+      resHint: "Every win brings its game's resource, with Unlimited — without limits. Spend them in the workshop.",
       bonusReady: "🎁 CLAIM THE DAILY CUTLET",
       bonusWait: "⏳ Bonus in {h}h {m}m", bonusDone: "🎉 Cutlet added!",
       team: "🏆 MY TEAM", clan: "CLAN", teamLabel: "Team", captain: "👑 You are the captain!",
@@ -375,7 +390,7 @@
       eff_nitrogen: "+40% mining for all robots", eff_nuclear: "×5 mining, Drillers eat ×3 cutlets",
       eff_drone: "robots don't age", eff_shield: "nobody can raid you",
       eff_cutlet: "1 cyber-cutlet to your inventory (pricey: fuel is cheaper in the shop)", eff_armor: "+10% mining per level for 30 days",
-      eff_shuttle: "yours only: 5% fee on your sales and orders up to 500 cutlets — forever",
+      eff_storage: "more room for resources — forever", eff_shuttle: "yours only: 5% fee on your sales and orders up to 500 cutlets — forever",
       raid_title: "🏴‍☠️ RAIDS", raid_how: "📖 How it works",
       raid_rule1: "You pick a gesture; the target has a defense stance set in advance. Rock-paper-scissors decides: a duel of decisions, not a lottery.",
       raid_rule2: "Win: take {pct}% of each target resource, up to {cap} per resource. Fail: give the target {fpct}% of yours, up to {fcap}. Draw: fuel burned.",
@@ -425,6 +440,14 @@
       sw_empty: "No swap offers yet", sw_mine: "My offers", sw_done: "Swap completed!",
       sw_created: "Offer listed, resources set aside", sw_cancelled: "Offer withdrawn, resources returned",
       ws_armorUntil: "🛡 Armor active until {t}",
+      tab_friends: "🤝 Friends", ref_title: "🤝 INVITE FRIENDS",
+      ref_rules: "+{s} 🪙 for every friend right away. When a friend plays {r} rounds — another +{q} 🪙 and {c} 🥩 cyber-cutlet.",
+      ref_copy: "📋 Copy", ref_copied: "Link copied!", ref_share: "📤 Share",
+      ref_stats: "📊 YOUR NETWORK", ref_invited: "invited", ref_qualified: "active", ref_earned: "earned",
+      ref_cutlets: "🥩 Cutlets received for active friends: {n}", ref_top: "🏆 WHO HAS THE MOST FRIENDS",
+      ref_topHint: "✅ — active friends (played 30 rounds), 👥 — everyone invited", ref_empty: "The ranking is empty — be the first!",
+      wk_title: "🔥 RECIPES OF THE WEEK", wk_hint: "Limited recipes: they appear when the hub decides and then vanish. Craft them in time!",
+      wk_left: "crafts left this week: {n} of {m}", st_cap: "📦 Storage: up to {c} of each resource — extra loot is lost",
       featureOff: "⚙️ This section is under maintenance", done: "Done!", loading: "⏳ Loading…"
     }
   };
@@ -475,7 +498,7 @@
     "resources": "🧰 الموارد",
     "bonusPct": "مكافأة دائمة للتعدين",
     "shuttle": "🚀 المكوك مُجمَّع",
-    "resHint": "كل فوز يمنحك مورد لعبته. أنفق الموارد في الورشة.",
+    "resHint": "كل فوز يمنحك مورد لعبته، ومع إزالة حدود الفوز — بلا قيود. أنفق الموارد في الورشة.",
     "bonusReady": "🎁 استلم كفتة اليوم",
     "bonusWait": "⏳ المكافأة بعد {h} س {m} د",
     "bonusDone": "🎉 الكفتة في المخزون!",
@@ -528,6 +551,7 @@
     "eff_shield": "لا يمكن لأحد الإغارة عليك",
     "eff_cutlet": "كفتة سيبرانية واحدة إلى المخزون (مكلفة: الوقود أوفر في المتجر)",
     "eff_armor": "+10% للتعدين لكل مستوى لمدة 30 يومًا",
+    "eff_storage": "مساحة أكبر للموارد — إلى الأبد",
     "eff_shuttle": "لك وحدك: عمولة 5% على مبيعاتك وأوامر حتى 500 كفتة — إلى الأبد",
     "raid_title": "🏴‍☠️ الغارات",
     "raid_how": "📖 كيف تعمل",
@@ -639,6 +663,24 @@
     "goals_claimed": "🎁 استلمت صندوق اليوم. أهداف جديدة غدًا!",
     "goals_reset": "تتجدد الأهداف عند 00:00 UTC",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · السلسلة {s} يوم",
+    "tab_friends": "🤝 الأصدقاء",
+    "ref_title": "🤝 ادعُ أصدقاءك",
+    "ref_rules": "عن كل صديق +{s} 🪙 فورًا. وعندما يلعب الصديق {r} جولة — +{q} 🪙 إضافية و{c} 🥩 كفتة سيبرانية.",
+    "ref_copy": "📋 نسخ",
+    "ref_copied": "تم نسخ الرابط!",
+    "ref_share": "📤 مشاركة",
+    "ref_stats": "📊 شبكتك",
+    "ref_invited": "مدعوّون",
+    "ref_qualified": "نشطون",
+    "ref_earned": "مكتسب",
+    "ref_cutlets": "🥩 الكفتات المستلمة عن الأصدقاء النشطين: {n}",
+    "ref_top": "🏆 من لديه أكثر الأصدقاء",
+    "ref_topHint": "✅ — الأصدقاء النشطون (لعبوا 30 جولة)، 👥 — كل المدعوّين",
+    "ref_empty": "التصنيف فارغ حتى الآن — كن أول من يتصدّره!",
+    "wk_title": "🔥 وصفات الأسبوع",
+    "wk_hint": "وصفات مؤقتة: تظهر بقرار من المركز ثم تختفي. لا تفوّت فرصة تجميعها!",
+    "wk_left": "التجميعات المتبقية هذا الأسبوع: {n} من {m}",
+    "st_cap": "📦 المخزون: حتى {c} من كل مورد — فائض الغنيمة يضيع",
     "featureOff": "⚙️ هذا القسم تحت الصيانة",
     "done": "تم!",
     "loading": "⏳ جارٍ التحميل…"
@@ -652,6 +694,7 @@
     "tab_raids": "🏴‍☠️ রেইড",
     "tab_market": "📈 বাজার",
     "tab_team": "🏆 টিম",
+    "tab_friends": "🤝 বন্ধুরা",
     "tab_shop": "🏪 দোকান",
     "tab_top": "👑 টপ",
     "passport": "📋 খেলোয়াড়ের পাসপোর্ট",
@@ -688,7 +731,7 @@
     "resources": "🧰 রিসোর্স",
     "bonusPct": "মাইনিংয়ে স্থায়ী বোনাস",
     "shuttle": "🚀 শাটল তৈরি",
-    "resHint": "প্রতিটা জয়ে মেলে সেই গেমের রিসোর্স। খরচ করো ওয়ার্কশপে।",
+    "resHint": "প্রতিটা জয়ে মেলে সেই গেমের রিসোর্স, আনলিমিটেডে — কোনো সীমা ছাড়াই। খরচ করো ওয়ার্কশপে।",
     "bonusReady": "🎁 দৈনিক কাটলেট নাও",
     "bonusWait": "⏳ বোনাস {h} ঘণ্টা {m} মিনিট পরে",
     "bonusDone": "🎉 কাটলেট গুদামে!",
@@ -742,6 +785,7 @@
     "eff_shield": "তোমার ওপর রেইড করা যায় না",
     "eff_cutlet": "গুদামে 1টা সাইবার-কাটলেট (দামি: দোকানের জ্বালানি সস্তা)",
     "eff_armor": "প্রতি লেভেলে মাইনিংয়ে +10%, 30 দিনের জন্য",
+    "eff_storage": "রিসোর্সের জন্য আরও জায়গা — চিরকালের জন্য",
     "eff_shuttle": "শুধু তোমার: তোমার বিক্রিতে 5% ফি, অর্ডারে 500 কাটলেট পর্যন্ত — চিরকালের জন্য",
     "raid_title": "🏴‍☠️ রেইড",
     "raid_how": "📖 কীভাবে কাজ করে",
@@ -852,6 +896,23 @@
     "goals_claimed": "🎁 আজকের বাক্স নেওয়া হয়ে গেছে। কাল — নতুন লক্ষ্য!",
     "goals_reset": "লক্ষ্য বদলায় 00:00 UTC-তে",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · স্ট্রিক {s} দিন",
+    "ref_title": "🤝 বন্ধুদের ডাকো",
+    "ref_rules": "প্রতিটা বন্ধুর জন্য সঙ্গে সঙ্গে +{s} 🪙। বন্ধু {r} রাউন্ড খেললে — আরও +{q} 🪙 আর {c} 🥩 সাইবার-কাটলেট।",
+    "ref_copy": "📋 কপি করো",
+    "ref_copied": "লিংক কপি হয়েছে!",
+    "ref_share": "📤 শেয়ার করো",
+    "ref_stats": "📊 তোমার নেটওয়ার্ক",
+    "ref_invited": "আমন্ত্রিত",
+    "ref_qualified": "সক্রিয়",
+    "ref_earned": "আয়",
+    "ref_cutlets": "🥩 সক্রিয় বন্ধুদের জন্য পাওয়া কাটলেট: {n}",
+    "ref_top": "🏆 কার বন্ধু সবচেয়ে বেশি",
+    "ref_topHint": "✅ — সক্রিয় বন্ধু (30 রাউন্ড খেলেছে), 👥 — সব আমন্ত্রিত",
+    "ref_empty": "র‍্যাংকিং এখনও ফাঁকা — প্রথম হও!",
+    "wk_title": "🔥 সপ্তাহের রেসিপি",
+    "wk_hint": "সাময়িক রেসিপি: হাবের সিদ্ধান্তে আসে, তারপর উধাও হয়ে যায়। সময় থাকতে বানিয়ে নাও!",
+    "wk_left": "এই সপ্তাহে বাকি তৈরি: {m}-এর মধ্যে {n}",
+    "st_cap": "📦 গুদাম: প্রতিটা রিসোর্স {c} পর্যন্ত — বাড়তি লুট হারিয়ে যায়",
     "featureOff": "⚙️ এই সেকশন রক্ষণাবেক্ষণে আছে",
     "done": "হয়ে গেছে!",
     "loading": "⏳ লোড হচ্ছে…"
@@ -901,7 +962,7 @@
     "resources": "🧰 Ressourcen",
     "bonusPct": "Dauerhafter Schürf-Bonus",
     "shuttle": "🚀 Shuttle gebaut",
-    "resHint": "Jeder Sieg bringt die Ressource seines Spiels. Setz sie in der Werkstatt ein.",
+    "resHint": "Jeder Sieg bringt die Ressource seines Spiels, mit Limit-Aufhebung — ohne Grenzen. Setz sie in der Werkstatt ein.",
     "bonusReady": "🎁 TÄGLICHE FRIKADELLE ABHOLEN",
     "bonusWait": "⏳ Bonus in {h} Std. {m} Min.",
     "bonusDone": "🎉 Frikadelle im Lager!",
@@ -954,6 +1015,7 @@
     "eff_shield": "niemand kann dich überfallen",
     "eff_cutlet": "1 Cyber-Frikadelle ins Lager (teuer: Treibstoff ist im Shop günstiger)",
     "eff_armor": "+10% Ertrag pro Level für 30 Tage",
+    "eff_storage": "mehr Platz für Ressourcen — für immer",
     "eff_shuttle": "nur deins: 5% Gebühr auf deine Verkäufe und Orders bis 500 Frikadellen — für immer",
     "raid_title": "🏴‍☠️ RAIDS",
     "raid_how": "📖 So funktioniert's",
@@ -1065,6 +1127,24 @@
     "goals_claimed": "🎁 Die heutige Truhe ist abgeholt. Morgen gibt's neue Ziele!",
     "goals_reset": "Die Ziele werden um 00:00 UTC erneuert",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · Serie {s} Tage",
+    "tab_friends": "🤝 Freunde",
+    "ref_title": "🤝 LADE FREUNDE EIN",
+    "ref_rules": "Für jeden Freund sofort +{s} 🪙. Wenn ein Freund {r} Runden spielt — weitere +{q} 🪙 und {c} 🥩 Cyber-Frikadelle.",
+    "ref_copy": "📋 Kopieren",
+    "ref_copied": "Link kopiert!",
+    "ref_share": "📤 Teilen",
+    "ref_stats": "📊 DEIN NETZWERK",
+    "ref_invited": "eingeladen",
+    "ref_qualified": "aktiv",
+    "ref_earned": "verdient",
+    "ref_cutlets": "🥩 Frikadellen für aktive Freunde erhalten: {n}",
+    "ref_top": "🏆 WER HAT DIE MEISTEN FREUNDE",
+    "ref_topHint": "✅ — aktive Freunde (30 Runden gespielt), 👥 — alle Eingeladenen",
+    "ref_empty": "Das Ranking ist noch leer — mach den Anfang!",
+    "wk_title": "🔥 REZEPTE DER WOCHE",
+    "wk_hint": "Zeitlich begrenzte Rezepte: Sie erscheinen, wann der Hub es entscheidet, und verschwinden wieder. Schnapp sie dir rechtzeitig!",
+    "wk_left": "noch {n} von {m} Bauten diese Woche",
+    "st_cap": "📦 Lager: bis zu {c} von jeder Ressource — überschüssiger Ertrag geht verloren",
     "featureOff": "⚙️ Dieser Bereich wird gerade gewartet",
     "done": "Fertig!",
     "loading": "⏳ Lädt…"
@@ -1078,6 +1158,7 @@
     "tab_raids": "🏴‍☠️ Asaltos",
     "tab_market": "📈 Bolsa",
     "tab_team": "🏆 Equipo",
+    "tab_friends": "🤝 Amigos",
     "tab_shop": "🏪 Tienda",
     "tab_top": "👑 TOP",
     "passport": "📋 PASAPORTE DEL JUGADOR",
@@ -1114,7 +1195,7 @@
     "resources": "🧰 Recursos",
     "bonusPct": "Bono permanente de extracción",
     "shuttle": "🚀 Transbordador construido",
-    "resHint": "Cada victoria trae el recurso de su juego. Gástalos en el taller.",
+    "resHint": "Cada victoria trae el recurso de su juego; con Sin Límite, sin restricciones. Gástalos en el taller.",
     "bonusReady": "🎁 RECLAMAR LA CHULETA DIARIA",
     "bonusWait": "⏳ Bono en {h} h {m} min",
     "bonusDone": "🎉 ¡Chuleta añadida!",
@@ -1168,6 +1249,24 @@
     "eff_cutlet": "1 ciber-chuleta a tu inventario (caro: el combustible sale más barato en la tienda)",
     "eff_armor": "+10% de extracción por nivel durante 30 días",
     "eff_shuttle": "solo tuyo: comisión del 5% en tus ventas y órdenes de hasta 500 chuletas, para siempre",
+    "eff_storage": "más espacio para recursos, para siempre",
+    "ref_title": "🤝 INVITA A TUS AMIGOS",
+    "ref_rules": "Por cada amigo, +{s} 🪙 al instante. Cuando tu amigo juegue {r} rondas, otros +{q} 🪙 y {c} 🥩 ciber-chuleta.",
+    "ref_copy": "📋 Copiar",
+    "ref_copied": "¡Enlace copiado!",
+    "ref_share": "📤 Compartir",
+    "ref_stats": "📊 TU RED",
+    "ref_invited": "invitados",
+    "ref_qualified": "activos",
+    "ref_earned": "ganado",
+    "ref_cutlets": "🥩 Chuletas recibidas por amigos activos: {n}",
+    "ref_top": "🏆 QUIÉN TIENE MÁS AMIGOS",
+    "ref_topHint": "✅ — amigos activos (jugaron 30 rondas), 👥 — todos los invitados",
+    "ref_empty": "El ranking aún está vacío: ¡sé quien lo estrene!",
+    "wk_title": "🔥 RECETAS DE LA SEMANA",
+    "wk_hint": "Recetas temporales: aparecen cuando el hub lo decide y luego desaparecen. ¡Fabrícalas a tiempo!",
+    "wk_left": "fabricaciones restantes esta semana: {n} de {m}",
+    "st_cap": "📦 Inventario: hasta {c} de cada recurso; lo que sobra de la extracción se pierde",
     "raid_title": "🏴‍☠️ ASALTOS",
     "raid_how": "📖 Cómo funciona",
     "raid_rule1": "Tú eliges un gesto; el objetivo tiene una postura de defensa fijada de antemano. Decide piedra-papel-tijera: es un duelo de decisiones, no una lotería.",
@@ -1327,7 +1426,7 @@
     "resources": "🧰 Ressources",
     "bonusPct": "Bonus de minage permanent",
     "shuttle": "🚀 Navette assemblée",
-    "resHint": "Chaque victoire rapporte la ressource de son jeu. Dépense-les à l'atelier.",
+    "resHint": "Chaque victoire rapporte la ressource de son jeu, avec l'Illimité — sans limites. Dépense-les à l'atelier.",
     "bonusReady": "🎁 RÉCUPÉRER LA CÔTELETTE DU JOUR",
     "bonusWait": "⏳ Bonus dans {h} h {m} min",
     "bonusDone": "🎉 Côtelette ajoutée !",
@@ -1380,6 +1479,7 @@
     "eff_shield": "personne ne peut te raider",
     "eff_cutlet": "1 cyber-côtelette dans ton stock (cher : le carburant est moins cher à la boutique)",
     "eff_armor": "+10% de minage par niveau pour 30 jours",
+    "eff_storage": "plus de place pour les ressources — pour toujours",
     "eff_shuttle": "rien qu'à toi : commission de 5% sur tes ventes et ordres jusqu'à 500 côtelettes — pour toujours",
     "raid_title": "🏴‍☠️ RAIDS",
     "raid_how": "📖 Comment ça marche",
@@ -1493,7 +1593,25 @@
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · série {s} j.",
     "featureOff": "⚙️ Section en maintenance",
     "done": "C'est fait !",
-    "loading": "⏳ Chargement…"
+    "loading": "⏳ Chargement…",
+    "tab_friends": "🤝 Amis",
+    "ref_title": "🤝 INVITE TES AMIS",
+    "ref_rules": "+{s} 🪙 tout de suite pour chaque ami. Quand ton ami joue {r} manches — encore +{q} 🪙 et {c} 🥩 cyber-côtelette.",
+    "ref_copy": "📋 Copier",
+    "ref_copied": "Lien copié !",
+    "ref_share": "📤 Partager",
+    "ref_stats": "📊 TON RÉSEAU",
+    "ref_invited": "invités",
+    "ref_qualified": "actifs",
+    "ref_earned": "gagnées",
+    "ref_cutlets": "🥩 Côtelettes reçues pour tes amis actifs : {n}",
+    "ref_top": "🏆 QUI A LE PLUS D'AMIS",
+    "ref_topHint": "✅ — amis actifs (30 manches jouées), 👥 — tous les invités",
+    "ref_empty": "Le classement est encore vide — sois le premier ou la première !",
+    "wk_title": "🔥 RECETTES DE LA SEMAINE",
+    "wk_hint": "Recettes éphémères : elles apparaissent quand le hub le décide, puis disparaissent. Fabrique-les à temps !",
+    "wk_left": "fabrications restantes cette semaine : {n} sur {m}",
+    "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
     "subtitle": "एक स्क्रीन पर तुम्हारा गेम साम्राज्य",
@@ -1540,7 +1658,7 @@
     "resources": "🧰 संसाधन",
     "bonusPct": "माइनिंग पर स्थायी बोनस",
     "shuttle": "🚀 शटल बन चुका",
-    "resHint": "हर जीत उस गेम का संसाधन देती है। इन्हें वर्कशॉप में खर्च करो।",
+    "resHint": "हर जीत उस गेम का संसाधन देती है, अनलिमिटेड के साथ — बिना किसी सीमा के। इन्हें वर्कशॉप में खर्च करो।",
     "bonusReady": "🎁 रोज़ाना की कटलेट लो",
     "bonusWait": "⏳ बोनस {h} घं {m} मि में",
     "bonusDone": "🎉 कटलेट भंडार में!",
@@ -1593,6 +1711,7 @@
     "eff_shield": "तुम पर छापा नहीं पड़ सकता",
     "eff_cutlet": "भंडार में 1 साइबर-कटलेट (महँगा: दुकान में ईंधन सस्ता है)",
     "eff_armor": "हर लेवल पर माइनिंग +10%, 30 दिन के लिए",
+    "eff_storage": "संसाधनों के लिए ज़्यादा जगह — हमेशा के लिए",
     "eff_shuttle": "सिर्फ़ तुम्हारा: तुम्हारी बिक्री पर 5% फ़ीस और 500 कटलेट तक के ऑर्डर — हमेशा के लिए",
     "raid_title": "🏴‍☠️ छापे",
     "raid_how": "📖 यह कैसे काम करता है",
@@ -1704,6 +1823,24 @@
     "sw_created": "ऑफ़र लग गया, संसाधन अलग रख दिए गए",
     "sw_cancelled": "ऑफ़र हटा दिया, संसाधन लौट आए",
     "ws_armorUntil": "🛡 कवच {t} तक एक्टिव है",
+    "tab_friends": "🤝 दोस्त",
+    "ref_title": "🤝 दोस्तों को बुलाओ",
+    "ref_rules": "हर दोस्त के लिए तुरंत +{s} 🪙। जब दोस्त {r} राउंड खेल ले — और +{q} 🪙 और {c} 🥩 साइबर-कटलेट।",
+    "ref_copy": "📋 कॉपी करो",
+    "ref_copied": "लिंक कॉपी हो गया!",
+    "ref_share": "📤 शेयर करो",
+    "ref_stats": "📊 तुम्हारा नेटवर्क",
+    "ref_invited": "बुलाए गए",
+    "ref_qualified": "एक्टिव",
+    "ref_earned": "कमाए",
+    "ref_cutlets": "🥩 एक्टिव दोस्तों के लिए मिले कटलेट: {n}",
+    "ref_top": "🏆 सबसे ज़्यादा दोस्त किसके",
+    "ref_topHint": "✅ — एक्टिव दोस्त (30 राउंड खेल चुके), 👥 — सभी बुलाए गए",
+    "ref_empty": "रेटिंग अभी खाली है — पहले बनो!",
+    "wk_title": "🔥 हफ़्ते की रेसिपी",
+    "wk_hint": "सीमित रेसिपी: हब के फ़ैसले से आती हैं और फिर गायब हो जाती हैं। समय रहते बना लो!",
+    "wk_left": "इस हफ़्ते बाकी बनाने के मौके: {m} में से {n}",
+    "st_cap": "📦 भंडार: हर संसाधन {c} तक — ज़्यादा माइनिंग बेकार जाती है",
     "featureOff": "⚙️ यह सेक्शन मेंटेनेंस में है",
     "done": "हो गया!",
     "loading": "⏳ लोड हो रहा है…"
@@ -1753,7 +1890,7 @@
     "resources": "🧰 Sumber daya",
     "bonusPct": "Bonus penambangan permanen",
     "shuttle": "🚀 Shuttle sudah dibangun",
-    "resHint": "Setiap kemenangan memberi sumber daya dari game-nya. Gunakan di bengkel.",
+    "resHint": "Setiap kemenangan memberi sumber daya dari game-nya, dan dengan Tanpa Batas jumlahnya tak terbatas. Gunakan di bengkel.",
     "bonusReady": "🎁 KLAIM KOTLET HARIAN",
     "bonusWait": "⏳ Bonus dalam {h} jam {m} mnt",
     "bonusDone": "🎉 Kotlet masuk gudang!",
@@ -1807,6 +1944,25 @@
     "eff_cutlet": "1 kotlet siber ke gudang (mahal: bahan bakar lebih murah di toko)",
     "eff_armor": "+10% penambangan per level selama 30 hari",
     "eff_shuttle": "hanya milikmu: biaya 5% untuk penjualanmu dan order hingga 500 kotlet — selamanya",
+    "eff_storage": "lebih banyak tempat untuk sumber daya — selamanya",
+    "tab_friends": "🤝 Teman",
+    "ref_title": "🤝 UNDANG TEMAN",
+    "ref_rules": "Untuk setiap teman langsung +{s} 🪙. Saat teman main {r} ronde — tambah +{q} 🪙 dan {c} 🥩 kotlet siber.",
+    "ref_copy": "📋 Salin",
+    "ref_copied": "Link disalin!",
+    "ref_share": "📤 Bagikan",
+    "ref_stats": "📊 JARINGANMU",
+    "ref_invited": "diundang",
+    "ref_qualified": "aktif",
+    "ref_earned": "didapat",
+    "ref_cutlets": "🥩 Kotlet yang didapat dari teman aktif: {n}",
+    "ref_top": "🏆 SIAPA PUNYA TEMAN TERBANYAK",
+    "ref_topHint": "✅ — teman aktif (sudah main 30 ronde), 👥 — semua yang diundang",
+    "ref_empty": "Peringkat masih kosong — jadilah yang pertama!",
+    "wk_title": "🔥 RESEP MINGGU INI",
+    "wk_hint": "Resep terbatas: muncul atas keputusan hub lalu menghilang. Rakit sebelum terlambat!",
+    "wk_left": "sisa rakitan minggu ini: {n} dari {m}",
+    "st_cap": "📦 Gudang: hingga {c} tiap sumber daya — kelebihan hasil tambang hilang",
     "raid_title": "🏴‍☠️ SERBUAN",
     "raid_how": "📖 Cara kerjanya",
     "raid_rule1": "Kamu memilih gestur, target sudah memasang kuda-kuda pertahanan sebelumnya. Hasilnya ditentukan suit batu-gunting-kertas: ini duel keputusan, bukan lotre.",
@@ -1966,7 +2122,7 @@
     "resources": "🧰 Risorse",
     "bonusPct": "Bonus permanente all'estrazione",
     "shuttle": "🚀 Shuttle costruito",
-    "resHint": "Ogni vittoria porta la risorsa del suo gioco. Spendile nell'officina.",
+    "resHint": "Ogni vittoria porta la risorsa del suo gioco, con la rimozione dei limiti senza alcun tetto. Spendile nell'officina.",
     "bonusReady": "🎁 RITIRA LA COTOLETTA GIORNALIERA",
     "bonusWait": "⏳ Bonus tra {h} h {m} min",
     "bonusDone": "🎉 Cotoletta nell'inventario!",
@@ -2019,6 +2175,7 @@
     "eff_shield": "nessuno può farti incursioni",
     "eff_cutlet": "1 cyber-cotoletta nell'inventario (cara: il carburante conviene in negozio)",
     "eff_armor": "+10% all'estrazione per livello per 30 giorni",
+    "eff_storage": "più spazio per le risorse — per sempre",
     "eff_shuttle": "solo tuo: commissione del 5% sulle tue vendite e ordini fino a 500 cotolette — per sempre",
     "raid_title": "🏴‍☠️ INCURSIONI",
     "raid_how": "📖 Come funziona",
@@ -2130,6 +2287,24 @@
     "sw_created": "Proposta pubblicata, risorse messe da parte",
     "sw_cancelled": "Proposta ritirata, risorse restituite",
     "ws_armorUntil": "🛡 Armatura attiva fino al {t}",
+    "tab_friends": "🤝 Amici",
+    "ref_title": "🤝 INVITA GLI AMICI",
+    "ref_rules": "+{s} 🪙 subito per ogni amico. Quando un amico gioca {r} round: altre +{q} 🪙 e {c} 🥩 cyber-cotoletta.",
+    "ref_copy": "📋 Copia",
+    "ref_copied": "Link copiato!",
+    "ref_share": "📤 Condividi",
+    "ref_stats": "📊 LA TUA RETE",
+    "ref_invited": "invitati",
+    "ref_qualified": "attivi",
+    "ref_earned": "guadagnate",
+    "ref_cutlets": "🥩 Cotolette ricevute per gli amici attivi: {n}",
+    "ref_top": "🏆 CHI HA PIÙ AMICI",
+    "ref_topHint": "✅ — amici attivi (hanno giocato 30 round), 👥 — tutti gli invitati",
+    "ref_empty": "La classifica è ancora vuota: conquista il primo posto!",
+    "wk_title": "🔥 RICETTE DELLA SETTIMANA",
+    "wk_hint": "Ricette a tempo: compaiono quando lo decide l'hub e poi spariscono. Creale finché puoi!",
+    "wk_left": "creazioni rimaste questa settimana: {n} su {m}",
+    "st_cap": "📦 Deposito: fino a {c} di ogni risorsa — il bottino in eccesso va perso",
     "featureOff": "⚙️ Sezione in manutenzione",
     "done": "Fatto!",
     "loading": "⏳ Caricamento…"
@@ -2143,6 +2318,7 @@
     "tab_raids": "🏴‍☠️ Najazdy",
     "tab_market": "📈 Giełda",
     "tab_team": "🏆 Drużyna",
+    "tab_friends": "🤝 Znajomi",
     "tab_shop": "🏪 Sklep",
     "tab_top": "👑 TOP",
     "passport": "📋 PASZPORT GRACZA",
@@ -2179,7 +2355,24 @@
     "resources": "🧰 Surowce",
     "bonusPct": "Stały bonus do wydobycia",
     "shuttle": "🚀 Wahadłowiec zbudowany",
-    "resHint": "Każde zwycięstwo przynosi surowiec danej gry. Wydawaj je w warsztacie.",
+    "resHint": "Każde zwycięstwo przynosi surowiec danej gry, a ze zdjętym limitem — bez ograniczeń. Wydawaj je w warsztacie.",
+    "ref_title": "🤝 ZAPRASZAJ ZNAJOMYCH",
+    "ref_rules": "Za każdego znajomego od razu +{s} 🪙. Gdy znajomy rozegra {r} rund — kolejne +{q} 🪙 i {c} 🥩 cyber-kotlet.",
+    "ref_copy": "📋 Kopiuj",
+    "ref_copied": "Link skopiowany!",
+    "ref_share": "📤 Udostępnij",
+    "ref_stats": "📊 TWOJA EKIPA",
+    "ref_invited": "zaproszeni",
+    "ref_qualified": "aktywni",
+    "ref_earned": "zarobione",
+    "ref_cutlets": "🥩 Kotlety otrzymane za aktywnych znajomych: {n}",
+    "ref_top": "🏆 KTO MA NAJWIĘCEJ ZNAJOMYCH",
+    "ref_topHint": "✅ — aktywni znajomi (rozegrali 30 rund), 👥 — wszyscy zaproszeni",
+    "ref_empty": "Ranking jest jeszcze pusty — bądź pierwszy(-a)!",
+    "wk_title": "🔥 PRZEPISY TYGODNIA",
+    "wk_hint": "Przepisy czasowe: pojawiają się z decyzji hubu i znikają. Zdąż je stworzyć!",
+    "wk_left": "pozostało wytworzeń w tym tygodniu: {n} z {m}",
+    "st_cap": "📦 Magazyn: do {c} każdego surowca — nadwyżka wydobycia przepada",
     "bonusReady": "🎁 ODBIERZ CODZIENNY KOTLET",
     "bonusWait": "⏳ Bonus za {h} godz. {m} min",
     "bonusDone": "🎉 Kotlet w magazynie!",
@@ -2232,6 +2425,7 @@
     "eff_shield": "nikt nie może cię najechać",
     "eff_cutlet": "1 cyber-kotlet do magazynu (drogo: paliwo w sklepie wychodzi taniej)",
     "eff_armor": "+10% do wydobycia za poziom na 30 dni",
+    "eff_storage": "więcej miejsca na surowce — na zawsze",
     "eff_shuttle": "tylko twój: prowizja 5% od twoich sprzedaży i zlecenia do 500 kotletów — na zawsze",
     "raid_title": "🏴‍☠️ NAJAZDY",
     "raid_how": "📖 Jak to działa",
@@ -2392,7 +2586,7 @@
     "resources": "🧰 Recursos",
     "bonusPct": "Bônus permanente de mineração",
     "shuttle": "🚀 Shuttle montado",
-    "resHint": "Cada vitória traz o recurso do seu jogo. Gaste-os na oficina.",
+    "resHint": "Cada vitória traz o recurso do seu jogo, com Sem Limite — sem restrições. Gaste-os na oficina.",
     "bonusReady": "🎁 PEGAR O BIFE DIÁRIO",
     "bonusWait": "⏳ Bônus em {h} h {m} min",
     "bonusDone": "🎉 Bife no estoque!",
@@ -2445,7 +2639,26 @@
     "eff_shield": "ninguém pode saquear você",
     "eff_cutlet": "1 ciber-bife no estoque (caro: o combustível sai mais barato na loja)",
     "eff_armor": "+10% de mineração por nível por 30 dias",
+    "eff_storage": "mais espaço para recursos — para sempre",
     "eff_shuttle": "só seu: taxa de 5% nas suas vendas e ordens de até 500 bifes — para sempre",
+    "tab_friends": "🤝 Amigos",
+    "ref_title": "🤝 CONVIDE AMIGOS",
+    "ref_rules": "+{s} 🪙 na hora por cada amigo. Quando o amigo jogar {r} rodadas — mais +{q} 🪙 e {c} 🥩 ciber-bife.",
+    "ref_copy": "📋 Copiar",
+    "ref_copied": "Link copiado!",
+    "ref_share": "📤 Compartilhar",
+    "ref_stats": "📊 SUA REDE",
+    "ref_invited": "convidados",
+    "ref_qualified": "ativos",
+    "ref_earned": "ganho",
+    "ref_cutlets": "🥩 Bifes recebidos por amigos ativos: {n}",
+    "ref_top": "🏆 QUEM TEM MAIS AMIGOS",
+    "ref_topHint": "✅ — amigos ativos (jogaram 30 rodadas), 👥 — todos os convidados",
+    "ref_empty": "O ranking ainda está vazio — seja o primeiro lugar!",
+    "wk_title": "🔥 RECEITAS DA SEMANA",
+    "wk_hint": "Receitas temporárias: aparecem quando o hub decide e depois somem. Monte a tempo!",
+    "wk_left": "montagens restantes nesta semana: {n} de {m}",
+    "st_cap": "📦 Estoque: até {c} de cada recurso — o excedente da mineração se perde",
     "raid_title": "🏴‍☠️ SAQUES",
     "raid_how": "📖 Como funciona",
     "raid_rule1": "Você escolhe uma jogada; o alvo já deixou uma postura de defesa definida. Quem decide é o pedra-papel-tesoura: um duelo de decisões, não uma loteria.",
@@ -2605,7 +2818,7 @@
     "resources": "🧰 Resurslar",
     "bonusPct": "Qazib olishga doimiy bonus",
     "shuttle": "🚀 Shattl yig'ilgan",
-    "resHint": "Har bir g'alaba o'sha o'yinning resursini beradi. Ularni ustaxonada sarfla.",
+    "resHint": "Har bir g'alaba o'sha o'yinning resursini beradi, Cheksiz rejimda — cheklovsiz. Ularni ustaxonada sarfla.",
     "bonusReady": "🎁 KUNDALIK KOTLETNI OLISH",
     "bonusWait": "⏳ Bonus {h} soat {m} daqiqadan keyin",
     "bonusDone": "🎉 Kotlet omborda!",
@@ -2658,6 +2871,7 @@
     "eff_shield": "senga bosqin qilib bo'lmaydi",
     "eff_cutlet": "omborga 1 kiber-kotlet (qimmat: yoqilg'i do'konda arzonroq)",
     "eff_armor": "har darajaga qazib olishga +10%, 30 kunga",
+    "eff_storage": "resurslar uchun ko'proq joy — abadiy",
     "eff_shuttle": "faqat seniki: sotuvlaringga 5% komissiya va buyurtmalar 500 kotletgacha — abadiy",
     "raid_title": "🏴‍☠️ BOSQINLAR",
     "raid_how": "📖 Bu qanday ishlaydi",
@@ -2750,6 +2964,24 @@
     "sw_created": "Taklif qo'yildi, resurslar ajratib qo'yildi",
     "sw_cancelled": "Taklif olib tashlandi, resurslar qaytdi",
     "ws_armorUntil": "🛡 Zirh {t} gacha amal qiladi",
+    "tab_friends": "🤝 Do'stlar",
+    "ref_title": "🤝 DO'STLARNI TAKLIF QIL",
+    "ref_rules": "Har bir do'st uchun darhol +{s} 🪙. Do'st {r} raund o'ynasa — yana +{q} 🪙 va {c} 🥩 kiber-kotlet.",
+    "ref_copy": "📋 Nusxa olish",
+    "ref_copied": "Havola nusxalandi!",
+    "ref_share": "📤 Ulashish",
+    "ref_stats": "📊 SENING BAZANG",
+    "ref_invited": "taklif qilingan",
+    "ref_qualified": "faol",
+    "ref_earned": "ishlab topilgan",
+    "ref_cutlets": "🥩 Faol do'stlar uchun olingan kotletlar: {n}",
+    "ref_top": "🏆 KIMNING DO'STLARI KO'P",
+    "ref_topHint": "✅ — faol do'stlar (30 raund o'ynagan), 👥 — barcha taklif qilinganlar",
+    "ref_empty": "Reyting hozircha bo'sh — birinchi bo'l!",
+    "wk_title": "🔥 HAFTA RETSEPTLARI",
+    "wk_hint": "Vaqtinchalik retseptlar: hab qaroriga ko'ra paydo bo'ladi va yo'qoladi. Yig'ishga ulgur!",
+    "wk_left": "bu hafta qolgan yig'ishlar: {m} tadan {n} ta",
+    "st_cap": "📦 Ombor: har bir resursdan {c} tagacha — ortiqcha o'lja yo'qoladi",
     "st_title": "🛰 JAMOA STANSIYASI",
     "st_level": "Daraja: {l} / {m}",
     "st_bonus": "har bir jangchiga qazib olishga +{p}%",
@@ -2784,6 +3016,7 @@
     "tab_team": "🏆 战队",
     "tab_shop": "🏪 商店",
     "tab_top": "👑 排行",
+    "tab_friends": "🤝 好友",
     "passport": "📋 玩家护照",
     "coins": "🪙",
     "brain": "🧠 智力等级",
@@ -2818,7 +3051,7 @@
     "resources": "🧰 资源",
     "bonusPct": "永久产量加成",
     "shuttle": "🚀 穿梭机已建成",
-    "resHint": "每次获胜都会带来对应游戏的资源。在工坊里使用它们。",
+    "resHint": "每次获胜都会带来对应游戏的资源，开通无限畅玩则不受限制。在工坊里使用它们。",
     "bonusReady": "🎁 领取每日肉排",
     "bonusWait": "⏳ {h} 小时 {m} 分钟后可领",
     "bonusDone": "🎉 肉排已入仓库！",
@@ -2872,6 +3105,24 @@
     "eff_cutlet": "1 份赛博肉排入仓库（较贵：商店里的燃料更划算）",
     "eff_armor": "每级产量 +10%，有效期 30 天",
     "eff_shuttle": "只属于你：你出售时手续费 5%，挂单最多 500 份肉排——永久",
+    "eff_storage": "资源空间更大——永久",
+    "ref_title": "🤝 邀请好友",
+    "ref_rules": "每邀请一位好友立得 +{s} 🪙。好友玩满 {r} 局后，再得 +{q} 🪙 和 {c} 🥩 份赛博肉排。",
+    "ref_copy": "📋 复制",
+    "ref_copied": "链接已复制！",
+    "ref_share": "📤 分享",
+    "ref_stats": "📊 你的人脉",
+    "ref_invited": "已邀请",
+    "ref_qualified": "活跃",
+    "ref_earned": "已赚取",
+    "ref_cutlets": "🥩 活跃好友带来的肉排：{n}",
+    "ref_top": "🏆 谁的好友最多",
+    "ref_topHint": "✅ — 活跃好友（玩满 30 局），👥 — 全部受邀者",
+    "ref_empty": "排行榜还是空的——快来当第一名！",
+    "wk_title": "🔥 本周配方",
+    "wk_hint": "限时配方：由中心决定上架，随后消失。抓紧合成！",
+    "wk_left": "本周剩余合成次数：{n} / {m}",
+    "st_cap": "📦 仓库：每种资源最多 {c}——多出的产出会丢失",
     "raid_title": "🏴‍☠️ 突袭",
     "raid_how": "📖 玩法说明",
     "raid_rule1": "你选择手势，目标事先设好了防御姿态。胜负由石头剪刀布决定：这是决策的较量，不是抽奖。",
@@ -2999,7 +3250,7 @@
   const RES = ["metal", "hydrogen", "crystal", "parts"];
   const RES_ICON = { metal: "⛏", hydrogen: "💧", crystal: "💎", parts: "⚙️" };
   const KINDS = ["intern", "junior", "premium"];   // от самого слабого к самому мощному
-  const TABS = ["passport", "farm", "goals", "workshop", "raids", "market", "team", "shop", "top"];
+  const TABS = ["passport", "farm", "goals", "workshop", "raids", "market", "team", "friends", "shop", "top"];
   const TAB_FLAG = { goals: "goals", workshop: "workshop", raids: "raids", market: "market", shop: "shop" };
 
   async function api(path, opts) {
@@ -3090,6 +3341,7 @@
       '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="hint">' + fmt(L.toNext, { n: q.next_level, left: q.required - q.progress, reward: q.next_reward }) + '</div>') +
       card(L.resources, '<div class="res-grid">' + resTiles + '</div><div class="hint">' + L.resHint + '</div>' +
+        '<div class="hint">' + fmt(L.st_cap, { c: num(me.res_capacity || 500) }) + '</div>' +
         (me.bonus_percent ? row(L.bonusPct, "+" + me.bonus_percent + "%", "status-ok") : '') +
         (me.has_shuttle ? '<div class="hint">' + L.shuttle + '</div>' : ''));
   }
@@ -3212,8 +3464,18 @@
       return '<div class="recipe' + (r.affordable ? ' ready' : '') + '"><div class="rh"><b>' + esc(r.title) + '</b>' + btn + '</div>' +
         '<div class="hint">' + (L["eff_" + r.effect] || "") + '</div>' + (r.done ? '' : '<div class="chips">' + cost + '</div>') + '</div>';
     }).join("");
-    box.innerHTML = card(L.ws_title,
+    const weekly = (w.weekly || []).map(r => {
+      const cost = RES.filter(k => r.cost[k]).map(k =>
+        '<span class="chip ' + ((w.stock[k] || 0) >= r.cost[k] ? 'have' : 'lack') + '">' +
+        RES_ICON[k] + ' ' + num(w.stock[k] || 0) + '/' + r.cost[k] + '</span>').join("");
+      return '<div class="recipe weekly' + (r.affordable ? ' ready' : '') + '"><div class="rh"><b>' + esc(r.title) + '</b>' +
+        '<button class="mini wcraft" data-id="' + r.id + '"' + (r.affordable ? '' : ' disabled') + '>' + L.ws_craft + '</button></div>' +
+        '<div class="hint">' + fmt(L.wk_left, { n: r.left, m: r.limit }) + '</div><div class="chips">' + cost + '</div></div>';
+    }).join("");
+    box.innerHTML = (weekly ? '<div class="card hot"><h2>' + L.wk_title + '</h2><div class="hint">' + L.wk_hint + '</div>' + weekly + '</div>' : '') +
+      card(L.ws_title,
       '<div class="chips big">' + resLine(w.stock) + '</div>' +
+      '<div class="hint">' + fmt(L.st_cap, { c: num(w.capacity) }) + '</div>' +
       '<div class="hint">' + L.ws_hint + '</div>' +
       row(L.ws_armor, fmt(L.ws_armorLvl, { l: w.armor_level, m: w.armor_max, p: w.armor_pct })) +
       (w.armor_until ? '<div class="hint">' + fmt(L.ws_armorUntil, { t: new Date(w.armor_until).toLocaleString(me.lang === "ru" ? "ru-RU" : "en-GB",
@@ -3222,6 +3484,11 @@
         { fee: w.has_shuttle ? w.shuttle_fee : w.market_fee }) + '</div>') +
       card(L.resources + " · " + L.resWhere, RES.map(k => row(RES_ICON[k] + " " + esc(w.res_names[k]), L["res_" + k + "_src"])).join("")) +
       '<div class="recipes">' + recipes + '</div>';
+    document.querySelectorAll(".wcraft").forEach(b => {
+      b.onclick = () => act(b, "/api/craft_weekly", { recipe: b.dataset.id }, async () => {
+        notify(L.ws_crafted); await refreshMe(); go("workshop");
+      });
+    });
     document.querySelectorAll(".craft").forEach(b => {
       b.onclick = () => act(b, "/api/craft", { recipe: b.dataset.id }, async () => {
         notify(L.ws_crafted); await refreshMe(); go("workshop");
@@ -3455,6 +3722,44 @@
     });
   }
 
+  // ================= 🤝 Друзья: реферальная ссылка, статистика, рейтинг =================
+  async function viewFriends(box) {
+    const d = await api("/api/referral");
+    const R = d.rules;
+    const top = d.top.map((p, i) =>
+      '<div class="top-row' + (p.me ? ' me' : '') + '"><span class="place">' + (["🥇", "🥈", "🥉"][i] || (i + 1) + ".") + '</span>' +
+      '<span class="nm">' + esc(p.name) + (p.rank ? ' <span class="rank">' + esc(p.rank) + '</span>' : '') + '</span>' +
+      '<span class="brain">✅' + p.qualified + '</span><span class="bal">👥' + p.invited + '</span></div>').join("") ||
+      '<div class="hint">' + L.ref_empty + '</div>';
+    box.innerHTML =
+      card(L.ref_title,
+        '<div class="hint">' + fmt(L.ref_rules, { s: num(R.signup), q: num(R.qualified), r: R.rounds, c: R.cutlets }) + '</div>' +
+        (d.link ? '<div class="reflink" id="refLink">' + esc(d.link) + '</div>' +
+          '<div class="two"><button class="btn ghost" id="refCopy">' + L.ref_copy + '</button>' +
+          '<button class="btn" id="refShare">' + L.ref_share + '</button></div>' : '')) +
+      card(L.ref_stats,
+        '<div class="res-grid three">' +
+        '<div class="res"><div class="ri">👥</div><div class="rn">' + d.invited + '</div><div class="rs">' + L.ref_invited + '</div></div>' +
+        '<div class="res"><div class="ri">✅</div><div class="rn">' + d.qualified + '</div><div class="rs">' + L.ref_qualified + '</div></div>' +
+        '<div class="res"><div class="ri">🪙</div><div class="rn">' + num(d.earned) + '</div><div class="rs">' + L.ref_earned + '</div></div>' +
+        '</div>' + (d.cutlets ? '<div class="hint">' + fmt(L.ref_cutlets, { n: d.cutlets }) + '</div>' : '')) +
+      card(L.ref_top, '<div class="hint">' + L.ref_topHint + '</div>' + top);
+    const copy = document.getElementById("refCopy");
+    if (copy) copy.onclick = async () => {
+      try { await navigator.clipboard.writeText(d.link); notify(L.ref_copied); }
+      catch (e) {
+        const r = document.createRange(); r.selectNodeContents(document.getElementById("refLink"));
+        const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        try { document.execCommand("copy"); notify(L.ref_copied); } catch (e2) { notify(d.link); }
+      }
+    };
+    const share = document.getElementById("refShare");
+    if (share) share.onclick = () => {
+      const url = "https://t.me/share/url?url=" + encodeURIComponent(d.link) + "&text=" + encodeURIComponent(d.share_text);
+      if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, "_blank");
+    };
+  }
+
   // ================= 🏪 Магазин =================
   async function viewShop(box) {
     const shop = await api("/api/shop");
@@ -3492,7 +3797,7 @@
   }
 
   const VIEWS = { passport: viewPassport, farm: viewFarm, goals: viewGoals, workshop: viewWorkshop,
-                  raids: viewRaids, market: viewMarket, team: viewTeam, shop: viewShop, top: viewTop };
+                  raids: viewRaids, market: viewMarket, team: viewTeam, friends: viewFriends, shop: viewShop, top: viewTop };
 
   // ================= Шахта: визуальная сцена фермы =================
   let sceneTimer = null, coinTimer = null, minedVisit = 0;

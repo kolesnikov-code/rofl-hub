@@ -23,6 +23,7 @@ from shared.economy import (
     SHUTTLE_MARKET_MAX_QTY,
     WORKSHOP_RECIPES,
     armor_level_active,
+    next_storage_level,
     utcnow,
 )
 from shared.locales import t
@@ -32,7 +33,11 @@ from shared.workshop import WorkshopError, can_afford, craft, recipe_cost
 router = Router()
 logger = logging.getLogger(__name__)
 
-RECIPE_ORDER = ("nitro_6h", "nuclear_3h", "drone_24h", "shield_24h", "cutlet", "armor", "shuttle")
+def cost_is_max(user) -> bool:
+    return bool(user) and next_storage_level(user["res_capacity"]) is None
+
+
+RECIPE_ORDER = ("nitro_6h", "nuclear_3h", "drone_24h", "shield_24h", "cutlet", "armor", "storage", "shuttle")
 
 
 def stock_block(lang: str, stock: dict[str, int]) -> str:
@@ -44,7 +49,7 @@ async def _view(user_id: int, lang: str) -> tuple[str, types.InlineKeyboardMarku
     async with db.pool.acquire() as conn:
         stock = await get_resources(conn, user_id)
         user = await conn.fetchrow(
-            "SELECT farm_armor_level, armor_until, has_shuttle FROM users WHERE user_id = $1", user_id)
+            "SELECT farm_armor_level, armor_until, has_shuttle, res_capacity FROM users WHERE user_id = $1", user_id)
     armor_level = armor_level_active(user["farm_armor_level"], user["armor_until"], utcnow()) if user else 0
     has_shuttle = bool(user and user["has_shuttle"])
 
@@ -52,6 +57,8 @@ async def _view(user_id: int, lang: str) -> tuple[str, types.InlineKeyboardMarku
     for rid in RECIPE_ORDER:
         recipe = WORKSHOP_RECIPES[rid]
         effect = recipe["effect"]
+        if effect == "storage" and cost_is_max(user):
+            continue
         if effect == "shuttle" and has_shuttle:
             rows.append([types.InlineKeyboardButton(text=t(lang, "ws.btn_shuttle_owned"),
                                                     callback_data="ws_noop")])
@@ -60,9 +67,10 @@ async def _view(user_id: int, lang: str) -> tuple[str, types.InlineKeyboardMarku
             rows.append([types.InlineKeyboardButton(text=t(lang, "ws.btn_armor_max"),
                                                     callback_data="ws_noop")])
             continue
-        cost = recipe_cost(rid, armor_level)
+        cost = recipe_cost(rid, armor_level, user["res_capacity"] if user else 500)
         mark = "✅" if can_afford(stock, cost) else "🔒"
-        label = t(lang, f"ws.recipe_{rid}", level=armor_level + 1)
+        label = t(lang, f"ws.recipe_{rid}", level=armor_level + 1,
+                  cap=(next_storage_level(user["res_capacity"]) or (0,))[0] if user else 0)
         rows.append([types.InlineKeyboardButton(
             text=f"{mark} {label} — {format_bundle(lang, cost, sep=' + ')}",
             callback_data=f"ws_craft:{rid}")])
@@ -142,6 +150,8 @@ async def workshop_craft(callback: types.CallbackQuery, user_lang: str = "ru"):
     elif effect == "armor":
         done = t(user_lang, "ws.done_armor", level=result.level,
                  percent=result.level * ARMOR_BONUS_PER_LEVEL)
+    elif effect == "storage":
+        done = t(user_lang, "ws.done_storage", cap=result.level)
     else:
         done = t(user_lang, "ws.done_shuttle", fee=SHUTTLE_MARKET_FEE_PERCENT, qty=SHUTTLE_MARKET_MAX_QTY)
     await callback.answer(t(user_lang, "ws.toast"))

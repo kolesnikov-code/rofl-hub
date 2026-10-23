@@ -37,7 +37,7 @@ from shared.economy import (
     raid_loot,
 )
 from shared.locales import t
-from shared.resources import InsufficientResources, change_resource, lock_resources
+from shared.resources import InsufficientResources, change_resource, lock_resources, resource_capacity
 
 logger = logging.getLogger(__name__)
 
@@ -191,19 +191,23 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
     # Блокируем ресурсы обеих сторон в фиксированном порядке (анти-дедлок)
     first, second = sorted((attacker_id, defender_id))
     stocks = {first: await lock_resources(conn, first), second: await lock_resources(conn, second)}
+    # Трофей сверх вместимости склада победителя пропадает (склад с лимитом, 25.10)
+    caps = {uid: await resource_capacity(conn, uid) for uid in (attacker_id, defender_id)}
     if result == "win":
         for kind in RESOURCE_KINDS:
             amount = raid_loot(stocks[defender_id].get(kind, 0))
             if amount > 0:
                 await change_resource(conn, defender_id, kind, -amount, "raid_loss", str(attacker_id))
-                await change_resource(conn, attacker_id, kind, amount, "raid_loot", str(defender_id))
+                await change_resource(conn, attacker_id, kind, amount, "raid_loot", str(defender_id),
+                                      cap=caps[attacker_id])
                 loot[kind] = amount
     elif result == "lose":
         for kind in RESOURCE_KINDS:
             amount = raid_fail_loss(stocks[attacker_id].get(kind, 0))
             if amount > 0:
                 await change_resource(conn, attacker_id, kind, -amount, "raid_fail", str(defender_id))
-                await change_resource(conn, defender_id, kind, amount, "raid_defense", str(attacker_id))
+                await change_resource(conn, defender_id, kind, amount, "raid_defense", str(attacker_id),
+                                      cap=caps[defender_id])
                 loot[kind] = amount
 
     raid_id = await conn.fetchval(

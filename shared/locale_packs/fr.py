@@ -484,9 +484,11 @@ STRINGS = {
     "ref.btn_share": "📣 Partager le lien",
     "ref.share_text": "Rejoins l'écosystème de jeu ROFL HUB !",
     "ref.qualified_line": ("⭐ <b>Double récompense :</b> quand un ami invité joue {rounds} "
-                           "manches, tu reçois encore <b>+{bonus} 🪙</b> !"),
+                           "manches, tu reçois encore <b>+{bonus} 🪙</b> et "
+                           "<b>{cutlets} 🥩 cyber-côtelette</b> !"),
     "ref.qualified_notify": ("🤝 <b>Ton ami est accro : déjà {rounds} manches !</b>\n"
-                             "Tu gagnes <b>+{bonus} 🪙</b> pour un filleul qualifié. "
+                             "Tu gagnes <b>+{bonus} 🪙</b> et <b>{cutlets} 🥩 cyber-côtelette</b> "
+                             "dans ton stock pour un filleul qualifié. "
                              "Invites-en d'autres !"),
 
     # ---------------- transferts ----------------
@@ -653,6 +655,21 @@ STRINGS = {
     "sw.err_same": "❌ Impossible d'échanger une ressource contre la même.",
     "sw.done_notify": "🔄 <b>Échange #{id} conclu !</b> Donné : {give}, reçu : {want}.",
     "ws.err_coins": "🔒 Pas assez de pièces : il faut {need} 🪙, tu as {have} 🪙.",
+    "wk.eff_nitrogen": "❄️ Azote +40% pour {h} h",
+    "wk.eff_nuclear": "☢️ Nucléaire x5 pour {h} h",
+    "wk.eff_drone": "🛸 Maître-Drone pour {h} h",
+    "wk.eff_shield": "🛡 Bouclier pour {h} h",
+    "wk.eff_unlimit": "⚡ Jeux illimités pour {h} h",
+    "wk.eff_cutlet": "🥩 Côtelette ×{n}",
+    "wk.eff_resource": "{icon} +{n}",
+    "wk.err_gone": "⏳ Cette recette de la semaine n'est plus disponible.",
+    "wk.err_limit": "🔒 La limite hebdomadaire de cette recette est atteinte ({limit}). Nouvelle semaine dès lundi 00:00 UTC.",
+    "games.resource_full": "📦 Stock de {icon} plein ({cap}) — le surplus est perdu. Dépense, vends ou agrandis ton stock à l'atelier.",
+    "mk.err_storage_full": "📦 Pas assez de place dans ton stock : {free} de libre. Agrandis ton stock à l'atelier.",
+    "mk.err_buyer_full": "📦 Le stock de l'acheteur est plein — la transaction est impossible pour l'instant ({free} de libre).",
+    "ws.recipe_storage": "Agrandir le stock à {cap}",
+    "ws.done_storage": "📦 <b>Stock agrandi :</b> jusqu'à {cap} de chaque ressource. C'est pour toujours.",
+    "ws.err_storage_max": "📦 Le stock est déjà à sa taille maximale.",
     "farm.boost_armor": "🛡 Cyber-Armure niv. {level} : +{percent}% de minage jusqu'au {until} UTC",
     "farm.boost_station": "🛰 Station d'équipe niv. {level} : +{percent}% de minage",
     "clan.btn_station": "🛰 Station d'équipe",
@@ -891,7 +908,7 @@ MINIAPP = {
     "resources": "🧰 Ressources",
     "bonusPct": "Bonus de minage permanent",
     "shuttle": "🚀 Navette assemblée",
-    "resHint": "Chaque victoire rapporte la ressource de son jeu. Dépense-les à l'atelier.",
+    "resHint": "Chaque victoire rapporte la ressource de son jeu, avec l'Illimité — sans limites. Dépense-les à l'atelier.",
     "bonusReady": "🎁 RÉCUPÉRER LA CÔTELETTE DU JOUR",
     "bonusWait": "⏳ Bonus dans {h} h {m} min",
     "bonusDone": "🎉 Côtelette ajoutée !",
@@ -944,6 +961,7 @@ MINIAPP = {
     "eff_shield": "personne ne peut te raider",
     "eff_cutlet": "1 cyber-côtelette dans ton stock (cher : le carburant est moins cher à la boutique)",
     "eff_armor": "+10% de minage par niveau pour 30 jours",
+    "eff_storage": "plus de place pour les ressources — pour toujours",
     "eff_shuttle": "rien qu'à toi : commission de 5% sur tes ventes et ordres jusqu'à 500 côtelettes — pour toujours",
     "raid_title": "🏴‍☠️ RAIDS",
     "raid_how": "📖 Comment ça marche",
@@ -1058,6 +1076,24 @@ MINIAPP = {
     "featureOff": "⚙️ Section en maintenance",
     "done": "C'est fait !",
     "loading": "⏳ Chargement…",
+    "tab_friends": "🤝 Amis",
+    "ref_title": "🤝 INVITE TES AMIS",
+    "ref_rules": "+{s} 🪙 tout de suite pour chaque ami. Quand ton ami joue {r} manches — encore +{q} 🪙 et {c} 🥩 cyber-côtelette.",
+    "ref_copy": "📋 Copier",
+    "ref_copied": "Lien copié !",
+    "ref_share": "📤 Partager",
+    "ref_stats": "📊 TON RÉSEAU",
+    "ref_invited": "invités",
+    "ref_qualified": "actifs",
+    "ref_earned": "gagnées",
+    "ref_cutlets": "🥩 Côtelettes reçues pour tes amis actifs : {n}",
+    "ref_top": "🏆 QUI A LE PLUS D'AMIS",
+    "ref_topHint": "✅ — amis actifs (30 manches jouées), 👥 — tous les invités",
+    "ref_empty": "Le classement est encore vide — sois le premier ou la première !",
+    "wk_title": "🔥 RECETTES DE LA SEMAINE",
+    "wk_hint": "Recettes éphémères : elles apparaissent quand le hub le décide, puis disparaissent. Fabrique-les à temps !",
+    "wk_left": "fabrications restantes cette semaine : {n} sur {m}",
+    "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu",
 }
 
 COMMANDS = {

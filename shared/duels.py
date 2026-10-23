@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from shared.economy import DUEL_TABLES, duel_payout
 from shared.economy import DUEL_RESOURCE_REWARD
 from shared.ledger import InsufficientFunds, change_balance
-from shared.resources import change_resource
+from shared.resources import change_resource, resource_capacity
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +168,8 @@ async def _resolve_round(conn, duel) -> MoveResult:
     await change_balance(conn, winner_id, payout, "duel_win", str(duel["duel_id"]))
     metal = DUEL_RESOURCE_REWARD.get(duel["stake"], 0)
     if metal:
-        await change_resource(conn, winner_id, "metal", metal, "duel_win", str(duel["duel_id"]))
+        await change_resource(conn, winner_id, "metal", metal, "duel_win", str(duel["duel_id"]),
+                              cap=await resource_capacity(conn, winner_id))
     await conn.execute(
         "UPDATE duels SET status = 'finished', winner_id = $2, finished_at = NOW() WHERE duel_id = $1",
         duel["duel_id"], winner_id)

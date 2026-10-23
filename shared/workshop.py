@@ -20,7 +20,9 @@ from datetime import datetime
 from shared.economy import (
     ARMOR_DAYS,
     ARMOR_MAX_LEVEL,
+    RES_CAPACITY_BASE,
     WORKSHOP_RECIPES,
+    next_storage_level,
     armor_cost,
     armor_level_active,
     extend_expiry,
@@ -64,7 +66,7 @@ class CraftResult:
     stock: dict[str, int] = field(default_factory=dict)
 
 
-def recipe_cost(recipe_id: str, armor_level: int = 0) -> dict[str, int] | None:
+def recipe_cost(recipe_id: str, armor_level: int = 0, capacity: int = RES_CAPACITY_BASE) -> dict[str, int] | None:
     """
     Цена рецепта в ресурсах; для брони зависит от ДЕЙСТВУЮЩЕГО уровня
     (на максимуме — цена продления максимального уровня). None — рецепта нет.
@@ -74,6 +76,9 @@ def recipe_cost(recipe_id: str, armor_level: int = 0) -> dict[str, int] | None:
         return None
     if recipe["effect"] == "armor":
         return armor_cost(armor_level + 1)
+    if recipe["effect"] == "storage":
+        nxt = next_storage_level(capacity)
+        return nxt[1] if nxt else None
     return dict(recipe["cost"])
 
 
@@ -106,9 +111,9 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime) -> CraftResul
         raise WorkshopError("ws.err_shuttle_owned")
     armor_now = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
 
-    cost = recipe_cost(recipe_id, armor_now)
+    cost = recipe_cost(recipe_id, armor_now, user["res_capacity"])
     if cost is None:
-        raise WorkshopError("ws.err_unknown")
+        raise WorkshopError("ws.err_storage_max" if effect == "storage" else "ws.err_unknown")
     coins = recipe_coins(recipe_id)
     if coins and user["balance"] < coins:
         raise WorkshopError("ws.err_coins", need=coins, have=user["balance"])
@@ -141,5 +146,8 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime) -> CraftResul
                            user_id, result.level, result.until)
     elif effect == "shuttle":
         await conn.execute("UPDATE users SET has_shuttle = TRUE WHERE user_id = $1", user_id)
+    elif effect == "storage":
+        result.level = next_storage_level(user["res_capacity"])[0]   # новая вместимость
+        await conn.execute("UPDATE users SET res_capacity = $2 WHERE user_id = $1", user_id, result.level)
     logger.info("[WORKSHOP] user=%s crafted %s cost=%s", user_id, recipe_id, cost)
     return result

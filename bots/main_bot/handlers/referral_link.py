@@ -12,7 +12,8 @@ from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 
 from shared.database import db
-from shared.economy import REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFY_ROUNDS, REFERRAL_SIGNUP_BONUS
+from shared.economy import (REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFIED_CUTLETS, REFERRAL_QUALIFY_ROUNDS,
+                            REFERRAL_SIGNUP_BONUS)
 from shared.locales import t
 
 router = Router()
@@ -37,7 +38,8 @@ def _referral_text(lang: str, link: str, invited: int, earned: int) -> str:
     return (t(lang, "ref.text", link=link, invited=invited, earned=earned,
               bonus=REFERRAL_SIGNUP_BONUS)
             + "\n\n" + t(lang, "ref.qualified_line",
-                         rounds=REFERRAL_QUALIFY_ROUNDS, bonus=REFERRAL_QUALIFIED_BONUS))
+                         rounds=REFERRAL_QUALIFY_ROUNDS, bonus=REFERRAL_QUALIFIED_BONUS,
+                         cutlets=REFERRAL_QUALIFIED_CUTLETS))
 
 
 @router.message(Command("invite"))

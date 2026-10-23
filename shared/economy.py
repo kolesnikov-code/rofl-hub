@@ -20,6 +20,10 @@ REFERRAL_SHARE_DAYS = 365
 # когда сыграл 30 раундов; рефереру — ещё +1000, строго один раз (users.qualified_at).
 REFERRAL_QUALIFY_ROUNDS = 30
 REFERRAL_QUALIFIED_BONUS = 1000
+# + кибер-котлета рефереру за АКТИВНОГО друга (решение владельца 25.10): котлета для Бурильщика,
+# а у кого его нет — повод продать её на бирже и заходить каждый день.
+REFERRAL_QUALIFIED_CUTLETS = 1
+REFERRAL_TOP_LIMIT = 20       # рейтинг «у кого больше друзей» в приложении
 
 # --------------------------------------------------------------------------
 # Продуктовая аналитика
@@ -183,7 +187,24 @@ GAME_RESOURCE = {          # игра → ресурс за победу
 RESOURCE_PER_WIN = {"rps": 1, "hl": 1, "quiz": 1, "safe": 3}
 DUEL_RESOURCE_REWARD = {10: 2, 100: 4, 1000: 8}   # ⛏ Металл победителю дуэли по столу
 QUEST_RESOURCE_BUNDLE = 5     # каждого ресурса за ПЕРВОЕ прохождение квеста
-RESOURCE_MAX_STOCK = 100_000  # потолок запаса на ресурс (защита от переполнения)
+RESOURCE_MAX_STOCK = 100_000  # технический потолок запаса на ресурс (защита от переполнения)
+# СКЛАД С ЛИМИТОМ (решение владельца 25.10): добыча сверх вместимости пропадает — ресурсы
+# не лежат мёртвым грузом, их тратят или продают на бирже. Расширение — в мастерской.
+RES_CAPACITY_BASE = 500           # вместимость на КАЖДЫЙ ресурс
+STORAGE_LEVELS: tuple[tuple[int, dict], ...] = (   # (новая вместимость, цена расширения)
+    (1000, {"metal": 150, "parts": 150}),
+    (2000, {"metal": 300, "hydrogen": 100, "crystal": 100, "parts": 300}),
+    (5000, {"metal": 800, "hydrogen": 400, "crystal": 400, "parts": 800}),
+    (10000, {"metal": 1500, "hydrogen": 1500, "crystal": 1500, "parts": 1500}),
+)
+
+
+def next_storage_level(capacity: int) -> tuple[int, dict] | None:
+    """Следующее расширение склада или None, если максимум."""
+    for cap, cost in STORAGE_LEVELS:
+        if cap > capacity:
+            return cap, dict(cost)
+    return None
 
 # --------------------------------------------------------------------------
 # МАСТЕРСКАЯ: рецепты из ресурсов. id → цена {ресурс: кол-во} и эффект.
@@ -199,6 +220,7 @@ WORKSHOP_RECIPES: dict[str, dict] = {
     # синтез нужен лишь как мотивация «котлета есть — заведу Бурильщика».
     "cutlet": {"cost": {"metal": 50, "hydrogen": 50, "crystal": 50, "parts": 50}, "effect": "cutlet", "qty": 1},
     "armor": {"cost": None, "effect": "armor"},       # цена зависит от уровня (ARMOR_LEVEL_COSTS)
+    "storage": {"cost": None, "effect": "storage"},   # расширение склада (STORAGE_LEVELS)
     # Шаттл: 1000 каждого ресурса + 1000 🪙 (решение владельца 24.10)
     "shuttle": {"cost": {"metal": 1000, "hydrogen": 1000, "crystal": 1000, "parts": 1000},
                 "coins": 1000, "effect": "shuttle"},

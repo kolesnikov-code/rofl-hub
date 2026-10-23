@@ -22,6 +22,7 @@ from shared.economy import (
     EVENTS_RETENTION_DAYS,
     PROMOTER_CODE_MAX_LEN,
     REFERRAL_QUALIFIED_BONUS,
+    REFERRAL_QUALIFIED_CUTLETS,
     REFERRAL_QUALIFY_ROUNDS,
     utcnow,
 )
@@ -110,6 +111,9 @@ async def qualify_referral_if_due(conn, user_id: int, games_played: int) -> int 
     try:
         await change_balance(conn, referrer_id, REFERRAL_QUALIFIED_BONUS,
                              "referral_qualified", str(user_id))
+        if REFERRAL_QUALIFIED_CUTLETS:
+            await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $2 WHERE user_id = $1",
+                               referrer_id, REFERRAL_QUALIFIED_CUTLETS)
     except Exception:
         # Реферер удалён/сломан — квалификацию фиксируем, бонус сгорает осознанно
         logger.exception("[REFERRAL_QUALIFIED] бонус рефереру %s не начислен", referrer_id)

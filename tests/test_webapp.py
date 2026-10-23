@@ -77,7 +77,7 @@ def test_build_me_payload_shape():
         "boost_nuclear_until": now + timedelta(days=1), "boost_nitrogen_until": None,
         "drone_until": None, "last_bonus_claim_at": now - timedelta(hours=25),
         "created_at": now - timedelta(days=10), "intern_claimed": False,
-        "farm_armor_level": 0, "armor_until": None, "has_shuttle": False,
+        "farm_armor_level": 0, "armor_until": None, "has_shuttle": False, "res_capacity": 500,
     }
     miners = [
         MinerState(1, "junior", now - timedelta(days=1), now + timedelta(days=29)),

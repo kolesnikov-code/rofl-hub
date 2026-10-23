@@ -31,7 +31,7 @@ async def conn():
                         "miners, duels, battles, vip_aliases, quest_progress, events, "
                         "daily_activity, promoters, metrics_snapshots, market_orders, "
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
-                        "team_stations, team_donations, market_trades, resource_swaps RESTART IDENTITY")
+                        "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -1179,3 +1179,83 @@ async def test_resource_swaps_escrow_accept_cancel(conn):
     swap2 = await create_swap(conn, 910, "metal", 40, "parts", 1)
     await cancel_swap(conn, 910, swap2)
     assert (await get_resources(conn, 910))["metal"] == 40
+
+
+# ---------------------------------------------------------------- 25.10: склад с лимитом, рецепты недели, рефералка
+async def test_storage_cap_clips_mining_but_not_transfers(conn, global_db):
+    pytest.importorskip("aiogram")
+    from datetime import timedelta
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    from shared.economy import utcnow
+    from shared.market import MarketError, fill_order, place_order
+    from shared.resources import change_resource, get_resources, grant_bundle
+    from shared.workshop import craft
+    await _mk_user(conn, 920, 100, unlimit_until=utcnow() + timedelta(hours=1))
+    await _mk_user(conn, 921, 10_000)
+    await grant_bundle(conn, 920, {"parts": 499}, "test")
+
+    ok, text, _ = await execute_solo_game_payout(920, True, "safe")       # +3 детали, влезает только 1
+    assert ok and "📦" in text
+    assert (await get_resources(conn, 920))["parts"] == 500
+    rows = await conn.fetch("SELECT delta FROM resource_ledger WHERE user_id = 920 AND reason = 'game_win:safe'")
+    assert [r["delta"] for r in rows] == [1]                                # в журнал — фактически полученное
+
+    # Безлимит: победы сверх суточного лимита дают ресурс (16 побед в Больше/Меньше при лимите 15)
+    for _ in range(16):
+        ok, _, _ = await execute_solo_game_payout(920, True, "hl")
+        assert ok
+    assert (await get_resources(conn, 920))["hydrogen"] == 16
+
+    # Биржа: купить ресурс сверх вместимости нельзя — проверка до списания монет
+    await grant_bundle(conn, 921, {"parts": 100}, "test")
+    ask = await place_order(conn, 921, "parts", "sell", 10, 2)
+    with pytest.raises(MarketError) as e:
+        await fill_order(conn, 920, ask, 10)
+    assert e.value.key == "mk.err_storage_full"
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 920") >= 100
+
+    # Расширение склада: 500 → 1000, после него добыча снова идёт
+    await grant_bundle(conn, 920, {"metal": 150}, "test")
+    res = await craft(conn, 920, "storage", utcnow())
+    assert res.level == 1000
+    assert await conn.fetchval("SELECT res_capacity FROM users WHERE user_id = 920") == 1000
+    assert await change_resource(conn, 920, "parts", 5, "test", cap=1000) == 350 + 5   # 500 - 150 потрачено + 5
+
+
+async def test_weekly_recipe_needs_toggle_and_respects_limit(conn):
+    from datetime import timedelta
+    from shared.economy import utcnow
+    from shared.resources import get_resources, grant_bundle
+    from shared.weekly_recipes import WEEKLY_RECIPES, WeeklyError, craft_weekly
+    now = utcnow()
+    await _mk_user(conn, 930, 0)
+    await grant_bundle(conn, 930, {"metal": 400}, "test")
+    with pytest.raises(WeeklyError) as e:
+        await craft_weekly(conn, 930, "w_cutlet_metal", now, enabled=False)
+    assert e.value.key == "wk.err_gone"
+    res = await craft_weekly(conn, 930, "w_cutlet_metal", now, enabled=True)
+    assert res["left"] == 0
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 930") == 1
+    with pytest.raises(WeeklyError) as e:
+        await craft_weekly(conn, 930, "w_cutlet_metal", now, enabled=True)
+    assert e.value.key == "wk.err_limit"
+    # Новая неделя — лимит снова доступен
+    await craft_weekly(conn, 930, "w_cutlet_metal", now + timedelta(days=7), enabled=True)
+    # Комбо с бустом и щитом, переплавка ресурса
+    await grant_bundle(conn, 930, {"metal": 40}, "test")
+    await craft_weekly(conn, 930, "w_conv_metal_hydro", now, enabled=True)
+    assert (await get_resources(conn, 930))["hydrogen"] == WEEKLY_RECIPES["w_conv_metal_hydro"]["effects"][0]["qty"]
+    await grant_bundle(conn, 930, {"metal": 15, "crystal": 15}, "test")
+    await craft_weekly(conn, 930, "w_shield_48h", now, enabled=True)
+    assert await conn.fetchval("SELECT raid_shield_until FROM users WHERE user_id = 930") == now + timedelta(hours=48)
+
+
+async def test_qualified_referral_gives_coins_and_a_cutlet(conn):
+    from shared.analytics import qualify_referral_if_due
+    from shared.economy import REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFIED_CUTLETS, REFERRAL_QUALIFY_ROUNDS
+    await _mk_user(conn, 940, 0)
+    await _mk_user(conn, 941, 0, referred_by=940)
+    assert await qualify_referral_if_due(conn, 941, REFERRAL_QUALIFY_ROUNDS) == 940
+    row = await conn.fetchrow("SELECT balance, inv_cutlets FROM users WHERE user_id = 940")
+    assert (row["balance"], row["inv_cutlets"]) == (REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFIED_CUTLETS)
+    assert await qualify_referral_if_due(conn, 941, REFERRAL_QUALIFY_ROUNDS + 5) is None   # ровно один раз

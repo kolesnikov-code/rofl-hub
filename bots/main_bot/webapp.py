@@ -77,6 +77,7 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now,
         "armor_until": _iso(user["armor_until"]) if armor else None,
         "has_shuttle": bool(user["has_shuttle"]),
         "station_level": station_level,
+        "res_capacity": user["res_capacity"],
         "bonus_percent": bonus,
         "quiz": {
             "level": quiz_level,

@@ -505,11 +505,11 @@ RU: dict[str, str] = {
     "ref.share_text": "Залетай в игровую экосистему ROFL HUB!",
     "ref.qualified_line": (
         "⭐ <b>Двойная выгода:</b> когда приглашённый друг сыграет {rounds} раундов — "
-        "тебе прилетит ещё <b>+{bonus} 🪙</b>!"
+        "тебе прилетит ещё <b>+{bonus} 🪙</b> и <b>{cutlets} 🥩 кибер-котлета</b>!"
     ),
     "ref.qualified_notify": (
         "🤝 <b>Твой друг разыгрался: уже {rounds} раундов!</b>\n"
-        "За квалифицированного реферала начислено <b>+{bonus} 🪙</b>. Зови ещё!"
+        "За квалифицированного реферала начислено <b>+{bonus} 🪙</b> и <b>{cutlets} 🥩 кибер-котлета</b> на склад. Зови ещё!"
     ),
 
     # ---------------- переводы ----------------
@@ -676,6 +676,21 @@ RU: dict[str, str] = {
     "sw.err_same": "❌ Нельзя менять ресурс на тот же самый.",
     "sw.done_notify": "🔄 <b>Обмен #{id} состоялся!</b> Отдано {give}, получено {want}.",
     "ws.err_coins": "🔒 Не хватает монет: нужно {need} 🪙, на балансе {have} 🪙.",
+    "wk.eff_nitrogen": "❄️ Азот +40% на {h} ч",
+    "wk.eff_nuclear": "☢️ Ядерный x5 на {h} ч",
+    "wk.eff_drone": "🛸 Мастер-дрон на {h} ч",
+    "wk.eff_shield": "🛡 Щит на {h} ч",
+    "wk.eff_unlimit": "⚡ Безлимит игр на {h} ч",
+    "wk.eff_cutlet": "🥩 Котлета ×{n}",
+    "wk.eff_resource": "{icon} +{n}",
+    "wk.err_gone": "⏳ Этот рецепт недели уже недоступен.",
+    "wk.err_limit": "🔒 Лимит этого рецепта на неделе исчерпан ({limit}). Новая неделя — с понедельника 00:00 UTC.",
+    "games.resource_full": "📦 Склад {icon} полон ({cap}) — излишек пропадает. Трать, продавай или расширь склад в мастерской.",
+    "mk.err_storage_full": "📦 На складе не хватит места: свободно {free}. Расширь склад в мастерской.",
+    "mk.err_buyer_full": "📦 У покупателя полон склад — сделку сейчас не провести (свободно {free}).",
+    "ws.recipe_storage": "Расширить склад до {cap}",
+    "ws.done_storage": "📦 <b>Склад расширен:</b> до {cap} каждого ресурса. Это навсегда.",
+    "ws.err_storage_max": "📦 Склад уже максимального размера.",
     "farm.boost_armor": "🛡 Кибер-броня ур. {level}: +{percent}% к добыче до {until} UTC",
     "farm.boost_station": "🛰 Станция команды ур. {level}: +{percent}% к добыче",
     "clan.btn_station": "🛰 Станция команды",
@@ -1319,11 +1334,11 @@ EN: dict[str, str] = {
     "ref.share_text": "Join the ROFL HUB gaming ecosystem!",
     "ref.qualified_line": (
         "⭐ <b>Double reward:</b> when an invited friend plays {rounds} rounds, "
-        "you get another <b>+{bonus} 🪙</b>!"
+        "you get another <b>+{bonus} 🪙</b> and <b>{cutlets} 🥩 cyber-cutlet</b>!"
     ),
     "ref.qualified_notify": (
         "🤝 <b>Your friend is hooked: {rounds} rounds already!</b>\n"
-        "You've earned <b>+{bonus} 🪙</b> for a qualified referral. Invite more!"
+        "You've earned <b>+{bonus} 🪙</b> and <b>{cutlets} 🥩 cyber-cutlet</b> for a qualified referral. Invite more!"
     ),
 
     # ---------------- transfers ----------------
@@ -1490,6 +1505,21 @@ EN: dict[str, str] = {
     "sw.err_same": "❌ You can't swap a resource for the same one.",
     "sw.done_notify": "🔄 <b>Swap #{id} completed!</b> Given {give}, received {want}.",
     "ws.err_coins": "🔒 Not enough coins: {need} 🪙 needed, you have {have} 🪙.",
+    "wk.eff_nitrogen": "❄️ Nitrogen +40% for {h} h",
+    "wk.eff_nuclear": "☢️ Nuclear x5 for {h} h",
+    "wk.eff_drone": "🛸 Master Drone for {h} h",
+    "wk.eff_shield": "🛡 Shield for {h} h",
+    "wk.eff_unlimit": "⚡ Unlimited games for {h} h",
+    "wk.eff_cutlet": "🥩 Cutlet ×{n}",
+    "wk.eff_resource": "{icon} +{n}",
+    "wk.err_gone": "⏳ This recipe of the week is no longer available.",
+    "wk.err_limit": "🔒 This recipe's weekly limit is used up ({limit}). The new week starts Monday 00:00 UTC.",
+    "games.resource_full": "📦 {icon} storage is full ({cap}) — extra loot is lost. Spend, sell or expand storage in the workshop.",
+    "mk.err_storage_full": "📦 Not enough storage space: {free} free. Expand storage in the workshop.",
+    "mk.err_buyer_full": "📦 The buyer's storage is full — the deal can't go through now ({free} free).",
+    "ws.recipe_storage": "Expand storage to {cap}",
+    "ws.done_storage": "📦 <b>Storage expanded:</b> up to {cap} of each resource. Permanent.",
+    "ws.err_storage_max": "📦 Storage is already at max size.",
     "farm.boost_armor": "🛡 Cyber-armor lvl {level}: +{percent}% mining until {until} UTC",
     "farm.boost_station": "🛰 Team station lvl {level}: +{percent}% mining",
     "clan.btn_station": "🛰 Team station",

@@ -485,10 +485,10 @@ STRINGS = {
     "ref.btn_share": "📣 Link teilen",
     "ref.share_text": "Komm ins Spiele-Ökosystem von ROFL HUB!",
     "ref.qualified_line": ("⭐ <b>Doppelte Belohnung:</b> Wenn ein eingeladener Freund {rounds} "
-                           "Runden spielt, bekommst du weitere <b>+{bonus} 🪙</b>!"),
+                           "Runden spielt, bekommst du weitere <b>+{bonus} 🪙</b> und <b>{cutlets} 🥩 Cyber-Frikadelle</b>!"),
     "ref.qualified_notify": ("🤝 <b>Dein Freund ist am Ball: schon {rounds} Runden!</b>\n"
-                             "Du hast <b>+{bonus} 🪙</b> für einen qualifizierten Freund "
-                             "erhalten. Lade noch mehr ein!"),
+                             "Du hast <b>+{bonus} 🪙</b> und <b>{cutlets} 🥩 Cyber-Frikadelle</b> fürs Lager "
+                             "für einen qualifizierten Freund erhalten. Lade noch mehr ein!"),
 
     # ---------------- Überweisungen ----------------
     "tr.help": (
@@ -654,6 +654,21 @@ STRINGS = {
     "sw.err_same": "❌ Eine Ressource lässt sich nicht gegen dieselbe tauschen.",
     "sw.done_notify": "🔄 <b>Tausch #{id} abgeschlossen!</b> Abgegeben: {give}, erhalten: {want}.",
     "ws.err_coins": "🔒 Nicht genug Münzen: {need} 🪙 nötig, auf dem Konto {have} 🪙.",
+    "wk.eff_nitrogen": "❄️ Stickstoff +40% für {h} Std.",
+    "wk.eff_nuclear": "☢️ Nuklear x5 für {h} Std.",
+    "wk.eff_drone": "🛸 Master-Drohne für {h} Std.",
+    "wk.eff_shield": "🛡 Schild für {h} Std.",
+    "wk.eff_unlimit": "⚡ Spiele ohne Limit für {h} Std.",
+    "wk.eff_cutlet": "🥩 Frikadelle ×{n}",
+    "wk.eff_resource": "{icon} +{n}",
+    "wk.err_gone": "⏳ Dieses Rezept der Woche ist nicht mehr verfügbar.",
+    "wk.err_limit": "🔒 Das Wochenlimit für dieses Rezept ist ausgeschöpft ({limit}). Die neue Woche beginnt Montag 00:00 UTC.",
+    "games.resource_full": "📦 Lager für {icon} ist voll ({cap}) — der Überschuss geht verloren. Gib aus, verkauf oder erweitere das Lager in der Werkstatt.",
+    "mk.err_storage_full": "📦 Nicht genug Platz im Lager: {free} frei. Erweitere das Lager in der Werkstatt.",
+    "mk.err_buyer_full": "📦 Das Lager des Käufers ist voll — der Deal geht gerade nicht durch ({free} frei).",
+    "ws.recipe_storage": "Lager auf {cap} erweitern",
+    "ws.done_storage": "📦 <b>Lager erweitert:</b> bis zu {cap} von jeder Ressource. Für immer.",
+    "ws.err_storage_max": "📦 Das Lager hat schon die maximale Größe.",
     "farm.boost_armor": "🛡 Cyber-Panzerung Level {level}: +{percent}% Ertrag bis {until} UTC",
     "farm.boost_station": "🛰 Team-Station Level {level}: +{percent}% Ertrag",
     "clan.btn_station": "🛰 Team-Station",
@@ -866,7 +881,7 @@ MINIAPP = {
     "perHour": "{v} 🪙/Std.", "fridge": "Kühlschrank", "inv": "Frikadellen im Lager",
     "burnout": "Nächster Ablauf", "boosts": "Aktive Boosts", "none": "keine",
     "resources": "🧰 Ressourcen", "bonusPct": "Dauerhafter Schürf-Bonus", "shuttle": "🚀 Shuttle gebaut",
-    "resHint": "Jeder Sieg bringt die Ressource seines Spiels. Setz sie in der Werkstatt ein.",
+    "resHint": "Jeder Sieg bringt die Ressource seines Spiels, mit Limit-Aufhebung — ohne Grenzen. Setz sie in der Werkstatt ein.",
     "bonusReady": "🎁 TÄGLICHE FRIKADELLE ABHOLEN",
     "bonusWait": "⏳ Bonus in {h} Std. {m} Min.", "bonusDone": "🎉 Frikadelle im Lager!",
     "team": "🏆 MEIN TEAM", "clan": "CLAN", "teamLabel": "Team", "captain": "👑 Du hast das Kommando!",
@@ -897,6 +912,7 @@ MINIAPP = {
     "eff_nitrogen": "+40% Ertrag für alle Roboter", "eff_nuclear": "×5 Ertrag, Bohrer fressen ×3 Frikadellen",
     "eff_drone": "Roboter altern nicht", "eff_shield": "niemand kann dich überfallen",
     "eff_cutlet": "1 Cyber-Frikadelle ins Lager (teuer: Treibstoff ist im Shop günstiger)", "eff_armor": "+10% Ertrag pro Level für 30 Tage",
+    "eff_storage": "mehr Platz für Ressourcen — für immer",
     "eff_shuttle": "nur deins: 5% Gebühr auf deine Verkäufe und Orders bis 500 Frikadellen — für immer",
     "raid_title": "🏴‍☠️ RAIDS", "raid_how": "📖 So funktioniert's",
     "raid_rule1": "Du wählst ein Zeichen, das Ziel hat vorab eine Abwehrhaltung gesetzt. Schere-Stein-Papier entscheidet: ein Duell der Entscheidungen, keine Lotterie.",
@@ -947,6 +963,14 @@ MINIAPP = {
     "goals_streak": "🔥 Serie: {s} Tage · jeder {e}. Tag in Folge +{b} 🪙", "goals_claim": "🎁 TRUHE ABHOLEN",
     "goals_claimed": "🎁 Die heutige Truhe ist abgeholt. Morgen gibt's neue Ziele!", "goals_reset": "Die Ziele werden um 00:00 UTC erneuert",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · Serie {s} Tage",
+    "tab_friends": "🤝 Freunde", "ref_title": "🤝 LADE FREUNDE EIN",
+    "ref_rules": "Für jeden Freund sofort +{s} 🪙. Wenn ein Freund {r} Runden spielt — weitere +{q} 🪙 und {c} 🥩 Cyber-Frikadelle.",
+    "ref_copy": "📋 Kopieren", "ref_copied": "Link kopiert!", "ref_share": "📤 Teilen",
+    "ref_stats": "📊 DEIN NETZWERK", "ref_invited": "eingeladen", "ref_qualified": "aktiv", "ref_earned": "verdient",
+    "ref_cutlets": "🥩 Frikadellen für aktive Freunde erhalten: {n}", "ref_top": "🏆 WER HAT DIE MEISTEN FREUNDE",
+    "ref_topHint": "✅ — aktive Freunde (30 Runden gespielt), 👥 — alle Eingeladenen", "ref_empty": "Das Ranking ist noch leer — mach den Anfang!",
+    "wk_title": "🔥 REZEPTE DER WOCHE", "wk_hint": "Zeitlich begrenzte Rezepte: Sie erscheinen, wann der Hub es entscheidet, und verschwinden wieder. Schnapp sie dir rechtzeitig!",
+    "wk_left": "noch {n} von {m} Bauten diese Woche", "st_cap": "📦 Lager: bis zu {c} von jeder Ressource — überschüssiger Ertrag geht verloren",
     "featureOff": "⚙️ Dieser Bereich wird gerade gewartet", "done": "Fertig!", "loading": "⏳ Lädt…",
 }
 

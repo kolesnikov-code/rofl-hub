@@ -26,7 +26,7 @@ from shared.economy import (
 )
 from shared.ledger import change_balance
 from shared.locales import t
-from shared.resources import change_resource
+from shared.resources import change_resource, resource_capacity
 
 logger = logging.getLogger(__name__)
 
@@ -173,7 +173,8 @@ async def claim_chest(conn, user_id: int, goals: list[Goal], day: date) -> dict:
     coins = chest_coins(streak)
     kind = chest_resource_kind(user_id, day)
     await change_balance(conn, user_id, coins, "daily_chest", day.isoformat())
-    await change_resource(conn, user_id, kind, DAILY_CHEST_RESOURCE, "daily_chest", day.isoformat())
+    await change_resource(conn, user_id, kind, DAILY_CHEST_RESOURCE, "daily_chest", day.isoformat(),
+                          cap=await resource_capacity(conn, user_id))
     await conn.execute("UPDATE users SET goal_streak = $2, goal_last_claim = $3 WHERE user_id = $1",
                        user_id, streak, day)
     logger.info("[GOALS] chest user=%s day=%s coins=%s %s=%s streak=%s",

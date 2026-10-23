@@ -459,6 +459,17 @@ SCHEMA_STATEMENTS: list[str] = [
     """,
     "CREATE INDEX IF NOT EXISTS resource_swaps_open_idx ON resource_swaps (status, created_at);",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS armor_until TIMESTAMP WITH TIME ZONE;",
+    # --- 25.10: склад ресурсов с лимитом, рецепты недели ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS res_capacity INT NOT NULL DEFAULT 500;",
+    """
+    CREATE TABLE IF NOT EXISTS weekly_crafts (
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        recipe_id VARCHAR(32) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS weekly_crafts_user_idx ON weekly_crafts (user_id, recipe_id, created_at);",
     # Броня, собранная до 24.10 «навсегда», получает честные 30 дней с момента выкатки
     "UPDATE users SET armor_until = NOW() + INTERVAL '30 days' WHERE farm_armor_level > 0 AND armor_until IS NULL;",
     "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",

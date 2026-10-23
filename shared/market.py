@@ -37,7 +37,7 @@ from shared.economy import (
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
-from shared.resources import InsufficientResources, change_resource, lock_resources
+from shared.resources import InsufficientResources, change_resource, free_space, lock_resources
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +93,15 @@ async def _take_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref
         raise MarketError("mk.err_no_resource", have=e.have) from e
 
 
+async def _ensure_room(conn, user_id: int, asset: str, qty: int, key: str = "mk.err_storage_full") -> None:
+    """Ресурс купят/получат только если он влезет на склад (котлеты склад не ограничивает)."""
+    if asset == "cutlet":
+        return
+    room = await free_space(conn, user_id, asset)
+    if room < qty:
+        raise MarketError(key, free=room)
+
+
 async def _give_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref: str) -> None:
     if asset == "cutlet":
         await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $2 WHERE user_id = $1", user_id, qty)
@@ -126,6 +135,7 @@ async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price
         balance = await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", user_id)
         if balance < qty * price:
             raise MarketError("mk.err_insufficient", total=qty * price)
+        await _ensure_room(conn, user_id, asset, qty)
 
     order_id = await conn.fetchval(
         "INSERT INTO market_orders (seller_id, qty, price, asset, side) VALUES ($1, $2, $3, $4, $5) RETURNING id",
@@ -181,6 +191,8 @@ async def fill_order(conn, taker_id: int, order_id: int, qty: int) -> dict:
         raise MarketError("common.no_profile")
 
     total = qty * price
+    await _ensure_room(conn, taker_id if order["side"] == "sell" else maker_id, asset, qty,
+                       "mk.err_storage_full" if order["side"] == "sell" else "mk.err_buyer_full")
     if order["side"] == "sell":
         buyer_id, seller_id = taker_id, maker_id
         try:
@@ -318,6 +330,8 @@ async def accept_swap(conn, taker_id: int, swap_id: int) -> dict:
     if swap["maker_id"] == taker_id:
         raise MarketError("mk.err_own")
     await _lock_users(conn, [taker_id, swap["maker_id"]])
+    await _ensure_room(conn, taker_id, swap["give_kind"], swap["give_qty"])
+    await _ensure_room(conn, swap["maker_id"], swap["want_kind"], swap["want_qty"], "mk.err_buyer_full")
     first, second = sorted((taker_id, swap["maker_id"]))
     await lock_resources(conn, first)
     await lock_resources(conn, second)
