@@ -5,7 +5,7 @@
 # Кибер-Бурильщик -> Cyber-Foreur
 # кибер-котлета -> cyber-côtelette (кратко: côtelette)
 # Холодильник -> Frigo
-# склад (инвентарь) -> inventaire / stock
+# склад (инвентарь) -> stock (единый термин; не «entrepôt»/«inventaire»)
 # ферма -> ferme (Cyber-Ferme)
 # Ядерный Разгон x5 -> Boost Nucléaire x5
 # Азотное Охлаждение +40% -> Refroidissement à l'Azote +40%
@@ -131,7 +131,7 @@ STRINGS = {
         "• /my_stats — Tes statistiques des 30 derniers jours\n\n"
         "🚜 <b>CYBER-FERME ET AUTOMATISATION :</b>\n"
         "• /farm — Hub carburant : ravitaillement et vitesse de production des robots\n"
-        "• /shop — Marché : achat de mineurs, de côtelettes et d'améliorations du hub\n\n"
+        "• /shop — Boutique : achat de mineurs, de côtelettes et d'améliorations du hub\n\n"
         "🕹️ <b>SALLE DE JEU :</b>\n"
         "• /games — Hub inline de tous les jeux contre le bot\n"
         "• /quiz — Quiz de vitesse : 15 secondes par réponse, niveaux et bonus\n"
@@ -270,15 +270,15 @@ STRINGS = {
         "..................................................\n\n"
         "📦 <b>ÉTAT DU FRIGO AUTOMATIQUE :</b>\n"
         "🥩 Réserve de carburant : <b>{fridge} / {capacity}</b>\n"
-        "💼 Côtelettes dans l'inventaire : <code>{inv}</code>\n\n"
+        "💼 Côtelettes en stock : <code>{inv}</code>\n\n"
         "..................................................\n\n"
         "<i>💿 Important : les robots vivent 30 jours (le Maître-Drone met l'usure en pause). "
         "CHAQUE Cyber-Foreur consomme SA propre côtelette entière du frigo toutes les "
         "24 heures de travail : 3 robots — 3 côtelettes par jour. Surveille le ravitaillement !</i>"
     ),
-    "farm.bonus_ok": "🎁 Cyber-côtelette ajoutée à l'inventaire ! Reviens dans 24 heures.",
+    "farm.bonus_ok": "🎁 Cyber-côtelette ajoutée au stock ! Reviens dans 24 heures.",
     "farm.bonus_wait": "⏳ Bonus déjà récupéré ! Prochaine côtelette dans {hours} h {minutes} min.",
-    "farm.no_inv_cutlets": "❌ Tu n'as pas de cyber-côtelettes dans ton inventaire ! Achètes-en dans /shop",
+    "farm.no_inv_cutlets": "❌ Tu n'as pas de cyber-côtelettes dans ton stock ! Achètes-en dans /shop",
     "farm.fridge_full": "📦 Ton Frigo est déjà plein à craquer !",
 
     # ---------------- profil ----------------
@@ -573,7 +573,7 @@ STRINGS = {
     ),
 
     # ---------------- livraison ----------------
-    "dlv.cutlets": "🥩 Ajouté à l'inventaire : <b>{qty} côtelettes</b>.",
+    "dlv.cutlets": "🥩 Ajouté au stock : <b>{qty} côtelettes</b>.",
     "dlv.miner": "🤖 Le robot <b>« {name} »</b> a été livré à ta ferme.\n⏳ Durée de service : jusqu'au <b>{until} UTC</b>.",
     "dlv.miner_junior": "Robot Mineur",
     "dlv.miner_premium": "Cyber-Foreur",
@@ -590,7 +590,7 @@ STRINGS = {
     "dlv.intern_upgrade": "♾ Ton Robot Stagiaire est promu <b>Robot Mineur ÉTERNEL</b> : 5 🪙 par heure, sans expiration !",
     "dlv.err_no_intern": "Aucun Robot Stagiaire activé : active-le d'abord dans /farm.",
     "dlv.err_intern_refs": "L'amélioration exige {need} amis qualifiés (30 manches chacun) ; tu en as {have}.",
-    "mk.header": "📈 <b>BOURSE DES CÔTELETTES</b>\n..................................................\n\nOrdres ouverts : <b>{orders}</b> · côtelettes en vente : <b>{cutlets}</b> · meilleur prix : <b>{best}</b>\nCommission du hub : <b>{fee}%</b> par vente (brûlée — bouclier anti-inflation)\n🥩 Dans ton entrepôt : <b>{inv}</b> côtelettes\n\n{body}\n\n<i>Touche un ordre pour acheter. Pour vendre : /sell.</i>",
+    "mk.header": "📈 <b>BOURSE DES CÔTELETTES</b>\n..................................................\n\nOrdres ouverts : <b>{orders}</b> · côtelettes en vente : <b>{cutlets}</b> · meilleur prix : <b>{best}</b>\nCommission du hub : <b>{fee}%</b> par vente (brûlée — bouclier anti-inflation)\n🥩 Dans ton stock : <b>{inv}</b> côtelettes\n\n{body}\n\n<i>Touche un ordre pour acheter. Pour vendre : /sell.</i>",
     "mk.empty": "Aucune offre pour l'instant. Sois le premier : /sell quantité prix",
     "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> à <b>{price}</b> 🪙",
     "mk.btn_order": "🛒 #{id} : {qty} pcs à {price} 🪙",
@@ -602,24 +602,24 @@ STRINGS = {
     "mk.btn_qty": "{qty} pcs — {total} 🪙",
     "mk.btn_qty_all": "Tout, {qty} pcs — {total} 🪙",
     "mk.buy_toast": "Affaire conclue !",
-    "mk.buy_done": "✅ Acheté <b>{qty} côtelettes</b> pour <b>{total} 🪙</b>. Elles sont dans ton entrepôt : ravitaille tes Foreurs !",
+    "mk.buy_done": "✅ Acheté <b>{qty} côtelettes</b> pour <b>{total} 🪙</b>. Elles sont dans ton stock : ravitaille tes Foreurs !",
     "mk.sold_notify": "💰 <b>Bourse : vendu !</b> Ordre #{id} : {qty} pcs à {price}. Tu reçois <b>+{got} 🪙</b> (commission de {fee} brûlée).",
-    "mk.sell_help": "💰 <b>COMMENT VENDRE DES CÔTELETTES</b>\n\nCommande : <code>/sell quantité prix</code>\nExemple : <code>/sell 10 50</code> — 10 côtelettes à 50 🪙.\n\nLes côtelettes quittent l'entrepôt et attendent dans l'ordre (annulable à tout moment). Jusqu'à {max_qty} pcs par ordre et {max_orders} ordres ouverts. Une commission de {fee}% est brûlée à la vente.",
+    "mk.sell_help": "💰 <b>COMMENT VENDRE DES CÔTELETTES</b>\n\nCommande : <code>/sell quantité prix</code>\nExemple : <code>/sell 10 250</code> — 10 côtelettes à 250 🪙.\n\nLes côtelettes quittent ton stock et attendent dans l'ordre (annulable à tout moment). Jusqu'à {max_qty} pcs par ordre et {max_orders} ordres ouverts. Une commission de {fee}% est brûlée à la vente. Une côtelette ne se vend pas moins de {min} 🪙 : le carburant de la boutique en Étoiles est toujours plus avantageux que la bourse. Ressources, ordres d'achat et échanges : dans l'appli de jeu.",
     "mk.sell_confirm": "📝 Mettre en vente <b>{qty} côtelettes</b> à <b>{price}</b> 🪙 ?\nTotal : {total} · commission {fee} brûlée · tu recevras <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ METTRE EN VENTE",
     "mk.btn_cancel": "❌ Annuler",
     "mk.sell_toast": "Ordre publié !",
     "mk.sell_done": "✅ Ordre <b>#{id}</b> en ligne : {qty} pcs à {price} 🪙. Je te préviens dès la vente.",
     "mk.cancelled_toast": "Annulé",
-    "mk.cancel_text": "❌ <b>Annulé.</b> Les côtelettes restent dans ton entrepôt.",
+    "mk.cancel_text": "❌ <b>Annulé.</b> Les côtelettes restent dans ton stock.",
     "mk.my_header": "📋 <b>TES ORDRES</b>\n\n",
     "mk.my_line": "🥩 #{id} · {qty} pcs à {price} 🪙",
     "mk.my_empty": "📋 Tu n'as aucun ordre ouvert.",
     "mk.btn_cancel_order": "❌ Retirer l'ordre #{id}",
-    "mk.order_cancelled": "↩️ Ordre #{id} retiré : <b>{qty} côtelettes</b> de retour dans l'entrepôt.",
+    "mk.order_cancelled": "↩️ Ordre #{id} retiré : <b>{qty} côtelettes</b> de retour dans le stock.",
     "mk.err_qty": "❌ Quantité : de 1 à {max} côtelettes par ordre.",
-    "mk.err_price": "❌ Prix : de {min} à {max} 🪙 la côtelette.",
-    "mk.err_no_cutlets": "❌ Seulement {have} côtelettes dans l'entrepôt. Celles du frigo ne se vendent pas — voir /farm.",
+    "mk.err_price": "❌ Prix : de {min} à {max} 🪙 l'unité.",
+    "mk.err_no_cutlets": "❌ Seulement {have} côtelettes en stock. Celles du frigo ne se vendent pas — voir /farm.",
     "mk.err_too_many": "❌ Limite : {max} ordres ouverts maximum. Retire-en un dans « Mes ordres ».",
     "mk.err_not_found": "❌ Cet ordre est déjà clos.",
     "mk.err_own": "🤨 Tu ne peux pas acheter ton propre ordre.",
@@ -647,7 +647,13 @@ STRINGS = {
     "app.goto_raids": "🏴‍☠️ Les <b>Raids</b> vivent dans l'appli de jeu : reconnaissance, posture de défense et revanche.",
     "app.goto_station": "🛰 La <b>Station d'équipe</b> vit dans l'appli de jeu : progression, dons et bonus pour toute l'équipe.",
     "app.goto_market": "📈 La <b>Bourse des côtelettes</b> est plus pratique dans l'appli de jeu : offres, vente et tes ordres sur un seul écran.",
-    "farm.boost_armor": "🛡 Cyber-Armure niv. {level} : +{percent}% de minage pour toujours",
+    "mk.err_asset": "❌ Cet article n'existe pas à la bourse.",
+    "mk.err_no_resource": "❌ Pas assez de cette ressource : tu n'en as que {have} en stock.",
+    "mk.bid_filled_notify": "🙋 <b>Bourse : ordre d'achat exécuté !</b> Ordre #{id} : tu as acheté <b>+{qty} {icon}</b> à {price} 🪙.",
+    "sw.err_same": "❌ Impossible d'échanger une ressource contre la même.",
+    "sw.done_notify": "🔄 <b>Échange #{id} conclu !</b> Donné : {give}, reçu : {want}.",
+    "ws.err_coins": "🔒 Pas assez de pièces : il faut {need} 🪙, tu as {have} 🪙.",
+    "farm.boost_armor": "🛡 Cyber-Armure niv. {level} : +{percent}% de minage jusqu'au {until} UTC",
     "farm.boost_station": "🛰 Station d'équipe niv. {level} : +{percent}% de minage",
     "clan.btn_station": "🛰 Station d'équipe",
 
@@ -658,7 +664,7 @@ STRINGS = {
         "🧰 Tes ressources : {stock}\n"
         "⛏ Métal — Chifoumi et duels · 💧 Hydrogène — Plus/Moins · "
         "💎 Cristaux — Quiz · ⚙️ Composants — Cyber-Coffre. Les quêtes donnent un lot complet.\n\n"
-        "🛡 Cyber-Armure : <b>niveau {armor}/{armor_max}</b> (+{armor_pct}% de minage par niveau, pour toujours)\n"
+        "🛡 Cyber-Armure : <b>niveau {armor}/{armor_max}</b> (+{armor_pct}% de minage par niveau, pour 30 jours)\n"
         "🚀 Navette : <b>{shuttle}</b> — commission de la bourse {shuttle_fee}%, jusqu'à {shuttle_qty} côtelettes par ordre\n\n"
         "<i>✅ — assez de ressources, 🔒 — pas encore. Une pression et c'est fait.</i>"
     ),
@@ -681,9 +687,9 @@ STRINGS = {
     "ws.done_nuclear": "☢️ <b>Boost Nucléaire x5</b> actif jusqu'à {until} UTC. Les Foreurs mangent ×3 côtelettes !",
     "ws.done_drone": "🛸 Le <b>Maître-Drone</b> protège tes robots jusqu'à {until} UTC.",
     "ws.done_shield": "🛡 Le <b>Bouclier anti-raids</b> tient jusqu'à {until} UTC. Tes ressources sont à l'abri.",
-    "ws.done_cutlet": "🥩 Synthétisé : <b>+{qty} cyber-côtelette</b> dans ton entrepôt. Ravitaille dans /farm !",
-    "ws.done_armor": "🛡 <b>Cyber-Armure niveau {level} !</b> Minage de la ferme : <b>+{percent}%</b> pour toujours.",
-    "ws.done_shuttle": "🚀 <b>Navette assemblée !</b> La commission de la bourse passe à {fee}%, jusqu'à {qty} côtelettes par ordre. Et c'est définitif.",
+    "ws.done_cutlet": "🥩 Synthétisé : <b>+{qty} cyber-côtelette</b> dans ton stock. Ravitaille dans /farm !",
+    "ws.done_armor": "🛡 <b>Cyber-Armure niveau {level} !</b> Minage de la ferme : <b>+{percent}%</b> pour 30 jours.",
+    "ws.done_shuttle": "🚀 <b>Navette assemblée !</b> La commission sur tes ventes passe à {fee}%, jusqu'à {qty} côtelettes par ordre. La Navette n'appartient qu'à toi, pour toujours.",
     "ws.err_unknown": "❌ Cette recette n'existe pas.",
     "ws.err_resources": "🔒 Pas assez : {kind} — il en faut {need}, tu en as {have}. Récolte-en dans les jeux !",
     "ws.err_shuttle_owned": "🚀 La Navette est déjà assemblée — une seule par joueur.",
@@ -929,16 +935,16 @@ MINIAPP = {
     "ws_owned": "✅ Déjà acquis",
     "ws_crafted": "C'est fait ! L'amélioration fonctionne déjà.",
     "ws_armor": "🛡 Cyber-Armure",
-    "ws_armorLvl": "niveau {l}/{m} · +{p}% de minage par niveau",
+    "ws_armorLvl": "niveau {l}/{m} · +{p}% par niveau pour 30 jours",
     "ws_shuttleOn": "🚀 Navette assemblée : commission de la bourse {fee}%",
     "ws_shuttleOff": "🚀 Navette non assemblée : commission de la bourse {fee}%",
     "eff_nitrogen": "+40% de minage pour tous les robots",
     "eff_nuclear": "×5 de minage, les Foreurs mangent ×3 côtelettes",
     "eff_drone": "les robots ne vieillissent pas",
     "eff_shield": "personne ne peut te raider",
-    "eff_cutlet": "1 cyber-côtelette dans ton stock",
-    "eff_armor": "+10% de minage pour toujours",
-    "eff_shuttle": "commission de la bourse divisée par deux, ordres jusqu'à 500 côtelettes — pour toujours",
+    "eff_cutlet": "1 cyber-côtelette dans ton stock (cher : le carburant est moins cher à la boutique)",
+    "eff_armor": "+10% de minage par niveau pour 30 jours",
+    "eff_shuttle": "rien qu'à toi : commission de 5% sur tes ventes et ordres jusqu'à 500 côtelettes — pour toujours",
     "raid_title": "🏴‍☠️ RAIDS",
     "raid_how": "📖 Comment ça marche",
     "raid_rule1": "Tu choisis un geste ; la cible a réglé sa posture de défense à l'avance. Pierre-feuille-ciseaux tranche : c'est un duel de décisions, pas une loterie.",
@@ -972,7 +978,7 @@ MINIAPP = {
     "rock": "🪨 Pierre",
     "scissors": "✂️ Ciseaux",
     "paper": "📄 Feuille",
-    "mk_title": "📈 BOURSE DES CÔTELETTES",
+    "mk_title": "📈 BOURSE",
     "mk_stats": "Ordres : {o} · côtelettes : {c} · meilleur prix : {b} 🪙",
     "mk_feeLine": "Une commission de {f}% sur chaque vente est brûlée — bouclier anti-inflation",
     "mk_inv": "🥩 Dans ton stock : {n}",
@@ -992,6 +998,44 @@ MINIAPP = {
     "mk_bought": "Acheté {q} 🥩 pour {t} 🪙",
     "mk_listed": "Ordre en ligne ! Je t'écris dès qu'il est vendu.",
     "mk_cancelledMsg": "Ordre retiré, les côtelettes sont revenues dans ton stock",
+    "as_cutlet": "Côtelettes",
+    "as_metal": "Métal",
+    "as_hydrogen": "Hydrogène",
+    "as_crystal": "Cristaux",
+    "as_parts": "Composants",
+    "mk_index": "📈 INDICE DE LA BOURSE",
+    "mk_chart": "📊 PRIX SUR 7 JOURS",
+    "mk_noTrades": "Aucune transaction pour l'instant — sois le premier ou la première !",
+    "mk_avg": "Prix moyen de la semaine : {p} 🪙 · vendu : {v}",
+    "mk_asks": "🛒 À VENDRE",
+    "mk_bids": "🙋 À L'ACHAT",
+    "mk_noBids": "Aucun ordre d'achat pour l'instant",
+    "mk_sellTo": "Vendre",
+    "mk_sellHow": "Combien vendre ?",
+    "mk_bidTitle": "🙋 ORDRE D'ACHAT",
+    "mk_bidHint": "Les pièces sont gelées dans l'ordre jusqu'à la transaction. Tu retires l'ordre, les pièces reviennent.",
+    "mk_bid": "Placer l'ordre d'achat",
+    "mk_bidPreview": "{t} 🪙 seront gelées",
+    "mk_have": "Tu as : {n}",
+    "mk_floor": "Une côtelette ne se vend pas moins de {p} 🪙 : le carburant de la boutique en Étoiles est toujours plus avantageux",
+    "mk_side_sell": "je vends",
+    "mk_side_buy": "j'achète",
+    "mk_listedBid": "Ordre d'achat placé ! Les pièces sont gelées jusqu'à la transaction.",
+    "mk_sold": "Vendu {q}, reçu {g} 🪙 après commission",
+    "mk_shuttleNote": "🚀 Ta Navette : commission de {f}% sur tes ventes",
+    "sw_title": "🔄 ÉCHANGE DE RESSOURCES",
+    "sw_hint": "Donne ce qui est en trop, reçois ce qu'il te faut. Sans pièces ni commission.",
+    "sw_give": "Je donne",
+    "sw_want": "Je veux",
+    "sw_qty": "Combien",
+    "sw_create": "Proposer un échange",
+    "sw_take": "Échanger",
+    "sw_empty": "Aucune offre d'échange pour l'instant",
+    "sw_mine": "Mes offres",
+    "sw_done": "Échange conclu !",
+    "sw_created": "Offre publiée, ressources mises de côté",
+    "sw_cancelled": "Offre retirée, ressources rendues",
+    "ws_armorUntil": "🛡 Armure active jusqu'au {t}",
     "st_title": "🛰 STATION D'ÉQUIPE",
     "st_level": "Niveau {l} sur {m}",
     "st_bonus": "+{p}% de minage pour chaque combattant",

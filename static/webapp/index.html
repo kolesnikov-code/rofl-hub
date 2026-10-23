@@ -194,6 +194,18 @@
   .lbl input { display: block; width: 100%; margin-top: 4px; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(0,255,225,.3);
     background: #0d1326; color: var(--text); font-size: 16px; font-weight: 700; }
   .stres { margin-top: 8px; } .donrow { display: flex; flex-wrap: wrap; gap: 6px; }
+  .idxrow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .idx { padding: 7px 10px; border-radius: 999px; border: 1px solid rgba(0,255,225,.25); background: #0d1326;
+    color: var(--text); font-weight: 800; font-size: 12px; cursor: pointer; }
+  .idx.on { border-color: var(--accent); box-shadow: 0 0 10px rgba(255,217,61,.35); }
+  .idx .up { color: var(--ok); } .idx .down { color: #ff8e8e; }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart polyline { fill: none; stroke: var(--neon); stroke-width: 2.5; stroke-linejoin: round; }
+  .chart circle { fill: var(--accent); }
+  .chart text { fill: var(--muted); font-size: 9px; text-anchor: middle; }
+  .swapform { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
+  .lbl select { display: block; width: 100%; margin-top: 4px; padding: 11px 8px; border-radius: 10px;
+    border: 1px solid rgba(0,255,225,.3); background: #0d1326; color: var(--text); font-size: 15px; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -256,12 +268,12 @@
       res_parts_src: "Кибер-Сейф", resWhere: "где добывать",
       ws_title: "🔧 МАСТЕРСКАЯ", ws_hint: "Ресурсы из игр превращаются в усиления. Хватает ресурсов — жми «Собрать».",
       ws_craft: "Собрать", ws_owned: "✅ Уже есть", ws_crafted: "Готово! Усиление уже работает.",
-      ws_armor: "🛡 Кибер-броня", ws_armorLvl: "уровень {l}/{m} · +{p}% к добыче за уровень",
+      ws_armor: "🛡 Кибер-броня", ws_armorLvl: "уровень {l}/{m} · +{p}% за уровень на 30 дней",
       ws_shuttleOn: "🚀 Шаттл собран: комиссия биржи {fee}%", ws_shuttleOff: "🚀 Шаттл не собран: комиссия биржи {fee}%",
       eff_nitrogen: "+40% к добыче всех роботов", eff_nuclear: "×5 к добыче, Бурильщики едят ×3 котлет",
       eff_drone: "роботы не стареют", eff_shield: "налёты на тебя невозможны",
-      eff_cutlet: "1 кибер-котлета на склад", eff_armor: "+10% к добыче навсегда",
-      eff_shuttle: "комиссия биржи вдвое ниже, ордера до 500 котлет — навсегда",
+      eff_cutlet: "1 кибер-котлета на склад (дорого: топливо выгоднее в магазине)", eff_armor: "+10% к добыче за уровень на 30 дней",
+      eff_shuttle: "только твой: комиссия 5% на твои продажи и ордера до 500 котлет — навсегда",
       raid_title: "🏴‍☠️ НАЛЁТЫ", raid_how: "📖 Как это работает",
       raid_rule1: "Ты выбираешь жест, у цели заранее выставлена стойка обороны. Исход решает камень-ножницы-бумага: это дуэль решений, а не лотерея.",
       raid_rule2: "Победа: забираешь {pct}% каждого ресурса цели, до {cap} за ресурс. Провал: отдаёшь цели {fpct}% своих, до {fcap}. Ничья: топливо сгорело.",
@@ -278,7 +290,7 @@
       raid_win: "🏴‍☠️ Налёт удался!", raid_draw: "😐 Ничья — корабль вернулся пустым",
       raid_lose: "💥 Оборона выстояла", raid_vs: "{m} против {s}", raid_loot: "Трофеи: {l}", raid_lost: "Отдано цели: {l}",
       rock: "🪨 Камень", scissors: "✂️ Ножницы", paper: "📄 Бумага",
-      mk_title: "📈 БИРЖА КОТЛЕТ", mk_stats: "Ордеров: {o} · котлет: {c} · лучшая цена: {b} 🪙",
+      mk_title: "📈 БИРЖА", mk_stats: "Ордеров: {o} · котлет: {c} · лучшая цена: {b} 🪙",
       mk_feeLine: "Комиссия {f}% с продажи сгорает — защита от инфляции", mk_inv: "🥩 У тебя на складе: {n}",
       mk_offers: "🛒 ПРЕДЛОЖЕНИЯ", mk_empty: "Пока нет предложений — выставь своё первым!",
       mk_offer: "{q} 🥩 × {p} 🪙", mk_buyHow: "Сколько купить?", mk_all: "Все {q}",
@@ -297,6 +309,20 @@
       goals_streak: "🔥 Серия: {s} дн. · каждый {e}-й день подряд +{b} 🪙", goals_claim: "🎁 ЗАБРАТЬ СУНДУК",
       goals_claimed: "🎁 Сундук за сегодня забран. Завтра — новые цели!", goals_reset: "Цели обновляются в 00:00 UTC",
       goals_got: "🎁 +{c} 🪙 · +{q} {n} · серия {s} дн.",
+      as_cutlet: "Котлеты", as_metal: "Металл", as_hydrogen: "Водород", as_crystal: "Кристаллы", as_parts: "Детали",
+      mk_index: "📈 ИНДЕКС БИРЖИ", mk_chart: "📊 ЦЕНА ЗА 7 ДНЕЙ", mk_noTrades: "Сделок пока не было — стань первым(ой)!",
+      mk_avg: "Средняя цена за неделю: {p} 🪙 · продано: {v}", mk_asks: "🛒 ПРОДАЮТ", mk_bids: "🙋 ПОКУПАЮТ",
+      mk_noBids: "Заявок на покупку пока нет", mk_sellTo: "Продать", mk_sellHow: "Сколько продать?",
+      mk_bidTitle: "🙋 ЗАЯВКА НА ПОКУПКУ", mk_bidHint: "Монеты замораживаются в заявке до сделки. Снимешь заявку — монеты вернутся.",
+      mk_bid: "Разместить заявку", mk_bidPreview: "Заморозится {t} 🪙", mk_have: "У тебя: {n}",
+      mk_floor: "Котлета не дешевле {p} 🪙: топливо из магазина за Звёзды всегда выгоднее",
+      mk_side_sell: "продаю", mk_side_buy: "покупаю", mk_listedBid: "Заявка размещена! Монеты заморожены до сделки.",
+      mk_sold: "Продано {q}, получено {g} 🪙 после комиссии", mk_shuttleNote: "🚀 Твой Шаттл: комиссия {f}% на твои продажи",
+      sw_title: "🔄 ОБМЕН РЕСУРСАМИ", sw_hint: "Отдай лишнее — получи нужное. Без монет и без комиссии.",
+      sw_give: "Отдаю", sw_want: "Хочу получить", sw_qty: "Сколько", sw_create: "Предложить обмен", sw_take: "Обменять",
+      sw_empty: "Предложений обмена пока нет", sw_mine: "Мои предложения", sw_done: "Обмен состоялся!",
+      sw_created: "Предложение выставлено, ресурсы отложены", sw_cancelled: "Предложение снято, ресурсы вернулись",
+      ws_armorUntil: "🛡 Броня действует до {t}",
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
@@ -344,12 +370,12 @@
       res_parts_src: "Cyber-Safe", resWhere: "where to mine",
       ws_title: "🔧 WORKSHOP", ws_hint: "Game resources turn into upgrades. Enough resources — tap “Build”.",
       ws_craft: "Build", ws_owned: "✅ Owned", ws_crafted: "Done! The upgrade is already working.",
-      ws_armor: "🛡 Cyber-armor", ws_armorLvl: "level {l}/{m} · +{p}% mining per level",
+      ws_armor: "🛡 Cyber-armor", ws_armorLvl: "level {l}/{m} · +{p}% per level for 30 days",
       ws_shuttleOn: "🚀 Shuttle built: market fee {fee}%", ws_shuttleOff: "🚀 No shuttle yet: market fee {fee}%",
       eff_nitrogen: "+40% mining for all robots", eff_nuclear: "×5 mining, Drillers eat ×3 cutlets",
       eff_drone: "robots don't age", eff_shield: "nobody can raid you",
-      eff_cutlet: "1 cyber-cutlet to your inventory", eff_armor: "+10% mining forever",
-      eff_shuttle: "half the market fee, orders up to 500 cutlets — forever",
+      eff_cutlet: "1 cyber-cutlet to your inventory (pricey: fuel is cheaper in the shop)", eff_armor: "+10% mining per level for 30 days",
+      eff_shuttle: "yours only: 5% fee on your sales and orders up to 500 cutlets — forever",
       raid_title: "🏴‍☠️ RAIDS", raid_how: "📖 How it works",
       raid_rule1: "You pick a gesture; the target has a defense stance set in advance. Rock-paper-scissors decides: a duel of decisions, not a lottery.",
       raid_rule2: "Win: take {pct}% of each target resource, up to {cap} per resource. Fail: give the target {fpct}% of yours, up to {fcap}. Draw: fuel burned.",
@@ -366,7 +392,7 @@
       raid_win: "🏴‍☠️ Raid successful!", raid_draw: "😐 Draw — the ship came back empty",
       raid_lose: "💥 The defense held", raid_vs: "{m} vs {s}", raid_loot: "Loot: {l}", raid_lost: "Given to the target: {l}",
       rock: "🪨 Rock", scissors: "✂️ Scissors", paper: "📄 Paper",
-      mk_title: "📈 CUTLET MARKET", mk_stats: "Orders: {o} · cutlets: {c} · best price: {b} 🪙",
+      mk_title: "📈 MARKET", mk_stats: "Orders: {o} · cutlets: {c} · best price: {b} 🪙",
       mk_feeLine: "A {f}% fee per sale is burned — inflation shield", mk_inv: "🥩 In your inventory: {n}",
       mk_offers: "🛒 OFFERS", mk_empty: "No offers yet — be the first to list!",
       mk_offer: "{q} 🥩 × {p} 🪙", mk_buyHow: "How many?", mk_all: "All {q}",
@@ -385,6 +411,20 @@
       goals_streak: "🔥 Streak: {s} days · every {e}th day in a row +{b} 🪙", goals_claim: "🎁 CLAIM THE CHEST",
       goals_claimed: "🎁 Today's chest is claimed. New goals tomorrow!", goals_reset: "Goals reset at 00:00 UTC",
       goals_got: "🎁 +{c} 🪙 · +{q} {n} · streak {s} days",
+      as_cutlet: "Cutlets", as_metal: "Metal", as_hydrogen: "Hydrogen", as_crystal: "Crystals", as_parts: "Parts",
+      mk_index: "📈 MARKET INDEX", mk_chart: "📊 PRICE FOR 7 DAYS", mk_noTrades: "No deals yet — be the first!",
+      mk_avg: "Weekly average: {p} 🪙 · sold: {v}", mk_asks: "🛒 SELLING", mk_bids: "🙋 BUYING",
+      mk_noBids: "No buy orders yet", mk_sellTo: "Sell", mk_sellHow: "How many to sell?",
+      mk_bidTitle: "🙋 BUY ORDER", mk_bidHint: "Coins are frozen in the order until a deal. Cancel the order — coins come back.",
+      mk_bid: "Place buy order", mk_bidPreview: "{t} 🪙 will be frozen", mk_have: "You have: {n}",
+      mk_floor: "A cutlet can't go below {p} 🪙: fuel from the shop for Stars is always the better deal",
+      mk_side_sell: "selling", mk_side_buy: "buying", mk_listedBid: "Buy order placed! Coins are frozen until a deal.",
+      mk_sold: "Sold {q}, received {g} 🪙 after the fee", mk_shuttleNote: "🚀 Your Shuttle: {f}% fee on your sales",
+      sw_title: "🔄 RESOURCE SWAPS", sw_hint: "Give what you don't need — get what you do. No coins, no fee.",
+      sw_give: "I give", sw_want: "I want", sw_qty: "How many", sw_create: "Offer a swap", sw_take: "Swap",
+      sw_empty: "No swap offers yet", sw_mine: "My offers", sw_done: "Swap completed!",
+      sw_created: "Offer listed, resources set aside", sw_cancelled: "Offer withdrawn, resources returned",
+      ws_armorUntil: "🛡 Armor active until {t}",
       featureOff: "⚙️ This section is under maintenance", done: "Done!", loading: "⏳ Loading…"
     }
   };
@@ -479,16 +519,16 @@
     "ws_owned": "✅ لديك بالفعل",
     "ws_crafted": "تم! التعزيز يعمل الآن.",
     "ws_armor": "🛡 الدرع السيبراني",
-    "ws_armorLvl": "المستوى {l}/{m} · +{p}% للتعدين لكل مستوى",
+    "ws_armorLvl": "المستوى {l}/{m} · +{p}% لكل مستوى لمدة 30 يومًا",
     "ws_shuttleOn": "🚀 المكوك مُجمَّع: عمولة البورصة {fee}%",
     "ws_shuttleOff": "🚀 المكوك غير مُجمَّع: عمولة البورصة {fee}%",
     "eff_nitrogen": "+40% لتعدين كل الروبوتات",
     "eff_nuclear": "×5 للتعدين، والحفّارات تأكل ×3 كفتة",
     "eff_drone": "الروبوتات لا تشيخ",
     "eff_shield": "لا يمكن لأحد الإغارة عليك",
-    "eff_cutlet": "كفتة سيبرانية واحدة إلى المخزون",
-    "eff_armor": "+10% للتعدين إلى الأبد",
-    "eff_shuttle": "نصف عمولة البورصة، وأوامر حتى 500 كفتة — إلى الأبد",
+    "eff_cutlet": "كفتة سيبرانية واحدة إلى المخزون (مكلفة: الوقود أوفر في المتجر)",
+    "eff_armor": "+10% للتعدين لكل مستوى لمدة 30 يومًا",
+    "eff_shuttle": "لك وحدك: عمولة 5% على مبيعاتك وأوامر حتى 500 كفتة — إلى الأبد",
     "raid_title": "🏴‍☠️ الغارات",
     "raid_how": "📖 كيف تعمل",
     "raid_rule1": "تختار حركتك، وللهدف وضعية دفاع محددة مسبقًا. يحسم الأمرَ حجر-ورقة-مقص: إنها مبارزة قرارات لا يانصيب.",
@@ -522,10 +562,10 @@
     "rock": "🪨 حجر",
     "scissors": "✂️ مقص",
     "paper": "📄 ورقة",
-    "mk_title": "📈 بورصة الكفتة",
+    "mk_title": "📈 البورصة",
     "mk_stats": "الأوامر: {o} · الكفتة: {c} · أفضل سعر: {b} 🪙",
     "mk_feeLine": "تُحرق عمولة {f}% من كل بيع — درع ضد التضخم",
-    "mk_inv": "🥩 في مخزنك: {n}",
+    "mk_inv": "🥩 في مخزونك: {n}",
     "mk_offers": "🛒 العروض",
     "mk_empty": "لا عروض بعد — كن أول من يعرض!",
     "mk_offer": "{q} 🥩 × {p} 🪙",
@@ -542,6 +582,44 @@
     "mk_bought": "اشتريت {q} 🥩 مقابل {t} 🪙",
     "mk_listed": "تم عرض الأمر! سأراسلك عند البيع.",
     "mk_cancelledMsg": "أُلغي الأمر، وعادت الكفتة إلى المخزون",
+    "as_cutlet": "الكفتة",
+    "as_metal": "المعدن",
+    "as_hydrogen": "الهيدروجين",
+    "as_crystal": "البلّورات",
+    "as_parts": "القطع",
+    "mk_index": "📈 مؤشر البورصة",
+    "mk_chart": "📊 السعر خلال 7 أيام",
+    "mk_noTrades": "لا صفقات بعد — كن أول من يبدأ!",
+    "mk_avg": "متوسط سعر الأسبوع: {p} 🪙 · المُباع: {v}",
+    "mk_asks": "🛒 يبيعون",
+    "mk_bids": "🙋 يشترون",
+    "mk_noBids": "لا طلبات شراء بعد",
+    "mk_sellTo": "بِع",
+    "mk_sellHow": "كم تبيع؟",
+    "mk_bidTitle": "🙋 طلب شراء",
+    "mk_bidHint": "تُجمَّد العملات في الطلب حتى الصفقة. إذا ألغيت الطلب تعود العملات.",
+    "mk_bid": "ضع طلب شراء",
+    "mk_bidPreview": "سيُجمَّد {t} 🪙",
+    "mk_have": "لديك: {n}",
+    "mk_floor": "لا يقل سعر الكفتة عن {p} 🪙: الوقود من المتجر مقابل النجوم أوفر دائمًا",
+    "mk_side_sell": "أبيع",
+    "mk_side_buy": "أشتري",
+    "mk_listedBid": "تم وضع طلب الشراء! العملات مجمّدة حتى الصفقة.",
+    "mk_sold": "بيع {q}، وحصلت على {g} 🪙 بعد العمولة",
+    "mk_shuttleNote": "🚀 مكوكك: عمولة {f}% على مبيعاتك",
+    "sw_title": "🔄 مقايضة الموارد",
+    "sw_hint": "أعطِ ما يزيد عن حاجتك — واحصل على ما تحتاجه. بلا عملات وبلا عمولة.",
+    "sw_give": "أعطي",
+    "sw_want": "أريد",
+    "sw_qty": "الكمية",
+    "sw_create": "اقترح مقايضة",
+    "sw_take": "قايِض",
+    "sw_empty": "لا عروض مقايضة بعد",
+    "sw_mine": "عروضي",
+    "sw_done": "تمت المقايضة!",
+    "sw_created": "تم نشر العرض، والموارد محجوزة",
+    "sw_cancelled": "سُحب العرض، وعادت الموارد",
+    "ws_armorUntil": "🛡 الدرع فعّال حتى {t}",
     "st_title": "🛰 محطة الفريق",
     "st_level": "المستوى {l} من {m}",
     "st_bonus": "+{p}% للتعدين لكل مقاتل",
@@ -654,16 +732,17 @@
     "ws_owned": "✅ আগেই আছে",
     "ws_crafted": "হয়ে গেছে! আপগ্রেড এখনই কাজ করছে।",
     "ws_armor": "🛡 সাইবার-বর্ম",
-    "ws_armorLvl": "লেভেল {l}/{m} · প্রতি লেভেলে মাইনিংয়ে +{p}%",
+    "ws_armorLvl": "লেভেল {l}/{m} · প্রতি লেভেলে +{p}%, 30 দিনের জন্য",
+    "ws_armorUntil": "🛡 বর্ম চালু থাকবে {t} পর্যন্ত",
     "ws_shuttleOn": "🚀 শাটল তৈরি: বাজারের ফি {fee}%",
     "ws_shuttleOff": "🚀 শাটল এখনো নেই: বাজারের ফি {fee}%",
     "eff_nitrogen": "সব রোবটের মাইনিংয়ে +40%",
     "eff_nuclear": "মাইনিং ×5, ড্রিলাররা ×3 কাটলেট খায়",
     "eff_drone": "রোবটদের বয়স বাড়ে না",
     "eff_shield": "তোমার ওপর রেইড করা যায় না",
-    "eff_cutlet": "গুদামে 1টা সাইবার-কাটলেট",
-    "eff_armor": "মাইনিংয়ে চিরতরে +10%",
-    "eff_shuttle": "বাজারের ফি অর্ধেক, অর্ডারে 500 কাটলেট পর্যন্ত — চিরকালের জন্য",
+    "eff_cutlet": "গুদামে 1টা সাইবার-কাটলেট (দামি: দোকানের জ্বালানি সস্তা)",
+    "eff_armor": "প্রতি লেভেলে মাইনিংয়ে +10%, 30 দিনের জন্য",
+    "eff_shuttle": "শুধু তোমার: তোমার বিক্রিতে 5% ফি, অর্ডারে 500 কাটলেট পর্যন্ত — চিরকালের জন্য",
     "raid_title": "🏴‍☠️ রেইড",
     "raid_how": "📖 কীভাবে কাজ করে",
     "raid_rule1": "তুমি চাল বেছে নাও, টার্গেটের রক্ষণ-ভঙ্গি আগে থেকেই ঠিক করা। ফল ঠিক করে পাথর-কাগজ-কাঁচি: এটা সিদ্ধান্তের ডুয়েল, লটারি নয়।",
@@ -697,7 +776,7 @@
     "rock": "🪨 পাথর",
     "scissors": "✂️ কাঁচি",
     "paper": "📄 কাগজ",
-    "mk_title": "📈 কাটলেট বাজার",
+    "mk_title": "📈 বাজার",
     "mk_stats": "অর্ডার: {o} · কাটলেট: {c} · সেরা দাম: {b} 🪙",
     "mk_feeLine": "প্রতি বিক্রিতে {f}% ফি পুড়ে যায় — মুদ্রাস্ফীতি থেকে সুরক্ষা",
     "mk_inv": "🥩 তোমার গুদামে: {n}",
@@ -717,6 +796,43 @@
     "mk_bought": "কেনা হলো {q} 🥩, {t} 🪙-তে",
     "mk_listed": "অর্ডার তোলা হয়েছে! বিক্রি হলেই মেসেজ পাঠাব।",
     "mk_cancelledMsg": "অর্ডার তুলে নেওয়া হলো, কাটলেট গুদামে ফিরেছে",
+    "as_cutlet": "কাটলেট",
+    "as_metal": "ধাতু",
+    "as_hydrogen": "হাইড্রোজেন",
+    "as_crystal": "ক্রিস্টাল",
+    "as_parts": "যন্ত্রাংশ",
+    "mk_index": "📈 বাজারের সূচক",
+    "mk_chart": "📊 7 দিনের দাম",
+    "mk_noTrades": "এখনো কোনো লেনদেন হয়নি — প্রথম হও তুমিই!",
+    "mk_avg": "সপ্তাহের গড় দাম: {p} 🪙 · বিক্রি: {v}",
+    "mk_asks": "🛒 বিক্রি হচ্ছে",
+    "mk_bids": "🙋 কেনা হচ্ছে",
+    "mk_noBids": "এখনো কোনো কেনার অর্ডার নেই",
+    "mk_sellTo": "বেচো",
+    "mk_sellHow": "কয়টা বেচবে?",
+    "mk_bidTitle": "🙋 কেনার অর্ডার",
+    "mk_bidHint": "লেনদেন না হওয়া পর্যন্ত কয়েন অর্ডারে আটকে থাকে। অর্ডার তুলে নিলে কয়েন ফেরত আসে।",
+    "mk_bid": "কেনার অর্ডার দাও",
+    "mk_bidPreview": "আটকে থাকবে {t} 🪙",
+    "mk_have": "তোমার আছে: {n}",
+    "mk_floor": "একটা কাটলেটের দাম {p} 🪙-এর কম নয়: স্টারে কেনা দোকানের জ্বালানি সবসময় বেশি লাভজনক",
+    "mk_side_sell": "বেচছি",
+    "mk_side_buy": "কিনছি",
+    "mk_listedBid": "কেনার অর্ডার দেওয়া হয়েছে! লেনদেন পর্যন্ত কয়েন আটকে থাকবে।",
+    "mk_sold": "বিক্রি হলো {q}, ফি বাদে পেলে {g} 🪙",
+    "mk_shuttleNote": "🚀 তোমার শাটল: তোমার বিক্রিতে {f}% ফি",
+    "sw_title": "🔄 রিসোর্স বিনিময়",
+    "sw_hint": "বাড়তিটা দাও — দরকারিটা নাও। কয়েন ছাড়া, ফি ছাড়া।",
+    "sw_give": "দিচ্ছি",
+    "sw_want": "চাই",
+    "sw_qty": "কতটা",
+    "sw_create": "বিনিময়ের প্রস্তাব দাও",
+    "sw_take": "বিনিময় করো",
+    "sw_empty": "এখনো কোনো বিনিময়ের প্রস্তাব নেই",
+    "sw_mine": "আমার প্রস্তাব",
+    "sw_done": "বিনিময় সম্পন্ন!",
+    "sw_created": "প্রস্তাব দেওয়া হয়েছে, রিসোর্স সরিয়ে রাখা হলো",
+    "sw_cancelled": "প্রস্তাব তুলে নেওয়া হলো, রিসোর্স ফিরেছে",
     "st_title": "🛰 টিম স্টেশন",
     "st_level": "লেভেল {l} / {m}",
     "st_bonus": "প্রতিটি যোদ্ধার মাইনিংয়ে +{p}%",
@@ -829,16 +945,16 @@
     "ws_owned": "✅ Schon da",
     "ws_crafted": "Fertig! Das Upgrade wirkt schon.",
     "ws_armor": "🛡 Cyber-Panzerung",
-    "ws_armorLvl": "Level {l}/{m} · +{p}% Ertrag pro Level",
+    "ws_armorLvl": "Level {l}/{m} · +{p}% pro Level für 30 Tage",
     "ws_shuttleOn": "🚀 Shuttle gebaut: Börsengebühr {fee}%",
     "ws_shuttleOff": "🚀 Kein Shuttle: Börsengebühr {fee}%",
     "eff_nitrogen": "+40% Ertrag für alle Roboter",
     "eff_nuclear": "×5 Ertrag, Bohrer fressen ×3 Frikadellen",
     "eff_drone": "Roboter altern nicht",
     "eff_shield": "niemand kann dich überfallen",
-    "eff_cutlet": "1 Cyber-Frikadelle ins Lager",
-    "eff_armor": "+10% Ertrag für immer",
-    "eff_shuttle": "halbe Börsengebühr, Orders bis 500 Frikadellen — für immer",
+    "eff_cutlet": "1 Cyber-Frikadelle ins Lager (teuer: Treibstoff ist im Shop günstiger)",
+    "eff_armor": "+10% Ertrag pro Level für 30 Tage",
+    "eff_shuttle": "nur deins: 5% Gebühr auf deine Verkäufe und Orders bis 500 Frikadellen — für immer",
     "raid_title": "🏴‍☠️ RAIDS",
     "raid_how": "📖 So funktioniert's",
     "raid_rule1": "Du wählst ein Zeichen, das Ziel hat vorab eine Abwehrhaltung gesetzt. Schere-Stein-Papier entscheidet: ein Duell der Entscheidungen, keine Lotterie.",
@@ -872,7 +988,7 @@
     "rock": "🪨 Stein",
     "scissors": "✂️ Schere",
     "paper": "📄 Papier",
-    "mk_title": "📈 KOTELETT-BÖRSE",
+    "mk_title": "📈 BÖRSE",
     "mk_stats": "Orders: {o} · Frikadellen: {c} · bester Preis: {b} 🪙",
     "mk_feeLine": "{f}% Gebühr pro Verkauf werden verbrannt — Inflationsschutz",
     "mk_inv": "🥩 In deinem Lager: {n}",
@@ -892,6 +1008,44 @@
     "mk_bought": "{q} 🥩 für {t} 🪙 gekauft",
     "mk_listed": "Order eingestellt! Ich melde mich, sobald sie verkauft ist.",
     "mk_cancelledMsg": "Order zurückgezogen, die Frikadellen sind wieder im Lager",
+    "as_cutlet": "Frikadellen",
+    "as_metal": "Metall",
+    "as_hydrogen": "Wasserstoff",
+    "as_crystal": "Kristalle",
+    "as_parts": "Bauteile",
+    "mk_index": "📈 BÖRSENINDEX",
+    "mk_chart": "📊 PREIS DER LETZTEN 7 TAGE",
+    "mk_noTrades": "Noch keine Deals — mach den Anfang!",
+    "mk_avg": "Wochendurchschnitt: {p} 🪙 · verkauft: {v}",
+    "mk_asks": "🛒 VERKAUFEN",
+    "mk_bids": "🙋 KAUFEN",
+    "mk_noBids": "Noch keine Kaufaufträge",
+    "mk_sellTo": "Verkaufen",
+    "mk_sellHow": "Wie viele verkaufen?",
+    "mk_bidTitle": "🙋 KAUFAUFTRAG",
+    "mk_bidHint": "Die Münzen werden bis zum Deal im Auftrag eingefroren. Ziehst du ihn zurück, kommen sie zurück.",
+    "mk_bid": "Kaufauftrag erteilen",
+    "mk_bidPreview": "{t} 🪙 werden eingefroren",
+    "mk_have": "Du hast: {n}",
+    "mk_floor": "Eine Frikadelle kostet mindestens {p} 🪙: Treibstoff aus dem Shop für Stars ist immer günstiger",
+    "mk_side_sell": "verkaufe",
+    "mk_side_buy": "kaufe",
+    "mk_listedBid": "Kaufauftrag erteilt! Die Münzen sind bis zum Deal eingefroren.",
+    "mk_sold": "{q} verkauft, {g} 🪙 nach Gebühr erhalten",
+    "mk_shuttleNote": "🚀 Dein Shuttle: {f}% Gebühr auf deine Verkäufe",
+    "sw_title": "🔄 RESSOURCEN-TAUSCH",
+    "sw_hint": "Gib ab, was du übrig hast — hol dir, was du brauchst. Ohne Münzen, ohne Gebühr.",
+    "sw_give": "Ich gebe",
+    "sw_want": "Ich will",
+    "sw_qty": "Wie viele",
+    "sw_create": "Tausch anbieten",
+    "sw_take": "Tauschen",
+    "sw_empty": "Noch keine Tauschangebote",
+    "sw_mine": "Meine Angebote",
+    "sw_done": "Tausch abgeschlossen!",
+    "sw_created": "Angebot eingestellt, Ressourcen zurückgelegt",
+    "sw_cancelled": "Angebot zurückgezogen, Ressourcen sind zurück",
+    "ws_armorUntil": "🛡 Panzerung aktiv bis {t}",
     "st_title": "🛰 TEAM-STATION",
     "st_level": "Level {l} von {m}",
     "st_bonus": "+{p}% Ertrag für jeden Kämpfer",
@@ -1004,16 +1158,16 @@
     "ws_owned": "✅ Ya lo tienes",
     "ws_crafted": "¡Listo! La mejora ya está funcionando.",
     "ws_armor": "🛡 Ciber-Armadura",
-    "ws_armorLvl": "nivel {l}/{m} · +{p}% de extracción por nivel",
+    "ws_armorLvl": "nivel {l}/{m} · +{p}% por nivel durante 30 días",
     "ws_shuttleOn": "🚀 Transbordador construido: comisión de la bolsa {fee}%",
     "ws_shuttleOff": "🚀 Sin Transbordador: comisión de la bolsa {fee}%",
     "eff_nitrogen": "+40% de extracción para todos los robots",
     "eff_nuclear": "×5 de extracción, los Perforadores comen ×3 chuletas",
     "eff_drone": "los robots no envejecen",
     "eff_shield": "nadie puede asaltarte",
-    "eff_cutlet": "1 ciber-chuleta a tu inventario",
-    "eff_armor": "+10% de extracción para siempre",
-    "eff_shuttle": "comisión de la bolsa a la mitad y órdenes de hasta 500 chuletas, para siempre",
+    "eff_cutlet": "1 ciber-chuleta a tu inventario (caro: el combustible sale más barato en la tienda)",
+    "eff_armor": "+10% de extracción por nivel durante 30 días",
+    "eff_shuttle": "solo tuyo: comisión del 5% en tus ventas y órdenes de hasta 500 chuletas, para siempre",
     "raid_title": "🏴‍☠️ ASALTOS",
     "raid_how": "📖 Cómo funciona",
     "raid_rule1": "Tú eliges un gesto; el objetivo tiene una postura de defensa fijada de antemano. Decide piedra-papel-tijera: es un duelo de decisiones, no una lotería.",
@@ -1047,7 +1201,7 @@
     "rock": "🪨 Piedra",
     "scissors": "✂️ Tijera",
     "paper": "📄 Papel",
-    "mk_title": "📈 BOLSA DE CHULETAS",
+    "mk_title": "📈 BOLSA",
     "mk_stats": "Órdenes: {o} · chuletas: {c} · mejor precio: {b} 🪙",
     "mk_feeLine": "La comisión del {f}% por venta se quema: escudo contra la inflación",
     "mk_inv": "🥩 En tu inventario: {n}",
@@ -1086,6 +1240,44 @@
     "goals_claimed": "🎁 El cofre de hoy ya fue reclamado. ¡Mañana, nuevas metas!",
     "goals_reset": "Las metas se renuevan a las 00:00 UTC",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · racha de {s} días",
+    "as_cutlet": "Chuletas",
+    "as_metal": "Metal",
+    "as_hydrogen": "Hidrógeno",
+    "as_crystal": "Cristales",
+    "as_parts": "Piezas",
+    "mk_index": "📈 ÍNDICE DE LA BOLSA",
+    "mk_chart": "📊 PRECIO EN 7 DÍAS",
+    "mk_noTrades": "Aún no hay tratos: ¡estrena la bolsa!",
+    "mk_avg": "Precio medio semanal: {p} 🪙 · vendido: {v}",
+    "mk_asks": "🛒 VENDEN",
+    "mk_bids": "🙋 COMPRAN",
+    "mk_noBids": "Aún no hay órdenes de compra",
+    "mk_sellTo": "Vender",
+    "mk_sellHow": "¿Cuántas vendes?",
+    "mk_bidTitle": "🙋 ORDEN DE COMPRA",
+    "mk_bidHint": "Las monedas quedan congeladas en la orden hasta el trato. Si la retiras, las monedas vuelven.",
+    "mk_bid": "Publicar orden de compra",
+    "mk_bidPreview": "Se congelarán {t} 🪙",
+    "mk_have": "Tienes: {n}",
+    "mk_floor": "Una chuleta no puede valer menos de {p} 🪙: el combustible de la tienda por Estrellas siempre sale más a cuenta",
+    "mk_side_sell": "vendo",
+    "mk_side_buy": "compro",
+    "mk_listedBid": "¡Orden de compra publicada! Las monedas quedan congeladas hasta el trato.",
+    "mk_sold": "Vendiste {q} y recibiste {g} 🪙 tras la comisión",
+    "mk_shuttleNote": "🚀 Tu Transbordador: comisión del {f}% en tus ventas",
+    "sw_title": "🔄 INTERCAMBIO DE RECURSOS",
+    "sw_hint": "Da lo que te sobra y recibe lo que necesitas. Sin monedas y sin comisión.",
+    "sw_give": "Doy",
+    "sw_want": "Quiero recibir",
+    "sw_qty": "Cuánto",
+    "sw_create": "Proponer intercambio",
+    "sw_take": "Intercambiar",
+    "sw_empty": "Aún no hay propuestas de intercambio",
+    "sw_mine": "Mis propuestas",
+    "sw_done": "¡Intercambio realizado!",
+    "sw_created": "Propuesta publicada, recursos reservados",
+    "sw_cancelled": "Propuesta retirada, los recursos volvieron",
+    "ws_armorUntil": "🛡 Armadura activa hasta el {t}",
     "featureOff": "⚙️ Sección en mantenimiento",
     "done": "¡Listo!",
     "loading": "⏳ Cargando…"
@@ -1179,16 +1371,16 @@
     "ws_owned": "✅ Déjà acquis",
     "ws_crafted": "C'est fait ! L'amélioration fonctionne déjà.",
     "ws_armor": "🛡 Cyber-Armure",
-    "ws_armorLvl": "niveau {l}/{m} · +{p}% de minage par niveau",
+    "ws_armorLvl": "niveau {l}/{m} · +{p}% par niveau pour 30 jours",
     "ws_shuttleOn": "🚀 Navette assemblée : commission de la bourse {fee}%",
     "ws_shuttleOff": "🚀 Navette non assemblée : commission de la bourse {fee}%",
     "eff_nitrogen": "+40% de minage pour tous les robots",
     "eff_nuclear": "×5 de minage, les Foreurs mangent ×3 côtelettes",
     "eff_drone": "les robots ne vieillissent pas",
     "eff_shield": "personne ne peut te raider",
-    "eff_cutlet": "1 cyber-côtelette dans ton stock",
-    "eff_armor": "+10% de minage pour toujours",
-    "eff_shuttle": "commission de la bourse divisée par deux, ordres jusqu'à 500 côtelettes — pour toujours",
+    "eff_cutlet": "1 cyber-côtelette dans ton stock (cher : le carburant est moins cher à la boutique)",
+    "eff_armor": "+10% de minage par niveau pour 30 jours",
+    "eff_shuttle": "rien qu'à toi : commission de 5% sur tes ventes et ordres jusqu'à 500 côtelettes — pour toujours",
     "raid_title": "🏴‍☠️ RAIDS",
     "raid_how": "📖 Comment ça marche",
     "raid_rule1": "Tu choisis un geste ; la cible a réglé sa posture de défense à l'avance. Pierre-feuille-ciseaux tranche : c'est un duel de décisions, pas une loterie.",
@@ -1222,7 +1414,7 @@
     "rock": "🪨 Pierre",
     "scissors": "✂️ Ciseaux",
     "paper": "📄 Feuille",
-    "mk_title": "📈 BOURSE DES CÔTELETTES",
+    "mk_title": "📈 BOURSE",
     "mk_stats": "Ordres : {o} · côtelettes : {c} · meilleur prix : {b} 🪙",
     "mk_feeLine": "Une commission de {f}% sur chaque vente est brûlée — bouclier anti-inflation",
     "mk_inv": "🥩 Dans ton stock : {n}",
@@ -1242,6 +1434,44 @@
     "mk_bought": "Acheté {q} 🥩 pour {t} 🪙",
     "mk_listed": "Ordre en ligne ! Je t'écris dès qu'il est vendu.",
     "mk_cancelledMsg": "Ordre retiré, les côtelettes sont revenues dans ton stock",
+    "as_cutlet": "Côtelettes",
+    "as_metal": "Métal",
+    "as_hydrogen": "Hydrogène",
+    "as_crystal": "Cristaux",
+    "as_parts": "Composants",
+    "mk_index": "📈 INDICE DE LA BOURSE",
+    "mk_chart": "📊 PRIX SUR 7 JOURS",
+    "mk_noTrades": "Aucune transaction pour l'instant — sois le premier ou la première !",
+    "mk_avg": "Prix moyen de la semaine : {p} 🪙 · vendu : {v}",
+    "mk_asks": "🛒 À VENDRE",
+    "mk_bids": "🙋 À L'ACHAT",
+    "mk_noBids": "Aucun ordre d'achat pour l'instant",
+    "mk_sellTo": "Vendre",
+    "mk_sellHow": "Combien vendre ?",
+    "mk_bidTitle": "🙋 ORDRE D'ACHAT",
+    "mk_bidHint": "Les pièces sont gelées dans l'ordre jusqu'à la transaction. Tu retires l'ordre, les pièces reviennent.",
+    "mk_bid": "Placer l'ordre d'achat",
+    "mk_bidPreview": "{t} 🪙 seront gelées",
+    "mk_have": "Tu as : {n}",
+    "mk_floor": "Une côtelette ne se vend pas moins de {p} 🪙 : le carburant de la boutique en Étoiles est toujours plus avantageux",
+    "mk_side_sell": "je vends",
+    "mk_side_buy": "j'achète",
+    "mk_listedBid": "Ordre d'achat placé ! Les pièces sont gelées jusqu'à la transaction.",
+    "mk_sold": "Vendu {q}, reçu {g} 🪙 après commission",
+    "mk_shuttleNote": "🚀 Ta Navette : commission de {f}% sur tes ventes",
+    "sw_title": "🔄 ÉCHANGE DE RESSOURCES",
+    "sw_hint": "Donne ce qui est en trop, reçois ce qu'il te faut. Sans pièces ni commission.",
+    "sw_give": "Je donne",
+    "sw_want": "Je veux",
+    "sw_qty": "Combien",
+    "sw_create": "Proposer un échange",
+    "sw_take": "Échanger",
+    "sw_empty": "Aucune offre d'échange pour l'instant",
+    "sw_mine": "Mes offres",
+    "sw_done": "Échange conclu !",
+    "sw_created": "Offre publiée, ressources mises de côté",
+    "sw_cancelled": "Offre retirée, ressources rendues",
+    "ws_armorUntil": "🛡 Armure active jusqu'au {t}",
     "st_title": "🛰 STATION D'ÉQUIPE",
     "st_level": "Niveau {l} sur {m}",
     "st_bonus": "+{p}% de minage pour chaque combattant",
@@ -1354,16 +1584,16 @@
     "ws_owned": "✅ पहले से है",
     "ws_crafted": "हो गया! अपग्रेड काम करने लगा है।",
     "ws_armor": "🛡 साइबर-कवच",
-    "ws_armorLvl": "लेवल {l}/{m} · हर लेवल पर माइनिंग +{p}%",
+    "ws_armorLvl": "लेवल {l}/{m} · हर लेवल पर +{p}%, 30 दिन के लिए",
     "ws_shuttleOn": "🚀 शटल बन चुका: बाज़ार फ़ीस {fee}%",
     "ws_shuttleOff": "🚀 शटल नहीं बना: बाज़ार फ़ीस {fee}%",
     "eff_nitrogen": "सभी रोबोटों की माइनिंग +40%",
     "eff_nuclear": "माइनिंग ×5, ड्रिलर ×3 कटलेट खाते हैं",
     "eff_drone": "रोबोट बूढ़े नहीं होते",
     "eff_shield": "तुम पर छापा नहीं पड़ सकता",
-    "eff_cutlet": "भंडार में 1 साइबर-कटलेट",
-    "eff_armor": "माइनिंग +10% हमेशा के लिए",
-    "eff_shuttle": "बाज़ार फ़ीस आधी, 500 कटलेट तक के ऑर्डर — हमेशा के लिए",
+    "eff_cutlet": "भंडार में 1 साइबर-कटलेट (महँगा: दुकान में ईंधन सस्ता है)",
+    "eff_armor": "हर लेवल पर माइनिंग +10%, 30 दिन के लिए",
+    "eff_shuttle": "सिर्फ़ तुम्हारा: तुम्हारी बिक्री पर 5% फ़ीस और 500 कटलेट तक के ऑर्डर — हमेशा के लिए",
     "raid_title": "🏴‍☠️ छापे",
     "raid_how": "📖 यह कैसे काम करता है",
     "raid_rule1": "तुम चाल चुनते हो, निशाने ने पहले से रक्षा मुद्रा लगा रखी है। नतीजा पत्थर-कैंची-कागज़ तय करता है: यह फ़ैसलों का डुएल है, लॉटरी नहीं।",
@@ -1397,7 +1627,7 @@
     "rock": "🪨 पत्थर",
     "scissors": "✂️ कैंची",
     "paper": "📄 कागज़",
-    "mk_title": "📈 कटलेट बाज़ार",
+    "mk_title": "📈 बाज़ार",
     "mk_stats": "ऑर्डर: {o} · कटलेट: {c} · सबसे अच्छी कीमत: {b} 🪙",
     "mk_feeLine": "हर बिक्री पर {f}% फ़ीस जलती है — महँगाई से बचाव",
     "mk_inv": "🥩 तुम्हारे भंडार में: {n}",
@@ -1436,6 +1666,44 @@
     "goals_claimed": "🎁 आज का संदूक ले लिया। कल नए लक्ष्य!",
     "goals_reset": "लक्ष्य 00:00 UTC पर बदलते हैं",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · स्ट्रीक {s} दिन",
+    "as_cutlet": "कटलेट",
+    "as_metal": "धातु",
+    "as_hydrogen": "हाइड्रोजन",
+    "as_crystal": "क्रिस्टल",
+    "as_parts": "पुर्ज़े",
+    "mk_index": "📈 बाज़ार इंडेक्स",
+    "mk_chart": "📊 7 दिन की कीमत",
+    "mk_noTrades": "अभी तक कोई सौदा नहीं — पहले तुम बनो!",
+    "mk_avg": "हफ़्ते की औसत कीमत: {p} 🪙 · बिके: {v}",
+    "mk_asks": "🛒 बेच रहे हैं",
+    "mk_bids": "🙋 खरीद रहे हैं",
+    "mk_noBids": "अभी खरीद का कोई ऑर्डर नहीं",
+    "mk_sellTo": "बेचो",
+    "mk_sellHow": "कितने बेचने हैं?",
+    "mk_bidTitle": "🙋 खरीद का ऑर्डर",
+    "mk_bidHint": "सौदा होने तक सिक्के ऑर्डर में फ़्रीज़ रहते हैं। ऑर्डर हटाओ — सिक्के लौट आएँगे।",
+    "mk_bid": "खरीद का ऑर्डर लगाओ",
+    "mk_bidPreview": "{t} 🪙 फ़्रीज़ होंगे",
+    "mk_have": "तुम्हारे पास: {n}",
+    "mk_floor": "कटलेट की कीमत {p} 🪙 से कम नहीं हो सकती: दुकान से स्टार्स में ईंधन हमेशा ज़्यादा फ़ायदेमंद है",
+    "mk_side_sell": "बिक्री",
+    "mk_side_buy": "खरीद",
+    "mk_listedBid": "खरीद का ऑर्डर लग गया! सौदे तक सिक्के फ़्रीज़ हैं।",
+    "mk_sold": "{q} बिके, फ़ीस के बाद {g} 🪙 मिले",
+    "mk_shuttleNote": "🚀 तुम्हारा शटल: तुम्हारी बिक्री पर {f}% फ़ीस",
+    "sw_title": "🔄 संसाधनों की अदला-बदली",
+    "sw_hint": "फ़ालतू दो — ज़रूरी लो। बिना सिक्कों और बिना फ़ीस के।",
+    "sw_give": "देना है",
+    "sw_want": "चाहिए",
+    "sw_qty": "कितने",
+    "sw_create": "अदला-बदली का ऑफ़र दो",
+    "sw_take": "बदलो",
+    "sw_empty": "अभी अदला-बदली का कोई ऑफ़र नहीं",
+    "sw_mine": "मेरे ऑफ़र",
+    "sw_done": "अदला-बदली हो गई!",
+    "sw_created": "ऑफ़र लग गया, संसाधन अलग रख दिए गए",
+    "sw_cancelled": "ऑफ़र हटा दिया, संसाधन लौट आए",
+    "ws_armorUntil": "🛡 कवच {t} तक एक्टिव है",
     "featureOff": "⚙️ यह सेक्शन मेंटेनेंस में है",
     "done": "हो गया!",
     "loading": "⏳ लोड हो रहा है…"
@@ -1529,16 +1797,16 @@
     "ws_owned": "✅ Sudah punya",
     "ws_crafted": "Selesai! Upgrade-nya sudah aktif.",
     "ws_armor": "🛡 Zirah Siber",
-    "ws_armorLvl": "level {l}/{m} · +{p}% penambangan per level",
+    "ws_armorLvl": "level {l}/{m} · +{p}% per level selama 30 hari",
     "ws_shuttleOn": "🚀 Shuttle sudah dibangun: biaya bursa {fee}%",
     "ws_shuttleOff": "🚀 Belum ada Shuttle: biaya bursa {fee}%",
     "eff_nitrogen": "+40% penambangan semua robot",
     "eff_nuclear": "×5 penambangan, Pengebor makan kotlet ×3",
     "eff_drone": "robot tidak menua",
     "eff_shield": "tidak ada yang bisa menyerbumu",
-    "eff_cutlet": "1 kotlet siber ke gudang",
-    "eff_armor": "+10% penambangan selamanya",
-    "eff_shuttle": "biaya bursa separuhnya, order hingga 500 kotlet — selamanya",
+    "eff_cutlet": "1 kotlet siber ke gudang (mahal: bahan bakar lebih murah di toko)",
+    "eff_armor": "+10% penambangan per level selama 30 hari",
+    "eff_shuttle": "hanya milikmu: biaya 5% untuk penjualanmu dan order hingga 500 kotlet — selamanya",
     "raid_title": "🏴‍☠️ SERBUAN",
     "raid_how": "📖 Cara kerjanya",
     "raid_rule1": "Kamu memilih gestur, target sudah memasang kuda-kuda pertahanan sebelumnya. Hasilnya ditentukan suit batu-gunting-kertas: ini duel keputusan, bukan lotre.",
@@ -1572,7 +1840,7 @@
     "rock": "🪨 Batu",
     "scissors": "✂️ Gunting",
     "paper": "📄 Kertas",
-    "mk_title": "📈 BURSA KOTLET",
+    "mk_title": "📈 BURSA",
     "mk_stats": "Order: {o} · kotlet: {c} · harga terbaik: {b} 🪙",
     "mk_feeLine": "Biaya {f}% per penjualan dibakar — perisai anti-inflasi",
     "mk_inv": "🥩 Di gudangmu: {n}",
@@ -1592,6 +1860,44 @@
     "mk_bought": "Terbeli {q} 🥩 seharga {t} 🪙",
     "mk_listed": "Order terpasang! Kukabari saat terjual.",
     "mk_cancelledMsg": "Order dibatalkan, kotlet kembali ke gudang",
+    "as_cutlet": "Kotlet",
+    "as_metal": "Logam",
+    "as_hydrogen": "Hidrogen",
+    "as_crystal": "Kristal",
+    "as_parts": "Komponen",
+    "mk_index": "📈 INDEKS BURSA",
+    "mk_chart": "📊 HARGA 7 HARI",
+    "mk_noTrades": "Belum ada transaksi — jadilah yang pertama!",
+    "mk_avg": "Harga rata-rata seminggu: {p} 🪙 · terjual: {v}",
+    "mk_asks": "🛒 DIJUAL",
+    "mk_bids": "🙋 DICARI",
+    "mk_noBids": "Belum ada order beli",
+    "mk_sellTo": "Jual",
+    "mk_sellHow": "Jual berapa?",
+    "mk_bidTitle": "🙋 ORDER BELI",
+    "mk_bidHint": "Koin dibekukan di order sampai terjadi transaksi. Batalkan order — koin kembali.",
+    "mk_bid": "Pasang order beli",
+    "mk_bidPreview": "{t} 🪙 akan dibekukan",
+    "mk_have": "Punyamu: {n}",
+    "mk_floor": "Harga kotlet minimal {p} 🪙: bahan bakar dari toko seharga Bintang selalu lebih untung",
+    "mk_side_sell": "jual",
+    "mk_side_buy": "beli",
+    "mk_listedBid": "Order beli terpasang! Koin dibekukan sampai transaksi.",
+    "mk_sold": "Terjual {q}, diterima {g} 🪙 setelah biaya",
+    "mk_shuttleNote": "🚀 Shuttle-mu: biaya {f}% untuk penjualanmu",
+    "sw_title": "🔄 TUKAR SUMBER DAYA",
+    "sw_hint": "Berikan yang berlebih — dapatkan yang dibutuhkan. Tanpa koin, tanpa biaya.",
+    "sw_give": "Kuberikan",
+    "sw_want": "Ingin dapat",
+    "sw_qty": "Berapa",
+    "sw_create": "Tawarkan tukar",
+    "sw_take": "Tukar",
+    "sw_empty": "Belum ada tawaran tukar",
+    "sw_mine": "Tawaranku",
+    "sw_done": "Tukar berhasil!",
+    "sw_created": "Tawaran dipasang, sumber daya disisihkan",
+    "sw_cancelled": "Tawaran dibatalkan, sumber daya kembali",
+    "ws_armorUntil": "🛡 Zirah aktif hingga {t}",
     "st_title": "🛰 STASIUN TIM",
     "st_level": "Level {l} dari {m}",
     "st_bonus": "+{p}% penambangan untuk setiap petarung",
@@ -1704,16 +2010,16 @@
     "ws_owned": "✅ Già tuo",
     "ws_crafted": "Fatto! Il potenziamento è già attivo.",
     "ws_armor": "🛡 Cyber-Armatura",
-    "ws_armorLvl": "livello {l}/{m} · +{p}% all'estrazione per livello",
+    "ws_armorLvl": "livello {l}/{m} · +{p}% per livello per 30 giorni",
     "ws_shuttleOn": "🚀 Shuttle costruito: commissione della borsa {fee}%",
     "ws_shuttleOff": "🚀 Shuttle non costruito: commissione della borsa {fee}%",
     "eff_nitrogen": "+40% all'estrazione di tutti i robot",
     "eff_nuclear": "×5 all'estrazione, le Trivelle mangiano ×3 cotolette",
     "eff_drone": "i robot non invecchiano",
     "eff_shield": "nessuno può farti incursioni",
-    "eff_cutlet": "1 cyber-cotoletta nell'inventario",
-    "eff_armor": "+10% all'estrazione per sempre",
-    "eff_shuttle": "commissione della borsa dimezzata, ordini fino a 500 cotolette — per sempre",
+    "eff_cutlet": "1 cyber-cotoletta nell'inventario (cara: il carburante conviene in negozio)",
+    "eff_armor": "+10% all'estrazione per livello per 30 giorni",
+    "eff_shuttle": "solo tuo: commissione del 5% sulle tue vendite e ordini fino a 500 cotolette — per sempre",
     "raid_title": "🏴‍☠️ INCURSIONI",
     "raid_how": "📖 Come funziona",
     "raid_rule1": "Scegli una mossa; il bersaglio ha una posizione di difesa impostata in anticipo. Decide la Morra Cinese: è un duello di decisioni, non una lotteria.",
@@ -1747,7 +2053,7 @@
     "rock": "🪨 Sasso",
     "scissors": "✂️ Forbici",
     "paper": "📄 Carta",
-    "mk_title": "📈 BORSA DELLE COTOLETTE",
+    "mk_title": "📈 BORSA",
     "mk_stats": "Ordini: {o} · cotolette: {c} · miglior prezzo: {b} 🪙",
     "mk_feeLine": "La commissione del {f}% su ogni vendita viene bruciata — scudo contro l'inflazione",
     "mk_inv": "🥩 Nel tuo inventario: {n}",
@@ -1786,6 +2092,44 @@
     "goals_claimed": "🎁 Il forziere di oggi è stato ritirato. Domani nuovi obiettivi!",
     "goals_reset": "Gli obiettivi si rinnovano alle 00:00 UTC",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · serie {s} gg",
+    "as_cutlet": "Cotolette",
+    "as_metal": "Metallo",
+    "as_hydrogen": "Idrogeno",
+    "as_crystal": "Cristalli",
+    "as_parts": "Componenti",
+    "mk_index": "📈 INDICE DI BORSA",
+    "mk_chart": "📊 PREZZO A 7 GIORNI",
+    "mk_noTrades": "Ancora nessuno scambio — sii il primo o la prima!",
+    "mk_avg": "Prezzo medio della settimana: {p} 🪙 · venduti: {v}",
+    "mk_asks": "🛒 IN VENDITA",
+    "mk_bids": "🙋 RICHIESTE",
+    "mk_noBids": "Ancora nessun ordine di acquisto",
+    "mk_sellTo": "Vendi",
+    "mk_sellHow": "Quante venderne?",
+    "mk_bidTitle": "🙋 ORDINE DI ACQUISTO",
+    "mk_bidHint": "Le monete restano congelate nell'ordine fino allo scambio. Ritiri l'ordine e le monete tornano.",
+    "mk_bid": "Piazza l'ordine",
+    "mk_bidPreview": "Verranno congelate {t} 🪙",
+    "mk_have": "Hai: {n}",
+    "mk_floor": "Una cotoletta non costa meno di {p} 🪙: il carburante del negozio in Stars conviene sempre",
+    "mk_side_sell": "vendo",
+    "mk_side_buy": "compro",
+    "mk_listedBid": "Ordine di acquisto piazzato! Monete congelate fino allo scambio.",
+    "mk_sold": "Vendute {q}, ricevute {g} 🪙 al netto della commissione",
+    "mk_shuttleNote": "🚀 Il tuo Shuttle: commissione del {f}% sulle tue vendite",
+    "sw_title": "🔄 SCAMBIO DI RISORSE",
+    "sw_hint": "Dai ciò che ti avanza, ricevi ciò che ti serve. Senza monete e senza commissioni.",
+    "sw_give": "Do",
+    "sw_want": "Voglio",
+    "sw_qty": "Quantità",
+    "sw_create": "Proponi uno scambio",
+    "sw_take": "Scambia",
+    "sw_empty": "Ancora nessuna proposta di scambio",
+    "sw_mine": "Le mie proposte",
+    "sw_done": "Scambio concluso!",
+    "sw_created": "Proposta pubblicata, risorse messe da parte",
+    "sw_cancelled": "Proposta ritirata, risorse restituite",
+    "ws_armorUntil": "🛡 Armatura attiva fino al {t}",
     "featureOff": "⚙️ Sezione in manutenzione",
     "done": "Fatto!",
     "loading": "⏳ Caricamento…"
@@ -1879,16 +2223,16 @@
     "ws_owned": "✅ Już masz",
     "ws_crafted": "Gotowe! Ulepszenie już działa.",
     "ws_armor": "🛡 Cyber-pancerz",
-    "ws_armorLvl": "poziom {l}/{m} · +{p}% do wydobycia za poziom",
+    "ws_armorLvl": "poziom {l}/{m} · +{p}% za poziom na 30 dni",
     "ws_shuttleOn": "🚀 Wahadłowiec zbudowany: prowizja giełdy {fee}%",
     "ws_shuttleOff": "🚀 Brak Wahadłowca: prowizja giełdy {fee}%",
     "eff_nitrogen": "+40% do wydobycia wszystkich robotów",
     "eff_nuclear": "×5 do wydobycia, Wiertacze jedzą ×3 kotletów",
     "eff_drone": "roboty się nie starzeją",
     "eff_shield": "nikt nie może cię najechać",
-    "eff_cutlet": "1 cyber-kotlet do magazynu",
-    "eff_armor": "+10% do wydobycia na zawsze",
-    "eff_shuttle": "prowizja giełdy o połowę niższa, zlecenia do 500 kotletów — na zawsze",
+    "eff_cutlet": "1 cyber-kotlet do magazynu (drogo: paliwo w sklepie wychodzi taniej)",
+    "eff_armor": "+10% do wydobycia za poziom na 30 dni",
+    "eff_shuttle": "tylko twój: prowizja 5% od twoich sprzedaży i zlecenia do 500 kotletów — na zawsze",
     "raid_title": "🏴‍☠️ NAJAZDY",
     "raid_how": "📖 Jak to działa",
     "raid_rule1": "Wybierasz gest, a cel ma z góry ustawioną postawę obronną. O wyniku decyduje kamień-papier-nożyce: to pojedynek decyzji, a nie loteria.",
@@ -1922,7 +2266,7 @@
     "rock": "🪨 Kamień",
     "scissors": "✂️ Nożyce",
     "paper": "📄 Papier",
-    "mk_title": "📈 GIEŁDA KOTLETÓW",
+    "mk_title": "📈 GIEŁDA",
     "mk_stats": "Zlecenia: {o} · kotlety: {c} · najlepsza cena: {b} 🪙",
     "mk_feeLine": "Prowizja {f}% od sprzedaży spala się — tarcza przed inflacją",
     "mk_inv": "🥩 W twoim magazynie: {n}",
@@ -1961,6 +2305,44 @@
     "goals_claimed": "🎁 Dzisiejsza skrzynia odebrana. Jutro nowe cele!",
     "goals_reset": "Cele odnawiają się o 00:00 UTC",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · seria {s} dn.",
+    "as_cutlet": "Kotlety",
+    "as_metal": "Metal",
+    "as_hydrogen": "Wodór",
+    "as_crystal": "Kryształy",
+    "as_parts": "Części",
+    "mk_index": "📈 INDEKS GIEŁDY",
+    "mk_chart": "📊 CENA Z 7 DNI",
+    "mk_noTrades": "Na razie bez transakcji — bądź pierwszy(a)!",
+    "mk_avg": "Średnia cena z tygodnia: {p} 🪙 · sprzedano: {v}",
+    "mk_asks": "🛒 SPRZEDAJĄ",
+    "mk_bids": "🙋 KUPUJĄ",
+    "mk_noBids": "Na razie brak zleceń kupna",
+    "mk_sellTo": "Sprzedaj",
+    "mk_sellHow": "Ile sprzedać?",
+    "mk_bidTitle": "🙋 ZLECENIE KUPNA",
+    "mk_bidHint": "Monety są zamrożone w zleceniu do transakcji. Wycofasz zlecenie — monety wrócą.",
+    "mk_bid": "Złóż zlecenie kupna",
+    "mk_bidPreview": "Zostanie zamrożone {t} 🪙",
+    "mk_have": "Masz: {n}",
+    "mk_floor": "Kotlet nie taniej niż {p} 🪙: paliwo ze sklepu za Gwiazdki zawsze wychodzi korzystniej",
+    "mk_side_sell": "sprzedaję",
+    "mk_side_buy": "kupuję",
+    "mk_listedBid": "Zlecenie kupna złożone! Monety zamrożone do transakcji.",
+    "mk_sold": "Sprzedano {q}, otrzymano {g} 🪙 po prowizji",
+    "mk_shuttleNote": "🚀 Twój Wahadłowiec: prowizja {f}% od twoich sprzedaży",
+    "sw_title": "🔄 WYMIANA SUROWCÓW",
+    "sw_hint": "Oddaj nadmiar — weź to, czego potrzebujesz. Bez monet i bez prowizji.",
+    "sw_give": "Oddaję",
+    "sw_want": "Chcę dostać",
+    "sw_qty": "Ile",
+    "sw_create": "Zaproponuj wymianę",
+    "sw_take": "Wymień",
+    "sw_empty": "Na razie brak propozycji wymiany",
+    "sw_mine": "Moje propozycje",
+    "sw_done": "Wymiana zrealizowana!",
+    "sw_created": "Propozycja wystawiona, surowce odłożone",
+    "sw_cancelled": "Propozycja wycofana, surowce wróciły",
+    "ws_armorUntil": "🛡 Pancerz działa do {t}",
     "featureOff": "⚙️ Sekcja w przerwie technicznej",
     "done": "Gotowe!",
     "loading": "⏳ Ładowanie…"
@@ -2054,16 +2436,16 @@
     "ws_owned": "✅ Já tem",
     "ws_crafted": "Pronto! A melhoria já está funcionando.",
     "ws_armor": "🛡 Ciber-Armadura",
-    "ws_armorLvl": "nível {l}/{m} · +{p}% de mineração por nível",
+    "ws_armorLvl": "nível {l}/{m} · +{p}% por nível por 30 dias",
     "ws_shuttleOn": "🚀 Shuttle montado: taxa da bolsa {fee}%",
     "ws_shuttleOff": "🚀 Shuttle não montado: taxa da bolsa {fee}%",
     "eff_nitrogen": "+40% de mineração para todos os robôs",
     "eff_nuclear": "×5 de mineração, os Perfuradores comem ×3 bifes",
     "eff_drone": "os robôs não envelhecem",
     "eff_shield": "ninguém pode saquear você",
-    "eff_cutlet": "1 ciber-bife no estoque",
-    "eff_armor": "+10% de mineração para sempre",
-    "eff_shuttle": "taxa da bolsa pela metade, ordens de até 500 bifes — para sempre",
+    "eff_cutlet": "1 ciber-bife no estoque (caro: o combustível sai mais barato na loja)",
+    "eff_armor": "+10% de mineração por nível por 30 dias",
+    "eff_shuttle": "só seu: taxa de 5% nas suas vendas e ordens de até 500 bifes — para sempre",
     "raid_title": "🏴‍☠️ SAQUES",
     "raid_how": "📖 Como funciona",
     "raid_rule1": "Você escolhe uma jogada; o alvo já deixou uma postura de defesa definida. Quem decide é o pedra-papel-tesoura: um duelo de decisões, não uma loteria.",
@@ -2097,7 +2479,7 @@
     "rock": "🪨 Pedra",
     "scissors": "✂️ Tesoura",
     "paper": "📄 Papel",
-    "mk_title": "📈 BOLSA DE BIFES",
+    "mk_title": "📈 BOLSA",
     "mk_stats": "Ordens: {o} · bifes: {c} · melhor preço: {b} 🪙",
     "mk_feeLine": "A taxa de {f}% por venda é queimada — proteção contra a inflação",
     "mk_inv": "🥩 No seu estoque: {n}",
@@ -2117,6 +2499,44 @@
     "mk_bought": "Comprou {q} 🥩 por {t} 🪙",
     "mk_listed": "Ordem anunciada! Mando uma mensagem quando vender.",
     "mk_cancelledMsg": "Ordem retirada, os bifes voltaram para o estoque",
+    "as_cutlet": "Bifes",
+    "as_metal": "Metal",
+    "as_hydrogen": "Hidrogênio",
+    "as_crystal": "Cristais",
+    "as_parts": "Peças",
+    "mk_index": "📈 ÍNDICE DA BOLSA",
+    "mk_chart": "📊 PREÇO EM 7 DIAS",
+    "mk_noTrades": "Ainda não houve negócios — seja a primeira pessoa!",
+    "mk_avg": "Preço médio da semana: {p} 🪙 · vendidos: {v}",
+    "mk_asks": "🛒 VENDENDO",
+    "mk_bids": "🙋 COMPRANDO",
+    "mk_noBids": "Ainda não há ordens de compra",
+    "mk_sellTo": "Vender",
+    "mk_sellHow": "Quantos vender?",
+    "mk_bidTitle": "🙋 ORDEM DE COMPRA",
+    "mk_bidHint": "As moedas ficam congeladas na ordem até o negócio. Retirou a ordem — as moedas voltam.",
+    "mk_bid": "Criar ordem de compra",
+    "mk_bidPreview": "Serão congeladas {t} 🪙",
+    "mk_have": "Você tem: {n}",
+    "mk_floor": "Um bife não sai por menos de {p} 🪙: o combustível da loja por Estrelas é sempre mais vantajoso",
+    "mk_side_sell": "vendo",
+    "mk_side_buy": "compro",
+    "mk_listedBid": "Ordem de compra criada! As moedas ficam congeladas até o negócio.",
+    "mk_sold": "Vendidos {q}, recebidas {g} 🪙 após a taxa",
+    "mk_shuttleNote": "🚀 Seu Shuttle: taxa de {f}% nas suas vendas",
+    "sw_title": "🔄 TROCA DE RECURSOS",
+    "sw_hint": "Dê o que sobra — receba o que falta. Sem moedas e sem taxa.",
+    "sw_give": "Dou",
+    "sw_want": "Quero receber",
+    "sw_qty": "Quantos",
+    "sw_create": "Propor troca",
+    "sw_take": "Trocar",
+    "sw_empty": "Ainda não há propostas de troca",
+    "sw_mine": "Minhas propostas",
+    "sw_done": "Troca concluída!",
+    "sw_created": "Proposta publicada, recursos reservados",
+    "sw_cancelled": "Proposta retirada, os recursos voltaram",
+    "ws_armorUntil": "🛡 Armadura ativa até {t}",
     "st_title": "🛰 ESTAÇÃO DA EQUIPE",
     "st_level": "Nível {l} de {m}",
     "st_bonus": "+{p}% de mineração para cada membro",
@@ -2229,16 +2649,16 @@
     "ws_owned": "✅ Allaqachon bor",
     "ws_crafted": "Tayyor! Kuchaytirgich allaqachon ishlayapti.",
     "ws_armor": "🛡 Kiber-zirh",
-    "ws_armorLvl": "daraja {l}/{m} · har darajaga qazib olishga +{p}%",
+    "ws_armorLvl": "daraja {l}/{m} · har darajaga +{p}%, 30 kunga",
     "ws_shuttleOn": "🚀 Shattl yig'ilgan: birja komissiyasi {fee}%",
     "ws_shuttleOff": "🚀 Shattl yig'ilmagan: birja komissiyasi {fee}%",
     "eff_nitrogen": "barcha robotlar qazib olishiga +40%",
     "eff_nuclear": "qazib olish ×5, Burg'ulovchilar ×3 kotlet yeydi",
     "eff_drone": "robotlar eskirmaydi",
     "eff_shield": "senga bosqin qilib bo'lmaydi",
-    "eff_cutlet": "omborga 1 kiber-kotlet",
-    "eff_armor": "qazib olishga abadiy +10%",
-    "eff_shuttle": "birja komissiyasi ikki baravar past, buyurtmalar 500 kotletgacha — abadiy",
+    "eff_cutlet": "omborga 1 kiber-kotlet (qimmat: yoqilg'i do'konda arzonroq)",
+    "eff_armor": "har darajaga qazib olishga +10%, 30 kunga",
+    "eff_shuttle": "faqat seniki: sotuvlaringga 5% komissiya va buyurtmalar 500 kotletgacha — abadiy",
     "raid_title": "🏴‍☠️ BOSQINLAR",
     "raid_how": "📖 Bu qanday ishlaydi",
     "raid_rule1": "Sen ishora tanlaysan, nishonda esa oldindan himoya pozitsiyasi qo'yilgan. Natijani tosh-qaychi-qog'oz hal qiladi: bu lotereya emas, qarorlar dueli.",
@@ -2272,7 +2692,7 @@
     "rock": "🪨 Tosh",
     "scissors": "✂️ Qaychi",
     "paper": "📄 Qog'oz",
-    "mk_title": "📈 KOTLET BIRJASI",
+    "mk_title": "📈 BIRJA",
     "mk_stats": "Buyurtmalar: {o} · kotletlar: {c} · eng yaxshi narx: {b} 🪙",
     "mk_feeLine": "Sotuvdan {f}% komissiya yondiriladi — inflyatsiyadan himoya",
     "mk_inv": "🥩 Omboringda: {n}",
@@ -2292,6 +2712,44 @@
     "mk_bought": "{q} 🥩 sotib olindi: {t} 🪙",
     "mk_listed": "Buyurtma qo'yildi! Sotib olishganda xabar beraman.",
     "mk_cancelledMsg": "Buyurtma olib tashlandi, kotletlar omborga qaytdi",
+    "as_cutlet": "Kotletlar",
+    "as_metal": "Metall",
+    "as_hydrogen": "Vodorod",
+    "as_crystal": "Kristallar",
+    "as_parts": "Detallar",
+    "mk_index": "📈 BIRJA INDEKSI",
+    "mk_chart": "📊 7 KUNLIK NARX",
+    "mk_noTrades": "Hali bitimlar bo'lmagan — birinchi bo'l!",
+    "mk_avg": "Haftalik o'rtacha narx: {p} 🪙 · sotildi: {v}",
+    "mk_asks": "🛒 SOTISHADI",
+    "mk_bids": "🙋 SOTIB OLISHADI",
+    "mk_noBids": "Hozircha sotib olish so'rovlari yo'q",
+    "mk_sellTo": "Sotish",
+    "mk_sellHow": "Nechta sotasan?",
+    "mk_bidTitle": "🙋 SOTIB OLISH SO'ROVI",
+    "mk_bidHint": "Tangalar bitimgacha so'rovda muzlatiladi. So'rovni olib tashlasang — tangalar qaytadi.",
+    "mk_bid": "So'rov qo'yish",
+    "mk_bidPreview": "{t} 🪙 muzlatiladi",
+    "mk_have": "Senda: {n}",
+    "mk_floor": "Kotlet {p} 🪙 dan arzon bo'lmaydi: do'kondan Stars evaziga yoqilg'i har doim foydaliroq",
+    "mk_side_sell": "sotaman",
+    "mk_side_buy": "sotib olaman",
+    "mk_listedBid": "So'rov qo'yildi! Tangalar bitimgacha muzlatildi.",
+    "mk_sold": "{q} sotildi, komissiyadan keyin {g} 🪙 olindi",
+    "mk_shuttleNote": "🚀 Shattling: sotuvlaringga {f}% komissiya",
+    "sw_title": "🔄 RESURS ALMASHUVI",
+    "sw_hint": "Ortiqchasini ber — keraklisini ol. Tangasiz va komissiyasiz.",
+    "sw_give": "Beraman",
+    "sw_want": "Olmoqchiman",
+    "sw_qty": "Nechta",
+    "sw_create": "Almashuv taklif qilish",
+    "sw_take": "Almashish",
+    "sw_empty": "Hozircha almashuv takliflari yo'q",
+    "sw_mine": "Mening takliflarim",
+    "sw_done": "Almashuv amalga oshdi!",
+    "sw_created": "Taklif qo'yildi, resurslar ajratib qo'yildi",
+    "sw_cancelled": "Taklif olib tashlandi, resurslar qaytdi",
+    "ws_armorUntil": "🛡 Zirh {t} gacha amal qiladi",
     "st_title": "🛰 JAMOA STANSIYASI",
     "st_level": "Daraja: {l} / {m}",
     "st_bonus": "har bir jangchiga qazib olishga +{p}%",
@@ -2404,16 +2862,16 @@
     "ws_owned": "✅ 已拥有",
     "ws_crafted": "完成！强化已经生效。",
     "ws_armor": "🛡 赛博装甲",
-    "ws_armorLvl": "等级 {l}/{m} · 每级产量 +{p}%",
+    "ws_armorLvl": "等级 {l}/{m} · 每级 +{p}%，有效期 30 天",
     "ws_shuttleOn": "🚀 穿梭机已建成：交易所手续费 {fee}%",
     "ws_shuttleOff": "🚀 尚未建成穿梭机：交易所手续费 {fee}%",
     "eff_nitrogen": "所有机器人产量 +40%",
     "eff_nuclear": "产量 ×5，钻机吃肉排 ×3",
     "eff_drone": "机器人不会老化",
     "eff_shield": "没人能突袭你",
-    "eff_cutlet": "1 份赛博肉排入仓库",
-    "eff_armor": "产量永久 +10%",
-    "eff_shuttle": "交易所手续费减半，挂单最多 500 份肉排——永久",
+    "eff_cutlet": "1 份赛博肉排入仓库（较贵：商店里的燃料更划算）",
+    "eff_armor": "每级产量 +10%，有效期 30 天",
+    "eff_shuttle": "只属于你：你出售时手续费 5%，挂单最多 500 份肉排——永久",
     "raid_title": "🏴‍☠️ 突袭",
     "raid_how": "📖 玩法说明",
     "raid_rule1": "你选择手势，目标事先设好了防御姿态。胜负由石头剪刀布决定：这是决策的较量，不是抽奖。",
@@ -2447,7 +2905,7 @@
     "rock": "🪨 石头",
     "scissors": "✂️ 剪刀",
     "paper": "📄 布",
-    "mk_title": "📈 肉排交易所",
+    "mk_title": "📈 交易所",
     "mk_stats": "挂单：{o} · 肉排：{c} · 最低价：{b} 🪙",
     "mk_feeLine": "每笔成交销毁 {f}% 手续费——抵御通胀",
     "mk_inv": "🥩 你的仓库：{n}",
@@ -2467,6 +2925,44 @@
     "mk_bought": "已用 {t} 🪙 买入 {q} 🥩",
     "mk_listed": "挂单已上架！成交后会通知你。",
     "mk_cancelledMsg": "挂单已撤回，肉排已回到仓库",
+    "as_cutlet": "肉排",
+    "as_metal": "金属",
+    "as_hydrogen": "氢气",
+    "as_crystal": "晶体",
+    "as_parts": "零件",
+    "mk_index": "📈 交易所指数",
+    "mk_chart": "📊 7 天价格",
+    "mk_noTrades": "还没有成交——来做第一笔吧！",
+    "mk_avg": "本周均价：{p} 🪙 · 成交量：{v}",
+    "mk_asks": "🛒 出售中",
+    "mk_bids": "🙋 求购中",
+    "mk_noBids": "还没有求购单",
+    "mk_sellTo": "卖出",
+    "mk_sellHow": "卖多少？",
+    "mk_bidTitle": "🙋 求购单",
+    "mk_bidHint": "金币会冻结在求购单里直到成交。撤回求购单，金币就会退回。",
+    "mk_bid": "发布求购单",
+    "mk_bidPreview": "将冻结 {t} 🪙",
+    "mk_have": "你有：{n}",
+    "mk_floor": "每块肉排不低于 {p} 🪙：用星星在商店买燃料永远更划算",
+    "mk_side_sell": "出售",
+    "mk_side_buy": "求购",
+    "mk_listedBid": "求购单已发布！金币已冻结至成交。",
+    "mk_sold": "已售出 {q}，扣除手续费后获得 {g} 🪙",
+    "mk_shuttleNote": "🚀 你的穿梭机：你出售时手续费 {f}%",
+    "sw_title": "🔄 资源交换",
+    "sw_hint": "拿出多余的，换来需要的。不用金币，没有手续费。",
+    "sw_give": "我付出",
+    "sw_want": "我想要",
+    "sw_qty": "数量",
+    "sw_create": "发起交换",
+    "sw_take": "交换",
+    "sw_empty": "还没有交换提议",
+    "sw_mine": "我的提议",
+    "sw_done": "交换完成！",
+    "sw_created": "提议已发布，资源已预留",
+    "sw_cancelled": "提议已撤回，资源已退回",
+    "ws_armorUntil": "🛡 装甲有效期至 {t}",
     "st_title": "🛰 战队空间站",
     "st_level": "等级 {l} / {m}",
     "st_bonus": "每位成员产量 +{p}%",
@@ -2709,7 +3205,8 @@
     const recipes = w.recipes.map(r => {
       const cost = RES.filter(k => r.cost[k]).map(k =>
         '<span class="chip ' + ((w.stock[k] || 0) >= r.cost[k] ? 'have' : 'lack') + '">' +
-        RES_ICON[k] + ' ' + num(w.stock[k] || 0) + '/' + r.cost[k] + '</span>').join("");
+        RES_ICON[k] + ' ' + num(w.stock[k] || 0) + '/' + r.cost[k] + '</span>').join("") +
+        (r.coins ? '<span class="chip ' + (w.balance >= r.coins ? 'have' : 'lack') + '">🪙 ' + num(w.balance) + '/' + num(r.coins) + '</span>' : '');
       const btn = r.done ? '<span class="owned">' + L.ws_owned + '</span>'
         : '<button class="mini craft" data-id="' + r.id + '"' + (r.affordable ? '' : ' disabled') + '>' + L.ws_craft + '</button>';
       return '<div class="recipe' + (r.affordable ? ' ready' : '') + '"><div class="rh"><b>' + esc(r.title) + '</b>' + btn + '</div>' +
@@ -2719,6 +3216,8 @@
       '<div class="chips big">' + resLine(w.stock) + '</div>' +
       '<div class="hint">' + L.ws_hint + '</div>' +
       row(L.ws_armor, fmt(L.ws_armorLvl, { l: w.armor_level, m: w.armor_max, p: w.armor_pct })) +
+      (w.armor_until ? '<div class="hint">' + fmt(L.ws_armorUntil, { t: new Date(w.armor_until).toLocaleString(me.lang === "ru" ? "ru-RU" : "en-GB",
+        { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) }) + '</div>' : '') +
       '<div class="hint">' + fmt(w.has_shuttle ? L.ws_shuttleOn : L.ws_shuttleOff,
         { fee: w.has_shuttle ? w.shuttle_fee : w.market_fee }) + '</div>') +
       card(L.resources + " · " + L.resWhere, RES.map(k => row(RES_ICON[k] + " " + esc(w.res_names[k]), L["res_" + k + "_src"])).join("")) +
@@ -2794,55 +3293,127 @@
     });
   }
 
-  // ================= 📈 Биржа =================
+  // ================= 📈 Биржа v2: котлеты и ресурсы, заявки, график, индекс, обмен =================
+  const ASSETS = ["cutlet", "metal", "hydrogen", "crystal", "parts"];
+  const A_ICON = { cutlet: "🥩", metal: "⛏", hydrogen: "💧", crystal: "💎", parts: "⚙️" };
+  let mkAsset = "cutlet";
+  function chartSvg(history) {
+    const pts = history.map((d, i) => [i, d.avg]).filter(p => p[1] !== null);
+    if (!pts.length) return '<div class="hint">' + L.mk_noTrades + '</div>';
+    const vals = pts.map(p => p[1]);
+    const lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    const W = 300, H = 90, pad = 10, n = Math.max(history.length - 1, 1);
+    const x = i => pad + i * (W - 2 * pad) / n;
+    const y = v => hi === lo ? H / 2 : H - pad - (v - lo) * (H - 2 * pad) / (hi - lo);
+    const line = pts.map(p => x(p[0]).toFixed(1) + "," + y(p[1]).toFixed(1)).join(" ");
+    const dots = pts.map(p => '<circle cx="' + x(p[0]).toFixed(1) + '" cy="' + y(p[1]).toFixed(1) + '" r="3"/>').join("");
+    const days = history.map((d, i) => '<text x="' + x(i).toFixed(1) + '" y="' + (H + 12) + '">' + d.day.slice(8) + '</text>').join("");
+    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + (H + 16) + '"><polyline points="' + line + '"/>' + dots + days + '</svg>';
+  }
+  function idxChip(a, ix) {
+    let tail = "—";
+    if (ix && ix.last !== null) {
+      const ch = ix.change_pct;
+      const cls = ch > 0 ? "up" : ch < 0 ? "down" : "";
+      tail = num(Math.round(ix.last)) + ' <span class="' + cls + '">' + (ch > 0 ? "▲" : ch < 0 ? "▼" : "•") + Math.abs(ch || 0) + '%</span>';
+    }
+    return '<button class="idx' + (a === mkAsset ? ' on' : '') + '" data-asset="' + a + '">' + A_ICON[a] + ' ' + tail + '</button>';
+  }
   async function viewMarket(box) {
-    const m = await api("/api/market");
-    const best = m.stats.best_price === null ? "—" : m.stats.best_price;
-    const offers = m.orders.map(o => '<div class="offer"><div class="ol">' + fmt(L.mk_offer, { q: o.qty, p: o.price }) +
-      '</div><button class="mini pick" data-id="' + o.id + '" data-q="' + o.qty + '" data-p="' + o.price + '">🛒</button>' +
-      '<div class="buyrow hidden" id="buy' + o.id + '"></div></div>').join("") || '<div class="hint">' + L.mk_empty + '</div>';
-    const mine = m.my.map(o => '<div class="offer"><div class="ol">' + fmt(L.mk_offer, { q: o.qty, p: o.price }) +
-      '</div><button class="mini ghost cancel" data-id="' + o.id + '">' + L.mk_cancel + '</button></div>').join("");
+    const m = await api("/api/market?asset=" + mkAsset);
+    const a = m.asset, icon = A_ICON[a], name = L["as_" + a];
+    const asks = m.asks.map(o => '<div class="offer"><div class="ol">' + o.qty + ' ' + icon + ' × ' + num(o.price) + ' 🪙</div>' +
+      '<button class="mini take" data-id="' + o.id + '" data-q="' + o.qty + '" data-p="' + o.price + '" data-side="sell">🛒</button>' +
+      '<div class="buyrow hidden" id="q' + o.id + '"></div></div>').join("") || '<div class="hint">' + L.mk_empty + '</div>';
+    const bids = m.bids.map(o => '<div class="offer"><div class="ol">' + o.qty + ' ' + icon + ' × ' + num(o.price) + ' 🪙</div>' +
+      '<button class="mini ghost take" data-id="' + o.id + '" data-q="' + o.qty + '" data-p="' + o.price + '" data-side="buy">' + L.mk_sellTo + '</button>' +
+      '<div class="buyrow hidden" id="q' + o.id + '"></div></div>').join("") || '<div class="hint">' + L.mk_noBids + '</div>';
+    const mine = m.my.map(o => '<div class="offer"><div class="ol">' + (o.side === "sell" ? L.mk_side_sell : L.mk_side_buy) + ': ' +
+      o.qty + ' ' + A_ICON[o.asset] + ' × ' + num(o.price) + ' 🪙</div><button class="mini ghost cancel" data-id="' + o.id + '">' +
+      L.mk_cancel + '</button></div>').join("");
+    const startPrice = m.stats.best_price || m.stats.best_bid || m.min_price;
+    const form = (id, title, hint, btn, disabled) => card(title,
+      (hint ? '<div class="hint">' + hint + '</div>' : '') +
+      '<label class="lbl">' + L.mk_qty + '<input id="' + id + 'Q" type="number" inputmode="numeric" min="1" max="' + m.max_qty + '" value="1"></label>' +
+      '<label class="lbl">' + L.mk_price + '<input id="' + id + 'P" type="number" inputmode="numeric" min="' + m.min_price + '" max="' + m.max_price + '" value="' + startPrice + '"></label>' +
+      '<div class="hint" id="' + id + 'V"></div>' +
+      '<button class="btn" id="' + id + 'B"' + (disabled ? ' disabled' : '') + '>' + btn + '</button>');
+    const resOpts = sel => RES.map(k => '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + A_ICON[k] + ' ' + L["as_" + k] + '</option>').join("");
+    const swaps = m.swaps.map(s => '<div class="offer"><div class="ol">' + s.give_qty + ' ' + A_ICON[s.give_kind] + ' → ' +
+      s.want_qty + ' ' + A_ICON[s.want_kind] + '</div><button class="mini swapTake" data-id="' + s.id + '">' + L.sw_take + '</button></div>').join("") ||
+      '<div class="hint">' + L.sw_empty + '</div>';
+    const mySwaps = m.my_swaps.map(s => '<div class="offer"><div class="ol">' + s.give_qty + ' ' + A_ICON[s.give_kind] + ' → ' +
+      s.want_qty + ' ' + A_ICON[s.want_kind] + '</div><button class="mini ghost swapCancel" data-id="' + s.id + '">' + L.mk_cancel + '</button></div>').join("");
     box.innerHTML =
-      card(L.mk_title, '<div class="hint">' + fmt(L.mk_stats, { o: m.stats.orders, c: m.stats.cutlets, b: best }) + '</div>' +
+      card(L.mk_index, '<div class="idxrow">' + ASSETS.map(x => idxChip(x, m.index[x])).join("") + '</div>' +
+        '<div class="balance small">' + icon + ' ' + name + '</div>' +
+        '<div class="hint">' + fmt(L.mk_have, { n: num(m.have) }) + ' · 🪙 ' + num(m.balance) + '</div>' +
         '<div class="hint">' + fmt(L.mk_feeLine, { f: m.fee }) + '</div>' +
-        '<div class="balance small">' + num(m.balance) + ' 🪙</div>' + '<div class="hint">' + fmt(L.mk_inv, { n: m.inv }) + '</div>') +
-      card(L.mk_offers, offers) +
-      card(L.mk_sellTitle,
-        '<label class="lbl">' + L.mk_qty + '<input id="sQty" type="number" inputmode="numeric" min="1" max="' + m.max_qty + '" value="' + Math.min(Math.max(m.inv, 1), m.max_qty) + '"></label>' +
-        '<label class="lbl">' + L.mk_price + '<input id="sPrice" type="number" inputmode="numeric" min="' + m.min_price + '" max="' + m.max_price + '" value="' + (m.stats.best_price || 50) + '"></label>' +
-        '<div class="hint" id="sPrev"></div><div class="hint">' + fmt(L.mk_limits, { q: m.max_qty, o: m.max_orders }) + '</div>' +
-        '<button class="btn" id="sellBtn"' + (m.inv ? '' : ' disabled') + '>' + L.mk_sell + '</button>') +
-      (mine ? card(L.mk_my, mine) : '');
-    const qi = document.getElementById("sQty"), pi = document.getElementById("sPrice"), pv = document.getElementById("sPrev");
-    const prev = () => {
-      const total = Math.max(0, parseInt(qi.value || 0)) * Math.max(0, parseInt(pi.value || 0));
-      const fee = Math.floor(total * m.fee / 100);
-      pv.textContent = fmt(L.mk_preview, { t: total, g: total - fee, f: fee });
+        (m.shuttle ? '<div class="hint status-ok">' + fmt(L.mk_shuttleNote, { f: m.fee }) + '</div>' : '') +
+        (a === "cutlet" ? '<div class="hint">' + fmt(L.mk_floor, { p: m.cutlet_floor }) + '</div>' : '')) +
+      card(L.mk_chart, chartSvg(m.history) + (m.index[a] && m.index[a].last !== null
+        ? '<div class="hint">' + fmt(L.mk_avg, { p: m.index[a].week_avg, v: m.index[a].volume }) + '</div>' : '')) +
+      card(L.mk_asks, asks) + card(L.mk_bids, bids) +
+      form("sell", L.mk_sellTitle, fmt(L.mk_limits, { q: m.max_qty, o: m.max_orders }), L.mk_sell, !m.have) +
+      form("bid", L.mk_bidTitle, L.mk_bidHint, L.mk_bid, false) +
+      (mine ? card(L.mk_my, mine) : '') +
+      card(L.sw_title, '<div class="hint">' + L.sw_hint + '</div>' + swaps +
+        '<div class="swapform"><label class="lbl">' + L.sw_give + '<select id="swG">' + resOpts("metal") + '</select></label>' +
+        '<label class="lbl">' + L.sw_qty + '<input id="swGQ" type="number" inputmode="numeric" min="1" value="10"></label>' +
+        '<label class="lbl">' + L.sw_want + '<select id="swW">' + resOpts("hydrogen") + '</select></label>' +
+        '<label class="lbl">' + L.sw_qty + '<input id="swWQ" type="number" inputmode="numeric" min="1" value="10"></label></div>' +
+        '<button class="btn ghost" id="swB">' + L.sw_create + '</button>' +
+        (mySwaps ? '<div class="sub2">' + L.sw_mine + '</div>' + mySwaps : ''));
+
+    document.querySelectorAll(".idx").forEach(b => { b.onclick = () => { mkAsset = b.dataset.asset; go("market"); }; });
+    const val = id => Math.max(0, parseInt(document.getElementById(id).value || 0));
+    const preview = () => {
+      const t1 = val("sellQ") * val("sellP"), fee = Math.floor(t1 * m.fee / 100);
+      document.getElementById("sellV").textContent = fmt(L.mk_preview, { t: t1, g: t1 - fee, f: fee });
+      document.getElementById("bidV").textContent = fmt(L.mk_bidPreview, { t: val("bidQ") * val("bidP") });
     };
-    qi.oninput = prev; pi.oninput = prev; prev();
-    const sb = document.getElementById("sellBtn");
-    sb.onclick = () => act(sb, "/api/market/sell", { qty: parseInt(qi.value || 0), price: parseInt(pi.value || 0) },
-      async () => { notify(L.mk_listed); go("market"); });
-    document.querySelectorAll(".pick").forEach(b => {
+    ["sellQ", "sellP", "bidQ", "bidP"].forEach(id => { document.getElementById(id).oninput = preview; });
+    preview();
+    const place = (side, btnId, msg) => {
+      const b = document.getElementById(btnId), pre = side === "sell" ? "sell" : "bid";
+      b.onclick = () => act(b, "/api/market/order", { asset: a, side: side, qty: val(pre + "Q"), price: val(pre + "P") },
+        async () => { notify(msg); await refreshMe(); go("market"); });
+    };
+    place("sell", "sellB", L.mk_listed);
+    place("buy", "bidB", L.mk_listedBid);
+    document.querySelectorAll(".take").forEach(b => {
       b.onclick = () => {
-        const q = Number(b.dataset.q), p = Number(b.dataset.p), id = b.dataset.id;
-        const opts = [1, 5, 10].filter(x => x < q).map(x => [x, x + " 🥩 · " + x * p + " 🪙"]);
-        opts.push([q, fmt(L.mk_all, { q: q }) + " · " + q * p + " 🪙"]);
-        const rowEl = document.getElementById("buy" + id);
-        rowEl.innerHTML = '<div class="hint">' + L.mk_buyHow + '</div>' +
-          opts.map(o => '<button class="mini buyq" data-q="' + o[0] + '">' + o[1] + '</button>').join("");
+        const q = Number(b.dataset.q), p = Number(b.dataset.p), id = b.dataset.id, isBid = b.dataset.side === "buy";
+        const cap = isBid ? Math.min(q, m.have) : q;
+        if (cap <= 0) return notify(fmt(L.mk_have, { n: 0 }), false);
+        const opts = [1, 5, 10, 50].filter(x => x < cap).map(x => [x, x + " " + icon + " · " + num(x * p) + " 🪙"]);
+        opts.push([cap, fmt(L.mk_all, { q: cap }) + " · " + num(cap * p) + " 🪙"]);
+        const rowEl = document.getElementById("q" + id);
+        rowEl.innerHTML = '<div class="hint">' + (isBid ? L.mk_sellHow : L.mk_buyHow) + '</div>' +
+          opts.map(o => '<button class="mini qbtn" data-q="' + o[0] + '">' + o[1] + '</button>').join("");
         rowEl.classList.toggle("hidden");
-        rowEl.querySelectorAll(".buyq").forEach(x => {
-          x.onclick = () => act(x, "/api/market/buy", { order_id: Number(id), qty: Number(x.dataset.q) }, async res => {
-            notify(fmt(L.mk_bought, { q: res.qty, t: res.total })); await refreshMe(); go("market");
+        rowEl.querySelectorAll(".qbtn").forEach(x => {
+          x.onclick = () => act(x, "/api/market/fill", { order_id: Number(id), qty: Number(x.dataset.q) }, async res => {
+            notify(res.side === "sell" ? fmt(L.mk_bought, { q: res.qty, t: res.total }) : fmt(L.mk_sold, { q: res.qty, g: res.got }));
+            await refreshMe(); go("market");
           });
         });
       };
     });
     document.querySelectorAll(".cancel").forEach(b => {
       b.onclick = () => act(b, "/api/market/cancel", { order_id: Number(b.dataset.id) },
-        async () => { notify(L.mk_cancelledMsg); go("market"); });
+        async () => { notify(L.mk_cancelledMsg); await refreshMe(); go("market"); });
+    });
+    const sb = document.getElementById("swB");
+    sb.onclick = () => act(sb, "/api/swap/create", {
+      give_kind: document.getElementById("swG").value, give_qty: val("swGQ"),
+      want_kind: document.getElementById("swW").value, want_qty: val("swWQ")
+    }, async () => { notify(L.sw_created); go("market"); });
+    document.querySelectorAll(".swapTake").forEach(b => {
+      b.onclick = () => act(b, "/api/swap/accept", { swap_id: Number(b.dataset.id) }, async () => { notify(L.sw_done); await refreshMe(); go("market"); });
+    });
+    document.querySelectorAll(".swapCancel").forEach(b => {
+      b.onclick = () => act(b, "/api/swap/cancel", { swap_id: Number(b.dataset.id) }, async () => { notify(L.sw_cancelled); go("market"); });
     });
   }
 

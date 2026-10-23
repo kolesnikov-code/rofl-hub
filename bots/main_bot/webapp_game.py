@@ -25,13 +25,16 @@ from shared.analytics import track
 from shared.daily_goals import GoalsError, all_done, chest_coins, claim_chest, claimed_today, goal_progress, goals_for
 from shared.database import db
 from shared.economy import (
+    ARMOR_DAYS,
+    armor_level_active,
     ARMOR_BONUS_PER_LEVEL,
     ARMOR_MAX_LEVEL,
     DAILY_CHEST_RESOURCE,
     DAILY_STREAK_BONUS_COINS,
     DAILY_STREAK_BONUS_EVERY,
+    MARKET_ASSETS,
+    MARKET_CUTLET_MIN_PRICE,
     MARKET_MAX_PRICE,
-    MARKET_MIN_PRICE,
     MARKET_SHOWCASE_LIMIT,
     RAID_ATTACK_COOLDOWN_HOURS,
     RAID_FAIL_CAP,
@@ -50,6 +53,7 @@ from shared.economy import (
     WORKSHOP_RECIPES,
     market_fee,
     market_limits,
+    market_min_price,
     station_level_cost,
     utcnow,
 )
@@ -58,12 +62,19 @@ from shared.feature_flags import FLAG_DEFAULTS, get_flag
 from shared.locales import resolve_lang, t
 from shared.market import (
     MarketError,
-    buy_from_order,
+    accept_swap,
     cancel_order,
+    cancel_swap,
+    create_swap,
+    fill_order,
+    index_change,
     list_open_orders,
+    list_swaps,
     market_stats,
     my_open_orders,
-    place_sell_order,
+    my_swaps,
+    place_order,
+    price_history,
 )
 from shared.raids import (
     STANCES,
@@ -81,7 +92,7 @@ from shared.ranks import rank_label
 from shared.resources import get_resources
 from shared.team_station import StationError, donate, get_station, progress_to_next, recent_donations, team_member_ids
 from shared.webapp_auth import validate_init_data
-from shared.workshop import WorkshopError, can_afford, craft, recipe_cost
+from shared.workshop import WorkshopError, can_afford, craft, recipe_coins, recipe_cost
 
 logger = logging.getLogger(__name__)
 
@@ -153,27 +164,33 @@ def resource_labels(lang: str) -> dict[str, str]:
 # ============================================================================
 # Мастерская
 # ============================================================================
-def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lang: str) -> dict:
-    """Чистый сборщик витрины мастерской (юнит-тесты без aiohttp)."""
+def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lang: str,
+                           balance: int = 0, armor_until=None) -> dict:
+    """Чистый сборщик витрины мастерской (юнит-тесты без aiohttp). armor_level — действующий."""
     recipes = []
     for rid in RECIPE_ORDER:
         recipe = WORKSHOP_RECIPES[rid]
         effect = recipe["effect"]
-        done = (effect == "shuttle" and has_shuttle) or (effect == "armor" and armor_level >= ARMOR_MAX_LEVEL)
+        done = effect == "shuttle" and has_shuttle
         cost = None if done else recipe_cost(rid, armor_level)
+        coins = recipe_coins(rid)
         recipes.append({
             "id": rid,
             "effect": effect,
             "title": t(lang, f"ws.recipe_{rid}", level=min(armor_level + 1, ARMOR_MAX_LEVEL)),
             "cost": cost or {},
+            "coins": coins,
             "hours": recipe.get("hours"),
+            "days": ARMOR_DAYS if effect == "armor" else None,
             "done": done,
-            "affordable": bool(cost) and can_afford(stock, cost),
+            "affordable": bool(cost) and can_afford(stock, cost) and balance >= coins,
         })
     return {
         "stock": stock,
+        "balance": balance,
         "res_names": resource_labels(lang),
         "armor_level": armor_level,
+        "armor_until": armor_until.isoformat() if armor_until and armor_level else None,
         "armor_max": ARMOR_MAX_LEVEL,
         "armor_pct": ARMOR_BONUS_PER_LEVEL,
         "has_shuttle": has_shuttle,
@@ -191,10 +208,11 @@ async def handle_workshop(request: web.Request) -> web.Response:
         return off
     async with db.pool.acquire() as conn:
         stock = await get_resources(conn, ctx.user_id)
-        user = await conn.fetchrow("SELECT farm_armor_level, has_shuttle FROM users WHERE user_id = $1",
-                                   ctx.user_id)
-    return web.json_response(build_workshop_payload(stock, user["farm_armor_level"],
-                                                    bool(user["has_shuttle"]), ctx.lang))
+        user = await conn.fetchrow(
+            "SELECT farm_armor_level, armor_until, has_shuttle, balance FROM users WHERE user_id = $1", ctx.user_id)
+    armor = armor_level_active(user["farm_armor_level"], user["armor_until"], utcnow())
+    return web.json_response(build_workshop_payload(stock, armor, bool(user["has_shuttle"]), ctx.lang,
+                                                    balance=user["balance"], armor_until=user["armor_until"]))
 
 
 async def handle_craft(request: web.Request) -> web.Response:
@@ -367,32 +385,89 @@ async def handle_raid_go(request: web.Request) -> web.Response:
 # ============================================================================
 # Биржа котлет
 # ============================================================================
+ASSET_ICONS = {"cutlet": "🥩", "metal": "⛏", "hydrogen": "💧", "crystal": "💎", "parts": "⚙️"}
+
+
+async def _asset_stock(conn, user_id: int, asset: str) -> int:
+    if asset == "cutlet":
+        return await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = $1", user_id) or 0
+    return (await get_resources(conn, user_id))[asset]
+
+
 async def handle_market(request: web.Request) -> web.Response:
+    """Биржа v2: стакан выбранного товара, мои ордера, график 7 дней, индекс, обмен ресурсов."""
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
     if off := await _feature_off("market", ctx.lang):
         return off
+    asset = request.query.get("asset", "cutlet")
+    if asset not in MARKET_ASSETS:
+        asset = "cutlet"
+    now = utcnow()
     async with db.pool.acquire() as conn:
-        stats = await market_stats(conn)
-        orders = await list_open_orders(conn, MARKET_SHOWCASE_LIMIT * 2, exclude_user=ctx.user_id)
+        stats = await market_stats(conn, asset)
+        asks = await list_open_orders(conn, MARKET_SHOWCASE_LIMIT * 2, exclude_user=ctx.user_id,
+                                      asset=asset, side="sell")
+        bids = await list_open_orders(conn, MARKET_SHOWCASE_LIMIT * 2, exclude_user=ctx.user_id,
+                                      asset=asset, side="buy")
         mine = await my_open_orders(conn, ctx.user_id)
         user = await conn.fetchrow("SELECT inv_cutlets, balance, has_shuttle FROM users WHERE user_id = $1",
                                    ctx.user_id)
-    max_qty, max_orders = market_limits(bool(user["has_shuttle"]))
+        stock = await get_resources(conn, ctx.user_id)
+        history = await price_history(conn, asset, now)
+        index = {}
+        for a in MARKET_ASSETS:
+            index[a] = index_change(history if a == asset else await price_history(conn, a, now))
+        swaps = await list_swaps(conn, 20, exclude_user=ctx.user_id)
+        my_sw = await my_swaps(conn, ctx.user_id)
+    shuttle = bool(user["has_shuttle"])
+    max_qty, max_orders = market_limits(shuttle, asset)
+    slim = lambda o: {"id": o["id"], "qty": o["qty"], "price": o["price"]}  # noqa: E731
     return web.json_response({
-        "stats": {"orders": stats["orders"], "cutlets": stats["cutlets"], "best_price": stats["best_price"]},
-        "orders": [{"id": o["id"], "qty": o["qty"], "price": o["price"]} for o in orders],
-        "my": [{"id": o["id"], "qty": o["qty"], "price": o["price"]} for o in mine],
-        "inv": user["inv_cutlets"], "balance": user["balance"],
-        "shuttle": bool(user["has_shuttle"]),
-        "fee": SHUTTLE_MARKET_FEE_PERCENT if user["has_shuttle"] else MARKET_FEE_PERCENT,
+        "asset": asset,
+        "stats": {"orders": stats["orders"], "qty": stats["qty"], "best_price": stats["best_price"],
+                  "bids": stats["bids"], "best_bid": stats["best_bid"]},
+        "asks": [slim(o) for o in asks], "bids": [slim(o) for o in bids],
+        "my": [{"id": o["id"], "qty": o["qty"], "price": o["price"], "asset": o["asset"], "side": o["side"]}
+               for o in mine],
+        "have": user["inv_cutlets"] if asset == "cutlet" else stock[asset],
+        "inv": user["inv_cutlets"], "stock": stock, "balance": user["balance"],
+        "shuttle": shuttle,
+        "fee": SHUTTLE_MARKET_FEE_PERCENT if shuttle else MARKET_FEE_PERCENT,
         "max_qty": max_qty, "max_orders": max_orders,
-        "min_price": MARKET_MIN_PRICE, "max_price": MARKET_MAX_PRICE,
+        "min_price": market_min_price(asset), "max_price": MARKET_MAX_PRICE,
+        "cutlet_floor": MARKET_CUTLET_MIN_PRICE,
+        "history": history, "index": index,
+        "swaps": [{"id": s["id"], "give_kind": s["give_kind"], "give_qty": s["give_qty"],
+                   "want_kind": s["want_kind"], "want_qty": s["want_qty"]} for s in swaps],
+        "my_swaps": my_sw,
+        "res_names": resource_labels(ctx.lang),
     })
 
 
-async def handle_market_buy(request: web.Request) -> web.Response:
+async def handle_market_order(request: web.Request) -> web.Response:
+    """Новый ордер: продажа (товар в эскроу) или заявка на покупку (монеты в эскроу)."""
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    if off := await _feature_off("market", ctx.lang):
+        return off
+    data = await _json(request)
+    asset, side = str(data.get("asset", "cutlet")), str(data.get("side", "sell"))
+    qty, price = _int(data.get("qty")), _int(data.get("price"))
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                order_id = await place_order(conn, ctx.user_id, asset, side, qty, price)
+    except MarketError as e:
+        return fail(e.localized(ctx.lang))
+    await track(ctx.user_id, "market_order", asset=asset, side=side, qty=qty, price=price, source="webapp")
+    return web.json_response({"ok": True, "order_id": order_id})
+
+
+async def handle_market_fill(request: web.Request) -> web.Response:
+    """Сделка по чужому ордеру: купить из продажи или продать в заявку."""
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
@@ -403,28 +478,38 @@ async def handle_market_buy(request: web.Request) -> web.Response:
     try:
         async with db.pool.acquire() as conn:
             async with conn.transaction():
-                deal = await buy_from_order(conn, ctx.user_id, order_id, qty)
-            seller_lang = resolve_lang(await conn.fetchval(
-                "SELECT lang FROM users WHERE user_id = $1", deal["seller_id"]))
+                deal = await fill_order(conn, ctx.user_id, order_id, qty)
+            maker_lang = resolve_lang(await conn.fetchval(
+                "SELECT lang FROM users WHERE user_id = $1", deal["maker_id"]))
     except MarketError as e:
         return fail(e.localized(ctx.lang))
-    await track(ctx.user_id, "market_buy", order_id=order_id, qty=deal["qty"], total=deal["total"],
-                source="webapp")
+    await track(ctx.user_id, "market_buy" if deal["side"] == "sell" else "market_sell",
+                asset=deal["asset"], order_id=order_id, qty=deal["qty"], total=deal["total"], source="webapp")
     bot = request.app.get("bot")
     if bot is not None:
-        asyncio.create_task(_notify_seller(bot, deal, order_id, seller_lang))
-    return web.json_response({"ok": True, "qty": deal["qty"], "total": deal["total"]})
+        asyncio.create_task(_notify_maker(bot, deal, order_id, maker_lang))
+    return web.json_response({"ok": True, "qty": deal["qty"], "total": deal["total"], "fee": deal["fee"],
+                              "side": deal["side"], "asset": deal["asset"],
+                              "got": deal["seller_got"] if deal["side"] == "buy" else None})
 
 
-async def _notify_seller(bot, deal: dict, order_id: int, lang: str) -> None:
+async def _notify_maker(bot, deal: dict, order_id: int, lang: str) -> None:
+    """ЛС автору ордера на его языке: продажа состоялась или заявка на покупку исполнена."""
     try:
-        await bot.send_message(
-            deal["seller_id"],
-            t(lang, "mk.sold_notify", id=order_id, qty=deal["qty"], price=deal["price"],
-              got=deal["seller_got"], fee=deal["fee"]),
-            parse_mode="HTML")
+        if deal["side"] == "sell":
+            text = t(lang, "mk.sold_notify", id=order_id, qty=deal["qty"], price=deal["price"],
+                     got=deal["seller_got"], fee=deal["fee"])
+        else:
+            text = t(lang, "mk.bid_filled_notify", id=order_id, qty=deal["qty"],
+                     icon=ASSET_ICONS[deal["asset"]], price=deal["price"])
+        await bot.send_message(deal["maker_id"], text, parse_mode="HTML")
     except Exception:
         pass
+
+
+# Совместимость со старыми клиентами приложения (кэш WebView): котлеты как раньше
+async def handle_market_buy(request: web.Request) -> web.Response:
+    return await handle_market_fill(request)
 
 
 async def handle_market_sell(request: web.Request) -> web.Response:
@@ -434,14 +519,13 @@ async def handle_market_sell(request: web.Request) -> web.Response:
     if off := await _feature_off("market", ctx.lang):
         return off
     data = await _json(request)
-    qty, price = _int(data.get("qty")), _int(data.get("price"))
     try:
         async with db.pool.acquire() as conn:
             async with conn.transaction():
-                order_id = await place_sell_order(conn, ctx.user_id, qty, price)
+                order_id = await place_order(conn, ctx.user_id, "cutlet", "sell",
+                                             _int(data.get("qty")), _int(data.get("price")))
     except MarketError as e:
         return fail(e.localized(ctx.lang))
-    await track(ctx.user_id, "market_sell_order", order_id=order_id, qty=qty, price=price, source="webapp")
     return web.json_response({"ok": True, "order_id": order_id})
 
 
@@ -466,6 +550,72 @@ def sell_preview(qty: int, price: int, shuttle: bool) -> dict:
     total = max(0, qty) * max(0, price)
     fee = market_fee(total, shuttle=shuttle)
     return {"total": total, "fee": fee, "got": total - fee}
+
+
+# ---------------------------------------------------------------- обмен ресурс ↔ ресурс
+async def handle_swap_create(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    if off := await _feature_off("market", ctx.lang):
+        return off
+    data = await _json(request)
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                swap_id = await create_swap(conn, ctx.user_id, str(data.get("give_kind", "")),
+                                            _int(data.get("give_qty")), str(data.get("want_kind", "")),
+                                            _int(data.get("want_qty")))
+    except MarketError as e:
+        return fail(e.localized(ctx.lang))
+    await track(ctx.user_id, "swap_created", source="webapp")
+    return web.json_response({"ok": True, "swap_id": swap_id})
+
+
+async def handle_swap_accept(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    if off := await _feature_off("market", ctx.lang):
+        return off
+    swap_id = _int((await _json(request)).get("swap_id"))
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                swap = await accept_swap(conn, ctx.user_id, swap_id)
+            maker_lang = resolve_lang(await conn.fetchval(
+                "SELECT lang FROM users WHERE user_id = $1", swap["maker_id"]))
+    except MarketError as e:
+        return fail(e.localized(ctx.lang))
+    await track(ctx.user_id, "swap_accepted", source="webapp")
+    bot = request.app.get("bot")
+    if bot is not None:
+        asyncio.create_task(_notify_swap(bot, swap, maker_lang))
+    return web.json_response({"ok": True})
+
+
+async def _notify_swap(bot, swap: dict, lang: str) -> None:
+    try:
+        await bot.send_message(swap["maker_id"], t(
+            lang, "sw.done_notify", id=swap["id"],
+            give=f"{swap['give_qty']} {ASSET_ICONS[swap['give_kind']]}",
+            want=f"{swap['want_qty']} {ASSET_ICONS[swap['want_kind']]}"), parse_mode="HTML")
+    except Exception:
+        pass
+
+
+async def handle_swap_cancel(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    swap_id = _int((await _json(request)).get("swap_id"))
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                await cancel_swap(conn, ctx.user_id, swap_id)
+    except MarketError as e:
+        return fail(e.localized(ctx.lang))
+    return web.json_response({"ok": True})
 
 
 # ============================================================================
@@ -610,9 +760,14 @@ def register_game_routes(app: web.Application) -> None:
     app.router.add_post("/api/raid/scout", handle_raid_scout)
     app.router.add_post("/api/raid/go", handle_raid_go)
     app.router.add_get("/api/market", handle_market)
-    app.router.add_post("/api/market/buy", handle_market_buy)
-    app.router.add_post("/api/market/sell", handle_market_sell)
+    app.router.add_post("/api/market/order", handle_market_order)
+    app.router.add_post("/api/market/fill", handle_market_fill)
+    app.router.add_post("/api/market/buy", handle_market_buy)      # старые клиенты
+    app.router.add_post("/api/market/sell", handle_market_sell)    # старые клиенты
     app.router.add_post("/api/market/cancel", handle_market_cancel)
+    app.router.add_post("/api/swap/create", handle_swap_create)
+    app.router.add_post("/api/swap/accept", handle_swap_accept)
+    app.router.add_post("/api/swap/cancel", handle_swap_cancel)
     app.router.add_get("/api/team", handle_team)
     app.router.add_post("/api/station/donate", handle_station_donate)
     app.router.add_get("/api/goals", handle_goals)

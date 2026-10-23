@@ -22,6 +22,7 @@ from shared.economy import (
     SHUTTLE_MARKET_FEE_PERCENT,
     SHUTTLE_MARKET_MAX_QTY,
     WORKSHOP_RECIPES,
+    armor_level_active,
     utcnow,
 )
 from shared.locales import t
@@ -43,8 +44,8 @@ async def _view(user_id: int, lang: str) -> tuple[str, types.InlineKeyboardMarku
     async with db.pool.acquire() as conn:
         stock = await get_resources(conn, user_id)
         user = await conn.fetchrow(
-            "SELECT farm_armor_level, has_shuttle FROM users WHERE user_id = $1", user_id)
-    armor_level = user["farm_armor_level"] if user else 0
+            "SELECT farm_armor_level, armor_until, has_shuttle FROM users WHERE user_id = $1", user_id)
+    armor_level = armor_level_active(user["farm_armor_level"], user["armor_until"], utcnow()) if user else 0
     has_shuttle = bool(user and user["has_shuttle"])
 
     rows = []

@@ -66,7 +66,31 @@ def test_armor_cost_escalates_and_stops_at_max():
     costs = [sum(ARMOR_LEVEL_COSTS[lvl].values()) for lvl in range(1, ARMOR_MAX_LEVEL + 1)]
     assert costs == sorted(costs) and costs[0] < costs[-1]
     assert recipe_cost("armor", armor_level=0) == ARMOR_LEVEL_COSTS[1]
-    assert recipe_cost("armor", armor_level=ARMOR_MAX_LEVEL) is None
+    # На максимуме — продление максимального уровня ещё на 30 дней по его же цене
+    assert recipe_cost("armor", armor_level=ARMOR_MAX_LEVEL) == ARMOR_LEVEL_COSTS[ARMOR_MAX_LEVEL]
+
+
+def test_owner_rules_24_10_for_workshop():
+    """Решения владельца 24.10: синтез котлеты дорогой, броня на 30 дней, Шаттл — 1000 всего + 1000 🪙."""
+    assert WORKSHOP_RECIPES["cutlet"]["cost"] == {k: 50 for k in RESOURCE_KINDS}
+    assert economy.ARMOR_DAYS == 30
+    assert WORKSHOP_RECIPES["shuttle"]["cost"] == {k: 1000 for k in RESOURCE_KINDS}
+    assert WORKSHOP_RECIPES["shuttle"]["coins"] == 1000
+    # Ни один рецепт мастерской не даёт «навсегда», кроме Шаттла (льгота биржи, не добыча)
+    assert all(r["effect"] != "armor" or economy.ARMOR_DAYS for r in WORKSHOP_RECIPES.values())
+
+
+def test_armor_expires_after_30_days_in_engine():
+    from shared.economy import armor_level_active
+    until = NOW + timedelta(days=30)
+    assert armor_level_active(2, until, NOW) == 2
+    assert armor_level_active(2, until, until + timedelta(seconds=1)) == 0
+    assert armor_level_active(2, None, NOW) == 0
+    miner = MinerState(1, "junior", NOW, NOW + timedelta(days=60))
+    # 10 часов: первые 5 с бронёй +30%, потом броня кончилась
+    tick = simulate_farm(last_update=NOW, now=NOW + timedelta(hours=10), fridge_cutlets=0, acc=0,
+                         miners=[miner], armor_percent=30, armor_until=NOW + timedelta(hours=5))
+    assert tick.earned == 5 * 5 * 130 // 100 + 5 * 5   # 32 + 25 = 57 (дробь — в остатке)
 
 
 def test_can_afford():

@@ -425,6 +425,42 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS team_donations_team_idx ON team_donations (team_id, created_at);",
+    # --- 24.10: биржа v2 (ресурсы, заявки на покупку, история), броня на 30 дней ---
+    "ALTER TABLE market_orders ADD COLUMN IF NOT EXISTS asset VARCHAR(16) NOT NULL DEFAULT 'cutlet';",
+    "ALTER TABLE market_orders ADD COLUMN IF NOT EXISTS side VARCHAR(4) NOT NULL DEFAULT 'sell';",
+    "CREATE INDEX IF NOT EXISTS market_book_idx ON market_orders (asset, side, status, price);",
+    """
+    CREATE TABLE IF NOT EXISTS market_trades (
+        id BIGSERIAL PRIMARY KEY,
+        asset VARCHAR(16) NOT NULL,
+        qty INT NOT NULL,
+        price INT NOT NULL,
+        buyer_id BIGINT NOT NULL,
+        seller_id BIGINT NOT NULL,
+        order_id BIGINT,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS market_trades_asset_idx ON market_trades (asset, created_at);",
+    "CREATE INDEX IF NOT EXISTS market_trades_buyer_idx ON market_trades (buyer_id, created_at);",
+    "CREATE INDEX IF NOT EXISTS market_trades_seller_idx ON market_trades (seller_id, created_at);",
+    """
+    CREATE TABLE IF NOT EXISTS resource_swaps (
+        id BIGSERIAL PRIMARY KEY,
+        maker_id BIGINT NOT NULL,
+        give_kind VARCHAR(16) NOT NULL,
+        give_qty INT NOT NULL CHECK (give_qty > 0),
+        want_kind VARCHAR(16) NOT NULL,
+        want_qty INT NOT NULL CHECK (want_qty > 0),
+        status VARCHAR(12) NOT NULL DEFAULT 'open',
+        taker_id BIGINT,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS resource_swaps_open_idx ON resource_swaps (status, created_at);",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS armor_until TIMESTAMP WITH TIME ZONE;",
+    # Броня, собранная до 24.10 «навсегда», получает честные 30 дней с момента выкатки
+    "UPDATE users SET armor_until = NOW() + INTERVAL '30 days' WHERE farm_armor_level > 0 AND armor_until IS NULL;",
     "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",
     "CREATE INDEX IF NOT EXISTS star_payments_created_idx ON star_payments (created_at);",
 ]

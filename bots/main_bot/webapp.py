@@ -18,6 +18,7 @@ from bots.main_bot.catalog import CATALOG, CatalogError, SHOP_LAYOUT, build_orde
 from shared.analytics import track
 from shared.database import db
 from shared.economy import (
+    armor_level_active,
     farm_bonus_percent,
     daily_bonus_seconds_left,
     is_active,
@@ -47,7 +48,8 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now,
     counts = farm_counts(miners, now)
     nuclear = is_active(user["boost_nuclear_until"], now)
     nitrogen = is_active(user["boost_nitrogen_until"], now)
-    bonus = farm_bonus_percent(user["farm_armor_level"], station_level)
+    armor = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
+    bonus = farm_bonus_percent(armor, station_level)
     junior_rate = miner_hourly_rate("junior", nuclear_active=nuclear, nitrogen_active=nitrogen,
                                     bonus_percent=bonus)
     premium_rate = miner_hourly_rate("premium", nuclear_active=nuclear, nitrogen_active=nitrogen,
@@ -71,7 +73,8 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now,
         "rank": rank_label(lang, user["created_at"], now),
         "vip_aliases": list(vip_aliases),
         "resources": dict(resources or {}),
-        "armor_level": user["farm_armor_level"],
+        "armor_level": armor,
+        "armor_until": _iso(user["armor_until"]) if armor else None,
         "has_shuttle": bool(user["has_shuttle"]),
         "station_level": station_level,
         "bonus_percent": bonus,

@@ -18,14 +18,18 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from shared.economy import (
+    ARMOR_DAYS,
     ARMOR_MAX_LEVEL,
     WORKSHOP_RECIPES,
     armor_cost,
+    armor_level_active,
+    extend_expiry,
     extend_expiry_hours,
 )
+from shared.ledger import InsufficientFunds, change_balance
 from shared.farm_logic import apply_lazy_farm
 from shared.locales import t
-from shared.resources import InsufficientResources, spend_bundle
+from shared.resources import RESOURCE_ICONS, InsufficientResources, spend_bundle
 
 logger = logging.getLogger(__name__)
 
@@ -61,13 +65,21 @@ class CraftResult:
 
 
 def recipe_cost(recipe_id: str, armor_level: int = 0) -> dict[str, int] | None:
-    """Цена рецепта; для брони зависит от текущего уровня. None — рецепт недоступен."""
+    """
+    Цена рецепта в ресурсах; для брони зависит от ДЕЙСТВУЮЩЕГО уровня
+    (на максимуме — цена продления максимального уровня). None — рецепта нет.
+    """
     recipe = WORKSHOP_RECIPES.get(recipe_id)
     if recipe is None:
         return None
     if recipe["effect"] == "armor":
         return armor_cost(armor_level + 1)
     return dict(recipe["cost"])
+
+
+def recipe_coins(recipe_id: str) -> int:
+    """Сколько 🪙 стоит рецепт помимо ресурсов (Шаттл)."""
+    return int((WORKSHOP_RECIPES.get(recipe_id) or {}).get("coins", 0))
 
 
 def can_afford(stock: dict[str, int], cost: dict[str, int] | None) -> bool:
@@ -92,17 +104,24 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime) -> CraftResul
 
     if effect == "shuttle" and user["has_shuttle"]:
         raise WorkshopError("ws.err_shuttle_owned")
-    if effect == "armor" and user["farm_armor_level"] >= ARMOR_MAX_LEVEL:
-        raise WorkshopError("ws.err_armor_max", max=ARMOR_MAX_LEVEL)
+    armor_now = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
 
-    cost = recipe_cost(recipe_id, user["farm_armor_level"])
+    cost = recipe_cost(recipe_id, armor_now)
     if cost is None:
         raise WorkshopError("ws.err_unknown")
+    coins = recipe_coins(recipe_id)
+    if coins and user["balance"] < coins:
+        raise WorkshopError("ws.err_coins", need=coins, have=user["balance"])
     try:
         stock = await spend_bundle(conn, user_id, cost, f"craft:{recipe_id}")
     except InsufficientResources as e:
         raise WorkshopError("ws.err_resources", need=e.need, have=e.have,
-                            kind=t("ru", f"res.{e.kind}")) from e
+                            kind=RESOURCE_ICONS[e.kind]) from e
+    if coins:
+        try:
+            await change_balance(conn, user_id, -coins, f"craft:{recipe_id}")
+        except InsufficientFunds as e:   # гонка с другой тратой: транзакция откатит и ресурсы
+            raise WorkshopError("ws.err_coins", need=coins, have=user["balance"]) from e
 
     result = CraftResult(recipe_id=recipe_id, effect=effect, cost=cost, stock=stock)
     if effect in EFFECT_COLUMNS:
@@ -115,9 +134,11 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime) -> CraftResul
                            user_id, recipe["qty"])
         result.qty = recipe["qty"]
     elif effect == "armor":
-        result.level = user["farm_armor_level"] + 1
-        await conn.execute("UPDATE users SET farm_armor_level = $2 WHERE user_id = $1",
-                           user_id, result.level)
+        # Уровень вверх (или продление максимального) и +30 дней к сроку брони
+        result.level = min(armor_now + 1, ARMOR_MAX_LEVEL)
+        result.until = extend_expiry(user["armor_until"] if armor_now else None, now, ARMOR_DAYS)
+        await conn.execute("UPDATE users SET farm_armor_level = $2, armor_until = $3 WHERE user_id = $1",
+                           user_id, result.level, result.until)
     elif effect == "shuttle":
         await conn.execute("UPDATE users SET has_shuttle = TRUE WHERE user_id = $1", user_id)
     logger.info("[WORKSHOP] user=%s crafted %s cost=%s", user_id, recipe_id, cost)

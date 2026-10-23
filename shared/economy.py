@@ -132,16 +132,38 @@ def transfer_fee(amount: int) -> int:
 # --------------------------------------------------------------------------
 # Биржа котлет (решение владельца 22.10): P2P котлеты за монеты, комиссия сжигается
 # --------------------------------------------------------------------------
-MARKET_FEE_PERCENT = 10        # сгорает с каждой продажи — дефляция монет
-MARKET_MIN_PRICE = 1           # монет за котлету
+MARKET_FEE_PERCENT = 10        # сгорает с каждой продажи — дефляция монет (платит продавец)
+MARKET_MIN_PRICE = 1           # минимальная цена ресурса, 🪙 за штуку
 MARKET_MAX_PRICE = 100_000
 MARKET_MAX_QTY = 100           # котлет в одном ордере
-MARKET_MAX_OPEN_ORDERS = 5     # открытых ордеров на игрока
+MARKET_RESOURCE_MAX_QTY = 1000  # ресурса в одном ордере
+MARKET_MAX_OPEN_ORDERS = 8     # открытых ордеров на игрока (все товары и обе стороны вместе)
 MARKET_SHOWCASE_LIMIT = 6      # ордеров на витрине /market (по одной кнопке в ряд)
+MARKET_ASSETS = ("cutlet", "metal", "hydrogen", "crystal", "parts")
+MARKET_HISTORY_DAYS = 7        # график цены и индекс биржи
+
+# ПОЛ ЦЕНЫ КОТЛЕТЫ (решение владельца 24.10): топливо — исключительное право магазина.
+# Котлета на бирже не может стоить меньше, чем котлета из магазина в пересчёте на монеты:
+# самый выгодный пак котлет 100 шт. = 449 ★ (4,49 ★/шт), самый выгодный пак монет
+# 100 000 🪙 = 2499 ★ (≈40 🪙/★) → 4,49 × 40 ≈ 180 🪙. Пол 200 🪙 — с запасом:
+# Звёздами котлета всегда выгоднее, а на бирже её берут «киты» с бустами (с Ядерным
+# разгоном котлета приносит до 560 🪙), когда в магазин идти не хочется.
+SHOP_CUTLET_BEST_STARS_X100 = 449   # ★ за 100 котлет (самый выгодный пак) — сверяется тестом с каталогом
+SHOP_COINS_PER_STAR_BEST = 40       # 🪙 за ★ в самом выгодном паке монет — сверяется тестом
+MARKET_CUTLET_MIN_PRICE = 200
+
+
+def market_min_price(asset: str) -> int:
+    return MARKET_CUTLET_MIN_PRICE if asset == "cutlet" else MARKET_MIN_PRICE
+
+
+# Обмен ресурс ↔ ресурс без монет (предложения «отдам X за Y»)
+SWAP_MAX_OPEN = 5
+SWAP_MAX_QTY = 10_000
 
 
 def market_fee(total: int, shuttle: bool = False) -> int:
-    """Комиссия сделки на бирже; у владельцев Шаттла (мастерская) — льготная."""
+    """Комиссия сделки (платит продавец); Шаттл ПРОДАВЦА — льготная, чужим Шаттлом не воспользоваться."""
     percent = SHUTTLE_MARKET_FEE_PERCENT if shuttle else MARKET_FEE_PERCENT
     return total * percent // 100
 DUEL_BURN_PERCENT = 20
@@ -173,14 +195,20 @@ WORKSHOP_RECIPES: dict[str, dict] = {
     "nuclear_3h": {"cost": {"metal": 40, "hydrogen": 30, "parts": 10}, "effect": "nuclear", "hours": 3},
     "drone_24h": {"cost": {"metal": 25, "parts": 25}, "effect": "drone", "hours": 24},
     "shield_24h": {"cost": {"metal": 10, "crystal": 10}, "effect": "shield", "hours": 24},
-    "cutlet": {"cost": {"hydrogen": 15, "parts": 10}, "effect": "cutlet", "qty": 1},
+    # Синтез котлеты — ОЧЕНЬ дорого (решение владельца 24.10): топливо — право магазина,
+    # синтез нужен лишь как мотивация «котлета есть — заведу Бурильщика».
+    "cutlet": {"cost": {"metal": 50, "hydrogen": 50, "crystal": 50, "parts": 50}, "effect": "cutlet", "qty": 1},
     "armor": {"cost": None, "effect": "armor"},       # цена зависит от уровня (ARMOR_LEVEL_COSTS)
-    "shuttle": {"cost": {"metal": 150, "hydrogen": 150, "crystal": 100, "parts": 100},
-                "effect": "shuttle"},
+    # Шаттл: 1000 каждого ресурса + 1000 🪙 (решение владельца 24.10)
+    "shuttle": {"cost": {"metal": 1000, "hydrogen": 1000, "crystal": 1000, "parts": 1000},
+                "coins": 1000, "effect": "shuttle"},
 }
-# Кибер-броня роботов: постоянный бонус к добыче, 3 уровня по +10%
+# Кибер-броня роботов: +10% к добыче за уровень, 3 уровня, ТОЛЬКО НА 30 ДНЕЙ
+# (решение владельца 24.10: навсегда — только покупки за Stars). Повторный крафт
+# поднимает уровень (или обновляет максимальный) и заново отсчитывает 30 дней.
 ARMOR_BONUS_PER_LEVEL = 10
 ARMOR_MAX_LEVEL = 3
+ARMOR_DAYS = 30
 ARMOR_LEVEL_COSTS = {
     1: {"metal": 100, "parts": 50},
     2: {"metal": 250, "crystal": 100, "parts": 120},
@@ -189,7 +217,8 @@ ARMOR_LEVEL_COSTS = {
 # Шаттл: постоянная льгота на бирже (комиссия 10% → 5%) и логистика побольше
 SHUTTLE_MARKET_FEE_PERCENT = 5
 SHUTTLE_MARKET_MAX_QTY = 500
-SHUTTLE_MARKET_MAX_OPEN_ORDERS = 10
+SHUTTLE_RESOURCE_MAX_QTY = 5000
+SHUTTLE_MARKET_MAX_OPEN_ORDERS = 16
 
 # --------------------------------------------------------------------------
 # НАЛЁТЫ: решение против решения — жест атакующего против оборонительной стойки цели.
@@ -236,8 +265,13 @@ def station_level_cost(level: int) -> int:
 
 
 def armor_cost(next_level: int) -> dict[str, int] | None:
-    """Цена следующего уровня брони или None, если максимум."""
-    return ARMOR_LEVEL_COSTS.get(next_level)
+    """Цена уровня брони (на максимуме — цена продления максимального уровня)."""
+    return ARMOR_LEVEL_COSTS.get(min(next_level, ARMOR_MAX_LEVEL))
+
+
+def armor_level_active(level: int, until: datetime | None, now: datetime) -> int:
+    """Действующий уровень брони: после окончания 30 дней — ноль."""
+    return level if is_active(until, now) else 0
 
 
 def farm_bonus_percent(armor_level: int, station_level: int) -> int:
@@ -257,11 +291,13 @@ def raid_fail_loss(attacker_stock: int) -> int:
     return min(RAID_FAIL_CAP, max(0, attacker_stock) * RAID_FAIL_PERCENT // 100)
 
 
-def market_limits(shuttle: bool) -> tuple[int, int]:
-    """(макс. котлет в ордере, макс. открытых ордеров) — с Шаттлом логистика шире."""
-    if shuttle:
-        return SHUTTLE_MARKET_MAX_QTY, SHUTTLE_MARKET_MAX_OPEN_ORDERS
-    return MARKET_MAX_QTY, MARKET_MAX_OPEN_ORDERS
+def market_limits(shuttle: bool, asset: str = "cutlet") -> tuple[int, int]:
+    """(макс. штук в ордере, макс. открытых ордеров) — с Шаттлом логистика шире."""
+    if asset == "cutlet":
+        qty = SHUTTLE_MARKET_MAX_QTY if shuttle else MARKET_MAX_QTY
+    else:
+        qty = SHUTTLE_RESOURCE_MAX_QTY if shuttle else MARKET_RESOURCE_MAX_QTY
+    return qty, (SHUTTLE_MARKET_MAX_OPEN_ORDERS if shuttle else MARKET_MAX_OPEN_ORDERS)
 TOURNAMENT_ENTRY_FEE = 5000
 TOURNAMENT_WINNERS_PERCENT = 1
 

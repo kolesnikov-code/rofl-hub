@@ -31,7 +31,7 @@ async def conn():
                         "miners, duels, battles, vip_aliases, quest_progress, events, "
                         "daily_activity, promoters, metrics_snapshots, market_orders, "
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
-                        "team_stations, team_donations RESTART IDENTITY")
+                        "team_stations, team_donations, market_trades, resource_swaps RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -860,27 +860,26 @@ async def test_market_sell_buy_cancel_with_burned_fee(conn):
     """Эскроу котлет, покупка с комиссией (сгорает), частичная сделка, снятие ордера."""
     from shared.market import MarketError, buy_from_order, cancel_order, list_open_orders, place_sell_order
     await _mk_user(conn, 400, 0, inv_cutlets=20)      # продавец
-    await _mk_user(conn, 401, 1000)                   # покупатель
+    await _mk_user(conn, 401, 1500)                   # покупатель
     await conn.execute("TRUNCATE market_orders RESTART IDENTITY")
 
-    order_id = await place_sell_order(conn, 400, 10, 50)   # 10 котлет по 50
+    order_id = await place_sell_order(conn, 400, 10, 250)  # 10 котлет по 250 (пол — 200)
     assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 400") == 10  # эскроу
     with pytest.raises(MarketError) as e:
-        await place_sell_order(conn, 400, 11, 50)      # на складе осталось 10
+        await place_sell_order(conn, 400, 11, 250)     # на складе осталось 10
     assert e.value.key == "mk.err_no_cutlets"
     with pytest.raises(MarketError) as e:
         await buy_from_order(conn, 400, order_id, 1)   # свой ордер
     assert e.value.key == "mk.err_own"
 
-    deal = await buy_from_order(conn, 401, order_id, 4)    # 4 × 50 = 200, комиссия 20
-    assert deal == {"qty": 4, "price": 50, "total": 200, "fee": 20, "seller_id": 400, "seller_got": 180,
-                    "shuttle": False}
-    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 401") == 800
-    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 400") == 180
+    deal = await buy_from_order(conn, 401, order_id, 4)    # 4 × 250 = 1000, комиссия 100
+    assert {k: deal[k] for k in ("qty", "price", "total", "fee", "seller_id", "seller_got", "shuttle")} ==         {"qty": 4, "price": 250, "total": 1000, "fee": 100, "seller_id": 400, "seller_got": 900, "shuttle": False}
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 401") == 500
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 400") == 900
     assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 401") == 4
     burned = await conn.fetchval(
         "SELECT -SUM(delta) FROM ledger WHERE reason IN ('market_buy', 'market_sell')")
-    assert burned == 20                                     # 200 списано, 180 зачислено
+    assert burned == 100                                    # 1000 списано, 900 зачислено
     assert (await list_open_orders(conn))[0]["qty"] == 6
 
     # покупатель без монет
@@ -962,14 +961,22 @@ async def test_workshop_crafts_spend_all_or_nothing(conn):
     assert (await get_resources(conn, 510)) == {"metal": 0, "hydrogen": 0, "crystal": 0, "parts": 0}
     assert await conn.fetchval("SELECT boost_nitrogen_until FROM users WHERE user_id = 510") == result.until
 
-    # Броня: цена растёт по уровням, после максимума — отказ; Шаттл — один на игрока
+    # Броня (решение 24.10): уровни растут, каждый крафт даёт +30 дней; на максимуме — продление
     await grant_bundle(conn, 510, {k: 5000 for k in ("metal", "hydrogen", "crystal", "parts")}, "test")
     for lvl in range(1, ARMOR_MAX_LEVEL + 1):
         assert (await craft(conn, 510, "armor", now)).level == lvl
+    renewed = await craft(conn, 510, "armor", now)
+    assert renewed.level == ARMOR_MAX_LEVEL
+    assert renewed.until == now + timedelta(days=30 * (ARMOR_MAX_LEVEL + 1))
+    # Шаттл стоит ещё и 1000 🪙: без монет — отказ без списания ресурсов
+    metal_before = (await get_resources(conn, 510))["metal"]
     with pytest.raises(WorkshopError) as e:
-        await craft(conn, 510, "armor", now)
-    assert e.value.key == "ws.err_armor_max"
+        await craft(conn, 510, "shuttle", now)
+    assert e.value.key == "ws.err_coins"
+    assert (await get_resources(conn, 510))["metal"] == metal_before
+    await conn.execute("UPDATE users SET balance = 1500 WHERE user_id = 510")
     await craft(conn, 510, "shuttle", now)
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 510") == 500
     with pytest.raises(WorkshopError) as e:
         await craft(conn, 510, "shuttle", now)
     assert e.value.key == "ws.err_shuttle_owned"
@@ -986,7 +993,8 @@ async def test_armor_and_station_bonus_reach_the_farm_engine(conn):
     now = utcnow()
     await conn.execute("INSERT INTO teams (team_id, team_name, captain_id) VALUES (7, 'Bonus', 520)")
     await conn.execute("INSERT INTO team_stations (team_id, level) VALUES (7, 5)")
-    await _mk_user(conn, 520, 0, team_id=7, farm_armor_level=3, last_update_time=now - timedelta(hours=10))
+    await _mk_user(conn, 520, 0, team_id=7, farm_armor_level=3, armor_until=now + timedelta(days=5),
+                   last_update_time=now - timedelta(hours=10))
     await conn.execute(
         "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES (520, 'junior', $1, $2)",
         now - timedelta(days=1), now + timedelta(days=29))
@@ -1098,3 +1106,76 @@ async def test_team_station_donations_level_up_for_everyone(conn):
     assert all(station[k] == 0 for k in RESOURCE_KINDS)        # уровень закрыт, остаток 0
     assert all(v == 0 for v in (await get_resources(conn, 800)).values())
     assert await conn.fetchval("SELECT COUNT(*) FROM team_donations WHERE team_id = 9") == 4
+
+
+# ---------------------------------------------------------------- биржа v2 (24.10): ресурсы, заявки, обмен
+async def test_market_v2_buy_orders_resources_floor_and_shuttle(conn):
+    from shared.economy import MARKET_CUTLET_MIN_PRICE, utcnow
+    from shared.market import (MarketError, cancel_order, fill_order, index_change, place_order,
+                               price_history)
+    from shared.resources import get_resources, grant_bundle
+    await _mk_user(conn, 900, 10_000, inv_cutlets=10, has_shuttle=True)   # продавец с Шаттлом
+    await _mk_user(conn, 901, 10_000)                                     # покупатель без Шаттла
+    await grant_bundle(conn, 900, {"metal": 500}, "test")
+
+    # Пол цены котлеты действует для обеих сторон
+    for side in ("sell", "buy"):
+        with pytest.raises(MarketError) as e:
+            await place_order(conn, 900 if side == "sell" else 901, "cutlet", side, 1, MARKET_CUTLET_MIN_PRICE - 1)
+        assert e.value.key == "mk.err_price"
+
+    # Заявка на покупку металла: монеты замораживаются сразу
+    bid = await place_order(conn, 901, "metal", "buy", 100, 3)
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 901") == 10_000 - 300
+    # Продавец с Шаттлом закрывает заявку: комиссия 5% с ЕГО продажи
+    deal = await fill_order(conn, 900, bid, 100)
+    assert (deal["side"], deal["fee"], deal["seller_got"]) == ("buy", 15, 285)
+    assert (await get_resources(conn, 901))["metal"] == 100
+    assert (await get_resources(conn, 900))["metal"] == 400
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 900") == 10_000 + 285
+
+    # Продажа котлет игроком без Шаттла покупателю с Шаттлом: комиссия обычная (Шаттл не «одалживается»)
+    ask = await place_order(conn, 901, "metal", "sell", 50, 4)
+    deal2 = await fill_order(conn, 900, ask, 50)
+    assert (deal2["side"], deal2["fee"]) == ("sell", 20)
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 900") == 10
+
+    # Отмена заявки возвращает замороженные монеты; ордер на продажу — товар
+    bid2 = await place_order(conn, 901, "cutlet", "buy", 2, MARKET_CUTLET_MIN_PRICE)
+    balance = await conn.fetchval("SELECT balance FROM users WHERE user_id = 901")
+    await cancel_order(conn, 901, bid2)
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 901") == balance + 2 * MARKET_CUTLET_MIN_PRICE
+    with pytest.raises(MarketError) as e:
+        await place_order(conn, 901, "metal", "sell", 999, 5)    # у 901 осталось 50 металла
+    assert e.value.key == "mk.err_no_resource"
+
+    # История сделок и индекс
+    hist = await price_history(conn, "metal", utcnow())
+    assert len(hist) == 7 and hist[-1]["volume"] == 150
+    assert index_change(hist)["last"] == round((100 * 3 + 50 * 4) / 150, 1)
+    trades = await conn.fetchval("SELECT COUNT(*) FROM market_trades")
+    assert trades == 2
+
+
+async def test_resource_swaps_escrow_accept_cancel(conn):
+    from shared.market import MarketError, accept_swap, cancel_swap, create_swap
+    from shared.resources import get_resources, grant_bundle
+    await _mk_user(conn, 910, 0)
+    await _mk_user(conn, 911, 0)
+    await grant_bundle(conn, 910, {"metal": 100}, "test")
+    await grant_bundle(conn, 911, {"hydrogen": 30}, "test")
+
+    swap_id = await create_swap(conn, 910, "metal", 60, "hydrogen", 25)
+    assert (await get_resources(conn, 910))["metal"] == 40            # отложено в эскроу
+    with pytest.raises(MarketError) as e:
+        await accept_swap(conn, 910, swap_id)
+    assert e.value.key == "mk.err_own"
+    await accept_swap(conn, 911, swap_id)
+    assert (await get_resources(conn, 910)) == {"metal": 40, "hydrogen": 25, "crystal": 0, "parts": 0}
+    assert (await get_resources(conn, 911)) == {"metal": 60, "hydrogen": 5, "crystal": 0, "parts": 0}
+    with pytest.raises(MarketError):
+        await accept_swap(conn, 911, swap_id)                         # уже закрыт
+
+    swap2 = await create_swap(conn, 910, "metal", 40, "parts", 1)
+    await cancel_swap(conn, 910, swap2)
+    assert (await get_resources(conn, 910))["metal"] == 40

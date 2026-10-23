@@ -41,7 +41,7 @@ def test_games_hub_is_one_button_per_row_without_raids_and_workshop():
 def _farm_user(**over):
     user = {
         "boost_nuclear_until": None, "boost_nitrogen_until": None, "drone_until": None,
-        "farm_armor_level": 0, "intern_claimed": True, "fridge_cutlets": 1, "fridge_capacity": 1,
+        "farm_armor_level": 0, "armor_until": None, "intern_claimed": True, "fridge_cutlets": 1, "fridge_capacity": 1,
         "inv_cutlets": 0,
     }
     user.update(over)
@@ -115,11 +115,16 @@ def test_index_has_no_slash_commands_in_ru_app_texts():
 def test_workshop_payload_marks_affordable_and_done():
     from bots.main_bot.webapp_game import build_workshop_payload
     stock = {"metal": 25, "hydrogen": 20, "crystal": 10, "parts": 0}
-    payload = build_workshop_payload(stock, armor_level=3, has_shuttle=True, lang="ru")
+    payload = build_workshop_payload(stock, armor_level=3, has_shuttle=True, lang="ru", balance=5000)
     by_id = {r["id"]: r for r in payload["recipes"]}
     assert by_id["nitro_6h"]["affordable"] and by_id["shield_24h"]["affordable"]
     assert not by_id["nuclear_3h"]["affordable"]
-    assert by_id["armor"]["done"] and by_id["shuttle"]["done"]
+    assert not by_id["armor"]["done"] and by_id["armor"]["days"] == 30   # броню можно продлить
+    assert by_id["shuttle"]["done"]
+    rich = {k: 5000 for k in stock}
+    poor = build_workshop_payload(rich, armor_level=0, has_shuttle=False, lang="ru", balance=999)
+    assert not {r["id"]: r for r in poor["recipes"]}["shuttle"]["affordable"]   # нет 1000 🪙
+    assert {r["id"]: r for r in poor["recipes"]}["shuttle"]["coins"] == 1000
     assert [r["id"] for r in payload["recipes"]][0] == "nitro_6h"
     assert payload["res_names"]["metal"] == "Металл"
 

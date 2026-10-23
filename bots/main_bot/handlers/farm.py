@@ -19,7 +19,7 @@ from shared.economy import (
 from shared.farm_logic import MinerState, apply_lazy_farm, farm_counts
 from shared.locales import btn_variants, t
 from bots.main_bot.webapp_links import app_button
-from shared.economy import ARMOR_BONUS_PER_LEVEL, STATION_BONUS_PER_LEVEL, farm_bonus_percent
+from shared.economy import ARMOR_BONUS_PER_LEVEL, STATION_BONUS_PER_LEVEL, armor_level_active, farm_bonus_percent
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -143,7 +143,8 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
 
     nuclear = is_active(user["boost_nuclear_until"], now)
     nitrogen = is_active(user["boost_nitrogen_until"], now)
-    bonus = farm_bonus_percent(user["farm_armor_level"], station_level)
+    armor = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
+    bonus = farm_bonus_percent(armor, station_level)
     junior_rate = miner_hourly_rate("junior", nuclear_active=nuclear, nitrogen_active=nitrogen,
                                     bonus_percent=bonus)
     premium_rate = miner_hourly_rate("premium", nuclear_active=nuclear, nitrogen_active=nitrogen,
@@ -159,9 +160,9 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
         boosts.append(t(lang, "farm.boost_nitrogen", until=f"{user['boost_nitrogen_until']:%d.%m %H:%M}"))
     if is_active(user["drone_until"], now):
         boosts.append(t(lang, "farm.boost_drone", until=f"{user['drone_until']:%d.%m.%Y}"))
-    if user["farm_armor_level"]:
-        boosts.append(t(lang, "farm.boost_armor", level=user["farm_armor_level"],
-                        percent=user["farm_armor_level"] * ARMOR_BONUS_PER_LEVEL))
+    if armor:
+        boosts.append(t(lang, "farm.boost_armor", level=armor, percent=armor * ARMOR_BONUS_PER_LEVEL,
+                        until=f"{user['armor_until']:%d.%m %H:%M}"))
     if station_level:
         boosts.append(t(lang, "farm.boost_station", level=station_level,
                         percent=station_level * STATION_BONUS_PER_LEVEL))

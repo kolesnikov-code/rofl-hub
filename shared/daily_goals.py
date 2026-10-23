@@ -3,7 +3,7 @@
 
 - набор целей детерминирован по (игрок, дата UTC): у каждого свой, но стабильный в течение дня;
 - прогресс считается ТОЛЬКО по транзакционным таблицам (ledger, raids, resource_ledger,
-  team_donations, users) — аналитика (events) не участвует, цели не зависят от неё;
+  team_donations, market_trades, users) — аналитика (events) не участвует, цели не зависят от неё;
 - сундук забирается один раз в день (daily_goal_claims), монеты — через ledger
   reason='daily_chest', ресурс — через resource_ledger; серия дней подряд (users.goal_streak)
   каждые DAILY_STREAK_BONUS_EVERY дней добавляет DAILY_STREAK_BONUS_COINS.
@@ -128,9 +128,9 @@ async def goal_progress(conn, user_id: int, goals: list[Goal], day: date) -> dic
                 "SELECT COUNT(*) FROM raids WHERE attacker_id = $1 "
                 "AND created_at >= $2 AND created_at < $3", user_id, start, end)
         elif g.key == "market_deal":
+            # любая сделка на бирже — как покупатель или как продавец (включая заявки на покупку)
             value = await conn.fetchval(
-                "SELECT COUNT(*) FROM ledger WHERE user_id = $1 "
-                "AND reason IN ('market_buy', 'market_sell') "
+                "SELECT COUNT(*) FROM market_trades WHERE (buyer_id = $1 OR seller_id = $1) "
                 "AND created_at >= $2 AND created_at < $3", user_id, start, end)
         elif g.key == "donate":
             value = await conn.fetchval(

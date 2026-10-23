@@ -627,7 +627,7 @@ RU: dict[str, str] = {
     "mk.buy_toast": "Сделка закрыта!",
     "mk.buy_done": "✅ Куплено <b>{qty} котлет</b> за <b>{total} 🪙</b>. Они уже на складе — заправляй Бурильщиков!",
     "mk.sold_notify": "💰 <b>Биржа: продажа!</b> Ордер #{id}: куплено {qty} шт. по {price}. Получено <b>+{got} 🪙</b> (комиссия {fee} сгорела).",
-    "mk.sell_help": "💰 <b>КАК ПРОДАТЬ КОТЛЕТЫ</b>\n\nКоманда: <code>/sell количество цена</code>\nПример: <code>/sell 10 50</code> — 10 котлет по 50 🪙.\n\nКотлеты берутся со склада и ждут покупателя в ордере (снять можно в любой момент). До {max_qty} шт. в ордере, до {max_orders} открытых ордеров. Комиссия {fee}% сгорает при продаже.",
+    "mk.sell_help": "💰 <b>КАК ПРОДАТЬ КОТЛЕТЫ</b>\n\nКоманда: <code>/sell количество цена</code>\nПример: <code>/sell 10 250</code> — 10 котлет по 250 🪙.\n\nКотлеты берутся со склада и ждут покупателя в ордере (снять можно в любой момент). До {max_qty} шт. в ордере, до {max_orders} открытых ордеров. Комиссия {fee}% сгорает при продаже. Котлета не дешевле {min} 🪙: топливо из магазина за Звёзды всегда выгоднее биржи. Ресурсы, заявки на покупку и обмен — в игровом приложении.",
     "mk.sell_confirm": "📝 Выставить <b>{qty} котлет</b> по <b>{price}</b> 🪙?\nСумма сделки: {total} · комиссия хаба {fee} сгорит · ты получишь <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ ВЫСТАВИТЬ НА БИРЖУ",
     "mk.btn_cancel": "❌ Отмена",
@@ -641,7 +641,7 @@ RU: dict[str, str] = {
     "mk.btn_cancel_order": "❌ Снять ордер #{id}",
     "mk.order_cancelled": "↩️ Ордер #{id} снят: <b>{qty} котлет</b> вернулись на склад.",
     "mk.err_qty": "❌ Количество: от 1 до {max} котлет в ордере.",
-    "mk.err_price": "❌ Цена: от {min} до {max} 🪙 за котлету.",
+    "mk.err_price": "❌ Цена: от {min} до {max} 🪙 за штуку.",
     "mk.err_no_cutlets": "❌ На складе только {have} котлет. Загляни в /farm — котлеты из холодильника на биржу не идут.",
     "mk.err_too_many": "❌ Лимит: не больше {max} открытых ордеров. Сними лишний в «Мои ордера».",
     "mk.err_not_found": "❌ Ордер уже закрыт или снят.",
@@ -670,7 +670,13 @@ RU: dict[str, str] = {
     "app.goto_raids": "🏴‍☠️ <b>Налёты</b> живут в игровом приложении: разведка, стойка обороны и реванш.",
     "app.goto_station": "🛰 <b>Станция команды</b> живёт в игровом приложении: прогресс, вклады и бонус для всей команды.",
     "app.goto_market": "📈 <b>Биржа котлет</b> удобнее в игровом приложении: витрина, продажа и твои ордера на одном экране.",
-    "farm.boost_armor": "🛡 Кибер-броня ур. {level}: +{percent}% к добыче навсегда",
+    "mk.err_asset": "❌ Такого товара на бирже нет.",
+    "mk.err_no_resource": "❌ Не хватает ресурса: на складе только {have}.",
+    "mk.bid_filled_notify": "🙋 <b>Биржа: заявка исполнена!</b> Заявка #{id}: куплено <b>+{qty} {icon}</b> по {price} 🪙.",
+    "sw.err_same": "❌ Нельзя менять ресурс на тот же самый.",
+    "sw.done_notify": "🔄 <b>Обмен #{id} состоялся!</b> Отдано {give}, получено {want}.",
+    "ws.err_coins": "🔒 Не хватает монет: нужно {need} 🪙, на балансе {have} 🪙.",
+    "farm.boost_armor": "🛡 Кибер-броня ур. {level}: +{percent}% к добыче до {until} UTC",
     "farm.boost_station": "🛰 Станция команды ур. {level}: +{percent}% к добыче",
     "clan.btn_station": "🛰 Станция команды",
 
@@ -681,7 +687,7 @@ RU: dict[str, str] = {
         "🧰 Твои ресурсы: {stock}\n"
         "⛏ Металл — КНБ и дуэли · 💧 Водород — Больше/Меньше · "
         "💎 Кристаллы — Викторина · ⚙️ Детали — Кибер-Сейф. Квесты дают набор.\n\n"
-        "🛡 Кибер-броня: <b>уровень {armor}/{armor_max}</b> (+{armor_pct}% к добыче за уровень, навсегда)\n"
+        "🛡 Кибер-броня: <b>уровень {armor}/{armor_max}</b> (+{armor_pct}% к добыче за уровень, на 30 дней)\n"
         "🚀 Шаттл: <b>{shuttle}</b> — комиссия биржи {shuttle_fee}%, до {shuttle_qty} котлет в ордере\n\n"
         "<i>✅ — хватает ресурсов, 🔒 — пока нет. Одно нажатие — и готово.</i>"
     ),
@@ -705,8 +711,8 @@ RU: dict[str, str] = {
     "ws.done_drone": "🛸 <b>Мастер-дрон</b> бережёт роботов до {until} UTC.",
     "ws.done_shield": "🛡 <b>Щит от налётов</b> держится до {until} UTC. Ресурсы под защитой.",
     "ws.done_cutlet": "🥩 Синтезировано: <b>+{qty} кибер-котлета</b> на склад. Заправляй в /farm!",
-    "ws.done_armor": "🛡 <b>Кибер-броня уровня {level}!</b> Добыча фермы: <b>+{percent}%</b> навсегда.",
-    "ws.done_shuttle": "🚀 <b>Шаттл собран!</b> Комиссия на бирже теперь {fee}%, в ордере до {qty} котлет. Это навсегда.",
+    "ws.done_armor": "🛡 <b>Кибер-броня уровня {level}!</b> Добыча фермы: <b>+{percent}%</b> на 30 дней.",
+    "ws.done_shuttle": "🚀 <b>Шаттл собран!</b> Комиссия на твои продажи теперь {fee}%, в ордере до {qty} котлет. Шаттл только твой и навсегда.",
     "ws.err_unknown": "❌ Такого рецепта нет.",
     "ws.err_resources": "🔒 Не хватает: {kind} нужно {need}, есть {have}. Добывай в играх!",
     "ws.err_shuttle_owned": "🚀 Шаттл уже собран — он один на игрока.",
@@ -1435,7 +1441,7 @@ EN: dict[str, str] = {
     "mk.buy_toast": "Deal closed!",
     "mk.buy_done": "✅ Bought <b>{qty} cutlets</b> for <b>{total} 🪙</b>. They're in your inventory — fuel your Drillers!",
     "mk.sold_notify": "💰 <b>Market: sold!</b> Order #{id}: {qty} pcs at {price}. You received <b>+{got} 🪙</b> ({fee} fee burned).",
-    "mk.sell_help": "💰 <b>HOW TO SELL CUTLETS</b>\n\nCommand: <code>/sell quantity price</code>\nExample: <code>/sell 10 50</code> — 10 cutlets at 50 🪙 each.\n\nCutlets leave your inventory and wait in the order (cancel anytime). Up to {max_qty} pcs per order, up to {max_orders} open orders. A {fee}% fee is burned on sale.",
+    "mk.sell_help": "💰 <b>HOW TO SELL CUTLETS</b>\n\nCommand: <code>/sell quantity price</code>\nExample: <code>/sell 10 250</code> — 10 cutlets at 250 🪙 each.\n\nCutlets leave your inventory and wait in the order (cancel anytime). Up to {max_qty} pcs per order, up to {max_orders} open orders. A {fee}% fee is burned on sale. A cutlet can't go below {min} 🪙: fuel from the shop for Stars is always the better deal. Resources, buy orders and swaps are in the game app.",
     "mk.sell_confirm": "📝 List <b>{qty} cutlets</b> at <b>{price}</b> 🪙?\nDeal total: {total} · hub fee {fee} burns · you get <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ LIST ON THE MARKET",
     "mk.btn_cancel": "❌ Cancel",
@@ -1449,7 +1455,7 @@ EN: dict[str, str] = {
     "mk.btn_cancel_order": "❌ Cancel order #{id}",
     "mk.order_cancelled": "↩️ Order #{id} cancelled: <b>{qty} cutlets</b> returned to your inventory.",
     "mk.err_qty": "❌ Quantity: 1 to {max} cutlets per order.",
-    "mk.err_price": "❌ Price: {min} to {max} 🪙 per cutlet.",
+    "mk.err_price": "❌ Price: {min} to {max} 🪙 each.",
     "mk.err_no_cutlets": "❌ Only {have} cutlets in your inventory. Fridge cutlets can't be listed — see /farm.",
     "mk.err_too_many": "❌ Limit: no more than {max} open orders. Cancel one in “My orders”.",
     "mk.err_not_found": "❌ This order is already closed.",
@@ -1478,7 +1484,13 @@ EN: dict[str, str] = {
     "app.goto_raids": "🏴‍☠️ <b>Raids</b> live in the game app: scouting, defense stance and revenge.",
     "app.goto_station": "🛰 The <b>team station</b> lives in the game app: progress, donations and a bonus for the whole team.",
     "app.goto_market": "📈 The <b>cutlet market</b> is easier in the game app: offers, selling and your orders on one screen.",
-    "farm.boost_armor": "🛡 Cyber-armor lvl {level}: +{percent}% mining forever",
+    "mk.err_asset": "❌ There's no such item on the market.",
+    "mk.err_no_resource": "❌ Not enough of that resource: you only have {have}.",
+    "mk.bid_filled_notify": "🙋 <b>Market: buy order filled!</b> Order #{id}: you bought <b>+{qty} {icon}</b> at {price} 🪙.",
+    "sw.err_same": "❌ You can't swap a resource for the same one.",
+    "sw.done_notify": "🔄 <b>Swap #{id} completed!</b> Given {give}, received {want}.",
+    "ws.err_coins": "🔒 Not enough coins: {need} 🪙 needed, you have {have} 🪙.",
+    "farm.boost_armor": "🛡 Cyber-armor lvl {level}: +{percent}% mining until {until} UTC",
     "farm.boost_station": "🛰 Team station lvl {level}: +{percent}% mining",
     "clan.btn_station": "🛰 Team station",
 
@@ -1489,7 +1501,7 @@ EN: dict[str, str] = {
         "🧰 Your resources: {stock}\n"
         "⛏ Metal — RPS & duels · 💧 Hydrogen — High/Low · "
         "💎 Crystals — Quiz · ⚙️ Parts — Cyber-Safe. Quests give a bundle.\n\n"
-        "🛡 Cyber-armor: <b>level {armor}/{armor_max}</b> (+{armor_pct}% mining per level, forever)\n"
+        "🛡 Cyber-armor: <b>level {armor}/{armor_max}</b> (+{armor_pct}% mining per level, for 30 days)\n"
         "🚀 Shuttle: <b>{shuttle}</b> — market fee {shuttle_fee}%, up to {shuttle_qty} cutlets per order\n\n"
         "<i>✅ — enough resources, 🔒 — not yet. One tap and it's done.</i>"
     ),
@@ -1513,8 +1525,8 @@ EN: dict[str, str] = {
     "ws.done_drone": "🛸 <b>Master Drone</b> protects your robots until {until} UTC.",
     "ws.done_shield": "🛡 <b>Raid shield</b> holds until {until} UTC. Your resources are safe.",
     "ws.done_cutlet": "🥩 Synthesized: <b>+{qty} cyber-cutlet</b> in your inventory. Refuel in /farm!",
-    "ws.done_armor": "🛡 <b>Cyber-armor level {level}!</b> Farm mining: <b>+{percent}%</b> forever.",
-    "ws.done_shuttle": "🚀 <b>Shuttle built!</b> Market fee is now {fee}%, up to {qty} cutlets per order. Permanent.",
+    "ws.done_armor": "🛡 <b>Cyber-armor level {level}!</b> Farm mining: <b>+{percent}%</b> for 30 days.",
+    "ws.done_shuttle": "🚀 <b>Shuttle built!</b> The fee on your sales is now {fee}%, up to {qty} cutlets per order. The shuttle is yours only, forever.",
     "ws.err_unknown": "❌ No such recipe.",
     "ws.err_resources": "🔒 Not enough: {kind} needs {need}, you have {have}. Mine it in the games!",
     "ws.err_shuttle_owned": "🚀 Shuttle already built — one per player.",
