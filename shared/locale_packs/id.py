@@ -71,7 +71,7 @@ STRINGS = {
     "start.intro2": (
         "🎁 <b>INI HADIAH PERTAMAMU UNTUK PENDAFTARAN!</b>\n"
         "..................................................\n"
-        "💸 Kamu menerima: <b>{balance} koin</b>\n"
+        "💸 Kamu menerima: <b>{balance} 🪙</b>\n"
         "🥩 Kamu menerima: <b>{cutlets} kotlet siber</b>\n"
         "..................................................\n"
         "Ini bonus awalmu karena bergabung dengan klub ROFL HUB.\n\n"
@@ -138,11 +138,11 @@ STRINGS = {
         "• /quests — MISI: cerita detektif, komedi, dan teka-teki berhadiah\n"
         "• /rps, /high_low, /safe — Game cepat berhadiah koin\n\n"
         "👥 <b>MANAJEMEN GENG:</b>\n"
-        "• /create_team — Daftarkan tim sendiri seharga 100.000 koin\n"
+        "• /create_team — Daftarkan tim sendiri seharga 100.000 🪙\n"
         "• /my_team — Dasbor geng dan DAFTAR REKAN TIM dengan level 🧠\n"
         "• /all_teams — Rulet tim acak\n\n"
         "💸 <b>UANG & TEMAN:</b>\n"
-        "• /invite — Link referalmu: +1000 koin per teman\n"
+        "• /invite — Link referalmu: +1000 🪙 per teman\n"
         "• /transfer — Kirim koin ke pemain lain\n\n"
         "📚 <b>PANDUAN & ATURAN:</b>\n"
         "• /faq — Panduan lengkap ekosistem (dibuka di Mini App)\n"
@@ -155,9 +155,9 @@ STRINGS = {
         "..................................................\n\n"
         "Lawan bot dalam duel cepat atau ikuti tes sprint intelektual "
         "untuk menang besar — atau kehilangan semuanya!\n\n"
-        "💸 Tiap kemenangan: <b>+2 koin</b> (Brankas Siber: <b>+5</b>)\n"
-        "💀 Kalah atau seri: dipotong <b>-1 koin</b>\n"
-        "🧠 Di Kuis ada timer 15 detik dan level kecerdasan: level 1 = 10 jawaban benar dan <b>+100 koin</b>, "
+        "💸 Tiap kemenangan: <b>+2 🪙</b> (Brankas Siber: <b>+5</b>)\n"
+        "💀 Kalah atau seri: dipotong <b>-1 🪙</b>\n"
+        "🧠 Di Kuis ada timer 15 detik dan level kecerdasan: level 1 = 10 jawaban benar dan <b>+100 🪙</b>, "
         "setiap level berikutnya 10 jawaban lebih panjang — tapi hadiahnya naik 100!\n\n"
         "..................................................\n"
         "👇 <b>KETUK TOMBOL DI BAWAH UNTUK LANGSUNG MULAI RONDE:</b>"
@@ -183,7 +183,7 @@ STRINGS = {
         "Pengebor Siber — 10/jam, dan SETIAP Pengebor memakan 1 kotlet sibernya sendiri per hari. "
         "Semua robot bertahan 30 hari (Drone Master menghentikan sementara keausan).\n"
         "🧠 Kuis: 15 detik per jawaban, level kecerdasan dengan hadiah yang terus naik.\n"
-        "⚔️ Duel melawan pemain sungguhan di meja 10/100/1000 koin.\n"
+        "⚔️ Duel melawan pemain sungguhan di meja 10/100/1000 🪙.\n"
         "🏆 Tim hingga 50 petarung (Mega-Klan — hingga 1000) dan event Pertempuran berhadiah untuk semua.\n\n"
         "..................................................\n"
         "👇 <b>Panduan lengkap dengan semua mekanik — satu ketukan saja:</b>"
@@ -214,7 +214,7 @@ STRINGS = {
     ),
     "quest.card": (
         "{title}\n"
-        "🎭 {genre} · ⏱ {minutes} mnt · 🏆 +{reward} koin untuk kemenangan pertama\n"
+        "🎭 {genre} · ⏱ {minutes} mnt · 🏆 +{reward} 🪙 untuk kemenangan pertama\n"
         "..................................................\n\n"
         "{teaser}\n\n{status}"
     ),
@@ -226,11 +226,11 @@ STRINGS = {
     "quest.btn_resume": "⏯ LANJUTKAN",
     "quest.btn_list": "🗺️ Ke daftar misi",
     "quest.btn_replay": "🔄 Main lagi",
-    "quest.win_first": "\n\n🏆 <b>MISI SELESAI! Hadiah: +{coins} koin.</b>",
+    "quest.win_first": "\n\n🏆 <b>MISI SELESAI! Hadiah: +{coins} 🪙.</b>",
     "quest.win_repeat": "\n\n✅ <b>Selesai lagi!</b> Hadiah misi ini sudah pernah diklaim sebelumnya.",
     "quest.fail_footer": "\n\n💀 <i>Bukan akhir yang terbaik... tapi ceritanya selalu bisa diulang!</i>",
     "quest.stale": "⏳ Adegan itu sudah lewat — kita lanjut dari posisi sekarang!",
-    "quest.no_coins": "❌ Koin tidak cukup untuk petunjuk ({cost}). Mampir ke ladangmu!",
+    "quest.no_coins": "❌ Petunjuk ini seharga {cost} 🪙, saldomu kurang. Mampir ke ladangmu!",
     "quest.not_found": "❌ Misi tidak ditemukan.",
     "menu.btn_quests": "🗺️ MISI",
 
@@ -242,27 +242,28 @@ STRINGS = {
     "farm.status_all_fueled": "🟢 Semua Pengebor Siber terisi bahan bakar dan sedang menambang koin!",
     "farm.status_partial": "🟡 {fueled} dari {total} Pengebor Siber sudah terisi. Sisanya menunggu kotlet di kulkas!",
     "farm.status_no_fuel": "🔴 Para Pengebor Siber berhenti! Bahan bakar di kulkas tidak cukup.",
-    "farm.status_no_drills": "💡 Pelihara Pengebor Siber di /shop untuk menambah penghasilan.",
+    "farm.status_no_drills": "💡 Ambil robot yang lebih kuat di /shop — ladangmu akan menambang lebih banyak.",
     "farm.boost_nuclear": "🔋 Boost Nuklir x5 sampai {until} UTC (konsumsi kotlet ×3)",
     "farm.boost_nitrogen": "❄️ Pendingin Nitrogen +40% sampai {until} UTC",
     "farm.boost_drone": "🛸 Drone Master memperpanjang umur robot sampai {until} UTC",
     "farm.no_boosts": "Tidak ada boost aktif — cek /shop.",
     "farm.burnout": "🔥 Robot berikutnya hangus pada: <b>{until} UTC</b>\n",
     "farm.btn_activate_intern": "🚀 Aktifkan Robot Magang-mu (gratis)",
-    "farm.intern_activated": "🤖 Robot Magang-mu mulai bekerja! +1 koin per jam selamanya — tanpa bahan bakar, tanpa kedaluwarsa.",
+    "farm.intern_activated": "🤖 Robot Magang-mu mulai bekerja! +1 🪙 per jam selamanya — tanpa bahan bakar, tanpa kedaluwarsa.",
     "farm.intern_already": "🤖 Robot Magang-mu sudah bekerja.",
-    "farm.intern_line": "🤖 Robot Magang ({rate} koin/jam, abadi): <code>{count}</code>",
-    "farm.intern_hint": "🎁 Kamu punya Robot Magang gratis! Tekan tombol di bawah — dia akan menambang 1 koin per jam selamanya.",
+    "farm.intern_line": "• Robot Magang ({rate} 🪙/jam, abadi): <code>{count}</code>\n",
+    "farm.intern_hint": "🎁 Kamu punya Robot Magang gratis! Tekan tombol di bawah — dia akan menambang 1 🪙 per jam selamanya.",
     "farm.dashboard": (
         "🚜 <b>HUB BAHAN BAKAR PUSAT ROFL HUB</b>\n"
         "..................................................\n\n"
         "🤖 Robot aktif di pabrik: <b>{total}</b>\n"
-        "• Robot Penambang ({junior_rate} koin/jam): <code>{junior}</code>\n"
-        "• Pengebor Siber ({premium_rate} koin/jam): <code>{premium}</code>\n"
+        "{intern}"
+        "• Robot Penambang ({junior_rate} 🪙/jam): <code>{junior}</code>\n"
+        "• Pengebor Siber ({premium_rate} 🪙/jam): <code>{premium}</code>\n"
         "{burnout}\n"
         "📊 <b>KECEPATAN LADANGMU SAAT INI:</b>\n"
-        "• Produksi per jam: <b>+{speed_hour} koin</b>\n"
-        "• Produksi per hari: <b>+{speed_day} koin</b>\n\n"
+        "• Produksi per jam: <b>+{speed_hour} 🪙</b>\n"
+        "• Produksi per hari: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>BOOST:</b>\n{boosts}\n\n"
         "📋 <b>STATUS PABRIK GAME:</b>\n"
         "{status}\n\n"
@@ -286,10 +287,10 @@ STRINGS = {
         "..................................................\n\n"
         "🆔 ID Paspormu: <code>{user_id}</code>\n"
         "{vip}"
-        "💰 Koin saat ini: <b>{balance} koin</b>\n"
+        "💰 Koin saat ini: <b>{balance} 🪙</b>\n"
         "🏆 Statusmu: <b>{team}</b>\n"
         "🧠 Level kecerdasan: <b>{level}</b> · menuju level {next_level}: "
-        "<b>{left}</b> jawaban benar di /quiz (hadiah: +{reward} koin)\n\n"
+        "<b>{left}</b> jawaban benar di /quiz (hadiah: +{reward} 🪙)\n\n"
         "..................................................\n"
         "<i>Ini yang kamu miliki saat ini. Gunakan tombol untuk melompat ke bagian lain!</i>"
     ),
@@ -317,21 +318,21 @@ STRINGS = {
     "img.premium": "Pengebor Siber: {count}",
 
     # ---------------- game: mesin umum ----------------
-    "games.win": "🎉 <b>MENANG!</b> 🎉\nKoin didapat: <b>+{reward}</b>",
-    "games.lose": "💀 <b>KALAH!</b>\nKoin dipotong: <b>-{penalty}</b>",
-    "games.draw": "🤝 <b>SERI!</b>\nKoin dipotong: <b>-{penalty}</b>",
+    "games.win": "🎉 <b>MENANG!</b> 🎉\nDidapat: <b>+{reward} 🪙</b>",
+    "games.lose": "💀 <b>KALAH!</b>\nDipotong: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>SERI!</b>\nDipotong: <b>-{penalty} 🪙</b>",
     "games.limit": (
         "🛑 <b>Batas harian tercapai!</b>\n\n"
         "Kamu sudah meraih {limit} kemenangan di {game} hari ini. Batas di-reset pada 00:00 UTC.\n\n"
         "⚡ Hapus batas selama 24 jam — 5 ★, selama 30 hari — 99 ★ (bagian “Game” di /shop)."
     ),
     "games.no_coins": "❌ Koinmu 0 — tidak ada yang bisa dipakai membayar biaya ronde. Ambil penghasilan ladangmu di /farm!",
-    "games.balance": "💰 Saldo: <b>{balance} koin</b>",
+    "games.balance": "💰 Saldo: <b>{balance} 🪙</b>",
     "games.btn_retry": "🎮 Main lagi!",
     "games.btn_hub": "🕹️ Zona game",
     "games.level_up": (
-        "🏅 <b>LEVEL KECERDASAN NAIK: {level}!</b> Hadiah: <b>+{bonus} koin</b>!\n"
-        "Level berikutnya: {next_required} jawaban benar → +{next_reward} koin."
+        "🏅 <b>LEVEL KECERDASAN NAIK: {level}!</b> Hadiah: <b>+{bonus} 🪙</b>!\n"
+        "Level berikutnya: {next_required} jawaban benar → +{next_reward} 🪙."
     ),
     "games.name.rps": "Batu-Gunting-Kertas",
     "games.intern_bonus": "🤖 Level {level}! Satu Robot Magang lagi datang ke farm-mu — sekarang ada {count}.",
@@ -374,15 +375,15 @@ STRINGS = {
     "quiz.stale_alert": "Pertanyaan ini sudah tidak aktif. Mulai yang baru!",
     "quiz.empty": "⚠️ Bank soal kosong. Beri tahu admin.",
     "quiz.wrong": "❌ <b>Salah</b> ❌\nJawaban yang benar: <b>{correct}</b>",
-    "quiz.lost_line": "💀 <b>-{penalty} koin</b> karena kalah!",
+    "quiz.lost_line": "💀 <b>-{penalty} 🪙</b> karena kalah!",
     "quiz.level_line": (
         "🧠 Level kecerdasan: <b>{level}</b>\n"
         "Kemenangan tersisa menuju level {next_level}: <b>{left}</b>"
     ),
     "quiz.rules": (
         "<i>{seconds} detik per jawaban!\n"
-        "Benar: +{win} koin ke saldomu\n"
-        "Salah / kehabisan waktu: -{penalty} koin\n"
+        "Benar: +{win} 🪙 ke saldomu\n"
+        "Salah / kehabisan waktu: -{penalty} 🪙\n"
         "Batas: {limit} kemenangan per hari</i>"
     ),
 
@@ -391,7 +392,7 @@ STRINGS = {
     # ---------------- Brankas ----------------
     "safe.intro": (
         "🔐 <b>BRANKAS SIBER</b>\n\n"
-        "Di dalamnya — jackpot <b>{jackpot} koin</b>! Pintunya terkunci dengan kode dari 1 sampai {codes}. "
+        "Di dalamnya — jackpot <b>{jackpot} 🪙</b>! Pintunya terkunci dengan kode dari 1 sampai {codes}. "
         "Kamu punya satu percobaan.\n"
         "Dibobol: <b>+{jackpot}</b> · Alarm: <b>-{penalty}</b> · Batas: <b>{limit}</b> kemenangan"
     ),
@@ -412,21 +413,21 @@ STRINGS = {
         "🏆 Kemenangan duel dihitung untuk timmu di Pertempuran!\n\n"
         "👇 <b>PILIH MEJA:</b>"
     ),
-    "duel.btn_table": "⚔️ Meja {stake} koin",
+    "duel.btn_table": "⚔️ Meja {stake} 🪙",
     "duel.btn_cancel": "❌ Tinggalkan meja (taruhan kembali)",
     "duel.btn_move_rock": "🪨 Batu",
     "duel.btn_move_scissors": "✂️ Gunting",
     "duel.btn_move_paper": "🧻 Kertas",
     "duel.waiting": (
-        "🪑 <b>Kamu di meja {stake} koin.</b> Taruhanmu sudah masuk pot.\n"
+        "🪑 <b>Kamu di meja {stake} 🪙.</b> Taruhanmu sudah masuk pot.\n"
         "Menunggu petarung kedua... Begitu dia duduk, kalian berdua akan diminta memilih gestur!\n"
         "<i>Antrean berlaku {ttl} menit, setelah itu taruhanmu otomatis kembali.</i>"
     ),
-    "duel.cancelled": "🚪 Kamu meninggalkan meja. Taruhan <b>{stake} koin</b> kembali ke saldomu.",
-    "duel.expired": "⌛ Tidak ada lawan yang muncul di meja {stake}. Taruhan <b>{stake} koin</b> sudah dikembalikan.",
+    "duel.cancelled": "🚪 Kamu meninggalkan meja. Taruhan <b>{stake} 🪙</b> kembali ke saldomu.",
+    "duel.expired": "⌛ Tidak ada lawan yang muncul di meja {stake}. Taruhan <b>{stake} 🪙</b> sudah dikembalikan.",
     "duel.matched": (
-        "⚔️ <b>LAWAN DITEMUKAN! Meja {stake} koin.</b>\n"
-        "Pot: <b>{bank} koin</b> · Untuk pemenang: <b>{payout}</b>\n\n"
+        "⚔️ <b>LAWAN DITEMUKAN! Meja {stake} 🪙.</b>\n"
+        "Pot: <b>{bank} 🪙</b> · Untuk pemenang: <b>{payout}</b>\n\n"
         "⏱ Kamu punya <b>{timeout} detik</b> untuk memilih gestur!"
     ),
     "duel.move_saved": "✊ Gestur terkunci! Menunggu gestur lawan...",
@@ -437,19 +438,19 @@ STRINGS = {
     "duel.win": (
         "🏆 <b>DUEL INI MILIKMU!</b>\n\n"
         "Gesturmu {winner_move} mengalahkan {loser_move}.\n"
-        "💰 Kemenangan: <b>+{payout} koin</b> · 🔥 Terbakar dari pot: {burned}\n"
-        "💼 Saldo: <b>{balance} koin</b>"
+        "💰 Kemenangan: <b>+{payout} 🪙</b> · 🔥 Terbakar dari pot: {burned}\n"
+        "💼 Saldo: <b>{balance} 🪙</b>"
     ),
     "duel.lose": (
         "💀 <b>DUEL KALAH.</b>\n\n"
         "{winner_move} lawan mengalahkan {loser_move} milikmu.\n"
-        "📉 Taruhan <b>{stake} koin</b> masuk ke pot pemenang.\n"
+        "📉 Taruhan <b>{stake} 🪙</b> masuk ke pot pemenang.\n"
         "Rematch?"
     ),
     "duel.reaper_prefix": "⏰ <b>Ronde kehabisan waktu!</b> Gestur yang belum dipilih ditentukan oleh generator acak.\n\n",
     "duel.bad_table": "❌ Meja seperti itu tidak ada.",
     "duel.already_in": "⚠️ Kamu sudah di meja atau sedang bertarung! Selesaikan dulu duel yang sedang berjalan.",
-    "duel.no_coins": "❌ Kamu butuh {stake} koin di saldo untuk meja ini.",
+    "duel.no_coins": "❌ Kamu butuh {stake} 🪙 di saldo untuk meja ini.",
     "duel.cancel_impossible": "⚠️ Antrean ini sudah tidak bisa dibatalkan (lawan sudah ditemukan atau meja ditutup).",
     "duel.not_active": "⌛ Duel ini sudah berakhir.",
     "duel.not_participant": "🔒 Ini bukan duelmu!",
@@ -471,21 +472,21 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAM REFERAL ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Undang teman dan dapatkan <b>+{bonus} koin</b> untuk setiap orang "
+        "Undang teman dan dapatkan <b>+{bonus} 🪙</b> untuk setiap orang "
         "yang mendaftar lewat link pribadimu!\n\n"
         "🔗 <b>Link-mu (ketuk untuk menyalin):</b>\n<code>{link}</code>\n\n"
         "📊 <b>STATISTIKMU:</b>\n"
         "👥 Teman yang diundang: <b>{invited}</b>\n"
-        "💰 Penghasilan dari referal: <b>{earned} koin</b>\n\n"
+        "💰 Penghasilan dari referal: <b>{earned} 🪙</b>\n\n"
         "..................................................\n"
         "<i>Sebarkan link ke teman sekelas, sahabat, dan media sosial — makin besar gengmu, makin cepat saldomu tumbuh!</i>"
     ),
     "ref.btn_share": "📣 Bagikan link",
     "ref.share_text": "Gabung ke ekosistem game ROFL HUB!",
     "ref.qualified_line": ("⭐ <b>Hadiah ganda:</b> saat teman yang kamu undang main {rounds} "
-                           "ronde, kamu dapat <b>+{bonus} koin</b> lagi!"),
+                           "ronde, kamu dapat <b>+{bonus} 🪙</b> lagi!"),
     "ref.qualified_notify": ("🤝 <b>Temanmu ketagihan: sudah {rounds} ronde!</b>\n"
-                             "Kamu dapat <b>+{bonus} koin</b> untuk referral berkualitas. "
+                             "Kamu dapat <b>+{bonus} 🪙</b> untuk referral berkualitas. "
                              "Undang lagi!"),
 
     # ---------------- transfer ----------------
@@ -497,22 +498,22 @@ STRINGS = {
         "<code>/transfer @username jumlah</code> — lewat username\n"
         "<code>/transfer ROFL-HUB-777 jumlah</code> — lewat VIP ID dari lelang\n\n"
         "Contoh:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 Jumlah minimum: <b>{min} koin</b>"
+        "📌 Jumlah minimum: <b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ Penerima tidak ditemukan. Periksa ID Paspor atau @username — pemainnya harus sudah terdaftar di bot.",
     "tr.self": "🤨 Mengirim koin ke diri sendiri tidak bisa — itu sih mesin ekonomi abadi namanya!",
     "tr.blocked": "🚫 Pemain ini diblokir — transfer ke dia tidak tersedia.",
-    "tr.min": "❌ Jumlah transfer minimum adalah {min} koin.",
-    "tr.insufficient": "❌ Koin tidak cukup! Saldomu: <b>{balance}</b>.",
+    "tr.min": "❌ Jumlah transfer minimum adalah {min} 🪙.",
+    "tr.insufficient": "❌ Koin tidak cukup! Saldomu: <b>{balance} 🪙</b>.",
     "tr.err_insufficient": "❌ Koin di saldomu tidak cukup.",
     "tr.confirm": (
         "🔄 <b>KONFIRMASI TRANSFER:</b>\n\n"
         "👤 Penerima: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Jumlah yang dipotong: <b>{amount} koin</b>{fee_line}\n"
-        "💰 Penerima mendapat: <b>{received} koin</b>\n\n"
+        "💸 Jumlah yang dipotong: <b>{amount} 🪙</b>{fee_line}\n"
+        "💰 Penerima mendapat: <b>{received} 🪙</b>\n\n"
         "<i>Transfer tidak bisa dibatalkan — periksa lagi penerimanya!</i>"
     ),
-    "tr.fee_line": "\n🔥 Biaya hub: <b>{fee} koin</b> (terbakar)",
+    "tr.fee_line": "\n🔥 Biaya hub: <b>{fee} 🪙</b> (terbakar)",
     "tr.btn_confirm": "✅ KONFIRMASI TRANSFER",
     "tr.btn_cancel": "❌ Batal",
     "tr.cancelled_toast": "Transfer dibatalkan",
@@ -521,11 +522,11 @@ STRINGS = {
     "tr.done_toast": "✅ Transfer berhasil!",
     "tr.done": (
         "✅ <b>TRANSFER BERHASIL!</b>\n\n"
-        "💸 Terkirim: <b>{amount} koin</b> ke pemain ID <code>{recipient_id}</code>\n"
-        "💰 Saldomu: <b>{balance} koin</b>"
+        "💸 Terkirim: <b>{amount} 🪙</b> ke pemain ID <code>{recipient_id}</code>\n"
+        "💰 Saldomu: <b>{balance} 🪙</b>"
     ),
     "tr.received": (
-        "💰 <b>Kamu menerima {amount} koin!</b>\n"
+        "💰 <b>Kamu menerima {amount} 🪙!</b>\n"
         "Pengirim: ID <code>{sender_id}</code>. Saldomu sudah bertambah — cek /profile!"
     ),
 
@@ -577,7 +578,7 @@ STRINGS = {
     "dlv.miner_junior": "Robot Penambang",
     "dlv.miner_premium": "Pengebor Siber",
     "dlv.fridge": "📦 Kulkas diperluas menjadi <b>{capacity} kotlet</b>.",
-    "dlv.coins": "💰 Masuk <b>+{amount} koin</b>.",
+    "dlv.coins": "💰 Masuk <b>+{amount} 🪙</b>.",
     "dlv.boost_nuclear": "🔋 Boost Nuklir x5 aktif sampai <b>{until} UTC</b>.",
     "dlv.boost_nitrogen": "❄️ Pendingin Nitrogen +40% aktif sampai <b>{until} UTC</b>.",
     "dlv.drone": "🛸 Drone Master menjaga ladangmu sampai <b>{until} UTC</b>.",
@@ -586,43 +587,43 @@ STRINGS = {
     "dlv.err_fridge": "Kamu sudah punya kulkas sebesar ini atau lebih besar.",
     "dlv.err_no_team": "Kamu belum punya tim. Buat dulu lewat /create_team.",
     "dlv.err_mega": "Timmu sudah berstatus Mega-Klan.",
-    "dlv.intern_upgrade": "♾ Robot Magang-mu naik jadi <b>Robot Penambang ABADI</b>: 5 koin per jam, tanpa kedaluwarsa!",
+    "dlv.intern_upgrade": "♾ Robot Magang-mu naik jadi <b>Robot Penambang ABADI</b>: 5 🪙 per jam, tanpa kedaluwarsa!",
     "dlv.err_no_intern": "Belum ada Robot Magang aktif — aktifkan dulu di /farm.",
     "dlv.err_intern_refs": "Upgrade butuh {need} teman berkualitas (30 ronde masing-masing); kamu punya {have}.",
     "mk.header": "📈 <b>BURSA PATTY</b>\n..................................................\n\nOrder terbuka: <b>{orders}</b> · patty dijual: <b>{cutlets}</b> · harga terbaik: <b>{best}</b>\nBiaya hub: <b>{fee}%</b> per penjualan (dibakar — pelindung inflasi)\n🥩 Di gudangmu: <b>{inv}</b> patty\n\n{body}\n\n<i>Ketuk order untuk membeli. Untuk menjual: /sell.</i>",
     "mk.empty": "Belum ada penawaran. Jadilah yang pertama: /sell jumlah harga",
-    "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> seharga <b>{price}</b> koin",
-    "mk.btn_order": "🛒 #{id}: {qty} pcs seharga {price} koin",
+    "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> seharga <b>{price}</b> 🪙",
+    "mk.btn_order": "🛒 #{id}: {qty} pcs seharga {price} 🪙",
     "mk.btn_my": "📋 Order saya",
     "mk.btn_sell_help": "💰 Cara menjual patty",
     "mk.btn_refresh": "🔄 Muat ulang",
     "mk.btn_back": "← Ke bursa",
-    "mk.pick": "🛒 <b>Order #{id}</b>: tersedia {qty} pcs seharga {price} koin.\nBeli berapa?",
-    "mk.btn_qty": "{qty} pcs — {total} koin",
-    "mk.btn_qty_all": "Semua {qty} pcs — {total} koin",
+    "mk.pick": "🛒 <b>Order #{id}</b>: tersedia {qty} pcs seharga {price} 🪙.\nBeli berapa?",
+    "mk.btn_qty": "{qty} pcs — {total} 🪙",
+    "mk.btn_qty_all": "Semua {qty} pcs — {total} 🪙",
     "mk.buy_toast": "Transaksi selesai!",
-    "mk.buy_done": "✅ Terbeli <b>{qty} patty</b> seharga <b>{total} koin</b>. Sudah di gudang — isi bahan bakar Bor-mu!",
-    "mk.sold_notify": "💰 <b>Bursa: terjual!</b> Order #{id}: {qty} pcs seharga {price}. Kamu dapat <b>+{got} koin</b> (biaya {fee} dibakar).",
-    "mk.sell_help": "💰 <b>CARA MENJUAL PATTY</b>\n\nPerintah: <code>/sell jumlah harga</code>\nContoh: <code>/sell 10 50</code> — 10 patty seharga 50 koin.\n\nPatty keluar dari gudang dan menunggu di order (bisa dibatalkan kapan saja). Maks {max_qty} pcs per order dan {max_orders} order terbuka. Biaya {fee}% dibakar saat terjual.",
-    "mk.sell_confirm": "📝 Jual <b>{qty} patty</b> seharga <b>{price}</b> koin?\nTotal: {total} · biaya {fee} dibakar · kamu dapat <b>{got} koin</b>.",
+    "mk.buy_done": "✅ Terbeli <b>{qty} patty</b> seharga <b>{total} 🪙</b>. Sudah di gudang — isi bahan bakar Bor-mu!",
+    "mk.sold_notify": "💰 <b>Bursa: terjual!</b> Order #{id}: {qty} pcs seharga {price}. Kamu dapat <b>+{got} 🪙</b> (biaya {fee} dibakar).",
+    "mk.sell_help": "💰 <b>CARA MENJUAL PATTY</b>\n\nPerintah: <code>/sell jumlah harga</code>\nContoh: <code>/sell 10 50</code> — 10 patty seharga 50 🪙.\n\nPatty keluar dari gudang dan menunggu di order (bisa dibatalkan kapan saja). Maks {max_qty} pcs per order dan {max_orders} order terbuka. Biaya {fee}% dibakar saat terjual.",
+    "mk.sell_confirm": "📝 Jual <b>{qty} patty</b> seharga <b>{price}</b> 🪙?\nTotal: {total} · biaya {fee} dibakar · kamu dapat <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ PASANG DI BURSA",
     "mk.btn_cancel": "❌ Batal",
     "mk.sell_toast": "Order terpasang!",
-    "mk.sell_done": "✅ Order <b>#{id}</b> aktif: {qty} pcs seharga {price} koin. Kuberi tahu saat terjual.",
+    "mk.sell_done": "✅ Order <b>#{id}</b> aktif: {qty} pcs seharga {price} 🪙. Kuberi tahu saat terjual.",
     "mk.cancelled_toast": "Dibatalkan",
     "mk.cancel_text": "❌ <b>Dibatalkan.</b> Patty tetap di gudang.",
     "mk.my_header": "📋 <b>ORDER-MU</b>\n\n",
-    "mk.my_line": "🥩 #{id} · {qty} pcs seharga {price} koin",
+    "mk.my_line": "🥩 #{id} · {qty} pcs seharga {price} 🪙",
     "mk.my_empty": "📋 Kamu tidak punya order terbuka.",
     "mk.btn_cancel_order": "❌ Batalkan order #{id}",
     "mk.order_cancelled": "↩️ Order #{id} dibatalkan: <b>{qty} patty</b> kembali ke gudang.",
     "mk.err_qty": "❌ Jumlah: 1 sampai {max} patty per order.",
-    "mk.err_price": "❌ Harga: {min} sampai {max} koin per patty.",
+    "mk.err_price": "❌ Harga: {min} sampai {max} 🪙 per patty.",
     "mk.err_no_cutlets": "❌ Hanya ada {have} patty di gudang. Patty di kulkas tidak bisa dijual — lihat /farm.",
     "mk.err_too_many": "❌ Batas: maksimal {max} order terbuka. Batalkan satu di «Order saya».",
     "mk.err_not_found": "❌ Order ini sudah ditutup.",
     "mk.err_own": "🤨 Tidak bisa membeli order sendiri.",
-    "mk.err_insufficient": "❌ Koin kurang: butuh {total}.",
+    "mk.err_insufficient": "❌ Tidak cukup: butuh {total} 🪙.",
     "farm.btn_market": "📈 Bursa patty",
 
     # ---------------- sumber daya (gelombang 22.10, malam) ----------------
@@ -639,6 +640,13 @@ STRINGS = {
     "menu.btn_raids": "🏴‍☠️ Serbuan",
     "menu.btn_workshop": "🔧 Bengkel",
     "farm.btn_workshop": "🔧 Bengkel",
+    "farm.btn_app": "🏭 Ladang di aplikasi",
+    "menu.btn_app": "🚀 Aplikasi game: ladang, bengkel, serbuan",
+    "app.btn_section": "🚀 BUKA DI APLIKASI",
+    "app.goto_workshop": "🔧 <b>Bengkel</b> ada di aplikasi game: sumber daya, resep, dan crafting sekali ketuk.",
+    "app.goto_raids": "🏴\u200d☠️ <b>Serbuan</b> ada di aplikasi game: pengintaian, kuda-kuda pertahanan, dan balas dendam.",
+    "app.goto_station": "🛰 <b>Stasiun Tim</b> ada di aplikasi game: progres, sumbangan, dan bonus untuk seluruh tim.",
+    "app.goto_market": "📈 <b>Bursa kotlet</b> lebih nyaman di aplikasi game: penawaran, penjualan, dan order-mu dalam satu layar.",
     "farm.boost_armor": "🛡 Zirah Siber level {level}: +{percent}% penambangan selamanya",
     "farm.boost_station": "🛰 Stasiun Tim level {level}: +{percent}% penambangan",
     "clan.btn_station": "🛰 Stasiun Tim",
@@ -738,8 +746,8 @@ STRINGS = {
         "..................................................\n\n"
         "{goals}\n\n"
         "{status}\n"
-        "🎁 Peti: <b>+{coins} koin</b> dan <b>+{res}</b> sumber daya acak\n"
-        "🔥 Rentetan: <b>{streak}</b> hari · tiap hari ke-{every} berturut-turut +{bonus} koin ke peti\n\n"
+        "🎁 Peti: <b>+{coins} 🪙</b> dan <b>+{res}</b> sumber daya acak\n"
+        "🔥 Rentetan: <b>{streak}</b> hari · tiap hari ke-{every} berturut-turut +{bonus} 🪙 ke peti\n\n"
         "<i>Target diperbarui pukul 00:00 UTC.</i>"
     ),
     "goal.status_progress": "⏳ Selesaikan ketiganya — petinya jadi milikmu.",
@@ -749,7 +757,7 @@ STRINGS = {
     "goal.btn_go": "→ {goal}",
     "goal.btn_refresh": "🔄 Perbarui",
     "goal.toast": "Peti terbuka!",
-    "goal.chest": "🎁 <b>PETI TERBUKA!</b>\n💰 +{coins} koin · {icon} +{qty} {name}\n🔥 Rentetan: {streak} hari",
+    "goal.chest": "🎁 <b>PETI TERBUKA!</b>\n💰 +{coins} 🪙 · {icon} +{qty} {name}\n🔥 Rentetan: {streak} hari",
     "goal.err_claimed": "🎁 Hari ini sudah diambil.",
     "goal.err_not_done": "⏳ Belum semua target selesai.",
     "goal.win_quiz": "Menangkan {n} ronde kuis",
@@ -834,52 +842,91 @@ STRINGS = {
 
 MINIAPP = {
     "subtitle": "kerajaan game-mu dalam satu layar",
-    "passport": "📋 PASPOR PEMAIN", "coins": "koin",
-    "brain": "🧠 Level kecerdasan", "toNext": "menuju level {n}: {left} jawaban benar di kuis (+{reward} koin)",
+    "tab_passport": "📋 Paspor", "tab_farm": "🚜 Ladang", "tab_goals": "🎯 Target", "tab_workshop": "🔧 Bengkel",
+    "tab_raids": "🏴‍☠️ Serbuan", "tab_market": "📈 Bursa", "tab_team": "🏆 Tim", "tab_shop": "🏪 Toko", "tab_top": "👑 TOP",
+    "passport": "📋 PASPOR PEMAIN", "coins": "🪙",
+    "brain": "🧠 Level kecerdasan", "toNext": "menuju level {n}: {left} jawaban benar di kuis (+{reward} 🪙)",
     "farm": "🚜 LADANG SIBER", "robots": "Robot (penambang / pengebor)",
-    "fueled": "Pengebor terisi", "speed": "Kecepatan menambang",
-    "perHour": "{v} koin/jam", "fridge": "Kulkas", "inv": "Kotlet di gudang",
-    "burnout": "Hangus berikutnya", "boosts": "Boost aktif", "none": "tidak ada",
-    "intern": "Robot Magang (1 koin/jam, abadi)",
-    "activateIntern": "🚀 AKTIFKAN ROBOT MAGANG",
-    "internDone": "🤖 Robot Magang-mu mulai bekerja!",
-    "rank": "🎖 Pangkat",
-    "openFarm": "🏭 BUKA FARM",
-    "farmScene": "🏭 FARM-MU",
-    "back": "← Kembali",
-    "minedVisit": "ditambang selama kunjungan ini",
-    "unit_intern": "Robot Magang",
-    "unit_junior": "Robot Penambang",
-    "unit_premium": "Cyber-Bor",
-    "eternal": "abadi",
-    "fueledAll": "terisi bahan bakar",
-    "fueledPart": "{a} dari {b} terisi",
-    "license": "lisensi 30 hari",
+    "intern": "Robot Magang (1 🪙/jam, abadi)", "activateIntern": "🚀 AKTIFKAN ROBOT MAGANG",
+    "internDone": "🤖 Robot Magang-mu mulai bekerja!", "rank": "🎖 Pangkat",
+    "openFarm": "🏭 BUKA TAMBANG", "farmScene": "🏭 LADANGMU", "back": "← Kembali",
+    "minedVisit": "ditambang selama kunjungan ini", "unit_intern": "Robot Magang", "unit_junior": "Robot Penambang",
+    "unit_premium": "Pengebor Siber", "eternal": "abadi", "fueledAll": "terisi bahan bakar",
+    "fueledPart": "{a} dari {b} terisi", "license": "lisensi 30 hari",
     "emptyFarm": "Tambang kosong. Aktifkan Robot Magang-mu atau beli robot di toko!",
     "madeBy": "Mau bot seperti ini untuk proyekmu? Hubungi @mister_telebot",
+    "fueled": "Pengebor terisi", "speed": "Kecepatan menambang",
+    "perHour": "{v} 🪙/jam", "fridge": "Kulkas", "inv": "Kotlet di gudang",
+    "burnout": "Hangus berikutnya", "boosts": "Boost aktif", "none": "tidak ada",
+    "resources": "🧰 Sumber daya", "bonusPct": "Bonus penambangan permanen", "shuttle": "🚀 Shuttle sudah dibangun",
+    "resHint": "Setiap kemenangan memberi sumber daya dari game-nya. Gunakan di bengkel.",
     "bonusReady": "🎁 KLAIM KOTLET HARIAN",
     "bonusWait": "⏳ Bonus dalam {h} jam {m} mnt", "bonusDone": "🎉 Kotlet masuk gudang!",
     "team": "🏆 TIMKU", "clan": "KLAN", "teamLabel": "Tim", "captain": "👑 Kamu kaptennya!",
-    "members": "Anggota", "noTeam": "Belum punya tim — bangun gengmu di chat bot!",
+    "members": "Anggota", "noTeam": "Kamu belum punya tim. Buat sendiri atau gabung tim lain di chat bot: «🏆 TIM & KLAN».",
     "top": "👑 TOP-100 PEMAIN TERKAYA EKOSISTEM",
     "shop": "🏪 TOKO", "shopFarm": "🚜 UNTUK LADANG", "shopGames": "🕹️ GAME",
     "shopHint": "Bayar dengan Telegram Stars resmi — langsung di sini, sekali ketuk.",
     "paid": "🎉 Pembayaran berhasil! Barangnya sudah ada di akunmu.",
     "payFail": "Pembayaran tidak berhasil. Coba lagi.",
-    "oldClient": "Perbarui Telegram untuk belanja dari Mini App, atau buka toko di chat bot.",
-    "ctaNoRobots": "💤 Ladangmu kosong! Pelihara robot pertamamu — koin akan mengalir nonstop.",
+    "oldClient": "Perbarui Telegram untuk belanja dari aplikasi, atau buka toko di chat bot.",
+    "ctaNoRobots": "💤 Ladangmu hampir kosong! Ambil robot yang lebih kuat — 🪙 akan mengalir nonstop.",
     "ctaHungry": "🚨 Para Pengebor kelaparan ({n} tanpa bahan bakar) — penambangan berhenti!",
     "ctaLowFuel": "⚠️ Kotlet tidak cukup untuk sehari kerja para Pengebor.",
     "ctaShopBtn": "🛒 Ke toko",
-    "footer": "Kendali penuh — di chat bot: /menu",
+    "footer": "Game dan kuis ada di chat bot",
     "noProfile": "Profil tidak ditemukan. Buka bot dan tekan /start!",
     "blocked": "Akun diblokir oleh admin.",
     "error": "Gagal memuat data. Coba lagi nanti.",
     "outside": "Buka aplikasi ini dari bot Telegram ROFL HUB.",
-    "resources": "🧰 Sumber daya",
-    "bonusPct": "Bonus penambangan permanen",
-    "shuttle": "🚀 Shuttle sudah dibangun",
-    "resHint": "Logam — Suit, hidrogen — Besar/Kecil, kristal — kuis, komponen — brankas. Gunakan di bengkel lewat chat bot.",
+    "robotsTitle": "🤖 ROBOT-ROBOTMU", "buyMore": "🛒 Beli", "rateShort": "{v} 🪙/jam",
+    "refuelOne": "🥩 Isi 1", "refuelAll": "⚡ Isi semua", "refueled": "Terisi: {n} 🥩",
+    "res_metal_src": "Suit & duel", "res_hydrogen_src": "Besar/Kecil", "res_crystal_src": "Kuis",
+    "res_parts_src": "Brankas Siber", "resWhere": "cara mendapatkan",
+    "ws_title": "🔧 BENGKEL", "ws_hint": "Sumber daya dari game diubah jadi upgrade. Kalau sumber dayanya cukup — tekan «Rakit».",
+    "ws_craft": "Rakit", "ws_owned": "✅ Sudah punya", "ws_crafted": "Selesai! Upgrade-nya sudah aktif.",
+    "ws_armor": "🛡 Zirah Siber", "ws_armorLvl": "level {l}/{m} · +{p}% penambangan per level",
+    "ws_shuttleOn": "🚀 Shuttle sudah dibangun: biaya bursa {fee}%", "ws_shuttleOff": "🚀 Belum ada Shuttle: biaya bursa {fee}%",
+    "eff_nitrogen": "+40% penambangan semua robot", "eff_nuclear": "×5 penambangan, Pengebor makan kotlet ×3",
+    "eff_drone": "robot tidak menua", "eff_shield": "tidak ada yang bisa menyerbumu",
+    "eff_cutlet": "1 kotlet siber ke gudang", "eff_armor": "+10% penambangan selamanya",
+    "eff_shuttle": "biaya bursa separuhnya, order hingga 500 kotlet — selamanya",
+    "raid_title": "🏴‍☠️ SERBUAN", "raid_how": "📖 Cara kerjanya",
+    "raid_rule1": "Kamu memilih gestur, target sudah memasang kuda-kuda pertahanan sebelumnya. Hasilnya ditentukan suit batu-gunting-kertas: ini duel keputusan, bukan lotre.",
+    "raid_rule2": "Menang: ambil {pct}% tiap sumber daya target, maksimal {cap} per sumber daya. Gagal: berikan {fpct}% milikmu ke target, maksimal {fcap}. Seri: bahan bakar hangus.",
+    "raid_rule3": "Hanya sumber daya yang bisa dirampas. Koin, robot, dan kotlet sepenuhnya aman. Pemain baru terlindungi {days} hari, rekan tim tidak boleh diserbu.",
+    "raid_rule4": "Sekali terbang butuh {fuel} 💧 hidrogen, berikutnya setelah {cd} jam. Kalau kamu diserbu, balas dendam gratis selama {rh} jam.",
+    "raid_fuel": "💧 Hidrogen", "raid_ready": "🚀 Kapal siap terbang", "raid_cooldown": "⏳ Isi ulang: {m} mnt",
+    "raid_shieldOn": "🛡 Perisai sampai {t}", "raid_shieldNewbie": "🛡 Perlindungan pemain baru", "raid_shieldOff": "🛡 Tanpa perisai — rakit di bengkel",
+    "raid_stance": "✊ KUDA-KUDA PERTAHANANMU", "raid_stanceHint": "Dengan ini kamu menghadapi serbuan pemain lain. Ganti sesekali — yang mudah ditebak lebih sering dirampok.",
+    "raid_stanceNone": "Kuda-kuda belum dipilih — akan acak", "raid_stanceSaved": "Kuda-kuda disimpan",
+    "raid_stats": "Serbuan: {a} ({w} berhasil) · ditahan: {h} dari {d}",
+    "raid_scout": "🔭 PENGINTAIAN: cari target", "raid_targets": "🎯 Pilih target", "raid_res": "sumber daya ≈{n}",
+    "raid_noTargets": "Belum ada target yang cocok: perisai, isi ulang, pemain baru. Coba lagi nanti.",
+    "raid_pickMove": "✊ Gesturmu melawan kuda-kuda {name}", "raid_revenge": "⚔️ BALAS DENDAM", "raid_revengeBtn": "⚔️ Balas: {name}",
+    "raid_win": "🏴‍☠️ Serbuan berhasil!", "raid_draw": "😐 Seri — kapal pulang dengan tangan kosong",
+    "raid_lose": "💥 Pertahanan bertahan", "raid_vs": "{m} vs {s}", "raid_loot": "Rampasan: {l}", "raid_lost": "Diberikan ke target: {l}",
+    "rock": "🪨 Batu", "scissors": "✂️ Gunting", "paper": "📄 Kertas",
+    "mk_title": "📈 BURSA KOTLET", "mk_stats": "Order: {o} · kotlet: {c} · harga terbaik: {b} 🪙",
+    "mk_feeLine": "Biaya {f}% per penjualan dibakar — perisai anti-inflasi", "mk_inv": "🥩 Di gudangmu: {n}",
+    "mk_offers": "🛒 PENAWARAN", "mk_empty": "Belum ada penawaran — jadilah yang pertama!",
+    "mk_offer": "{q} 🥩 × {p} 🪙", "mk_buyHow": "Beli berapa?", "mk_all": "Semua {q}",
+    "mk_sellTitle": "💰 JUAL KOTLET", "mk_qty": "Jumlah kotlet", "mk_price": "Harga per buah, 🪙",
+    "mk_preview": "Transaksi {t} 🪙 · kamu dapat {g} 🪙 · dibakar {f} 🪙", "mk_sell": "Pasang di bursa",
+    "mk_limits": "Maks {q} kotlet per order, maks {o} order terbuka",
+    "mk_my": "📋 ORDER-KU", "mk_cancel": "Batalkan", "mk_bought": "Terbeli {q} 🥩 seharga {t} 🪙",
+    "mk_listed": "Order terpasang! Kukabari saat terjual.", "mk_cancelledMsg": "Order dibatalkan, kotlet kembali ke gudang",
+    "st_title": "🛰 STASIUN TIM", "st_level": "Level {l} dari {m}", "st_bonus": "+{p}% penambangan untuk setiap petarung",
+    "st_next": "Level {n} butuh {c} dari setiap sumber daya", "st_max": "🏁 Stasiun selesai dibangun!",
+    "st_feed": "🧾 Sumbangan terbaru", "st_feedEmpty": "Belum ada sumbangan — jadilah yang pertama",
+    "st_donate": "Sumbang", "st_all": "Semua", "st_done": "Tersumbang!",
+    "st_hint": "Seluruh tim membangunnya, semua dapat bonus. Keluar dari tim — bonus hilang.",
+    "st_off": "Stasiun sedang dalam perawatan sementara",
+    "goals_title": "🎯 TARGET HARI INI", "goals_chest": "🎁 Peti untuk ketiganya: +{c} 🪙 dan +{r} sumber daya acak",
+    "goals_streak": "🔥 Rentetan: {s} hari · tiap hari ke-{e} berturut-turut +{b} 🪙", "goals_claim": "🎁 KLAIM PETI",
+    "goals_claimed": "🎁 Peti hari ini sudah diklaim. Target baru besok!", "goals_reset": "Target diperbarui pukul 00:00 UTC",
+    "goals_got": "🎁 +{c} 🪙 · +{q} {n} · rentetan {s} hari",
+    "featureOff": "⚙️ Bagian ini sedang dalam perawatan", "done": "Selesai!", "loading": "⏳ Memuat…",
 }
 
 COMMANDS = {

@@ -70,7 +70,7 @@ STRINGS: dict[str, str] = {
     "start.intro2": (
         "🎁 <b>¡AQUÍ TIENES TUS PRIMERAS RECOMPENSAS POR REGISTRARTE!</b>\n"
         "..................................................\n"
-        "💸 Recibiste: <b>{balance} monedas</b>\n"
+        "💸 Recibiste: <b>{balance} 🪙</b>\n"
         "🥩 Recibiste: <b>{cutlets} ciber-chuleta</b>\n"
         "..................................................\n"
         "Este es tu bono de bienvenida por unirte al club ROFL HUB.\n\n"
@@ -137,11 +137,11 @@ STRINGS: dict[str, str] = {
         "• /quests — MISIONES: historias de detectives, comedias y acertijos con recompensas\n"
         "• /rps, /high_low, /safe — Juegos rápidos por monedas\n\n"
         "👥 <b>GESTIÓN DE BANDAS:</b>\n"
-        "• /create_team — Registrar tu propio equipo por 100 000 monedas\n"
+        "• /create_team — Registrar tu propio equipo por 100 000 🪙\n"
         "• /my_team — Panel de la banda y la LISTA DE COMPAÑEROS con niveles 🧠\n"
         "• /all_teams — Ruleta de equipos al azar\n\n"
         "💸 <b>DINERO Y AMIGOS:</b>\n"
-        "• /invite — Tu enlace de referido: +1000 monedas por amigo\n"
+        "• /invite — Tu enlace de referido: +1000 🪙 por amigo\n"
         "• /transfer — Enviar monedas a otro jugador\n\n"
         "📚 <b>AYUDA Y REGLAS:</b>\n"
         "• /faq — La guía completa del ecosistema (se abre en la Mini App)\n"
@@ -154,9 +154,9 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "Aquí puedes enfrentarte al bot en duelos rápidos o ponerte a prueba en el sprint intelectual "
         "para llevarte el premio gordo... ¡o perderlo todo!\n\n"
-        "💸 Una victoria paga: <b>+2 monedas</b> (Ciber-Caja Fuerte: <b>+5</b>)\n"
-        "💀 Una derrota o un empate cuesta: <b>-1 moneda</b>\n"
-        "🧠 La Trivia tiene cronómetro de 15 segundos y niveles de inteligencia: el nivel 1 son 10 respuestas correctas y <b>+100 monedas</b>; "
+        "💸 Una victoria paga: <b>+2 🪙</b> (Ciber-Caja Fuerte: <b>+5</b>)\n"
+        "💀 Una derrota o un empate cuesta: <b>-1 🪙</b>\n"
+        "🧠 La Trivia tiene cronómetro de 15 segundos y niveles de inteligencia: el nivel 1 son 10 respuestas correctas y <b>+100 🪙</b>; "
         "cada nivel siguiente es 10 respuestas más largo, ¡pero la recompensa crece en 100!\n\n"
         "..................................................\n"
         "👇 <b>TOCA UN BOTÓN ABAJO PARA EMPEZAR UNA RONDA AHORA MISMO:</b>"
@@ -182,7 +182,7 @@ STRINGS: dict[str, str] = {
         "el Ciber-Perforador — 10/h, y CADA Perforador come su propia ciber-chuleta al día. "
         "Todos los robots viven 30 días (el Dron Maestro pausa el desgaste).\n"
         "🧠 Trivia: 15 segundos por respuesta, niveles de inteligencia con recompensas crecientes.\n"
-        "⚔️ Duelos con jugadores reales en mesas de 10/100/1000 monedas.\n"
+        "⚔️ Duelos con jugadores reales en mesas de 10/100/1000 🪙.\n"
         "🏆 Equipos de hasta 50 combatientes (Mega-Clan: hasta 1000) y Batallas especiales con premios para todos.\n\n"
         "..................................................\n"
         "👇 <b>La guía completa con todas las mecánicas, a un toque:</b>"
@@ -213,7 +213,7 @@ STRINGS: dict[str, str] = {
     ),
     "quest.card": (
         "{title}\n"
-        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} monedas por la primera victoria\n"
+        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} 🪙 por la primera victoria\n"
         "..................................................\n\n"
         "{teaser}\n\n{status}"
     ),
@@ -225,11 +225,11 @@ STRINGS: dict[str, str] = {
     "quest.btn_resume": "⏯ CONTINUAR",
     "quest.btn_list": "🗺️ A la lista de misiones",
     "quest.btn_replay": "🔄 Jugar otra vez",
-    "quest.win_first": "\n\n🏆 <b>¡MISIÓN COMPLETADA! Recompensa: +{coins} monedas.</b>",
+    "quest.win_first": "\n\n🏆 <b>¡MISIÓN COMPLETADA! Recompensa: +{coins} 🪙.</b>",
     "quest.win_repeat": "\n\n✅ <b>¡Completada otra vez!</b> La recompensa de esta misión ya fue reclamada antes.",
     "quest.fail_footer": "\n\n💀 <i>No fue el mejor final... ¡pero siempre puedes rejugar la historia!</i>",
     "quest.stale": "⏳ Esa escena ya quedó atrás. ¡Seguimos desde el punto actual!",
-    "quest.no_coins": "❌ No te alcanzan las monedas para la pista ({cost}). ¡Pasa por tu granja!",
+    "quest.no_coins": "❌ La pista cuesta {cost} 🪙 y tu saldo es menor. ¡Pasa por tu granja!",
     "quest.not_found": "❌ Misión no encontrada.",
     "menu.btn_quests": "🗺️ MISIONES",
 
@@ -241,27 +241,27 @@ STRINGS: dict[str, str] = {
     "farm.status_all_fueled": "🟢 ¡Todos los Ciber-Perforadores están cargados y extrayendo monedas!",
     "farm.status_partial": "🟡 Cargados {fueled} de {total} Ciber-Perforadores. ¡El resto espera chuletas en el refrigerador!",
     "farm.status_no_fuel": "🔴 ¡Los Ciber-Perforadores se detuvieron! No hay suficiente combustible en el refrigerador.",
-    "farm.status_no_drills": "💡 Consigue Ciber-Perforadores en /shop para aumentar tus ingresos.",
+    "farm.status_no_drills": "💡 Consigue un robot más potente en /shop: tu granja extraerá más.",
     "farm.boost_nuclear": "🔋 Impulso Nuclear x5 hasta el {until} UTC (consumo de chuletas ×3)",
     "farm.boost_nitrogen": "❄️ Enfriamiento de Nitrógeno +40% hasta el {until} UTC",
     "farm.boost_drone": "🛸 El Dron Maestro extiende la vida de los robots hasta el {until} UTC",
     "farm.no_boosts": "No hay mejoras activas; date una vuelta por /shop.",
     "farm.burnout": "🔥 Próximo robot en quemarse: <b>{until} UTC</b>\n",
     "farm.btn_activate_intern": "🚀 Activar tu Robot Becario (gratis)",
-    "farm.intern_activated": "🤖 ¡Tu Robot Becario entró en turno! +1 moneda por hora para siempre, sin combustible ni caducidad.",
+    "farm.intern_activated": "🤖 ¡Tu Robot Becario entró en turno! +1 🪙 por hora para siempre, sin combustible ni caducidad.",
     "farm.intern_already": "🤖 Tu Robot Becario ya está trabajando.",
-    "farm.intern_line": "🤖 Robots Becarios ({rate} moneda/h, eternos): <code>{count}</code>",
-    "farm.intern_hint": "🎁 ¡Tienes un Robot Becario gratis! Pulsa el botón de abajo y minará 1 moneda por hora para siempre.",
+    "farm.intern_line": "• Robots Becarios ({rate} 🪙/h, eternos): <code>{count}</code>\n",
+    "farm.intern_hint": "🎁 ¡Tienes un Robot Becario gratis! Pulsa el botón de abajo y minará 1 🪙 por hora para siempre.",
     "farm.dashboard": (
         "🚜 <b>HUB CENTRAL DE COMBUSTIBLE DE ROFL HUB</b>\n"
         "..................................................\n\n"
         "🤖 Robots activos en la planta: <b>{total}</b>\n"
-        "• Robots Mineros ({junior_rate} monedas/h): <code>{junior}</code>\n"
-        "• Ciber-Perforadores ({premium_rate} monedas/h): <code>{premium}</code>\n"
+        "{intern}• Robots Mineros ({junior_rate} 🪙/h): <code>{junior}</code>\n"
+        "• Ciber-Perforadores ({premium_rate} 🪙/h): <code>{premium}</code>\n"
         "{burnout}\n"
         "📊 <b>VELOCIDAD ACTUAL DE TU GRANJA:</b>\n"
-        "• Producción por hora: <b>+{speed_hour} monedas</b>\n"
-        "• Producción por día: <b>+{speed_day} monedas</b>\n\n"
+        "• Producción por hora: <b>+{speed_hour} 🪙</b>\n"
+        "• Producción por día: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>MEJORAS:</b>\n{boosts}\n\n"
         "📋 <b>ESTADO DE LA PLANTA DE JUEGO:</b>\n"
         "{status}\n\n"
@@ -285,10 +285,10 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "🆔 Tu ID de Pasaporte: <code>{user_id}</code>\n"
         "{vip}"
-        "💰 Monedas ahora mismo: <b>{balance} monedas</b>\n"
+        "💰 Monedas ahora mismo: <b>{balance} 🪙</b>\n"
         "🏆 Tu estatus: <b>{team}</b>\n"
         "🧠 Nivel de inteligencia: <b>{level}</b> · para el nivel {next_level}: "
-        "<b>{left}</b> respuestas correctas en /quiz (recompensa: +{reward} monedas)\n\n"
+        "<b>{left}</b> respuestas correctas en /quiz (recompensa: +{reward} 🪙)\n\n"
         "..................................................\n"
         "<i>Aquí ves lo que tienes ahora mismo. ¡Usa los botones para volar a otras secciones!</i>"
     ),
@@ -316,21 +316,21 @@ STRINGS: dict[str, str] = {
     "img.premium": "Ciber-Perforadores: {count}",
 
     # ---------------- игры: общий движок ----------------
-    "games.win": "🎉 <b>¡VICTORIA!</b> 🎉\nMonedas acreditadas: <b>+{reward}</b>",
-    "games.lose": "💀 <b>¡DERROTA!</b>\nMonedas descontadas: <b>-{penalty}</b>",
-    "games.draw": "🤝 <b>¡EMPATE!</b>\nMonedas descontadas: <b>-{penalty}</b>",
+    "games.win": "🎉 <b>¡VICTORIA!</b> 🎉\nAcreditado: <b>+{reward} 🪙</b>",
+    "games.lose": "💀 <b>¡DERROTA!</b>\nDescontado: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>¡EMPATE!</b>\nDescontado: <b>-{penalty} 🪙</b>",
     "games.limit": (
         "🛑 <b>¡Límite diario alcanzado!</b>\n\n"
         "Hoy ya te llevaste {limit} victorias en {game}. El límite se reinicia a las 00:00 UTC.\n\n"
         "⚡ Quitar el límite por 24 horas — 5 ★, por 30 días — 99 ★ (sección «Juegos» en /shop)."
     ),
-    "games.no_coins": "❌ Tienes 0 monedas y no puedes pagar la cuota de la ronda. ¡Recoge los ingresos de tu granja en /farm!",
-    "games.balance": "💰 Saldo: <b>{balance} monedas</b>",
+    "games.no_coins": "❌ Tienes 0 🪙 y no puedes pagar la cuota de la ronda. ¡Recoge los ingresos de tu granja en /farm!",
+    "games.balance": "💰 Saldo: <b>{balance} 🪙</b>",
     "games.btn_retry": "🎮 ¡Jugar otra vez!",
     "games.btn_hub": "🕹️ Zona de juegos",
     "games.level_up": (
-        "🏅 <b>¡SUBISTE AL NIVEL DE INTELIGENCIA {level}!</b> ¡Recompensa: <b>+{bonus} monedas</b>!\n"
-        "Siguiente nivel: {next_required} respuestas correctas → +{next_reward} monedas."
+        "🏅 <b>¡SUBISTE AL NIVEL DE INTELIGENCIA {level}!</b> ¡Recompensa: <b>+{bonus} 🪙</b>!\n"
+        "Siguiente nivel: {next_required} respuestas correctas → +{next_reward} 🪙."
     ),
     "games.name.rps": "Piedra-Papel-Tijera",
     "games.intern_bonus": "🤖 ¡Nivel {level}! Otro Robot Becario llegó a tu granja: ahora tienes {count}.",
@@ -373,15 +373,15 @@ STRINGS: dict[str, str] = {
     "quiz.stale_alert": "Esta pregunta ya no está activa. ¡Lanza una nueva!",
     "quiz.empty": "⚠️ La base de preguntas está vacía. Avisa al administrador.",
     "quiz.wrong": "❌ <b>Error</b> ❌\nRespuesta correcta: <b>{correct}</b>",
-    "quiz.lost_line": "💀 ¡<b>-{penalty} moneda</b> por la derrota!",
+    "quiz.lost_line": "💀 ¡<b>-{penalty} 🪙</b> por la derrota!",
     "quiz.level_line": (
         "🧠 Nivel de inteligencia: <b>{level}</b>\n"
         "Victorias restantes para el nivel {next_level}: <b>{left}</b>"
     ),
     "quiz.rules": (
         "<i>¡{seconds} segundos para responder!\n"
-        "Correcta: +{win} monedas a tu saldo\n"
-        "Error / sin tiempo: -{penalty} moneda\n"
+        "Correcta: +{win} 🪙 a tu saldo\n"
+        "Error / sin tiempo: -{penalty} 🪙\n"
         "Límite: {limit} victorias al día</i>"
     ),
 
@@ -390,7 +390,7 @@ STRINGS: dict[str, str] = {
     # ---------------- Сейф ----------------
     "safe.intro": (
         "🔐 <b>CIBER-CAJA FUERTE</b>\n\n"
-        "¡Adentro hay un botín de <b>{jackpot} monedas</b>! La puerta está cerrada con un código del 1 al {codes}. "
+        "¡Adentro hay un botín de <b>{jackpot} 🪙</b>! La puerta está cerrada con un código del 1 al {codes}. "
         "Tienes un solo intento.\n"
         "Si la abres: <b>+{jackpot}</b> · Alarma: <b>-{penalty}</b> · Límite: <b>{limit}</b> victorias"
     ),
@@ -411,21 +411,21 @@ STRINGS: dict[str, str] = {
         "🏆 ¡Las victorias en duelos cuentan para tu equipo en las Batallas!\n\n"
         "👇 <b>ELIGE UNA MESA:</b>"
     ),
-    "duel.btn_table": "⚔️ Mesa de {stake} monedas",
+    "duel.btn_table": "⚔️ Mesa de {stake} 🪙",
     "duel.btn_cancel": "❌ Salir y recuperar la apuesta",
     "duel.btn_move_rock": "🪨 Piedra",
     "duel.btn_move_scissors": "✂️ Tijera",
     "duel.btn_move_paper": "🧻 Papel",
     "duel.waiting": (
-        "🪑 <b>Estás en la mesa de {stake} monedas.</b> Tu apuesta ya está en el pozo.\n"
+        "🪑 <b>Estás en la mesa de {stake} 🪙.</b> Tu apuesta ya está en el pozo.\n"
         "Esperando al segundo combatiente... En cuanto se siente, ¡los dos pasarán a elegir su gesto!\n"
         "<i>La cola vive {ttl} minutos; después tu apuesta vuelve automáticamente.</i>"
     ),
-    "duel.cancelled": "🚪 Dejaste la mesa. La apuesta de <b>{stake} monedas</b> volvió a tu saldo.",
-    "duel.expired": "⌛ No apareció ningún rival en la mesa de {stake}. La apuesta de <b>{stake} monedas</b> fue devuelta.",
+    "duel.cancelled": "🚪 Dejaste la mesa. La apuesta de <b>{stake} 🪙</b> volvió a tu saldo.",
+    "duel.expired": "⌛ No apareció ningún rival en la mesa de {stake}. La apuesta de <b>{stake} 🪙</b> fue devuelta.",
     "duel.matched": (
-        "⚔️ <b>¡RIVAL ENCONTRADO! Mesa de {stake} monedas.</b>\n"
-        "Pozo: <b>{bank} monedas</b> · El ganador se lleva: <b>{payout}</b>\n\n"
+        "⚔️ <b>¡RIVAL ENCONTRADO! Mesa de {stake} 🪙.</b>\n"
+        "Pozo: <b>{bank} 🪙</b> · El ganador se lleva: <b>{payout}</b>\n\n"
         "⏱ ¡Tienes <b>{timeout} segundos</b> para elegir tu gesto!"
     ),
     "duel.move_saved": "✊ ¡Gesto registrado! Esperando el gesto del rival...",
@@ -436,19 +436,19 @@ STRINGS: dict[str, str] = {
     "duel.win": (
         "🏆 <b>¡EL DUELO ES TUYO!</b>\n\n"
         "Tu {winner_move} vence a {loser_move}.\n"
-        "💰 Ganancia: <b>+{payout} monedas</b> · 🔥 Quemado del pozo: {burned}\n"
-        "💼 Saldo: <b>{balance} monedas</b>"
+        "💰 Ganancia: <b>+{payout} 🪙</b> · 🔥 Quemado del pozo: {burned}\n"
+        "💼 Saldo: <b>{balance} 🪙</b>"
     ),
     "duel.lose": (
         "💀 <b>DUELO PERDIDO.</b>\n\n"
         "El gesto {winner_move} del rival vence a tu {loser_move}.\n"
-        "📉 Tu apuesta de <b>{stake} monedas</b> se fue al pozo del ganador.\n"
+        "📉 Tu apuesta de <b>{stake} 🪙</b> se fue al pozo del ganador.\n"
         "¿Revancha?"
     ),
     "duel.reaper_prefix": "⏰ <b>¡Tiempo de la ronda agotado!</b> Los gestos que faltaban los eligió el generador aleatorio.\n\n",
     "duel.bad_table": "❌ Esa mesa no existe.",
     "duel.already_in": "⚠️ ¡Ya estás en una mesa o en pleno combate! Termina primero tu duelo actual.",
-    "duel.no_coins": "❌ Para esta mesa necesitas {stake} monedas en tu saldo.",
+    "duel.no_coins": "❌ Para esta mesa necesitas {stake} 🪙 en tu saldo.",
     "duel.cancel_impossible": "⚠️ Esta cola ya no se puede cancelar (se encontró un rival o la mesa se cerró).",
     "duel.not_active": "⌛ Este duelo ya terminó.",
     "duel.not_participant": "🔒 ¡Este no es tu duelo!",
@@ -470,21 +470,21 @@ STRINGS: dict[str, str] = {
     "ref.text": (
         "🤝 <b>PROGRAMA DE REFERIDOS DE ROFL HUB</b>\n"
         "..................................................\n\n"
-        "¡Invita a tus amigos y recibe <b>+{bonus} monedas</b> por cada uno "
+        "¡Invita a tus amigos y recibe <b>+{bonus} 🪙</b> por cada uno "
         "que se registre con tu enlace personal!\n\n"
         "🔗 <b>Tu enlace (toca para copiar):</b>\n<code>{link}</code>\n\n"
         "📊 <b>TUS ESTADÍSTICAS:</b>\n"
         "👥 Amigos invitados: <b>{invited}</b>\n"
-        "💰 Ganado con referidos: <b>{earned} monedas</b>\n\n"
+        "💰 Ganado con referidos: <b>{earned} 🪙</b>\n\n"
         "..................................................\n"
         "<i>Comparte el enlace en los chats de tu clase, con tus amigos y en redes: ¡cuanto más grande sea la banda, más rápido crece tu saldo!</i>"
     ),
     "ref.btn_share": "📣 Compartir el enlace",
     "ref.share_text": "¡Únete al ecosistema de juegos ROFL HUB!",
     "ref.qualified_line": ("⭐ <b>Doble recompensa:</b> cuando un amigo invitado juegue {rounds} "
-                           "rondas, ¡recibes otras <b>+{bonus} monedas</b>!"),
+                           "rondas, ¡recibes <b>+{bonus} 🪙</b> más!"),
     "ref.qualified_notify": ("🤝 <b>¡Tu amigo se enganchó: ya lleva {rounds} rondas!</b>\n"
-                             "Ganaste <b>+{bonus} monedas</b> por un referido calificado. "
+                             "Ganaste <b>+{bonus} 🪙</b> por un referido calificado. "
                              "¡Invita a más!"),
 
     # ---------------- переводы ----------------
@@ -496,22 +496,22 @@ STRINGS: dict[str, str] = {
         "<code>/transfer @username cantidad</code> — por nombre de usuario\n"
         "<code>/transfer ROFL-HUB-777 cantidad</code> — por un VIP ID de subasta\n\n"
         "Ejemplos:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 Cantidad mínima: <b>{min} monedas</b>"
+        "📌 Cantidad mínima: <b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ Destinatario no encontrado. Revisa el ID de Pasaporte o el @username: el jugador debe estar registrado en el bot.",
     "tr.self": "🤨 No puedes transferirte monedas a tu propia cuenta. ¡Eso sería dinero infinito!",
     "tr.blocked": "🚫 Este jugador está bloqueado: las transferencias hacia él no están disponibles.",
-    "tr.min": "❌ La transferencia mínima es de {min} monedas.",
-    "tr.insufficient": "❌ ¡No te alcanzan las monedas! Tu saldo: <b>{balance}</b>.",
+    "tr.min": "❌ La transferencia mínima es de {min} 🪙.",
+    "tr.insufficient": "❌ ¡No te alcanzan las monedas! Tu saldo: <b>{balance} 🪙</b>.",
     "tr.err_insufficient": "❌ No hay suficientes monedas en tu saldo.",
     "tr.confirm": (
         "🔄 <b>CONFIRMA LA TRANSFERENCIA:</b>\n\n"
         "👤 Destinatario: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Cantidad a descontar: <b>{amount} monedas</b>{fee_line}\n"
-        "💰 El destinatario recibe: <b>{received} monedas</b>\n\n"
+        "💸 Cantidad a descontar: <b>{amount} 🪙</b>{fee_line}\n"
+        "💰 El destinatario recibe: <b>{received} 🪙</b>\n\n"
         "<i>Las transferencias no se pueden deshacer. ¡Revisa bien el destinatario!</i>"
     ),
-    "tr.fee_line": "\n🔥 Comisión del hub: <b>{fee} monedas</b> (se quema)",
+    "tr.fee_line": "\n🔥 Comisión del hub: <b>{fee} 🪙</b> (se quema)",
     "tr.btn_confirm": "✅ CONFIRMAR TRANSFERENCIA",
     "tr.btn_cancel": "❌ Cancelar",
     "tr.cancelled_toast": "Transferencia cancelada",
@@ -520,11 +520,11 @@ STRINGS: dict[str, str] = {
     "tr.done_toast": "✅ ¡Transferencia realizada!",
     "tr.done": (
         "✅ <b>¡TRANSFERENCIA REALIZADA!</b>\n\n"
-        "💸 Enviado: <b>{amount} monedas</b> al jugador ID <code>{recipient_id}</code>\n"
-        "💰 Tu saldo: <b>{balance} monedas</b>"
+        "💸 Enviado: <b>{amount} 🪙</b> al jugador ID <code>{recipient_id}</code>\n"
+        "💰 Tu saldo: <b>{balance} 🪙</b>"
     ),
     "tr.received": (
-        "💰 <b>¡Te transfirieron {amount} monedas!</b>\n"
+        "💰 <b>¡Te transfirieron {amount} 🪙!</b>\n"
         "Remitente: ID <code>{sender_id}</code>. Tu saldo ya fue recargado. ¡Revisa /profile!"
     ),
 
@@ -576,7 +576,7 @@ STRINGS: dict[str, str] = {
     "dlv.miner_junior": "Robot Minero",
     "dlv.miner_premium": "Ciber-Perforador",
     "dlv.fridge": "📦 Refrigerador ampliado a <b>{capacity} chuletas</b>.",
-    "dlv.coins": "💰 Acreditadas <b>+{amount} monedas</b>.",
+    "dlv.coins": "💰 Acreditado: <b>+{amount} 🪙</b>.",
     "dlv.boost_nuclear": "🔋 Impulso Nuclear x5 activo hasta el <b>{until} UTC</b>.",
     "dlv.boost_nitrogen": "❄️ Enfriamiento de Nitrógeno +40% activo hasta el <b>{until} UTC</b>.",
     "dlv.drone": "🛸 El Dron Maestro protege tu granja hasta el <b>{until} UTC</b>.",
@@ -585,43 +585,43 @@ STRINGS: dict[str, str] = {
     "dlv.err_fridge": "Ya tienes un refrigerador de ese tamaño o más grande.",
     "dlv.err_no_team": "Todavía no tienes un equipo creado. Primero créalo con /create_team.",
     "dlv.err_mega": "Tu equipo ya tiene el estatus de Mega-Clan.",
-    "dlv.intern_upgrade": "♾ Tu Robot Becario ascendió a <b>Robot Minero ETERNO</b>: ¡5 monedas por hora sin caducidad!",
+    "dlv.intern_upgrade": "♾ Tu Robot Becario ascendió a <b>Robot Minero ETERNO</b>: ¡5 🪙 por hora sin caducidad!",
     "dlv.err_no_intern": "No tienes un Robot Becario activado: actívalo primero en /farm.",
     "dlv.err_intern_refs": "La mejora necesita {need} amigos calificados (30 rondas cada uno); tienes {have}.",
     "mk.header": "📈 <b>BOLSA DE CHULETAS</b>\n..................................................\n\nÓrdenes abiertas: <b>{orders}</b> · chuletas en venta: <b>{cutlets}</b> · mejor precio: <b>{best}</b>\nComisión del hub: <b>{fee}%</b> por venta (se quema — escudo antiinflación)\n🥩 En tu almacén: <b>{inv}</b> chuletas\n\n{body}\n\n<i>Toca una orden para comprar. Para vender usa /sell.</i>",
     "mk.empty": "Aún no hay ofertas. Sé el primero: /sell cantidad precio",
-    "mk.order_line": "🥩 #{id} · <b>{qty} uds.</b> a <b>{price}</b> monedas",
-    "mk.btn_order": "🛒 #{id}: {qty} uds. a {price} monedas",
+    "mk.order_line": "🥩 #{id} · <b>{qty} uds.</b> a <b>{price}</b> 🪙",
+    "mk.btn_order": "🛒 #{id}: {qty} uds. a {price} 🪙",
     "mk.btn_my": "📋 Mis órdenes",
     "mk.btn_sell_help": "💰 Cómo vender chuletas",
     "mk.btn_refresh": "🔄 Actualizar",
     "mk.btn_back": "← A la bolsa",
-    "mk.pick": "🛒 <b>Orden #{id}</b>: {qty} uds. disponibles a {price} monedas.\n¿Cuántas compras?",
-    "mk.btn_qty": "{qty} uds. — {total} monedas",
-    "mk.btn_qty_all": "Todas, {qty} uds. — {total} monedas",
+    "mk.pick": "🛒 <b>Orden #{id}</b>: {qty} uds. disponibles a {price} 🪙.\n¿Cuántas compras?",
+    "mk.btn_qty": "{qty} uds. — {total} 🪙",
+    "mk.btn_qty_all": "Todas, {qty} uds. — {total} 🪙",
     "mk.buy_toast": "¡Trato cerrado!",
-    "mk.buy_done": "✅ Compraste <b>{qty} chuletas</b> por <b>{total} monedas</b>. Ya están en tu almacén: ¡alimenta a tus Perforadores!",
-    "mk.sold_notify": "💰 <b>Bolsa: ¡vendido!</b> Orden #{id}: {qty} uds. a {price}. Recibiste <b>+{got} monedas</b> (comisión de {fee} quemada).",
-    "mk.sell_help": "💰 <b>CÓMO VENDER CHULETAS</b>\n\nComando: <code>/sell cantidad precio</code>\nEjemplo: <code>/sell 10 50</code> — 10 chuletas a 50 monedas.\n\nLas chuletas salen del almacén y esperan en la orden (puedes retirarla cuando quieras). Hasta {max_qty} uds. por orden y {max_orders} órdenes abiertas. Al vender se quema una comisión del {fee}%.",
-    "mk.sell_confirm": "📝 ¿Poner a la venta <b>{qty} chuletas</b> a <b>{price}</b> monedas?\nTotal: {total} · comisión {fee} se quema · recibirás <b>{got} monedas</b>.",
+    "mk.buy_done": "✅ Compraste <b>{qty} chuletas</b> por <b>{total} 🪙</b>. Ya están en tu almacén: ¡alimenta a tus Perforadores!",
+    "mk.sold_notify": "💰 <b>Bolsa: ¡vendido!</b> Orden #{id}: {qty} uds. a {price}. Recibiste <b>+{got} 🪙</b> (comisión de {fee} quemada).",
+    "mk.sell_help": "💰 <b>CÓMO VENDER CHULETAS</b>\n\nComando: <code>/sell cantidad precio</code>\nEjemplo: <code>/sell 10 50</code> — 10 chuletas a 50 🪙.\n\nLas chuletas salen del almacén y esperan en la orden (puedes retirarla cuando quieras). Hasta {max_qty} uds. por orden y {max_orders} órdenes abiertas. Al vender se quema una comisión del {fee}%.",
+    "mk.sell_confirm": "📝 ¿Poner a la venta <b>{qty} chuletas</b> a <b>{price}</b> 🪙?\nTotal: {total} · comisión {fee} se quema · recibirás <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ PONER EN LA BOLSA",
     "mk.btn_cancel": "❌ Cancelar",
     "mk.sell_toast": "¡Orden publicada!",
-    "mk.sell_done": "✅ Orden <b>#{id}</b> publicada: {qty} uds. a {price} monedas. Te avisaré cuando se venda.",
+    "mk.sell_done": "✅ Orden <b>#{id}</b> publicada: {qty} uds. a {price} 🪙. Te avisaré cuando se venda.",
     "mk.cancelled_toast": "Cancelado",
     "mk.cancel_text": "❌ <b>Cancelado.</b> Las chuletas siguen en tu almacén.",
     "mk.my_header": "📋 <b>TUS ÓRDENES</b>\n\n",
-    "mk.my_line": "🥩 #{id} · {qty} uds. a {price} monedas",
+    "mk.my_line": "🥩 #{id} · {qty} uds. a {price} 🪙",
     "mk.my_empty": "📋 No tienes órdenes abiertas.",
     "mk.btn_cancel_order": "❌ Retirar orden #{id}",
     "mk.order_cancelled": "↩️ Orden #{id} retirada: <b>{qty} chuletas</b> volvieron a tu almacén.",
     "mk.err_qty": "❌ Cantidad: de 1 a {max} chuletas por orden.",
-    "mk.err_price": "❌ Precio: de {min} a {max} monedas por chuleta.",
+    "mk.err_price": "❌ Precio: de {min} a {max} 🪙 por chuleta.",
     "mk.err_no_cutlets": "❌ Solo tienes {have} chuletas en el almacén. Las del frigorífico no se venden — mira /farm.",
     "mk.err_too_many": "❌ Límite: máximo {max} órdenes abiertas. Retira una en «Mis órdenes».",
     "mk.err_not_found": "❌ Esa orden ya está cerrada.",
     "mk.err_own": "🤨 No puedes comprar tu propia orden.",
-    "mk.err_insufficient": "❌ Faltan monedas: necesitas {total}.",
+    "mk.err_insufficient": "❌ No te alcanza: necesitas {total} 🪙.",
     "farm.btn_market": "📈 Bolsa de chuletas",
 
     # ---------------- ресурсы (волна 22.10, вечер) ----------------
@@ -638,6 +638,13 @@ STRINGS: dict[str, str] = {
     "menu.btn_raids": "🏴‍☠️ Asaltos",
     "menu.btn_workshop": "🔧 Taller",
     "farm.btn_workshop": "🔧 Taller",
+    "farm.btn_app": "🏭 Granja en la app",
+    "menu.btn_app": "🚀 App del juego: granja, taller, asaltos",
+    "app.btn_section": "🚀 ABRIR EN LA APP",
+    "app.goto_workshop": "🔧 El <b>Taller</b> vive en la app del juego: recursos, recetas y fabricación con un toque.",
+    "app.goto_raids": "🏴\u200d☠️ Los <b>Asaltos</b> viven en la app del juego: exploración, postura de defensa y revancha.",
+    "app.goto_station": "🛰 La <b>Estación del equipo</b> vive en la app del juego: progreso, aportes y un bono para todo el equipo.",
+    "app.goto_market": "📈 La <b>Bolsa de chuletas</b> es más cómoda en la app del juego: ofertas, ventas y tus órdenes en una sola pantalla.",
     "farm.boost_armor": "🛡 Ciber-Armadura niv. {level}: +{percent}% de extracción para siempre",
     "farm.boost_station": "🛰 Estación del equipo niv. {level}: +{percent}% de extracción",
     "clan.btn_station": "🛰 Estación del equipo",
@@ -737,8 +744,8 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "{goals}\n\n"
         "{status}\n"
-        "🎁 Cofre: <b>+{coins} monedas</b> y <b>+{res}</b> de un recurso al azar\n"
-        "🔥 Racha: <b>{streak}</b> días · cada {every}.º día seguido suma +{bonus} monedas al cofre\n\n"
+        "🎁 Cofre: <b>+{coins} 🪙</b> y <b>+{res}</b> de un recurso al azar\n"
+        "🔥 Racha: <b>{streak}</b> días · cada {every}.º día seguido suma +{bonus} 🪙 al cofre\n\n"
         "<i>Las metas se renuevan a las 00:00 UTC.</i>"
     ),
     "goal.status_progress": "⏳ Completa las tres y el cofre es tuyo.",
@@ -748,7 +755,7 @@ STRINGS: dict[str, str] = {
     "goal.btn_go": "→ {goal}",
     "goal.btn_refresh": "🔄 Actualizar",
     "goal.toast": "¡Cofre abierto!",
-    "goal.chest": "🎁 <b>¡COFRE ABIERTO!</b>\n💰 +{coins} monedas · {icon} +{qty} {name}\n🔥 Racha: {streak} días",
+    "goal.chest": "🎁 <b>¡COFRE ABIERTO!</b>\n💰 +{coins} 🪙 · {icon} +{qty} {name}\n🔥 Racha: {streak} días",
     "goal.err_claimed": "🎁 Hoy ya lo reclamaste.",
     "goal.err_not_done": "⏳ Todavía no completaste todas las metas.",
     "goal.win_quiz": "Ganar {n} rondas de Trivia",
@@ -833,37 +840,50 @@ STRINGS: dict[str, str] = {
 
 MINIAPP: dict[str, str] = {
     "subtitle": "tu imperio de juego en una sola pantalla",
+    "tab_passport": "📋 Pasaporte",
+    "tab_farm": "🚜 Granja",
+    "tab_goals": "🎯 Metas",
+    "tab_workshop": "🔧 Taller",
+    "tab_raids": "🏴‍☠️ Asaltos",
+    "tab_market": "📈 Bolsa",
+    "tab_team": "🏆 Equipo",
+    "tab_shop": "🏪 Tienda",
+    "tab_top": "👑 TOP",
     "passport": "📋 PASAPORTE DEL JUGADOR",
-    "coins": "monedas",
+    "coins": "🪙",
     "brain": "🧠 Nivel de inteligencia",
-    "toNext": "para el nivel {n}: {left} respuestas correctas en la trivia (+{reward} monedas)",
+    "toNext": "para el nivel {n}: {left} respuestas correctas en la trivia (+{reward} 🪙)",
     "farm": "🚜 CIBER-GRANJA",
     "robots": "Robots (mineros / perforadores)",
-    "fueled": "Perforadores cargados",
-    "speed": "Velocidad de extracción",
-    "perHour": "{v} monedas/hora",
-    "fridge": "Refrigerador",
-    "inv": "Chuletas en inventario",
-    "burnout": "Próximo en quemarse",
-    "intern": "Robots Becarios (1 moneda/h, eternos)",
+    "intern": "Robots Becarios (1 🪙/h, eternos)",
     "activateIntern": "🚀 ACTIVAR ROBOT BECARIO",
     "internDone": "🤖 ¡Tu Robot Becario entró en turno!",
     "rank": "🎖 Rango",
-    "openFarm": "🏭 ABRIR LA GRANJA",
+    "openFarm": "🏭 ABRIR LA MINA",
     "farmScene": "🏭 TU GRANJA",
     "back": "← Atrás",
-    "minedVisit": "minado en esta visita",
+    "minedVisit": "extraído en esta visita",
     "unit_intern": "Robot Becario",
     "unit_junior": "Robot Minero",
-    "unit_premium": "Cyber-Perforador",
+    "unit_premium": "Ciber-Perforador",
     "eternal": "eterno",
     "fueledAll": "con combustible",
     "fueledPart": "{a} de {b} con combustible",
     "license": "licencia de 30 días",
     "emptyFarm": "La mina está vacía. ¡Activa tu Robot Becario o consigue robots en la tienda!",
     "madeBy": "¿Quieres un bot así para tu proyecto? Escribe a @mister_telebot",
+    "fueled": "Perforadores cargados",
+    "speed": "Velocidad de extracción",
+    "perHour": "{v} 🪙/h",
+    "fridge": "Refrigerador",
+    "inv": "Chuletas en inventario",
+    "burnout": "Próximo en quemarse",
     "boosts": "Mejoras activas",
     "none": "ninguna",
+    "resources": "🧰 Recursos",
+    "bonusPct": "Bono permanente de extracción",
+    "shuttle": "🚀 Transbordador construido",
+    "resHint": "Cada victoria trae el recurso de su juego. Gástalos en el taller.",
     "bonusReady": "🎁 RECLAMAR LA CHULETA DIARIA",
     "bonusWait": "⏳ Bono en {h} h {m} min",
     "bonusDone": "🎉 ¡Chuleta añadida!",
@@ -872,7 +892,7 @@ MINIAPP: dict[str, str] = {
     "teamLabel": "Equipo",
     "captain": "👑 ¡Estás al mando del equipo!",
     "members": "Plantilla",
-    "noTeam": "Todavía no tienes equipo. ¡Arma tu banda en el chat del bot!",
+    "noTeam": "Todavía no tienes equipo. Crea uno o únete a otro en el chat del bot: «🏆 Equipos y clanes».",
     "top": "👑 TOP-100 DE LOS MÁS RICOS DEL ECOSISTEMA",
     "shop": "🏪 TIENDA",
     "shopFarm": "🚜 PARA LA GRANJA",
@@ -880,20 +900,118 @@ MINIAPP: dict[str, str] = {
     "shopHint": "Paga con Telegram Stars oficiales, aquí mismo y en un toque.",
     "paid": "🎉 ¡Pagado! El artículo ya está en tu cuenta.",
     "payFail": "El pago no se completó. Inténtalo de nuevo.",
-    "oldClient": "Actualiza Telegram para comprar desde la Mini App o abre la tienda en el chat del bot.",
-    "ctaNoRobots": "💤 ¡Tu granja está vacía! Consigue tu primer robot y las monedas caerán las 24 horas.",
+    "oldClient": "Actualiza Telegram para comprar desde la app o abre la tienda en el chat del bot.",
+    "ctaNoRobots": "💤 ¡Tu granja está casi vacía! Consigue un robot más potente y las 🪙 caerán las 24 horas.",
     "ctaHungry": "🚨 ¡Los Perforadores tienen hambre ({n} sin combustible) y la extracción está parada!",
     "ctaLowFuel": "⚠️ Quedan menos chuletas que para un día de trabajo de los Perforadores.",
     "ctaShopBtn": "🛒 A la tienda",
-    "footer": "El control completo está en el chat del bot: /menu",
+    "footer": "Los juegos y la trivia están en el chat del bot",
     "noProfile": "Perfil no encontrado. ¡Abre el bot y pulsa /start!",
     "blocked": "Cuenta bloqueada por la administración.",
     "error": "No se pudieron cargar los datos. Inténtalo más tarde.",
     "outside": "Abre esta aplicación desde el bot de Telegram de ROFL HUB.",
-    "resources": "🧰 Recursos",
-    "bonusPct": "Bono permanente de extracción",
-    "shuttle": "🚀 Transbordador construido",
-    "resHint": "Metal — PPT, hidrógeno — Mayor/Menor, cristales — Trivia, piezas — caja fuerte. Úsalos en el taller, en el chat del bot.",
+    "robotsTitle": "🤖 TUS ROBOTS",
+    "buyMore": "🛒 Comprar",
+    "rateShort": "{v} 🪙/h",
+    "refuelOne": "🥩 Cargar 1",
+    "refuelAll": "⚡ Cargar todas",
+    "refueled": "Cargadas: {n} 🥩",
+    "res_metal_src": "PPT y duelos",
+    "res_hydrogen_src": "Mayor/Menor",
+    "res_crystal_src": "Trivia",
+    "res_parts_src": "Ciber-Caja Fuerte",
+    "resWhere": "dónde conseguirlos",
+    "ws_title": "🔧 TALLER",
+    "ws_hint": "Los recursos de los juegos se convierten en mejoras. Si te alcanzan, pulsa «Fabricar».",
+    "ws_craft": "Fabricar",
+    "ws_owned": "✅ Ya lo tienes",
+    "ws_crafted": "¡Listo! La mejora ya está funcionando.",
+    "ws_armor": "🛡 Ciber-Armadura",
+    "ws_armorLvl": "nivel {l}/{m} · +{p}% de extracción por nivel",
+    "ws_shuttleOn": "🚀 Transbordador construido: comisión de la bolsa {fee}%",
+    "ws_shuttleOff": "🚀 Sin Transbordador: comisión de la bolsa {fee}%",
+    "eff_nitrogen": "+40% de extracción para todos los robots",
+    "eff_nuclear": "×5 de extracción, los Perforadores comen ×3 chuletas",
+    "eff_drone": "los robots no envejecen",
+    "eff_shield": "nadie puede asaltarte",
+    "eff_cutlet": "1 ciber-chuleta a tu inventario",
+    "eff_armor": "+10% de extracción para siempre",
+    "eff_shuttle": "comisión de la bolsa a la mitad y órdenes de hasta 500 chuletas, para siempre",
+    "raid_title": "🏴‍☠️ ASALTOS",
+    "raid_how": "📖 Cómo funciona",
+    "raid_rule1": "Tú eliges un gesto; el objetivo tiene una postura de defensa fijada de antemano. Decide piedra-papel-tijera: es un duelo de decisiones, no una lotería.",
+    "raid_rule2": "Victoria: te llevas el {pct}% de cada recurso del objetivo, hasta {cap} por recurso. Fracaso: le das al objetivo el {fpct}% de los tuyos, hasta {fcap}. Empate: el combustible se quemó.",
+    "raid_rule3": "Solo se pueden saquear recursos. Las monedas, los robots y las chuletas están totalmente a salvo. Los novatos están protegidos {days} días y a los compañeros no se les puede asaltar.",
+    "raid_rule4": "Cada salida cuesta {fuel} 💧 de hidrógeno y la siguiente es en {cd} h. Si alguien te asalta, la revancha es gratis durante {rh} h.",
+    "raid_fuel": "💧 Hidrógeno",
+    "raid_ready": "🚀 Nave lista para despegar",
+    "raid_cooldown": "⏳ Recargando: {m} min",
+    "raid_shieldOn": "🛡 Escudo hasta {t}",
+    "raid_shieldNewbie": "🛡 Protección de novato",
+    "raid_shieldOff": "🛡 Sin escudo: fabrica uno en el taller",
+    "raid_stance": "✊ TU POSTURA DE DEFENSA",
+    "raid_stanceHint": "Con ella recibes los asaltos ajenos. Cámbiala de vez en cuando: a quien es predecible lo saquean más.",
+    "raid_stanceNone": "Sin postura elegida: será al azar",
+    "raid_stanceSaved": "Postura guardada",
+    "raid_stats": "Asaltos: {a} ({w} con éxito) · defendidos: {h} de {d}",
+    "raid_scout": "🔭 EXPLORACIÓN: buscar objetivos",
+    "raid_targets": "🎯 Elige un objetivo",
+    "raid_res": "recursos ≈{n}",
+    "raid_noTargets": "Ahora no hay objetivos disponibles: escudos, recargas, novatos. Vuelve más tarde.",
+    "raid_pickMove": "✊ Tu gesto contra la postura de {name}",
+    "raid_revenge": "⚔️ REVANCHA",
+    "raid_revengeBtn": "⚔️ Responder: {name}",
+    "raid_win": "🏴‍☠️ ¡Asalto exitoso!",
+    "raid_draw": "😐 Empate: la nave volvió vacía",
+    "raid_lose": "💥 La defensa resistió",
+    "raid_vs": "{m} contra {s}",
+    "raid_loot": "Botín: {l}",
+    "raid_lost": "Entregado al objetivo: {l}",
+    "rock": "🪨 Piedra",
+    "scissors": "✂️ Tijera",
+    "paper": "📄 Papel",
+    "mk_title": "📈 BOLSA DE CHULETAS",
+    "mk_stats": "Órdenes: {o} · chuletas: {c} · mejor precio: {b} 🪙",
+    "mk_feeLine": "La comisión del {f}% por venta se quema: escudo contra la inflación",
+    "mk_inv": "🥩 En tu inventario: {n}",
+    "mk_offers": "🛒 OFERTAS",
+    "mk_empty": "Todavía no hay ofertas: ¡publica la primera!",
+    "mk_offer": "{q} 🥩 × {p} 🪙",
+    "mk_buyHow": "¿Cuántas compras?",
+    "mk_all": "Todas, {q}",
+    "mk_sellTitle": "💰 VENDER CHULETAS",
+    "mk_qty": "Cuántas chuletas",
+    "mk_price": "Precio por unidad, 🪙",
+    "mk_preview": "Total {t} 🪙 · recibirás {g} 🪙 · se queman {f} 🪙",
+    "mk_sell": "Publicar en la bolsa",
+    "mk_limits": "Hasta {q} chuletas por orden y {o} órdenes abiertas",
+    "mk_my": "📋 MIS ÓRDENES",
+    "mk_cancel": "Retirar",
+    "mk_bought": "Compraste {q} 🥩 por {t} 🪙",
+    "mk_listed": "¡Orden publicada! Te escribiré cuando se venda.",
+    "mk_cancelledMsg": "Orden retirada, las chuletas volvieron a tu inventario",
+    "st_title": "🛰 ESTACIÓN DEL EQUIPO",
+    "st_level": "Nivel {l} de {m}",
+    "st_bonus": "+{p}% de extracción para cada combatiente",
+    "st_next": "El nivel {n} requiere {c} de cada recurso",
+    "st_max": "🏁 ¡La estación está terminada!",
+    "st_feed": "🧾 Últimos aportes",
+    "st_feedEmpty": "Nadie ha aportado todavía: ¡sé quien empiece!",
+    "st_donate": "Aportar",
+    "st_all": "Todo",
+    "st_done": "¡Aportado!",
+    "st_hint": "La construye todo el equipo y el bono es para cada integrante. Si dejas el equipo, pierdes el bono.",
+    "st_off": "La estación está en mantenimiento temporalmente",
+    "goals_title": "🎯 METAS DE HOY",
+    "goals_chest": "🎁 Cofre por las tres: +{c} 🪙 y +{r} de un recurso al azar",
+    "goals_streak": "🔥 Racha: {s} días · cada {e}.º día seguido +{b} 🪙",
+    "goals_claim": "🎁 RECLAMAR EL COFRE",
+    "goals_claimed": "🎁 El cofre de hoy ya fue reclamado. ¡Mañana, nuevas metas!",
+    "goals_reset": "Las metas se renuevan a las 00:00 UTC",
+    "goals_got": "🎁 +{c} 🪙 · +{q} {n} · racha de {s} días",
+    "featureOff": "⚙️ Sección en mantenimiento",
+    "done": "¡Listo!",
+    "loading": "⏳ Cargando…",
 }
 
 COMMANDS: dict[str, str] = {

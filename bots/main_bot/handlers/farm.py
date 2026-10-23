@@ -18,6 +18,7 @@ from shared.economy import (
 )
 from shared.farm_logic import MinerState, apply_lazy_farm, farm_counts
 from shared.locales import btn_variants, t
+from bots.main_bot.webapp_links import app_button
 from shared.economy import ARMOR_BONUS_PER_LEVEL, STATION_BONUS_PER_LEVEL, farm_bonus_percent
 
 router = Router()
@@ -113,16 +114,23 @@ def get_farm_keyboard(lang: str = "ru", intern_claimed: bool = True) -> types.In
             types.InlineKeyboardButton(text=t(lang, "farm.btn_load1"), callback_data="farm_action:load_1"),
             types.InlineKeyboardButton(text=t(lang, "farm.btn_loadall"), callback_data="farm_action:load_all")
         ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "farm.btn_market"), callback_data="open_market")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "farm.btn_workshop"), callback_data="open_workshop")
-        ],
+    ] + _app_rows(lang) + [
         [
             types.InlineKeyboardButton(text=t(lang, "farm.btn_shop"), callback_data="open_shop_from_farm")
         ]
     ])
+
+
+def _app_rows(lang: str) -> list[list[types.InlineKeyboardButton]]:
+    """Ферма с артами, биржа и мастерская — в приложении; без приложения — чатовая биржа."""
+    farm_btn = app_button(t(lang, "farm.btn_app"), "farm")
+    if farm_btn is None:
+        return [[types.InlineKeyboardButton(text=t(lang, "farm.btn_market"), callback_data="open_market")]]
+    return [
+        [farm_btn],
+        [app_button(t(lang, "farm.btn_market"), "market")],
+        [app_button(t(lang, "farm.btn_workshop"), "workshop")],
+    ]
 
 
 def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = "ru",
@@ -177,9 +185,9 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
         burnout_line = t(lang, "farm.burnout", until=f"{nearest:%d.%m.%Y %H:%M}")
     intern_rate = miner_hourly_rate("intern", nuclear_active=nuclear, nitrogen_active=nitrogen,
                                     bonus_percent=bonus)
-    if counts["intern"] > 0:
-        burnout_line = t(lang, "farm.intern_line", count=counts["intern"], rate=intern_rate) + "\n" + burnout_line
-    elif not user["intern_claimed"]:
+    # Стажёр — первым в списке (от слабого к мощному), даже если пока ноль
+    intern_line = t(lang, "farm.intern_line", count=counts["intern"], rate=intern_rate)
+    if counts["intern"] == 0 and not user["intern_claimed"]:
         burnout_line = t(lang, "farm.intern_hint") + "\n" + burnout_line
     speed_per_hour += counts["intern"] * intern_rate
 
@@ -188,7 +196,7 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
         total=junior_count + premium_count + counts["intern"],
         junior=junior_count, premium=premium_count,
         junior_rate=junior_rate, premium_rate=premium_rate,
-        burnout=burnout_line,
+        intern=intern_line, burnout=burnout_line,
         speed_hour=speed_per_hour, speed_day=speed_per_hour * 24,
         boosts=boosts_block, status=status_work,
         fridge=user["fridge_cutlets"], capacity=user["fridge_capacity"], inv=user["inv_cutlets"],

@@ -71,7 +71,7 @@ STRINGS = {
     "start.intro2": (
         "🎁 <b>收下你的注册首批奖励！</b>\n"
         "..................................................\n"
-        "💸 已到账：<b>{balance} 金币</b>\n"
+        "💸 已到账：<b>{balance} 🪙</b>\n"
         "🥩 已到账：<b>{cutlets} 份赛博肉排</b>\n"
         "..................................................\n"
         "这是你加入 ROFL HUB 俱乐部的新手奖励。\n\n"
@@ -134,15 +134,15 @@ STRINGS = {
         "🕹️ <b>游戏室：</b>\n"
         "• /games — 所有对战机器人游戏的快捷中心\n"
         "• /quiz — 限时竞答：15 秒作答，等级与奖励\n"
-        "• /duel — 与真人玩家 1对1 对决：10/100/1000 金币桌\n"
+        "• /duel — 与真人玩家 1对1 对决：10/100/1000 🪙 桌\n"
         "• /quests — 冒险任务：侦探、喜剧和谜题，通关有奖\n"
         "• /rps, /high_low, /safe — 赚金币的快速小游戏\n\n"
         "👥 <b>战队管理：</b>\n"
-        "• /create_team — 花 10 万金币注册自己的战队\n"
+        "• /create_team — 花 10 万 🪙 注册自己的战队\n"
         "• /my_team — 战队仪表盘和带 🧠 等级的队友名单\n"
         "• /all_teams — 随机战队轮盘\n\n"
         "💸 <b>金钱与朋友：</b>\n"
-        "• /invite — 你的邀请链接：每位好友 +1000 金币\n"
+        "• /invite — 你的邀请链接：每位好友 +1000 🪙\n"
         "• /transfer — 给其他玩家转账金币\n\n"
         "📚 <b>帮助与规则：</b>\n"
         "• /faq — 完整生态系统指南（在 Mini App 中打开）\n"
@@ -155,9 +155,9 @@ STRINGS = {
         "..................................................\n\n"
         "在这里你可以和机器人快速过招，或挑战智力冲刺测验，"
         "赢个盆满钵满——或者输个精光！\n\n"
-        "💸 获胜奖励：<b>+2 金币</b>（赛博保险箱：<b>+5</b>）\n"
-        "💀 失败或平局扣除：<b>-1 金币</b>\n"
-        "🧠 竞答有 15 秒倒计时和智力等级：1 级需要答对 10 题，奖励 <b>+100 金币</b>，"
+        "💸 获胜奖励：<b>+2 🪙</b>（赛博保险箱：<b>+5</b>）\n"
+        "💀 失败或平局扣除：<b>-1 🪙</b>\n"
+        "🧠 竞答有 15 秒倒计时和智力等级：1 级需要答对 10 题，奖励 <b>+100 🪙</b>，"
         "之后每级多 10 题，但奖励也每级多 100！\n\n"
         "..................................................\n"
         "👇 <b>点按下方按钮，立刻开始一局：</b>"
@@ -183,7 +183,7 @@ STRINGS = {
         "赛博钻机——每小时 10 枚，而且每台钻机每天要吃掉自己的 1 份赛博肉排。"
         "所有机器人寿命 30 天（大师无人机可暂停损耗）。\n"
         "🧠 竞答：15 秒作答，智力等级越高奖励越高。\n"
-        "⚔️ 在 10/100/1000 金币桌上与真人玩家对决。\n"
+        "⚔️ 在 10/100/1000 🪙 的桌上与真人玩家对决。\n"
         "🏆 战队最多 50 名成员（超级公会——最多 1000），还有人人有奖的大作战活动。\n\n"
         "..................................................\n"
         "👇 <b>包含全部机制的完整指南——点按按钮：</b>"
@@ -214,7 +214,7 @@ STRINGS = {
     ),
     "quest.card": (
         "{title}\n"
-        "🎭 {genre} · ⏱ {minutes} 分钟 · 🏆 首次通关 +{reward} 金币\n"
+        "🎭 {genre} · ⏱ {minutes} 分钟 · 🏆 首次通关 +{reward} 🪙\n"
         "..................................................\n\n"
         "{teaser}\n\n{status}"
     ),
@@ -226,11 +226,11 @@ STRINGS = {
     "quest.btn_resume": "⏯ 继续",
     "quest.btn_list": "🗺️ 返回任务列表",
     "quest.btn_replay": "🔄 再玩一次",
-    "quest.win_first": "\n\n🏆 <b>任务通关！奖励：+{coins} 金币。</b>",
+    "quest.win_first": "\n\n🏆 <b>任务通关！奖励：+{coins} 🪙。</b>",
     "quest.win_repeat": "\n\n✅ <b>再次通关！</b>这个任务的奖励之前已经领过了。",
     "quest.fail_footer": "\n\n💀 <i>这个结局不算完美……不过故事随时可以重来！</i>",
     "quest.stale": "⏳ 这个场景已经过去了——从当前位置继续！",
-    "quest.no_coins": "❌ 金币不够买提示（{cost}）。去农场转转吧！",
+    "quest.no_coins": "❌ 提示需要 {cost} 🪙，你的余额不够。去农场转转吧！",
     "quest.not_found": "❌ 未找到该任务。",
     "menu.btn_quests": "🗺️ 冒险任务",
 
@@ -242,27 +242,27 @@ STRINGS = {
     "farm.status_all_fueled": "🟢 所有赛博钻机都已加满燃料，正在挖金币！",
     "farm.status_partial": "🟡 {total} 台赛博钻机中已装填 {fueled} 台。其余的还在等冰箱里的肉排！",
     "farm.status_no_fuel": "🔴 赛博钻机全停了！冰箱里的燃料不够。",
-    "farm.status_no_drills": "💡 到 /shop 添置赛博钻机，提高收入。",
+    "farm.status_no_drills": "💡 到 /shop 添置更强的机器人——农场会挖得更多。",
     "farm.boost_nuclear": "🔋 核能加速 x5 持续到 {until} UTC（肉排消耗 ×3）",
     "farm.boost_nitrogen": "❄️ 液氮冷却 +40% 持续到 {until} UTC",
     "farm.boost_drone": "🛸 大师无人机延长机器人寿命，持续到 {until} UTC",
     "farm.no_boosts": "暂无生效的强化——去 /shop 看看吧。",
     "farm.burnout": "🔥 下一次机器人报废：<b>{until} UTC</b>\n",
     "farm.btn_activate_intern": "🚀 激活实习机器人（免费）",
-    "farm.intern_activated": "🤖 实习机器人上岗了！永久每小时 +1 金币——不吃燃料，没有期限。",
+    "farm.intern_activated": "🤖 实习机器人上岗了！永久每小时 +1 🪙——不吃燃料，没有期限。",
     "farm.intern_already": "🤖 你的实习机器人已经在工作了。",
-    "farm.intern_line": "🤖 实习机器人（{rate} 金币/小时，永久）：<code>{count} 台</code>",
-    "farm.intern_hint": "🎁 你有一台免费的实习机器人！点下方按钮，它将永久每小时挖 1 金币。",
+    "farm.intern_line": "• 实习机器人（每小时 {rate} 🪙，永久）：<code>{count} 台</code>\n",
+    "farm.intern_hint": "🎁 你有一台免费的实习机器人！点下方按钮，它将永久每小时挖 1 🪙。",
     "farm.dashboard": (
         "🚜 <b>ROFL HUB 中央燃料中心</b>\n"
         "..................................................\n\n"
         "🤖 工厂里的在役机器人：<b>{total} 台</b>\n"
-        "• 初级矿工（每小时 {junior_rate} 金币）：<code>{junior} 台</code>\n"
-        "• 赛博钻机（每小时 {premium_rate} 金币）：<code>{premium} 台</code>\n"
+        "{intern}• 初级矿工（每小时 {junior_rate} 🪙）：<code>{junior} 台</code>\n"
+        "• 赛博钻机（每小时 {premium_rate} 🪙）：<code>{premium} 台</code>\n"
         "{burnout}\n"
         "📊 <b>你农场的当前速度：</b>\n"
-        "• 每小时产出：<b>+{speed_hour} 金币</b>\n"
-        "• 每天产出：<b>+{speed_day} 金币</b>\n\n"
+        "• 每小时产出：<b>+{speed_hour} 🪙</b>\n"
+        "• 每天产出：<b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>强化：</b>\n{boosts}\n\n"
         "📋 <b>游戏工厂状态：</b>\n"
         "{status}\n\n"
@@ -286,10 +286,10 @@ STRINGS = {
         "..................................................\n\n"
         "🆔 你的护照 ID：<code>{user_id}</code>\n"
         "{vip}"
-        "💰 当前余额：<b>{balance} 金币</b>\n"
+        "💰 当前余额：<b>{balance} 🪙</b>\n"
         "🏆 你的身份：<b>{team}</b>\n"
         "🧠 智力等级：<b>{level}</b> · 距离 {next_level} 级：还需在 /quiz 中答对 "
-        "<b>{left}</b> 题（奖励：+{reward} 金币）\n\n"
+        "<b>{left}</b> 题（奖励：+{reward} 🪙）\n\n"
         "..................................................\n"
         "<i>这里显示的是你此刻拥有的一切。用按钮飞往其他版块吧！</i>"
     ),
@@ -317,21 +317,21 @@ STRINGS = {
     "img.premium": "赛博钻机：{count} 台",
 
     # ---------------- игры: общий движок ----------------
-    "games.win": "🎉 <b>胜利！</b> 🎉\n已到账金币：<b>+{reward}</b>",
-    "games.lose": "💀 <b>落败！</b>\n已扣除金币：<b>-{penalty}</b>",
-    "games.draw": "🤝 <b>平局！</b>\n已扣除金币：<b>-{penalty}</b>",
+    "games.win": "🎉 <b>胜利！</b> 🎉\n已到账：<b>+{reward} 🪙</b>",
+    "games.lose": "💀 <b>落败！</b>\n已扣除：<b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>平局！</b>\n已扣除：<b>-{penalty} 🪙</b>",
     "games.limit": (
         "🛑 <b>已达每日上限！</b>\n\n"
         "今天你在「{game}」里已经拿满 {limit} 场胜利。上限将于 00:00 UTC 重置。\n\n"
         "⚡ 解除上限：24 小时 5 ★，30 天 99 ★（/shop 的「游戏专区」）。"
     ),
-    "games.no_coins": "❌ 你的金币余额是 0——付不起本局费用。去 /farm 领取农场收入吧！",
-    "games.balance": "💰 余额：<b>{balance} 金币</b>",
+    "games.no_coins": "❌ 你只有 0 🪙——付不起本局费用。去 /farm 领取农场收入吧！",
+    "games.balance": "💰 余额：<b>{balance} 🪙</b>",
     "games.btn_retry": "🎮 再来一局！",
     "games.btn_hub": "🕹️ 游戏区",
     "games.level_up": (
-        "🏅 <b>智力等级提升：{level}！</b>奖励：<b>+{bonus} 金币</b>！\n"
-        "下一级：答对 {next_required} 题 → +{next_reward} 金币。"
+        "🏅 <b>智力等级提升：{level}！</b>奖励：<b>+{bonus} 🪙</b>！\n"
+        "下一级：答对 {next_required} 题 → +{next_reward} 🪙。"
     ),
     "games.name.rps": "石头剪刀布",
     "games.intern_bonus": "🤖 {level} 级！又一台实习机器人加入你的农场——现在共有 {count} 台。",
@@ -374,15 +374,15 @@ STRINGS = {
     "quiz.stale_alert": "这道题已经失效。开始新的一题吧！",
     "quiz.empty": "⚠️ 题库是空的。请告知管理员。",
     "quiz.wrong": "❌ <b>答错了</b> ❌\n正确答案：<b>{correct}</b>",
-    "quiz.lost_line": "💀 落败扣除 <b>-{penalty} 金币</b>！",
+    "quiz.lost_line": "💀 落败扣除 <b>-{penalty} 🪙</b>！",
     "quiz.level_line": (
         "🧠 智力等级：<b>{level}</b>\n"
         "距离 {next_level} 级还差 <b>{left}</b> 场胜利"
     ),
     "quiz.rules": (
         "<i>限时 {seconds} 秒作答！\n"
-        "答对：余额 +{win} 金币\n"
-        "答错 / 超时：扣除 -{penalty} 金币\n"
+        "答对：余额 +{win} 🪙\n"
+        "答错 / 超时：扣除 -{penalty} 🪙\n"
         "上限：每日 {limit} 场胜利</i>"
     ),
 
@@ -391,7 +391,7 @@ STRINGS = {
     # ---------------- Сейф ----------------
     "safe.intro": (
         "🔐 <b>赛博保险箱</b>\n\n"
-        "里面装着 <b>{jackpot} 金币</b>大奖！箱门用 1 到 {codes} 的密码锁着。"
+        "里面装着 <b>{jackpot} 🪙</b>大奖！箱门用 1 到 {codes} 的密码锁着。"
         "你只有一次机会。\n"
         "破解成功：<b>+{jackpot}</b> · 触发警报：<b>-{penalty}</b> · 上限：<b>{limit}</b> 场胜利"
     ),
@@ -412,21 +412,21 @@ STRINGS = {
         "🏆 对决胜利会计入你战队在大作战中的成绩！\n\n"
         "👇 <b>选择一张桌：</b>"
     ),
-    "duel.btn_table": "⚔️ {stake} 金币桌",
+    "duel.btn_table": "⚔️ {stake} 🪙 桌",
     "duel.btn_cancel": "❌ 离桌（退回押注）",
     "duel.btn_move_rock": "🪨 石头",
     "duel.btn_move_scissors": "✂️ 剪刀",
     "duel.btn_move_paper": "🧻 布",
     "duel.waiting": (
-        "🪑 <b>你已坐上 {stake} 金币桌。</b>押注已入奖池。\n"
+        "🪑 <b>你已坐上 {stake} 🪙 桌。</b>押注已入奖池。\n"
         "正在等待第二位选手……对方一落座，你们双方就会收到选择手势的提示！\n"
         "<i>排队保留 {ttl} 分钟，之后押注会自动退回。</i>"
     ),
-    "duel.cancelled": "🚪 你已离桌。<b>{stake} 金币</b>押注已退回余额。",
-    "duel.expired": "⌛ {stake} 金币桌上一直没等到对手。<b>{stake} 金币</b>押注已退回。",
+    "duel.cancelled": "🚪 你已离桌。<b>{stake} 🪙</b>押注已退回余额。",
+    "duel.expired": "⌛ {stake} 🪙 桌上一直没等到对手。<b>{stake} 🪙</b>押注已退回。",
     "duel.matched": (
-        "⚔️ <b>找到对手了！{stake} 金币桌。</b>\n"
-        "奖池：<b>{bank} 金币</b> · 胜者可得：<b>{payout}</b>\n\n"
+        "⚔️ <b>找到对手了！{stake} 🪙 桌。</b>\n"
+        "奖池：<b>{bank} 🪙</b> · 胜者可得：<b>{payout}</b>\n\n"
         "⏱ 你有 <b>{timeout} 秒</b>来选择手势！"
     ),
     "duel.move_saved": "✊ 手势已提交！等待对手出招……",
@@ -437,19 +437,19 @@ STRINGS = {
     "duel.win": (
         "🏆 <b>你赢下了这场对决！</b>\n\n"
         "你的 {winner_move} 克制 {loser_move}。\n"
-        "💰 赢得：<b>+{payout} 金币</b> · 🔥 奖池销毁：{burned}\n"
-        "💼 余额：<b>{balance} 金币</b>"
+        "💰 赢得：<b>+{payout} 🪙</b> · 🔥 奖池销毁：{burned}\n"
+        "💼 余额：<b>{balance} 🪙</b>"
     ),
     "duel.lose": (
         "💀 <b>对决失利。</b>\n\n"
         "对手的 {winner_move} 克制你的 {loser_move}。\n"
-        "📉 <b>{stake} 金币</b>押注进了胜者的奖池。\n"
+        "📉 <b>{stake} 🪙</b>押注进了胜者的奖池。\n"
         "要复仇吗？"
     ),
     "duel.reaper_prefix": "⏰ <b>回合超时！</b>缺少的手势已由随机生成器代选。\n\n",
     "duel.bad_table": "❌ 没有这张桌子。",
     "duel.already_in": "⚠️ 你已经在桌上或战斗中了！先打完当前这场对决。",
-    "duel.no_coins": "❌ 坐上这张桌需要余额里有 {stake} 金币。",
+    "duel.no_coins": "❌ 坐上这张桌需要余额里有 {stake} 🪙。",
     "duel.cancel_impossible": "⚠️ 这次排队已无法取消（已匹配到对手或该桌已关闭）。",
     "duel.not_active": "⌛ 这场对决已经结束。",
     "duel.not_participant": "🔒 这不是你的对决！",
@@ -472,19 +472,19 @@ STRINGS = {
         "🤝 <b>ROFL HUB 邀请计划</b>\n"
         "..................................................\n\n"
         "邀请好友，每有一人通过你的专属链接注册，"
-        "你就能获得 <b>+{bonus} 金币</b>！\n\n"
+        "你就能获得 <b>+{bonus} 🪙</b>！\n\n"
         "🔗 <b>你的链接（点按复制）：</b>\n<code>{link}</code>\n\n"
         "📊 <b>你的统计：</b>\n"
         "👥 已邀请好友：<b>{invited} 人</b>\n"
-        "💰 邀请奖励累计：<b>{earned} 金币</b>\n\n"
+        "💰 邀请奖励累计：<b>{earned} 🪙</b>\n\n"
         "..................................................\n"
         "<i>把链接发到班级群、朋友圈和社交网络——队伍越大，你的余额涨得越快！</i>"
     ),
     "ref.btn_share": "📣 分享链接",
     "ref.share_text": "快来加入 ROFL HUB 游戏生态系统！",
-    "ref.qualified_line": "⭐ <b>双重奖励：</b>受邀好友玩满 {rounds} 局后，你再得 <b>+{bonus} 金币</b>！",
+    "ref.qualified_line": "⭐ <b>双重奖励：</b>受邀好友玩满 {rounds} 局后，你再得 <b>+{bonus} 🪙</b>！",
     "ref.qualified_notify": ("🤝 <b>你的好友玩上瘾了：已经 {rounds} 局！</b>\n"
-                             "合格推荐奖励 <b>+{bonus} 金币</b> 已到账。继续邀请吧！"),
+                             "合格推荐奖励 <b>+{bonus} 🪙</b> 已到账。继续邀请吧！"),
 
     # ---------------- переводы ----------------
     "tr.help": (
@@ -495,22 +495,22 @@ STRINGS = {
         "<code>/transfer @username 金额</code> — 按用户名\n"
         "<code>/transfer ROFL-HUB-777 金额</code> — 按拍卖的 VIP ID\n\n"
         "示例：\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 最低金额：<b>{min} 金币</b>"
+        "📌 最低金额：<b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ 未找到收款人。请检查护照 ID 或 @username——对方必须已在机器人中注册。",
     "tr.self": "🤨 不能给自己转账金币——不然就成永动机经济了！",
     "tr.blocked": "🚫 该玩家已被封禁——无法向其转账。",
-    "tr.min": "❌ 最低转账金额为 {min} 金币。",
-    "tr.insufficient": "❌ 金币不足！你的余额：<b>{balance}</b>。",
+    "tr.min": "❌ 最低转账金额为 {min} 🪙。",
+    "tr.insufficient": "❌ 金币不足！你的余额：<b>{balance} 🪙</b>。",
     "tr.err_insufficient": "❌ 余额中的金币不足。",
     "tr.confirm": (
         "🔄 <b>确认转账：</b>\n\n"
         "👤 收款人：<b>{recipient}</b>（ID <code>{recipient_id}</code>）\n"
-        "💸 扣除金额：<b>{amount} 金币</b>{fee_line}\n"
-        "💰 对方将收到：<b>{received} 金币</b>\n\n"
+        "💸 扣除金额：<b>{amount} 🪙</b>{fee_line}\n"
+        "💰 对方将收到：<b>{received} 🪙</b>\n\n"
         "<i>转账无法撤销——仔细核对收款人！</i>"
     ),
-    "tr.fee_line": "\n🔥 中心手续费：<b>{fee} 金币</b>（将销毁）",
+    "tr.fee_line": "\n🔥 中心手续费：<b>{fee} 🪙</b>（将销毁）",
     "tr.btn_confirm": "✅ 确认转账",
     "tr.btn_cancel": "❌ 取消",
     "tr.cancelled_toast": "转账已取消",
@@ -519,11 +519,11 @@ STRINGS = {
     "tr.done_toast": "✅ 转账完成！",
     "tr.done": (
         "✅ <b>转账完成！</b>\n\n"
-        "💸 已发送：<b>{amount} 金币</b>（收款人 ID <code>{recipient_id}</code>）\n"
-        "💰 你的余额：<b>{balance} 金币</b>"
+        "💸 已发送：<b>{amount} 🪙</b>（收款人 ID <code>{recipient_id}</code>）\n"
+        "💰 你的余额：<b>{balance} 🪙</b>"
     ),
     "tr.received": (
-        "💰 <b>有人给你转了 {amount} 金币！</b>\n"
+        "💰 <b>有人给你转了 {amount} 🪙！</b>\n"
         "发送方：ID <code>{sender_id}</code>。金币已到账——快去 /profile 看看！"
     ),
 
@@ -575,7 +575,7 @@ STRINGS = {
     "dlv.miner_junior": "初级矿工",
     "dlv.miner_premium": "赛博钻机",
     "dlv.fridge": "📦 冰箱已扩容至 <b>{capacity} 份肉排</b>。",
-    "dlv.coins": "💰 已到账 <b>+{amount} 金币</b>。",
+    "dlv.coins": "💰 已到账 <b>+{amount} 🪙</b>。",
     "dlv.boost_nuclear": "🔋 核能加速 x5 生效至 <b>{until} UTC</b>。",
     "dlv.boost_nitrogen": "❄️ 液氮冷却 +40% 生效至 <b>{until} UTC</b>。",
     "dlv.drone": "🛸 大师无人机守护你的农场至 <b>{until} UTC</b>。",
@@ -584,43 +584,43 @@ STRINGS = {
     "dlv.err_fridge": "你已经拥有同容量或更大的冰箱了。",
     "dlv.err_no_team": "你还没有创建战队。先用 /create_team 创建一个吧。",
     "dlv.err_mega": "你的战队已经是超级公会了。",
-    "dlv.intern_upgrade": "♾ 实习机器人晋升为<b>永久初级矿工</b>：每小时 5 金币，没有期限！",
+    "dlv.intern_upgrade": "♾ 实习机器人晋升为<b>永久初级矿工</b>：每小时 5 🪙，没有期限！",
     "dlv.err_no_intern": "还没有激活的实习机器人——先在 /farm 里激活它。",
     "dlv.err_intern_refs": "升级需要 {need} 位合格好友（各玩 30 局），你目前有 {have} 位。",
     "mk.header": "📈 <b>肉饼交易所</b>\n..................................................\n\n挂单：<b>{orders}</b> · 在售肉饼：<b>{cutlets}</b> · 最低价：<b>{best}</b>\n平台手续费：每笔成交 <b>{fee}%</b>（销毁——抗通胀）\n🥩 你仓库里的肉饼：<b>{inv}</b>\n\n{body}\n\n<i>点击挂单即可购买。出售请用 /sell。</i>",
     "mk.empty": "暂时没有挂单。抢先出售：/sell 数量 价格",
-    "mk.order_line": "🥩 #{id} · <b>{qty} 块</b>，单价 <b>{price}</b> 金币",
-    "mk.btn_order": "🛒 #{id}：{qty} 块，单价 {price} 金币",
+    "mk.order_line": "🥩 #{id} · <b>{qty} 块</b>，单价 <b>{price}</b> 🪙",
+    "mk.btn_order": "🛒 #{id}：{qty} 块，单价 {price} 🪙",
     "mk.btn_my": "📋 我的挂单",
     "mk.btn_sell_help": "💰 如何出售肉饼",
     "mk.btn_refresh": "🔄 刷新",
     "mk.btn_back": "← 返回交易所",
-    "mk.pick": "🛒 <b>挂单 #{id}</b>：可买 {qty} 块，单价 {price} 金币。\n买几块？",
-    "mk.btn_qty": "{qty} 块 — {total} 金币",
-    "mk.btn_qty_all": "全部 {qty} 块 — {total} 金币",
+    "mk.pick": "🛒 <b>挂单 #{id}</b>：可买 {qty} 块，单价 {price} 🪙。\n买几块？",
+    "mk.btn_qty": "{qty} 块 — {total} 🪙",
+    "mk.btn_qty_all": "全部 {qty} 块 — {total} 🪙",
     "mk.buy_toast": "成交！",
-    "mk.buy_done": "✅ 以 <b>{total} 金币</b> 买入 <b>{qty} 块肉饼</b>，已入仓库——快给钻机加燃料！",
-    "mk.sold_notify": "💰 <b>交易所：已售出！</b> 挂单 #{id}：售出 {qty} 块，单价 {price}。你收到 <b>+{got} 金币</b>（手续费 {fee} 已销毁）。",
-    "mk.sell_help": "💰 <b>如何出售肉饼</b>\n\n命令：<code>/sell 数量 价格</code>\n示例：<code>/sell 10 50</code> —— 10 块肉饼，每块 50 金币。\n\n肉饼从仓库转入挂单等待买家（随时可撤回）。每单最多 {max_qty} 块，最多 {max_orders} 个挂单。成交时销毁 {fee}% 手续费。",
-    "mk.sell_confirm": "📝 以单价 <b>{price}</b> 金币挂出 <b>{qty} 块肉饼</b>？\n总额 {total} · 手续费 {fee} 将销毁 · 你将收到 <b>{got} 金币</b>。",
+    "mk.buy_done": "✅ 以 <b>{total} 🪙</b> 买入 <b>{qty} 块肉饼</b>，已入仓库——快给钻机加燃料！",
+    "mk.sold_notify": "💰 <b>交易所：已售出！</b> 挂单 #{id}：售出 {qty} 块，单价 {price}。你收到 <b>+{got} 🪙</b>（手续费 {fee} 已销毁）。",
+    "mk.sell_help": "💰 <b>如何出售肉饼</b>\n\n命令：<code>/sell 数量 价格</code>\n示例：<code>/sell 10 50</code> —— 10 块肉饼，每块 50 🪙。\n\n肉饼从仓库转入挂单等待买家（随时可撤回）。每单最多 {max_qty} 块，最多 {max_orders} 个挂单。成交时销毁 {fee}% 手续费。",
+    "mk.sell_confirm": "📝 以单价 <b>{price}</b> 🪙挂出 <b>{qty} 块肉饼</b>？\n总额 {total} · 手续费 {fee} 将销毁 · 你将收到 <b>{got} 🪙</b>。",
     "mk.btn_confirm_sell": "✅ 挂到交易所",
     "mk.btn_cancel": "❌ 取消",
     "mk.sell_toast": "挂单成功！",
-    "mk.sell_done": "✅ 挂单 <b>#{id}</b> 已上架：{qty} 块，单价 {price} 金币。成交后会通知你。",
+    "mk.sell_done": "✅ 挂单 <b>#{id}</b> 已上架：{qty} 块，单价 {price} 🪙。成交后会通知你。",
     "mk.cancelled_toast": "已取消",
     "mk.cancel_text": "❌ <b>已取消。</b> 肉饼仍在仓库。",
     "mk.my_header": "📋 <b>你的挂单</b>\n\n",
-    "mk.my_line": "🥩 #{id} · {qty} 块，单价 {price} 金币",
+    "mk.my_line": "🥩 #{id} · {qty} 块，单价 {price} 🪙",
     "mk.my_empty": "📋 你没有未成交的挂单。",
     "mk.btn_cancel_order": "❌ 撤回挂单 #{id}",
     "mk.order_cancelled": "↩️ 挂单 #{id} 已撤回：<b>{qty} 块肉饼</b>已返回仓库。",
     "mk.err_qty": "❌ 数量：每单 1 到 {max} 块。",
-    "mk.err_price": "❌ 价格：每块 {min} 到 {max} 金币。",
+    "mk.err_price": "❌ 价格：每块 {min} 到 {max} 🪙。",
     "mk.err_no_cutlets": "❌ 仓库里只有 {have} 块肉饼。冰箱里的肉饼不能上架——见 /farm。",
     "mk.err_too_many": "❌ 上限：最多 {max} 个挂单。请在「我的挂单」中撤回一个。",
     "mk.err_not_found": "❌ 该挂单已关闭。",
     "mk.err_own": "🤨 不能购买自己的挂单。",
-    "mk.err_insufficient": "❌ 金币不足：需要 {total}。",
+    "mk.err_insufficient": "❌ 余额不足：需要 {total} 🪙。",
     "farm.btn_market": "📈 肉饼交易所",
 
     # ---------------- ресурсы (волна 22.10, вечер) ----------------
@@ -637,6 +637,13 @@ STRINGS = {
     "menu.btn_raids": "🏴‍☠️ 突袭",
     "menu.btn_workshop": "🔧 工坊",
     "farm.btn_workshop": "🔧 工坊",
+    "farm.btn_app": "🏭 在应用中打开农场",
+    "menu.btn_app": "🚀 游戏应用：农场、工坊、突袭",
+    "app.btn_section": "🚀 在应用中打开",
+    "app.goto_workshop": "🔧 <b>工坊</b>在游戏应用里：资源、配方，一键制造。",
+    "app.goto_raids": "🏴\u200d☠️ <b>突袭</b>在游戏应用里：侦察、防御姿态和复仇战。",
+    "app.goto_station": "🛰 <b>战队空间站</b>在游戏应用里：进度、捐献和全队加成。",
+    "app.goto_market": "📈 <b>肉排交易所</b>在游戏应用里更方便：报价、出售和你的挂单尽在一屏。",
     "farm.boost_armor": "🛡 赛博装甲 {level} 级：产量永久 +{percent}%",
     "farm.boost_station": "🛰 战队空间站 {level} 级：产量 +{percent}%",
     "clan.btn_station": "🛰 战队空间站",
@@ -736,8 +743,8 @@ STRINGS = {
         "..................................................\n\n"
         "{goals}\n\n"
         "{status}\n"
-        "🎁 宝箱：<b>+{coins} 金币</b>和 <b>+{res}</b> 随机资源\n"
-        "🔥 连续：<b>{streak}</b> 天 · 每连续第 {every} 天宝箱额外 +{bonus} 金币\n\n"
+        "🎁 宝箱：<b>+{coins} 🪙</b>和 <b>+{res}</b> 随机资源\n"
+        "🔥 连续：<b>{streak}</b> 天 · 每连续第 {every} 天宝箱额外 +{bonus} 🪙\n\n"
         "<i>目标在 00:00 UTC 刷新。</i>"
     ),
     "goal.status_progress": "⏳ 完成全部三项——宝箱就是你的。",
@@ -747,7 +754,7 @@ STRINGS = {
     "goal.btn_go": "→ {goal}",
     "goal.btn_refresh": "🔄 刷新",
     "goal.toast": "宝箱已打开！",
-    "goal.chest": "🎁 <b>宝箱已打开！</b>\n💰 +{coins} 金币 · {icon} +{qty} {name}\n🔥 连续：{streak} 天",
+    "goal.chest": "🎁 <b>宝箱已打开！</b>\n💰 +{coins} 🪙 · {icon} +{qty} {name}\n🔥 连续：{streak} 天",
     "goal.err_claimed": "🎁 今天已经领过了。",
     "goal.err_not_done": "⏳ 还有目标没完成。",
     "goal.win_quiz": "赢得 {n} 局竞答",
@@ -790,7 +797,7 @@ STRINGS = {
 
     # ---------------- команды/кланы (основные поверхности) ----------------
     "clan.no_team": "⚠️ <b>你还没有自己的战队！</b>\n\n点按下方按钮，现在就注册属于你的队伍。",
-    "clan.btn_create": "🏆 创建战队（10 万金币）",
+    "clan.btn_create": "🏆 创建战队（10 万 🪙）",
     "clan.btn_members": "👥 队友名单",
     "clan.btn_leave": "🚪 离开战队 / 退出队伍",
     "clan.btn_dashboard": "🏆 战队仪表盘",
@@ -832,23 +839,26 @@ STRINGS = {
 
 MINIAPP = {
     "subtitle": "一屏掌控你的游戏帝国",
+    "tab_passport": "📋 护照",
+    "tab_farm": "🚜 农场",
+    "tab_goals": "🎯 目标",
+    "tab_workshop": "🔧 工坊",
+    "tab_raids": "🏴‍☠️ 突袭",
+    "tab_market": "📈 交易所",
+    "tab_team": "🏆 战队",
+    "tab_shop": "🏪 商店",
+    "tab_top": "👑 排行",
     "passport": "📋 玩家护照",
-    "coins": "金币",
+    "coins": "🪙",
     "brain": "🧠 智力等级",
-    "toNext": "距离 {n} 级：还需在竞答中答对 {left} 题（+{reward} 金币）",
+    "toNext": "距离 {n} 级：还需在竞答中答对 {left} 题（+{reward} 🪙）",
     "farm": "🚜 赛博农场",
     "robots": "机器人（矿工 / 钻机）",
-    "fueled": "已装填的钻机",
-    "speed": "挖矿速度",
-    "perHour": "{v} 金币/小时",
-    "fridge": "冰箱",
-    "inv": "仓库肉排",
-    "burnout": "下次报废",
-    "intern": "实习机器人（1 金币/小时，永久）",
+    "intern": "实习机器人（每小时 1 🪙，永久）",
     "activateIntern": "🚀 激活实习机器人",
     "internDone": "🤖 实习机器人上岗了！",
     "rank": "🎖 称号",
-    "openFarm": "🏭 打开农场",
+    "openFarm": "🏭 打开矿井",
     "farmScene": "🏭 你的农场",
     "back": "← 返回",
     "minedVisit": "本次访问已挖到",
@@ -861,8 +871,18 @@ MINIAPP = {
     "license": "30 天许可",
     "emptyFarm": "矿井空空如也。激活实习机器人，或去商店购买机器人！",
     "madeBy": "想为自己的项目做一个这样的机器人？联系 @mister_telebot",
+    "fueled": "已装填的钻机",
+    "speed": "挖矿速度",
+    "perHour": "{v} 🪙/小时",
+    "fridge": "冰箱",
+    "inv": "仓库肉排",
+    "burnout": "下次报废",
     "boosts": "生效中的强化",
     "none": "无",
+    "resources": "🧰 资源",
+    "bonusPct": "永久产量加成",
+    "shuttle": "🚀 穿梭机已建成",
+    "resHint": "每次获胜都会带来对应游戏的资源。在工坊里使用它们。",
     "bonusReady": "🎁 领取每日肉排",
     "bonusWait": "⏳ {h} 小时 {m} 分钟后可领",
     "bonusDone": "🎉 肉排已入仓库！",
@@ -871,7 +891,7 @@ MINIAPP = {
     "teamLabel": "战队",
     "captain": "👑 你是队长！",
     "members": "成员",
-    "noTeam": "你还没有战队——去机器人聊天里组建自己的队伍吧！",
+    "noTeam": "你还没有战队。去机器人聊天里点「🏆 战队与公会」，创建自己的战队或加入别人的。",
     "top": "👑 生态系统富豪榜 TOP-100",
     "shop": "🏪 商店",
     "shopFarm": "🚜 农场专区",
@@ -879,20 +899,118 @@ MINIAPP = {
     "shopHint": "使用官方 Telegram Stars 付款——就在这里，一键搞定。",
     "paid": "🎉 已付款！商品已发放到你的账户。",
     "payFail": "付款没有成功。再试一次吧。",
-    "oldClient": "请更新 Telegram 以便在 Mini App 中购买，或在机器人聊天里打开商店。",
-    "ctaNoRobots": "💤 农场空空如也！养第一台机器人——金币就会全天候入账。",
+    "oldClient": "请更新 Telegram 以便在应用内购买，或在机器人聊天里打开商店。",
+    "ctaNoRobots": "💤 农场几乎空了！添置更强的机器人——🪙 就会全天候入账。",
     "ctaHungry": "🚨 钻机在挨饿（{n} 台没燃料）——挖矿停了！",
     "ctaLowFuel": "⚠️ 肉排不够钻机工作一天了。",
     "ctaShopBtn": "🛒 去商店",
-    "footer": "完整操作在机器人聊天里：/menu",
+    "footer": "游戏和竞答在机器人聊天里",
     "noProfile": "未找到个人资料。打开机器人并点按 /start！",
     "blocked": "账号已被管理员封禁。",
     "error": "数据加载失败。稍后再试。",
     "outside": "请从 ROFL HUB 的 Telegram 机器人打开此应用。",
-    "resources": "🧰 资源",
-    "bonusPct": "永久产量加成",
-    "shuttle": "🚀 穿梭机已建成",
-    "resHint": "金属——石头剪刀布，氢气——比大小，晶体——竞答，零件——保险箱。在机器人聊天的工坊里使用。",
+    "robotsTitle": "🤖 你的机器人",
+    "buyMore": "🛒 购买",
+    "rateShort": "{v} 🪙/小时",
+    "refuelOne": "🥩 加 1 份",
+    "refuelAll": "⚡ 全部加满",
+    "refueled": "已加注：{n} 🥩",
+    "res_metal_src": "石头剪刀布和对决",
+    "res_hydrogen_src": "比大小",
+    "res_crystal_src": "竞答",
+    "res_parts_src": "赛博保险箱",
+    "resWhere": "获取途径",
+    "ws_title": "🔧 工坊",
+    "ws_hint": "游戏里的资源可以变成强化。资源够了就点「制造」。",
+    "ws_craft": "制造",
+    "ws_owned": "✅ 已拥有",
+    "ws_crafted": "完成！强化已经生效。",
+    "ws_armor": "🛡 赛博装甲",
+    "ws_armorLvl": "等级 {l}/{m} · 每级产量 +{p}%",
+    "ws_shuttleOn": "🚀 穿梭机已建成：交易所手续费 {fee}%",
+    "ws_shuttleOff": "🚀 尚未建成穿梭机：交易所手续费 {fee}%",
+    "eff_nitrogen": "所有机器人产量 +40%",
+    "eff_nuclear": "产量 ×5，钻机吃肉排 ×3",
+    "eff_drone": "机器人不会老化",
+    "eff_shield": "没人能突袭你",
+    "eff_cutlet": "1 份赛博肉排入仓库",
+    "eff_armor": "产量永久 +10%",
+    "eff_shuttle": "交易所手续费减半，挂单最多 500 份肉排——永久",
+    "raid_title": "🏴‍☠️ 突袭",
+    "raid_how": "📖 玩法说明",
+    "raid_rule1": "你选择手势，目标事先设好了防御姿态。胜负由石头剪刀布决定：这是决策的较量，不是抽奖。",
+    "raid_rule2": "获胜：拿走目标每种资源的 {pct}%，每种最多 {cap}。失败：把自己的 {fpct}% 交给目标，最多 {fcap}。平局：燃料白烧了。",
+    "raid_rule3": "只能掠夺资源。金币、机器人和肉排绝对安全。新手有 {days} 天保护期，队友不能突袭。",
+    "raid_rule4": "出击消耗 {fuel} 💧 氢气，下一次要等 {cd} 小时。如果有人突袭你，{rh} 小时内可免费复仇。",
+    "raid_fuel": "💧 氢气",
+    "raid_ready": "🚀 飞船准备出击",
+    "raid_cooldown": "⏳ 冷却中：{m} 分钟",
+    "raid_shieldOn": "🛡 护盾有效至 {t}",
+    "raid_shieldNewbie": "🛡 新手保护",
+    "raid_shieldOff": "🛡 没有护盾——去工坊制造一个",
+    "raid_stance": "✊ 你的防御姿态",
+    "raid_stanceHint": "它用来迎接别人的突袭。时不时换一换——太好猜的人更容易被抢。",
+    "raid_stanceNone": "未选择姿态——将随机出招",
+    "raid_stanceSaved": "姿态已保存",
+    "raid_stats": "突袭：{a} 次（成功 {w}）· 守住：{h}/{d}",
+    "raid_scout": "🔭 侦察：寻找目标",
+    "raid_targets": "🎯 选择目标",
+    "raid_res": "资源 ≈{n}",
+    "raid_noTargets": "现在没有合适的目标：护盾、冷却、新手保护。稍后再来看看。",
+    "raid_pickMove": "✊ 你的手势 vs {name} 的姿态",
+    "raid_revenge": "⚔️ 复仇战",
+    "raid_revengeBtn": "⚔️ 反击：{name}",
+    "raid_win": "🏴‍☠️ 突袭成功！",
+    "raid_draw": "😐 平局——飞船空手而归",
+    "raid_lose": "💥 对方守住了",
+    "raid_vs": "{m} 对 {s}",
+    "raid_loot": "战利品：{l}",
+    "raid_lost": "交给目标：{l}",
+    "rock": "🪨 石头",
+    "scissors": "✂️ 剪刀",
+    "paper": "📄 布",
+    "mk_title": "📈 肉排交易所",
+    "mk_stats": "挂单：{o} · 肉排：{c} · 最低价：{b} 🪙",
+    "mk_feeLine": "每笔成交销毁 {f}% 手续费——抵御通胀",
+    "mk_inv": "🥩 你的仓库：{n}",
+    "mk_offers": "🛒 在售挂单",
+    "mk_empty": "还没有挂单——来当第一个卖家吧！",
+    "mk_offer": "{q} 🥩 × {p} 🪙",
+    "mk_buyHow": "买多少？",
+    "mk_all": "全部 {q}",
+    "mk_sellTitle": "💰 出售肉排",
+    "mk_qty": "肉排数量",
+    "mk_price": "单价，🪙",
+    "mk_preview": "成交 {t} 🪙 · 你得 {g} 🪙 · 销毁 {f} 🪙",
+    "mk_sell": "挂到交易所",
+    "mk_limits": "每单最多 {q} 份肉排，最多 {o} 个挂单",
+    "mk_my": "📋 我的挂单",
+    "mk_cancel": "撤回",
+    "mk_bought": "已用 {t} 🪙 买入 {q} 🥩",
+    "mk_listed": "挂单已上架！成交后会通知你。",
+    "mk_cancelledMsg": "挂单已撤回，肉排已回到仓库",
+    "st_title": "🛰 战队空间站",
+    "st_level": "等级 {l} / {m}",
+    "st_bonus": "每位成员产量 +{p}%",
+    "st_next": "升到 {n} 级需要每种资源各 {c}",
+    "st_max": "🏁 空间站已建成！",
+    "st_feed": "🧾 最近的捐献",
+    "st_feedEmpty": "还没有人捐献——来当第一个吧",
+    "st_donate": "捐献",
+    "st_all": "全部",
+    "st_done": "已捐献！",
+    "st_hint": "全队一起建造，人人享受加成。退出战队——加成就没了。",
+    "st_off": "空间站暂时在维护中",
+    "goals_title": "🎯 今日目标",
+    "goals_chest": "🎁 完成全部三项的宝箱：+{c} 🪙 和 +{r} 随机资源",
+    "goals_streak": "🔥 连续：{s} 天 · 每连续第 {e} 天额外 +{b} 🪙",
+    "goals_claim": "🎁 领取宝箱",
+    "goals_claimed": "🎁 今天的宝箱已领取。明天有新目标！",
+    "goals_reset": "目标在 00:00 UTC 刷新",
+    "goals_got": "🎁 +{c} 🪙 · +{q} {n} · 连续 {s} 天",
+    "featureOff": "⚙️ 该板块正在维护中",
+    "done": "完成！",
+    "loading": "⏳ 加载中…",
 }
 
 COMMANDS = {

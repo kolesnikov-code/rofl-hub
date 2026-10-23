@@ -4,6 +4,7 @@ from aiogram.filters import Command
 
 from bots.main_bot.config import WEBAPP_URL
 from bots.main_bot.guards import feature_enabled
+from bots.main_bot.webapp_links import app_button
 from shared.locales import btn, btn_variants, t
 
 router = Router()
@@ -49,35 +50,28 @@ def get_reply_main_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
     )
 
 
+GAMES_HUB_BUTTONS = (
+    ("menu.btn_quiz", "game_retry:quiz"),
+    ("menu.btn_rps", "game_retry:rps"),
+    ("menu.btn_hl", "game_retry:hl"),
+    ("menu.btn_safe", "game_retry:safe"),
+    ("menu.btn_duel", "duel_tables"),
+    ("menu.btn_quests", "quest_list"),
+    ("menu.btn_goals", "open_goals"),
+)
+
+
 def get_games_inline_keyboard(lang: str = "ru") -> types.InlineKeyboardMarkup:
-    """Инлайн-панель моментального запуска дуэлей и игр"""
-    return types.InlineKeyboardMarkup(inline_keyboard=[
-        [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_quiz"), callback_data="game_retry:quiz")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_rps"), callback_data="game_retry:rps"),
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_hl"), callback_data="game_retry:hl")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_safe"), callback_data="game_retry:safe")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_duel"), callback_data="duel_tables")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_quests"), callback_data="quest_list")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_goals"), callback_data="open_goals")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_raids"), callback_data="open_raids")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(lang, "menu.btn_workshop"), callback_data="open_workshop")
-        ]
-    ])
+    """
+    Хаб игр — СТРОГО по одной кнопке в ряд (решение владельца 23.10: на 14 языках
+    две кнопки в ряд обрезаются). Мастерская и налёты живут в приложении.
+    """
+    rows = [[types.InlineKeyboardButton(text=t(lang, key), callback_data=data)]
+            for key, data in GAMES_HUB_BUTTONS]
+    app = app_button(t(lang, "menu.btn_app"))
+    if app is not None:
+        rows.append([app])
+    return types.InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 # ============================================================================

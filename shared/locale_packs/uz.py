@@ -71,7 +71,7 @@ STRINGS: dict[str, str] = {
     "start.intro2": (
         "🎁 <b>RO'YXATDAN O'TGANING UCHUN ILK MUKOFOTLARINGNI OL!</b>\n"
         "..................................................\n"
-        "💸 Senga hisoblandi: <b>{balance} tanga</b>\n"
+        "💸 Senga hisoblandi: <b>{balance} 🪙</b>\n"
         "🥩 Senga hisoblandi: <b>{cutlets} kiber-kotlet</b>\n"
         "..................................................\n"
         "Bu — ROFL HUB klubiga qo'shilganing uchun boshlang'ich bonusing.\n\n"
@@ -138,11 +138,11 @@ STRINGS: dict[str, str] = {
         "• /quests — KVESTLAR: mukofotli detektivlar, komediyalar va boshqotirmalar\n"
         "• /rps, /high_low, /safe — Tanga uchun tezkor o'yinlar\n\n"
         "👥 <b>JAMOALARNI BOSHQARISH:</b>\n"
-        "• /create_team — 100 000 tangaga o'z jamoangni ro'yxatdan o'tkazish\n"
+        "• /create_team — O'z jamoangni ro'yxatdan o'tkazish: 100 000 🪙\n"
         "• /my_team — Jamoa dashbordi va 🧠 darajali JAMOADOSHLAR RO'YXATI\n"
         "• /all_teams — Tasodifiy jamoalar o'yin ruletkasi\n\n"
         "💸 <b>PUL VA DO'STLAR:</b>\n"
-        "• /invite — Referal havolang: har bir do'st uchun +1000 tanga\n"
+        "• /invite — Referal havolang: har bir do'st uchun +1000 🪙\n"
         "• /transfer — Boshqa o'yinchiga tanga o'tkazish\n\n"
         "📚 <b>MA'LUMOT VA QOIDALAR:</b>\n"
         "• /faq — Ekotizimning to'liq qo'llanmasi (Mini App'da ochiladi)\n"
@@ -155,10 +155,10 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "Bu yerda botga qarshi tezkor bellashuvlarga kirishing yoki intellektual sprint-testdan "
         "o'tishing mumkin — jekpotni urasan yoki balansni yutqazib qo'yasan!\n\n"
-        "💸 G'alaba keltiradi: <b>+2 tanga</b> (Kiber-Seyf: <b>+5</b>)\n"
-        "💀 Mag'lubiyat yoki durang olib ketadi: <b>-1 tanga</b>\n"
-        "🧠 Viktorinada — 15 soniyalik taymer va intellekt darajalari: 1-daraja — 10 to'g'ri javob va <b>+100 tanga</b>, "
-        "keyin har bir daraja 10 javobga uzunroq, lekin mukofot ham 100 tangaga o'sadi!\n\n"
+        "💸 G'alaba keltiradi: <b>+2 🪙</b> (Kiber-Seyf: <b>+5</b>)\n"
+        "💀 Mag'lubiyat yoki durang olib ketadi: <b>-1 🪙</b>\n"
+        "🧠 Viktorinada — 15 soniyalik taymer va intellekt darajalari: 1-daraja — 10 to'g'ri javob va <b>+100 🪙</b>, "
+        "keyin har bir daraja 10 javobga uzunroq, lekin mukofot ham 100 ga o'sadi!\n\n"
         "..................................................\n"
         "👇 <b>RAUNDNI HOZIROQ BOSHLASH UCHUN PASTDAGI TUGMANI BOS:</b>"
     ),
@@ -183,7 +183,7 @@ STRINGS: dict[str, str] = {
         "Kiber-Burg'ulovchi — 10/soat, va HAR BIR Burg'ulovchi kuniga o'zining 1 kiber-kotletini yeydi. "
         "Barcha robotlar 30 kun yashaydi (Master-Dron eskirishni to'xtatib turadi).\n"
         "🧠 Viktorina: javobga 15 soniya, o'sib boruvchi mukofotli intellekt darajalari.\n"
-        "⚔️ 10/100/1000 tangalik stollarda jonli o'yinchilar bilan duellar.\n"
+        "⚔️ Jonli o'yinchilar bilan 10/100/1000 🪙 stollarida duellar.\n"
         "🏆 50 jangchigacha jamoalar (Mega-Klan — 1000 tagacha) va har kimga sovrinli Jang tadbirlari.\n\n"
         "..................................................\n"
         "👇 <b>Barcha mexanikalar yoritilgan to'liq qo'llanma — tugmada:</b>"
@@ -214,7 +214,7 @@ STRINGS: dict[str, str] = {
     ),
     "quest.card": (
         "{title}\n"
-        "🎭 {genre} · ⏱ {minutes} daqiqa · 🏆 ilk g'alaba uchun +{reward} tanga\n"
+        "🎭 {genre} · ⏱ {minutes} daqiqa · 🏆 ilk g'alaba uchun +{reward} 🪙\n"
         "..................................................\n\n"
         "{teaser}\n\n{status}"
     ),
@@ -226,11 +226,11 @@ STRINGS: dict[str, str] = {
     "quest.btn_resume": "⏯ DAVOM ETISH",
     "quest.btn_list": "🗺️ Kvestlar ro'yxatiga",
     "quest.btn_replay": "🔄 Yana bir bor o'tish",
-    "quest.win_first": "\n\n🏆 <b>KVEST O'TILDI! Mukofot: +{coins} tanga.</b>",
+    "quest.win_first": "\n\n🏆 <b>KVEST O'TILDI! Mukofot: +{coins} 🪙.</b>",
     "quest.win_repeat": "\n\n✅ <b>Yana o'tildi!</b> Bu kvest uchun mukofot avvalroq olingan.",
     "quest.fail_footer": "\n\n💀 <i>Yakun unchalik zo'r emas... lekin hikoyani har doim qayta o'ynasa bo'ladi!</i>",
     "quest.stale": "⏳ Bu sahna allaqachon ortda qoldi — hozirgi joydan davom etamiz!",
-    "quest.no_coins": "❌ Maslahat uchun tanga yetmaydi ({cost}). Fermaga kirib chiq!",
+    "quest.no_coins": "❌ Maslahat {cost} 🪙 turadi, balansingda esa kamroq. Fermaga kirib chiq!",
     "quest.not_found": "❌ Kvest topilmadi.",
     "menu.btn_quests": "🗺️ KVESTLAR",
 
@@ -242,27 +242,28 @@ STRINGS: dict[str, str] = {
     "farm.status_all_fueled": "🟢 Barcha Kiber-Burg'ulovchilar to'ldirilgan va tanga qazmoqda!",
     "farm.status_partial": "🟡 {total} tadan {fueled} ta Kiber-Burg'ulovchi to'ldirilgan. Qolganlari muzlatkichdan kotlet kutyapti!",
     "farm.status_no_fuel": "🔴 Kiber-Burg'ulovchilar to'xtab qoldi! Muzlatkichda yoqilg'i yetarli emas.",
-    "farm.status_no_drills": "💡 Daromadni oshirish uchun /shop'dan Kiber-Burg'ulovchilarni ol.",
+    "farm.status_no_drills": "💡 /shop'dan kuchliroq robot ol — ferma ko'proq qazib beradi.",
     "farm.boost_nuclear": "🔋 Yadroviy Tezlatish x5 — {until} UTC gacha (kotlet sarfi ×3)",
     "farm.boost_nitrogen": "❄️ Azotli Sovutish +40% — {until} UTC gacha",
     "farm.boost_drone": "🛸 Master-Dron robotlar umrini {until} UTC gacha uzaytiradi",
     "farm.no_boosts": "Faol kuchaytirgichlar yo'q — /shop'ga kirib chiq.",
     "farm.burnout": "🔥 Keyingi robot kuyishi: <b>{until} UTC</b>\n",
     "farm.btn_activate_intern": "🚀 Stajyor Robotni faollashtirish (bepul)",
-    "farm.intern_activated": "🤖 Stajyor Robot smenaga chiqdi! Abadiy soatiga +1 tanga — yoqilg'isiz va muddatsiz.",
+    "farm.intern_activated": "🤖 Stajyor Robot smenaga chiqdi! Abadiy soatiga +1 🪙 — yoqilg'isiz va muddatsiz.",
     "farm.intern_already": "🤖 Stajyor Roboting allaqachon ishlayapti.",
-    "farm.intern_line": "🤖 Stajyor Robotlar ({rate} tanga/soat, abadiy): <code>{count} dona</code>",
-    "farm.intern_hint": "🎁 Senda bepul Stajyor Robot bor! Pastdagi tugmani bos — u abadiy soatiga 1 tanga qazib beradi.",
+    "farm.intern_line": "• Stajyor Robotlar ({rate} 🪙/soat, abadiy): <code>{count} dona</code>\n",
+    "farm.intern_hint": "🎁 Senda bepul Stajyor Robot bor! Pastdagi tugmani bos — u abadiy soatiga 1 🪙 qazib beradi.",
     "farm.dashboard": (
         "🚜 <b>ROFL HUB MARKAZIY YOQILG'I HUBI</b>\n"
         "..................................................\n\n"
         "🤖 Zavoddagi faol robotlar: <b>{total} dona</b>\n"
-        "• Kichik Maynerlar ({junior_rate} tanga/soat): <code>{junior} dona</code>\n"
-        "• Kiber-Burg'ulovchilar ({premium_rate} tanga/soat): <code>{premium} dona</code>\n"
+        "{intern}"
+        "• Kichik Maynerlar ({junior_rate} 🪙/soat): <code>{junior} dona</code>\n"
+        "• Kiber-Burg'ulovchilar ({premium_rate} 🪙/soat): <code>{premium} dona</code>\n"
         "{burnout}\n"
         "📊 <b>FERMANGNING HOZIRGI TEZLIGI:</b>\n"
-        "• Soatiga ishlab chiqarish: <b>+{speed_hour} tanga</b>\n"
-        "• Kuniga ishlab chiqarish: <b>+{speed_day} tanga</b>\n\n"
+        "• Soatiga ishlab chiqarish: <b>+{speed_hour} 🪙</b>\n"
+        "• Kuniga ishlab chiqarish: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>KUCHAYTIRGICHLAR:</b>\n{boosts}\n\n"
         "📋 <b>O'YIN ZAVODI HOLATI:</b>\n"
         "{status}\n\n"
@@ -286,10 +287,10 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "🆔 Pasport ID'ing: <code>{user_id}</code>\n"
         "{vip}"
-        "💰 Hozirgi tangalar: <b>{balance} tanga</b>\n"
+        "💰 Hozirgi tangalar: <b>{balance} 🪙</b>\n"
         "🏆 Statusing: <b>{team}</b>\n"
         "🧠 Intellekt darajasi: <b>{level}</b> · {next_level}-darajagacha: "
-        "/quiz da <b>{left}</b> to'g'ri javob (mukofot: +{reward} tanga)\n\n"
+        "/quiz da <b>{left}</b> to'g'ri javob (mukofot: +{reward} 🪙)\n\n"
         "..................................................\n"
         "<i>Bu yerda hozir senda bor narsalar ko'rsatilgan. Boshqa bo'limlarga uchish uchun tugmalardan foydalan!</i>"
     ),
@@ -317,21 +318,21 @@ STRINGS: dict[str, str] = {
     "img.premium": "Kiber-Burg'ulovchilar: {count} dona",
 
     # ---------------- игры: общий движок ----------------
-    "games.win": "🎉 <b>G'ALABA!</b> 🎉\nHisoblandi: <b>+{reward}</b> tanga",
-    "games.lose": "💀 <b>MAG'LUBIYAT!</b>\nYechildi: <b>-{penalty}</b> tanga",
-    "games.draw": "🤝 <b>DURANG!</b>\nYechildi: <b>-{penalty}</b> tanga",
+    "games.win": "🎉 <b>G'ALABA!</b> 🎉\nHisoblandi: <b>+{reward} 🪙</b>",
+    "games.lose": "💀 <b>MAG'LUBIYAT!</b>\nYechildi: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>DURANG!</b>\nYechildi: <b>-{penalty} 🪙</b>",
     "games.limit": (
         "🛑 <b>Kunlik limitga yetding!</b>\n\n"
         "{game} o'yinida bugun allaqachon {limit} ta g'alaba olding. Limit 00:00 UTC da yangilanadi.\n\n"
         "⚡ Limitni 24 soatga olib tashlash — 5 ★, 30 kunga — 99 ★ (/shop'dagi «O'yinlar» bo'limi)."
     ),
-    "games.no_coins": "❌ Senda 0 tanga — raund yig'imini to'lashga hech narsa yo'q. /farm'dan ferma daromadini yig'ib ol!",
-    "games.balance": "💰 Balans: <b>{balance} tanga</b>",
+    "games.no_coins": "❌ Senda 0 🪙 — raund yig'imini to'lashga hech narsa yo'q. /farm'dan ferma daromadini yig'ib ol!",
+    "games.balance": "💰 Balans: <b>{balance} 🪙</b>",
     "games.btn_retry": "🎮 Yana bir bor o'ynash!",
     "games.btn_hub": "🕹️ O'yin zonasi",
     "games.level_up": (
-        "🏅 <b>INTELLEKT DARAJASI OSHDI: {level}!</b> Mukofot: <b>+{bonus} tanga</b>!\n"
-        "Keyingi daraja: {next_required} to'g'ri javob → +{next_reward} tanga."
+        "🏅 <b>INTELLEKT DARAJASI OSHDI: {level}!</b> Mukofot: <b>+{bonus} 🪙</b>!\n"
+        "Keyingi daraja: {next_required} to'g'ri javob → +{next_reward} 🪙."
     ),
     "games.name.rps": "Tosh-Qaychi-Qog'oz",
     "games.intern_bonus": "🤖 {level}-daraja! Fermaga yana bitta Stajyor Robot keldi — endi ular {count} ta.",
@@ -374,15 +375,15 @@ STRINGS: dict[str, str] = {
     "quiz.stale_alert": "Bu savol endi faol emas. Yangisini boshla!",
     "quiz.empty": "⚠️ Savollar bazasi bo'sh. Administratorga xabar ber.",
     "quiz.wrong": "❌ <b>Xato</b> ❌\nTo'g'ri javob: <b>{correct}</b>",
-    "quiz.lost_line": "💀 Mag'lubiyat uchun <b>-{penalty} tanga</b>!",
+    "quiz.lost_line": "💀 Mag'lubiyat uchun <b>-{penalty} 🪙</b>!",
     "quiz.level_line": (
         "🧠 Intellekt darajasi: <b>{level}</b>\n"
         "{next_level}-darajagacha qolgan g'alabalar: <b>{left}</b>"
     ),
     "quiz.rules": (
         "<i>Javobga {seconds} soniya!\n"
-        "To'g'ri: balansga +{win} tanga\n"
-        "Xato / ulgurmaslik: -{penalty} tanga yechiladi\n"
+        "To'g'ri: balansga +{win} 🪙\n"
+        "Xato / ulgurmaslik: -{penalty} 🪙 yechiladi\n"
         "Limit: kuniga {limit} g'alaba</i>"
     ),
 
@@ -391,7 +392,7 @@ STRINGS: dict[str, str] = {
     # ---------------- Сейф ----------------
     "safe.intro": (
         "🔐 <b>KIBER-SEYF</b>\n\n"
-        "Ichida — <b>{jackpot} tangalik</b> jekpot! Eshik 1–{codes} oralig'idagi kod bilan qulflangan. "
+        "Ichida — <b>{jackpot} 🪙</b> jekpot! Eshik 1–{codes} oralig'idagi kod bilan qulflangan. "
         "Senda bitta urinish bor.\n"
         "Ochding: <b>+{jackpot}</b> · Signalizatsiya: <b>-{penalty}</b> · Limit: <b>{limit}</b> g'alaba"
     ),
@@ -412,21 +413,21 @@ STRINGS: dict[str, str] = {
         "🏆 Duellardagi g'alabalar Janglarda jamoang hisobiga yoziladi!\n\n"
         "👇 <b>STOLNI TANLA:</b>"
     ),
-    "duel.btn_table": "⚔️ {stake} tangalik stol",
+    "duel.btn_table": "⚔️ Stol {stake} 🪙",
     "duel.btn_cancel": "❌ Stolni tark etish (garov qaytadi)",
     "duel.btn_move_rock": "🪨 Tosh",
     "duel.btn_move_scissors": "✂️ Qaychi",
     "duel.btn_move_paper": "🧻 Qog'oz",
     "duel.waiting": (
-        "🪑 <b>Sen {stake} tangalik stoldasan.</b> Garov bankda.\n"
+        "🪑 <b>Sen {stake} 🪙 stolidasan.</b> Garov bankda.\n"
         "Ikkinchi jangchini kutyapmiz... U o'tirishi bilan ikkalangizga ham ishora tanlovi keladi!\n"
         "<i>Navbat {ttl} daqiqa yashaydi, keyin garov avtomatik qaytadi.</i>"
     ),
-    "duel.cancelled": "🚪 Sen stolni tark etding. <b>{stake} tangalik</b> garov balansga qaytdi.",
-    "duel.expired": "⌛ {stake} tangalik stolda raqib topilmadi. <b>{stake} tangalik</b> garov qaytarildi.",
+    "duel.cancelled": "🚪 Sen stolni tark etding. Garov (<b>{stake} 🪙</b>) balansga qaytdi.",
+    "duel.expired": "⌛ {stake} stolida raqib topilmadi. Garov (<b>{stake} 🪙</b>) qaytarildi.",
     "duel.matched": (
-        "⚔️ <b>RAQIB TOPILDI! Stol: {stake} tanga.</b>\n"
-        "Bank: <b>{bank} tanga</b> · G'olibga: <b>{payout}</b>\n\n"
+        "⚔️ <b>RAQIB TOPILDI! Stol {stake} 🪙.</b>\n"
+        "Bank: <b>{bank} 🪙</b> · G'olibga: <b>{payout}</b>\n\n"
         "⏱ Ishorani tanlashga <b>{timeout} soniya</b> bor!"
     ),
     "duel.move_saved": "✊ Ishora qabul qilindi! Raqib ishorasini kutyapmiz...",
@@ -437,19 +438,19 @@ STRINGS: dict[str, str] = {
     "duel.win": (
         "🏆 <b>DUEL SENIKI!</b>\n\n"
         "Sening {winner_move} ishorang {loser_move}ni yengadi.\n"
-        "💰 Yutuq: <b>+{payout} tanga</b> · 🔥 Bankda kuydi: {burned}\n"
-        "💼 Balans: <b>{balance} tanga</b>"
+        "💰 Yutuq: <b>+{payout} 🪙</b> · 🔥 Bankda kuydi: {burned}\n"
+        "💼 Balans: <b>{balance} 🪙</b>"
     ),
     "duel.lose": (
         "💀 <b>DUEL BOY BERILDI.</b>\n\n"
         "Raqibning {winner_move} ishorasi sening {loser_move} ishorangni yengadi.\n"
-        "📉 <b>{stake} tangalik</b> garov g'olib bankiga ketdi.\n"
+        "📉 Garov (<b>{stake} 🪙</b>) g'olib bankiga ketdi.\n"
         "Revansh-chi?"
     ),
     "duel.reaper_prefix": "⏰ <b>Raund vaqti tugadi!</b> Yetishmagan ishoralarni tasodif generatori tanladi.\n\n",
     "duel.bad_table": "❌ Bunaqa stol mavjud emas.",
     "duel.already_in": "⚠️ Sen allaqachon stoldasan yoki jangdasan! Avval hozirgi duelni tugat.",
-    "duel.no_coins": "❌ Bu stol uchun balansda {stake} tanga kerak.",
+    "duel.no_coins": "❌ Bu stol uchun balansda {stake} 🪙 kerak.",
     "duel.cancel_impossible": "⚠️ Bu navbatni endi bekor qilib bo'lmaydi (raqib topilgan yoki stol yopilgan).",
     "duel.not_active": "⌛ Bu duel allaqachon yakunlangan.",
     "duel.not_participant": "🔒 Bu sening dueling emas!",
@@ -472,20 +473,20 @@ STRINGS: dict[str, str] = {
         "🤝 <b>ROFL HUB REFERAL DASTURI</b>\n"
         "..................................................\n\n"
         "Do'stlaringni taklif qil va shaxsiy havolang orqali ro'yxatdan o'tgan "
-        "har bir kishi uchun <b>+{bonus} tanga</b> ol!\n\n"
+        "har bir kishi uchun <b>+{bonus} 🪙</b> ol!\n\n"
         "🔗 <b>Havolang (nusxalash uchun bos):</b>\n<code>{link}</code>\n\n"
         "📊 <b>SENING STATISTIKANG:</b>\n"
         "👥 Taklif qilingan do'stlar: <b>{invited} kishi</b>\n"
-        "💰 Referallardan topilgani: <b>{earned} tanga</b>\n\n"
+        "💰 Referallardan topilgani: <b>{earned} 🪙</b>\n\n"
         "..................................................\n"
         "<i>Havolani sinfdoshlar chatiga, do'stlarga va ijtimoiy tarmoqlarga tashla — davrang qancha katta bo'lsa, balansing shuncha tez o'sadi!</i>"
     ),
     "ref.btn_share": "📣 Havolani ulashish",
     "ref.share_text": "ROFL HUB o'yin ekotizimiga qo'shil!",
     "ref.qualified_line": ("⭐ <b>Ikki karra foyda:</b> taklif qilingan do'sting {rounds} raund "
-                           "o'ynasa — senga yana <b>+{bonus} tanga</b> keladi!"),
+                           "o'ynasa — senga yana <b>+{bonus} 🪙</b> keladi!"),
     "ref.qualified_notify": ("🤝 <b>Do'sting o'yinga berilib ketdi: allaqachon {rounds} raund!</b>\n"
-                             "Malakali referal uchun senga <b>+{bonus} tanga</b> yozildi. "
+                             "Malakali referal uchun senga <b>+{bonus} 🪙</b> yozildi. "
                              "Yana chaqir!"),
 
     # ---------------- переводы ----------------
@@ -497,22 +498,22 @@ STRINGS: dict[str, str] = {
         "<code>/transfer @username summa</code> — username bo'yicha\n"
         "<code>/transfer ROFL-HUB-777 summa</code> — auksiondan olingan VIP ID bo'yicha\n\n"
         "Misollar:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 Eng kam summa: <b>{min} tanga</b>"
+        "📌 Eng kam summa: <b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ Qabul qiluvchi topilmadi. Pasport ID yoki @username'ni tekshir — o'yinchi botda ro'yxatdan o'tgan bo'lishi kerak.",
     "tr.self": "🤨 O'zingga tanga o'tkazib bo'lmaydi — bu abadiy iqtisodiyot bo'lardi!",
     "tr.blocked": "🚫 Bu o'yinchi bloklangan — unga o'tkazma qilib bo'lmaydi.",
-    "tr.min": "❌ Eng kam o'tkazma summasi — {min} tanga.",
-    "tr.insufficient": "❌ Tanga yetarli emas! Balansing: <b>{balance}</b>.",
+    "tr.min": "❌ Eng kam o'tkazma summasi — {min} 🪙.",
+    "tr.insufficient": "❌ Tanga yetarli emas! Balansing: <b>{balance} 🪙</b>.",
     "tr.err_insufficient": "❌ Balansda tanga yetarli emas.",
     "tr.confirm": (
         "🔄 <b>O'TKAZMANI TASDIQLA:</b>\n\n"
         "👤 Qabul qiluvchi: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Yechiladigan summa: <b>{amount} tanga</b>{fee_line}\n"
-        "💰 Qabul qiluvchi oladi: <b>{received} tanga</b>\n\n"
+        "💸 Yechiladigan summa: <b>{amount} 🪙</b>{fee_line}\n"
+        "💰 Qabul qiluvchi oladi: <b>{received} 🪙</b>\n\n"
         "<i>O'tkazmalarni bekor qilib bo'lmaydi — qabul qiluvchini tekshir!</i>"
     ),
-    "tr.fee_line": "\n🔥 Hub komissiyasi: <b>{fee} tanga</b> (kuyadi)",
+    "tr.fee_line": "\n🔥 Hub komissiyasi: <b>{fee} 🪙</b> (kuyadi)",
     "tr.btn_confirm": "✅ O'TKAZMANI TASDIQLASH",
     "tr.btn_cancel": "❌ Bekor qilish",
     "tr.cancelled_toast": "O'tkazma bekor qilindi",
@@ -521,11 +522,11 @@ STRINGS: dict[str, str] = {
     "tr.done_toast": "✅ O'tkazma bajarildi!",
     "tr.done": (
         "✅ <b>O'TKAZMA BAJARILDI!</b>\n\n"
-        "💸 Yuborildi: <b>{amount} tanga</b> — ID <code>{recipient_id}</code> o'yinchiga\n"
-        "💰 Balansing: <b>{balance} tanga</b>"
+        "💸 Yuborildi: <b>{amount} 🪙</b> — ID <code>{recipient_id}</code> o'yinchiga\n"
+        "💰 Balansing: <b>{balance} 🪙</b>"
     ),
     "tr.received": (
-        "💰 <b>Senga {amount} tanga o'tkazildi!</b>\n"
+        "💰 <b>Senga {amount} 🪙 o'tkazildi!</b>\n"
         "Yuboruvchi: ID <code>{sender_id}</code>. Balans allaqachon to'ldirildi — /profile ni tekshir!"
     ),
 
@@ -577,7 +578,7 @@ STRINGS: dict[str, str] = {
     "dlv.miner_junior": "Kichik Mayner",
     "dlv.miner_premium": "Kiber-Burg'ulovchi",
     "dlv.fridge": "📦 Muzlatkich <b>{capacity} kotlet</b>gacha kengaytirildi.",
-    "dlv.coins": "💰 Hisoblandi: <b>+{amount} tanga</b>.",
+    "dlv.coins": "💰 Hisoblandi: <b>+{amount} 🪙</b>.",
     "dlv.boost_nuclear": "🔋 Yadroviy Tezlatish x5 <b>{until} UTC</b> gacha faol.",
     "dlv.boost_nitrogen": "❄️ Azotli Sovutish +40% <b>{until} UTC</b> gacha faol.",
     "dlv.drone": "🛸 Master-Dron fermani <b>{until} UTC</b> gacha qo'riqlaydi.",
@@ -586,43 +587,43 @@ STRINGS: dict[str, str] = {
     "dlv.err_fridge": "Senda allaqachon shu yoki kattaroq hajmdagi muzlatkich bor.",
     "dlv.err_no_team": "Senda tuzilgan jamoa yo'q. Avval /create_team orqali uni tuz.",
     "dlv.err_mega": "Jamoang allaqachon Mega-Klan statusiga ega.",
-    "dlv.intern_upgrade": "♾ Stajyor Robot <b>ABADIY Kichik Maynerga</b> ko'tarildi: soatiga 5 tanga, muddatsiz!",
+    "dlv.intern_upgrade": "♾ Stajyor Robot <b>ABADIY Kichik Maynerga</b> ko'tarildi: soatiga 5 🪙, muddatsiz!",
     "dlv.err_no_intern": "Faollashtirilgan Stajyor Robot yo'q — avval uni /farm da faollashtir.",
     "dlv.err_intern_refs": "Yangilash uchun {need} ta malakali do'st kerak (har biri 30 raund); senda {have} ta.",
     "mk.header": "📈 <b>KOTLET BIRJASI</b>\n..................................................\n\nOchiq buyurtmalar: <b>{orders}</b> · sotuvdagi kotletlar: <b>{cutlets}</b> · eng yaxshi narx: <b>{best}</b>\nHab komissiyasi: har sotuvdan <b>{fee}%</b> (yondiriladi — inflyatsiyadan himoya)\n🥩 Ombordagi kotletlaring: <b>{inv}</b>\n\n{body}\n\n<i>Sotib olish — buyurtmani bos. Sotish — /sell buyrug'i.</i>",
     "mk.empty": "Hozircha takliflar yo'q. Birinchi bo'l: /sell soni narxi",
-    "mk.order_line": "🥩 #{id} · <b>{qty} dona</b>, donasi <b>{price}</b> tanga",
-    "mk.btn_order": "🛒 #{id}: {qty} dona, donasi {price} tanga",
+    "mk.order_line": "🥩 #{id} · <b>{qty} dona</b>, donasi <b>{price}</b> 🪙",
+    "mk.btn_order": "🛒 #{id}: {qty} dona, donasi {price} 🪙",
     "mk.btn_my": "📋 Mening buyurtmalarim",
     "mk.btn_sell_help": "💰 Kotlet qanday sotiladi",
     "mk.btn_refresh": "🔄 Yangilash",
     "mk.btn_back": "← Birjaga",
-    "mk.pick": "🛒 <b>Buyurtma #{id}</b>: {qty} dona mavjud, donasi {price} tanga.\nNechta olasan?",
-    "mk.btn_qty": "{qty} dona — {total} tanga",
-    "mk.btn_qty_all": "Hammasi, {qty} dona — {total} tanga",
+    "mk.pick": "🛒 <b>Buyurtma #{id}</b>: {qty} dona mavjud, donasi {price} 🪙.\nNechta olasan?",
+    "mk.btn_qty": "{qty} dona — {total} 🪙",
+    "mk.btn_qty_all": "Hammasi, {qty} dona — {total} 🪙",
     "mk.buy_toast": "Bitim yopildi!",
-    "mk.buy_done": "✅ <b>{qty} kotlet</b> <b>{total} tangaga</b> sotib olindi. Ular omborda — Burg'ulovchilarni to'ldir!",
-    "mk.sold_notify": "💰 <b>Birja: sotildi!</b> Buyurtma #{id}: {qty} dona, donasi {price}. Senga <b>+{got} tanga</b> tushdi (komissiya {fee} yondirildi).",
-    "mk.sell_help": "💰 <b>KOTLET QANDAY SOTILADI</b>\n\nBuyruq: <code>/sell soni narxi</code>\nMisol: <code>/sell 10 50</code> — 10 ta kotlet, donasi 50 tanga.\n\nKotletlar ombordan olinib buyurtmada xaridorni kutadi (istalgan vaqtda olib tashlash mumkin). Bitta buyurtmada {max_qty} tagacha, {max_orders} tagacha ochiq buyurtma. Sotuvda {fee}% komissiya yondiriladi.",
-    "mk.sell_confirm": "📝 <b>{qty} kotlet</b>ni donasi <b>{price}</b> tangadan qo'yamizmi?\nBitim summasi: {total} · komissiya {fee} yonadi · senga <b>{got} tanga</b> tushadi.",
+    "mk.buy_done": "✅ <b>{qty} kotlet</b> <b>{total} 🪙</b> evaziga sotib olindi. Ular omborda — Burg'ulovchilarni to'ldir!",
+    "mk.sold_notify": "💰 <b>Birja: sotildi!</b> Buyurtma #{id}: {qty} dona, donasi {price}. Senga <b>+{got} 🪙</b> tushdi (komissiya {fee} yondirildi).",
+    "mk.sell_help": "💰 <b>KOTLET QANDAY SOTILADI</b>\n\nBuyruq: <code>/sell soni narxi</code>\nMisol: <code>/sell 10 50</code> — 10 ta kotlet, donasi 50 🪙.\n\nKotletlar ombordan olinib buyurtmada xaridorni kutadi (istalgan vaqtda olib tashlash mumkin). Bitta buyurtmada {max_qty} tagacha, {max_orders} tagacha ochiq buyurtma. Sotuvda {fee}% komissiya yondiriladi.",
+    "mk.sell_confirm": "📝 <b>{qty} kotlet</b>ni donasi <b>{price}</b> 🪙 narxda qo'yamizmi?\nBitim summasi: {total} · komissiya {fee} yonadi · senga <b>{got} 🪙</b> tushadi.",
     "mk.btn_confirm_sell": "✅ BIRJAGA QO'YISH",
     "mk.btn_cancel": "❌ Bekor qilish",
     "mk.sell_toast": "Buyurtma qo'yildi!",
-    "mk.sell_done": "✅ Buyurtma <b>#{id}</b> birjada: {qty} dona, donasi {price} tanga. Sotilgach xabar beraman.",
+    "mk.sell_done": "✅ Buyurtma <b>#{id}</b> birjada: {qty} dona, donasi {price} 🪙. Sotilgach xabar beraman.",
     "mk.cancelled_toast": "Bekor qilindi",
     "mk.cancel_text": "❌ <b>Bekor qilindi.</b> Kotletlar omborda qoldi.",
     "mk.my_header": "📋 <b>SENING BUYURTMALARING</b>\n\n",
-    "mk.my_line": "🥩 #{id} · {qty} dona, donasi {price} tanga",
+    "mk.my_line": "🥩 #{id} · {qty} dona, donasi {price} 🪙",
     "mk.my_empty": "📋 Ochiq buyurtmalaring yo'q.",
     "mk.btn_cancel_order": "❌ #{id} buyurtmani olib tashlash",
     "mk.order_cancelled": "↩️ #{id} buyurtma olib tashlandi: <b>{qty} kotlet</b> omborga qaytdi.",
     "mk.err_qty": "❌ Soni: bitta buyurtmada 1 dan {max} tagacha.",
-    "mk.err_price": "❌ Narx: donasiga {min} dan {max} tangagacha.",
+    "mk.err_price": "❌ Narx: bir kotlet uchun {min}–{max} 🪙.",
     "mk.err_no_cutlets": "❌ Omborda faqat {have} ta kotlet bor. Xolodilnikdagi kotletlar birjaga chiqmaydi — /farm ga qara.",
     "mk.err_too_many": "❌ Chegara: {max} tadan ko'p ochiq buyurtma bo'lmaydi. «Mening buyurtmalarim»da birini olib tashla.",
     "mk.err_not_found": "❌ Bu buyurtma allaqachon yopilgan.",
     "mk.err_own": "🤨 O'z buyurtmangni sotib olib bo'lmaydi.",
-    "mk.err_insufficient": "❌ Tanga yetmaydi: {total} kerak.",
+    "mk.err_insufficient": "❌ Yetmaydi: {total} 🪙 kerak.",
     "farm.btn_market": "📈 Kotlet birjasi",
 
     # ---------------- ресурсы (волна 22.10, вечер) ----------------
@@ -639,6 +640,13 @@ STRINGS: dict[str, str] = {
     "menu.btn_raids": "🏴‍☠️ Bosqinlar",
     "menu.btn_workshop": "🔧 Ustaxona",
     "farm.btn_workshop": "🔧 Ustaxona",
+    "farm.btn_app": "🏭 Ilovadagi ferma",
+    "menu.btn_app": "🚀 O'yin ilovasi: ferma, ustaxona, bosqinlar",
+    "app.btn_section": "🚀 ILOVADA OCHISH",
+    "app.goto_workshop": "🔧 <b>Ustaxona</b> o'yin ilovasida: resurslar, retseptlar va bir bosishda yasash.",
+    "app.goto_raids": "🏴\u200d☠️ <b>Bosqinlar</b> o'yin ilovasida: razvedka, himoya pozitsiyasi va revansh.",
+    "app.goto_station": "🛰 <b>Jamoa stansiyasi</b> o'yin ilovasida: progress, hissalar va butun jamoa uchun bonus.",
+    "app.goto_market": "📈 <b>Kotlet birjasi</b> o'yin ilovasida qulayroq: vitrina, sotuv va buyurtmalaring bitta ekranda.",
     "farm.boost_armor": "🛡 Kiber-zirh {level}-dar.: qazib olishga abadiy +{percent}%",
     "farm.boost_station": "🛰 Jamoa stansiyasi {level}-dar.: qazib olishga +{percent}%",
     "clan.btn_station": "🛰 Jamoa stansiyasi",
@@ -738,8 +746,8 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "{goals}\n\n"
         "{status}\n"
-        "🎁 Sandiq: <b>+{coins} tanga</b> va tasodifiy resursdan <b>+{res}</b> ta\n"
-        "🔥 Seriya: <b>{streak}</b> kun · ketma-ket har {every}-kun sandiqqa +{bonus} tanga qo'shadi\n\n"
+        "🎁 Sandiq: <b>+{coins} 🪙</b> va tasodifiy resursdan <b>+{res}</b> ta\n"
+        "🔥 Seriya: <b>{streak}</b> kun · ketma-ket har {every}-kun sandiqqa +{bonus} 🪙 qo'shadi\n\n"
         "<i>Maqsadlar 00:00 UTC da yangilanadi.</i>"
     ),
     "goal.status_progress": "⏳ Uchalasini bajar — sandiq seniki.",
@@ -749,7 +757,7 @@ STRINGS: dict[str, str] = {
     "goal.btn_go": "→ {goal}",
     "goal.btn_refresh": "🔄 Yangilash",
     "goal.toast": "Sandiq ochildi!",
-    "goal.chest": "🎁 <b>SANDIQ OCHILDI!</b>\n💰 +{coins} tanga · {icon} +{qty} {name}\n🔥 Seriya: {streak} kun",
+    "goal.chest": "🎁 <b>SANDIQ OCHILDI!</b>\n💰 +{coins} 🪙 · {icon} +{qty} {name}\n🔥 Seriya: {streak} kun",
     "goal.err_claimed": "🎁 Bugun allaqachon olgansan.",
     "goal.err_not_done": "⏳ Hali hamma maqsad bajarilmagan.",
     "goal.win_quiz": "Viktorinada {n} raund yutish",
@@ -834,50 +842,91 @@ STRINGS: dict[str, str] = {
 
 MINIAPP: dict[str, str] = {
     "subtitle": "bitta ekrandagi o'yin imperiyang",
-    "passport": "📋 O'YINCHI PASPORTI", "coins": "tanga",
-    "brain": "🧠 Intellekt darajasi", "toNext": "{n}-darajagacha: viktorinada {left} to'g'ri javob (+{reward} tanga)",
+    "tab_passport": "📋 Pasport", "tab_farm": "🚜 Ferma", "tab_goals": "🎯 Maqsadlar", "tab_workshop": "🔧 Ustaxona",
+    "tab_raids": "🏴‍☠️ Bosqinlar", "tab_market": "📈 Birja", "tab_team": "🏆 Jamoa", "tab_shop": "🏪 Do'kon", "tab_top": "👑 TOP",
+    "passport": "📋 O'YINCHI PASPORTI", "coins": "🪙",
+    "brain": "🧠 Intellekt darajasi", "toNext": "{n}-darajagacha: viktorinada {left} to'g'ri javob (+{reward} 🪙)",
     "farm": "🚜 KIBER-FERMA", "robots": "Robotlar (maynerlar / burg'ulovchilar)",
-    "fueled": "To'ldirilgan burg'ulovchilar", "speed": "Qazib olish tezligi",
-    "perHour": "{v} tanga/soat", "fridge": "Muzlatkich", "inv": "Ombordagi kotletlar",
-    "burnout": "Eng yaqin kuyish", "boosts": "Faol kuchaytirgichlar", "none": "yo'q",
-    "intern": "Stajyor Robotlar (1 tanga/soat, abadiy)",
-    "activateIntern": "🚀 STAJYOR ROBOTNI FAOLLASHTIRISH",
-    "internDone": "🤖 Stajyor Robot smenaga chiqdi!",
-    "rank": "🎖 Unvon",
-    "openFarm": "🏭 FERMANI OCHISH",
-    "farmScene": "🏭 SENING FERMANG",
-    "back": "← Orqaga",
-    "minedVisit": "shu tashrifda qazildi",
-    "unit_intern": "Stajyor Robot",
-    "unit_junior": "Kichik Mayner",
-    "unit_premium": "Kiber-Burg'ulovchi",
-    "eternal": "abadiy",
-    "fueledAll": "yoqilg'i bor",
-    "fueledPart": "{b} tadan {a} tasida yoqilg'i bor",
-    "license": "30 kunlik litsenziya",
+    "intern": "Stajyor Robotlar (1 🪙/soat, abadiy)", "activateIntern": "🚀 STAJYOR ROBOTNI FAOLLASHTIRISH",
+    "internDone": "🤖 Stajyor Robot smenaga chiqdi!", "rank": "🎖 Unvon",
+    "openFarm": "🏭 SHAXTANI OCHISH", "farmScene": "🏭 SENING FERMANG", "back": "← Orqaga",
+    "minedVisit": "shu tashrifda qazildi", "unit_intern": "Stajyor Robot", "unit_junior": "Kichik Mayner",
+    "unit_premium": "Kiber-Burg'ulovchi", "eternal": "abadiy", "fueledAll": "yoqilg'i bor",
+    "fueledPart": "{b} tadan {a} tasida yoqilg'i bor", "license": "30 kunlik litsenziya",
     "emptyFarm": "Shaxta bo'sh. Stajyor Robotni faollashtir yoki do'kondan robot ol!",
     "madeBy": "O'z loyihang uchun shunday bot kerakmi? @mister_telebot ga yoz",
+    "fueled": "To'ldirilgan burg'ulovchilar", "speed": "Qazib olish tezligi",
+    "perHour": "{v} 🪙/soat", "fridge": "Muzlatkich", "inv": "Ombordagi kotletlar",
+    "burnout": "Eng yaqin kuyish", "boosts": "Faol kuchaytirgichlar", "none": "yo'q",
+    "resources": "🧰 Resurslar", "bonusPct": "Qazib olishga doimiy bonus", "shuttle": "🚀 Shattl yig'ilgan",
+    "resHint": "Har bir g'alaba o'sha o'yinning resursini beradi. Ularni ustaxonada sarfla.",
     "bonusReady": "🎁 KUNDALIK KOTLETNI OLISH",
     "bonusWait": "⏳ Bonus {h} soat {m} daqiqadan keyin", "bonusDone": "🎉 Kotlet omborda!",
     "team": "🏆 MENING JAMOAM", "clan": "KLAN", "teamLabel": "Jamoa", "captain": "👑 Sen sardorsan!",
-    "members": "Tarkib", "noTeam": "Hozircha jamoasizsan — bot chatida o'z jamoangni yig'!",
+    "members": "Tarkib", "noTeam": "Hozircha jamoasizsan. Bot chatida o'z jamoangni tuz yoki boshqasiga qo'shil: «🏆 JAMOA VA KLANLAR».",
     "top": "👑 EKOTIZIMNING TOP-100 BOYLARI",
     "shop": "🏪 DO'KON", "shopFarm": "🚜 FERMA UCHUN", "shopGames": "🕹️ O'YINLAR",
     "shopHint": "To'lov rasmiy Telegram Stars bilan — shu yerning o'zida, bir bosishda.",
     "paid": "🎉 To'landi! Tovar allaqachon akkauntingda.",
     "payFail": "To'lov o'tmadi. Yana urinib ko'r.",
-    "oldClient": "Mini App'dan xarid qilish uchun Telegram'ni yangila yoki do'konni bot chatida och.",
-    "ctaNoRobots": "💤 Ferma bo'sh! Birinchi robotni ol — tangalar kecha-yu kunduz oqib keladi.",
+    "oldClient": "Ilovadan xarid qilish uchun Telegram'ni yangila yoki do'konni bot chatida och.",
+    "ctaNoRobots": "💤 Ferma deyarli bo'sh! Kuchliroq robot ol — 🪙 kecha-yu kunduz oqib keladi.",
     "ctaHungry": "🚨 Burg'ulovchilar och qoldi ({n} tasi yoqilg'isiz) — qazib olish to'xtab turibdi!",
     "ctaLowFuel": "⚠️ Kotletlar Burg'ulovchilarning bir kunlik ishiga ham yetmaydi.",
     "ctaShopBtn": "🛒 Do'konga",
-    "footer": "To'liq boshqaruv — bot chatida: /menu",
+    "footer": "O'yinlar va viktorina — bot chatida",
     "noProfile": "Profil topilmadi. Botni ochib, /start ni bos!",
     "blocked": "Akkaunt ma'muriyat tomonidan bloklangan.",
     "error": "Ma'lumotlarni yuklab bo'lmadi. Keyinroq urinib ko'r.",
     "outside": "Bu ilovani ROFL HUB Telegram-botidan och.",
-    "resources": "🧰 Resurslar", "bonusPct": "Qazib olishga doimiy bonus", "shuttle": "🚀 Shattl yig'ilgan",
-    "resHint": "Metall — Tosh-Qaychi, vodorod — Katta/Kichik, kristallar — viktorina, detallar — seyf. Ularni bot chatidagi ustaxonada ishlat.",
+    "robotsTitle": "🤖 SENING ROBOTLARING", "buyMore": "🛒 Sotib olish", "rateShort": "{v} 🪙/soat",
+    "refuelOne": "🥩 1 ta quyish", "refuelAll": "⚡ Hammasini quyish", "refueled": "Quyildi: {n} 🥩",
+    "res_metal_src": "Tosh-Qaychi va duellar", "res_hydrogen_src": "Katta/Kichik", "res_crystal_src": "Viktorina",
+    "res_parts_src": "Kiber-Seyf", "resWhere": "qayerda qazib olinadi",
+    "ws_title": "🔧 USTAXONA", "ws_hint": "O'yinlardagi resurslar kuchaytirgichlarga aylanadi. Resurs yetarli bo'lsa — «Yasash»ni bos.",
+    "ws_craft": "Yasash", "ws_owned": "✅ Allaqachon bor", "ws_crafted": "Tayyor! Kuchaytirgich allaqachon ishlayapti.",
+    "ws_armor": "🛡 Kiber-zirh", "ws_armorLvl": "daraja {l}/{m} · har darajaga qazib olishga +{p}%",
+    "ws_shuttleOn": "🚀 Shattl yig'ilgan: birja komissiyasi {fee}%", "ws_shuttleOff": "🚀 Shattl yig'ilmagan: birja komissiyasi {fee}%",
+    "eff_nitrogen": "barcha robotlar qazib olishiga +40%", "eff_nuclear": "qazib olish ×5, Burg'ulovchilar ×3 kotlet yeydi",
+    "eff_drone": "robotlar eskirmaydi", "eff_shield": "senga bosqin qilib bo'lmaydi",
+    "eff_cutlet": "omborga 1 kiber-kotlet", "eff_armor": "qazib olishga abadiy +10%",
+    "eff_shuttle": "birja komissiyasi ikki baravar past, buyurtmalar 500 kotletgacha — abadiy",
+    "raid_title": "🏴‍☠️ BOSQINLAR", "raid_how": "📖 Bu qanday ishlaydi",
+    "raid_rule1": "Sen ishora tanlaysan, nishonda esa oldindan himoya pozitsiyasi qo'yilgan. Natijani tosh-qaychi-qog'oz hal qiladi: bu lotereya emas, qarorlar dueli.",
+    "raid_rule2": "G'alaba: nishonning har bir resursidan {pct}% olasan, har resursdan {cap} tagacha. Muvaffaqiyatsizlik: nishonga o'zingnikidan {fpct}% berasan, {fcap} tagacha. Durang: yoqilg'i kuydi.",
+    "raid_rule3": "Faqat resurslar talanadi. Tangalar, robotlar va kotletlar to'liq xavfsiz. Yangi o'yinchilar {days} kun himoyada, jamoadoshlarga tegib bo'lmaydi.",
+    "raid_rule4": "Parvoz {fuel} 💧 vodorod turadi, keyingisi — {cd} soatdan keyin. Senga bosqin qilishsa, {rh} soat davomida revansh bepul.",
+    "raid_fuel": "💧 Vodorod", "raid_ready": "🚀 Kema parvozga tayyor", "raid_cooldown": "⏳ Qayta zaryad: {m} daqiqa",
+    "raid_shieldOn": "🛡 Qalqon {t} gacha", "raid_shieldNewbie": "🛡 Yangi o'yinchi himoyasi", "raid_shieldOff": "🛡 Qalqon yo'q — ustaxonada yasa",
+    "raid_stance": "✊ SENING HIMOYA POZITSIYANG", "raid_stanceHint": "U bilan begona bosqinlarni kutib olasan. Vaqti-vaqti bilan almashtir — oldindan bilinadiganlarni ko'proq talashadi.",
+    "raid_stanceNone": "Pozitsiya tanlanmagan — tasodifiy bo'ladi", "raid_stanceSaved": "Pozitsiya saqlandi",
+    "raid_stats": "Bosqinlar: {a} (muvaffaqiyatli: {w}) · qaytarildi: {d} tadan {h} tasi",
+    "raid_scout": "🔭 RAZVEDKA: nishon topish", "raid_targets": "🎯 Nishonni tanla", "raid_res": "resurslar ≈{n}",
+    "raid_noTargets": "Hozir mos nishon yo'q: qalqonlar, qayta zaryad, yangi o'yinchilar. Keyinroq kirib ko'r.",
+    "raid_pickMove": "✊ {name} pozitsiyasiga qarshi ishorang", "raid_revenge": "⚔️ REVANSH", "raid_revengeBtn": "⚔️ Javob qaytarish: {name}",
+    "raid_win": "🏴‍☠️ Bosqin muvaffaqiyatli!", "raid_draw": "😐 Durang — kema bo'sh qaytdi",
+    "raid_lose": "💥 Himoya bardosh berdi", "raid_vs": "{m} vs {s}", "raid_loot": "O'lja: {l}", "raid_lost": "Nishonga berildi: {l}",
+    "rock": "🪨 Tosh", "scissors": "✂️ Qaychi", "paper": "📄 Qog'oz",
+    "mk_title": "📈 KOTLET BIRJASI", "mk_stats": "Buyurtmalar: {o} · kotletlar: {c} · eng yaxshi narx: {b} 🪙",
+    "mk_feeLine": "Sotuvdan {f}% komissiya yondiriladi — inflyatsiyadan himoya", "mk_inv": "🥩 Omboringda: {n}",
+    "mk_offers": "🛒 TAKLIFLAR", "mk_empty": "Hozircha takliflar yo'q — birinchi bo'lib o'zingnikini qo'y!",
+    "mk_offer": "{q} 🥩 × {p} 🪙", "mk_buyHow": "Nechta olasan?", "mk_all": "Hammasi: {q}",
+    "mk_sellTitle": "💰 KOTLET SOTISH", "mk_qty": "Nechta kotlet", "mk_price": "Donasining narxi, 🪙",
+    "mk_preview": "Bitim {t} 🪙 · olasan {g} 🪙 · yonadi {f} 🪙", "mk_sell": "Birjaga qo'yish",
+    "mk_limits": "Buyurtmada {q} tagacha kotlet, {o} tagacha ochiq buyurtma",
+    "mk_my": "📋 BUYURTMALARIM", "mk_cancel": "Olib tashlash", "mk_bought": "{q} 🥩 sotib olindi: {t} 🪙",
+    "mk_listed": "Buyurtma qo'yildi! Sotib olishganda xabar beraman.", "mk_cancelledMsg": "Buyurtma olib tashlandi, kotletlar omborga qaytdi",
+    "st_title": "🛰 JAMOA STANSIYASI", "st_level": "Daraja: {l} / {m}", "st_bonus": "har bir jangchiga qazib olishga +{p}%",
+    "st_next": "{n}-darajaga har resursdan {c} ta kerak", "st_max": "🏁 Stansiya qurib bitkazildi!",
+    "st_feed": "🧾 So'nggi hissalar", "st_feedEmpty": "Hali hech kim hissa qo'shmagan — birinchi bo'l",
+    "st_donate": "Hissa qo'shish", "st_all": "Hammasi", "st_done": "Qo'shildi!",
+    "st_hint": "Butun jamoa quradi, bonusni har kim oladi. Jamoadan chiqding — bonus yo'qoldi.",
+    "st_off": "Stansiya vaqtincha texnik xizmatda",
+    "goals_title": "🎯 BUGUNGI MAQSADLAR", "goals_chest": "🎁 Uchchalasi uchun sandiq: +{c} 🪙 va tasodifiy resursdan +{r}",
+    "goals_streak": "🔥 Seriya: {s} kun · ketma-ket har {e}-kun +{b} 🪙", "goals_claim": "🎁 SANDIQNI OLISH",
+    "goals_claimed": "🎁 Bugungi sandiq olindi. Ertaga — yangi maqsadlar!", "goals_reset": "Maqsadlar 00:00 UTC da yangilanadi",
+    "goals_got": "🎁 +{c} 🪙 · +{q} {n} · seriya {s} kun",
+    "featureOff": "⚙️ Bo'lim texnik xizmatda", "done": "Tayyor!", "loading": "⏳ Yuklanmoqda…",
 }
 
 COMMANDS: dict[str, str] = {

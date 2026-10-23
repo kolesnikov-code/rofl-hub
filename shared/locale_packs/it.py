@@ -71,7 +71,7 @@ STRINGS = {
     "start.intro2": (
         "🎁 <b>ECCO LE TUE PRIME RICOMPENSE DI REGISTRAZIONE!</b>\n"
         "..................................................\n"
-        "💸 Hai ricevuto: <b>{balance} monete</b>\n"
+        "💸 Hai ricevuto: <b>{balance} 🪙</b>\n"
         "🥩 Hai ricevuto: <b>{cutlets} cyber-cotoletta</b>\n"
         "..................................................\n"
         "È il tuo bonus di benvenuto per l'ingresso nel club ROFL HUB.\n\n"
@@ -138,11 +138,11 @@ STRINGS = {
         "• /quests — QUEST: gialli, commedie e rompicapi con ricompense\n"
         "• /rps, /high_low, /safe — Giochi rapidi a monete\n\n"
         "👥 <b>GESTIONE DELLA BANDA:</b>\n"
-        "• /create_team — Registra la tua squadra per 100.000 monete\n"
+        "• /create_team — Registra la tua squadra per 100.000 🪙\n"
         "• /my_team — Dashboard della banda e LISTA COMPAGNI con livelli 🧠\n"
         "• /all_teams — Roulette di squadre casuali\n\n"
         "💸 <b>SOLDI E AMICI:</b>\n"
-        "• /invite — Il tuo link d'invito: +1000 monete per ogni amico\n"
+        "• /invite — Il tuo link d'invito: +1000 🪙 per ogni amico\n"
         "• /transfer — Trasferisci monete a un altro giocatore\n\n"
         "📚 <b>GUIDA E REGOLE:</b>\n"
         "• /faq — La guida completa dell'ecosistema (si apre nella Mini App)\n"
@@ -155,9 +155,9 @@ STRINGS = {
         "..................................................\n\n"
         "Qui puoi sfidare il bot in duelli rapidi o affrontare lo sprint-test "
         "d'intelligenza per fare il colpo grosso... o bruciare il saldo!\n\n"
-        "💸 Una vittoria paga: <b>+2 monete</b> (Cyber-Cassaforte: <b>+5</b>)\n"
-        "💀 Una sconfitta o un pareggio costa: <b>-1 moneta</b>\n"
-        "🧠 Il Quiz ha un timer di 15 secondi e livelli di intelligenza: il 1º livello si chiude con 10 risposte esatte e vale <b>+100 monete</b>, "
+        "💸 Una vittoria paga: <b>+2 🪙</b> (Cyber-Cassaforte: <b>+5</b>)\n"
+        "💀 Una sconfitta o un pareggio costa: <b>-1 🪙</b>\n"
+        "🧠 Il Quiz ha un timer di 15 secondi e livelli di intelligenza: il 1º livello si chiude con 10 risposte esatte e vale <b>+100 🪙</b>, "
         "ogni livello successivo è più lungo di 10 risposte, ma la ricompensa cresce di 100!\n\n"
         "..................................................\n"
         "👇 <b>TOCCA UN PULSANTE QUI SOTTO PER INIZIARE SUBITO UN ROUND:</b>"
@@ -183,7 +183,7 @@ STRINGS = {
         "la Cyber-Trivella — 10/h, e OGNI Trivella mangia la sua cyber-cotoletta al giorno. "
         "Tutti i robot vivono 30 giorni (il Master Drone mette in pausa l'usura).\n"
         "🧠 Quiz: 15 secondi per rispondere, livelli di intelligenza con ricompense crescenti.\n"
-        "⚔️ Duelli con giocatori veri ai tavoli da 10/100/1000 monete.\n"
+        "⚔️ Duelli con giocatori veri ai tavoli da 10/100/1000 🪙.\n"
         "🏆 Squadre fino a 50 combattenti (Mega-Clan — fino a 1000) e Battaglie-evento con premi per tutti.\n\n"
         "..................................................\n"
         "👇 <b>La guida completa con tutte le meccaniche — a un tocco da qui:</b>"
@@ -214,7 +214,7 @@ STRINGS = {
     ),
     "quest.card": (
         "{title}\n"
-        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} monete per la prima vittoria\n"
+        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} 🪙 per la prima vittoria\n"
         "..................................................\n\n"
         "{teaser}\n\n{status}"
     ),
@@ -226,11 +226,11 @@ STRINGS = {
     "quest.btn_resume": "⏯ CONTINUA",
     "quest.btn_list": "🗺️ Alla lista delle quest",
     "quest.btn_replay": "🔄 Gioca di nuovo",
-    "quest.win_first": "\n\n🏆 <b>QUEST COMPLETATA! Ricompensa: +{coins} monete.</b>",
+    "quest.win_first": "\n\n🏆 <b>QUEST COMPLETATA! Ricompensa: +{coins} 🪙.</b>",
     "quest.win_repeat": "\n\n✅ <b>Completata di nuovo!</b> La ricompensa di questa quest era già stata ritirata.",
     "quest.fail_footer": "\n\n💀 <i>Non proprio il miglior finale... ma puoi sempre rigiocare la storia!</i>",
     "quest.stale": "⏳ Quella scena è già alle spalle — si continua dal punto attuale!",
-    "quest.no_coins": "❌ Non hai abbastanza monete per l'indizio ({cost}). Passa dalla fattoria!",
+    "quest.no_coins": "❌ L'indizio costa {cost} 🪙 e il tuo saldo è più basso. Passa dalla fattoria!",
     "quest.not_found": "❌ Quest non trovata.",
     "menu.btn_quests": "🗺️ QUEST",
 
@@ -242,27 +242,27 @@ STRINGS = {
     "farm.status_all_fueled": "🟢 Tutte le Cyber-Trivelle sono rifornite e stanno estraendo monete!",
     "farm.status_partial": "🟡 Rifornite {fueled} Cyber-Trivelle su {total}. Le altre aspettano le cotolette nel frigo!",
     "farm.status_no_fuel": "🔴 Le Cyber-Trivelle si sono fermate! Non c'è abbastanza carburante nel frigo.",
-    "farm.status_no_drills": "💡 Prenditi delle Cyber-Trivelle in /shop per aumentare le entrate.",
+    "farm.status_no_drills": "💡 Prenditi un robot più potente in /shop: la fattoria estrarrà di più.",
     "farm.boost_nuclear": "🔋 Boost Nucleare x5 fino a {until} UTC (consumo cotolette ×3)",
     "farm.boost_nitrogen": "❄️ Raffreddamento ad Azoto +40% fino a {until} UTC",
     "farm.boost_drone": "🛸 Il Master Drone prolunga la vita dei robot fino a {until} UTC",
     "farm.no_boosts": "Nessun boost attivo — dai un'occhiata a /shop.",
     "farm.burnout": "🔥 Prossimo robot a esaurirsi: <b>{until} UTC</b>\n",
     "farm.btn_activate_intern": "🚀 Attiva il tuo Robot Stagista (gratis)",
-    "farm.intern_activated": "🤖 Il tuo Robot Stagista è entrato in turno! +1 moneta all'ora per sempre, senza carburante e senza scadenza.",
+    "farm.intern_activated": "🤖 Il tuo Robot Stagista è entrato in turno! +1 🪙 all'ora per sempre, senza carburante e senza scadenza.",
     "farm.intern_already": "🤖 Il tuo Robot Stagista sta già lavorando.",
-    "farm.intern_line": "🤖 Robot Stagisti ({rate} moneta/h, eterni): <code>{count}</code>",
-    "farm.intern_hint": "🎁 Hai un Robot Stagista gratis! Premi il pulsante qui sotto: estrarrà 1 moneta all'ora per sempre.",
+    "farm.intern_line": "• Robot Stagisti ({rate} 🪙/h, eterni): <code>{count}</code>\n",
+    "farm.intern_hint": "🎁 Hai un Robot Stagista gratis! Premi il pulsante qui sotto: estrarrà 1 🪙 all'ora per sempre.",
     "farm.dashboard": (
         "🚜 <b>HUB CENTRALE DEL CARBURANTE ROFL HUB</b>\n"
         "..................................................\n\n"
         "🤖 Robot attivi in fabbrica: <b>{total}</b>\n"
-        "• Robo-Minatori ({junior_rate} monete/h): <code>{junior}</code>\n"
-        "• Cyber-Trivelle ({premium_rate} monete/h): <code>{premium}</code>\n"
+        "{intern}• Robo-Minatori ({junior_rate} 🪙/h): <code>{junior}</code>\n"
+        "• Cyber-Trivelle ({premium_rate} 🪙/h): <code>{premium}</code>\n"
         "{burnout}\n"
         "📊 <b>VELOCITÀ ATTUALE DELLA TUA FATTORIA:</b>\n"
-        "• Produzione all'ora: <b>+{speed_hour} monete</b>\n"
-        "• Produzione al giorno: <b>+{speed_day} monete</b>\n\n"
+        "• Produzione all'ora: <b>+{speed_hour} 🪙</b>\n"
+        "• Produzione al giorno: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>BOOST:</b>\n{boosts}\n\n"
         "📋 <b>STATO DELLA FABBRICA DI GIOCO:</b>\n"
         "{status}\n\n"
@@ -286,10 +286,10 @@ STRINGS = {
         "..................................................\n\n"
         "🆔 Il tuo ID Passaporto: <code>{user_id}</code>\n"
         "{vip}"
-        "💰 Monete attuali: <b>{balance} monete</b>\n"
+        "💰 Monete attuali: <b>{balance} 🪙</b>\n"
         "🏆 Il tuo status: <b>{team}</b>\n"
         "🧠 Livello di intelligenza: <b>{level}</b> · al livello {next_level}: "
-        "<b>{left}</b> risposte esatte in /quiz (ricompensa: +{reward} monete)\n\n"
+        "<b>{left}</b> risposte esatte in /quiz (ricompensa: +{reward} 🪙)\n\n"
         "..................................................\n"
         "<i>Qui vedi ciò che possiedi in questo momento. Usa i pulsanti per volare nelle altre sezioni!</i>"
     ),
@@ -317,21 +317,21 @@ STRINGS = {
     "img.premium": "Cyber-Trivelle: {count}",
 
     # ---------------- игры: общий движок ----------------
-    "games.win": "🎉 <b>VITTORIA!</b> 🎉\nMonete accreditate: <b>+{reward}</b>",
-    "games.lose": "💀 <b>SCONFITTA!</b>\nMonete scalate: <b>-{penalty}</b>",
-    "games.draw": "🤝 <b>PAREGGIO!</b>\nMonete scalate: <b>-{penalty}</b>",
+    "games.win": "🎉 <b>VITTORIA!</b> 🎉\nAccredito: <b>+{reward} 🪙</b>",
+    "games.lose": "💀 <b>SCONFITTA!</b>\nAddebito: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>PAREGGIO!</b>\nAddebito: <b>-{penalty} 🪙</b>",
     "games.limit": (
         "🛑 <b>Limite giornaliero raggiunto!</b>\n\n"
         "Nel gioco {game} hai già messo a segno {limit} vittorie per oggi. Il limite si azzera alle 00:00 UTC.\n\n"
         "⚡ Togli il limite per 24 ore — 5 ★, per 30 giorni — 99 ★ (sezione “Gaming” in /shop)."
     ),
-    "games.no_coins": "❌ Hai 0 monete — non puoi pagare la quota del round. Riscuoti i guadagni della fattoria in /farm!",
-    "games.balance": "💰 Saldo: <b>{balance} monete</b>",
+    "games.no_coins": "❌ Hai 0 🪙 — non puoi pagare la quota del round. Riscuoti i guadagni della fattoria in /farm!",
+    "games.balance": "💰 Saldo: <b>{balance} 🪙</b>",
     "games.btn_retry": "🎮 Gioca ancora!",
     "games.btn_hub": "🕹️ Zona giochi",
     "games.level_up": (
-        "🏅 <b>LIVELLO DI INTELLIGENZA AUMENTATO: {level}!</b> Ricompensa: <b>+{bonus} monete</b>!\n"
-        "Prossimo livello: {next_required} risposte esatte → +{next_reward} monete."
+        "🏅 <b>LIVELLO DI INTELLIGENZA AUMENTATO: {level}!</b> Ricompensa: <b>+{bonus} 🪙</b>!\n"
+        "Prossimo livello: {next_required} risposte esatte → +{next_reward} 🪙."
     ),
     "games.name.rps": "Morra Cinese",
     "games.intern_bonus": "🤖 Livello {level}! Un altro Robot Stagista è arrivato nella tua fattoria: ora ne hai {count}.",
@@ -374,15 +374,15 @@ STRINGS = {
     "quiz.stale_alert": "Questa domanda non è più attiva. Lanciane una nuova!",
     "quiz.empty": "⚠️ Il database delle domande è vuoto. Avvisa l'amministratore.",
     "quiz.wrong": "❌ <b>Sbagliato</b> ❌\nRisposta esatta: <b>{correct}</b>",
-    "quiz.lost_line": "💀 <b>-{penalty} moneta</b> per la sconfitta!",
+    "quiz.lost_line": "💀 <b>-{penalty} 🪙</b> per la sconfitta!",
     "quiz.level_line": (
         "🧠 Livello di intelligenza: <b>{level}</b>\n"
         "Vittorie mancanti al livello {next_level}: <b>{left}</b>"
     ),
     "quiz.rules": (
         "<i>{seconds} secondi per rispondere!\n"
-        "Risposta esatta: +{win} monete sul saldo\n"
-        "Errore / tempo scaduto: -{penalty} moneta\n"
+        "Risposta esatta: +{win} 🪙 sul saldo\n"
+        "Errore / tempo scaduto: -{penalty} 🪙\n"
         "Limite: {limit} vittorie al giorno</i>"
     ),
 
@@ -391,7 +391,7 @@ STRINGS = {
     # ---------------- Сейф ----------------
     "safe.intro": (
         "🔐 <b>CYBER-CASSAFORTE</b>\n\n"
-        "Dentro c'è un jackpot da <b>{jackpot} monete</b>! Lo sportello è bloccato da un codice da 1 a {codes}. "
+        "Dentro c'è un jackpot da <b>{jackpot} 🪙</b>! Lo sportello è bloccato da un codice da 1 a {codes}. "
         "Hai un solo tentativo.\n"
         "Scassinata: <b>+{jackpot}</b> · Allarme: <b>-{penalty}</b> · Limite: <b>{limit}</b> vittorie"
     ),
@@ -412,21 +412,21 @@ STRINGS = {
         "🏆 Le vittorie nei duelli contano per la tua squadra nelle Battaglie!\n\n"
         "👇 <b>SCEGLI UN TAVOLO:</b>"
     ),
-    "duel.btn_table": "⚔️ Tavolo {stake} monete",
+    "duel.btn_table": "⚔️ Tavolo {stake} 🪙",
     "duel.btn_cancel": "❌ Lascia il tavolo (rimborso)",
     "duel.btn_move_rock": "🪨 Sasso",
     "duel.btn_move_scissors": "✂️ Forbici",
     "duel.btn_move_paper": "🧻 Carta",
     "duel.waiting": (
-        "🪑 <b>Sei al tavolo da {stake} monete.</b> La puntata è nel piatto.\n"
+        "🪑 <b>Sei al tavolo da {stake} 🪙.</b> La puntata è nel piatto.\n"
         "Aspettiamo il secondo sfidante... Appena si siede, a entrambi comparirà la scelta della mossa!\n"
         "<i>La coda dura {ttl} minuti, poi la puntata torna automaticamente.</i>"
     ),
-    "duel.cancelled": "🚪 Hai lasciato il tavolo. La puntata di <b>{stake} monete</b> è tornata sul saldo.",
-    "duel.expired": "⌛ Nessun avversario si è presentato al tavolo da {stake}. La puntata di <b>{stake} monete</b> è stata rimborsata.",
+    "duel.cancelled": "🚪 Hai lasciato il tavolo. La puntata di <b>{stake} 🪙</b> è tornata sul saldo.",
+    "duel.expired": "⌛ Nessun avversario si è presentato al tavolo da {stake}. La puntata di <b>{stake} 🪙</b> è stata rimborsata.",
     "duel.matched": (
-        "⚔️ <b>AVVERSARIO TROVATO! Tavolo da {stake} monete.</b>\n"
-        "Piatto: <b>{bank} monete</b> · Al vincitore: <b>{payout}</b>\n\n"
+        "⚔️ <b>AVVERSARIO TROVATO! Tavolo da {stake} 🪙.</b>\n"
+        "Piatto: <b>{bank} 🪙</b> · Al vincitore: <b>{payout}</b>\n\n"
         "⏱ Hai <b>{timeout} secondi</b> per scegliere la mossa!"
     ),
     "duel.move_saved": "✊ Mossa registrata! Aspettiamo la mossa dell'avversario...",
@@ -437,19 +437,19 @@ STRINGS = {
     "duel.win": (
         "🏆 <b>IL DUELLO È TUO!</b>\n\n"
         "La tua mossa {winner_move} batte {loser_move}.\n"
-        "💰 Vincita: <b>+{payout} monete</b> · 🔥 Bruciate dal piatto: {burned}\n"
-        "💼 Saldo: <b>{balance} monete</b>"
+        "💰 Vincita: <b>+{payout} 🪙</b> · 🔥 Bruciate dal piatto: {burned}\n"
+        "💼 Saldo: <b>{balance} 🪙</b>"
     ),
     "duel.lose": (
         "💀 <b>DUELLO PERSO.</b>\n\n"
         "La mossa {winner_move} dell'avversario batte la tua {loser_move}.\n"
-        "📉 La puntata di <b>{stake} monete</b> è finita nel piatto del vincitore.\n"
+        "📉 La puntata di <b>{stake} 🪙</b> è finita nel piatto del vincitore.\n"
         "Rivincita?"
     ),
     "duel.reaper_prefix": "⏰ <b>Tempo scaduto per il round!</b> Le mosse mancanti le ha scelte il generatore casuale.\n\n",
     "duel.bad_table": "❌ Questo tavolo non esiste.",
     "duel.already_in": "⚠️ Sei già a un tavolo o nel bel mezzo di un duello! Prima finisci quello in corso.",
-    "duel.no_coins": "❌ Per questo tavolo servono {stake} monete sul saldo.",
+    "duel.no_coins": "❌ Per questo tavolo servono {stake} 🪙 sul saldo.",
     "duel.cancel_impossible": "⚠️ Questa coda non si può più annullare (avversario trovato o tavolo chiuso).",
     "duel.not_active": "⌛ Questo duello è già finito.",
     "duel.not_participant": "🔒 Questo non è il tuo duello!",
@@ -471,21 +471,21 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAMMA REFERRAL DI ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Invita gli amici e ricevi <b>+{bonus} monete</b> per ognuno "
+        "Invita gli amici e ricevi <b>+{bonus} 🪙</b> per ognuno "
         "che si registra con il tuo link personale!\n\n"
         "🔗 <b>Il tuo link (tocca per copiarlo):</b>\n<code>{link}</code>\n\n"
         "📊 <b>LE TUE STATISTICHE:</b>\n"
         "👥 Amici invitati: <b>{invited}</b>\n"
-        "💰 Guadagnato dai referral: <b>{earned} monete</b>\n\n"
+        "💰 Guadagnato dai referral: <b>{earned} 🪙</b>\n\n"
         "..................................................\n"
         "<i>Manda il link nelle chat di classe, agli amici e sui social: più grande è la banda, più in fretta cresce il tuo saldo!</i>"
     ),
     "ref.btn_share": "📣 Condividi il link",
     "ref.share_text": "Entra nell'ecosistema di gioco ROFL HUB!",
     "ref.qualified_line": ("⭐ <b>Ricompensa doppia:</b> quando un amico invitato gioca {rounds} "
-                           "round, ricevi altre <b>+{bonus} monete</b>!"),
+                           "round, ricevi altre <b>+{bonus} 🪙</b>!"),
     "ref.qualified_notify": ("🤝 <b>Il tuo amico ci ha preso gusto: già {rounds} round!</b>\n"
-                             "Hai guadagnato <b>+{bonus} monete</b> per un invitato qualificato. "
+                             "Hai guadagnato <b>+{bonus} 🪙</b> per un invitato qualificato. "
                              "Invitane altri!"),
 
     # ---------------- переводы ----------------
@@ -497,22 +497,22 @@ STRINGS = {
         "<code>/transfer @username importo</code> — per username\n"
         "<code>/transfer ROFL-HUB-777 importo</code> — per VIP ID d'asta\n\n"
         "Esempi:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 Importo minimo: <b>{min} monete</b>"
+        "📌 Importo minimo: <b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ Destinatario non trovato. Controlla l'ID Passaporto o lo @username — il giocatore deve essere registrato nel bot.",
     "tr.self": "🤨 Non puoi trasferire monete al tuo stesso account — sarebbe il moto perpetuo dell'economia!",
     "tr.blocked": "🚫 Questo giocatore è bloccato — i trasferimenti verso questo account non sono disponibili.",
-    "tr.min": "❌ L'importo minimo del trasferimento è di {min} monete.",
-    "tr.insufficient": "❌ Monete insufficienti! Il tuo saldo: <b>{balance}</b>.",
+    "tr.min": "❌ L'importo minimo del trasferimento è di {min} 🪙.",
+    "tr.insufficient": "❌ Monete insufficienti! Il tuo saldo: <b>{balance} 🪙</b>.",
     "tr.err_insufficient": "❌ Monete insufficienti sul saldo.",
     "tr.confirm": (
         "🔄 <b>CONFERMA IL TRASFERIMENTO:</b>\n\n"
         "👤 Destinatario: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Importo prelevato: <b>{amount} monete</b>{fee_line}\n"
-        "💰 Il destinatario riceverà: <b>{received} monete</b>\n\n"
+        "💸 Importo prelevato: <b>{amount} 🪙</b>{fee_line}\n"
+        "💰 Il destinatario riceverà: <b>{received} 🪙</b>\n\n"
         "<i>I trasferimenti non si possono annullare — controlla bene il destinatario!</i>"
     ),
-    "tr.fee_line": "\n🔥 Commissione dell'hub: <b>{fee} monete</b> (bruciate)",
+    "tr.fee_line": "\n🔥 Commissione dell'hub: <b>{fee} 🪙</b> (bruciate)",
     "tr.btn_confirm": "✅ CONFERMA TRASFERIMENTO",
     "tr.btn_cancel": "❌ Annulla",
     "tr.cancelled_toast": "Trasferimento annullato",
@@ -521,11 +521,11 @@ STRINGS = {
     "tr.done_toast": "✅ Trasferimento eseguito!",
     "tr.done": (
         "✅ <b>TRASFERIMENTO ESEGUITO!</b>\n\n"
-        "💸 Inviate: <b>{amount} monete</b> al giocatore ID <code>{recipient_id}</code>\n"
-        "💰 Il tuo saldo: <b>{balance} monete</b>"
+        "💸 Inviate: <b>{amount} 🪙</b> al giocatore ID <code>{recipient_id}</code>\n"
+        "💰 Il tuo saldo: <b>{balance} 🪙</b>"
     ),
     "tr.received": (
-        "💰 <b>Hai ricevuto {amount} monete!</b>\n"
+        "💰 <b>Hai ricevuto {amount} 🪙!</b>\n"
         "Mittente: ID <code>{sender_id}</code>. Il saldo è già stato aggiornato — controlla /profile!"
     ),
 
@@ -577,7 +577,7 @@ STRINGS = {
     "dlv.miner_junior": "Robo-Minatore",
     "dlv.miner_premium": "Cyber-Trivella",
     "dlv.fridge": "📦 Frigo ampliato a <b>{capacity} cotolette</b>.",
-    "dlv.coins": "💰 Accreditate <b>+{amount} monete</b>.",
+    "dlv.coins": "💰 Accreditate <b>+{amount} 🪙</b>.",
     "dlv.boost_nuclear": "🔋 Boost Nucleare x5 attivo fino a <b>{until} UTC</b>.",
     "dlv.boost_nitrogen": "❄️ Raffreddamento ad Azoto +40% attivo fino a <b>{until} UTC</b>.",
     "dlv.drone": "🛸 Il Master Drone sorveglia la fattoria fino a <b>{until} UTC</b>.",
@@ -586,43 +586,43 @@ STRINGS = {
     "dlv.err_fridge": "Hai già un frigo di questa capienza o più grande.",
     "dlv.err_no_team": "Non hai ancora creato una squadra. Prima creala con /create_team.",
     "dlv.err_mega": "La tua squadra ha già lo status di Mega-Clan.",
-    "dlv.intern_upgrade": "♾ Il tuo Robot Stagista è stato promosso a <b>Robot Minatore ETERNO</b>: 5 monete all'ora, senza scadenza!",
+    "dlv.intern_upgrade": "♾ Il tuo Robot Stagista è stato promosso a <b>Robot Minatore ETERNO</b>: 5 🪙 all'ora, senza scadenza!",
     "dlv.err_no_intern": "Nessun Robot Stagista attivato: attivalo prima in /farm.",
     "dlv.err_intern_refs": "L'upgrade richiede {need} amici qualificati (30 round ciascuno); tu ne hai {have}.",
     "mk.header": "📈 <b>BORSA DELLE COTOLETTE</b>\n..................................................\n\nOrdini aperti: <b>{orders}</b> · cotolette in vendita: <b>{cutlets}</b> · miglior prezzo: <b>{best}</b>\nCommissione hub: <b>{fee}%</b> a vendita (bruciata — scudo anti-inflazione)\n🥩 Nel tuo magazzino: <b>{inv}</b> cotolette\n\n{body}\n\n<i>Tocca un ordine per comprare. Per vendere: /sell.</i>",
     "mk.empty": "Ancora nessuna offerta. Sii il primo: /sell quantità prezzo",
-    "mk.order_line": "🥩 #{id} · <b>{qty} pz</b> a <b>{price}</b> monete",
-    "mk.btn_order": "🛒 #{id}: {qty} pz a {price} monete",
+    "mk.order_line": "🥩 #{id} · <b>{qty} pz</b> a <b>{price}</b> 🪙",
+    "mk.btn_order": "🛒 #{id}: {qty} pz a {price} 🪙",
     "mk.btn_my": "📋 I miei ordini",
     "mk.btn_sell_help": "💰 Come vendere",
     "mk.btn_refresh": "🔄 Aggiorna",
     "mk.btn_back": "← Alla borsa",
-    "mk.pick": "🛒 <b>Ordine #{id}</b>: {qty} pz disponibili a {price} monete.\nQuante?",
-    "mk.btn_qty": "{qty} pz — {total} monete",
-    "mk.btn_qty_all": "Tutte, {qty} pz — {total} monete",
+    "mk.pick": "🛒 <b>Ordine #{id}</b>: {qty} pz disponibili a {price} 🪙.\nQuante?",
+    "mk.btn_qty": "{qty} pz — {total} 🪙",
+    "mk.btn_qty_all": "Tutte, {qty} pz — {total} 🪙",
     "mk.buy_toast": "Affare fatto!",
-    "mk.buy_done": "✅ Comprate <b>{qty} cotolette</b> per <b>{total} monete</b>. Sono nel magazzino: rifornisci le Trivelle!",
-    "mk.sold_notify": "💰 <b>Borsa: venduto!</b> Ordine #{id}: {qty} pz a {price}. Hai ricevuto <b>+{got} monete</b> (commissione di {fee} bruciata).",
-    "mk.sell_help": "💰 <b>COME VENDERE LE COTOLETTE</b>\n\nComando: <code>/sell quantità prezzo</code>\nEsempio: <code>/sell 10 50</code> — 10 cotolette a 50 monete.\n\nLe cotolette lasciano il magazzino e aspettano nell'ordine (annullabile in ogni momento). Fino a {max_qty} pz per ordine e {max_orders} ordini aperti. Alla vendita si brucia una commissione del {fee}%.",
-    "mk.sell_confirm": "📝 Mettere in vendita <b>{qty} cotolette</b> a <b>{price}</b> monete?\nTotale: {total} · commissione {fee} bruciata · riceverai <b>{got} monete</b>.",
+    "mk.buy_done": "✅ Comprate <b>{qty} cotolette</b> per <b>{total} 🪙</b>. Sono nel magazzino: rifornisci le Trivelle!",
+    "mk.sold_notify": "💰 <b>Borsa: venduto!</b> Ordine #{id}: {qty} pz a {price}. Hai ricevuto <b>+{got} 🪙</b> (commissione di {fee} bruciata).",
+    "mk.sell_help": "💰 <b>COME VENDERE LE COTOLETTE</b>\n\nComando: <code>/sell quantità prezzo</code>\nEsempio: <code>/sell 10 50</code> — 10 cotolette a 50 🪙.\n\nLe cotolette lasciano il magazzino e aspettano nell'ordine (annullabile in ogni momento). Fino a {max_qty} pz per ordine e {max_orders} ordini aperti. Alla vendita si brucia una commissione del {fee}%.",
+    "mk.sell_confirm": "📝 Mettere in vendita <b>{qty} cotolette</b> a <b>{price}</b> 🪙?\nTotale: {total} · commissione {fee} bruciata · riceverai <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ METTI IN BORSA",
     "mk.btn_cancel": "❌ Annulla",
     "mk.sell_toast": "Ordine pubblicato!",
-    "mk.sell_done": "✅ Ordine <b>#{id}</b> in borsa: {qty} pz a {price} monete. Ti avviso appena venduto.",
+    "mk.sell_done": "✅ Ordine <b>#{id}</b> in borsa: {qty} pz a {price} 🪙. Ti avviso appena venduto.",
     "mk.cancelled_toast": "Annullato",
     "mk.cancel_text": "❌ <b>Annullato.</b> Le cotolette restano nel magazzino.",
     "mk.my_header": "📋 <b>I TUOI ORDINI</b>\n\n",
-    "mk.my_line": "🥩 #{id} · {qty} pz a {price} monete",
+    "mk.my_line": "🥩 #{id} · {qty} pz a {price} 🪙",
     "mk.my_empty": "📋 Non hai ordini aperti.",
     "mk.btn_cancel_order": "❌ Ritira ordine #{id}",
     "mk.order_cancelled": "↩️ Ordine #{id} ritirato: <b>{qty} cotolette</b> tornate nel magazzino.",
     "mk.err_qty": "❌ Quantità: da 1 a {max} cotolette per ordine.",
-    "mk.err_price": "❌ Prezzo: da {min} a {max} monete a cotoletta.",
+    "mk.err_price": "❌ Prezzo: da {min} a {max} 🪙 a cotoletta.",
     "mk.err_no_cutlets": "❌ Hai solo {have} cotolette nel magazzino. Quelle nel frigo non si vendono — vedi /farm.",
     "mk.err_too_many": "❌ Limite: massimo {max} ordini aperti. Ritirane uno in «I miei ordini».",
     "mk.err_not_found": "❌ Questo ordine è già chiuso.",
     "mk.err_own": "🤨 Non puoi comprare il tuo stesso ordine.",
-    "mk.err_insufficient": "❌ Monete insufficienti: servono {total}.",
+    "mk.err_insufficient": "❌ Non basta: servono {total} 🪙.",
     "farm.btn_market": "📈 Borsa delle cotolette",
 
     # ---------------- ресурсы (волна 22.10, вечер) ----------------
@@ -639,6 +639,13 @@ STRINGS = {
     "menu.btn_raids": "🏴‍☠️ Incursioni",
     "menu.btn_workshop": "🔧 Officina",
     "farm.btn_workshop": "🔧 Officina",
+    "farm.btn_app": "🏭 Fattoria nell'app",
+    "menu.btn_app": "🚀 App di gioco: fattoria, officina, incursioni",
+    "app.btn_section": "🚀 APRI NELL'APP",
+    "app.goto_workshop": "🔧 L'<b>officina</b> vive nell'app di gioco: risorse, ricette e crafting in un tocco.",
+    "app.goto_raids": "🏴‍☠️ Le <b>incursioni</b> vivono nell'app di gioco: ricognizione, posizione di difesa e rivincita.",
+    "app.goto_station": "🛰 La <b>stazione della squadra</b> vive nell'app di gioco: progressi, contributi e un bonus per tutta la squadra.",
+    "app.goto_market": "📈 La <b>borsa delle cotolette</b> è più comoda nell'app di gioco: offerte, vendita e i tuoi ordini in un'unica schermata.",
     "farm.boost_armor": "🛡 Cyber-Armatura liv. {level}: +{percent}% all'estrazione per sempre",
     "farm.boost_station": "🛰 Stazione della squadra liv. {level}: +{percent}% all'estrazione",
     "clan.btn_station": "🛰 Stazione della squadra",
@@ -738,8 +745,8 @@ STRINGS = {
         "..................................................\n\n"
         "{goals}\n\n"
         "{status}\n"
-        "🎁 Forziere: <b>+{coins} monete</b> e <b>+{res}</b> di una risorsa a caso\n"
-        "🔥 Serie: <b>{streak}</b> gg · ogni {every}° giorno di fila +{bonus} monete nel forziere\n\n"
+        "🎁 Forziere: <b>+{coins} 🪙</b> e <b>+{res}</b> di una risorsa a caso\n"
+        "🔥 Serie: <b>{streak}</b> gg · ogni {every}° giorno di fila +{bonus} 🪙 nel forziere\n\n"
         "<i>Gli obiettivi si rinnovano alle 00:00 UTC.</i>"
     ),
     "goal.status_progress": "⏳ Completa tutti e tre e il forziere è tuo.",
@@ -749,7 +756,7 @@ STRINGS = {
     "goal.btn_go": "→ {goal}",
     "goal.btn_refresh": "🔄 Aggiorna",
     "goal.toast": "Forziere aperto!",
-    "goal.chest": "🎁 <b>FORZIERE APERTO!</b>\n💰 +{coins} monete · {icon} +{qty} {name}\n🔥 Serie: {streak} gg",
+    "goal.chest": "🎁 <b>FORZIERE APERTO!</b>\n💰 +{coins} 🪙 · {icon} +{qty} {name}\n🔥 Serie: {streak} gg",
     "goal.err_claimed": "🎁 Già ritirato oggi.",
     "goal.err_not_done": "⏳ Non hai ancora completato tutti gli obiettivi.",
     "goal.win_quiz": "Vinci {n} round di quiz",
@@ -834,28 +841,31 @@ STRINGS = {
 
 MINIAPP = {
     "subtitle": "il tuo impero di gioco su un unico schermo",
+    "tab_passport": "📋 Passaporto",
+    "tab_farm": "🚜 Fattoria",
+    "tab_goals": "🎯 Obiettivi",
+    "tab_workshop": "🔧 Officina",
+    "tab_raids": "🏴‍☠️ Incursioni",
+    "tab_market": "📈 Borsa",
+    "tab_team": "🏆 Squadra",
+    "tab_shop": "🏪 Negozio",
+    "tab_top": "👑 TOP",
     "passport": "📋 PASSAPORTO GIOCATORE",
-    "coins": "monete",
+    "coins": "🪙",
     "brain": "🧠 Livello di intelligenza",
-    "toNext": "al livello {n}: {left} risposte esatte nel quiz (+{reward} monete)",
+    "toNext": "al livello {n}: {left} risposte esatte nel quiz (+{reward} 🪙)",
     "farm": "🚜 CYBER-FATTORIA",
     "robots": "Robot (minatori / trivelle)",
-    "fueled": "Trivelle rifornite",
-    "speed": "Velocità di estrazione",
-    "perHour": "{v} monete/ora",
-    "fridge": "Frigo",
-    "inv": "Cotolette nell'inventario",
-    "burnout": "Prossimo esaurimento",
-    "intern": "Robot Stagisti (1 moneta/h, eterni)",
+    "intern": "Robot Stagisti (1 🪙/h, eterni)",
     "activateIntern": "🚀 ATTIVA IL ROBOT STAGISTA",
     "internDone": "🤖 Il tuo Robot Stagista è in turno!",
     "rank": "🎖 Grado",
-    "openFarm": "🏭 APRI LA FATTORIA",
+    "openFarm": "🏭 APRI LA MINIERA",
     "farmScene": "🏭 LA TUA FATTORIA",
     "back": "← Indietro",
     "minedVisit": "estratto in questa visita",
     "unit_intern": "Robot Stagista",
-    "unit_junior": "Robot Minatore",
+    "unit_junior": "Robo-Minatore",
     "unit_premium": "Cyber-Trivella",
     "eternal": "eterno",
     "fueledAll": "riforniti",
@@ -863,17 +873,27 @@ MINIAPP = {
     "license": "licenza di 30 giorni",
     "emptyFarm": "La miniera è vuota. Attiva il tuo Robot Stagista o compra robot nel negozio!",
     "madeBy": "Vuoi un bot così per il tuo progetto? Scrivi a @mister_telebot",
+    "fueled": "Trivelle rifornite",
+    "speed": "Velocità di estrazione",
+    "perHour": "{v} 🪙/h",
+    "fridge": "Frigo",
+    "inv": "Cotolette nell'inventario",
+    "burnout": "Prossimo esaurimento",
     "boosts": "Boost attivi",
     "none": "nessuno",
+    "resources": "🧰 Risorse",
+    "bonusPct": "Bonus permanente all'estrazione",
+    "shuttle": "🚀 Shuttle costruito",
+    "resHint": "Ogni vittoria porta la risorsa del suo gioco. Spendile nell'officina.",
     "bonusReady": "🎁 RITIRA LA COTOLETTA GIORNALIERA",
     "bonusWait": "⏳ Bonus tra {h} h {m} min",
-    "bonusDone": "🎉 Cotoletta aggiunta!",
+    "bonusDone": "🎉 Cotoletta nell'inventario!",
     "team": "🏆 LA MIA SQUADRA",
     "clan": "CLAN",
     "teamLabel": "Squadra",
     "captain": "👑 Al comando ci sei tu!",
     "members": "Formazione",
-    "noTeam": "Ancora nessuna squadra — raduna la tua banda nella chat del bot!",
+    "noTeam": "Ancora nessuna squadra. Creane una o unisciti a un'altra nella chat del bot: «🏆 Squadre e clan».",
     "top": "👑 TOP-100 DEI PIÙ RICCHI DELL'ECOSISTEMA",
     "shop": "🏪 NEGOZIO",
     "shopFarm": "🚜 PER LA FATTORIA",
@@ -881,20 +901,118 @@ MINIAPP = {
     "shopHint": "Paga con le Telegram Stars ufficiali — direttamente qui, in un tocco.",
     "paid": "🎉 Pagato! L'articolo è già sul tuo account.",
     "payFail": "Il pagamento non è andato a buon fine. Riprova.",
-    "oldClient": "Aggiorna Telegram per comprare dalla Mini App, oppure apri il negozio nella chat del bot.",
-    "ctaNoRobots": "💤 La fattoria è vuota! Prenditi il primo robot — le monete pioveranno 24 ore su 24.",
+    "oldClient": "Aggiorna Telegram per comprare dall'app, oppure apri il negozio nella chat del bot.",
+    "ctaNoRobots": "💤 La fattoria è quasi vuota! Prenditi un robot più potente — le 🪙 arriveranno 24 ore su 24.",
     "ctaHungry": "🚨 Le Trivelle hanno fame ({n} senza carburante) — l'estrazione è ferma!",
     "ctaLowFuel": "⚠️ Le cotolette non bastano per un giorno di lavoro delle Trivelle.",
     "ctaShopBtn": "🛒 Al negozio",
-    "footer": "Controllo completo nella chat del bot: /menu",
+    "footer": "Giochi e quiz sono nella chat del bot",
     "noProfile": "Profilo non trovato. Apri il bot e premi /start!",
     "blocked": "Account bloccato dall'amministrazione.",
     "error": "Impossibile caricare i dati. Riprova più tardi.",
     "outside": "Apri questa app dal bot Telegram di ROFL HUB.",
-    "resources": "🧰 Risorse",
-    "bonusPct": "Bonus permanente all'estrazione",
-    "shuttle": "🚀 Shuttle costruito",
-    "resHint": "Metallo — Morra Cinese, idrogeno — Alto/Basso, cristalli — quiz, componenti — cassaforte. Usali nell'officina nella chat del bot.",
+    "robotsTitle": "🤖 I TUOI ROBOT",
+    "buyMore": "🛒 Compra",
+    "rateShort": "{v} 🪙/h",
+    "refuelOne": "🥩 Carica 1",
+    "refuelAll": "⚡ Carica tutte",
+    "refueled": "Caricate: {n} 🥩",
+    "res_metal_src": "Morra Cinese e duelli",
+    "res_hydrogen_src": "Alto/Basso",
+    "res_crystal_src": "Quiz",
+    "res_parts_src": "Cyber-Cassaforte",
+    "resWhere": "dove ottenerle",
+    "ws_title": "🔧 OFFICINA",
+    "ws_hint": "Le risorse dei giochi diventano potenziamenti. Se le risorse bastano, premi «Costruisci».",
+    "ws_craft": "Costruisci",
+    "ws_owned": "✅ Già tuo",
+    "ws_crafted": "Fatto! Il potenziamento è già attivo.",
+    "ws_armor": "🛡 Cyber-Armatura",
+    "ws_armorLvl": "livello {l}/{m} · +{p}% all'estrazione per livello",
+    "ws_shuttleOn": "🚀 Shuttle costruito: commissione della borsa {fee}%",
+    "ws_shuttleOff": "🚀 Shuttle non costruito: commissione della borsa {fee}%",
+    "eff_nitrogen": "+40% all'estrazione di tutti i robot",
+    "eff_nuclear": "×5 all'estrazione, le Trivelle mangiano ×3 cotolette",
+    "eff_drone": "i robot non invecchiano",
+    "eff_shield": "nessuno può farti incursioni",
+    "eff_cutlet": "1 cyber-cotoletta nell'inventario",
+    "eff_armor": "+10% all'estrazione per sempre",
+    "eff_shuttle": "commissione della borsa dimezzata, ordini fino a 500 cotolette — per sempre",
+    "raid_title": "🏴‍☠️ INCURSIONI",
+    "raid_how": "📖 Come funziona",
+    "raid_rule1": "Scegli una mossa; il bersaglio ha una posizione di difesa impostata in anticipo. Decide la Morra Cinese: è un duello di decisioni, non una lotteria.",
+    "raid_rule2": "Vittoria: prendi il {pct}% di ogni risorsa del bersaglio, fino a {cap} per risorsa. Fallimento: dai al bersaglio il {fpct}% delle tue, fino a {fcap}. Pareggio: carburante bruciato.",
+    "raid_rule3": "Si possono rubare solo le risorse. Monete, robot e cotolette sono al sicuro. I principianti sono protetti per {days} giorni, i compagni di squadra non si toccano.",
+    "raid_rule4": "Un decollo costa {fuel} 💧 di idrogeno, il prossimo tra {cd} h. Se qualcuno ti attacca, la rivincita è gratis per {rh} h.",
+    "raid_fuel": "💧 Idrogeno",
+    "raid_ready": "🚀 Nave pronta al decollo",
+    "raid_cooldown": "⏳ Ricarica: {m} min",
+    "raid_shieldOn": "🛡 Scudo fino alle {t}",
+    "raid_shieldNewbie": "🛡 Protezione principiante",
+    "raid_shieldOff": "🛡 Nessuno scudo — costruiscilo nell'officina",
+    "raid_stance": "✊ LA TUA POSIZIONE DI DIFESA",
+    "raid_stanceHint": "Con questa accogli le incursioni altrui. Cambiala ogni tanto — chi è prevedibile viene derubato più spesso.",
+    "raid_stanceNone": "Nessuna posizione scelta — sarà casuale",
+    "raid_stanceSaved": "Posizione salvata",
+    "raid_stats": "Incursioni: {a} (riuscite {w}) · respinte: {h} su {d}",
+    "raid_scout": "🔭 RICOGNIZIONE: trova bersagli",
+    "raid_targets": "🎯 Scegli un bersaglio",
+    "raid_res": "risorse ≈{n}",
+    "raid_noTargets": "Nessun bersaglio adatto al momento: scudi, ricariche, principianti. Riprova più tardi.",
+    "raid_pickMove": "✊ La tua mossa contro la posizione di {name}",
+    "raid_revenge": "⚔️ RIVINCITA",
+    "raid_revengeBtn": "⚔️ Rispondi a: {name}",
+    "raid_win": "🏴‍☠️ Incursione riuscita!",
+    "raid_draw": "😐 Pareggio — la nave è tornata vuota",
+    "raid_lose": "💥 La difesa ha retto",
+    "raid_vs": "{m} contro {s}",
+    "raid_loot": "Bottino: {l}",
+    "raid_lost": "Ceduto al bersaglio: {l}",
+    "rock": "🪨 Sasso",
+    "scissors": "✂️ Forbici",
+    "paper": "📄 Carta",
+    "mk_title": "📈 BORSA DELLE COTOLETTE",
+    "mk_stats": "Ordini: {o} · cotolette: {c} · miglior prezzo: {b} 🪙",
+    "mk_feeLine": "La commissione del {f}% su ogni vendita viene bruciata — scudo contro l'inflazione",
+    "mk_inv": "🥩 Nel tuo inventario: {n}",
+    "mk_offers": "🛒 OFFERTE",
+    "mk_empty": "Ancora nessuna offerta — metti in vendita per primo/a!",
+    "mk_offer": "{q} 🥩 × {p} 🪙",
+    "mk_buyHow": "Quante comprarne?",
+    "mk_all": "Tutte, {q}",
+    "mk_sellTitle": "💰 VENDI COTOLETTE",
+    "mk_qty": "Quante cotolette",
+    "mk_price": "Prezzo cadauna, 🪙",
+    "mk_preview": "Totale {t} 🪙 · ricevi {g} 🪙 · bruciate {f} 🪙",
+    "mk_sell": "Metti in borsa",
+    "mk_limits": "Fino a {q} cotolette per ordine, fino a {o} ordini aperti",
+    "mk_my": "📋 I MIEI ORDINI",
+    "mk_cancel": "Ritira",
+    "mk_bought": "Comprate {q} 🥩 per {t} 🪙",
+    "mk_listed": "Ordine in borsa! Ti scrivo appena qualcuno compra.",
+    "mk_cancelledMsg": "Ordine ritirato, le cotolette sono tornate nell'inventario",
+    "st_title": "🛰 STAZIONE DELLA SQUADRA",
+    "st_level": "Livello {l} su {m}",
+    "st_bonus": "+{p}% all'estrazione per ogni combattente",
+    "st_next": "Per il livello {n} servono {c} di ogni risorsa",
+    "st_max": "🏁 Stazione completata!",
+    "st_feed": "🧾 Ultimi contributi",
+    "st_feedEmpty": "Ancora nessun contributo — fai il primo passo",
+    "st_donate": "Contribuisci",
+    "st_all": "Tutto",
+    "st_done": "Contributo versato!",
+    "st_hint": "La costruisce tutta la squadra, il bonus va a ognuno. Esci dalla squadra e perdi il bonus.",
+    "st_off": "La stazione è temporaneamente in manutenzione",
+    "goals_title": "🎯 OBIETTIVI DI OGGI",
+    "goals_chest": "🎁 Forziere per tutti e tre: +{c} 🪙 e +{r} di una risorsa a caso",
+    "goals_streak": "🔥 Serie: {s} gg · ogni {e}° giorno di fila +{b} 🪙",
+    "goals_claim": "🎁 RITIRA IL FORZIERE",
+    "goals_claimed": "🎁 Il forziere di oggi è stato ritirato. Domani nuovi obiettivi!",
+    "goals_reset": "Gli obiettivi si rinnovano alle 00:00 UTC",
+    "goals_got": "🎁 +{c} 🪙 · +{q} {n} · serie {s} gg",
+    "featureOff": "⚙️ Sezione in manutenzione",
+    "done": "Fatto!",
+    "loading": "⏳ Caricamento…",
 }
 
 COMMANDS = {

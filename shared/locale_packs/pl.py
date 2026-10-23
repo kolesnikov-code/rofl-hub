@@ -70,7 +70,7 @@ STRINGS: dict[str, str] = {
     "start.intro2": (
         "🎁 <b>ODBIERZ SWOJE PIERWSZE NAGRODY ZA REJESTRACJĘ!</b>\n"
         "..................................................\n"
-        "💸 Naliczono ci: <b>{balance} monet</b>\n"
+        "💸 Naliczono ci: <b>{balance} 🪙</b>\n"
         "🥩 Naliczono ci: <b>{cutlets} cyber-kotlet</b>\n"
         "..................................................\n"
         "To twój bonus startowy za dołączenie do klubu ROFL HUB.\n\n"
@@ -137,11 +137,11 @@ STRINGS: dict[str, str] = {
         "• /quests — QUESTY: kryminały, komedie i łamigłówki z nagrodami\n"
         "• /rps, /high_low, /safe — Szybkie gry o monety\n\n"
         "👥 <b>ZARZĄDZANIE EKIPĄ:</b>\n"
-        "• /create_team — Zarejestruj własną drużynę za 100 000 monet\n"
+        "• /create_team — Zarejestruj własną drużynę za 100 000 🪙\n"
         "• /my_team — Panel ekipy i SKŁAD DRUŻYNY z poziomami 🧠\n"
         "• /all_teams — Ruletka losowych drużyn\n\n"
         "💸 <b>PIENIĄDZE I ZNAJOMI:</b>\n"
-        "• /invite — Twój link polecający: +1000 monet za znajomego\n"
+        "• /invite — Twój link polecający: +1000 🪙 za znajomego\n"
         "• /transfer — Przelej monety innemu graczowi\n\n"
         "📚 <b>POMOC I ZASADY:</b>\n"
         "• /faq — Pełny przewodnik po ekosystemie (otwiera się w Mini App)\n"
@@ -154,9 +154,9 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "Tutaj możesz zmierzyć się z botem w szybkich starciach albo przejść "
         "intelektualny sprint — i zgarnąć pulę albo spłukać się do zera!\n\n"
-        "💸 Zwycięstwo daje: <b>+2 monety</b> (Cyber-Sejf: <b>+5</b>)\n"
-        "💀 Porażka lub remis kosztuje: <b>-1 monetę</b>\n"
-        "🧠 W Quizie — licznik 15 sekund i poziomy intelektu: 1. poziom to 10 poprawnych odpowiedzi i <b>+100 monet</b>, "
+        "💸 Zwycięstwo daje: <b>+2 🪙</b> (Cyber-Sejf: <b>+5</b>)\n"
+        "💀 Porażka lub remis kosztuje: <b>-1 🪙</b>\n"
+        "🧠 W Quizie — licznik 15 sekund i poziomy intelektu: 1. poziom to 10 poprawnych odpowiedzi i <b>+100 🪙</b>, "
         "każdy kolejny poziom jest o 10 odpowiedzi dłuższy, ale nagroda rośnie o 100!\n\n"
         "..................................................\n"
         "👇 <b>KLIKNIJ PRZYCISK PONIŻEJ, ABY NATYCHMIAST ROZPOCZĄĆ RUNDĘ:</b>"
@@ -182,7 +182,7 @@ STRINGS: dict[str, str] = {
         "Cyber-Wiertacz — 10/h, a KAŻDY Wiertacz zjada swój własny cyber-kotlet raz na dobę. "
         "Wszystkie roboty żyją 30 dni (Mistrzowski Dron wstrzymuje zużycie).\n"
         "🧠 Quiz: 15 sekund na odpowiedź, poziomy intelektu z rosnącymi nagrodami.\n"
-        "⚔️ Pojedynki z żywymi graczami przy stołach 10/100/1000 monet.\n"
+        "⚔️ Pojedynki z żywymi graczami przy stołach 10/100/1000 🪙.\n"
         "🏆 Drużyny do 50 wojowników (Mega-Klan — do 1000) i okazjonalne Bitwy z nagrodami dla każdego.\n\n"
         "..................................................\n"
         "👇 <b>Pełny przewodnik ze wszystkimi mechanikami — pod przyciskiem:</b>"
@@ -213,7 +213,7 @@ STRINGS: dict[str, str] = {
     ),
     "quest.card": (
         "{title}\n"
-        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} monet za pierwsze zwycięstwo\n"
+        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} 🪙 za pierwsze zwycięstwo\n"
         "..................................................\n\n"
         "{teaser}\n\n{status}"
     ),
@@ -225,11 +225,11 @@ STRINGS: dict[str, str] = {
     "quest.btn_resume": "⏯ KONTYNUUJ",
     "quest.btn_list": "🗺️ Do listy questów",
     "quest.btn_replay": "🔄 Zagraj jeszcze raz",
-    "quest.win_first": "\n\n🏆 <b>QUEST UKOŃCZONY! Nagroda: +{coins} monet.</b>",
+    "quest.win_first": "\n\n🏆 <b>QUEST UKOŃCZONY! Nagroda: +{coins} 🪙.</b>",
     "quest.win_repeat": "\n\n✅ <b>Ukończono ponownie!</b> Nagroda za ten quest została już odebrana wcześniej.",
     "quest.fail_footer": "\n\n💀 <i>Nie najlepsze zakończenie... ale historię zawsze można przejść jeszcze raz!</i>",
     "quest.stale": "⏳ Ta scena jest już za tobą — gramy dalej od bieżącego miejsca!",
-    "quest.no_coins": "❌ Za mało monet na podpowiedź ({cost}). Zajrzyj na farmę!",
+    "quest.no_coins": "❌ Podpowiedź kosztuje {cost} 🪙, a twoje saldo jest niższe. Zajrzyj na farmę!",
     "quest.not_found": "❌ Nie znaleziono questa.",
     "menu.btn_quests": "🗺️ QUESTY",
 
@@ -241,27 +241,28 @@ STRINGS: dict[str, str] = {
     "farm.status_all_fueled": "🟢 Wszystkie Cyber-Wiertacze są zatankowane i wydobywają monety!",
     "farm.status_partial": "🟡 Zatankowano {fueled} z {total} Cyber-Wiertaczy. Reszta czeka na kotlety w lodówce!",
     "farm.status_no_fuel": "🔴 Cyber-Wiertacze stanęły! W lodówce brakuje paliwa.",
-    "farm.status_no_drills": "💡 Spraw sobie Cyber-Wiertacze w /shop, aby zwiększyć dochód.",
+    "farm.status_no_drills": "💡 Spraw sobie mocniejszego robota w /shop — farma będzie wydobywać więcej.",
     "farm.boost_nuclear": "🔋 Nuklearne Przyspieszenie x5 do {until} UTC (zużycie kotletów ×3)",
     "farm.boost_nitrogen": "❄️ Azotowe Chłodzenie +40% do {until} UTC",
     "farm.boost_drone": "🛸 Mistrzowski Dron przedłuża życie robotów do {until} UTC",
     "farm.no_boosts": "Brak aktywnych wzmocnień — zajrzyj do /shop.",
     "farm.burnout": "🔥 Najbliższe wypalenie robota: <b>{until} UTC</b>\n",
     "farm.btn_activate_intern": "🚀 Aktywuj Robota Stażystę (za darmo)",
-    "farm.intern_activated": "🤖 Twój Robot Stażysta zaczął zmianę! +1 moneta na godzinę na zawsze — bez paliwa i bez terminu.",
+    "farm.intern_activated": "🤖 Twój Robot Stażysta zaczął zmianę! +1 🪙 na godzinę na zawsze — bez paliwa i bez terminu.",
     "farm.intern_already": "🤖 Twój Robot Stażysta już pracuje.",
-    "farm.intern_line": "🤖 Roboty Stażyści ({rate} moneta/h, wieczne): <code>{count}</code>",
-    "farm.intern_hint": "🎁 Masz darmowego Robota Stażystę! Naciśnij przycisk poniżej — będzie wydobywać 1 monetę na godzinę na zawsze.",
+    "farm.intern_line": "• Roboty Stażyści ({rate} 🪙/h, wieczne): <code>{count}</code>\n",
+    "farm.intern_hint": "🎁 Masz darmowego Robota Stażystę! Naciśnij przycisk poniżej — będzie wydobywać 1 🪙 na godzinę na zawsze.",
     "farm.dashboard": (
         "🚜 <b>CENTRALNY HUB PALIWOWY ROFL HUB</b>\n"
         "..................................................\n\n"
         "🤖 Aktywne roboty w fabryce: <b>{total} szt.</b>\n"
-        "• Młodsi Górnicy ({junior_rate} monet/h): <code>{junior} szt.</code>\n"
-        "• Cyber-Wiertacze ({premium_rate} monet/h): <code>{premium} szt.</code>\n"
+        "{intern}"
+        "• Młodsi Górnicy ({junior_rate} 🪙/h): <code>{junior} szt.</code>\n"
+        "• Cyber-Wiertacze ({premium_rate} 🪙/h): <code>{premium} szt.</code>\n"
         "{burnout}\n"
         "📊 <b>AKTUALNE TEMPO TWOJEJ FARMY:</b>\n"
-        "• Produkcja na godzinę: <b>+{speed_hour} monet</b>\n"
-        "• Produkcja na dobę: <b>+{speed_day} monet</b>\n\n"
+        "• Produkcja na godzinę: <b>+{speed_hour} 🪙</b>\n"
+        "• Produkcja na dobę: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>WZMOCNIENIA:</b>\n{boosts}\n\n"
         "📋 <b>STATUS TWOJEJ FABRYKI:</b>\n"
         "{status}\n\n"
@@ -285,10 +286,10 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "🆔 Twój ID Paszportu: <code>{user_id}</code>\n"
         "{vip}"
-        "💰 Monety teraz: <b>{balance} monet</b>\n"
+        "💰 Monety teraz: <b>{balance} 🪙</b>\n"
         "🏆 Twój status: <b>{team}</b>\n"
         "🧠 Poziom intelektu: <b>{level}</b> · do poziomu {next_level}: "
-        "<b>{left}</b> poprawnych odpowiedzi w /quiz (nagroda: +{reward} monet)\n\n"
+        "<b>{left}</b> poprawnych odpowiedzi w /quiz (nagroda: +{reward} 🪙)\n\n"
         "..................................................\n"
         "<i>Tutaj widzisz to, co masz w tej chwili. Używaj przycisków, aby przeskoczyć do innych sekcji!</i>"
     ),
@@ -316,21 +317,21 @@ STRINGS: dict[str, str] = {
     "img.premium": "Cyber-Wiertacze: {count} szt.",
 
     # ---------------- игры: общий движок ----------------
-    "games.win": "🎉 <b>ZWYCIĘSTWO!</b> 🎉\nNaliczono monet: <b>+{reward}</b>",
-    "games.lose": "💀 <b>PORAŻKA!</b>\nPobrano monet: <b>-{penalty}</b>",
-    "games.draw": "🤝 <b>REMIS!</b>\nPobrano monet: <b>-{penalty}</b>",
+    "games.win": "🎉 <b>ZWYCIĘSTWO!</b> 🎉\nNaliczono: <b>+{reward} 🪙</b>",
+    "games.lose": "💀 <b>PORAŻKA!</b>\nPobrano: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>REMIS!</b>\nPobrano: <b>-{penalty} 🪙</b>",
     "games.limit": (
         "🛑 <b>Dzienny limit osiągnięty!</b>\n\n"
         "W grze {game} masz już {limit} zwycięstw na dziś. Limit odnowi się o 00:00 UTC.\n\n"
         "⚡ Zdejmij limit na 24 godziny — 5 ★, na 30 dni — 99 ★ (sekcja „Do gier” w /shop)."
     ),
-    "games.no_coins": "❌ Masz 0 monet — nie masz czym opłacić rundy. Odbierz dochód z farmy w /farm!",
-    "games.balance": "💰 Saldo: <b>{balance} monet</b>",
+    "games.no_coins": "❌ Masz 0 🪙 — nie masz czym opłacić rundy. Odbierz dochód z farmy w /farm!",
+    "games.balance": "💰 Saldo: <b>{balance} 🪙</b>",
     "games.btn_retry": "🎮 Zagraj jeszcze raz!",
     "games.btn_hub": "🕹️ Strefa gier",
     "games.level_up": (
-        "🏅 <b>POZIOM INTELEKTU PODNIESIONY: {level}!</b> Nagroda: <b>+{bonus} monet</b>!\n"
-        "Następny poziom: {next_required} poprawnych odpowiedzi → +{next_reward} monet."
+        "🏅 <b>POZIOM INTELEKTU PODNIESIONY: {level}!</b> Nagroda: <b>+{bonus} 🪙</b>!\n"
+        "Następny poziom: {next_required} poprawnych odpowiedzi → +{next_reward} 🪙."
     ),
     "games.name.rps": "Kamień-Papier-Nożyce",
     "games.intern_bonus": "🤖 Poziom {level}! Na farmę przybył kolejny Robot Stażysta — masz ich już {count}.",
@@ -373,15 +374,15 @@ STRINGS: dict[str, str] = {
     "quiz.stale_alert": "To pytanie nie jest już aktywne. Odpal nowe!",
     "quiz.empty": "⚠️ Baza pytań jest pusta. Zgłoś to administratorowi.",
     "quiz.wrong": "❌ <b>Błąd</b> ❌\nPoprawna odpowiedź: <b>{correct}</b>",
-    "quiz.lost_line": "💀 <b>-{penalty} moneta</b> za przegraną!",
+    "quiz.lost_line": "💀 <b>-{penalty} 🪙</b> za przegraną!",
     "quiz.level_line": (
         "🧠 Poziom intelektu: <b>{level}</b>\n"
         "Do poziomu {next_level} brakuje zwycięstw: <b>{left}</b>"
     ),
     "quiz.rules": (
         "<i>Na odpowiedź masz {seconds} sekund!\n"
-        "Poprawnie: +{win} monety na konto\n"
-        "Błąd / brak odpowiedzi na czas: -{penalty} moneta\n"
+        "Poprawnie: +{win} 🪙 na konto\n"
+        "Błąd / brak odpowiedzi na czas: -{penalty} 🪙\n"
         "Limit: {limit} zwycięstw na dobę</i>"
     ),
 
@@ -390,7 +391,7 @@ STRINGS: dict[str, str] = {
     # ---------------- Сейф ----------------
     "safe.intro": (
         "🔐 <b>CYBER-SEJF</b>\n\n"
-        "W środku — jackpot <b>{jackpot} monet</b>! Drzwiczki zamknięte kodem od 1 do {codes}. "
+        "W środku — jackpot <b>{jackpot} 🪙</b>! Drzwiczki zamknięte kodem od 1 do {codes}. "
         "Masz jedną próbę.\n"
         "Włamanie: <b>+{jackpot}</b> · Alarm: <b>-{penalty}</b> · Limit: <b>{limit}</b> zwycięstw"
     ),
@@ -411,21 +412,21 @@ STRINGS: dict[str, str] = {
         "🏆 Zwycięstwa w pojedynkach liczą się dla twojej drużyny w Bitwach!\n\n"
         "👇 <b>WYBIERZ STÓŁ:</b>"
     ),
-    "duel.btn_table": "⚔️ Stół {stake} monet",
+    "duel.btn_table": "⚔️ Stół {stake} 🪙",
     "duel.btn_cancel": "❌ Opuść stół (zwrot stawki)",
     "duel.btn_move_rock": "🪨 Kamień",
     "duel.btn_move_scissors": "✂️ Nożyce",
     "duel.btn_move_paper": "🧻 Papier",
     "duel.waiting": (
-        "🪑 <b>Siedzisz przy stole {stake} monet.</b> Stawka jest w puli.\n"
+        "🪑 <b>Siedzisz przy stole {stake} 🪙.</b> Stawka jest w puli.\n"
         "Czekamy na drugiego wojownika... Gdy tylko usiądzie, każdy z was dostanie wybór gestu!\n"
         "<i>Kolejka żyje {ttl} minut, potem stawka wróci automatycznie.</i>"
     ),
-    "duel.cancelled": "🚪 Stół opuszczony. Stawka <b>{stake} monet</b> wróciła na saldo.",
-    "duel.expired": "⌛ Przy stole {stake} nie znalazł się przeciwnik. Stawka <b>{stake} monet</b> została zwrócona.",
+    "duel.cancelled": "🚪 Stół opuszczony. Stawka <b>{stake} 🪙</b> wróciła na saldo.",
+    "duel.expired": "⌛ Przy stole {stake} nie znalazł się przeciwnik. Stawka <b>{stake} 🪙</b> została zwrócona.",
     "duel.matched": (
-        "⚔️ <b>PRZECIWNIK ZNALEZIONY! Stół {stake} monet.</b>\n"
-        "Pula: <b>{bank} monet</b> · Dla zwycięzcy: <b>{payout}</b>\n\n"
+        "⚔️ <b>PRZECIWNIK ZNALEZIONY! Stół {stake} 🪙.</b>\n"
+        "Pula: <b>{bank} 🪙</b> · Dla zwycięzcy: <b>{payout}</b>\n\n"
         "⏱ Masz <b>{timeout} sekund</b> na wybór gestu!"
     ),
     "duel.move_saved": "✊ Gest przyjęty! Czekamy na gest przeciwnika...",
@@ -436,19 +437,19 @@ STRINGS: dict[str, str] = {
     "duel.win": (
         "🏆 <b>POJEDYNEK JEST TWÓJ!</b>\n\n"
         "Twój gest {winner_move} bije {loser_move}.\n"
-        "💰 Wygrana: <b>+{payout} monet</b> · 🔥 Spalone z puli: {burned}\n"
-        "💼 Saldo: <b>{balance} monet</b>"
+        "💰 Wygrana: <b>+{payout} 🪙</b> · 🔥 Spalone z puli: {burned}\n"
+        "💼 Saldo: <b>{balance} 🪙</b>"
     ),
     "duel.lose": (
         "💀 <b>POJEDYNEK PRZEGRANY.</b>\n\n"
         "Gest przeciwnika {winner_move} bije twój gest {loser_move}.\n"
-        "📉 Stawka <b>{stake} monet</b> trafiła do puli zwycięzcy.\n"
+        "📉 Stawka <b>{stake} 🪙</b> trafiła do puli zwycięzcy.\n"
         "Rewanż?"
     ),
     "duel.reaper_prefix": "⏰ <b>Koniec czasu rundy!</b> Brakujące gesty wybrał generator losowości.\n\n",
     "duel.bad_table": "❌ Taki stół nie istnieje.",
     "duel.already_in": "⚠️ Już siedzisz przy stole albo walczysz! Najpierw dokończ bieżący pojedynek.",
-    "duel.no_coins": "❌ Do tego stołu potrzebujesz {stake} monet na koncie.",
+    "duel.no_coins": "❌ Do tego stołu potrzebujesz {stake} 🪙 na koncie.",
     "duel.cancel_impossible": "⚠️ Tej kolejki nie da się już anulować (przeciwnik znaleziony albo stół zamknięty).",
     "duel.not_active": "⌛ Ten pojedynek już się zakończył.",
     "duel.not_participant": "🔒 To nie twój pojedynek!",
@@ -470,21 +471,21 @@ STRINGS: dict[str, str] = {
     "ref.text": (
         "🤝 <b>PROGRAM POLECEŃ ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Zapraszaj znajomych i otrzymuj <b>+{bonus} monet</b> za każdego, "
+        "Zapraszaj znajomych i otrzymuj <b>+{bonus} 🪙</b> za każdego, "
         "kto zarejestruje się przez twój osobisty link!\n\n"
         "🔗 <b>Twój link (kliknij, aby skopiować):</b>\n<code>{link}</code>\n\n"
         "📊 <b>TWOJE STATYSTYKI:</b>\n"
         "👥 Zaproszonych znajomych: <b>{invited}</b>\n"
-        "💰 Zarobione na poleconych: <b>{earned} monet</b>\n\n"
+        "💰 Zarobione na poleconych: <b>{earned} 🪙</b>\n\n"
         "..................................................\n"
         "<i>Podsyłaj link znajomym, wrzucaj na czaty klasowe i do social mediów — im większa ekipa, tym szybciej rośnie twoje saldo!</i>"
     ),
     "ref.btn_share": "📣 Udostępnij link",
     "ref.share_text": "Wbijaj do ekosystemu gier ROFL HUB!",
     "ref.qualified_line": ("⭐ <b>Podwójna nagroda:</b> gdy zaproszony znajomy rozegra {rounds} "
-                           "rund, dostajesz kolejne <b>+{bonus} monet</b>!"),
+                           "rund, dostajesz kolejne <b>+{bonus} 🪙</b>!"),
     "ref.qualified_notify": ("🤝 <b>Twój znajomy wkręcił się: już {rounds} rund!</b>\n"
-                             "Za kwalifikowanego poleconego dostajesz <b>+{bonus} monet</b>. "
+                             "Za kwalifikowanego poleconego dostajesz <b>+{bonus} 🪙</b>. "
                              "Zapraszaj dalej!"),
 
     # ---------------- переводы ----------------
@@ -496,22 +497,22 @@ STRINGS: dict[str, str] = {
         "<code>/transfer @username kwota</code> — po nazwie użytkownika\n"
         "<code>/transfer ROFL-HUB-777 kwota</code> — po VIP ID z aukcji\n\n"
         "Przykłady:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 Minimalna kwota: <b>{min} monet</b>"
+        "📌 Minimalna kwota: <b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ Nie znaleziono odbiorcy. Sprawdź ID Paszportu lub @username — gracz musi być zarejestrowany w bocie.",
     "tr.self": "🤨 Nie możesz przelać monet samemu sobie — to byłoby ekonomiczne perpetuum mobile!",
     "tr.blocked": "🚫 Ten gracz jest zablokowany — przelewy do niego są niedostępne.",
-    "tr.min": "❌ Minimalna kwota przelewu to {min} monet.",
-    "tr.insufficient": "❌ Za mało monet! Twoje saldo: <b>{balance}</b>.",
+    "tr.min": "❌ Minimalna kwota przelewu to {min} 🪙.",
+    "tr.insufficient": "❌ Za mało monet! Twoje saldo: <b>{balance} 🪙</b>.",
     "tr.err_insufficient": "❌ Za mało monet na koncie.",
     "tr.confirm": (
         "🔄 <b>POTWIERDŹ PRZELEW:</b>\n\n"
         "👤 Odbiorca: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Kwota do pobrania: <b>{amount} monet</b>{fee_line}\n"
-        "💰 Odbiorca otrzyma: <b>{received} monet</b>\n\n"
+        "💸 Kwota do pobrania: <b>{amount} 🪙</b>{fee_line}\n"
+        "💰 Odbiorca otrzyma: <b>{received} 🪙</b>\n\n"
         "<i>Przelewów nie da się cofnąć — sprawdź odbiorcę!</i>"
     ),
-    "tr.fee_line": "\n🔥 Prowizja huba: <b>{fee} monet</b> (spłonie)",
+    "tr.fee_line": "\n🔥 Prowizja huba: <b>{fee} 🪙</b> (spłonie)",
     "tr.btn_confirm": "✅ POTWIERDŹ PRZELEW",
     "tr.btn_cancel": "❌ Anuluj",
     "tr.cancelled_toast": "Przelew anulowany",
@@ -520,11 +521,11 @@ STRINGS: dict[str, str] = {
     "tr.done_toast": "✅ Przelew wykonany!",
     "tr.done": (
         "✅ <b>PRZELEW WYKONANY!</b>\n\n"
-        "💸 Wysłano: <b>{amount} monet</b> do gracza ID <code>{recipient_id}</code>\n"
-        "💰 Twoje saldo: <b>{balance} monet</b>"
+        "💸 Wysłano: <b>{amount} 🪙</b> do gracza ID <code>{recipient_id}</code>\n"
+        "💰 Twoje saldo: <b>{balance} 🪙</b>"
     ),
     "tr.received": (
-        "💰 <b>Masz przelew: {amount} monet!</b>\n"
+        "💰 <b>Masz przelew: {amount} 🪙!</b>\n"
         "Nadawca: ID <code>{sender_id}</code>. Saldo już doładowane — sprawdź /profile!"
     ),
 
@@ -576,7 +577,7 @@ STRINGS: dict[str, str] = {
     "dlv.miner_junior": "Młodszy Górnik",
     "dlv.miner_premium": "Cyber-Wiertacz",
     "dlv.fridge": "📦 Lodówka powiększona do <b>{capacity} kotletów</b>.",
-    "dlv.coins": "💰 Naliczono <b>+{amount} monet</b>.",
+    "dlv.coins": "💰 Naliczono <b>+{amount} 🪙</b>.",
     "dlv.boost_nuclear": "🔋 Nuklearne Przyspieszenie x5 aktywne do <b>{until} UTC</b>.",
     "dlv.boost_nitrogen": "❄️ Azotowe Chłodzenie +40% aktywne do <b>{until} UTC</b>.",
     "dlv.drone": "🛸 Mistrzowski Dron pilnuje farmy do <b>{until} UTC</b>.",
@@ -585,43 +586,43 @@ STRINGS: dict[str, str] = {
     "dlv.err_fridge": "Masz już lodówkę tej lub większej pojemności.",
     "dlv.err_no_team": "Nie masz jeszcze drużyny. Najpierw załóż ją przez /create_team.",
     "dlv.err_mega": "Twoja drużyna ma już status Mega-Klanu.",
-    "dlv.intern_upgrade": "♾ Twój Robot Stażysta awansował na <b>WIECZNEGO Robota Górnika</b>: 5 monet na godzinę, bez terminu!",
+    "dlv.intern_upgrade": "♾ Twój Robot Stażysta awansował na <b>WIECZNEGO Młodszego Górnika</b>: 5 🪙 na godzinę, bez terminu!",
     "dlv.err_no_intern": "Brak aktywowanego Robota Stażysty — najpierw aktywuj go w /farm.",
     "dlv.err_intern_refs": "Ulepszenie wymaga {need} kwalifikowanych znajomych (po 30 rund); masz {have}.",
     "mk.header": "📈 <b>GIEŁDA KOTLETÓW</b>\n..................................................\n\nOtwarte zlecenia: <b>{orders}</b> · kotletów w ofercie: <b>{cutlets}</b> · najlepsza cena: <b>{best}</b>\nProwizja hubu: <b>{fee}%</b> od sprzedaży (spalana — tarcza antyinflacyjna)\n🥩 W twoim magazynie: <b>{inv}</b> kotletów\n\n{body}\n\n<i>Kliknij zlecenie, aby kupić. Sprzedaż: /sell.</i>",
     "mk.empty": "Nie ma jeszcze ofert. Bądź pierwszy: /sell ilość cena",
-    "mk.order_line": "🥩 #{id} · <b>{qty} szt.</b> po <b>{price}</b> monet",
-    "mk.btn_order": "🛒 #{id}: {qty} szt. po {price} monet",
+    "mk.order_line": "🥩 #{id} · <b>{qty} szt.</b> po <b>{price}</b> 🪙",
+    "mk.btn_order": "🛒 #{id}: {qty} szt. po {price} 🪙",
     "mk.btn_my": "📋 Moje zlecenia",
     "mk.btn_sell_help": "💰 Jak sprzedać kotlety",
     "mk.btn_refresh": "🔄 Odśwież",
     "mk.btn_back": "← Do giełdy",
-    "mk.pick": "🛒 <b>Zlecenie #{id}</b>: dostępne {qty} szt. po {price} monet.\nIle kupić?",
-    "mk.btn_qty": "{qty} szt. — {total} monet",
-    "mk.btn_qty_all": "Wszystkie {qty} szt. — {total} monet",
+    "mk.pick": "🛒 <b>Zlecenie #{id}</b>: dostępne {qty} szt. po {price} 🪙.\nIle kupić?",
+    "mk.btn_qty": "{qty} szt. — {total} 🪙",
+    "mk.btn_qty_all": "Wszystkie {qty} szt. — {total} 🪙",
     "mk.buy_toast": "Transakcja zamknięta!",
-    "mk.buy_done": "✅ Kupiono <b>{qty} kotletów</b> za <b>{total} monet</b>. Są już w magazynie — tankuj Wiertła!",
-    "mk.sold_notify": "💰 <b>Giełda: sprzedano!</b> Zlecenie #{id}: {qty} szt. po {price}. Otrzymujesz <b>+{got} monet</b> (prowizja {fee} spalona).",
-    "mk.sell_help": "💰 <b>JAK SPRZEDAĆ KOTLETY</b>\n\nKomenda: <code>/sell ilość cena</code>\nPrzykład: <code>/sell 10 50</code> — 10 kotletów po 50 monet.\n\nKotlety schodzą z magazynu i czekają w zleceniu (możesz je wycofać w każdej chwili). Do {max_qty} szt. w zleceniu i do {max_orders} otwartych zleceń. Przy sprzedaży spalana jest prowizja {fee}%.",
-    "mk.sell_confirm": "📝 Wystawić <b>{qty} kotletów</b> po <b>{price}</b> monet?\nSuma: {total} · prowizja {fee} spłonie · dostaniesz <b>{got} monet</b>.",
+    "mk.buy_done": "✅ Kupiono <b>{qty} kotletów</b> za <b>{total} 🪙</b>. Są już w magazynie — tankuj Wiertacze!",
+    "mk.sold_notify": "💰 <b>Giełda: sprzedano!</b> Zlecenie #{id}: {qty} szt. po {price}. Otrzymujesz <b>+{got} 🪙</b> (prowizja {fee} spalona).",
+    "mk.sell_help": "💰 <b>JAK SPRZEDAĆ KOTLETY</b>\n\nKomenda: <code>/sell ilość cena</code>\nPrzykład: <code>/sell 10 50</code> — 10 kotletów po 50 🪙.\n\nKotlety schodzą z magazynu i czekają w zleceniu (możesz je wycofać w każdej chwili). Do {max_qty} szt. w zleceniu i do {max_orders} otwartych zleceń. Przy sprzedaży spalana jest prowizja {fee}%.",
+    "mk.sell_confirm": "📝 Wystawić <b>{qty} kotletów</b> po <b>{price}</b> 🪙?\nSuma: {total} · prowizja {fee} spłonie · dostaniesz <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ WYSTAW NA GIEŁDĘ",
     "mk.btn_cancel": "❌ Anuluj",
     "mk.sell_toast": "Zlecenie wystawione!",
-    "mk.sell_done": "✅ Zlecenie <b>#{id}</b> na giełdzie: {qty} szt. po {price} monet. Dam znać, gdy ktoś kupi.",
+    "mk.sell_done": "✅ Zlecenie <b>#{id}</b> na giełdzie: {qty} szt. po {price} 🪙. Dam znać, gdy ktoś kupi.",
     "mk.cancelled_toast": "Anulowano",
     "mk.cancel_text": "❌ <b>Anulowano.</b> Kotlety zostały w magazynie.",
     "mk.my_header": "📋 <b>TWOJE ZLECENIA</b>\n\n",
-    "mk.my_line": "🥩 #{id} · {qty} szt. po {price} monet",
+    "mk.my_line": "🥩 #{id} · {qty} szt. po {price} 🪙",
     "mk.my_empty": "📋 Nie masz otwartych zleceń.",
     "mk.btn_cancel_order": "❌ Wycofaj zlecenie #{id}",
     "mk.order_cancelled": "↩️ Zlecenie #{id} wycofane: <b>{qty} kotletów</b> wróciło do magazynu.",
     "mk.err_qty": "❌ Ilość: od 1 do {max} kotletów w zleceniu.",
-    "mk.err_price": "❌ Cena: od {min} do {max} monet za kotlet.",
+    "mk.err_price": "❌ Cena: od {min} do {max} 🪙 za kotlet.",
     "mk.err_no_cutlets": "❌ W magazynie masz tylko {have} kotletów. Kotlety z lodówki nie trafiają na giełdę — zobacz /farm.",
     "mk.err_too_many": "❌ Limit: maksymalnie {max} otwartych zleceń. Wycofaj jedno w „Moje zlecenia”.",
     "mk.err_not_found": "❌ To zlecenie jest już zamknięte.",
     "mk.err_own": "🤨 Nie możesz kupić własnego zlecenia.",
-    "mk.err_insufficient": "❌ Za mało monet: potrzeba {total}.",
+    "mk.err_insufficient": "❌ Za mało: potrzeba {total} 🪙.",
     "farm.btn_market": "📈 Giełda kotletów",
 
     # ---------------- ресурсы (волна 22.10, вечер) ----------------
@@ -638,6 +639,13 @@ STRINGS: dict[str, str] = {
     "menu.btn_raids": "🏴‍☠️ Najazdy",
     "menu.btn_workshop": "🔧 Warsztat",
     "farm.btn_workshop": "🔧 Warsztat",
+    "farm.btn_app": "🏭 Farma w aplikacji",
+    "menu.btn_app": "🚀 Aplikacja gry: farma, warsztat, najazdy",
+    "app.btn_section": "🚀 OTWÓRZ W APLIKACJI",
+    "app.goto_workshop": "🔧 <b>Warsztat</b> mieszka w aplikacji gry: surowce, receptury i crafting jednym tapnięciem.",
+    "app.goto_raids": "🏴‍☠️ <b>Najazdy</b> mieszkają w aplikacji gry: zwiad, postawa obronna i rewanż.",
+    "app.goto_station": "🛰 <b>Stacja drużyny</b> mieszka w aplikacji gry: postęp, wkłady i bonus dla całej drużyny.",
+    "app.goto_market": "📈 <b>Giełda kotletów</b> jest wygodniejsza w aplikacji gry: oferty, sprzedaż i twoje zlecenia na jednym ekranie.",
     "farm.boost_armor": "🛡 Cyber-pancerz poz. {level}: +{percent}% do wydobycia na zawsze",
     "farm.boost_station": "🛰 Stacja drużyny poz. {level}: +{percent}% do wydobycia",
     "clan.btn_station": "🛰 Stacja drużyny",
@@ -737,8 +745,8 @@ STRINGS: dict[str, str] = {
         "..................................................\n\n"
         "{goals}\n\n"
         "{status}\n"
-        "🎁 Skrzynia: <b>+{coins} monet</b> i <b>+{res}</b> losowego surowca\n"
-        "🔥 Seria: <b>{streak}</b> dn. · każdy {every}. dzień z rzędu daje +{bonus} monet do skrzyni\n\n"
+        "🎁 Skrzynia: <b>+{coins} 🪙</b> i <b>+{res}</b> losowego surowca\n"
+        "🔥 Seria: <b>{streak}</b> dn. · każdy {every}. dzień z rzędu daje +{bonus} 🪙 do skrzyni\n\n"
         "<i>Cele odnawiają się o 00:00 UTC.</i>"
     ),
     "goal.status_progress": "⏳ Zamknij wszystkie trzy — i skrzynia jest twoja.",
@@ -748,7 +756,7 @@ STRINGS: dict[str, str] = {
     "goal.btn_go": "→ {goal}",
     "goal.btn_refresh": "🔄 Odśwież",
     "goal.toast": "Skrzynia otwarta!",
-    "goal.chest": "🎁 <b>SKRZYNIA OTWARTA!</b>\n💰 +{coins} monet · {icon} +{qty} {name}\n🔥 Seria: {streak} dn.",
+    "goal.chest": "🎁 <b>SKRZYNIA OTWARTA!</b>\n💰 +{coins} 🪙 · {icon} +{qty} {name}\n🔥 Seria: {streak} dn.",
     "goal.err_claimed": "🎁 Dziś już odebrano.",
     "goal.err_not_done": "⏳ Jeszcze nie wszystkie cele są zamknięte.",
     "goal.win_quiz": "Wygraj {n} rund quizu",
@@ -833,37 +841,50 @@ STRINGS: dict[str, str] = {
 
 MINIAPP: dict[str, str] = {
     "subtitle": "twoje growe imperium na jednym ekranie",
+    "tab_passport": "📋 Paszport",
+    "tab_farm": "🚜 Farma",
+    "tab_goals": "🎯 Cele",
+    "tab_workshop": "🔧 Warsztat",
+    "tab_raids": "🏴‍☠️ Najazdy",
+    "tab_market": "📈 Giełda",
+    "tab_team": "🏆 Drużyna",
+    "tab_shop": "🏪 Sklep",
+    "tab_top": "👑 TOP",
     "passport": "📋 PASZPORT GRACZA",
-    "coins": "monet",
+    "coins": "🪙",
     "brain": "🧠 Poziom intelektu",
-    "toNext": "do poziomu {n}: {left} poprawnych odpowiedzi w quizie (+{reward} monet)",
+    "toNext": "do poziomu {n}: {left} poprawnych odpowiedzi w quizie (+{reward} 🪙)",
     "farm": "🚜 CYBER-FARMA",
     "robots": "Roboty (górnicy / wiertacze)",
-    "fueled": "Zatankowane wiertacze",
-    "speed": "Tempo wydobycia",
-    "perHour": "{v} monet/godz.",
-    "fridge": "Lodówka",
-    "inv": "Kotlety w magazynie",
-    "burnout": "Najbliższe wypalenie",
-    "intern": "Roboty Stażyści (1 moneta/h, wieczne)",
+    "intern": "Roboty Stażyści (1 🪙/h, wieczne)",
     "activateIntern": "🚀 AKTYWUJ ROBOTA STAŻYSTĘ",
     "internDone": "🤖 Twój Robot Stażysta zaczął zmianę!",
     "rank": "🎖 Ranga",
-    "openFarm": "🏭 OTWÓRZ FARMĘ",
+    "openFarm": "🏭 OTWÓRZ KOPALNIĘ",
     "farmScene": "🏭 TWOJA FARMA",
     "back": "← Wstecz",
     "minedVisit": "wydobyte podczas tej wizyty",
     "unit_intern": "Robot Stażysta",
-    "unit_junior": "Robot Górnik",
-    "unit_premium": "Cyber-Wiertło",
+    "unit_junior": "Młodszy Górnik",
+    "unit_premium": "Cyber-Wiertacz",
     "eternal": "wieczny",
     "fueledAll": "zatankowane",
     "fueledPart": "{a} z {b} zatankowanych",
     "license": "licencja na 30 dni",
     "emptyFarm": "Kopalnia jest pusta. Aktywuj Robota Stażystę albo kup roboty w sklepie!",
     "madeBy": "Chcesz takiego bota dla swojego projektu? Napisz do @mister_telebot",
+    "fueled": "Zatankowane wiertacze",
+    "speed": "Tempo wydobycia",
+    "perHour": "{v} 🪙/h",
+    "fridge": "Lodówka",
+    "inv": "Kotlety w magazynie",
+    "burnout": "Najbliższe wypalenie",
     "boosts": "Aktywne wzmocnienia",
     "none": "brak",
+    "resources": "🧰 Surowce",
+    "bonusPct": "Stały bonus do wydobycia",
+    "shuttle": "🚀 Wahadłowiec zbudowany",
+    "resHint": "Każde zwycięstwo przynosi surowiec danej gry. Wydawaj je w warsztacie.",
     "bonusReady": "🎁 ODBIERZ CODZIENNY KOTLET",
     "bonusWait": "⏳ Bonus za {h} godz. {m} min",
     "bonusDone": "🎉 Kotlet w magazynie!",
@@ -872,7 +893,7 @@ MINIAPP: dict[str, str] = {
     "teamLabel": "Drużyna",
     "captain": "👑 Jesteś kapitanem!",
     "members": "Skład",
-    "noTeam": "Nie masz jeszcze drużyny — zbierz ekipę w czacie bota!",
+    "noTeam": "Nie masz jeszcze drużyny. Załóż własną albo dołącz do innej w czacie bota: „🏆 DRUŻYNY I KLANY”.",
     "top": "👑 TOP-100 BOGACZY EKOSYSTEMU",
     "shop": "🏪 SKLEP",
     "shopFarm": "🚜 DLA FARMY",
@@ -880,20 +901,118 @@ MINIAPP: dict[str, str] = {
     "shopHint": "Płatność oficjalnymi Telegram Stars — tutaj, jednym tapnięciem.",
     "paid": "🎉 Opłacone! Towar jest już na twoim koncie.",
     "payFail": "Płatność nie przeszła. Spróbuj jeszcze raz.",
-    "oldClient": "Zaktualizuj Telegram, aby kupować z poziomu Mini App, albo otwórz sklep w czacie bota.",
-    "ctaNoRobots": "💤 Farma jest pusta! Spraw sobie pierwszego robota — monety będą kapać całą dobę.",
+    "oldClient": "Zaktualizuj Telegram, aby kupować w aplikacji, albo otwórz sklep w czacie bota.",
+    "ctaNoRobots": "💤 Farma jest prawie pusta! Spraw sobie mocniejszego robota — 🪙 będą kapać całą dobę.",
     "ctaHungry": "🚨 Wiertacze głodują ({n} bez paliwa) — wydobycie stoi!",
     "ctaLowFuel": "⚠️ Kotletów starczy na mniej niż dobę pracy Wiertaczy.",
     "ctaShopBtn": "🛒 Do sklepu",
-    "footer": "Pełne sterowanie — w czacie bota: /menu",
+    "footer": "Gry i quiz — w czacie bota",
     "noProfile": "Nie znaleziono profilu. Otwórz bota i naciśnij /start!",
     "blocked": "Konto zablokowane przez administrację.",
     "error": "Nie udało się załadować danych. Spróbuj później.",
     "outside": "Otwórz tę aplikację z Telegram-bota ROFL HUB.",
-    "resources": "🧰 Surowce",
-    "bonusPct": "Stały bonus do wydobycia",
-    "shuttle": "🚀 Wahadłowiec zbudowany",
-    "resHint": "Metal — Kamień-Papier-Nożyce, wodór — Wyżej/Niżej, kryształy — quiz, części — sejf. Wykorzystaj je w warsztacie w czacie bota.",
+    "robotsTitle": "🤖 TWOJE ROBOTY",
+    "buyMore": "🛒 Kup",
+    "rateShort": "{v} 🪙/h",
+    "refuelOne": "🥩 Zatankuj 1",
+    "refuelAll": "⚡ Zatankuj wszystkie",
+    "refueled": "Zatankowano: {n} 🥩",
+    "res_metal_src": "Kamień-Papier-Nożyce i pojedynki",
+    "res_hydrogen_src": "Wyżej/Niżej",
+    "res_crystal_src": "Quiz",
+    "res_parts_src": "Cyber-Sejf",
+    "resWhere": "gdzie zdobywać",
+    "ws_title": "🔧 WARSZTAT",
+    "ws_hint": "Surowce z gier zamieniają się w ulepszenia. Starczy surowców — naciśnij „Zbuduj”.",
+    "ws_craft": "Zbuduj",
+    "ws_owned": "✅ Już masz",
+    "ws_crafted": "Gotowe! Ulepszenie już działa.",
+    "ws_armor": "🛡 Cyber-pancerz",
+    "ws_armorLvl": "poziom {l}/{m} · +{p}% do wydobycia za poziom",
+    "ws_shuttleOn": "🚀 Wahadłowiec zbudowany: prowizja giełdy {fee}%",
+    "ws_shuttleOff": "🚀 Brak Wahadłowca: prowizja giełdy {fee}%",
+    "eff_nitrogen": "+40% do wydobycia wszystkich robotów",
+    "eff_nuclear": "×5 do wydobycia, Wiertacze jedzą ×3 kotletów",
+    "eff_drone": "roboty się nie starzeją",
+    "eff_shield": "nikt nie może cię najechać",
+    "eff_cutlet": "1 cyber-kotlet do magazynu",
+    "eff_armor": "+10% do wydobycia na zawsze",
+    "eff_shuttle": "prowizja giełdy o połowę niższa, zlecenia do 500 kotletów — na zawsze",
+    "raid_title": "🏴‍☠️ NAJAZDY",
+    "raid_how": "📖 Jak to działa",
+    "raid_rule1": "Wybierasz gest, a cel ma z góry ustawioną postawę obronną. O wyniku decyduje kamień-papier-nożyce: to pojedynek decyzji, a nie loteria.",
+    "raid_rule2": "Zwycięstwo: zabierasz {pct}% każdego surowca celu, do {cap} na surowiec. Porażka: oddajesz celowi {fpct}% swoich, do {fcap}. Remis: paliwo spłonęło.",
+    "raid_rule3": "Łupem padają tylko surowce. Monety, roboty i kotlety są całkowicie bezpieczne. Nowicjusze są chronieni przez {days} dni, członków własnej drużyny atakować nie można.",
+    "raid_rule4": "Wylot kosztuje {fuel} 💧 wodoru, następny — za {cd} godz. Jeśli ktoś cię najechał, rewanż jest darmowy przez {rh} godz.",
+    "raid_fuel": "💧 Wodór",
+    "raid_ready": "🚀 Statek gotowy do wylotu",
+    "raid_cooldown": "⏳ Przeładowanie: {m} min",
+    "raid_shieldOn": "🛡 Tarcza do {t}",
+    "raid_shieldNewbie": "🛡 Ochrona nowicjusza",
+    "raid_shieldOff": "🛡 Brak tarczy — zbuduj ją w warsztacie",
+    "raid_stance": "✊ TWOJA POSTAWA OBRONNA",
+    "raid_stanceHint": "Nią odpierasz cudze najazdy. Zmieniaj ją czasem — przewidywalnych okrada się częściej.",
+    "raid_stanceNone": "Postawa nie wybrana — będzie losowa",
+    "raid_stanceSaved": "Postawa zapisana",
+    "raid_stats": "Najazdy: {a} (udane: {w}) · odparte: {h} z {d}",
+    "raid_scout": "🔭 ZWIAD: znajdź cele",
+    "raid_targets": "🎯 Wybierz cel",
+    "raid_res": "surowców ≈{n}",
+    "raid_noTargets": "Brak odpowiednich celów: tarcze, przeładowania, nowicjusze. Zajrzyj później.",
+    "raid_pickMove": "✊ Twój gest przeciw postawie gracza {name}",
+    "raid_revenge": "⚔️ REWANŻ",
+    "raid_revengeBtn": "⚔️ Oddaj cios: {name}",
+    "raid_win": "🏴‍☠️ Najazd udany!",
+    "raid_draw": "😐 Remis — statek wrócił pusty",
+    "raid_lose": "💥 Obrona wytrzymała",
+    "raid_vs": "{m} przeciw {s}",
+    "raid_loot": "Łup: {l}",
+    "raid_lost": "Oddano celowi: {l}",
+    "rock": "🪨 Kamień",
+    "scissors": "✂️ Nożyce",
+    "paper": "📄 Papier",
+    "mk_title": "📈 GIEŁDA KOTLETÓW",
+    "mk_stats": "Zlecenia: {o} · kotlety: {c} · najlepsza cena: {b} 🪙",
+    "mk_feeLine": "Prowizja {f}% od sprzedaży spala się — tarcza przed inflacją",
+    "mk_inv": "🥩 W twoim magazynie: {n}",
+    "mk_offers": "🛒 OFERTY",
+    "mk_empty": "Na razie brak ofert — wystaw swoją jako pierwszy(a)!",
+    "mk_offer": "{q} 🥩 × {p} 🪙",
+    "mk_buyHow": "Ile kupić?",
+    "mk_all": "Wszystkie {q}",
+    "mk_sellTitle": "💰 SPRZEDAJ KOTLETY",
+    "mk_qty": "Ile kotletów",
+    "mk_price": "Cena za sztukę, 🪙",
+    "mk_preview": "Transakcja {t} 🪙 · dostaniesz {g} 🪙 · spłonie {f} 🪙",
+    "mk_sell": "Wystaw na giełdę",
+    "mk_limits": "Do {q} kotletów w zleceniu, do {o} otwartych zleceń",
+    "mk_my": "📋 MOJE ZLECENIA",
+    "mk_cancel": "Wycofaj",
+    "mk_bought": "Kupiono {q} 🥩 za {t} 🪙",
+    "mk_listed": "Zlecenie wystawione! Dam znać, gdy ktoś kupi.",
+    "mk_cancelledMsg": "Zlecenie wycofane, kotlety wróciły do magazynu",
+    "st_title": "🛰 STACJA DRUŻYNY",
+    "st_level": "Poziom {l} z {m}",
+    "st_bonus": "+{p}% do wydobycia dla każdego członka drużyny",
+    "st_next": "Poziom {n} wymaga po {c} każdego surowca",
+    "st_max": "🏁 Stacja ukończona!",
+    "st_feed": "🧾 Ostatnie wkłady",
+    "st_feedEmpty": "Nikt jeszcze nic nie wpłacił — bądź pierwszy(a)",
+    "st_donate": "Wpłać",
+    "st_all": "Wszystko",
+    "st_done": "Wpłacono!",
+    "st_hint": "Buduje cała drużyna, bonus dostaje każdy. Wyjście z drużyny — koniec bonusu.",
+    "st_off": "Stacja jest chwilowo w przerwie technicznej",
+    "goals_title": "🎯 CELE NA DZIŚ",
+    "goals_chest": "🎁 Skrzynia za wszystkie trzy: +{c} 🪙 i +{r} losowego surowca",
+    "goals_streak": "🔥 Seria: {s} dn. · każdy {e}. dzień z rzędu +{b} 🪙",
+    "goals_claim": "🎁 ODBIERZ SKRZYNIĘ",
+    "goals_claimed": "🎁 Dzisiejsza skrzynia odebrana. Jutro nowe cele!",
+    "goals_reset": "Cele odnawiają się o 00:00 UTC",
+    "goals_got": "🎁 +{c} 🪙 · +{q} {n} · seria {s} dn.",
+    "featureOff": "⚙️ Sekcja w przerwie technicznej",
+    "done": "Gotowe!",
+    "loading": "⏳ Ładowanie…",
 }
 
 COMMANDS: dict[str, str] = {

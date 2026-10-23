@@ -17,6 +17,7 @@ from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 
 from bots.main_bot.guards import feature_enabled
+from bots.main_bot.webapp_links import send_app_link
 from shared.analytics import track
 from shared.database import db
 from shared.economy import (
@@ -111,6 +112,8 @@ async def _safe_edit(message: types.Message, text: str, kb: types.InlineKeyboard
 async def cmd_station(message: types.Message, user_lang: str = "ru"):
     if not await feature_enabled(message, "station", user_lang):
         return
+    if await send_app_link(message, user_lang, "team", "app.goto_station"):
+        return
     text, kb = await _view(message.from_user.id, user_lang)
     await message.answer(text, reply_markup=kb, parse_mode="HTML")
 
@@ -120,6 +123,8 @@ async def station_refresh(callback: types.CallbackQuery, user_lang: str = "ru"):
     if not await feature_enabled(callback, "station", user_lang):
         return
     await callback.answer()
+    if callback.data == "open_station" and await send_app_link(callback.message, user_lang, "team", "app.goto_station"):
+        return
     text, kb = await _view(callback.from_user.id, user_lang)
     if callback.data == "open_station":
         await callback.message.answer(text, reply_markup=kb, parse_mode="HTML")

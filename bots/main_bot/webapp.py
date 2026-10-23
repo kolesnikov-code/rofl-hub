@@ -89,6 +89,7 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now,
             "premium": counts["premium"],
             "premium_fueled": counts["premium_fueled"],
             "speed_hour": speed_hour,
+            "rates": {"intern": intern_rate, "junior": junior_rate, "premium": premium_rate},
             "fridge": user["fridge_cutlets"],
             "fridge_capacity": user["fridge_capacity"],
             "inv_cutlets": user["inv_cutlets"],
@@ -168,8 +169,12 @@ async def handle_me(request: web.Request) -> web.Response:
                 station_level = await conn.fetchval(
                     "SELECT level FROM team_stations WHERE team_id = $1", user["team_id"]) or 0
 
-    return web.json_response(build_me_payload(user, miners, quiz_row, team_row, vip, now,
-                                              resources=resources, station_level=station_level))
+    payload = build_me_payload(user, miners, quiz_row, team_row, vip, now,
+                               resources=resources, station_level=station_level)
+    # Какие разделы включены в пульте — выключенные вкладки приложение прячет
+    from shared.feature_flags import all_feature_flags
+    payload["features"] = await all_feature_flags()
+    return web.json_response(payload)
 
 
 async def handle_bonus(request: web.Request) -> web.Response:
@@ -344,6 +349,9 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app.router.add_get("/api/shop", handle_shop)
     app.router.add_post("/api/invoice", handle_invoice)
     app.router.add_get("/health", lambda r: web.json_response({"ok": True}))
+    # Игровые разделы приложения: мастерская, налёты, биржа, станция, цели, заправка
+    from bots.main_bot.webapp_game import register_game_routes
+    register_game_routes(app)
     # Арты роботов для сцены фермы: img/robots/<kind>.png (арты владельца) или .svg (заглушки)
     app.router.add_static("/img", WEBAPP_DIR / "img")
     return app

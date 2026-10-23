@@ -70,7 +70,7 @@ STRINGS = {
     "start.intro2": (
         "🎁 <b>PEGUE AQUI SUAS PRIMEIRAS RECOMPENSAS DE REGISTRO!</b>\n"
         "..................................................\n"
-        "💸 Você recebeu: <b>{balance} moedas</b>\n"
+        "💸 Você recebeu: <b>{balance} 🪙</b>\n"
         "🥩 Você recebeu: <b>{cutlets} ciber-bife</b>\n"
         "..................................................\n"
         "Esse é o seu bônus de boas-vindas por entrar no clube ROFL HUB.\n\n"
@@ -137,11 +137,11 @@ STRINGS = {
         "• /quests — MISSÕES: histórias de detetive, comédias e enigmas com recompensas\n"
         "• /rps, /high_low, /safe — Jogos rápidos valendo moedas\n\n"
         "👥 <b>GESTÃO DA TROPA:</b>\n"
-        "• /create_team — Registrar sua equipe por 100.000 moedas\n"
+        "• /create_team — Registrar sua equipe por 100.000 🪙\n"
         "• /my_team — Painel da tropa e LISTA DE MEMBROS com níveis 🧠\n"
         "• /all_teams — Roleta de equipes aleatórias\n\n"
         "💸 <b>DINHEIRO E AMIGOS:</b>\n"
-        "• /invite — Seu link de indicação: +1000 moedas por amigo\n"
+        "• /invite — Seu link de indicação: +1000 🪙 por amigo\n"
         "• /transfer — Enviar moedas a outro jogador\n\n"
         "📚 <b>GUIA E REGRAS:</b>\n"
         "• /faq — Guia completo do ecossistema (abre no Mini App)\n"
@@ -154,9 +154,9 @@ STRINGS = {
         "..................................................\n\n"
         "Aqui você pode enfrentar o bot em duelos rápidos ou encarar o "
         "teste relâmpago de inteligência para faturar alto — ou zerar o saldo!\n\n"
-        "💸 Vitória paga: <b>+2 moedas</b> (Ciber-Cofre: <b>+5</b>)\n"
-        "💀 Derrota ou empate desconta: <b>-1 moeda</b>\n"
-        "🧠 No Quiz há um cronômetro de 15 segundos e níveis de inteligência: o nível 1 pede 10 respostas certas e paga <b>+100 moedas</b>, "
+        "💸 Vitória paga: <b>+2 🪙</b> (Ciber-Cofre: <b>+5</b>)\n"
+        "💀 Derrota ou empate desconta: <b>-1 🪙</b>\n"
+        "🧠 No Quiz há um cronômetro de 15 segundos e níveis de inteligência: o nível 1 pede 10 respostas certas e paga <b>+100 🪙</b>, "
         "cada nível seguinte é 10 respostas mais longo — mas a recompensa cresce em 100!\n\n"
         "..................................................\n"
         "👇 <b>TOQUE EM UM BOTÃO ABAIXO PARA COMEÇAR UMA RODADA AGORA:</b>"
@@ -182,7 +182,7 @@ STRINGS = {
         "Ciber-Perfurador — 10/h, e CADA Perfurador come o próprio ciber-bife por dia. "
         "Todos os robôs duram 30 dias (o Drone Mestre pausa o desgaste).\n"
         "🧠 Quiz: 15 segundos por resposta, níveis de inteligência com recompensas crescentes.\n"
-        "⚔️ Duelos contra jogadores reais em mesas de 10/100/1000 moedas.\n"
+        "⚔️ Duelos contra jogadores reais em mesas de 10/100/1000 🪙.\n"
         "🏆 Equipes de até 50 guerreiros (Mega-Clã — até 1000) e eventos de Batalha com prêmios para todos.\n\n"
         "..................................................\n"
         "👇 <b>O guia completo com todas as mecânicas — a um toque:</b>"
@@ -213,7 +213,7 @@ STRINGS = {
     ),
     "quest.card": (
         "{title}\n"
-        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} moedas pela primeira vitória\n"
+        "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} 🪙 pela primeira vitória\n"
         "..................................................\n\n"
         "{teaser}\n\n{status}"
     ),
@@ -225,11 +225,11 @@ STRINGS = {
     "quest.btn_resume": "⏯ CONTINUAR",
     "quest.btn_list": "🗺️ Lista de missões",
     "quest.btn_replay": "🔄 Jogar de novo",
-    "quest.win_first": "\n\n🏆 <b>MISSÃO CONCLUÍDA! Recompensa: +{coins} moedas.</b>",
+    "quest.win_first": "\n\n🏆 <b>MISSÃO CONCLUÍDA! Recompensa: +{coins} 🪙.</b>",
     "quest.win_repeat": "\n\n✅ <b>Concluída de novo!</b> A recompensa desta missão já foi recebida antes.",
     "quest.fail_footer": "\n\n💀 <i>Não foi o melhor dos finais... mas a história sempre pode ser rejogada!</i>",
     "quest.stale": "⏳ Essa cena já ficou para trás — seguindo do ponto atual!",
-    "quest.no_coins": "❌ Moedas insuficientes para a dica ({cost}). Dê um pulo na fazenda!",
+    "quest.no_coins": "❌ A dica custa {cost} 🪙 e seu saldo é menor. Dê um pulo na fazenda!",
     "quest.not_found": "❌ Missão não encontrada.",
     "menu.btn_quests": "🗺️ MISSÕES",
 
@@ -241,27 +241,28 @@ STRINGS = {
     "farm.status_all_fueled": "🟢 Todos os Ciber-Perfuradores estão abastecidos e minerando moedas!",
     "farm.status_partial": "🟡 {fueled} de {total} Ciber-Perfuradores abastecidos. Os outros esperam bifes na geladeira!",
     "farm.status_no_fuel": "🔴 Os Ciber-Perfuradores pararam! Falta combustível na geladeira.",
-    "farm.status_no_drills": "💡 Compre Ciber-Perfuradores no /shop para aumentar sua renda.",
+    "farm.status_no_drills": "💡 Pegue um robô mais forte no /shop — sua fazenda vai minerar mais.",
     "farm.boost_nuclear": "🔋 Boost Nuclear x5 até {until} UTC (consumo de bifes ×3)",
     "farm.boost_nitrogen": "❄️ Resfriamento a Nitrogênio +40% até {until} UTC",
     "farm.boost_drone": "🛸 O Drone Mestre prolonga a vida dos robôs até {until} UTC",
     "farm.no_boosts": "Nenhum boost ativo — dê uma olhada no /shop.",
     "farm.burnout": "🔥 Próxima queima de robô: <b>{until} UTC</b>\n",
     "farm.btn_activate_intern": "🚀 Ativar seu Robô Estagiário (grátis)",
-    "farm.intern_activated": "🤖 Seu Robô Estagiário entrou no turno! +1 moeda por hora para sempre, sem combustível e sem validade.",
+    "farm.intern_activated": "🤖 Seu Robô Estagiário entrou no turno! +1 🪙 por hora para sempre, sem combustível e sem validade.",
     "farm.intern_already": "🤖 Seu Robô Estagiário já está trabalhando.",
-    "farm.intern_line": "🤖 Robôs Estagiários ({rate} moeda/h, eternos): <code>{count}</code>",
-    "farm.intern_hint": "🎁 Você tem um Robô Estagiário grátis! Toque no botão abaixo e ele vai minerar 1 moeda por hora para sempre.",
+    "farm.intern_line": "• Robôs Estagiários ({rate} 🪙/h, eternos): <code>{count}</code>\n",
+    "farm.intern_hint": "🎁 Você tem um Robô Estagiário grátis! Toque no botão abaixo e ele vai minerar 1 🪙 por hora para sempre.",
     "farm.dashboard": (
         "🚜 <b>HUB CENTRAL DE COMBUSTÍVEL DO ROFL HUB</b>\n"
         "..................................................\n\n"
         "🤖 Robôs ativos na usina: <b>{total}</b>\n"
-        "• Robôs Mineradores ({junior_rate} moedas/h): <code>{junior}</code>\n"
-        "• Ciber-Perfuradores ({premium_rate} moedas/h): <code>{premium}</code>\n"
+        "{intern}"
+        "• Robôs Mineradores ({junior_rate} 🪙/h): <code>{junior}</code>\n"
+        "• Ciber-Perfuradores ({premium_rate} 🪙/h): <code>{premium}</code>\n"
         "{burnout}\n"
         "📊 <b>VELOCIDADE ATUAL DA SUA FAZENDA:</b>\n"
-        "• Produção por hora: <b>+{speed_hour} moedas</b>\n"
-        "• Produção por dia: <b>+{speed_day} moedas</b>\n\n"
+        "• Produção por hora: <b>+{speed_hour} 🪙</b>\n"
+        "• Produção por dia: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>BOOSTS:</b>\n{boosts}\n\n"
         "📋 <b>STATUS DA USINA DO JOGO:</b>\n"
         "{status}\n\n"
@@ -285,10 +286,10 @@ STRINGS = {
         "..................................................\n\n"
         "🆔 Seu ID de Passaporte: <code>{user_id}</code>\n"
         "{vip}"
-        "💰 Moedas agora: <b>{balance} moedas</b>\n"
+        "💰 Moedas agora: <b>{balance} 🪙</b>\n"
         "🏆 Seu status: <b>{team}</b>\n"
         "🧠 Nível de inteligência: <b>{level}</b> · até o nível {next_level}: "
-        "<b>{left}</b> respostas certas no /quiz (recompensa: +{reward} moedas)\n\n"
+        "<b>{left}</b> respostas certas no /quiz (recompensa: +{reward} 🪙)\n\n"
         "..................................................\n"
         "<i>Aqui aparece o que você tem neste exato momento. Use os botões para voar até as outras seções!</i>"
     ),
@@ -316,21 +317,21 @@ STRINGS = {
     "img.premium": "Ciber-Perfuradores: {count}",
 
     # ---------------- jogos: motor comum ----------------
-    "games.win": "🎉 <b>VITÓRIA!</b> 🎉\nMoedas creditadas: <b>+{reward}</b>",
-    "games.lose": "💀 <b>DERROTA!</b>\nMoedas descontadas: <b>-{penalty}</b>",
-    "games.draw": "🤝 <b>EMPATE!</b>\nMoedas descontadas: <b>-{penalty}</b>",
+    "games.win": "🎉 <b>VITÓRIA!</b> 🎉\nCreditado: <b>+{reward} 🪙</b>",
+    "games.lose": "💀 <b>DERROTA!</b>\nDescontado: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>EMPATE!</b>\nDescontado: <b>-{penalty} 🪙</b>",
     "games.limit": (
         "🛑 <b>Limite diário atingido!</b>\n\n"
         "Você já pegou {limit} vitórias em {game} hoje. O limite renova às 00:00 UTC.\n\n"
         "⚡ Remover o limite por 24 horas — 5 ★, por 30 dias — 99 ★ (seção “Jogos” no /shop)."
     ),
-    "games.no_coins": "❌ Você tem 0 moedas — nada para pagar a taxa da rodada. Colete a renda da fazenda no /farm!",
-    "games.balance": "💰 Saldo: <b>{balance} moedas</b>",
+    "games.no_coins": "❌ Você tem 0 🪙 — nada para pagar a taxa da rodada. Colete a renda da fazenda no /farm!",
+    "games.balance": "💰 Saldo: <b>{balance} 🪙</b>",
     "games.btn_retry": "🎮 Jogar de novo!",
     "games.btn_hub": "🕹️ Zona de jogos",
     "games.level_up": (
-        "🏅 <b>NÍVEL DE INTELIGÊNCIA AUMENTOU: {level}!</b> Recompensa: <b>+{bonus} moedas</b>!\n"
-        "Próximo nível: {next_required} respostas certas → +{next_reward} moedas."
+        "🏅 <b>NÍVEL DE INTELIGÊNCIA AUMENTOU: {level}!</b> Recompensa: <b>+{bonus} 🪙</b>!\n"
+        "Próximo nível: {next_required} respostas certas → +{next_reward} 🪙."
     ),
     "games.name.rps": "Pedra-Papel-Tesoura",
     "games.intern_bonus": "🤖 Nível {level}! Mais um Robô Estagiário chegou à sua fazenda: agora são {count}.",
@@ -373,15 +374,15 @@ STRINGS = {
     "quiz.stale_alert": "Esta pergunta não está mais ativa. Comece uma nova!",
     "quiz.empty": "⚠️ O banco de perguntas está vazio. Avise o administrador.",
     "quiz.wrong": "❌ <b>Errou</b> ❌\nResposta certa: <b>{correct}</b>",
-    "quiz.lost_line": "💀 <b>-{penalty} moeda</b> pela derrota!",
+    "quiz.lost_line": "💀 <b>-{penalty} 🪙</b> pela derrota!",
     "quiz.level_line": (
         "🧠 Nível de inteligência: <b>{level}</b>\n"
         "Vitórias restantes até o nível {next_level}: <b>{left}</b>"
     ),
     "quiz.rules": (
         "<i>{seconds} segundos para responder!\n"
-        "Certa: +{win} moedas no saldo\n"
-        "Errou / não deu tempo: -{penalty} moeda\n"
+        "Certa: +{win} 🪙 no saldo\n"
+        "Errou / não deu tempo: -{penalty} 🪙\n"
         "Limite: {limit} vitórias por dia</i>"
     ),
 
@@ -390,7 +391,7 @@ STRINGS = {
     # ---------------- Cofre ----------------
     "safe.intro": (
         "🔐 <b>CIBER-COFRE</b>\n\n"
-        "Lá dentro tem um prêmio de <b>{jackpot} moedas</b>! A porta está trancada com um código de 1 a {codes}. "
+        "Lá dentro tem um prêmio de <b>{jackpot} 🪙</b>! A porta está trancada com um código de 1 a {codes}. "
         "Você tem só uma tentativa.\n"
         "Abriu: <b>+{jackpot}</b> · Alarme: <b>-{penalty}</b> · Limite: <b>{limit}</b> vitórias"
     ),
@@ -411,21 +412,21 @@ STRINGS = {
         "🏆 Vitórias em duelos contam para a sua equipe nas Batalhas!\n\n"
         "👇 <b>ESCOLHA UMA MESA:</b>"
     ),
-    "duel.btn_table": "⚔️ Mesa de {stake} moedas",
+    "duel.btn_table": "⚔️ Mesa de {stake} 🪙",
     "duel.btn_cancel": "❌ Sair da mesa (devolver a aposta)",
     "duel.btn_move_rock": "🪨 Pedra",
     "duel.btn_move_scissors": "✂️ Tesoura",
     "duel.btn_move_paper": "🧻 Papel",
     "duel.waiting": (
-        "🪑 <b>Você está na mesa de {stake} moedas.</b> Sua aposta está no pote.\n"
+        "🪑 <b>Você está na mesa de {stake} 🪙.</b> Sua aposta está no pote.\n"
         "Esperando o segundo guerreiro... Assim que ele sentar, vocês dois escolhem a jogada!\n"
         "<i>A fila dura {ttl} minutos; depois a aposta volta automaticamente.</i>"
     ),
-    "duel.cancelled": "🚪 Você saiu da mesa. A aposta de <b>{stake} moedas</b> voltou para o seu saldo.",
-    "duel.expired": "⌛ Nenhum adversário apareceu na mesa de {stake}. A aposta de <b>{stake} moedas</b> foi devolvida.",
+    "duel.cancelled": "🚪 Você saiu da mesa. A aposta de <b>{stake} 🪙</b> voltou para o seu saldo.",
+    "duel.expired": "⌛ Nenhum adversário apareceu na mesa de {stake}. A aposta de <b>{stake} 🪙</b> foi devolvida.",
     "duel.matched": (
-        "⚔️ <b>ADVERSÁRIO ENCONTRADO! Mesa de {stake} moedas.</b>\n"
-        "Pote: <b>{bank} moedas</b> · O vencedor leva: <b>{payout}</b>\n\n"
+        "⚔️ <b>ADVERSÁRIO ENCONTRADO! Mesa de {stake} 🪙.</b>\n"
+        "Pote: <b>{bank} 🪙</b> · O vencedor leva: <b>{payout}</b>\n\n"
         "⏱ Você tem <b>{timeout} segundos</b> para escolher a jogada!"
     ),
     "duel.move_saved": "✊ Jogada registrada! Esperando a jogada do adversário...",
@@ -436,19 +437,19 @@ STRINGS = {
     "duel.win": (
         "🏆 <b>O DUELO É SEU!</b>\n\n"
         "Sua jogada {winner_move} vence {loser_move}.\n"
-        "💰 Prêmio: <b>+{payout} moedas</b> · 🔥 Queimado do pote: {burned}\n"
-        "💼 Saldo: <b>{balance} moedas</b>"
+        "💰 Prêmio: <b>+{payout} 🪙</b> · 🔥 Queimado do pote: {burned}\n"
+        "💼 Saldo: <b>{balance} 🪙</b>"
     ),
     "duel.lose": (
         "💀 <b>DUELO PERDIDO.</b>\n\n"
         "A jogada {winner_move} do adversário vence a sua {loser_move}.\n"
-        "📉 A aposta de <b>{stake} moedas</b> foi para o pote do vencedor.\n"
+        "📉 A aposta de <b>{stake} 🪙</b> foi para o pote do vencedor.\n"
         "Revanche?"
     ),
     "duel.reaper_prefix": "⏰ <b>Tempo da rodada esgotado!</b> As jogadas que faltavam foram sorteadas automaticamente.\n\n",
     "duel.bad_table": "❌ Essa mesa não existe.",
     "duel.already_in": "⚠️ Você já está em uma mesa ou em combate! Termine o duelo atual primeiro.",
-    "duel.no_coins": "❌ Para esta mesa você precisa de {stake} moedas no saldo.",
+    "duel.no_coins": "❌ Para esta mesa você precisa de {stake} 🪙 no saldo.",
     "duel.cancel_impossible": "⚠️ Esta fila não pode mais ser cancelada (adversário encontrado ou mesa fechada).",
     "duel.not_active": "⌛ Este duelo já terminou.",
     "duel.not_participant": "🔒 Este duelo não é seu!",
@@ -470,21 +471,21 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAMA DE INDICAÇÃO DO ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Convide amigos e ganhe <b>+{bonus} moedas</b> por cada um "
+        "Convide amigos e ganhe <b>+{bonus} 🪙</b> por cada um "
         "que se registrar pelo seu link pessoal!\n\n"
         "🔗 <b>Seu link (toque para copiar):</b>\n<code>{link}</code>\n\n"
         "📊 <b>SUAS ESTATÍSTICAS:</b>\n"
         "👥 Amigos convidados: <b>{invited}</b>\n"
-        "💰 Ganho com indicações: <b>{earned} moedas</b>\n\n"
+        "💰 Ganho com indicações: <b>{earned} 🪙</b>\n\n"
         "..................................................\n"
         "<i>Mande o link nos grupos da escola, para os amigos e nas redes — quanto maior a tropa, mais rápido o saldo cresce!</i>"
     ),
     "ref.btn_share": "📣 Compartilhar o link",
     "ref.share_text": "Entra no ecossistema de jogos ROFL HUB!",
     "ref.qualified_line": ("⭐ <b>Recompensa em dobro:</b> quando um amigo convidado jogar "
-                           "{rounds} rodadas, você ganha mais <b>+{bonus} moedas</b>!"),
+                           "{rounds} rodadas, você ganha mais <b>+{bonus} 🪙</b>!"),
     "ref.qualified_notify": ("🤝 <b>Seu amigo pegou o gosto: já são {rounds} rodadas!</b>\n"
-                             "Você ganhou <b>+{bonus} moedas</b> por um indicado qualificado. "
+                             "Você ganhou <b>+{bonus} 🪙</b> por um indicado qualificado. "
                              "Convide mais!"),
 
     # ---------------- transferências ----------------
@@ -496,22 +497,22 @@ STRINGS = {
         "<code>/transfer @username quantia</code> — pelo nome de usuário\n"
         "<code>/transfer ROFL-HUB-777 quantia</code> — por um VIP ID de leilão\n\n"
         "Exemplos:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
-        "📌 Quantia mínima: <b>{min} moedas</b>"
+        "📌 Quantia mínima: <b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ Destinatário não encontrado. Confira o ID de Passaporte ou o @username — o jogador precisa estar registrado no bot.",
     "tr.self": "🤨 Não dá para transferir moedas para você mesmo — isso seria uma economia infinita!",
     "tr.blocked": "🚫 Este jogador está bloqueado — transferências para ele estão indisponíveis.",
-    "tr.min": "❌ A transferência mínima é de {min} moedas.",
-    "tr.insufficient": "❌ Moedas insuficientes! Seu saldo: <b>{balance}</b>.",
+    "tr.min": "❌ A transferência mínima é de {min} 🪙.",
+    "tr.insufficient": "❌ Moedas insuficientes! Seu saldo: <b>{balance} 🪙</b>.",
     "tr.err_insufficient": "❌ Moedas insuficientes no saldo.",
     "tr.confirm": (
         "🔄 <b>CONFIRME A TRANSFERÊNCIA:</b>\n\n"
         "👤 Destinatário: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Quantia a debitar: <b>{amount} moedas</b>{fee_line}\n"
-        "💰 O destinatário recebe: <b>{received} moedas</b>\n\n"
+        "💸 Quantia a debitar: <b>{amount} 🪙</b>{fee_line}\n"
+        "💰 O destinatário recebe: <b>{received} 🪙</b>\n\n"
         "<i>Transferências não podem ser desfeitas — confira o destinatário!</i>"
     ),
-    "tr.fee_line": "\n🔥 Taxa do hub: <b>{fee} moedas</b> (queimada)",
+    "tr.fee_line": "\n🔥 Taxa do hub: <b>{fee} 🪙</b> (queimada)",
     "tr.btn_confirm": "✅ CONFIRMAR TRANSFERÊNCIA",
     "tr.btn_cancel": "❌ Cancelar",
     "tr.cancelled_toast": "Transferência cancelada",
@@ -520,11 +521,11 @@ STRINGS = {
     "tr.done_toast": "✅ Transferência concluída!",
     "tr.done": (
         "✅ <b>TRANSFERÊNCIA CONCLUÍDA!</b>\n\n"
-        "💸 Enviado: <b>{amount} moedas</b> para o jogador ID <code>{recipient_id}</code>\n"
-        "💰 Seu saldo: <b>{balance} moedas</b>"
+        "💸 Enviado: <b>{amount} 🪙</b> para o jogador ID <code>{recipient_id}</code>\n"
+        "💰 Seu saldo: <b>{balance} 🪙</b>"
     ),
     "tr.received": (
-        "💰 <b>Você recebeu {amount} moedas!</b>\n"
+        "💰 <b>Você recebeu {amount} 🪙!</b>\n"
         "Remetente: ID <code>{sender_id}</code>. O saldo já foi atualizado — confira no /profile!"
     ),
 
@@ -576,7 +577,7 @@ STRINGS = {
     "dlv.miner_junior": "Robô Minerador",
     "dlv.miner_premium": "Ciber-Perfurador",
     "dlv.fridge": "📦 Geladeira ampliada para <b>{capacity} bifes</b>.",
-    "dlv.coins": "💰 Creditado <b>+{amount} moedas</b>.",
+    "dlv.coins": "💰 Creditado <b>+{amount} 🪙</b>.",
     "dlv.boost_nuclear": "🔋 Boost Nuclear x5 ativo até <b>{until} UTC</b>.",
     "dlv.boost_nitrogen": "❄️ Resfriamento a Nitrogênio +40% ativo até <b>{until} UTC</b>.",
     "dlv.drone": "🛸 O Drone Mestre protege a fazenda até <b>{until} UTC</b>.",
@@ -585,43 +586,43 @@ STRINGS = {
     "dlv.err_fridge": "Você já tem uma geladeira desse tamanho ou maior.",
     "dlv.err_no_team": "Você ainda não criou uma equipe. Crie primeiro com /create_team.",
     "dlv.err_mega": "Sua equipe já tem o status de Mega-Clã.",
-    "dlv.intern_upgrade": "♾ Seu Robô Estagiário foi promovido a <b>Robô Minerador ETERNO</b>: 5 moedas por hora, sem validade!",
+    "dlv.intern_upgrade": "♾ Seu Robô Estagiário foi promovido a <b>Robô Minerador ETERNO</b>: 5 🪙 por hora, sem validade!",
     "dlv.err_no_intern": "Nenhum Robô Estagiário ativado: ative-o primeiro em /farm.",
     "dlv.err_intern_refs": "O upgrade exige {need} amigos qualificados (30 rodadas cada); você tem {have}.",
     "mk.header": "📈 <b>BOLSA DE COSTELETAS</b>\n..................................................\n\nOrdens abertas: <b>{orders}</b> · costeletas à venda: <b>{cutlets}</b> · melhor preço: <b>{best}</b>\nTaxa do hub: <b>{fee}%</b> por venda (queimada — escudo contra inflação)\n🥩 No seu estoque: <b>{inv}</b> costeletas\n\n{body}\n\n<i>Toque numa ordem para comprar. Para vender, use /sell.</i>",
     "mk.empty": "Ainda não há ofertas. Seja o primeiro: /sell quantidade preço",
-    "mk.order_line": "🥩 #{id} · <b>{qty} un.</b> a <b>{price}</b> moedas",
-    "mk.btn_order": "🛒 #{id}: {qty} un. a {price} moedas",
+    "mk.order_line": "🥩 #{id} · <b>{qty} un.</b> a <b>{price}</b> 🪙",
+    "mk.btn_order": "🛒 #{id}: {qty} un. a {price} 🪙",
     "mk.btn_my": "📋 Minhas ordens",
     "mk.btn_sell_help": "💰 Como vender costeletas",
     "mk.btn_refresh": "🔄 Atualizar",
     "mk.btn_back": "← Voltar à bolsa",
-    "mk.pick": "🛒 <b>Ordem #{id}</b>: {qty} un. disponíveis a {price} moedas.\nQuantas?",
-    "mk.btn_qty": "{qty} un. — {total} moedas",
-    "mk.btn_qty_all": "Todas, {qty} un. — {total} moedas",
+    "mk.pick": "🛒 <b>Ordem #{id}</b>: {qty} un. disponíveis a {price} 🪙.\nQuantas?",
+    "mk.btn_qty": "{qty} un. — {total} 🪙",
+    "mk.btn_qty_all": "Todas, {qty} un. — {total} 🪙",
     "mk.buy_toast": "Negócio fechado!",
-    "mk.buy_done": "✅ Comprou <b>{qty} costeletas</b> por <b>{total} moedas</b>. Já estão no estoque — abasteça seus Perfuradores!",
-    "mk.sold_notify": "💰 <b>Bolsa: vendido!</b> Ordem #{id}: {qty} un. a {price}. Você recebeu <b>+{got} moedas</b> (taxa de {fee} queimada).",
-    "mk.sell_help": "💰 <b>COMO VENDER COSTELETAS</b>\n\nComando: <code>/sell quantidade preço</code>\nExemplo: <code>/sell 10 50</code> — 10 costeletas a 50 moedas.\n\nAs costeletas saem do estoque e ficam na ordem (cancele quando quiser). Até {max_qty} un. por ordem e {max_orders} ordens abertas. Uma taxa de {fee}% é queimada na venda.",
-    "mk.sell_confirm": "📝 Colocar <b>{qty} costeletas</b> a <b>{price}</b> moedas?\nTotal: {total} · taxa {fee} queima · você recebe <b>{got} moedas</b>.",
+    "mk.buy_done": "✅ Comprou <b>{qty} costeletas</b> por <b>{total} 🪙</b>. Já estão no estoque — abasteça seus Perfuradores!",
+    "mk.sold_notify": "💰 <b>Bolsa: vendido!</b> Ordem #{id}: {qty} un. a {price}. Você recebeu <b>+{got} 🪙</b> (taxa de {fee} queimada).",
+    "mk.sell_help": "💰 <b>COMO VENDER COSTELETAS</b>\n\nComando: <code>/sell quantidade preço</code>\nExemplo: <code>/sell 10 50</code> — 10 costeletas a 50 🪙.\n\nAs costeletas saem do estoque e ficam na ordem (cancele quando quiser). Até {max_qty} un. por ordem e {max_orders} ordens abertas. Uma taxa de {fee}% é queimada na venda.",
+    "mk.sell_confirm": "📝 Colocar <b>{qty} costeletas</b> a <b>{price}</b> 🪙?\nTotal: {total} · taxa {fee} queima · você recebe <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ COLOCAR NA BOLSA",
     "mk.btn_cancel": "❌ Cancelar",
     "mk.sell_toast": "Ordem publicada!",
-    "mk.sell_done": "✅ Ordem <b>#{id}</b> publicada: {qty} un. a {price} moedas. Aviso quando vender.",
+    "mk.sell_done": "✅ Ordem <b>#{id}</b> publicada: {qty} un. a {price} 🪙. Aviso quando vender.",
     "mk.cancelled_toast": "Cancelado",
     "mk.cancel_text": "❌ <b>Cancelado.</b> As costeletas continuam no estoque.",
     "mk.my_header": "📋 <b>SUAS ORDENS</b>\n\n",
-    "mk.my_line": "🥩 #{id} · {qty} un. a {price} moedas",
+    "mk.my_line": "🥩 #{id} · {qty} un. a {price} 🪙",
     "mk.my_empty": "📋 Você não tem ordens abertas.",
     "mk.btn_cancel_order": "❌ Retirar ordem #{id}",
     "mk.order_cancelled": "↩️ Ordem #{id} retirada: <b>{qty} costeletas</b> voltaram ao estoque.",
     "mk.err_qty": "❌ Quantidade: de 1 a {max} costeletas por ordem.",
-    "mk.err_price": "❌ Preço: de {min} a {max} moedas por costeleta.",
+    "mk.err_price": "❌ Preço: de {min} a {max} 🪙 por costeleta.",
     "mk.err_no_cutlets": "❌ Só há {have} costeletas no estoque. As da geladeira não vão à bolsa — veja /farm.",
     "mk.err_too_many": "❌ Limite: no máximo {max} ordens abertas. Retire uma em «Minhas ordens».",
     "mk.err_not_found": "❌ Essa ordem já foi fechada.",
     "mk.err_own": "🤨 Não dá para comprar a própria ordem.",
-    "mk.err_insufficient": "❌ Faltam moedas: precisa de {total}.",
+    "mk.err_insufficient": "❌ Saldo insuficiente: precisa de {total} 🪙.",
     "farm.btn_market": "📈 Bolsa de costeletas",
 
     # ---------------- recursos (onda 22.10, noite) ----------------
@@ -638,6 +639,13 @@ STRINGS = {
     "menu.btn_raids": "🏴‍☠️ Saques",
     "menu.btn_workshop": "🔧 Oficina",
     "farm.btn_workshop": "🔧 Oficina",
+    "farm.btn_app": "🏭 Fazenda no app",
+    "menu.btn_app": "🚀 App do jogo: fazenda, oficina, saques",
+    "app.btn_section": "🚀 ABRIR NO APP",
+    "app.goto_workshop": "🔧 A <b>Oficina</b> fica no app do jogo: recursos, receitas e fabricação com um toque.",
+    "app.goto_raids": "🏴‍☠️ Os <b>Saques</b> ficam no app do jogo: reconhecimento, postura de defesa e revanche.",
+    "app.goto_station": "🛰 A <b>Estação da equipe</b> fica no app do jogo: progresso, contribuições e bônus para a equipe toda.",
+    "app.goto_market": "📈 A <b>Bolsa de costeletas</b> é mais prática no app do jogo: vitrine, vendas e suas ordens numa tela só.",
     "farm.boost_armor": "🛡 Ciber-Armadura nv. {level}: +{percent}% de mineração para sempre",
     "farm.boost_station": "🛰 Estação da equipe nv. {level}: +{percent}% de mineração",
     "clan.btn_station": "🛰 Estação da equipe",
@@ -737,8 +745,8 @@ STRINGS = {
         "..................................................\n\n"
         "{goals}\n\n"
         "{status}\n"
-        "🎁 Baú: <b>+{coins} moedas</b> e <b>+{res}</b> de um recurso aleatório\n"
-        "🔥 Sequência: <b>{streak}</b> dias · a cada {every}º dia seguido, +{bonus} moedas no baú\n\n"
+        "🎁 Baú: <b>+{coins} 🪙</b> e <b>+{res}</b> de um recurso aleatório\n"
+        "🔥 Sequência: <b>{streak}</b> dias · a cada {every}º dia seguido, +{bonus} 🪙 no baú\n\n"
         "<i>As metas são renovadas às 00:00 UTC.</i>"
     ),
     "goal.status_progress": "⏳ Feche as três — e o baú é seu.",
@@ -748,7 +756,7 @@ STRINGS = {
     "goal.btn_go": "→ {goal}",
     "goal.btn_refresh": "🔄 Atualizar",
     "goal.toast": "Baú aberto!",
-    "goal.chest": "🎁 <b>BAÚ ABERTO!</b>\n💰 +{coins} moedas · {icon} +{qty} {name}\n🔥 Sequência: {streak} dias",
+    "goal.chest": "🎁 <b>BAÚ ABERTO!</b>\n💰 +{coins} 🪙 · {icon} +{qty} {name}\n🔥 Sequência: {streak} dias",
     "goal.err_claimed": "🎁 Você já pegou o de hoje.",
     "goal.err_not_done": "⏳ Ainda faltam metas por fechar.",
     "goal.win_quiz": "Vencer {n} rodadas do quiz",
@@ -833,37 +841,50 @@ STRINGS = {
 
 MINIAPP = {
     "subtitle": "seu império de jogos em uma única tela",
+    "tab_passport": "📋 Passaporte",
+    "tab_farm": "🚜 Fazenda",
+    "tab_goals": "🎯 Metas",
+    "tab_workshop": "🔧 Oficina",
+    "tab_raids": "🏴‍☠️ Saques",
+    "tab_market": "📈 Bolsa",
+    "tab_team": "🏆 Equipe",
+    "tab_shop": "🏪 Loja",
+    "tab_top": "👑 TOP",
     "passport": "📋 PASSAPORTE DO JOGADOR",
-    "coins": "moedas",
+    "coins": "🪙",
     "brain": "🧠 Nível de inteligência",
-    "toNext": "até o nível {n}: {left} respostas certas no quiz (+{reward} moedas)",
+    "toNext": "até o nível {n}: {left} respostas certas no quiz (+{reward} 🪙)",
     "farm": "🚜 CIBER-FAZENDA",
     "robots": "Robôs (mineradores / perfuradores)",
-    "fueled": "Perfuradores abastecidos",
-    "speed": "Velocidade de mineração",
-    "perHour": "{v} moedas/hora",
-    "fridge": "Geladeira",
-    "inv": "Bifes no estoque",
-    "burnout": "Próxima queima",
-    "intern": "Robôs Estagiários (1 moeda/h, eternos)",
+    "intern": "Robôs Estagiários (1 🪙/h, eternos)",
     "activateIntern": "🚀 ATIVAR ROBÔ ESTAGIÁRIO",
     "internDone": "🤖 Seu Robô Estagiário entrou no turno!",
     "rank": "🎖 Patente",
-    "openFarm": "🏭 ABRIR A FAZENDA",
+    "openFarm": "🏭 ABRIR A MINA",
     "farmScene": "🏭 SUA FAZENDA",
     "back": "← Voltar",
     "minedVisit": "minerado nesta visita",
     "unit_intern": "Robô Estagiário",
     "unit_junior": "Robô Minerador",
-    "unit_premium": "Cyber-Perfurador",
+    "unit_premium": "Ciber-Perfurador",
     "eternal": "eterno",
     "fueledAll": "abastecidos",
     "fueledPart": "{a} de {b} abastecidos",
     "license": "licença de 30 dias",
     "emptyFarm": "A mina está vazia. Ative seu Robô Estagiário ou compre robôs na loja!",
     "madeBy": "Quer um bot assim para o seu projeto? Fale com @mister_telebot",
+    "fueled": "Perfuradores abastecidos",
+    "speed": "Velocidade de mineração",
+    "perHour": "{v} 🪙/h",
+    "fridge": "Geladeira",
+    "inv": "Bifes no estoque",
+    "burnout": "Próxima queima",
     "boosts": "Boosts ativos",
     "none": "nenhum",
+    "resources": "🧰 Recursos",
+    "bonusPct": "Bônus permanente de mineração",
+    "shuttle": "🚀 Shuttle montado",
+    "resHint": "Cada vitória traz o recurso do seu jogo. Gaste-os na oficina.",
     "bonusReady": "🎁 PEGAR O BIFE DIÁRIO",
     "bonusWait": "⏳ Bônus em {h} h {m} min",
     "bonusDone": "🎉 Bife no estoque!",
@@ -872,7 +893,7 @@ MINIAPP = {
     "teamLabel": "Equipe",
     "captain": "👑 Você está no comando!",
     "members": "Elenco",
-    "noTeam": "Você ainda está sem equipe — monte sua tropa no chat do bot!",
+    "noTeam": "Você ainda está sem equipe. Crie a sua ou entre em outra no chat do bot: «🏆 Equipes e clãs».",
     "top": "👑 TOP-100 MAIS RICOS DO ECOSSISTEMA",
     "shop": "🏪 LOJA",
     "shopFarm": "🚜 PARA A FAZENDA",
@@ -880,20 +901,118 @@ MINIAPP = {
     "shopHint": "Pagamento com Telegram Stars oficiais — aqui mesmo, em um toque.",
     "paid": "🎉 Pago! O item já está na sua conta.",
     "payFail": "O pagamento não foi concluído. Tente de novo.",
-    "oldClient": "Atualize o Telegram para comprar pelo Mini App, ou abra a loja no chat do bot.",
-    "ctaNoRobots": "💤 A fazenda está vazia! Compre seu primeiro robô — as moedas vão pingar 24 horas por dia.",
+    "oldClient": "Atualize o Telegram para comprar pelo app, ou abra a loja no chat do bot.",
+    "ctaNoRobots": "💤 A fazenda está quase vazia! Pegue um robô mais forte — as 🪙 vão pingar 24 horas por dia.",
     "ctaHungry": "🚨 Os Perfuradores estão com fome ({n} sem combustível) — a mineração parou!",
     "ctaLowFuel": "⚠️ Os bifes não duram nem um dia de trabalho dos Perfuradores.",
     "ctaShopBtn": "🛒 Ir à loja",
-    "footer": "Controle total — no chat do bot: /menu",
+    "footer": "Jogos e quiz ficam no chat do bot",
     "noProfile": "Perfil não encontrado. Abra o bot e toque em /start!",
     "blocked": "Conta bloqueada pela administração.",
     "error": "Não foi possível carregar os dados. Tente mais tarde.",
     "outside": "Abra este aplicativo pelo bot ROFL HUB no Telegram.",
-    "resources": "🧰 Recursos",
-    "bonusPct": "Bônus permanente de mineração",
-    "shuttle": "🚀 Shuttle montado",
-    "resHint": "Metal — PPT, hidrogênio — Maior/Menor, cristais — quiz, peças — cofre. Use-os na oficina, no chat do bot.",
+    "robotsTitle": "🤖 SEUS ROBÔS",
+    "buyMore": "🛒 Comprar",
+    "rateShort": "{v} 🪙/h",
+    "refuelOne": "🥩 Carregar 1",
+    "refuelAll": "⚡ Carregar todos",
+    "refueled": "Carregado: {n} 🥩",
+    "res_metal_src": "PPT e duelos",
+    "res_hydrogen_src": "Maior/Menor",
+    "res_crystal_src": "Quiz",
+    "res_parts_src": "Ciber-Cofre",
+    "resWhere": "onde conseguir",
+    "ws_title": "🔧 OFICINA",
+    "ws_hint": "Os recursos dos jogos viram melhorias. Recursos suficientes? Toque em «Montar».",
+    "ws_craft": "Montar",
+    "ws_owned": "✅ Já tem",
+    "ws_crafted": "Pronto! A melhoria já está funcionando.",
+    "ws_armor": "🛡 Ciber-Armadura",
+    "ws_armorLvl": "nível {l}/{m} · +{p}% de mineração por nível",
+    "ws_shuttleOn": "🚀 Shuttle montado: taxa da bolsa {fee}%",
+    "ws_shuttleOff": "🚀 Shuttle não montado: taxa da bolsa {fee}%",
+    "eff_nitrogen": "+40% de mineração para todos os robôs",
+    "eff_nuclear": "×5 de mineração, os Perfuradores comem ×3 bifes",
+    "eff_drone": "os robôs não envelhecem",
+    "eff_shield": "ninguém pode saquear você",
+    "eff_cutlet": "1 ciber-bife no estoque",
+    "eff_armor": "+10% de mineração para sempre",
+    "eff_shuttle": "taxa da bolsa pela metade, ordens de até 500 bifes — para sempre",
+    "raid_title": "🏴‍☠️ SAQUES",
+    "raid_how": "📖 Como funciona",
+    "raid_rule1": "Você escolhe uma jogada; o alvo já deixou uma postura de defesa definida. Quem decide é o pedra-papel-tesoura: um duelo de decisões, não uma loteria.",
+    "raid_rule2": "Vitória: você leva {pct}% de cada recurso do alvo, até {cap} por recurso. Fracasso: você entrega ao alvo {fpct}% dos seus, até {fcap}. Empate: o combustível queimou.",
+    "raid_rule3": "Só recursos podem ser saqueados. Moedas, robôs e bifes estão totalmente seguros. Novatos ficam protegidos por {days} dias, e colegas de equipe são intocáveis.",
+    "raid_rule4": "Cada voo custa {fuel} 💧 de hidrogênio, o próximo só em {cd} h. Se alguém saquear você, a revanche é grátis por {rh} h.",
+    "raid_fuel": "💧 Hidrogênio",
+    "raid_ready": "🚀 Nave pronta para decolar",
+    "raid_cooldown": "⏳ Recarregando: {m} min",
+    "raid_shieldOn": "🛡 Escudo até {t}",
+    "raid_shieldNewbie": "🛡 Proteção de novato",
+    "raid_shieldOff": "🛡 Sem escudo — monte um na oficina",
+    "raid_stance": "✊ SUA POSTURA DE DEFESA",
+    "raid_stanceHint": "É com ela que você recebe os saques dos outros. Troque de vez em quando — quem é previsível é saqueado mais vezes.",
+    "raid_stanceNone": "Nenhuma postura escolhida — será aleatória",
+    "raid_stanceSaved": "Postura salva",
+    "raid_stats": "Saques: {a} ({w} com sucesso) · defendidos: {h} de {d}",
+    "raid_scout": "🔭 RECONHECIMENTO: achar alvos",
+    "raid_targets": "🎯 Escolha um alvo",
+    "raid_res": "recursos ≈{n}",
+    "raid_noTargets": "Nenhum alvo disponível agora: escudos, recargas, novatos. Volte mais tarde.",
+    "raid_pickMove": "✊ Sua jogada contra a postura de {name}",
+    "raid_revenge": "⚔️ REVANCHE",
+    "raid_revengeBtn": "⚔️ Revidar: {name}",
+    "raid_win": "🏴‍☠️ Saque bem-sucedido!",
+    "raid_draw": "😐 Empate — a nave voltou vazia",
+    "raid_lose": "💥 A defesa segurou",
+    "raid_vs": "{m} contra {s}",
+    "raid_loot": "Espólio: {l}",
+    "raid_lost": "Entregue ao alvo: {l}",
+    "rock": "🪨 Pedra",
+    "scissors": "✂️ Tesoura",
+    "paper": "📄 Papel",
+    "mk_title": "📈 BOLSA DE BIFES",
+    "mk_stats": "Ordens: {o} · bifes: {c} · melhor preço: {b} 🪙",
+    "mk_feeLine": "A taxa de {f}% por venda é queimada — proteção contra a inflação",
+    "mk_inv": "🥩 No seu estoque: {n}",
+    "mk_offers": "🛒 OFERTAS",
+    "mk_empty": "Ainda não há ofertas — anuncie antes de todo mundo!",
+    "mk_offer": "{q} 🥩 × {p} 🪙",
+    "mk_buyHow": "Quantos comprar?",
+    "mk_all": "Todos os {q}",
+    "mk_sellTitle": "💰 VENDER BIFES",
+    "mk_qty": "Quantos bifes",
+    "mk_price": "Preço por unidade, 🪙",
+    "mk_preview": "Negócio {t} 🪙 · você recebe {g} 🪙 · queimam {f} 🪙",
+    "mk_sell": "Anunciar na bolsa",
+    "mk_limits": "Até {q} bifes por ordem, até {o} ordens abertas",
+    "mk_my": "📋 MINHAS ORDENS",
+    "mk_cancel": "Retirar",
+    "mk_bought": "Comprou {q} 🥩 por {t} 🪙",
+    "mk_listed": "Ordem anunciada! Mando uma mensagem quando vender.",
+    "mk_cancelledMsg": "Ordem retirada, os bifes voltaram para o estoque",
+    "st_title": "🛰 ESTAÇÃO DA EQUIPE",
+    "st_level": "Nível {l} de {m}",
+    "st_bonus": "+{p}% de mineração para cada membro",
+    "st_next": "O nível {n} pede {c} de cada recurso",
+    "st_max": "🏁 A estação está completa!",
+    "st_feed": "🧾 Últimas contribuições",
+    "st_feedEmpty": "Ninguém contribuiu ainda — seja a primeira pessoa",
+    "st_donate": "Contribuir",
+    "st_all": "Tudo",
+    "st_done": "Contribuído!",
+    "st_hint": "A equipe toda constrói, cada um ganha o bônus. Saiu da equipe — perdeu o bônus.",
+    "st_off": "A estação está temporariamente em manutenção",
+    "goals_title": "🎯 METAS DE HOJE",
+    "goals_chest": "🎁 Baú pelas três: +{c} 🪙 e +{r} de um recurso aleatório",
+    "goals_streak": "🔥 Sequência: {s} dias · a cada {e}º dia seguido +{b} 🪙",
+    "goals_claim": "🎁 PEGAR O BAÚ",
+    "goals_claimed": "🎁 O baú de hoje já foi aberto. Amanhã tem novas metas!",
+    "goals_reset": "As metas renovam às 00:00 UTC",
+    "goals_got": "🎁 +{c} 🪙 · +{q} {n} · sequência de {s} dias",
+    "featureOff": "⚙️ Seção em manutenção",
+    "done": "Pronto!",
+    "loading": "⏳ Carregando…",
 }
 
 COMMANDS = {
