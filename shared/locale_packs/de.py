@@ -467,7 +467,7 @@ STRINGS = {
     "rank.legend": "Legende",
     "rank.rofl": "ROFL",
     "rank.lmao": "LMAO",
-    "rank.dead": "DEAD",
+    "rank.king": "KING",
 
     # ---------------- Einladungsprogramm ----------------
     "ref.text": (

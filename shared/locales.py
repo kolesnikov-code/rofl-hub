@@ -486,7 +486,7 @@ RU: dict[str, str] = {
     "rank.legend": "Легенда",
     "rank.rofl": "ROFL",
     "rank.lmao": "LMAO",
-    "rank.dead": "DEAD",
+    "rank.king": "KING",
 
     # ---------------- рефералка ----------------
     "ref.text": (
@@ -1317,7 +1317,7 @@ EN: dict[str, str] = {
     "rank.legend": "Legend",
     "rank.rofl": "ROFL",
     "rank.lmao": "LMAO",
-    "rank.dead": "DEAD",
+    "rank.king": "KING",
 
     # ---------------- referral ----------------
     "ref.text": (

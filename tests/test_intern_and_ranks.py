@@ -3,7 +3,7 @@
 
 - Стажёр: бесплатный, вечный, 1 монета/ч, без топлива, бусты действуют;
 - +1 Стажёр за каждый уровень интеллекта, кратный 10;
-- звания: 1 день → Новичок … 1 год → DEAD; меньше суток — без звания.
+- звания: 1 день → Новичок … 1 год → KING; меньше суток — без звания.
 """
 from datetime import datetime, timedelta, timezone
 
@@ -82,8 +82,8 @@ def test_rank_thresholds():
     assert rank_key_for(T0 - timedelta(days=30), T0) == "legend"
     assert rank_key_for(T0 - timedelta(days=90), T0) == "rofl"
     assert rank_key_for(T0 - timedelta(days=180), T0) == "lmao"
-    assert rank_key_for(T0 - timedelta(days=365), T0) == "dead"
-    assert rank_key_for(T0 - timedelta(days=3000), T0) == "dead"      # выше DEAD звания нет
+    assert rank_key_for(T0 - timedelta(days=365), T0) == "king"
+    assert rank_key_for(T0 - timedelta(days=3000), T0) == "king"      # выше KING звания нет
 
 
 def test_rank_labels_localized_and_latin_top_ranks():
@@ -92,6 +92,6 @@ def test_rank_labels_localized_and_latin_top_ranks():
     assert rank_label("ru", T0 - timedelta(days=7), T0) == "Боец"
     assert rank_label("en", T0 - timedelta(days=7), T0) == "Fighter"
     for lang in ("ru", "en", "es", "zh", "ar"):
-        assert t(lang, "rank.rofl") == "ROFL" and t(lang, "rank.dead") == "DEAD"
-    assert name_with_rank("@tolya", "ru", T0 - timedelta(days=400), T0) == "@tolya · 🎖 DEAD"
+        assert t(lang, "rank.rofl") == "ROFL" and t(lang, "rank.king") == "KING"
+    assert name_with_rank("@tolya", "ru", T0 - timedelta(days=400), T0) == "@tolya · 🎖 KING"
     assert name_with_rank("@tolya", "ru", T0, T0) == "@tolya"           # новичок без звания — без хвоста

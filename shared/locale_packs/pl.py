@@ -465,7 +465,7 @@ STRINGS: dict[str, str] = {
     "rank.legend": "Legenda",
     "rank.rofl": "ROFL",
     "rank.lmao": "LMAO",
-    "rank.dead": "DEAD",
+    "rank.king": "KING",
 
     # ---------------- рефералка ----------------
     "ref.text": (

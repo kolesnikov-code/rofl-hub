@@ -465,7 +465,7 @@ STRINGS = {
     "rank.legend": "أسطورة",
     "rank.rofl": "ROFL",
     "rank.lmao": "LMAO",
-    "rank.dead": "DEAD",
+    "rank.king": "KING",
 
     # ---------------- рефералка ----------------
     "ref.text": (
