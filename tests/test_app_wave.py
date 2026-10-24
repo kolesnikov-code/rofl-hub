@@ -214,3 +214,17 @@ def test_team_market_fees_and_help_ui():
     from shared.locales import t
     for lang in ("ru", "en", "de", "zh", "ar"):
         assert "{" not in t(lang, "help.err_limit", max=100)
+
+
+def test_storage_tab_shield_timer_and_giver_threshold():
+    """Склад после фермы (серые пустые плашки, «лава» у заполненных), щит с таймером, порог дарения 7/10."""
+    from shared.economy import (ITEM_COLUMNS, ITEM_EFFECTS, TEAM_HELP_GIVER_MIN_BONUS_CLAIMS,
+                                TEAM_HELP_GIVER_MIN_QUIZ_LEVEL, TRANSFER_SENDER_MIN_QUIZ_LEVEL)
+    assert (TEAM_HELP_GIVER_MIN_QUIZ_LEVEL, TEAM_HELP_GIVER_MIN_BONUS_CLAIMS) == (7, 10)
+    assert TEAM_HELP_GIVER_MIN_QUIZ_LEVEL > TRANSFER_SENDER_MIN_QUIZ_LEVEL
+    assert set(ITEM_EFFECTS) == set(ITEM_COLUMNS)
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert '"farm", "storage"' in html
+    for needle in ("viewStorage", "/api/storage", "/api/item/use", "card.lava", "card.dim", "shield-card",
+                   'id="shTimer"', "L.raid_noFuel", "fuel-pill", "L.hp_who", "res.stored ? L.it_stored"):
+        assert needle in html, needle

@@ -536,6 +536,8 @@ RU: dict[str, str] = {
     "help.err_not_found": "Просьба уже закрыта.",
     "help.err_self": "Свою просьбу закрыть подарком нельзя 🙂",
     "help.err_limit": "Сегодня ты уже подарил(а) {max} ресурсов — лимит обновится в 00:00 UTC.",
+    "help.err_not_active": "🔒 Дарить ресурсы можно с {level} уровня интеллекта и после {claims} ежедневных котлет.",
+    "it.err_none": "Этого изделия на складе уже нет.",
 
     # ---------------- удаление аккаунта ----------------
     "profile.btn_delete": "🗑 Удалить аккаунт",
@@ -1434,6 +1436,8 @@ EN: dict[str, str] = {
     "help.err_not_found": "This request is already closed.",
     "help.err_self": "You can't fill your own request with a gift 🙂",
     "help.err_limit": "You've already given {max} resources today — the limit resets at 00:00 UTC.",
+    "help.err_not_active": "🔒 You can give resources from intellect level {level} and after claiming {claims} daily cutlets.",
+    "it.err_none": "This item is no longer in your storage.",
 
     # ---------------- account deletion ----------------
     "profile.btn_delete": "🗑 Delete account",

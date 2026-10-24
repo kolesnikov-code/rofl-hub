@@ -4,15 +4,17 @@
 Правила (всё внутри транзакции вызывающего, ресурсы — через change_resource):
 - просить и помогать можно только своей команде; у игрока одна открытая просьба;
 - дарят только РЕСУРСЫ: котлеты — топливо из магазина, их не дарят;
-- дарить может только АКТИВНЫЙ аккаунт (как отправитель монет: 3 уровень интеллекта + 3 котлеты),
-  не больше TEAM_HELP_DAILY_GIVE за сутки UTC — фейки не сольют ресурсы на основной аккаунт;
+- дарить может только ПРОКАЧАННЫЙ аккаунт (решение владельца 26.10: 7 уровень интеллекта +
+  10 ежедневных котлет — строже порога переводов), не больше TEAM_HELP_DAILY_GIVE за сутки UTC —
+  фейки не сольют ресурсы на основной аккаунт;
 - подарок не больше остатка просьбы и свободного места на складе просящего.
 """
 from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from shared.economy import RESOURCE_KINDS, TEAM_HELP_DAILY_GIVE, TEAM_HELP_LIST_LIMIT, TEAM_HELP_MAX_QTY
+from shared.economy import (RESOURCE_KINDS, TEAM_HELP_DAILY_GIVE, TEAM_HELP_GIVER_MIN_BONUS_CLAIMS,
+                            TEAM_HELP_GIVER_MIN_QUIZ_LEVEL, TEAM_HELP_LIST_LIMIT, TEAM_HELP_MAX_QTY)
 from shared.locales import t
 from shared.resources import InsufficientResources, change_resource, free_space, lock_resources
 
@@ -39,6 +41,13 @@ async def given_today(conn, user_id: int, now: datetime) -> int:
     return int(await conn.fetchval(
         "SELECT COALESCE(-SUM(delta), 0) FROM resource_ledger WHERE user_id = $1 AND reason = $2 "
         "AND created_at >= $3 AND created_at < $4", user_id, GIVE_REASON, start, start + timedelta(days=1)) or 0)
+
+
+async def can_give(conn, user_id: int) -> bool:
+    """Порог дарителя: TEAM_HELP_GIVER_MIN_QUIZ_LEVEL уровень интеллекта и столько-то ежедневных котлет."""
+    claims = await conn.fetchval("SELECT bonus_claims FROM users WHERE user_id = $1", user_id) or 0
+    level = await conn.fetchval("SELECT quiz_level FROM game_stats WHERE user_id = $1", user_id) or 0
+    return level >= TEAM_HELP_GIVER_MIN_QUIZ_LEVEL and claims >= TEAM_HELP_GIVER_MIN_BONUS_CLAIMS
 
 
 async def _team_of(conn, user_id: int) -> int:
@@ -73,7 +82,6 @@ async def cancel_help(conn, user_id: int, help_id: int) -> None:
 
 async def give_help(conn, giver_id: int, help_id: int, qty: int, now: datetime) -> dict:
     """Дарит ресурс по просьбе тиммейта. Возвращает {qty, kind, receiver_id, filled, done}."""
-    from shared.transfers import TransferError, ensure_sender_active
     req = await conn.fetchrow("SELECT * FROM team_help WHERE id = $1 FOR UPDATE", help_id)
     if not req or req["status"] != "open":
         raise HelpError("help.err_not_found")
@@ -81,10 +89,9 @@ async def give_help(conn, giver_id: int, help_id: int, qty: int, now: datetime) 
         raise HelpError("help.err_self")
     if await _team_of(conn, giver_id) != req["team_id"]:
         raise HelpError("mk.err_team_only")
-    try:
-        await ensure_sender_active(conn, giver_id)
-    except TransferError as e:
-        raise HelpError(e.key, **e.kwargs) from e
+    if not await can_give(conn, giver_id):
+        raise HelpError("help.err_not_active", level=TEAM_HELP_GIVER_MIN_QUIZ_LEVEL,
+                        claims=TEAM_HELP_GIVER_MIN_BONUS_CLAIMS)
     left_today = TEAM_HELP_DAILY_GIVE - await given_today(conn, giver_id, now)
     if left_today <= 0:
         raise HelpError("help.err_limit", max=TEAM_HELP_DAILY_GIVE)

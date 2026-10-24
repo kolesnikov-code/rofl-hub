@@ -62,6 +62,10 @@ from shared.economy import (
     team_market_fee_percent,
     TEAM_HELP_MAX_QTY,
     TEAM_HELP_DAILY_GIVE,
+    TEAM_HELP_GIVER_MIN_BONUS_CLAIMS,
+    TEAM_HELP_GIVER_MIN_QUIZ_LEVEL,
+    ITEM_COLUMNS,
+    ITEM_EFFECTS,
     MEGA_CLAN_MAX_MEMBERS,
     CLAN_MARKET_FEE_PERCENT,
     TEAM_SYMBOL_MAX_LEN,
@@ -107,7 +111,8 @@ from shared.raids import (
     shield_active,
 )
 from shared.ranks import rank_label
-from shared.team_help import HelpError, cancel_help, give_help, given_today, open_requests, request_help
+from shared.team_help import HelpError, can_give, cancel_help, give_help, given_today, open_requests, request_help
+from shared.items import ItemError, activate_item, list_items
 from shared.db_clans import (TeamError, create_team, join_team, leave_team, public_team, random_teams,
                              search_teams, team_members)
 from shared.resources import get_resources
@@ -264,11 +269,12 @@ async def handle_craft_weekly(request: web.Request) -> web.Response:
     try:
         async with db.pool.acquire() as conn:
             async with conn.transaction():
-                res = await craft_weekly(conn, ctx.user_id, rid, utcnow())
+                res = await craft_weekly(conn, ctx.user_id, rid, utcnow(), to_storage=True)
     except WeeklyError as e:
         return fail(e.localized(ctx.lang))
     await track(ctx.user_id, "craft_weekly", recipe=rid, source="webapp")
-    return web.json_response({"ok": True, "left": res["left"]})
+    stored = any(e["type"] in ITEM_COLUMNS for e in WEEKLY_RECIPES[rid]["effects"])
+    return web.json_response({"ok": True, "left": res["left"], "stored": stored})
 
 
 # ============================================================================
@@ -339,13 +345,58 @@ async def handle_craft(request: web.Request) -> web.Response:
     try:
         async with db.pool.acquire() as conn:
             async with conn.transaction():
-                result = await craft(conn, ctx.user_id, rid, utcnow())
+                result = await craft(conn, ctx.user_id, rid, utcnow(), to_storage=True)
     except WorkshopError as e:
         return fail(e.localized(ctx.lang))
     await track(ctx.user_id, "craft", recipe=rid, source="webapp")
     return web.json_response({"ok": True, "effect": result.effect,
                               "until": result.until.isoformat() if result.until else None,
-                              "level": result.level, "qty": result.qty})
+                              "level": result.level, "qty": result.qty, "stored": result.stored})
+
+
+# ============================================================================
+# 📦 Склад: ресурсы, котлеты, изделия мастерской (включаются кнопкой), постоянные улучшения
+# ============================================================================
+async def handle_storage(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    now = utcnow()
+    async with db.pool.acquire() as conn:
+        stock = await get_resources(conn, ctx.user_id)
+        items = await list_items(conn, ctx.user_id)
+        user = await conn.fetchrow(
+            "SELECT inv_cutlets, res_capacity, has_shuttle, farm_armor_level, armor_until, boost_nitrogen_until, "
+            "boost_nuclear_until, drone_until, raid_shield_until, unlimit_until FROM users WHERE user_id = $1",
+            ctx.user_id)
+    armor = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
+    active = {e: (user[c].isoformat() if user[c] and user[c] > now else None) for e, c in ITEM_COLUMNS.items()}
+    return web.json_response({
+        "stock": stock, "capacity": user["res_capacity"], "cutlets": user["inv_cutlets"],
+        "res_names": resource_labels(ctx.lang),
+        "items": items, "effects": list(ITEM_EFFECTS), "active": active,
+        "perm": {"shuttle": bool(user["has_shuttle"]), "shuttle_fee": SHUTTLE_MARKET_FEE_PERCENT,
+                 "armor_level": armor, "armor_max": ARMOR_MAX_LEVEL, "armor_pct": ARMOR_BONUS_PER_LEVEL,
+                 "armor_until": user["armor_until"].isoformat() if armor and user["armor_until"] else None,
+                 "capacity": user["res_capacity"], "capacity_base": RES_CAPACITY_BASE,
+                 "capacity_max": next_storage_level(user["res_capacity"]) is None},
+    })
+
+
+async def handle_item_use(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    data = await _json(request)
+    effect, hours = str(data.get("effect", ""))[:16], _int(data.get("hours"))
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                until = await activate_item(conn, ctx.user_id, effect, hours, utcnow())
+    except ItemError as e:
+        return fail(plain(e.localized(ctx.lang)))
+    await track(ctx.user_id, "item_used", effect=effect, hours=hours, source="webapp")
+    return web.json_response({"ok": True, "effect": effect, "until": until.isoformat()})
 
 
 # ============================================================================
@@ -767,6 +818,7 @@ async def handle_team(request: web.Request) -> web.Response:
         now = utcnow()
         help_rows = await open_requests(conn, user["team_id"])
         given = await given_today(conn, ctx.user_id, now)
+        giver_ok = await can_give(conn, ctx.user_id)
     station_on = await get_flag("station")
     level = station["level"]
     stored = {k: station[k] for k in RESOURCE_KINDS}
@@ -787,6 +839,8 @@ async def handle_team(request: web.Request) -> web.Response:
             "requests": [{"id": h["id"], "name": _player_name(h), "kind": h["kind"], "qty": h["qty"],
                           "filled": h["filled"], "mine": h["user_id"] == ctx.user_id} for h in help_rows],
             "given_today": given, "daily": TEAM_HELP_DAILY_GIVE, "max_qty": TEAM_HELP_MAX_QTY,
+            "can_give": giver_ok, "giver_level": TEAM_HELP_GIVER_MIN_QUIZ_LEVEL,
+            "giver_claims": TEAM_HELP_GIVER_MIN_BONUS_CLAIMS,
         },
         "market": {"fee": team_market_fee_percent(team["max_members"]), "public_fee": MARKET_FEE_PERCENT,
                    "clan_fee": CLAN_MARKET_FEE_PERCENT},
@@ -995,6 +1049,8 @@ def register_game_routes(app: web.Application) -> None:
     app.router.add_get("/api/workshop", handle_workshop)
     app.router.add_post("/api/craft", handle_craft)
     app.router.add_post("/api/craft_weekly", handle_craft_weekly)
+    app.router.add_get("/api/storage", handle_storage)
+    app.router.add_post("/api/item/use", handle_item_use)
     app.router.add_get("/api/referral", handle_referral)
     app.router.add_get("/api/raids", handle_raids)
     app.router.add_post("/api/raid/stance", handle_raid_stance)

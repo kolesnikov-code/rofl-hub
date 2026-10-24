@@ -31,6 +31,7 @@ from shared.economy import (
 from shared.ledger import InsufficientFunds, change_balance
 from shared.farm_logic import apply_lazy_farm
 from shared.locales import t
+from shared.items import add_item
 from shared.resources import RESOURCE_ICONS, InsufficientResources, spend_bundle
 
 logger = logging.getLogger(__name__)
@@ -64,6 +65,7 @@ class CraftResult:
     qty: int = 0
     level: int = 0
     stock: dict[str, int] = field(default_factory=dict)
+    stored: bool = False   # изделие легло на склад (активируется игроком позже)
 
 
 def recipe_cost(recipe_id: str, armor_level: int = 0, capacity: int = RES_CAPACITY_BASE) -> dict[str, int] | None:
@@ -93,14 +95,16 @@ def can_afford(stock: dict[str, int], cost: dict[str, int] | None) -> bool:
     return all(stock.get(k, 0) >= v for k, v in cost.items())
 
 
-async def craft(conn, user_id: int, recipe_id: str, now: datetime) -> CraftResult:
+async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: bool = False) -> CraftResult:
+    """to_storage=True (приложение): часы бустов/дрона/щита ложатся на склад изделий, а не включаются."""
     recipe = WORKSHOP_RECIPES.get(recipe_id)
     if recipe is None:
         raise WorkshopError("ws.err_unknown")
     effect = recipe["effect"]
+    store = to_storage and effect in EFFECT_COLUMNS
 
     # Для бустов/дрона/брони сначала закрываем прошлое время фермы по старым ставкам
-    if effect in ("nitrogen", "nuclear", "drone", "armor"):
+    if effect in ("nitrogen", "nuclear", "drone", "armor") and not store:
         user, _ = await apply_lazy_farm(conn, user_id, now)
     else:
         user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
@@ -129,7 +133,10 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime) -> CraftResul
             raise WorkshopError("ws.err_coins", need=coins, have=user["balance"]) from e
 
     result = CraftResult(recipe_id=recipe_id, effect=effect, cost=cost, stock=stock)
-    if effect in EFFECT_COLUMNS:
+    if store:
+        await add_item(conn, user_id, effect, recipe["hours"])
+        result.stored = True
+    elif effect in EFFECT_COLUMNS:
         column = EFFECT_COLUMNS[effect]
         until = extend_expiry_hours(user[column], now, recipe["hours"])
         await conn.execute(f"UPDATE users SET {column} = $2 WHERE user_id = $1", user_id, until)

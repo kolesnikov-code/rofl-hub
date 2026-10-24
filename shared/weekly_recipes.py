@@ -137,8 +137,12 @@ async def crafted_this_week(conn, user_id: int, rid: str, now: datetime) -> int:
 
 
 async def craft_weekly(conn, user_id: int, rid: str, now: datetime | None = None,
-                       enabled: bool | None = None) -> dict:
-    """Собирает рецепт недели. enabled=None — проверить тумблер. Внутри транзакции вызывающего."""
+                       enabled: bool | None = None, to_storage: bool = False) -> dict:
+    """
+    Собирает рецепт недели. enabled=None — проверить тумблер. Внутри транзакции вызывающего.
+    to_storage=True (приложение): часовые эффекты ложатся на склад изделий.
+    """
+    from shared.items import add_item
     from shared.farm_logic import apply_lazy_farm
     from shared.resources import resource_capacity
     now = now or utcnow()
@@ -152,7 +156,7 @@ async def craft_weekly(conn, user_id: int, rid: str, now: datetime | None = None
         raise WeeklyError("wk.err_gone")
 
     effects = recipe["effects"]
-    if any(e["type"] in FARM_EFFECTS for e in effects):
+    if not to_storage and any(e["type"] in FARM_EFFECTS for e in effects):
         user, _ = await apply_lazy_farm(conn, user_id, now)
     else:
         user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1 FOR UPDATE", user_id)
@@ -169,7 +173,9 @@ async def craft_weekly(conn, user_id: int, rid: str, now: datetime | None = None
     cap = await resource_capacity(conn, user_id)
     for effect in effects:
         kind = effect["type"]
-        if kind in HOURS_COLUMNS:
+        if kind in HOURS_COLUMNS and to_storage:
+            await add_item(conn, user_id, kind, effect["hours"])
+        elif kind in HOURS_COLUMNS:
             column = HOURS_COLUMNS[kind]
             current = await conn.fetchval(f"SELECT {column} FROM users WHERE user_id = $1", user_id)
             until = extend_expiry_hours(current, now, effect["hours"])

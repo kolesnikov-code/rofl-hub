@@ -214,6 +214,25 @@ def market_fee(total: int, shuttle: bool = False, team_percent: int | None = Non
 TEAM_HELP_MAX_QTY = 200          # максимум одной просьбы
 TEAM_HELP_DAILY_GIVE = 100       # сколько ресурсов один игрок может подарить за сутки UTC
 TEAM_HELP_LIST_LIMIT = 50
+# Дарить ресурсы может только «прокачанный» аккаунт (решение владельца 26.10: строже порога переводов —
+# фейку до 7 уровня интеллекта и 10 ежедневных котлет минимум 10 дней игры)
+TEAM_HELP_GIVER_MIN_QUIZ_LEVEL = 7
+TEAM_HELP_GIVER_MIN_BONUS_CLAIMS = 10
+
+# --------------------------------------------------------------------------
+# СКЛАД ИЗДЕЛИЙ (решение владельца 26.10): всё, что собрано в мастерской приложения
+# (часы бустов, дрона, щита, пробники Безлимита), ложится на склад и включается кнопкой,
+# когда игроку удобно. Постоянные улучшения (броня, склад, Шаттл) действуют сразу.
+# --------------------------------------------------------------------------
+ITEM_EFFECTS = ("nitrogen", "nuclear", "drone", "shield", "unlimit")
+ITEM_COLUMNS = {
+    "nitrogen": "boost_nitrogen_until",
+    "nuclear": "boost_nuclear_until",
+    "drone": "drone_until",
+    "shield": "raid_shield_until",
+    "unlimit": "unlimit_until",
+}
+ITEM_FARM_EFFECTS = ("nitrogen", "nuclear", "drone")   # меняют ставки фермы — закрыть прошлое время
 DUEL_BURN_PERCENT = 20
 
 

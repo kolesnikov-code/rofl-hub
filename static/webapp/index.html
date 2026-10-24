@@ -265,6 +265,47 @@
   @media (min-width: 1100px) {
     #app[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
+  /* ----- 🛡 Щит от налётов: таймер обратного отсчёта ----- */
+  .card.shield-card { transition: filter .4s, opacity .4s; }
+  .card.shield-card.off { filter: grayscale(1); opacity: .6; }
+  .card.shield-card.on { border-color: rgba(167, 139, 250, .45); box-shadow: 0 0 22px rgba(167, 139, 250, .18), 0 4px 24px rgba(0, 0, 0, .35); }
+  .sh-state { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1px; padding: 3px 10px;
+    border-radius: 999px; margin-bottom: 8px; background: #2a3354; color: var(--muted); }
+  .shield-card.on .sh-state { background: rgba(52, 211, 153, .16); color: #6ee7b7; }
+  .sh-timer { font: 800 34px/1.1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 2px;
+    color: #59607e; margin: 2px 0 8px; font-variant-numeric: tabular-nums; }
+  .shield-card.on .sh-timer { color: transparent; -webkit-background-clip: text; background-clip: text;
+    background-image: linear-gradient(90deg, #f6c177, #c4a7e7, #9ccfd8, #a6e3a1, #f6c177);
+    background-size: 300% 100%; animation: shflow 9s ease-in-out infinite alternate; }
+  @keyframes shflow { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+  /* ----- налёты: топливо в углу плашки ----- */
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .card-head h2 { margin-bottom: 0; }
+  .fuel-pill { font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+    background: rgba(0, 255, 225, .1); color: var(--neon); }
+  .fuel-pill.low { background: rgba(255, 85, 85, .12); color: var(--bad); }
+  /* ----- 📦 Склад: серые пустые плашки и «лавовая лампа» у заполненных ----- */
+  .card.dim { filter: grayscale(1); opacity: .5; }
+  .card.lava { position: relative; overflow: hidden; border-color: rgba(255, 255, 255, .16); }
+  .card.lava::before, .card.lava::after { content: ""; position: absolute; pointer-events: none; z-index: 0; }
+  .card.lava::before { inset: -60%; filter: blur(46px); opacity: .30;
+    background: conic-gradient(from 0deg, #ffb347, #ff6fb5, #c084fc, #60a5fa, #22d3ee, #34d399, #a3e635, #fde047, #ffb347);
+    animation: lavaSpin 28s linear infinite; }
+  .card.lava::after { inset: -30%; filter: blur(30px); opacity: .22;
+    background: radial-gradient(circle at 30% 30%, #f472b6 0, transparent 38%), radial-gradient(circle at 70% 65%, #38bdf8 0, transparent 40%),
+                radial-gradient(circle at 45% 80%, #facc15 0, transparent 35%);
+    animation: lavaDrift 17s ease-in-out infinite alternate; }
+  .card.lava > * { position: relative; z-index: 1; }
+  @keyframes lavaSpin { to { transform: rotate(360deg); } }
+  @keyframes lavaDrift { 0% { transform: translate(-8%, -6%) scale(1); } 50% { transform: translate(6%, 4%) scale(1.15); }
+                         100% { transform: translate(-4%, 8%) scale(.95); } }
+  @media (prefers-reduced-motion: reduce) { .card.lava::before, .card.lava::after, .shield-card.on .sh-timer { animation: none; } }
+  .moves + .hint { margin-top: 8px; }
+  .big-num { font-size: 30px; font-weight: 900; margin: 2px 0 6px; }
+  .unit-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0;
+    border-top: 1px solid rgba(255, 255, 255, .06); }
+  .unit-row b { font-size: 15px; }
+  .resbar { margin: 6px 0; }
 </style>
 </head>
 <body>
@@ -316,6 +357,24 @@
       tm_roster: "👥 СОСТАВ КОМАНДЫ", tm_mottoL: "💬 Девиз", tm_leave: "🚪 Выйти из команды",
       tm_leaveAsk: "Точно выйти из команды «{n}»?", tm_leaveAskCaptain: "Ты капитан: корона перейдёт ветерану команды. Точно выйти из «{n}»?",
       tm_left: "Ты больше не в команде",
+      tab_storage: "📦 Склад",
+      raid_noFuel: "⛽ Корабль не готов к вылету — нужно топливо",
+      raid_shieldTitle: "🛡 ЩИТ ОТ НАЛЁТОВ", raid_shieldActive: "АКТИВЕН", raid_shieldInactive: "НЕ АКТИВЕН",
+      raid_shieldHint: "Пока щит активен, на тебя не нападают. Щит собирается в мастерской и ложится на склад — включишь, когда нужно.",
+      raid_toStorage: "📦 Открыть склад",
+      sk_res: "📦 РЕСУРСЫ НА СКЛАДЕ", sk_expand: "🔧 Расширить склад",
+      sk_cutlets: "🥩 КИБЕР-КОТЛЕТЫ", sk_cutletsHint: "Топливо для Кибер-Бурильщиков: 1 котлета — сутки работы.",
+      sk_refuel: "🚜 Заправить на ферме",
+      it_nitrogen: "АЗОТНОЕ ОХЛАЖДЕНИЕ +40%", it_nuclear: "ЯДЕРНЫЙ РАЗГОН X5", it_drone: "МАСТЕР-ДРОН",
+      it_shield: "ЩИТ ОТ НАЛЁТОВ", it_unlimit: "БЕЗЛИМИТ ИГР", it_unlimitDesc: "победы в играх без суточного лимита",
+      it_hours: "{h} ч", it_use: "Включить", it_empty: "Пусто. Собери в мастерской — изделие ляжет сюда.",
+      it_toWorkshop: "🔧 В мастерскую", it_active: "✅ Действует до {t}", it_used: "✅ Включено! Действует до {t}",
+      it_stored: "📦 Готово! Изделие лежит на складе — включи его во вкладке «Склад», когда понадобится.",
+      sk_shuttle: "🚀 ШАТТЛ", sk_shuttleOn: "Есть: комиссия биржи {f}%, лимиты ордеров шире.", sk_shuttleOff: "Пока нет. Собирается в мастерской.",
+      sk_armor: "🦾 КИБЕР-БРОНЯ", sk_armorOn: "Уровень {l} из {m}: +{p}% к добыче до {t}.",
+      sk_armorOff: "Не надета. Каждый уровень даёт +{p}% к добыче на 30 дней.",
+      sk_store: "🏗 РАСШИРЕНИЕ СКЛАДА", sk_storeLvl: "Вместимость: {c} каждого ресурса.", sk_storeMax: "🏆 Максимальный склад!",
+      hp_who: "Дарить могут игроки от {l} уровня интеллекта и {c} ежедневных котлет.",
       mk_scopePublic: "🌐 Общая биржа", mk_scopeTeam: "🏆 Биржа команды",
       mk_teamHint: "Биржа команды «{t}»: лоты видят и покупают только тиммейты, комиссия всего {f}%.",
       mk_yourStock: "📦 У тебя", mk_yourCoins: "💰 У тебя монет",
@@ -449,6 +508,24 @@
       tm_roster: "👥 TEAM ROSTER", tm_mottoL: "💬 Motto", tm_leave: "🚪 Leave the team",
       tm_leaveAsk: "Leave the team “{n}”?", tm_leaveAskCaptain: "You're the captain: the crown passes to the team veteran. Leave “{n}”?",
       tm_left: "You're no longer in a team",
+      tab_storage: "📦 Storage",
+      raid_noFuel: "⛽ Ship isn't ready to launch — it needs fuel",
+      raid_shieldTitle: "🛡 RAID SHIELD", raid_shieldActive: "ACTIVE", raid_shieldInactive: "INACTIVE",
+      raid_shieldHint: "While the shield is active, nobody can raid you. Build it in the workshop — it goes to storage, switch it on when you need it.",
+      raid_toStorage: "📦 Open storage",
+      sk_res: "📦 RESOURCES IN STORAGE", sk_expand: "🔧 Expand storage",
+      sk_cutlets: "🥩 CYBER-CUTLETS", sk_cutletsHint: "Fuel for Cyber-Drillers: 1 cutlet = one day of work.",
+      sk_refuel: "🚜 Refuel on the farm",
+      it_nitrogen: "NITROGEN COOLING +40%", it_nuclear: "NUCLEAR BOOST X5", it_drone: "MASTER DRONE",
+      it_shield: "RAID SHIELD", it_unlimit: "UNLIMITED GAMES", it_unlimitDesc: "game wins without the daily limit",
+      it_hours: "{h} h", it_use: "Activate", it_empty: "Empty. Build it in the workshop — the item will land here.",
+      it_toWorkshop: "🔧 To the workshop", it_active: "✅ Active until {t}", it_used: "✅ Activated! Active until {t}",
+      it_stored: "📦 Done! The item is in your storage — activate it in the Storage tab whenever you need it.",
+      sk_shuttle: "🚀 SHUTTLE", sk_shuttleOn: "Owned: market fee {f}%, bigger order limits.", sk_shuttleOff: "Not yet. Built in the workshop.",
+      sk_armor: "🦾 CYBER ARMOR", sk_armorOn: "Level {l} of {m}: +{p}% mining until {t}.",
+      sk_armorOff: "Not equipped. Each level gives +{p}% mining for 30 days.",
+      sk_store: "🏗 STORAGE UPGRADE", sk_storeLvl: "Capacity: {c} of each resource.", sk_storeMax: "🏆 Maximum storage!",
+      hp_who: "Players from intellect level {l} with {c} daily cutlets claimed can give.",
       mk_scopePublic: "🌐 Public market", mk_scopeTeam: "🏆 Team market",
       mk_teamHint: "Team market of “{t}”: only teammates see and buy these lots, the fee is just {f}%.",
       mk_yourStock: "📦 You have", mk_yourCoins: "💰 Your coins",
@@ -650,6 +727,41 @@
     "hp_ask": "🙏 اطلب المساعدة",
     "hp_given": "تم الإهداء: {q} {k} — شكرًا على اللعب بروح الفريق!",
     "hp_asked": "أُرسل طلبك إلى الفريق!",
+    "tab_storage": "📦 المخزون",
+    "raid_noFuel": "⛽ السفينة غير جاهزة للإقلاع — تحتاج إلى وقود",
+    "raid_shieldTitle": "🛡 ترس الحماية من الغارات",
+    "raid_shieldActive": "مفعّل",
+    "raid_shieldInactive": "غير مفعّل",
+    "raid_shieldHint": "ما دام الترس مفعّلًا لا أحد يغير عليك. يُجمَّع الترس في الورشة ويُحفظ في المخزون — فعّله عند الحاجة.",
+    "raid_toStorage": "📦 افتح المخزون",
+    "sk_res": "📦 الموارد في المخزون",
+    "sk_expand": "🔧 وسّع المخزون",
+    "sk_cutlets": "🥩 الكفتات السيبرانية",
+    "sk_cutletsHint": "وقود الحفّارات السيبرانية: كفتة واحدة = يوم عمل.",
+    "sk_refuel": "🚜 تزويد في المزرعة",
+    "it_nitrogen": "التبريد النيتروجيني +40%",
+    "it_nuclear": "التسريع النووي x5",
+    "it_drone": "الدرون المايسترو",
+    "it_shield": "ترس الحماية من الغارات",
+    "it_unlimit": "إزالة حدود الفوز",
+    "it_unlimitDesc": "انتصارات في الألعاب بلا حد يومي",
+    "it_hours": "{h} س",
+    "it_use": "فعّل",
+    "it_empty": "فارغ. جمّع قطعة في الورشة — وستظهر هنا.",
+    "it_toWorkshop": "🔧 إلى الورشة",
+    "it_active": "✅ ساري حتى {t}",
+    "it_used": "✅ تم التفعيل! ساري حتى {t}",
+    "it_stored": "📦 جاهز! القطعة في المخزون — فعّلها من تبويب «المخزون» عند الحاجة.",
+    "sk_shuttle": "🚀 المكوك",
+    "sk_shuttleOn": "متوفر: عمولة البورصة {f}% وحدود الأوامر أوسع.",
+    "sk_shuttleOff": "غير متوفر بعد. يُجمَّع في الورشة.",
+    "sk_armor": "🦾 الدرع السيبراني",
+    "sk_armorOn": "المستوى {l} من {m}: +{p}% للتعدين حتى {t}.",
+    "sk_armorOff": "غير مرتدى. كل مستوى يمنح +{p}% للتعدين لمدة 30 يومًا.",
+    "sk_store": "🏗 توسيع المخزون",
+    "sk_storeLvl": "السعة: {c} من كل مورد.",
+    "sk_storeMax": "🏆 أقصى مخزون!",
+    "hp_who": "يمكن للّاعبين من مستوى الذكاء {l} ومع {c} من الكفتات اليومية الإهداء.",
     "top": "👑 أغنى 100 لاعب في المنظومة",
     "shop": "🏪 المتجر",
     "shopFarm": "🚜 للمزرعة",
@@ -933,6 +1045,41 @@
     "hp_ask": "🙏 সাহায্য চাও",
     "hp_given": "উপহার দেওয়া হয়েছে: {q} {k} — টিম হয়ে খেলার জন্য ধন্যবাদ!",
     "hp_asked": "তোমার অনুরোধ টিমের কাছে গেছে!",
+    "tab_storage": "📦 গুদাম",
+    "raid_noFuel": "⛽ জাহাজ উড়তে তৈরি নয় — জ্বালানি লাগবে",
+    "raid_shieldTitle": "🛡 রেইড-ঢাল",
+    "raid_shieldActive": "চালু",
+    "raid_shieldInactive": "বন্ধ",
+    "raid_shieldHint": "ঢাল চালু থাকলে কেউ তোমার ওপর রেইড করতে পারবে না। ওয়ার্কশপে বানাও — ঢাল গুদামে জমা হয়, দরকারের সময় চালু করো।",
+    "raid_toStorage": "📦 গুদাম খোলো",
+    "sk_res": "📦 গুদামের রিসোর্স",
+    "sk_expand": "🔧 গুদাম বাড়াও",
+    "sk_cutlets": "🥩 সাইবার-কাটলেট",
+    "sk_cutletsHint": "সাইবার-ড্রিলারদের জ্বালানি: 1টা কাটলেট = এক দিনের কাজ।",
+    "sk_refuel": "🚜 ফার্মে জ্বালানি ভরো",
+    "it_nitrogen": "নাইট্রোজেন কুলিং +40%",
+    "it_nuclear": "নিউক্লিয়ার বুস্ট x5",
+    "it_drone": "মাস্টার ড্রোন",
+    "it_shield": "রেইড-ঢাল",
+    "it_unlimit": "আনলিমিটেড গেম",
+    "it_unlimitDesc": "দৈনিক সীমা ছাড়াই গেম জেতা",
+    "it_hours": "{h} ঘণ্টা",
+    "it_use": "চালু করো",
+    "it_empty": "খালি। ওয়ার্কশপে বানাও — জিনিসটা এখানে এসে জমবে।",
+    "it_toWorkshop": "🔧 ওয়ার্কশপে যাও",
+    "it_active": "✅ {t} পর্যন্ত চালু",
+    "it_used": "✅ চালু হয়েছে! {t} পর্যন্ত চলবে",
+    "it_stored": "📦 হয়ে গেছে! জিনিসটা তোমার গুদামে আছে — যখন খুশি “গুদাম” ট্যাবে চালু করো।",
+    "sk_shuttle": "🚀 শাটল",
+    "sk_shuttleOn": "আছে: বাজারের ফি {f}%, অর্ডারের সীমা বড়।",
+    "sk_shuttleOff": "এখনো নেই। ওয়ার্কশপে বানানো হয়।",
+    "sk_armor": "🦾 সাইবার-বর্ম",
+    "sk_armorOn": "লেভেল {l}/{m}: {t} পর্যন্ত খনন +{p}%।",
+    "sk_armorOff": "পরা নেই। প্রতি লেভেলে 30 দিনের জন্য খনন +{p}%।",
+    "sk_store": "🏗 গুদাম আপগ্রেড",
+    "sk_storeLvl": "ধারণক্ষমতা: প্রতিটি রিসোর্সের {c}।",
+    "sk_storeMax": "🏆 গুদাম সর্বোচ্চ!",
+    "hp_who": "ইন্টেলেক্ট লেভেল {l} থেকে এবং {c}টি দৈনিক কাটলেট নেওয়া খেলোয়াড়রা উপহার দিতে পারে।",
     "top": "👑 ইকোসিস্টেমের টপ-100 ধনী",
     "shop": "🏪 দোকান",
     "shopFarm": "🚜 ফার্মের জন্য",
@@ -1214,6 +1361,41 @@
     "hp_ask": "🙏 Um Hilfe bitten",
     "hp_given": "Verschenkt: {q} {k} — danke fürs Teamplay!",
     "hp_asked": "Deine Anfrage wurde ans Team geschickt!",
+    "tab_storage": "📦 Lager",
+    "raid_noFuel": "⛽ Das Schiff ist nicht startklar — es braucht Treibstoff",
+    "raid_shieldTitle": "🛡 RAID-SCHILD",
+    "raid_shieldActive": "AKTIV",
+    "raid_shieldInactive": "INAKTIV",
+    "raid_shieldHint": "Solange das Schild aktiv ist, wirst du nicht überfallen. Es wird in der Werkstatt gebaut und landet im Lager — schalte es ein, wenn du es brauchst.",
+    "raid_toStorage": "📦 Lager öffnen",
+    "sk_res": "📦 RESSOURCEN IM LAGER",
+    "sk_expand": "🔧 Lager erweitern",
+    "sk_cutlets": "🥩 CYBER-FRIKADELLEN",
+    "sk_cutletsHint": "Treibstoff für Cyber-Bohrer: 1 Frikadelle = ein Tag Arbeit.",
+    "sk_refuel": "🚜 Auf der Farm auftanken",
+    "it_nitrogen": "STICKSTOFF-KÜHLUNG +40%",
+    "it_nuclear": "NUKLEAR-BOOST X5",
+    "it_drone": "MASTER-DROHNE",
+    "it_shield": "RAID-SCHILD",
+    "it_unlimit": "SPIEL-UNLIMIT",
+    "it_unlimitDesc": "Siege in Spielen ohne Tageslimit",
+    "it_hours": "{h} Std.",
+    "it_use": "Einschalten",
+    "it_empty": "Leer. Bau etwas in der Werkstatt — das Stück landet hier.",
+    "it_toWorkshop": "🔧 Zur Werkstatt",
+    "it_active": "✅ Aktiv bis {t}",
+    "it_used": "✅ Eingeschaltet! Aktiv bis {t}",
+    "it_stored": "📦 Fertig! Das Stück liegt im Lager — schalte es im Tab „Lager“ ein, wenn du es brauchst.",
+    "sk_shuttle": "🚀 SHUTTLE",
+    "sk_shuttleOn": "Vorhanden: Börsengebühr {f}%, größere Order-Limits.",
+    "sk_shuttleOff": "Noch nicht da. Wird in der Werkstatt gebaut.",
+    "sk_armor": "🦾 CYBER-RÜSTUNG",
+    "sk_armorOn": "Stufe {l} von {m}: +{p}% Ertrag bis {t}.",
+    "sk_armorOff": "Nicht angelegt. Jede Stufe gibt +{p}% Ertrag für 30 Tage.",
+    "sk_store": "🏗 LAGER-ERWEITERUNG",
+    "sk_storeLvl": "Kapazität: {c} pro Ressource.",
+    "sk_storeMax": "🏆 Maximales Lager!",
+    "hp_who": "Verschenken können Spieler ab Intellekt-Stufe {l} und {c} täglichen Frikadellen.",
     "top": "👑 TOP-100 DER REICHSTEN SPIELER",
     "shop": "🏪 SHOP",
     "shopFarm": "🚜 FÜR DIE FARM",
@@ -1497,6 +1679,41 @@
     "hp_ask": "🙏 Pedir ayuda",
     "hp_given": "Regalado: {q} {k}. ¡Gracias por jugar en equipo!",
     "hp_asked": "¡Petición enviada al equipo!",
+    "tab_storage": "📦 Inventario",
+    "raid_noFuel": "⛽ La nave no está lista para despegar: necesita combustible",
+    "raid_shieldTitle": "🛡 ESCUDO DE ASALTOS",
+    "raid_shieldActive": "ACTIVO",
+    "raid_shieldInactive": "INACTIVO",
+    "raid_shieldHint": "Mientras el escudo esté activo, nadie te asalta. Se fabrica en el taller y va al inventario: actívalo cuando lo necesites.",
+    "raid_toStorage": "📦 Abrir inventario",
+    "sk_res": "📦 RECURSOS EN EL INVENTARIO",
+    "sk_expand": "🔧 Ampliar inventario",
+    "sk_cutlets": "🥩 CIBER-CHULETAS",
+    "sk_cutletsHint": "Combustible para los Ciber-Perforadores: 1 chuleta = un día de trabajo.",
+    "sk_refuel": "🚜 Repostar en la granja",
+    "it_nitrogen": "ENFRIAMIENTO DE NITRÓGENO +40%",
+    "it_nuclear": "IMPULSO NUCLEAR X5",
+    "it_drone": "DRON MAESTRO",
+    "it_shield": "ESCUDO DE ASALTOS",
+    "it_unlimit": "JUEGOS SIN LÍMITE",
+    "it_unlimitDesc": "victorias en los juegos sin límite diario",
+    "it_hours": "{h} h",
+    "it_use": "Activar",
+    "it_empty": "Vacío. Fabrícalo en el taller: el artículo aparecerá aquí.",
+    "it_toWorkshop": "🔧 Al taller",
+    "it_active": "✅ Activo hasta el {t}",
+    "it_used": "✅ ¡Activado! Activo hasta el {t}",
+    "it_stored": "📦 ¡Listo! El artículo está en el inventario: actívalo en la pestaña «Inventario» cuando lo necesites.",
+    "sk_shuttle": "🚀 TRANSBORDADOR",
+    "sk_shuttleOn": "Lo tienes: comisión de la bolsa {f}%, límites de órdenes más amplios.",
+    "sk_shuttleOff": "Aún no. Se fabrica en el taller.",
+    "sk_armor": "🦾 CIBER-ARMADURA",
+    "sk_armorOn": "Nivel {l} de {m}: +{p}% de extracción hasta el {t}.",
+    "sk_armorOff": "Sin equipar. Cada nivel da +{p}% de extracción durante 30 días.",
+    "sk_store": "🏗 AMPLIACIÓN DEL INVENTARIO",
+    "sk_storeLvl": "Capacidad: {c} de cada recurso.",
+    "sk_storeMax": "🏆 ¡Inventario al máximo!",
+    "hp_who": "Pueden regalar los jugadores desde el nivel de inteligencia {l} con {c} chuletas diarias recogidas.",
     "top": "👑 TOP-100 DE LOS MÁS RICOS DEL ECOSISTEMA",
     "shop": "🏪 TIENDA",
     "shopFarm": "🚜 PARA LA GRANJA",
@@ -1778,6 +1995,41 @@
     "hp_ask": "🙏 Demander de l'aide",
     "hp_given": "Offert : {q} {k} — merci pour l'esprit d'équipe !",
     "hp_asked": "Ta demande a été envoyée à l'équipe !",
+    "tab_storage": "📦 Stock",
+    "raid_noFuel": "⛽ Le vaisseau n'est pas prêt au décollage — il lui faut du carburant",
+    "raid_shieldTitle": "🛡 BOUCLIER ANTI-RAIDS",
+    "raid_shieldActive": "ACTIF",
+    "raid_shieldInactive": "INACTIF",
+    "raid_shieldHint": "Tant que le bouclier est actif, personne ne peut te raider. Il s'assemble à l'atelier et va dans ton stock — active-le quand tu veux.",
+    "raid_toStorage": "📦 Ouvrir le stock",
+    "sk_res": "📦 RESSOURCES EN STOCK",
+    "sk_expand": "🔧 Agrandir le stock",
+    "sk_cutlets": "🥩 CYBER-CÔTELETTES",
+    "sk_cutletsHint": "Carburant des Cyber-Foreurs : 1 côtelette = une journée de travail.",
+    "sk_refuel": "🚜 Ravitailler à la ferme",
+    "it_nitrogen": "REFROIDISSEMENT À L'AZOTE +40%",
+    "it_nuclear": "ACCÉLÉRATION NUCLÉAIRE X5",
+    "it_drone": "MAÎTRE-DRONE",
+    "it_shield": "BOUCLIER ANTI-RAIDS",
+    "it_unlimit": "ILLIMITÉ JEUX",
+    "it_unlimitDesc": "victoires aux jeux sans limite quotidienne",
+    "it_hours": "{h} h",
+    "it_use": "Activer",
+    "it_empty": "Vide. Fabrique-en à l'atelier — l'objet atterrira ici.",
+    "it_toWorkshop": "🔧 À l'atelier",
+    "it_active": "✅ Actif jusqu'à {t}",
+    "it_used": "✅ Activé ! Actif jusqu'à {t}",
+    "it_stored": "📦 Prêt ! L'objet est dans ton stock — active-le dans l'onglet « Stock » quand tu en as besoin.",
+    "sk_shuttle": "🚀 NAVETTE",
+    "sk_shuttleOn": "Assemblée : commission de la bourse {f}%, limites d'ordres élargies.",
+    "sk_shuttleOff": "Pas encore. S'assemble à l'atelier.",
+    "sk_armor": "🦾 CYBER-ARMURE",
+    "sk_armorOn": "Niveau {l} sur {m} : +{p}% de minage jusqu'au {t}.",
+    "sk_armorOff": "Non équipée. Chaque niveau donne +{p}% de minage pendant 30 jours.",
+    "sk_store": "🏗 AGRANDISSEMENT DU STOCK",
+    "sk_storeLvl": "Capacité : {c} de chaque ressource.",
+    "sk_storeMax": "🏆 Stock au maximum !",
+    "hp_who": "Les joueurs à partir du niveau d'intellect {l} avec {c} côtelettes quotidiennes récupérées peuvent offrir.",
     "top": "👑 TOP-100 DES PLUS RICHES DE L'ÉCOSYSTÈME",
     "shop": "🏪 BOUTIQUE",
     "shopFarm": "🚜 POUR LA FERME",
@@ -2060,6 +2312,41 @@
     "hp_ask": "🙏 मदद माँगो",
     "hp_given": "तोहफ़े में दिया: {q} {k} — टीम भावना के लिए शुक्रिया!",
     "hp_asked": "तुम्हारी माँग टीम को भेज दी गई!",
+    "tab_storage": "📦 भंडार",
+    "raid_noFuel": "⛽ यान उड़ान के लिए तैयार नहीं — ईंधन चाहिए",
+    "raid_shieldTitle": "🛡 छापा-ढाल",
+    "raid_shieldActive": "चालू",
+    "raid_shieldInactive": "बंद",
+    "raid_shieldHint": "ढाल चालू रहने तक तुम पर छापा नहीं पड़ सकता। ढाल वर्कशॉप में बनती है और भंडार में रखी जाती है — जब चाहो चालू करो।",
+    "raid_toStorage": "📦 भंडार खोलो",
+    "sk_res": "📦 भंडार में संसाधन",
+    "sk_expand": "🔧 भंडार बढ़ाओ",
+    "sk_cutlets": "🥩 साइबर-कटलेट",
+    "sk_cutletsHint": "साइबर-ड्रिलर का ईंधन: 1 कटलेट = एक दिन का काम।",
+    "sk_refuel": "🚜 फ़ार्म पर ईंधन भरो",
+    "it_nitrogen": "नाइट्रोजन कूलिंग +40%",
+    "it_nuclear": "न्यूक्लियर बूस्ट X5",
+    "it_drone": "मास्टर ड्रोन",
+    "it_shield": "छापा-ढाल",
+    "it_unlimit": "अनलिमिटेड गेम",
+    "it_unlimitDesc": "गेम जीतने पर रोज़ का लिमिट नहीं",
+    "it_hours": "{h} घं.",
+    "it_use": "चालू करो",
+    "it_empty": "खाली है। वर्कशॉप में बनाओ — चीज़ यहाँ आ जाएगी।",
+    "it_toWorkshop": "🔧 वर्कशॉप में",
+    "it_active": "✅ {t} तक चालू",
+    "it_used": "✅ चालू हो गया! {t} तक चलेगा",
+    "it_stored": "📦 तैयार! चीज़ भंडार में रखी है — ज़रूरत पड़ने पर «भंडार» टैब से चालू करो।",
+    "sk_shuttle": "🚀 शटल",
+    "sk_shuttleOn": "है: बाज़ार कमीशन {f}%, ऑर्डर की सीमा ज़्यादा।",
+    "sk_shuttleOff": "अभी नहीं है। वर्कशॉप में बनता है।",
+    "sk_armor": "🦾 साइबर-कवच",
+    "sk_armorOn": "लेवल {l}/{m}: {t} तक माइनिंग में +{p}%।",
+    "sk_armorOff": "पहना नहीं है। हर लेवल 30 दिन के लिए माइनिंग में +{p}% देता है।",
+    "sk_store": "🏗 भंडार का विस्तार",
+    "sk_storeLvl": "क्षमता: हर संसाधन की {c}।",
+    "sk_storeMax": "🏆 भंडार अधिकतम है!",
+    "hp_who": "तोहफ़ा वे खिलाड़ी दे सकते हैं जिनका बुद्धि लेवल {l} या ज़्यादा है और जिन्होंने {c} रोज़ाना कटलेट ली हैं।",
     "top": "👑 इकोसिस्टम के टॉप-100 अमीर",
     "shop": "🏪 दुकान",
     "shopFarm": "🚜 फ़ार्म के लिए",
@@ -2342,6 +2629,41 @@
     "hp_ask": "🙏 Minta bantuan",
     "hp_given": "Diberikan: {q} {k} — terima kasih sudah bermain sebagai tim!",
     "hp_asked": "Permintaanmu sudah dikirim ke tim!",
+    "tab_storage": "📦 Gudang",
+    "raid_noFuel": "⛽ Kapal belum siap berangkat — butuh bahan bakar",
+    "raid_shieldTitle": "🛡 PERISAI SERBUAN",
+    "raid_shieldActive": "AKTIF",
+    "raid_shieldInactive": "TIDAK AKTIF",
+    "raid_shieldHint": "Selama perisai aktif, tidak ada yang bisa menyerbu kamu. Perisai dibuat di bengkel dan masuk ke gudang — aktifkan saat diperlukan.",
+    "raid_toStorage": "📦 Buka gudang",
+    "sk_res": "📦 SUMBER DAYA DI GUDANG",
+    "sk_expand": "🔧 Perluas gudang",
+    "sk_cutlets": "🥩 KOTLET SIBER",
+    "sk_cutletsHint": "Bahan bakar Pengebor Siber: 1 kotlet = sehari bekerja.",
+    "sk_refuel": "🚜 Isi bahan bakar di ladang",
+    "it_nitrogen": "PENDINGIN NITROGEN +40%",
+    "it_nuclear": "BOOST NUKLIR X5",
+    "it_drone": "DRONE MASTER",
+    "it_shield": "PERISAI SERBUAN",
+    "it_unlimit": "GAME TANPA BATAS",
+    "it_unlimitDesc": "kemenangan game tanpa batas harian",
+    "it_hours": "{h} jam",
+    "it_use": "Aktifkan",
+    "it_empty": "Kosong. Buat di bengkel — barangnya akan masuk ke sini.",
+    "it_toWorkshop": "🔧 Ke bengkel",
+    "it_active": "✅ Aktif sampai {t}",
+    "it_used": "✅ Diaktifkan! Aktif sampai {t}",
+    "it_stored": "📦 Selesai! Barangnya ada di gudang — aktifkan di tab «Gudang» kapan pun diperlukan.",
+    "sk_shuttle": "🚀 SHUTTLE",
+    "sk_shuttleOn": "Dimiliki: biaya bursa {f}%, batas order lebih besar.",
+    "sk_shuttleOff": "Belum punya. Dibuat di bengkel.",
+    "sk_armor": "🦾 ZIRAH SIBER",
+    "sk_armorOn": "Level {l} dari {m}: +{p}% penambangan sampai {t}.",
+    "sk_armorOff": "Belum dipakai. Tiap level memberi +{p}% penambangan selama 30 hari.",
+    "sk_store": "🏗 PERLUASAN GUDANG",
+    "sk_storeLvl": "Kapasitas: {c} untuk tiap sumber daya.",
+    "sk_storeMax": "🏆 Gudang sudah maksimal!",
+    "hp_who": "Pemain dari Level Kecerdasan {l} dengan {c} kotlet harian yang sudah diambil bisa memberi.",
     "top": "👑 TOP-100 PEMAIN TERKAYA EKOSISTEM",
     "shop": "🏪 TOKO",
     "shopFarm": "🚜 UNTUK LADANG",
@@ -2624,6 +2946,41 @@
     "hp_ask": "🙏 Chiedi aiuto",
     "hp_given": "Regalate: {q} {k} — grazie per il gioco di squadra!",
     "hp_asked": "Richiesta inviata alla squadra!",
+    "tab_storage": "📦 Deposito",
+    "raid_noFuel": "⛽ La nave non è pronta al decollo: serve carburante",
+    "raid_shieldTitle": "🛡 SCUDO DALLE INCURSIONI",
+    "raid_shieldActive": "ATTIVO",
+    "raid_shieldInactive": "NON ATTIVO",
+    "raid_shieldHint": "Finché lo scudo è attivo, nessuno ti attacca. Lo costruisci nell'officina e finisce nel deposito: attivalo quando serve.",
+    "raid_toStorage": "📦 Apri il deposito",
+    "sk_res": "📦 RISORSE NEL DEPOSITO",
+    "sk_expand": "🔧 Amplia il deposito",
+    "sk_cutlets": "🥩 CYBER-COTOLETTE",
+    "sk_cutletsHint": "Carburante per i Cyber-Trivellatori: 1 cotoletta = un giorno di lavoro.",
+    "sk_refuel": "🚜 Rifornisci nella fattoria",
+    "it_nitrogen": "RAFFREDDAMENTO AD AZOTO +40%",
+    "it_nuclear": "BOOST NUCLEARE X5",
+    "it_drone": "MASTER DRONE",
+    "it_shield": "SCUDO DALLE INCURSIONI",
+    "it_unlimit": "GIOCHI SENZA LIMITI",
+    "it_unlimitDesc": "vittorie nei giochi senza limite giornaliero",
+    "it_hours": "{h} h",
+    "it_use": "Attiva",
+    "it_empty": "Vuoto. Costruiscilo nell'officina: l'oggetto finirà qui.",
+    "it_toWorkshop": "🔧 All'officina",
+    "it_active": "✅ Attivo fino alle {t}",
+    "it_used": "✅ Attivato! Attivo fino alle {t}",
+    "it_stored": "📦 Fatto! L'oggetto è nel deposito: attivalo nella scheda «Deposito» quando ti serve.",
+    "sk_shuttle": "🚀 SHUTTLE",
+    "sk_shuttleOn": "Ce l'hai: commissione della borsa {f}%, limiti degli ordini più ampi.",
+    "sk_shuttleOff": "Ancora no. Si costruisce nell'officina.",
+    "sk_armor": "🦾 CYBER-ARMATURA",
+    "sk_armorOn": "Livello {l} di {m}: +{p}% all'estrazione fino alle {t}.",
+    "sk_armorOff": "Non indossata. Ogni livello dà +{p}% all'estrazione per 30 giorni.",
+    "sk_store": "🏗 AMPLIAMENTO DEL DEPOSITO",
+    "sk_storeLvl": "Capienza: {c} di ogni risorsa.",
+    "sk_storeMax": "🏆 Deposito al massimo!",
+    "hp_who": "Possono regalare i giocatori dal livello {l} di intelletto con {c} cotolette giornaliere ritirate.",
     "top": "👑 TOP-100 DEI PIÙ RICCHI DELL'ECOSISTEMA",
     "shop": "🏪 NEGOZIO",
     "shopFarm": "🚜 PER LA FATTORIA",
@@ -2923,6 +3280,41 @@
     "hp_ask": "🙏 Poproś o pomoc",
     "hp_given": "Podarowano: {q} {k} — dzięki za grę zespołową!",
     "hp_asked": "Prośba trafiła do drużyny!",
+    "tab_storage": "📦 Magazyn",
+    "raid_noFuel": "⛽ Statek nie jest gotowy do wylotu — potrzebne paliwo",
+    "raid_shieldTitle": "🛡 TARCZA PRZED NAJAZDAMI",
+    "raid_shieldActive": "AKTYWNA",
+    "raid_shieldInactive": "NIEAKTYWNA",
+    "raid_shieldHint": "Gdy tarcza działa, nikt cię nie najedzie. Tarczę budujesz w warsztacie, a trafia do magazynu — włączysz ją, kiedy będzie potrzebna.",
+    "raid_toStorage": "📦 Otwórz magazyn",
+    "sk_res": "📦 SUROWCE W MAGAZYNIE",
+    "sk_expand": "🔧 Powiększ magazyn",
+    "sk_cutlets": "🥩 CYBER-KOTLETY",
+    "sk_cutletsHint": "Paliwo dla Cyber-Wiertaczy: 1 kotlet — doba pracy.",
+    "sk_refuel": "🚜 Zatankuj na farmie",
+    "it_nitrogen": "AZOTOWE CHŁODZENIE +40%",
+    "it_nuclear": "NUKLEARNE PRZYSPIESZENIE X5",
+    "it_drone": "MISTRZOWSKI DRON",
+    "it_shield": "TARCZA PRZED NAJAZDAMI",
+    "it_unlimit": "BEZLIMIT GIER",
+    "it_unlimitDesc": "wygrane w grach bez dziennego limitu",
+    "it_hours": "{h} godz.",
+    "it_use": "Włącz",
+    "it_empty": "Pusto. Zbuduj coś w warsztacie — przedmiot trafi tutaj.",
+    "it_toWorkshop": "🔧 Do warsztatu",
+    "it_active": "✅ Działa do {t}",
+    "it_used": "✅ Włączono! Działa do {t}",
+    "it_stored": "📦 Gotowe! Przedmiot leży w magazynie — włącz go w zakładce „Magazyn”, gdy będzie potrzebny.",
+    "sk_shuttle": "🚀 WAHADŁOWIEC",
+    "sk_shuttleOn": "Masz: prowizja giełdy {f}%, szersze limity zleceń.",
+    "sk_shuttleOff": "Jeszcze nie masz. Budowany w warsztacie.",
+    "sk_armor": "🦾 CYBER-PANCERZ",
+    "sk_armorOn": "Poziom {l} z {m}: +{p}% do wydobycia do {t}.",
+    "sk_armorOff": "Nie założony. Każdy poziom daje +{p}% do wydobycia na 30 dni.",
+    "sk_store": "🏗 POWIĘKSZENIE MAGAZYNU",
+    "sk_storeLvl": "Pojemność: {c} każdego surowca.",
+    "sk_storeMax": "🏆 Maksymalny magazyn!",
+    "hp_who": "Dawać mogą gracze od poziomu intelektu {l} i po {c} codziennych kotletach.",
     "top": "👑 TOP-100 BOGACZY EKOSYSTEMU",
     "shop": "🏪 SKLEP",
     "shopFarm": "🚜 DLA FARMY",
@@ -3188,6 +3580,41 @@
     "hp_ask": "🙏 Pedir ajuda",
     "hp_given": "Presenteado: {q} {k} — valeu pelo jogo em equipe!",
     "hp_asked": "Pedido enviado à equipe!",
+    "tab_storage": "📦 Estoque",
+    "raid_noFuel": "⛽ A nave não está pronta para decolar — falta combustível",
+    "raid_shieldTitle": "🛡 ESCUDO CONTRA SAQUES",
+    "raid_shieldActive": "ATIVO",
+    "raid_shieldInactive": "INATIVO",
+    "raid_shieldHint": "Com o escudo ativo, ninguém pode te saquear. Ele é montado na oficina e vai para o estoque — ative quando precisar.",
+    "raid_toStorage": "📦 Abrir o estoque",
+    "sk_res": "📦 RECURSOS NO ESTOQUE",
+    "sk_expand": "🔧 Ampliar o estoque",
+    "sk_cutlets": "🥩 CIBER-BIFES",
+    "sk_cutletsHint": "Combustível dos Ciber-Perfuradores: 1 bife = um dia de trabalho.",
+    "sk_refuel": "🚜 Abastecer na fazenda",
+    "it_nitrogen": "RESFRIAMENTO A NITROGÊNIO +40%",
+    "it_nuclear": "BOOST NUCLEAR X5",
+    "it_drone": "DRONE MESTRE",
+    "it_shield": "ESCUDO CONTRA SAQUES",
+    "it_unlimit": "SEM LIMITE DE JOGOS",
+    "it_unlimitDesc": "vitórias nos jogos sem o limite diário",
+    "it_hours": "{h} h",
+    "it_use": "Ativar",
+    "it_empty": "Vazio. Monte na oficina — o item virá parar aqui.",
+    "it_toWorkshop": "🔧 Para a oficina",
+    "it_active": "✅ Ativo até {t}",
+    "it_used": "✅ Ativado! Vale até {t}",
+    "it_stored": "📦 Pronto! O item está no seu estoque — ative-o na aba Estoque quando precisar.",
+    "sk_shuttle": "🚀 SHUTTLE",
+    "sk_shuttleOn": "Você tem: taxa da bolsa {f}%, limites de ordens maiores.",
+    "sk_shuttleOff": "Ainda não. Montado na oficina.",
+    "sk_armor": "🦾 CIBER-ARMADURA",
+    "sk_armorOn": "Nível {l} de {m}: +{p}% de mineração até {t}.",
+    "sk_armorOff": "Não equipada. Cada nível dá +{p}% de mineração por 30 dias.",
+    "sk_store": "🏗 AMPLIAÇÃO DO ESTOQUE",
+    "sk_storeLvl": "Capacidade: {c} de cada recurso.",
+    "sk_storeMax": "🏆 Estoque no máximo!",
+    "hp_who": "Podem presentear jogadores a partir do nível {l} de inteligência e com {c} ciber-bifes diários resgatados.",
     "top": "👑 TOP-100 MAIS RICOS DO ECOSSISTEMA",
     "shop": "🏪 LOJA",
     "shopFarm": "🚜 PARA A FAZENDA",
@@ -3470,6 +3897,41 @@
     "hp_ask": "🙏 Yordam so'rash",
     "hp_given": "Sovg'a qilindi: {q} {k} — jamoaviy o'yin uchun rahmat!",
     "hp_asked": "So'rov jamoaga yuborildi!",
+    "tab_storage": "📦 Ombor",
+    "raid_noFuel": "⛽ Kema uchishga tayyor emas — yoqilg'i kerak",
+    "raid_shieldTitle": "🛡 BOSQINLARDAN HIMOYA QALQONI",
+    "raid_shieldActive": "FAOL",
+    "raid_shieldInactive": "FAOL EMAS",
+    "raid_shieldHint": "Qalqon faol bo'lsa, senga hujum qilib bo'lmaydi. Qalqon ustaxonada yig'iladi va omborga tushadi — kerak paytda yoqasan.",
+    "raid_toStorage": "📦 Omborni ochish",
+    "sk_res": "📦 OMBORDAGI RESURSLAR",
+    "sk_expand": "🔧 Omborni kengaytirish",
+    "sk_cutlets": "🥩 KIBER-KOTLETLAR",
+    "sk_cutletsHint": "Kiber-Burg'ulovchilar uchun yoqilg'i: 1 kotlet — bir sutka ish.",
+    "sk_refuel": "🚜 Fermada to'ldirish",
+    "it_nitrogen": "AZOTLI SOVUTISH +40%",
+    "it_nuclear": "YADROVIY TEZLATISH X5",
+    "it_drone": "MASTER-DRON",
+    "it_shield": "BOSQINLARDAN QALQON",
+    "it_unlimit": "CHEKSIZ REJIM",
+    "it_unlimitDesc": "o'yinlarda kunlik limitsiz g'alabalar",
+    "it_hours": "{h} soat",
+    "it_use": "Yoqish",
+    "it_empty": "Bo'sh. Ustaxonada yig' — buyum shu yerga tushadi.",
+    "it_toWorkshop": "🔧 Ustaxonaga",
+    "it_active": "✅ {t} gacha amal qiladi",
+    "it_used": "✅ Yoqildi! {t} gacha amal qiladi",
+    "it_stored": "📦 Tayyor! Buyum omborda — kerak bo'lganda «Ombor» bo'limida yoq.",
+    "sk_shuttle": "🚀 SHATTL",
+    "sk_shuttleOn": "Bor: birja komissiyasi {f}%, buyurtma limitlari kengroq.",
+    "sk_shuttleOff": "Hozircha yo'q. Ustaxonada yig'iladi.",
+    "sk_armor": "🦾 KIBER-ZIRH",
+    "sk_armorOn": "{l}-daraja ({m} dan): qazib olishga +{p}%, {t} gacha.",
+    "sk_armorOff": "Kiyilmagan. Har bir daraja 30 kunga qazib olishga +{p}% beradi.",
+    "sk_store": "🏗 OMBORNI KENGAYTIRISH",
+    "sk_storeLvl": "Sig'im: har bir resursdan {c} tadan.",
+    "sk_storeMax": "🏆 Maksimal ombor!",
+    "hp_who": "Sovg'a qila oladiganlar: {l}-intellekt darajasi va {c} ta kundalik kotletga yetgan o'yinchilar.",
     "top": "👑 EKOTIZIMNING TOP-100 BOYLARI",
     "shop": "🏪 DO'KON",
     "shopFarm": "🚜 FERMA UCHUN",
@@ -3753,6 +4215,41 @@
     "hp_ask": "🙏 请求支援",
     "hp_given": "已赠送：{q} {k}——感谢团队协作！",
     "hp_asked": "请求已发送给战队！",
+    "tab_storage": "📦 仓库",
+    "raid_noFuel": "⛽ 飞船无法起飞——需要燃料",
+    "raid_shieldTitle": "🛡 突袭护盾",
+    "raid_shieldActive": "生效中",
+    "raid_shieldInactive": "未生效",
+    "raid_shieldHint": "护盾生效期间，没人能突袭你。护盾在工坊建造后会存入仓库——需要时再启用。",
+    "raid_toStorage": "📦 打开仓库",
+    "sk_res": "📦 仓库资源",
+    "sk_expand": "🔧 扩建仓库",
+    "sk_cutlets": "🥩 赛博肉排",
+    "sk_cutletsHint": "赛博钻机的燃料：1 块肉排 = 工作一天。",
+    "sk_refuel": "🚜 去农场加料",
+    "it_nitrogen": "液氮冷却 +40%",
+    "it_nuclear": "核能加速 X5",
+    "it_drone": "大师无人机",
+    "it_shield": "突袭护盾",
+    "it_unlimit": "解除上限",
+    "it_unlimitDesc": "游戏获胜不受每日次数限制",
+    "it_hours": "{h} 小时",
+    "it_use": "启用",
+    "it_empty": "空空如也。去工坊建造——成品会存到这里。",
+    "it_toWorkshop": "🔧 去工坊",
+    "it_active": "✅ 生效至 {t}",
+    "it_used": "✅ 已启用！生效至 {t}",
+    "it_stored": "📦 完成！成品已存入仓库——需要时到「仓库」页启用。",
+    "sk_shuttle": "🚀 穿梭机",
+    "sk_shuttleOn": "已拥有：交易所手续费 {f}%，订单上限更高。",
+    "sk_shuttleOff": "尚未拥有。可在工坊建造。",
+    "sk_armor": "🦾 赛博装甲",
+    "sk_armorOn": "等级 {l}/{m}：产量 +{p}%，有效期至 {t}。",
+    "sk_armorOff": "未穿戴。每级可使产量 +{p}%，持续 30 天。",
+    "sk_store": "🏗 仓库扩建",
+    "sk_storeLvl": "容量：每种资源 {c}。",
+    "sk_storeMax": "🏆 仓库已达最大容量！",
+    "hp_who": "智力等级达到 {l} 且已领取 {c} 次每日肉排的玩家才能赠送。",
     "top": "👑 生态系统富豪榜 TOP-100",
     "shop": "🏪 商店",
     "shopFarm": "🚜 农场专区",
@@ -3948,7 +4445,7 @@
   const RES = ["metal", "hydrogen", "crystal", "parts"];
   const RES_ICON = { metal: "⛏", hydrogen: "💧", crystal: "💎", parts: "⚙️" };
   const KINDS = ["intern", "junior", "premium"];   // от самого слабого к самому мощному
-  const TABS = ["passport", "farm", "goals", "workshop", "raids", "market", "team", "friends", "shop", "top", "faq", "rules"];
+  const TABS = ["passport", "farm", "storage", "goals", "workshop", "raids", "market", "team", "friends", "shop", "top", "faq", "rules"];
   const TAB_FLAG = { goals: "goals", workshop: "workshop", raids: "raids", market: "market", shop: "shop" };
 
   async function api(path, opts) {
@@ -4026,7 +4523,7 @@
   }
   const bindPagers = root => (root || document).querySelectorAll(".pager").forEach(bindPager);
   // Сколько колонок плашек у вкладки на широком экране (см. CSS #app[data-cols])
-  const VIEW_COLS = { passport: 2, farm: 2, goals: 1, workshop: 2, raids: 2, market: 3,
+  const VIEW_COLS = { passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
                       team: 3, friends: 3, shop: 3, top: 1, faq: 1, rules: 1 };
   const resLine = stock => RES.map(k => '<span class="chip">' + RES_ICON[k] + ' ' + num(stock[k]) + '</span>').join("");
   const bundle = b => RES.filter(k => b && b[k]).map(k => RES_ICON[k] + ' ' + b[k]).join(" · ") || "—";
@@ -4232,37 +4729,54 @@
       card(L.resources + " · " + L.resWhere, RES.map(k => row(RES_ICON[k] + " " + esc(w.res_names[k]), L["res_" + k + "_src"])).join("")) +
       '<div class="recipes">' + recipes + '</div>';
     document.querySelectorAll(".wcraft").forEach(b => {
-      b.onclick = () => act(b, "/api/craft_weekly", { recipe: b.dataset.id }, async () => {
-        notify(L.ws_crafted); await refreshMe(); go("workshop");
+      b.onclick = () => act(b, "/api/craft_weekly", { recipe: b.dataset.id }, async res => {
+        notify(res.stored ? L.it_stored : L.ws_crafted); await refreshMe(); go("workshop");
       });
     });
     document.querySelectorAll(".craft").forEach(b => {
-      b.onclick = () => act(b, "/api/craft", { recipe: b.dataset.id }, async () => {
-        notify(L.ws_crafted); await refreshMe(); go("workshop");
+      b.onclick = () => act(b, "/api/craft", { recipe: b.dataset.id }, async res => {
+        notify(res.stored ? L.it_stored : L.ws_crafted); await refreshMe(); go("workshop");
       });
     });
   }
 
   // ================= 🏴‍☠️ Налёты =================
   const MOVES = ["rock", "scissors", "paper"];
+  const dateShort = iso => new Date(iso).toLocaleString(me.lang === "ru" ? "ru-RU" : "en-GB",
+    { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  // Обратный отсчёт «ЧЧ:ММ:СС» (часы могут быть больше 24 — щит на неделю = 167:59:59)
+  function hms(ms) {
+    const sec = Math.max(0, Math.floor(ms / 1000)), p = n => String(n).padStart(2, "0");
+    return p(Math.floor(sec / 3600)) + ":" + p(Math.floor(sec % 3600 / 60)) + ":" + p(sec % 60);
+  }
+  let shieldTick = null;
   async function viewRaids(box) {
     const d = await api("/api/raids");
     const R = d.rules;
-    const ready = d.cooldown_left > 0 ? fmt(L.raid_cooldown, { m: Math.ceil(d.cooldown_left / 60) }) : L.raid_ready;
-    let shield = L.raid_shieldOff;
-    if (d.shield.active) shield = d.shield.until
-      ? fmt(L.raid_shieldOn, { t: new Date(d.shield.until).toLocaleString(me.lang === "ru" ? "ru-RU" : "en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) })
-      : L.raid_shieldNewbie;
+    const fuelOk = (d.stock.hydrogen || 0) >= R.fuel;
+    // Корабль без топлива не «готов к вылету», даже если перезарядка закончилась
+    const ship = !fuelOk ? '<div class="hint status-bad">' + L.raid_noFuel + '</div>'
+      : d.cooldown_left > 0 ? '<div class="hint">' + fmt(L.raid_cooldown, { m: Math.ceil(d.cooldown_left / 60) }) + '</div>'
+      : '<div class="hint status-ok">' + L.raid_ready + '</div>';
     const stance = MOVES.map(m => '<button class="mv' + (d.stance === m ? ' on' : '') + '" data-st="' + m + '">' + L[m] + '</button>').join("");
     const revenge = d.revenge.map(r => '<button class="btn danger rv" data-id="' + r.raid_id + '" data-name="' + esc(r.name) + '">' +
       fmt(L.raid_revengeBtn, { name: esc(r.name) }) + ' · ' + bundle(r.loot) + '</button>').join("");
+    const sh = d.shield, shOn = !!sh.active, shUntil = sh.until ? new Date(sh.until).getTime() : null;
+    const shieldCard = '<div class="card shield-card ' + (shOn ? 'on' : 'off') + '"><h2>' + L.raid_shieldTitle + '</h2>' +
+      '<div class="sh-state">' + (shOn ? L.raid_shieldActive : L.raid_shieldInactive) + '</div>' +
+      (shOn && !shUntil ? '<div class="balance small">' + L.raid_shieldNewbie + '</div>'
+        : '<div class="sh-timer" id="shTimer">' + (shUntil ? hms(shUntil - Date.now()) : "00:00:00") + '</div>') +
+      (shUntil ? '<div class="hint">' + fmt(L.raid_shieldOn, { t: dateShort(sh.until) }) + '</div>' : '') +
+      '<div class="hint">' + L.raid_shieldHint + '</div>' +
+      (shOn ? '' : '<button class="btn ghost" id="shStore">' + L.raid_toStorage + '</button>') + '</div>';
     box.innerHTML =
-      card(L.raid_title,
-        row(L.raid_fuel, num(d.stock.hydrogen) + " / " + R.fuel) +
-        '<div class="hint">' + ready + '</div><div class="hint">' + shield + '</div>' +
+      '<div class="card"><div class="card-head"><h2>' + L.raid_title + '</h2>' +
+        '<span class="fuel-pill' + (fuelOk ? '' : ' low') + '">💧 ' + num(d.stock.hydrogen) + ' / ' + R.fuel + '</span></div>' +
+        ship +
         '<div class="hint">' + fmt(L.raid_stats, { a: d.stats.attacks, w: d.stats.attack_wins, h: d.stats.defense_holds, d: d.stats.defenses }) + '</div>' +
         '<button class="btn scene-btn" id="scoutBtn">' + L.raid_scout + '</button>' +
-        '<div id="raidStage"></div>') +
+        '<div id="raidStage"></div></div>' +
+      shieldCard +
       (revenge ? card(L.raid_revenge, revenge) : '') +
       card(L.raid_stance, '<div class="moves">' + stance + '</div><div class="hint">' +
         (d.stance ? L.raid_stanceHint : L.raid_stanceNone) + '</div>') +
@@ -4271,6 +4785,16 @@
         '<li>' + fmt(L.raid_rule2, { pct: R.loot_pct, cap: R.loot_cap, fpct: R.fail_pct, fcap: R.fail_cap }) + '</li>' +
         '<li>' + fmt(L.raid_rule3, { days: R.newbie_days }) + '</li>' +
         '<li>' + fmt(L.raid_rule4, { fuel: R.fuel, cd: R.cooldown_h, rh: R.revenge_h }) + '</li></ol>');
+    clearInterval(shieldTick);
+    if (shUntil) shieldTick = setInterval(() => {
+      const el = document.getElementById("shTimer");
+      if (!el) { clearInterval(shieldTick); return; }
+      const left = shUntil - Date.now();
+      el.textContent = hms(left);
+      if (left <= 0) { clearInterval(shieldTick); go("raids"); }
+    }, 1000);
+    const shb = document.getElementById("shStore");
+    if (shb) shb.onclick = () => go("storage");
     document.querySelectorAll(".mv[data-st]").forEach(b => {
       b.onclick = () => act(b, "/api/raid/stance", { stance: b.dataset.st }, async () => { notify(L.raid_stanceSaved); go("raids"); });
     });
@@ -4288,6 +4812,48 @@
         '<span class="tr">' + fmt(L.raid_res, { n: tg.total }) + '</span></button>').join("");
       stage.querySelectorAll(".target").forEach(b => {
         b.onclick = () => pickMove(stage, { slot: Number(b.dataset.slot) }, b.dataset.name);
+      });
+    });
+  }
+
+  // ================= 📦 Склад: ресурсы, котлеты, изделия мастерской, улучшения =================
+  // Пустое — серое и неприметное; есть хоть одно — плашка медленно переливается, как лавовая лампа.
+  const IT_ICON = { nitrogen: "❄️", nuclear: "☢️", drone: "🚁", shield: "🛡", unlimit: "♾" };
+  async function viewStorage(box) {
+    const d = await api("/api/storage");
+    const resCard = card(L.sk_res, RES.map(k => {
+      const have = d.stock[k] || 0, pct = Math.min(100, Math.round(have / d.capacity * 100));
+      return '<div class="resbar"><div class="row"><span class="k">' + RES_ICON[k] + ' ' + esc(d.res_names[k]) +
+        '</span><span class="v">' + num(have) + ' / ' + num(d.capacity) + '</span></div><div class="bar"><i style="width:' + pct + '%"></i></div></div>';
+    }).join("") + '<button class="btn ghost" data-go="workshop">' + L.sk_expand + '</button>');
+    const cutCard = '<div class="card ' + (d.cutlets > 0 ? 'lava' : 'dim') + '"><h2>' + L.sk_cutlets + '</h2>' +
+      '<div class="big-num">🥩 ' + num(d.cutlets) + '</div><div class="hint">' + L.sk_cutletsHint + '</div>' +
+      '<button class="btn ghost" data-go="farm">' + L.sk_refuel + '</button></div>';
+    const itemCards = d.effects.map(e => {
+      const units = d.items.filter(it => it.effect === e);
+      const until = d.active[e];
+      const body = units.length
+        ? units.map(it => '<div class="unit-row"><b>⏱ ' + fmt(L.it_hours, { h: it.hours }) + ' × ' + it.qty + '</b>' +
+            '<button class="mini itUse" data-e="' + e + '" data-h="' + it.hours + '">' + L.it_use + '</button></div>').join("")
+        : '<div class="hint">' + L.it_empty + '</div><button class="btn ghost" data-go="workshop">' + L.it_toWorkshop + '</button>';
+      // Запас есть — «лава»; запаса нет, но эффект действует — обычная плашка; ничего — серая
+      return '<div class="card ' + (units.length ? 'lava' : until ? '' : 'dim') + '"><h2>' + IT_ICON[e] + ' ' + L["it_" + e] + '</h2>' +
+        '<div class="hint">' + (e === "unlimit" ? L.it_unlimitDesc : L["eff_" + e]) + '</div>' +
+        (until ? '<div class="hint status-ok">' + fmt(L.it_active, { t: dateShort(until) }) + '</div>' : '') + body + '</div>';
+    }).join("");
+    const P = d.perm;
+    const perm = (on, title, text) => '<div class="card ' + (on ? 'lava' : 'dim') + '"><h2>' + title + '</h2><div class="hint">' + text + '</div></div>';
+    const permCards =
+      perm(P.shuttle, L.sk_shuttle, P.shuttle ? fmt(L.sk_shuttleOn, { f: P.shuttle_fee }) : L.sk_shuttleOff) +
+      perm(P.armor_level > 0, L.sk_armor, P.armor_level > 0
+        ? fmt(L.sk_armorOn, { l: P.armor_level, m: P.armor_max, p: P.armor_level * P.armor_pct, t: P.armor_until ? dateShort(P.armor_until) : "—" })
+        : fmt(L.sk_armorOff, { p: P.armor_pct })) +
+      perm(P.capacity > P.capacity_base, L.sk_store, fmt(L.sk_storeLvl, { c: num(P.capacity) }) + (P.capacity_max ? '<br>' + L.sk_storeMax : ''));
+    box.innerHTML = resCard + cutCard + itemCards + permCards;
+    box.querySelectorAll("[data-go]").forEach(b => { b.onclick = () => go(b.dataset.go); });
+    box.querySelectorAll(".itUse").forEach(b => {
+      b.onclick = () => act(b, "/api/item/use", { effect: b.dataset.e, hours: Number(b.dataset.h) }, async res => {
+        notify(fmt(L.it_used, { t: dateShort(res.until) })); await refreshMe(); go("storage");
       });
     });
   }
@@ -4572,7 +5138,7 @@
       // Больше остатка просьбы, суточного лимита и своего запаса кнопка не предлагает
       const left = Math.min(h.qty - h.filled, H.daily - H.given_today, d.stock[h.kind] || 0);
       const btns = h.mine ? '<button class="mini ghost hpCancel" data-id="' + h.id + '">' + L.mk_cancel + '</button>'
-        : left <= 0 ? '' : [10, 50].filter(x => x < left).map(x => '<button class="mini hpGive" data-id="' + h.id + '" data-q="' + x + '">' + fmt(L.hp_give, { n: x }) + '</button>').join("") +
+        : (left <= 0 || !H.can_give) ? '' : [10, 50].filter(x => x < left).map(x => '<button class="mini hpGive" data-id="' + h.id + '" data-q="' + x + '">' + fmt(L.hp_give, { n: x }) + '</button>').join("") +
           '<button class="mini hpGive" data-id="' + h.id + '" data-q="' + left + '">' + fmt(L.hp_give, { n: left }) + '</button>';
       return '<div class="stres"><div class="row"><span class="k">' + (h.mine ? '⭐ ' : '') + esc(h.name) + ' · ' + RES_ICON[h.kind] +
         '</span><span class="v">' + h.filled + ' / ' + h.qty + '</span></div><div class="bar"><i style="width:' + pct + '%"></i></div>' +
@@ -4587,6 +5153,7 @@
       card(L.tm_market, '<div class="hint">' + fmt(L.tm_marketHint, { f: MK.fee, p: MK.public_fee, c: MK.clan_fee }) + '</div>' +
         '<button class="btn" id="tmMarket">' + L.tm_marketBtn + '</button>') +
       card(L.hp_title, '<div class="hint">' + fmt(L.hp_hint, { d: H.daily }) + '</div>' +
+        '<div class="hint' + (H.can_give ? '' : ' status-bad') + '">' + fmt(L.hp_who, { l: H.giver_level, c: H.giver_claims }) + '</div>' +
         '<div class="holding">' + fmt(L.hp_today, { g: H.given_today, d: H.daily }) + '</div>' + helpRows + helpForm) +
       card(L.st_title, stHtml);
     document.getElementById("tmMarket").onclick = () => { mkScope = "team"; go("market"); };
@@ -4700,7 +5267,7 @@
     docSection = "";
     box.innerHTML = '<iframe class="doc" src="' + src + '" title="' + path.slice(1) + '"></iframe>';
   };
-  const VIEWS = { passport: viewPassport, farm: viewFarm, goals: viewGoals, workshop: viewWorkshop,
+  const VIEWS = { passport: viewPassport, farm: viewFarm, storage: viewStorage, goals: viewGoals, workshop: viewWorkshop,
                   raids: viewRaids, market: viewMarket, team: viewTeam, friends: viewFriends, shop: viewShop, top: viewTop,
                   faq: viewDoc("/faq"), rules: viewDoc("/rules") };
 

@@ -31,7 +31,7 @@ async def conn():
                         "miners, duels, battles, vip_aliases, quest_progress, events, "
                         "daily_activity, promoters, metrics_snapshots, market_orders, "
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
-                        "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help RESTART IDENTITY")
+                        "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -1549,8 +1549,10 @@ async def test_team_help_rules(conn):
     await _mk_user(conn, 1311, 0, team_id=tid)              # ещё не активный
     await _mk_user(conn, 1312, 0, team_id=tid)
     await _mk_user(conn, 1313, 0)                           # чужой
-    await _make_active(conn, 1312)
-    await _make_active(conn, 1313)
+    await _make_active(conn, 1311)                          # активный, но для дарения мало
+    for uid in (1312, 1313):                                # прокачанные: 7 уровень + 10 котлет
+        await conn.execute("UPDATE users SET bonus_claims = 10 WHERE user_id = $1", uid)
+        await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES ($1, 7)", uid)
     for uid in (1311, 1312, 1313):
         await grant_bundle(conn, uid, {"crystal": 300}, "test")
 
@@ -1576,7 +1578,7 @@ async def test_team_help_rules(conn):
     assert e.value.key == "mk.err_team_only"
     with pytest.raises(HelpError) as e:
         await give_help(conn, 1311, hid, 10, now)
-    assert e.value.key == "tr.err_not_active"
+    assert e.value.key == "help.err_not_active"
 
     res = await give_help(conn, 1312, hid, 150, now)        # режется суточным лимитом
     assert res["qty"] == TEAM_HELP_DAILY_GIVE and not res["done"]
@@ -1594,3 +1596,37 @@ async def test_team_help_rules(conn):
     with pytest.raises(HelpError) as e:
         await give_help(conn, 1312, hid2, 5, now + timedelta(days=1))
     assert e.value.key == "help.err_not_found"
+
+
+async def test_workshop_items_go_to_storage_and_activate_later(conn):
+    from datetime import timedelta
+    from shared.economy import utcnow
+    from shared.items import ItemError, activate_item, list_items
+    from shared.resources import grant_bundle
+    from shared.weekly_recipes import craft_weekly
+    from shared.workshop import craft
+    now = utcnow()
+    await _mk_user(conn, 1320, 0)
+    await grant_bundle(conn, 1320, {"metal": 300, "hydrogen": 300, "crystal": 300, "parts": 300}, "test")
+
+    res = await craft(conn, 1320, "shield_24h", now, to_storage=True)        # приложение: на склад
+    assert res.stored and res.until is None
+    assert await conn.fetchval("SELECT raid_shield_until FROM users WHERE user_id = 1320") is None
+    await craft(conn, 1320, "shield_24h", now, to_storage=True)
+    await craft_weekly(conn, 1320, "w_combo_guard", now, enabled=True, to_storage=True)   # азот 12 ч + щит 12 ч
+    items = {(i["effect"], i["hours"]): i["qty"] for i in await list_items(conn, 1320)}
+    assert items == {("shield", 24): 2, ("nitrogen", 12): 1, ("shield", 12): 1}
+
+    until = await activate_item(conn, 1320, "shield", 24, now)
+    assert until == now + timedelta(hours=24)
+    until2 = await activate_item(conn, 1320, "shield", 24, now)               # второй продлевает
+    assert until2 == now + timedelta(hours=48)
+    with pytest.raises(ItemError) as e:
+        await activate_item(conn, 1320, "shield", 24, now)
+    assert e.value.key == "it.err_none"
+    await activate_item(conn, 1320, "nitrogen", 12, now)
+    assert await conn.fetchval("SELECT boost_nitrogen_until FROM users WHERE user_id = 1320") == now + timedelta(hours=12)
+
+    res = await craft(conn, 1320, "nitro_6h", now)                            # чат: как раньше, сразу
+    assert not res.stored and res.until is not None
+    assert {(i["effect"], i["hours"]) for i in await list_items(conn, 1320)} == {("shield", 12)}

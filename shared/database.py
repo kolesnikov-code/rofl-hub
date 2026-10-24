@@ -475,6 +475,16 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS team_help_open_idx ON team_help (team_id, status);",
+    # --- 26.10: склад изделий мастерской (активируются игроком, когда удобно) ---
+    """
+    CREATE TABLE IF NOT EXISTS user_items (
+        user_id BIGINT NOT NULL,
+        effect VARCHAR(16) NOT NULL,
+        hours INT NOT NULL CHECK (hours > 0),
+        qty INT NOT NULL DEFAULT 0 CHECK (qty >= 0),
+        PRIMARY KEY (user_id, effect, hours)
+    );
+    """,
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS armor_until TIMESTAMP WITH TIME ZONE;",
     # --- 25.10: склад ресурсов с лимитом, рецепты недели ---
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS res_capacity INT NOT NULL DEFAULT 500;",
