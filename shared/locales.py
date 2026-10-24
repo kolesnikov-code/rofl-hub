@@ -518,6 +518,18 @@ RU: dict[str, str] = {
         "{level} уровень интеллекта и {claims} ежедневные котлеты — есть. Тебе начислено <b>{bonus}</b>. Зови ещё!"
     ),
 
+    # ---------------- команды: ошибки (общие для чата и приложения) ----------------
+    "team.err_len": "❌ Длина текста должна быть от 1 до {max} символов!",
+    "team.err_link": "🚨 Ошибка безопасности! Ссылки, юзернеймы и телефоны строго запрещены!",
+    "team.err_badword": "❌ Обнаружены нецензурные выражения! Соблюдай правила хаба.",
+    "team.err_already": "⚠️ Ты уже состоишь в команде или клане! Сначала выйди из неё.",
+    "team.err_money": "❌ Недостаточно монет! Создание команды стоит {cost} 🪙, у тебя {balance} 🪙.",
+    "team.err_captain": "⚠️ Ты уже являешься капитаном другой команды!",
+    "team.err_taken": "⚠️ Название «{name}» уже занято! Придумай уникальное.",
+    "team.err_gone": "❌ Эта команда больше не существует.",
+    "team.err_full": "📦 В этой команде закончились места!",
+    "team.err_not_member": "❌ Ты не состоишь в команде.",
+
     # ---------------- удаление аккаунта ----------------
     "profile.btn_delete": "🗑 Удалить аккаунт",
     "acct.warn": (
@@ -1396,6 +1408,18 @@ EN: dict[str, str] = {
         "🤝 <b>Your friend is now an active player!</b>\n"
         "Intellect level {level} and {claims} daily cutlets — done. You've earned <b>{bonus}</b>. Invite more!"
     ),
+
+    # ---------------- teams: errors (shared by the chat and the app) ----------------
+    "team.err_len": "❌ The text must be 1 to {max} characters long!",
+    "team.err_link": "🚨 Security check! Links, usernames and phone numbers are strictly forbidden!",
+    "team.err_badword": "❌ Profanity detected! Please follow the hub rules.",
+    "team.err_already": "⚠️ You're already in a team or clan! Leave it first.",
+    "team.err_money": "❌ Not enough coins! Creating a team costs {cost} 🪙, you have {balance} 🪙.",
+    "team.err_captain": "⚠️ You're already the captain of another team!",
+    "team.err_taken": "⚠️ The name “{name}” is already taken! Come up with a unique one.",
+    "team.err_gone": "❌ This team no longer exists.",
+    "team.err_full": "📦 This team has no free seats left!",
+    "team.err_not_member": "❌ You're not in a team.",
 
     # ---------------- account deletion ----------------
     "profile.btn_delete": "🗑 Delete account",

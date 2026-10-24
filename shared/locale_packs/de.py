@@ -495,6 +495,17 @@ STRINGS = {
     "ref.qualified_notify": ("🤝 <b>Dein Freund ist jetzt ein aktiver Spieler!</b>\n"
                              "Intelligenz-Level {level} und {claims} tägliche Frikadellen – geschafft. Du hast <b>{bonus}</b> erhalten. Lade noch mehr ein!"),
 
+    "team.err_len": "❌ Der Text muss 1 bis {max} Zeichen lang sein!",
+    "team.err_link": "🚨 Sicherheitswarnung! Links, Usernamen und Telefonnummern sind strikt verboten!",
+    "team.err_badword": "❌ Unzulässige Ausdrücke erkannt! Halte dich an die Regeln des Hubs.",
+    "team.err_already": "⚠️ Du bist schon in einem Team oder Clan! Verlasse es zuerst.",
+    "team.err_money": "❌ Nicht genug Münzen! Ein Team zu gründen kostet {cost} 🪙, du hast {balance} 🪙.",
+    "team.err_captain": "⚠️ Du bist bereits Kapitän eines anderen Teams!",
+    "team.err_taken": "⚠️ Der Name „{name}“ ist schon vergeben! Denk dir einen einzigartigen aus.",
+    "team.err_gone": "❌ Dieses Team gibt es nicht mehr.",
+    "team.err_full": "📦 In diesem Team sind keine Plätze mehr frei!",
+    "team.err_not_member": "❌ Du bist in keinem Team.",
+
     # ---------------- Account löschen ----------------
     "profile.btn_delete": "🗑 Account löschen",
     "acct.warn": (
@@ -934,7 +945,17 @@ MINIAPP = {
     "bonusReady": "🎁 TÄGLICHE FRIKADELLE ABHOLEN",
     "bonusWait": "⏳ Bonus in {h} Std. {m} Min.", "bonusDone": "🎉 Frikadelle im Lager!",
     "team": "🏆 MEIN TEAM", "clan": "CLAN", "teamLabel": "Team", "captain": "👑 Du hast das Kommando!",
-    "members": "Kader", "noTeam": "Noch kein Team. Gründe eins oder tritt einem bei — im Bot-Chat: „🏆 Teams & Clans“.",
+    "members": "Kader", "noTeam": "Noch kein Team: Tritt über die Roulette oder die Suche einem bei — oder gründe dein eigenes.",
+    "tab_faq": "📚 FAQ", "tab_rules": "📜 Regeln",
+    "tm_roulette": "🎲 TEAM-ROULETTE", "tm_rotate": "🔄 Andere Teams zeigen", "tm_noFree": "Noch keine freien Teams — gründe dein eigenes!",
+    "tm_search": "🔍 TEAM SUCHEN", "tm_searchPh": "Name oder Teil davon", "tm_searchBtn": "Suchen",
+    "tm_notFound": "Keine Teams mit diesem Namen gefunden", "tm_join": "💥 Beitreten", "tm_joined": "Du bist jetzt in „{n}“!",
+    "tm_create": "🏆 TEAM GRÜNDEN", "tm_hubHint": "Ein Team mit bis zu 50 Kämpfern kostet {cost} 🪙. Im Shop lässt es sich zum Mega-Clan mit 1000 Plätzen ausbauen.",
+    "tm_name": "Name (bis {n} Zeichen)", "tm_motto": "Motto (bis {n} Zeichen)", "tm_symbol": "Emblem — ein Emoji (bis {n} Zeichen)",
+    "tm_createBtn": "Gründen für {cost} 🪙", "tm_created": "Team „{n}“ gegründet — du bist der Kapitän!", "tm_noMoney": "Du brauchst {cost} 🪙, du hast {b} 🪙",
+    "tm_roster": "👥 TEAM-KADER", "tm_mottoL": "💬 Motto", "tm_leave": "🚪 Team verlassen",
+    "tm_leaveAsk": "Das Team „{n}“ wirklich verlassen?", "tm_leaveAskCaptain": "Du bist Kapitän: Die Krone geht an den Veteranen des Teams. „{n}“ wirklich verlassen?",
+    "tm_left": "Du bist nicht mehr in einem Team",
     "top": "👑 TOP-100 DER REICHSTEN SPIELER",
     "shop": "🏪 SHOP", "shopFarm": "🚜 FÜR DIE FARM", "shopGames": "🕹️ GAMING",
     "shopHint": "Bezahlung mit offiziellen Telegram Stars — direkt hier, mit einem Tap.",

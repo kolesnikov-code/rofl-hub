@@ -494,6 +494,18 @@ STRINGS = {
     "ref.qualified_notify": ("🤝 <b>Temanmu menjadi pemain aktif!</b>\n"
                              "Level intelektual {level} dan {claims} kotlet harian — tercapai. Kamu dapat <b>{bonus}</b>. Undang lagi!"),
 
+    # ---------------- kesalahan tim ----------------
+    "team.err_len": "❌ Panjang teks harus 1 sampai {max} karakter!",
+    "team.err_link": "🚨 Pemeriksaan keamanan! Tautan, username, dan nomor telepon dilarang keras!",
+    "team.err_badword": "❌ Terdeteksi kata kasar! Patuhi aturan hub.",
+    "team.err_already": "⚠️ Kamu sudah berada di tim atau klan! Keluar dulu.",
+    "team.err_money": "❌ Koin tidak cukup! Membuat tim butuh {cost} 🪙, kamu punya {balance} 🪙.",
+    "team.err_captain": "⚠️ Kamu sudah menjadi kapten tim lain!",
+    "team.err_taken": "⚠️ Nama «{name}» sudah dipakai! Cari nama yang unik.",
+    "team.err_gone": "❌ Tim ini sudah tidak ada.",
+    "team.err_full": "📦 Tim ini sudah penuh!",
+    "team.err_not_member": "❌ Kamu tidak berada di tim.",
+
     # ---------------- penghapusan akun ----------------
     "profile.btn_delete": "🗑 Hapus akun",
     "acct.warn": (
@@ -933,7 +945,17 @@ MINIAPP = {
     "bonusReady": "🎁 KLAIM KOTLET HARIAN",
     "bonusWait": "⏳ Bonus dalam {h} jam {m} mnt", "bonusDone": "🎉 Kotlet masuk gudang!",
     "team": "🏆 TIMKU", "clan": "KLAN", "teamLabel": "Tim", "captain": "👑 Kamu kaptennya!",
-    "members": "Anggota", "noTeam": "Kamu belum punya tim. Buat sendiri atau gabung tim lain di chat bot: «🏆 TIM & KLAN».",
+    "members": "Anggota", "noTeam": "Kamu belum punya tim: gabung lewat rolet atau pencarian — atau buat sendiri.",
+    "tab_faq": "📚 FAQ", "tab_rules": "📜 Perjanjian",
+    "tm_roulette": "🎲 ROLET TIM", "tm_rotate": "🔄 Tampilkan tim lain", "tm_noFree": "Belum ada tim kosong — buat sendiri!",
+    "tm_search": "🔍 CARI TIM", "tm_searchPh": "Nama atau sebagiannya", "tm_searchBtn": "Cari",
+    "tm_notFound": "Tidak ada tim dengan nama itu", "tm_join": "💥 Gabung", "tm_joined": "Kamu masuk tim «{n}»!",
+    "tm_create": "🏆 BUAT TIM", "tm_hubHint": "Tim hingga 50 petarung berharga {cost} 🪙. Di toko bisa ditingkatkan jadi Mega-Klan dengan 1000 tempat.",
+    "tm_name": "Nama (maks. {n} karakter)", "tm_motto": "Motto (maks. {n} karakter)", "tm_symbol": "Lambang — emoji (maks. {n} karakter)",
+    "tm_createBtn": "Buat seharga {cost} 🪙", "tm_created": "Tim «{n}» dibuat — kamu kaptennya!", "tm_noMoney": "Butuh {cost} 🪙, kamu punya {b} 🪙",
+    "tm_roster": "👥 ANGGOTA TIM", "tm_mottoL": "💬 Motto", "tm_leave": "🚪 Keluar dari tim",
+    "tm_leaveAsk": "Yakin keluar dari tim «{n}»?", "tm_leaveAskCaptain": "Kamu kapten: mahkota berpindah ke veteran tim. Yakin keluar dari «{n}»?",
+    "tm_left": "Kamu tidak lagi berada di tim",
     "top": "👑 TOP-100 PEMAIN TERKAYA EKOSISTEM",
     "shop": "🏪 TOKO", "shopFarm": "🚜 UNTUK LADANG", "shopGames": "🕹️ GAME",
     "shopHint": "Bayar dengan Telegram Stars resmi — langsung di sini, sekali ketuk.",

@@ -59,6 +59,10 @@ from shared.economy import (
     MARKET_FEE_PERCENT,
     STATION_BONUS_PER_LEVEL,
     STATION_MAX_LEVEL,
+    TEAM_SYMBOL_MAX_LEN,
+    TEAM_NAME_MAX_LEN,
+    TEAM_MOTTO_MAX_LEN,
+    TEAM_CREATE_COST,
     WORKSHOP_RECIPES,
     market_fee,
     market_limits,
@@ -98,6 +102,8 @@ from shared.raids import (
     shield_active,
 )
 from shared.ranks import rank_label
+from shared.db_clans import (TeamError, create_team, join_team, leave_team, public_team, random_teams,
+                             search_teams, team_members)
 from shared.resources import get_resources
 from shared.team_station import StationError, donate, get_station, progress_to_next, recent_donations, team_member_ids
 from shared.webapp_auth import validate_init_data
@@ -729,19 +735,28 @@ async def handle_team(request: web.Request) -> web.Response:
         user = await conn.fetchrow("SELECT team_id FROM users WHERE user_id = $1", ctx.user_id)
         stock = await get_resources(conn, ctx.user_id)
         if user["team_id"] is None:
-            return web.json_response({"team": None, "stock": stock, "res_names": resource_labels(ctx.lang)})
-        team = await conn.fetchrow(
-            "SELECT team_name, members_count, max_members, captain_id FROM teams WHERE team_id = $1",
-            user["team_id"])
+            # Без команды — тот же хаб, что в чате: рулетка свободных команд, поиск, создание
+            balance = await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", ctx.user_id)
+            return web.json_response({
+                "team": None, "teams": await random_teams(conn), "cost": TEAM_CREATE_COST, "balance": balance,
+                "limits": {"name": TEAM_NAME_MAX_LEN, "motto": TEAM_MOTTO_MAX_LEN, "symbol": TEAM_SYMBOL_MAX_LEN},
+                "stock": stock, "res_names": resource_labels(ctx.lang)})
+        team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1", user["team_id"])
         station = await get_station(conn, user["team_id"])
         feed = await recent_donations(conn, user["team_id"])
+        # Состав виден только своим (как в чате) — @username или имя, 🧠 уровень, звание
+        members = await team_members(conn, user["team_id"], team["captain_id"])
+    now = utcnow()
     station_on = await get_flag("station")
     level = station["level"]
     stored = {k: station[k] for k in RESOURCE_KINDS}
     return web.json_response({
-        "team": {"name": team["team_name"], "members": team["members_count"],
-                 "max": team["max_members"], "is_clan": team["max_members"] >= 1000,
-                 "captain": team["captain_id"] == ctx.user_id},
+        "team": {**public_team(team), "captain": team["captain_id"] == ctx.user_id,
+                 "roster": [{"name": ("@" + m["username"]) if m.get("username")
+                             else ((m.get("display_name") or "").strip() or "#" + str(m["user_id"])[-4:]),
+                             "level": m["quiz_level"], "rank": rank_label(ctx.lang, m["created_at"], now),
+                             "captain": m["user_id"] == team["captain_id"], "me": m["user_id"] == ctx.user_id}
+                            for m in members]},
         "station": {
             "enabled": station_on, "level": level, "max": STATION_MAX_LEVEL,
             "per_level": STATION_BONUS_PER_LEVEL, "percent": level * STATION_BONUS_PER_LEVEL,
@@ -754,6 +769,63 @@ async def handle_team(request: web.Request) -> web.Response:
         "stock": stock,
         "res_names": resource_labels(ctx.lang),
     })
+
+
+async def handle_teams(request: web.Request) -> web.Response:
+    """Рулетка (без q — новый случайный набор при каждом запросе) или поиск по названию."""
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    query = (request.query.get("q") or "").strip()
+    try:
+        async with db.pool.acquire() as conn:
+            teams = await search_teams(conn, query) if query else await random_teams(conn)
+    except TeamError as e:
+        return fail(e.localized(ctx.lang))
+    return web.json_response({"teams": teams, "query": query})
+
+
+async def handle_team_join(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    team_id = _int((await _json(request)).get("team_id"))
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                team = await join_team(conn, ctx.user_id, team_id)
+    except TeamError as e:
+        return fail(e.localized(ctx.lang))
+    await track(ctx.user_id, "team_joined", team_id=team_id, source="webapp")
+    return web.json_response({"ok": True, "team": team})
+
+
+async def handle_team_leave(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    async with db.pool.acquire() as conn:
+        async with conn.transaction():
+            left = await leave_team(conn, ctx.user_id)
+    if left is None:
+        return fail(plain(t(ctx.lang, "team.err_not_member")))
+    return web.json_response({"ok": True, "outcome": left["outcome"]})
+
+
+async def handle_team_create(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    data = await _json(request)
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                team_id = await create_team(conn, ctx.user_id, str(data.get("name", "")),
+                                            str(data.get("motto", "")), str(data.get("symbol", "")))
+    except TeamError as e:
+        return fail(plain(e.localized(ctx.lang)))
+    await track(ctx.user_id, "team_joined", role="captain", source="webapp")
+    return web.json_response({"ok": True, "team_id": team_id})
 
 
 async def handle_station_donate(request: web.Request) -> web.Response:
@@ -871,6 +943,10 @@ def register_game_routes(app: web.Application) -> None:
     app.router.add_post("/api/swap/accept", handle_swap_accept)
     app.router.add_post("/api/swap/cancel", handle_swap_cancel)
     app.router.add_get("/api/team", handle_team)
+    app.router.add_get("/api/teams", handle_teams)
+    app.router.add_post("/api/team/join", handle_team_join)
+    app.router.add_post("/api/team/leave", handle_team_leave)
+    app.router.add_post("/api/team/create", handle_team_create)
     app.router.add_post("/api/station/donate", handle_station_donate)
     app.router.add_get("/api/goals", handle_goals)
     app.router.add_post("/api/goals/claim", handle_goals_claim)

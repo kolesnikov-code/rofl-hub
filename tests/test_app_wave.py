@@ -176,3 +176,20 @@ def test_long_lists_are_paged_and_the_shop_has_three_panels():
     for pager_id in ('pager("asks-"', 'pager("bids-"', 'pager("swaps"', 'pager("top"', 'pager("reftop"'):
         assert pager_id in html
     assert "span-tablet" in html and 'pager("shopinfo"' in html
+
+
+
+def test_team_text_filter_and_app_team_hub():
+    """Команды в приложении — как в чате: рулетка, поиск, создание, выход; FAQ и соглашение — вкладки."""
+    import pytest
+    from shared.db_clans import TeamError, validate_team_text
+    assert validate_team_text("  <Банда>  ", 32) == "&lt;Банда&gt;"
+    for bad, key in (("", "team.err_len"), ("x" * 33, "team.err_len"), ("@spam", "team.err_link"),
+                     ("+7 999 123 45 67", "team.err_link")):
+        with pytest.raises(TeamError) as e:
+            validate_team_text(bad, 32)
+        assert e.value.key == key
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    for needle in ('"/api/teams"', '"/api/team/join"', '"/api/team/leave"', '"/api/team/create"',
+                   '"faq", "rules"]', 'viewDoc("/faq")', 'viewDoc("/rules")'):
+        assert needle in html

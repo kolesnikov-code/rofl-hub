@@ -123,6 +123,11 @@ TEAM_CREATE_COST = 100_000
 TEAM_MAX_MEMBERS = 50
 MEGA_CLAN_MAX_MEMBERS = 1000
 TEAM_LIST_PAGE_SIZE = 25      # тиммейтов на страницу в /my_team (Мега-Клан — до 40 страниц)
+TEAM_NAME_MAX_LEN = 32
+TEAM_MOTTO_MAX_LEN = 100
+TEAM_SYMBOL_MAX_LEN = 5
+TEAM_ROULETTE_SIZE = 6        # случайных свободных команд в рулетке приложения (в чате — 3)
+TEAM_SEARCH_LIMIT = 20
 
 # --------------------------------------------------------------------------
 # Дуэли: 3 уровня столов «как в покере», сжигание 20% банка

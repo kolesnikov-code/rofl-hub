@@ -227,6 +227,9 @@
   .pg-btn:disabled { opacity: .35; cursor: default; }
   .pg-gap { color: var(--muted); padding: 0 2px; }
   .pg-count { width: 100%; text-align: center; color: var(--muted); font-size: 11px; }
+  .doc { display: block; width: 100%; height: calc(100vh - 170px); min-height: 480px; border: 1px solid rgba(0,255,225,.14);
+    border-radius: 16px; background: var(--bg); }
+  .btn.danger-text { color: var(--bad); border-color: rgba(255,85,85,.45); }
   .info-item { padding: 8px 0; border-bottom: 1px dashed rgba(138,147,184,.18); }
   .info-item b { display: block; font-size: 13px; margin-bottom: 3px; }
   .info-item span { color: var(--muted); font-size: 12px; line-height: 1.4; }
@@ -296,7 +299,17 @@
       bonusReady: "🎁 ЗАБРАТЬ ЕЖЕДНЕВНУЮ КОТЛЕТУ",
       bonusWait: "⏳ Бонус через {h} ч {m} мин", bonusDone: "🎉 Котлета на складе!",
       team: "🏆 МОЯ КОМАНДА", clan: "КЛАН", teamLabel: "Команда", captain: "👑 Ты капитан!",
-      members: "Состав", noTeam: "Ты пока без команды. Создай свою или вступи в чужую в чате бота: «🏆 Команды и кланы».",
+      members: "Состав", noTeam: "Ты пока без команды: вступи в команду из рулетки или поиска — или создай свою.",
+      tab_faq: "📚 FAQ", tab_rules: "📜 Соглашение",
+      tm_roulette: "🎲 РУЛЕТКА КОМАНД", tm_rotate: "🔄 Показать другие команды", tm_noFree: "Свободных команд пока нет — создай свою!",
+      tm_search: "🔍 ПОИСК КОМАНДЫ", tm_searchPh: "Название или его часть", tm_searchBtn: "Найти",
+      tm_notFound: "Команды с таким названием не найдены", tm_join: "💥 Вступить", tm_joined: "Ты в команде «{n}»!",
+      tm_create: "🏆 СОЗДАТЬ КОМАНДУ", tm_hubHint: "Команда до 50 бойцов стоит {cost} 🪙. В магазине её можно прокачать до Мега-Клана на 1000 мест.",
+      tm_name: "Название (до {n} знаков)", tm_motto: "Девиз (до {n} знаков)", tm_symbol: "Эмблема — эмодзи (до {n} знаков)",
+      tm_createBtn: "Создать за {cost} 🪙", tm_created: "Команда «{n}» создана — ты капитан!", tm_noMoney: "Нужно {cost} 🪙, у тебя {b} 🪙",
+      tm_roster: "👥 СОСТАВ КОМАНДЫ", tm_mottoL: "💬 Девиз", tm_leave: "🚪 Выйти из команды",
+      tm_leaveAsk: "Точно выйти из команды «{n}»?", tm_leaveAskCaptain: "Ты капитан: корона перейдёт ветерану команды. Точно выйти из «{n}»?",
+      tm_left: "Ты больше не в команде",
       top: "👑 ТОП-100 БОГАЧЕЙ ЭКОСИСТЕМЫ",
       shop: "🏪 МАГАЗИН", shopFarm: "🚜 ДЛЯ ФЕРМЫ", shopGames: "🕹️ ИГРОВЫЕ",
       shopHint: "Оплата официальными Telegram Stars — прямо здесь, в один тап.",
@@ -410,7 +423,17 @@
       bonusReady: "🎁 CLAIM THE DAILY CUTLET",
       bonusWait: "⏳ Bonus in {h}h {m}m", bonusDone: "🎉 Cutlet added!",
       team: "🏆 MY TEAM", clan: "CLAN", teamLabel: "Team", captain: "👑 You are the captain!",
-      members: "Roster", noTeam: "No team yet. Create one or join another in the bot chat: “🏆 Teams & clans”.",
+      members: "Roster", noTeam: "No team yet: join one from the roulette or search — or create your own.",
+      tab_faq: "📚 FAQ", tab_rules: "📜 Agreement",
+      tm_roulette: "🎲 TEAM ROULETTE", tm_rotate: "🔄 Show other teams", tm_noFree: "No free teams yet — create your own!",
+      tm_search: "🔍 FIND A TEAM", tm_searchPh: "Name or part of it", tm_searchBtn: "Search",
+      tm_notFound: "No teams with that name", tm_join: "💥 Join", tm_joined: "You're in “{n}”!",
+      tm_create: "🏆 CREATE A TEAM", tm_hubHint: "A team of up to 50 fighters costs {cost} 🪙. In the shop it can be upgraded to a Mega-Clan with 1000 seats.",
+      tm_name: "Name (up to {n} characters)", tm_motto: "Motto (up to {n} characters)", tm_symbol: "Emblem — an emoji (up to {n} characters)",
+      tm_createBtn: "Create for {cost} 🪙", tm_created: "Team “{n}” created — you're the captain!", tm_noMoney: "You need {cost} 🪙, you have {b} 🪙",
+      tm_roster: "👥 TEAM ROSTER", tm_mottoL: "💬 Motto", tm_leave: "🚪 Leave the team",
+      tm_leaveAsk: "Leave the team “{n}”?", tm_leaveAskCaptain: "You're the captain: the crown passes to the team veteran. Leave “{n}”?",
+      tm_left: "You're no longer in a team",
       top: "👑 TOP-100 RICHEST PLAYERS",
       shop: "🏪 SHOP", shopFarm: "🚜 FOR THE FARM", shopGames: "🕹️ GAMING",
       shopHint: "Pay with official Telegram Stars — right here, in one tap.",
@@ -559,7 +582,32 @@
     "teamLabel": "فريق",
     "captain": "👑 أنت الكابتن!",
     "members": "التشكيلة",
-    "noTeam": "لا فريق لديك بعد. أنشئ فريقك أو انضم إلى فريق آخر في دردشة البوت: «🏆 الفرق والكلانات».",
+    "noTeam": "لا فريق لديك بعد: انضم إلى فريق من الروليت أو البحث — أو أنشئ فريقك.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 الاتفاقية",
+    "tm_roulette": "🎲 روليت الفرق",
+    "tm_rotate": "🔄 عرض فرق أخرى",
+    "tm_noFree": "لا توجد فرق شاغرة بعد — أنشئ فريقك!",
+    "tm_search": "🔍 البحث عن فريق",
+    "tm_searchPh": "الاسم أو جزء منه",
+    "tm_searchBtn": "بحث",
+    "tm_notFound": "لا توجد فرق بهذا الاسم",
+    "tm_join": "💥 انضمام",
+    "tm_joined": "أنت الآن في فريق «{n}»!",
+    "tm_create": "🏆 إنشاء فريق",
+    "tm_hubHint": "فريق يضم حتى 50 مقاتلًا يكلّف {cost} 🪙. ويمكن ترقيته في المتجر إلى ميغا-كلان بـ 1000 مقعد.",
+    "tm_name": "الاسم (حتى {n} حرفًا)",
+    "tm_motto": "الشعار (حتى {n} حرفًا)",
+    "tm_symbol": "الرمز — إيموجي (حتى {n} حرفًا)",
+    "tm_createBtn": "إنشاء مقابل {cost} 🪙",
+    "tm_created": "أُنشئ فريق «{n}» — أنت الكابتن!",
+    "tm_noMoney": "تحتاج {cost} 🪙 ولديك {b} 🪙",
+    "tm_roster": "👥 تشكيلة الفريق",
+    "tm_mottoL": "💬 الشعار",
+    "tm_leave": "🚪 مغادرة الفريق",
+    "tm_leaveAsk": "هل تريد مغادرة فريق «{n}»؟",
+    "tm_leaveAskCaptain": "أنت الكابتن: ستنتقل القيادة إلى قدامى الفريق. هل تريد مغادرة «{n}»؟",
+    "tm_left": "لم تعد في أي فريق",
     "top": "👑 أغنى 100 لاعب في المنظومة",
     "shop": "🏪 المتجر",
     "shopFarm": "🚜 للمزرعة",
@@ -799,7 +847,32 @@
     "teamLabel": "টিম",
     "captain": "👑 তুমি ক্যাপ্টেন!",
     "members": "সদস্যরা",
-    "noTeam": "এখনো টিম নেই। বটের চ্যাটে «🏆 টিম ও ক্ল্যান»-এ নিজের টিম বানাও বা অন্য টিমে যোগ দাও।",
+    "noTeam": "এখনো টিম নেই: রুলেট বা সার্চ থেকে একটা টিমে যোগ দাও — অথবা নিজের টিম বানাও।",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 চুক্তি",
+    "tm_roulette": "🎲 টিম রুলেট",
+    "tm_rotate": "🔄 অন্য টিম দেখাও",
+    "tm_noFree": "ফাঁকা টিম এখনো নেই — নিজেরটা বানাও!",
+    "tm_search": "🔍 টিম খোঁজা",
+    "tm_searchPh": "নাম বা নামের অংশ",
+    "tm_searchBtn": "খোঁজো",
+    "tm_notFound": "এই নামে কোনো টিম পাওয়া যায়নি",
+    "tm_join": "💥 যোগ দাও",
+    "tm_joined": "তুমি এখন «{n}» টিমে!",
+    "tm_create": "🏆 টিম বানাও",
+    "tm_hubHint": "৫০ যোদ্ধা পর্যন্ত টিমের দাম {cost} 🪙। দোকানে এটাকে ১০০০ জায়গার মেগা-ক্ল্যানে আপগ্রেড করা যায়।",
+    "tm_name": "নাম (সর্বোচ্চ {n} অক্ষর)",
+    "tm_motto": "মটো (সর্বোচ্চ {n} অক্ষর)",
+    "tm_symbol": "প্রতীক — ইমোজি (সর্বোচ্চ {n} অক্ষর)",
+    "tm_createBtn": "{cost} 🪙-এ বানাও",
+    "tm_created": "«{n}» টিম তৈরি — তুমি ক্যাপ্টেন!",
+    "tm_noMoney": "দরকার {cost} 🪙, তোমার আছে {b} 🪙",
+    "tm_roster": "👥 টিমের সদস্য",
+    "tm_mottoL": "💬 মটো",
+    "tm_leave": "🚪 টিম ছাড়ো",
+    "tm_leaveAsk": "সত্যিই «{n}» টিম ছাড়বে?",
+    "tm_leaveAskCaptain": "তুমি ক্যাপ্টেন: মুকুট চলে যাবে টিমের সবচেয়ে পুরোনো সদস্যের কাছে। সত্যিই «{n}» ছাড়বে?",
+    "tm_left": "তুমি আর কোনো টিমে নেই",
     "top": "👑 ইকোসিস্টেমের টপ-100 ধনী",
     "shop": "🏪 দোকান",
     "shopFarm": "🚜 ফার্মের জন্য",
@@ -1037,7 +1110,32 @@
     "teamLabel": "Team",
     "captain": "👑 Du hast das Kommando!",
     "members": "Kader",
-    "noTeam": "Noch kein Team. Gründe eins oder tritt einem bei — im Bot-Chat: „🏆 Teams & Clans“.",
+    "noTeam": "Noch kein Team: Tritt über die Roulette oder die Suche einem bei — oder gründe dein eigenes.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 Regeln",
+    "tm_roulette": "🎲 TEAM-ROULETTE",
+    "tm_rotate": "🔄 Andere Teams zeigen",
+    "tm_noFree": "Noch keine freien Teams — gründe dein eigenes!",
+    "tm_search": "🔍 TEAM SUCHEN",
+    "tm_searchPh": "Name oder Teil davon",
+    "tm_searchBtn": "Suchen",
+    "tm_notFound": "Keine Teams mit diesem Namen gefunden",
+    "tm_join": "💥 Beitreten",
+    "tm_joined": "Du bist jetzt in „{n}“!",
+    "tm_create": "🏆 TEAM GRÜNDEN",
+    "tm_hubHint": "Ein Team mit bis zu 50 Kämpfern kostet {cost} 🪙. Im Shop lässt es sich zum Mega-Clan mit 1000 Plätzen ausbauen.",
+    "tm_name": "Name (bis {n} Zeichen)",
+    "tm_motto": "Motto (bis {n} Zeichen)",
+    "tm_symbol": "Emblem — ein Emoji (bis {n} Zeichen)",
+    "tm_createBtn": "Gründen für {cost} 🪙",
+    "tm_created": "Team „{n}“ gegründet — du bist der Kapitän!",
+    "tm_noMoney": "Du brauchst {cost} 🪙, du hast {b} 🪙",
+    "tm_roster": "👥 TEAM-KADER",
+    "tm_mottoL": "💬 Motto",
+    "tm_leave": "🚪 Team verlassen",
+    "tm_leaveAsk": "Das Team „{n}“ wirklich verlassen?",
+    "tm_leaveAskCaptain": "Du bist Kapitän: Die Krone geht an den Veteranen des Teams. „{n}“ wirklich verlassen?",
+    "tm_left": "Du bist nicht mehr in einem Team",
     "top": "👑 TOP-100 DER REICHSTEN SPIELER",
     "shop": "🏪 SHOP",
     "shopFarm": "🚜 FÜR DIE FARM",
@@ -1277,7 +1375,32 @@
     "teamLabel": "Equipo",
     "captain": "👑 ¡Estás al mando del equipo!",
     "members": "Plantilla",
-    "noTeam": "Todavía no tienes equipo. Crea uno o únete a otro en el chat del bot: «🏆 Equipos y clanes».",
+    "noTeam": "Todavía no tienes equipo: únete a uno desde la ruleta o la búsqueda, o crea el tuyo.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 Acuerdo",
+    "tm_roulette": "🎲 RULETA DE EQUIPOS",
+    "tm_rotate": "🔄 Mostrar otros equipos",
+    "tm_noFree": "Aún no hay equipos libres: ¡crea el tuyo!",
+    "tm_search": "🔍 BUSCAR EQUIPO",
+    "tm_searchPh": "Nombre o parte de él",
+    "tm_searchBtn": "Buscar",
+    "tm_notFound": "No hay equipos con ese nombre",
+    "tm_join": "💥 Unirse",
+    "tm_joined": "¡Ya estás en «{n}»!",
+    "tm_create": "🏆 CREAR EQUIPO",
+    "tm_hubHint": "Un equipo de hasta 50 combatientes cuesta {cost} 🪙. En la tienda puedes mejorarlo a Mega-Clan de 1000 plazas.",
+    "tm_name": "Nombre (hasta {n} caracteres)",
+    "tm_motto": "Lema (hasta {n} caracteres)",
+    "tm_symbol": "Emblema: un emoji (hasta {n} caracteres)",
+    "tm_createBtn": "Crear por {cost} 🪙",
+    "tm_created": "¡Equipo «{n}» creado: eres el capitán!",
+    "tm_noMoney": "Necesitas {cost} 🪙 y tienes {b} 🪙",
+    "tm_roster": "👥 PLANTILLA DEL EQUIPO",
+    "tm_mottoL": "💬 Lema",
+    "tm_leave": "🚪 Salir del equipo",
+    "tm_leaveAsk": "¿Seguro que quieres salir del equipo «{n}»?",
+    "tm_leaveAskCaptain": "Eres el capitán: la corona pasará al veterano del equipo. ¿Seguro que quieres salir de «{n}»?",
+    "tm_left": "Ya no estás en ningún equipo",
     "top": "👑 TOP-100 DE LOS MÁS RICOS DEL ECOSISTEMA",
     "shop": "🏪 TIENDA",
     "shopFarm": "🚜 PARA LA GRANJA",
@@ -1515,7 +1638,32 @@
     "teamLabel": "Équipe",
     "captain": "👑 Tu es capitaine !",
     "members": "Effectif",
-    "noTeam": "Pas encore d'équipe. Crée la tienne ou rejoins-en une dans le chat du bot : « 🏆 ÉQUIPES & CLANS ».",
+    "noTeam": "Pas encore d'équipe : rejoins-en une via la roulette ou la recherche — ou crée la tienne.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 Accord",
+    "tm_roulette": "🎲 ROULETTE D'ÉQUIPES",
+    "tm_rotate": "🔄 Voir d'autres équipes",
+    "tm_noFree": "Aucune équipe libre pour l'instant — crée la tienne !",
+    "tm_search": "🔍 TROUVER UNE ÉQUIPE",
+    "tm_searchPh": "Nom ou une partie du nom",
+    "tm_searchBtn": "Chercher",
+    "tm_notFound": "Aucune équipe avec ce nom",
+    "tm_join": "💥 Rejoindre",
+    "tm_joined": "Tu es dans « {n} » !",
+    "tm_create": "🏆 CRÉER UNE ÉQUIPE",
+    "tm_hubHint": "Une équipe jusqu'à 50 combattants coûte {cost} 🪙. Dans la boutique, tu peux la faire évoluer en Méga-Clan de 1000 places.",
+    "tm_name": "Nom (jusqu'à {n} caractères)",
+    "tm_motto": "Devise (jusqu'à {n} caractères)",
+    "tm_symbol": "Emblème — un émoji (jusqu'à {n} caractères)",
+    "tm_createBtn": "Créer pour {cost} 🪙",
+    "tm_created": "L'équipe « {n} » est créée — tu es capitaine !",
+    "tm_noMoney": "Il te faut {cost} 🪙, tu as {b} 🪙",
+    "tm_roster": "👥 EFFECTIF DE L'ÉQUIPE",
+    "tm_mottoL": "💬 Devise",
+    "tm_leave": "🚪 Quitter l'équipe",
+    "tm_leaveAsk": "Vraiment quitter l'équipe « {n} » ?",
+    "tm_leaveAskCaptain": "Tu es capitaine : la couronne passera au vétéran de l'équipe. Vraiment quitter « {n} » ?",
+    "tm_left": "Tu n'es plus dans une équipe",
     "top": "👑 TOP-100 DES PLUS RICHES DE L'ÉCOSYSTÈME",
     "shop": "🏪 BOUTIQUE",
     "shopFarm": "🚜 POUR LA FERME",
@@ -1754,7 +1902,32 @@
     "teamLabel": "टीम",
     "captain": "👑 तुम कप्तान हो!",
     "members": "लाइनअप",
-    "noTeam": "अभी कोई टीम नहीं। बॉट के चैट में अपनी टीम बनाओ या किसी और में शामिल हो जाओ: «🏆 टीमें और क्लैन»।",
+    "noTeam": "अभी कोई टीम नहीं: रूलेट या खोज से किसी टीम में शामिल हो जाओ — या अपनी बनाओ।",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 समझौता",
+    "tm_roulette": "🎲 टीम रूलेट",
+    "tm_rotate": "🔄 दूसरी टीमें दिखाओ",
+    "tm_noFree": "अभी कोई खाली टीम नहीं — अपनी बनाओ!",
+    "tm_search": "🔍 टीम खोजो",
+    "tm_searchPh": "नाम या उसका कोई हिस्सा",
+    "tm_searchBtn": "खोजो",
+    "tm_notFound": "इस नाम की कोई टीम नहीं मिली",
+    "tm_join": "💥 शामिल हो जाओ",
+    "tm_joined": "तुम टीम «{n}» में हो!",
+    "tm_create": "🏆 टीम बनाओ",
+    "tm_hubHint": "50 लड़ाकों तक की टीम के {cost} 🪙 लगते हैं। दुकान में इसे 1000 जगहों वाले मेगा-क्लैन तक बढ़ाया जा सकता है।",
+    "tm_name": "नाम ({n} अक्षर तक)",
+    "tm_motto": "नारा ({n} अक्षर तक)",
+    "tm_symbol": "प्रतीक — इमोजी ({n} अक्षर तक)",
+    "tm_createBtn": "{cost} 🪙 में बनाओ",
+    "tm_created": "टीम «{n}» बन गई — तुम कप्तान हो!",
+    "tm_noMoney": "{cost} 🪙 चाहिए, तुम्हारे पास {b} 🪙 हैं",
+    "tm_roster": "👥 टीम का लाइनअप",
+    "tm_mottoL": "💬 नारा",
+    "tm_leave": "🚪 टीम छोड़ो",
+    "tm_leaveAsk": "क्या सच में टीम «{n}» छोड़नी है?",
+    "tm_leaveAskCaptain": "तुम कप्तान हो: ताज टीम के सबसे पुराने सदस्य को मिल जाएगा। क्या सच में «{n}» छोड़नी है?",
+    "tm_left": "अब तुम किसी टीम में नहीं हो",
     "top": "👑 इकोसिस्टम के टॉप-100 अमीर",
     "shop": "🏪 दुकान",
     "shopFarm": "🚜 फ़ार्म के लिए",
@@ -1993,7 +2166,32 @@
     "teamLabel": "Tim",
     "captain": "👑 Kamu kaptennya!",
     "members": "Anggota",
-    "noTeam": "Kamu belum punya tim. Buat sendiri atau gabung tim lain di chat bot: «🏆 TIM & KLAN».",
+    "noTeam": "Kamu belum punya tim: gabung lewat rolet atau pencarian — atau buat sendiri.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 Perjanjian",
+    "tm_roulette": "🎲 ROLET TIM",
+    "tm_rotate": "🔄 Tampilkan tim lain",
+    "tm_noFree": "Belum ada tim kosong — buat sendiri!",
+    "tm_search": "🔍 CARI TIM",
+    "tm_searchPh": "Nama atau sebagiannya",
+    "tm_searchBtn": "Cari",
+    "tm_notFound": "Tidak ada tim dengan nama itu",
+    "tm_join": "💥 Gabung",
+    "tm_joined": "Kamu masuk tim «{n}»!",
+    "tm_create": "🏆 BUAT TIM",
+    "tm_hubHint": "Tim hingga 50 petarung berharga {cost} 🪙. Di toko bisa ditingkatkan jadi Mega-Klan dengan 1000 tempat.",
+    "tm_name": "Nama (maks. {n} karakter)",
+    "tm_motto": "Motto (maks. {n} karakter)",
+    "tm_symbol": "Lambang — emoji (maks. {n} karakter)",
+    "tm_createBtn": "Buat seharga {cost} 🪙",
+    "tm_created": "Tim «{n}» dibuat — kamu kaptennya!",
+    "tm_noMoney": "Butuh {cost} 🪙, kamu punya {b} 🪙",
+    "tm_roster": "👥 ANGGOTA TIM",
+    "tm_mottoL": "💬 Motto",
+    "tm_leave": "🚪 Keluar dari tim",
+    "tm_leaveAsk": "Yakin keluar dari tim «{n}»?",
+    "tm_leaveAskCaptain": "Kamu kapten: mahkota berpindah ke veteran tim. Yakin keluar dari «{n}»?",
+    "tm_left": "Kamu tidak lagi berada di tim",
     "top": "👑 TOP-100 PEMAIN TERKAYA EKOSISTEM",
     "shop": "🏪 TOKO",
     "shopFarm": "🚜 UNTUK LADANG",
@@ -2232,7 +2430,32 @@
     "teamLabel": "Squadra",
     "captain": "👑 Al comando ci sei tu!",
     "members": "Formazione",
-    "noTeam": "Ancora nessuna squadra. Creane una o unisciti a un'altra nella chat del bot: «🏆 Squadre e clan».",
+    "noTeam": "Ancora senza squadra: unisciti a una dalla roulette o dalla ricerca — oppure creane una tua.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 Accordo",
+    "tm_roulette": "🎲 ROULETTE DELLE SQUADRE",
+    "tm_rotate": "🔄 Mostra altre squadre",
+    "tm_noFree": "Ancora nessuna squadra libera — creane una tua!",
+    "tm_search": "🔍 CERCA SQUADRA",
+    "tm_searchPh": "Nome o una sua parte",
+    "tm_searchBtn": "Cerca",
+    "tm_notFound": "Nessuna squadra con questo nome",
+    "tm_join": "💥 Unisciti",
+    "tm_joined": "Sei nella squadra «{n}»!",
+    "tm_create": "🏆 CREA UNA SQUADRA",
+    "tm_hubHint": "Una squadra fino a 50 combattenti costa {cost} 🪙. Nel negozio puoi potenziarla a Mega-Clan da 1000 posti.",
+    "tm_name": "Nome (fino a {n} caratteri)",
+    "tm_motto": "Motto (fino a {n} caratteri)",
+    "tm_symbol": "Emblema — un emoji (fino a {n} caratteri)",
+    "tm_createBtn": "Crea per {cost} 🪙",
+    "tm_created": "Squadra «{n}» creata — sei il capitano!",
+    "tm_noMoney": "Servono {cost} 🪙, ne hai {b} 🪙",
+    "tm_roster": "👥 ROSA DELLA SQUADRA",
+    "tm_mottoL": "💬 Motto",
+    "tm_leave": "🚪 Esci dalla squadra",
+    "tm_leaveAsk": "Uscire davvero dalla squadra «{n}»?",
+    "tm_leaveAskCaptain": "Sei il capitano: la corona passerà al veterano della squadra. Uscire davvero da «{n}»?",
+    "tm_left": "Non sei più in una squadra",
     "top": "👑 TOP-100 DEI PIÙ RICCHI DELL'ECOSISTEMA",
     "shop": "🏪 NEGOZIO",
     "shopFarm": "🚜 PER LA FATTORIA",
@@ -2488,7 +2711,32 @@
     "teamLabel": "Drużyna",
     "captain": "👑 Jesteś kapitanem!",
     "members": "Skład",
-    "noTeam": "Nie masz jeszcze drużyny. Załóż własną albo dołącz do innej w czacie bota: „🏆 DRUŻYNY I KLANY”.",
+    "noTeam": "Nie masz jeszcze drużyny: dołącz do jednej z ruletki lub wyszukiwarki — albo załóż własną.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 Regulamin",
+    "tm_roulette": "🎲 RULETKA DRUŻYN",
+    "tm_rotate": "🔄 Pokaż inne drużyny",
+    "tm_noFree": "Na razie brak wolnych drużyn — załóż własną!",
+    "tm_search": "🔍 SZUKAJ DRUŻYNY",
+    "tm_searchPh": "Nazwa lub jej fragment",
+    "tm_searchBtn": "Szukaj",
+    "tm_notFound": "Nie znaleziono drużyn o takiej nazwie",
+    "tm_join": "💥 Dołącz",
+    "tm_joined": "Jesteś w drużynie „{n}”!",
+    "tm_create": "🏆 ZAŁÓŻ DRUŻYNĘ",
+    "tm_hubHint": "Drużyna do 50 wojowników kosztuje {cost} 🪙. W sklepie można ją ulepszyć do Mega-Klanu na 1000 miejsc.",
+    "tm_name": "Nazwa (do {n} znaków)",
+    "tm_motto": "Motto (do {n} znaków)",
+    "tm_symbol": "Godło — emoji (do {n} znaków)",
+    "tm_createBtn": "Załóż za {cost} 🪙",
+    "tm_created": "Drużyna „{n}” założona — jesteś kapitanem!",
+    "tm_noMoney": "Potrzeba {cost} 🪙, a masz {b} 🪙",
+    "tm_roster": "👥 SKŁAD DRUŻYNY",
+    "tm_mottoL": "💬 Motto",
+    "tm_leave": "🚪 Wyjdź z drużyny",
+    "tm_leaveAsk": "Na pewno wyjść z drużyny „{n}”?",
+    "tm_leaveAskCaptain": "Jesteś kapitanem: korona przejdzie na weterana drużyny. Na pewno wyjść z „{n}”?",
+    "tm_left": "Nie jesteś już w drużynie",
     "top": "👑 TOP-100 BOGACZY EKOSYSTEMU",
     "shop": "🏪 SKLEP",
     "shopFarm": "🚜 DLA FARMY",
@@ -2710,7 +2958,32 @@
     "teamLabel": "Equipe",
     "captain": "👑 Você está no comando!",
     "members": "Elenco",
-    "noTeam": "Você ainda está sem equipe. Crie a sua ou entre em outra no chat do bot: «🏆 Equipes e clãs».",
+    "noTeam": "Você ainda está sem equipe: entre em uma pela roleta ou pela busca — ou crie a sua.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 Termos",
+    "tm_roulette": "🎲 ROLETA DE EQUIPES",
+    "tm_rotate": "🔄 Mostrar outras equipes",
+    "tm_noFree": "Ainda não há equipes livres — crie a sua!",
+    "tm_search": "🔍 BUSCAR EQUIPE",
+    "tm_searchPh": "Nome ou parte dele",
+    "tm_searchBtn": "Buscar",
+    "tm_notFound": "Nenhuma equipe com esse nome",
+    "tm_join": "💥 Entrar",
+    "tm_joined": "Você está na equipe «{n}»!",
+    "tm_create": "🏆 CRIAR EQUIPE",
+    "tm_hubHint": "Uma equipe de até 50 guerreiros custa {cost} 🪙. Na loja ela pode ser ampliada para Mega-Clã com 1000 vagas.",
+    "tm_name": "Nome (até {n} caracteres)",
+    "tm_motto": "Lema (até {n} caracteres)",
+    "tm_symbol": "Emblema — um emoji (até {n} caracteres)",
+    "tm_createBtn": "Criar por {cost} 🪙",
+    "tm_created": "Equipe «{n}» criada — você é o capitão!",
+    "tm_noMoney": "Você precisa de {cost} 🪙, tem {b} 🪙",
+    "tm_roster": "👥 ELENCO DA EQUIPE",
+    "tm_mottoL": "💬 Lema",
+    "tm_leave": "🚪 Sair da equipe",
+    "tm_leaveAsk": "Sair mesmo da equipe «{n}»?",
+    "tm_leaveAskCaptain": "Você é o capitão: a coroa passa ao veterano da equipe. Sair mesmo de «{n}»?",
+    "tm_left": "Você não está mais em uma equipe",
     "top": "👑 TOP-100 MAIS RICOS DO ECOSSISTEMA",
     "shop": "🏪 LOJA",
     "shopFarm": "🚜 PARA A FAZENDA",
@@ -2949,7 +3222,32 @@
     "teamLabel": "Jamoa",
     "captain": "👑 Sen sardorsan!",
     "members": "Tarkib",
-    "noTeam": "Hozircha jamoasizsan. Bot chatida o'z jamoangni tuz yoki boshqasiga qo'shil: «🏆 JAMOA VA KLANLAR».",
+    "noTeam": "Hozircha jamoasizsan: ruletka yoki qidiruvdan jamoaga qo'shil — yoki o'zingnikini yarat.",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 Shartnoma",
+    "tm_roulette": "🎲 JAMOA RULETKASI",
+    "tm_rotate": "🔄 Boshqa jamoalarni ko'rsatish",
+    "tm_noFree": "Bo'sh jamoalar hozircha yo'q — o'zingnikini yarat!",
+    "tm_search": "🔍 JAMOA QIDIRISH",
+    "tm_searchPh": "Nomi yoki uning bir qismi",
+    "tm_searchBtn": "Topish",
+    "tm_notFound": "Bunday nomli jamoa topilmadi",
+    "tm_join": "💥 Qo'shilish",
+    "tm_joined": "Sen «{n}» jamoasidasan!",
+    "tm_create": "🏆 JAMOA YARATISH",
+    "tm_hubHint": "50 jangchigacha jamoa {cost} 🪙 turadi. Do'konda uni 1000 o'rinli Mega-Klangacha oshirish mumkin.",
+    "tm_name": "Nomi ({n} belgigacha)",
+    "tm_motto": "Shior ({n} belgigacha)",
+    "tm_symbol": "Emblema — emoji ({n} belgigacha)",
+    "tm_createBtn": "{cost} 🪙 evaziga yaratish",
+    "tm_created": "«{n}» jamoasi yaratildi — sen sardorsan!",
+    "tm_noMoney": "{cost} 🪙 kerak, sende {b} 🪙 bor",
+    "tm_roster": "👥 JAMOA TARKIBI",
+    "tm_mottoL": "💬 Shior",
+    "tm_leave": "🚪 Jamoadan chiqish",
+    "tm_leaveAsk": "«{n}» jamoasidan chiqasanmi?",
+    "tm_leaveAskCaptain": "Sen sardorsan: toj jamoaning faxriysiga o'tadi. «{n}» dan chiqasanmi?",
+    "tm_left": "Sen endi jamoada emassan",
     "top": "👑 EKOTIZIMNING TOP-100 BOYLARI",
     "shop": "🏪 DO'KON",
     "shopFarm": "🚜 FERMA UCHUN",
@@ -3189,7 +3487,32 @@
     "teamLabel": "战队",
     "captain": "👑 你是队长！",
     "members": "成员",
-    "noTeam": "你还没有战队。去机器人聊天里点「🏆 战队与公会」，创建自己的战队或加入别人的。",
+    "noTeam": "你还没有战队：从战队轮盘或搜索里加入一个——或者自己创建。",
+    "tab_faq": "📚 FAQ",
+    "tab_rules": "📜 协议",
+    "tm_roulette": "🎲 战队轮盘",
+    "tm_rotate": "🔄 换一批战队",
+    "tm_noFree": "暂时没有空位战队——自己创建一个吧！",
+    "tm_search": "🔍 搜索战队",
+    "tm_searchPh": "战队名称或其中一部分",
+    "tm_searchBtn": "搜索",
+    "tm_notFound": "没有找到该名称的战队",
+    "tm_join": "💥 加入",
+    "tm_joined": "你已加入「{n}」！",
+    "tm_create": "🏆 创建战队",
+    "tm_hubHint": "最多 50 名成员的战队需要 {cost} 🪙。在商店里可升级为 1000 个席位的 超级公会。",
+    "tm_name": "名称（最多 {n} 个字符）",
+    "tm_motto": "口号（最多 {n} 个字符）",
+    "tm_symbol": "队徽——一个表情（最多 {n} 个字符）",
+    "tm_createBtn": "花 {cost} 🪙 创建",
+    "tm_created": "战队「{n}」已创建——你是队长！",
+    "tm_noMoney": "需要 {cost} 🪙，你有 {b} 🪙",
+    "tm_roster": "👥 战队成员",
+    "tm_mottoL": "💬 口号",
+    "tm_leave": "🚪 退出战队",
+    "tm_leaveAsk": "确定退出战队「{n}」吗？",
+    "tm_leaveAskCaptain": "你是队长：队长之位将传给战队元老。确定退出「{n}」吗？",
+    "tm_left": "你已不在战队中",
     "top": "👑 生态系统富豪榜 TOP-100",
     "shop": "🏪 商店",
     "shopFarm": "🚜 农场专区",
@@ -3385,7 +3708,7 @@
   const RES = ["metal", "hydrogen", "crystal", "parts"];
   const RES_ICON = { metal: "⛏", hydrogen: "💧", crystal: "💎", parts: "⚙️" };
   const KINDS = ["intern", "junior", "premium"];   // от самого слабого к самому мощному
-  const TABS = ["passport", "farm", "goals", "workshop", "raids", "market", "team", "friends", "shop", "top"];
+  const TABS = ["passport", "farm", "goals", "workshop", "raids", "market", "team", "friends", "shop", "top", "faq", "rules"];
   const TAB_FLAG = { goals: "goals", workshop: "workshop", raids: "raids", market: "market", shop: "shop" };
 
   async function api(path, opts) {
@@ -3464,7 +3787,7 @@
   const bindPagers = root => (root || document).querySelectorAll(".pager").forEach(bindPager);
   // Сколько колонок плашек у вкладки на широком экране (см. CSS #app[data-cols])
   const VIEW_COLS = { passport: 2, farm: 2, goals: 1, workshop: 2, raids: 2, market: 3,
-                      team: 2, friends: 3, shop: 3, top: 1 };
+                      team: 3, friends: 3, shop: 3, top: 1, faq: 1, rules: 1 };
   const resLine = stock => RES.map(k => '<span class="chip">' + RES_ICON[k] + ' ' + num(stock[k]) + '</span>').join("");
   const bundle = b => RES.filter(k => b && b[k]).map(k => RES_ICON[k] + ' ' + b[k]).join(" · ") || "—";
   const robotImg = kind => '<img src="/img/robots/' + kind + '.jpg" alt="" onerror="this.onerror=null;this.src=\'/img/robots/' + kind + '.svg\'">';
@@ -3880,12 +4203,86 @@
   }
 
   // ================= 🏆 Команда и станция =================
+  // Карточка команды в рулетке/поиске (публичное: название, девиз, эмблема, места)
+  function teamTile(tm) {
+    return '<div class="offer"><div class="ol">' + esc(tm.symbol) + ' ' + esc(tm.name) +
+      (tm.is_clan ? ' <span class="rank">' + L.clan + '</span>' : '') +
+      '<div class="hint">💬 «' + esc(tm.motto) + '» · 👥 ' + tm.members + ' / ' + tm.max + '</div></div>' +
+      '<button class="mini tjoin" data-id="' + tm.id + '" data-name="' + esc(tm.name) + '">' + L.tm_join + '</button></div>';
+  }
+  function bindTeamJoin(root) {
+    root.querySelectorAll(".tjoin").forEach(b => {
+      b.onclick = () => act(b, "/api/team/join", { team_id: Number(b.dataset.id) }, async () => {
+        notify(fmt(L.tm_joined, { n: b.dataset.name })); await refreshMe(); go("team");
+      });
+    });
+  }
+  // Без команды — тот же хаб, что в чате: рулетка свободных команд, поиск, создание
+  function teamHub(box, d) {
+    const lim = d.limits;
+    box.innerHTML =
+      card(L.tm_roulette, '<div class="hint">' + L.noTeam + '</div>' +
+        '<div id="tmRoulette">' + pager("tmroul", d.teams.map(teamTile), 6, '<div class="hint">' + L.tm_noFree + '</div>', bindTeamJoin) + '</div>' +
+        '<button class="btn ghost" id="tmRotate">' + L.tm_rotate + '</button>') +
+      card(L.tm_search,
+        '<label class="lbl">' + L.tm_searchPh + '<input id="tmQ" type="text" maxlength="' + lim.name + '"></label>' +
+        '<button class="btn ghost" id="tmFind">' + L.tm_searchBtn + '</button><div id="tmFound"></div>') +
+      card(L.tm_create, '<div class="hint">' + fmt(L.tm_hubHint, { cost: num(d.cost) }) + '</div>' +
+        '<label class="lbl">' + fmt(L.tm_name, { n: lim.name }) + '<input id="tmN" type="text" maxlength="' + lim.name + '"></label>' +
+        '<label class="lbl">' + fmt(L.tm_motto, { n: lim.motto }) + '<input id="tmM" type="text" maxlength="' + lim.motto + '"></label>' +
+        '<label class="lbl">' + fmt(L.tm_symbol, { n: lim.symbol }) + '<input id="tmS" type="text" maxlength="' + lim.symbol + '" placeholder="🔥"></label>' +
+        (d.balance < d.cost ? '<div class="hint">' + fmt(L.tm_noMoney, { cost: num(d.cost), b: num(d.balance) }) + '</div>' : '') +
+        '<button class="btn" id="tmCreate"' + (d.balance < d.cost ? ' disabled' : '') + '>' + fmt(L.tm_createBtn, { cost: num(d.cost) }) + '</button>');
+    bindTeamJoin(box);
+    const rot = document.getElementById("tmRotate");
+    rot.onclick = async () => {
+      rot.disabled = true;
+      try {
+        const r = await api("/api/teams");
+        PAGERS.tmroul = null;
+        const holder = document.getElementById("tmRoulette");
+        holder.innerHTML = pager("tmroul", r.teams.map(teamTile), 6, '<div class="hint">' + L.tm_noFree + '</div>', bindTeamJoin);
+        bindPagers(holder); bindTeamJoin(holder);
+      } catch (e) { apiError(e); }
+      rot.disabled = false;
+    };
+    const find = document.getElementById("tmFind"), q = document.getElementById("tmQ");
+    const search = async () => {
+      if (!q.value.trim()) return;
+      find.disabled = true;
+      try {
+        const r = await api("/api/teams?q=" + encodeURIComponent(q.value.trim()));
+        PAGERS.tmfound = null;
+        const out = document.getElementById("tmFound");
+        out.innerHTML = pager("tmfound", r.teams.map(teamTile), 5, '<div class="hint">' + L.tm_notFound + '</div>', bindTeamJoin);
+        bindPagers(out); bindTeamJoin(out);
+      } catch (e) { apiError(e); }
+      find.disabled = false;
+    };
+    find.onclick = search;
+    q.onkeydown = e => { if (e.key === "Enter") search(); };
+    const cb = document.getElementById("tmCreate");
+    cb.onclick = () => act(cb, "/api/team/create", {
+      name: document.getElementById("tmN").value, motto: document.getElementById("tmM").value,
+      symbol: document.getElementById("tmS").value
+    }, async () => { notify(fmt(L.tm_created, { n: document.getElementById("tmN").value.trim() })); await refreshMe(); go("team"); });
+  }
+  function askConfirm(text, then) {
+    if (tg && tg.showConfirm) tg.showConfirm(text, ok => { if (ok) then(); });
+    else if (window.confirm(text)) then();
+  }
   async function viewTeam(box) {
     const d = await api("/api/team");
-    if (!d.team) { box.innerHTML = card(L.team, '<div class="hint">' + L.noTeam + '</div>'); return; }
+    if (!d.team) return teamHub(box, d);
     const tm = d.team, st = d.station;
-    let teamHtml = row(tm.is_clan ? "👑 " + L.clan : L.teamLabel, esc(tm.name)) +
-      row(L.members, tm.members + " / " + tm.max) + (tm.captain ? '<div class="hint">' + L.captain + '</div>' : '');
+    let teamHtml = row(tm.is_clan ? "👑 " + L.clan : L.teamLabel, esc(tm.symbol) + ' ' + esc(tm.name)) +
+      row(L.tm_mottoL, '«' + esc(tm.motto) + '»') +
+      row(L.members, tm.members + " / " + tm.max) + (tm.captain ? '<div class="hint">' + L.captain + '</div>' : '') +
+      '<button class="btn ghost danger-text" id="tmLeave">' + L.tm_leave + '</button>';
+    const roster = pager("tmroster", tm.roster.map(m =>
+      '<div class="top-row' + (m.me ? ' me' : '') + '"><span class="brain">🧠' + m.level + '</span>' +
+      '<span class="nm">' + (m.captain ? '👑 ' : '') + esc(m.name) + (m.rank ? ' <span class="rank">' + esc(m.rank) + '</span>' : '') +
+      '</span></div>'), 10, "");
     let stHtml;
     if (!st.enabled) stHtml = '<div class="hint">' + L.st_off + '</div>';
     else {
@@ -3910,7 +4307,10 @@
         '<div class="hint">' + L.st_feedEmpty + '</div>';
       stHtml = head + progress + '<div class="hint">' + L.st_hint + '</div><div class="sub2">' + L.st_feed + '</div>' + feed;
     }
-    box.innerHTML = card(L.team, teamHtml) + card(L.st_title, stHtml);
+    box.innerHTML = card(L.team, teamHtml) + card(L.tm_roster, roster) + card(L.st_title, stHtml);
+    const lb = document.getElementById("tmLeave");
+    lb.onclick = () => askConfirm(fmt(tm.captain ? L.tm_leaveAskCaptain : L.tm_leaveAsk, { n: tm.name }),
+      () => act(lb, "/api/team/leave", {}, async () => { notify(L.tm_left); await refreshMe(); go("team"); }));
     document.querySelectorAll(".don").forEach(b => {
       b.onclick = () => act(b, "/api/station/donate", { kind: b.dataset.k, qty: Number(b.dataset.q) },
         async () => { notify(L.st_done); await refreshMe(); go("team"); });
@@ -3968,7 +4368,7 @@
       '<div class="card span-tablet"><h2>' + L.shop_info + '</h2>' + pager("shopinfo", info, 4, "") +
       '<button class="btn ghost" id="shopInfo">FAQ ↗</button></div>';
     document.querySelectorAll(".shop-item").forEach(b => { b.onclick = () => buy(b.dataset.sku, b); });
-    document.getElementById("shopInfo").onclick = () => { location.href = "/faq?s=shop-items"; };
+    document.getElementById("shopInfo").onclick = () => { docSection = "shop-items"; go("faq"); };
   }
   async function buy(sku, btn) {
     if (!tg || !tg.openInvoice) return notify(L.oldClient, false);
@@ -3997,8 +4397,16 @@
       '<span class="bal">' + num(p.balance) + '</span></div>'), 10, '<div class="hint">—</div>'));
   }
 
+  // FAQ и соглашение — те же страницы, что открываются из чата, но внутри приложения (вкладки остаются сверху)
+  let docSection = "";   // раздел FAQ, который раскрыть (например, «Что даёт каждый товар» из магазина)
+  const viewDoc = path => box => {
+    const src = path + (docSection ? "?s=" + encodeURIComponent(docSection) : "");
+    docSection = "";
+    box.innerHTML = '<iframe class="doc" src="' + src + '" title="' + path.slice(1) + '"></iframe>';
+  };
   const VIEWS = { passport: viewPassport, farm: viewFarm, goals: viewGoals, workshop: viewWorkshop,
-                  raids: viewRaids, market: viewMarket, team: viewTeam, friends: viewFriends, shop: viewShop, top: viewTop };
+                  raids: viewRaids, market: viewMarket, team: viewTeam, friends: viewFriends, shop: viewShop, top: viewTop,
+                  faq: viewDoc("/faq"), rules: viewDoc("/rules") };
 
   // ================= Шахта: визуальная сцена фермы =================
   let sceneTimer = null, coinTimer = null, minedVisit = 0;

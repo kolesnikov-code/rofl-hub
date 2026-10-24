@@ -1,5 +1,4 @@
 import logging
-import re
 import html
 from datetime import datetime
 
@@ -9,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from shared.analytics import track
 from shared.database import db
-from shared.db_clans import create_new_team_in_db, leave_team
+from shared.db_clans import TeamError, create_new_team_in_db, join_team, leave_team, validate_team_text
 from shared.economy import TEAM_CREATE_COST, TEAM_LIST_PAGE_SIZE, utcnow
 from shared.locales import btn_variants, t
 from shared.ranks import name_with_rank
@@ -25,29 +24,12 @@ class ClanCreationStates(StatesGroup):
     waiting_for_search = State()
 
 
-# 🛡️ ЖЕСТКИЕ ФИЛЬТРЫ БЕЗОПАСНОСТИ (АНТИ-СПАМ, АНТИ-ФИШИНГ, АНТИ-МАТ)
-URL_REGEX = re.compile(r'(https?://[^\s]+|t\.me/[^\s]+|@[^\s]+)')
-PHONE_REGEX = re.compile(r'(\+?\d[\d\-\(\) ]{7,\d})')
-PROHIBITED_WORDS = ["хуй", "пизда", "ебать", "член", "сука", "бля", "трахать", "мудак"]
-
-
 def validate_input_string(text: str, max_len: int) -> tuple[bool, str]:
-    """Серверный валидатор строк холдинга ROFL HUB CORE"""
-    cleaned = text.strip()
-    if not cleaned or len(cleaned) > max_len:
-        return False, f"❌ Длина текста должна быть от 1 до {max_len} символов!"
-
-    # Защита от фишинга и рекламы
-    if URL_REGEX.search(cleaned) or PHONE_REGEX.search(cleaned):
-        return False, "🚨 Ошибка безопасности! Ссылки, юзернеймы и телефоны строго запрещены!"
-
-    # Базовый фильтр мата для детской аудитории
-    for word in PROHIBITED_WORDS:
-        if word in cleaned.lower():
-            return False, "❌ Обнаружены нецензурные выражения! Соблюдай правила хаба."
-
-    # Намертво экранируем HTML-теги для предотвращения XSS инъекций в рулетке
-    return True, html.escape(cleaned)
+    """Проверка ввода FSM (фильтры — общие с приложением, shared.db_clans.validate_team_text)."""
+    try:
+        return True, validate_team_text(text, max_len)
+    except TeamError as e:
+        return False, e.localized("ru")
 
 
 def get_cancel_keyboard() -> types.InlineKeyboardMarkup:
@@ -443,28 +425,16 @@ async def process_clan_join_request(callback: types.CallbackQuery, user_lang: st
     if len(parts) < 2: return
     team_id = int(parts[1])
 
-    async with db.pool.acquire() as conn:
-        async with conn.transaction():
-            team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1 FOR UPDATE", team_id)
-            user = await conn.fetchrow("SELECT team_id FROM users WHERE user_id = $1 FOR UPDATE", user_id)
-            if not team:
-                await callback.message.answer("❌ Ошибка! Эта команда больше не существует.")
-                return
-            if user and user["team_id"] is not None:
-                await callback.message.answer(
-                    "⚠️ <b>Ты уже состоишь в команде!</b>\n\nСначала выйди из нее, прописав команду /my_team.",
-                    parse_mode="HTML")
-                return
-            if team["members_count"] >= team["max_members"]:
-                await callback.message.answer("📦 В этой команде закончились места!")
-                return
-            await conn.execute("UPDATE teams SET members_count = members_count + 1 WHERE team_id = $1", team_id)
-            await conn.execute(
-                "UPDATE users SET team_id = $1, team_joined_at = NOW() WHERE user_id = $2",
-                team_id, user_id)
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                team = await join_team(conn, user_id, team_id)   # те же правила, что в приложении
+    except TeamError as e:
+        await callback.message.answer(e.localized(user_lang), parse_mode="HTML")
+        return
     await track(user_id, "team_joined", team_id=team_id)
     await callback.message.edit_text(
-        t(user_lang, "clan.join_ok", name=team["team_name"]), parse_mode="HTML")
+        t(user_lang, "clan.join_ok", name=html.escape(team["name"])), parse_mode="HTML")
 
 
 # ============================================================================

@@ -1441,3 +1441,59 @@ async def test_leave_team_disbands_a_lonely_captain(conn):
     assert left["outcome"] == "disbanded"
     assert await conn.fetchval("SELECT COUNT(*) FROM teams") == 0
     assert await conn.fetchval("SELECT team_id FROM users WHERE user_id = 990") is None
+
+
+
+# ============================================================================
+# Команды: общая механика чата и приложения (26.10)
+# ============================================================================
+async def test_team_create_join_search_roulette_and_roster(conn):
+    from shared.db_clans import (TeamError, create_team, join_team, random_teams, search_teams,
+                                 team_members)
+    from shared.economy import TEAM_CREATE_COST
+    await _mk_user(conn, 1000, TEAM_CREATE_COST + 5)
+    await _mk_user(conn, 1001, 0)
+    await _mk_user(conn, 1002, TEAM_CREATE_COST)
+
+    with pytest.raises(TeamError) as e:                       # ссылки в названии запрещены
+        async with conn.transaction():
+            await create_team(conn, 1000, "t.me/spam", "девиз", "🔥")
+    assert e.value.key == "team.err_link"
+    with pytest.raises(TeamError) as e:                       # денег нет — монеты не списаны
+        async with conn.transaction():
+            await create_team(conn, 1001, "Бедные", "девиз", "🔥")
+    assert e.value.key == "team.err_money"
+
+    async with conn.transaction():
+        team_id = await create_team(conn, 1000, "Котлеты & Ко", "Вперёд", "🥩")
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1000") == 5
+    with pytest.raises(TeamError) as e:                       # название уже занято
+        async with conn.transaction():
+            await create_team(conn, 1002, "Котлеты & Ко", "x", "🔥")
+    assert e.value.key == "team.err_taken"
+
+    async with conn.transaction():
+        card = await join_team(conn, 1001, team_id)
+    assert card["name"] == "Котлеты & Ко" and card["members"] == 1   # имя без HTML-экранирования
+    with pytest.raises(TeamError) as e:
+        async with conn.transaction():
+            await join_team(conn, 1001, team_id)
+    assert e.value.key == "team.err_already"
+    with pytest.raises(TeamError) as e:
+        async with conn.transaction():
+            await join_team(conn, 1002, 999_999)
+    assert e.value.key == "team.err_gone"
+
+    found = await search_teams(conn, "котлеты &")
+    assert [t["id"] for t in found] == [team_id]
+    assert await search_teams(conn, "%") == []                # % ищется как символ, а не «всё подряд»
+    assert [t["id"] for t in await random_teams(conn)] == [team_id]
+    await conn.execute("UPDATE teams SET members_count = max_members WHERE team_id = $1", team_id)
+    assert await random_teams(conn) == []                     # в рулетке только команды со свободными местами
+    with pytest.raises(TeamError) as e:
+        async with conn.transaction():
+            await join_team(conn, 1002, team_id)
+    assert e.value.key == "team.err_full"
+
+    roster = await team_members(conn, team_id, 1000)
+    assert [m["user_id"] for m in roster] == [1000, 1001]     # капитан первым

@@ -495,6 +495,17 @@ STRINGS: dict[str, str] = {
                              "{level}-intellekt darajasi va {claims} ta kundalik kotlet — bajarildi. Senga <b>{bonus}</b> yozildi. "
                              "Yana chaqir!"),
 
+    "team.err_len": "❌ Matn uzunligi 1 dan {max} tagacha belgi bo'lishi kerak!",
+    "team.err_link": "🚨 Xavfsizlik xatosi! Havolalar, username va telefon raqamlari qat'iyan taqiqlangan!",
+    "team.err_badword": "❌ Qo'pol so'zlar topildi! Hub qoidalariga amal qil.",
+    "team.err_already": "⚠️ Sen allaqachon jamoa yoki klandasan! Avval undan chiq.",
+    "team.err_money": "❌ Tangalar yetmaydi! Jamoa yaratish {cost} 🪙 turadi, sende {balance} 🪙 bor.",
+    "team.err_captain": "⚠️ Sen allaqachon boshqa jamoaning sardorisan!",
+    "team.err_taken": "⚠️ «{name}» nomi band! Noyob nom o'ylab top.",
+    "team.err_gone": "❌ Bu jamoa endi mavjud emas.",
+    "team.err_full": "📦 Bu jamoada bo'sh joy qolmadi!",
+    "team.err_not_member": "❌ Sen jamoada emassan.",
+
     # ---------------- akkauntni o'chirish ----------------
     "profile.btn_delete": "🗑 Akkauntni o'chirish",
     "acct.warn": (
@@ -934,7 +945,17 @@ MINIAPP: dict[str, str] = {
     "bonusReady": "🎁 KUNDALIK KOTLETNI OLISH",
     "bonusWait": "⏳ Bonus {h} soat {m} daqiqadan keyin", "bonusDone": "🎉 Kotlet omborda!",
     "team": "🏆 MENING JAMOAM", "clan": "KLAN", "teamLabel": "Jamoa", "captain": "👑 Sen sardorsan!",
-    "members": "Tarkib", "noTeam": "Hozircha jamoasizsan. Bot chatida o'z jamoangni tuz yoki boshqasiga qo'shil: «🏆 JAMOA VA KLANLAR».",
+    "members": "Tarkib", "noTeam": "Hozircha jamoasizsan: ruletka yoki qidiruvdan jamoaga qo'shil — yoki o'zingnikini yarat.",
+    "tab_faq": "📚 FAQ", "tab_rules": "📜 Shartnoma",
+    "tm_roulette": "🎲 JAMOA RULETKASI", "tm_rotate": "🔄 Boshqa jamoalarni ko'rsatish", "tm_noFree": "Bo'sh jamoalar hozircha yo'q — o'zingnikini yarat!",
+    "tm_search": "🔍 JAMOA QIDIRISH", "tm_searchPh": "Nomi yoki uning bir qismi", "tm_searchBtn": "Topish",
+    "tm_notFound": "Bunday nomli jamoa topilmadi", "tm_join": "💥 Qo'shilish", "tm_joined": "Sen «{n}» jamoasidasan!",
+    "tm_create": "🏆 JAMOA YARATISH", "tm_hubHint": "50 jangchigacha jamoa {cost} 🪙 turadi. Do'konda uni 1000 o'rinli Mega-Klangacha oshirish mumkin.",
+    "tm_name": "Nomi ({n} belgigacha)", "tm_motto": "Shior ({n} belgigacha)", "tm_symbol": "Emblema — emoji ({n} belgigacha)",
+    "tm_createBtn": "{cost} 🪙 evaziga yaratish", "tm_created": "«{n}» jamoasi yaratildi — sen sardorsan!", "tm_noMoney": "{cost} 🪙 kerak, sende {b} 🪙 bor",
+    "tm_roster": "👥 JAMOA TARKIBI", "tm_mottoL": "💬 Shior", "tm_leave": "🚪 Jamoadan chiqish",
+    "tm_leaveAsk": "«{n}» jamoasidan chiqasanmi?", "tm_leaveAskCaptain": "Sen sardorsan: toj jamoaning faxriysiga o'tadi. «{n}» dan chiqasanmi?",
+    "tm_left": "Sen endi jamoada emassan",
     "top": "👑 EKOTIZIMNING TOP-100 BOYLARI",
     "shop": "🏪 DO'KON", "shopFarm": "🚜 FERMA UCHUN", "shopGames": "🕹️ O'YINLAR",
     "shopHint": "To'lov rasmiy Telegram Stars bilan — shu yerning o'zida, bir bosishda.",
