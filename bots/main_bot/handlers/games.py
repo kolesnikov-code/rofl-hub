@@ -238,13 +238,11 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                                          next_required=quiz_answers_required(next_level + 1),
                                          next_reward=quiz_level_reward(next_level + 1))
                     if next_level % INTERN_LEVEL_STEP == 0:
-                        # Каждый 10-й уровень интеллекта — ещё один Робот Стажёр на ферму
+                        # Новый уровень интеллекта — ещё один Робот Стажёр ждёт на ферме:
+                        # игрок забирает его кнопкой (видит награду, а не получает молча)
                         await conn.execute(
-                            "INSERT INTO miners (user_id, kind, purchased_at, expires_at) "
-                            "VALUES ($1, 'intern', $2, $3)", user_id, now, permanent_expiry(now))
-                        interns = await conn.fetchval(
-                            "SELECT COUNT(*) FROM miners WHERE user_id = $1 AND kind = 'intern'", user_id)
-                        status += "\n" + t(lang, "games.intern_bonus", level=next_level, count=interns)
+                            "UPDATE users SET interns_pending = interns_pending + 1 WHERE user_id = $1", user_id)
+                        status += "\n" + t(lang, "games.intern_ready")
 
             return True, status, new_balance, qualified_referrer
 
@@ -472,8 +470,20 @@ async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext, 
         head = t(user_lang, "quiz.wrong", correct=question["correct"] if question else "—")
     tail = await _quiz_result_tail(callback.from_user.id, user_lang, balance,
                                    lost_line=not is_win)
-    await _safe_edit(callback.message, f"{head}\n{tail}",
-                     _retry_kb(user_lang, "quiz", t(user_lang, "quiz.btn_new")))
+    kb = _retry_kb(user_lang, "quiz", t(user_lang, "quiz.btn_new"))
+    pending = await _interns_pending(callback.from_user.id) if is_win else 0
+    if pending:
+        kb.inline_keyboard.insert(0, [types.InlineKeyboardButton(
+            text=t(user_lang, "farm.btn_claim_intern", n=pending), callback_data="farm_action:claim_intern")])
+    await _safe_edit(callback.message, f"{head}\n{tail}", kb)
+
+
+async def _interns_pending(user_id: int) -> int:
+    try:
+        async with db.pool.acquire() as conn:
+            return await conn.fetchval("SELECT interns_pending FROM users WHERE user_id = $1", user_id) or 0
+    except Exception:
+        return 0
 
 
 @router.callback_query(F.data.startswith("quiz_check:"))

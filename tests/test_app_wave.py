@@ -41,7 +41,7 @@ def test_games_hub_is_one_button_per_row_without_raids_and_workshop():
 def _farm_user(**over):
     user = {
         "boost_nuclear_until": None, "boost_nitrogen_until": None, "drone_until": None,
-        "farm_armor_level": 0, "armor_until": None, "intern_claimed": True, "fridge_cutlets": 1, "fridge_capacity": 1,
+        "farm_armor_level": 0, "armor_until": None, "intern_claimed": True, "interns_pending": 0, "fridge_cutlets": 1, "fridge_capacity": 1,
         "inv_cutlets": 0,
     }
     user.update(over)

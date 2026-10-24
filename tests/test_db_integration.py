@@ -842,18 +842,24 @@ async def test_intern_upgrade_requires_three_qualified_referrals(conn):
     assert await conn.fetchval("SELECT COUNT(*) FROM star_payments WHERE user_id = 300") == 1
 
 
-async def test_tenth_intellect_level_grants_extra_intern(conn, global_db):
-    """Закрытие 10-го уровня викторины выдаёт ещё одного Робота Стажёра."""
+async def test_new_intellect_level_gives_a_claimable_intern(conn, global_db):
+    """Новый уровень интеллекта = Стажёр ждёт на ферме; на ферму попадает только по кнопке."""
     pytest.importorskip("aiogram")
+    from bots.main_bot.handlers.farm import claim_pending_intern
     from bots.main_bot.handlers.games import execute_solo_game_payout
+    from shared.economy import utcnow
     await _mk_user(conn, 310, 0)
     await conn.execute(
-        "INSERT INTO game_stats (user_id, quiz_level, quiz_level_progress) VALUES (310, 9, 99)")
-    ok, text, _ = await execute_solo_game_payout(310, True, "quiz")
+        "INSERT INTO game_stats (user_id, quiz_level, quiz_level_progress) VALUES (310, 1, 19)")
+    ok, text, _ = await execute_solo_game_payout(310, True, "quiz")      # закрыт уровень 2
     assert ok and "Стажёр" in text
-    interns = await conn.fetch("SELECT kind FROM miners WHERE user_id = 310")
-    assert [r["kind"] for r in interns] == ["intern"]
-    assert await conn.fetchval("SELECT quiz_level FROM game_stats WHERE user_id = 310") == 10
+    assert await conn.fetchval("SELECT interns_pending FROM users WHERE user_id = 310") == 1
+    assert await conn.fetchval("SELECT COUNT(*) FROM miners WHERE user_id = 310") == 0   # сам не падает
+    assert await claim_pending_intern(conn, 310, utcnow()) is True
+    assert await claim_pending_intern(conn, 310, utcnow()) is False        # второго нет
+    kinds = [r["kind"] for r in await conn.fetch("SELECT kind FROM miners WHERE user_id = 310")]
+    assert kinds == ["intern"]
+    assert await conn.fetchval("SELECT interns_pending FROM users WHERE user_id = 310") == 0
 
 
 async def test_market_sell_buy_cancel_with_burned_fee(conn):

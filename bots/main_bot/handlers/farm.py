@@ -57,7 +57,7 @@ async def send_farm(target: types.Message, user, miners: list[MinerState], now: 
                     lang: str, station_level: int = 0) -> None:
     """Дашборд фермы: с фото флагманского робота, если арт есть и подпись влезает."""
     text = render_farm_text(user, miners, now, lang, station_level)
-    kb = get_farm_keyboard(lang, user["intern_claimed"])
+    kb = get_farm_keyboard(lang, user["intern_claimed"], user["interns_pending"])
     kind = flagship_kind(farm_counts(miners, now))
     art = _robot_art(kind) if kind else None
     if art is not None:
@@ -99,12 +99,28 @@ async def activate_intern(conn, user_id: int, now: datetime) -> None:
     await conn.execute("UPDATE users SET intern_claimed = TRUE WHERE user_id = $1", user_id)
 
 
-def get_farm_keyboard(lang: str = "ru", intern_claimed: bool = True) -> types.InlineKeyboardMarkup:
-    """Кнопки фермы: активация Стажёра (пока не забран), бонус, заправка, магазин."""
+async def claim_pending_intern(conn, user_id: int, now: datetime) -> bool:
+    """Забирает одного Стажёра, заработанного уровнем интеллекта. Вызывать в транзакции."""
+    left = await conn.fetchval(
+        "UPDATE users SET interns_pending = interns_pending - 1 WHERE user_id = $1 AND interns_pending > 0 "
+        "RETURNING interns_pending", user_id)
+    if left is None:
+        return False
+    await conn.execute(
+        "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES ($1, 'intern', $2, $3)",
+        user_id, now, permanent_expiry(now))
+    return True
+
+
+def get_farm_keyboard(lang: str = "ru", intern_claimed: bool = True, pending: int = 0) -> types.InlineKeyboardMarkup:
+    """Кнопки фермы: Стажёры (стартовый и за уровни), бонус, заправка, магазин."""
     rows = []
     if not intern_claimed:
         rows.append([types.InlineKeyboardButton(text=t(lang, "farm.btn_activate_intern"),
                                                 callback_data="farm_action:activate_intern")])
+    if pending > 0:
+        rows.append([types.InlineKeyboardButton(text=t(lang, "farm.btn_claim_intern", n=pending),
+                                                callback_data="farm_action:claim_intern")])
     return types.InlineKeyboardMarkup(inline_keyboard=rows + [
         [
             types.InlineKeyboardButton(text=t(lang, "farm.btn_bonus"),
@@ -190,6 +206,8 @@ def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = 
     intern_line = t(lang, "farm.intern_line", count=counts["intern"], rate=intern_rate)
     if counts["intern"] == 0 and not user["intern_claimed"]:
         burnout_line = t(lang, "farm.intern_hint") + "\n" + burnout_line
+    if user["interns_pending"]:
+        burnout_line = t(lang, "farm.intern_pending", n=user["interns_pending"]) + "\n" + burnout_line
     speed_per_hour += counts["intern"] * intern_rate
 
     return t(
@@ -263,6 +281,13 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
                     toast = t(user_lang, "farm.intern_activated")
                     intern_activated = True
 
+            elif action == "claim_intern":
+                if await claim_pending_intern(conn, user_id, now):
+                    toast = t(user_lang, "farm.intern_claimed_new")
+                    intern_activated = True
+                else:
+                    toast = t(user_lang, "farm.intern_none")
+
             elif action == "daily_bonus":
                 seconds_left = daily_bonus_seconds_left(user["last_bonus_claim_at"], now)
                 if seconds_left > 0:
@@ -318,7 +343,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
         await callback.message.answer(extra_message)
 
     await edit_farm(callback.message, render_farm_text(user, miners, now, user_lang, station_level),
-                    get_farm_keyboard(user_lang, user["intern_claimed"]))
+                    get_farm_keyboard(user_lang, user["intern_claimed"], user["interns_pending"]))
 
 
 # ============================================================================

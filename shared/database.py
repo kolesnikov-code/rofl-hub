@@ -461,6 +461,20 @@ SCHEMA_STATEMENTS: list[str] = [
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS armor_until TIMESTAMP WITH TIME ZONE;",
     # --- 25.10: склад ресурсов с лимитом, рецепты недели ---
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS res_capacity INT NOT NULL DEFAULT 500;",
+    # --- 26.10: Стажёр за каждый уровень интеллекта, забирается кнопкой ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS interns_pending INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS interns_backfilled BOOLEAN NOT NULL DEFAULT FALSE;",
+    # Разовый пересчёт по новому правилу: положено = уровень интеллекта, уже выдано за уровни =
+    # Стажёры на ферме минус стартовый. Разница ждёт игрока на ферме (идемпотентно по флагу).
+    """
+    UPDATE users u SET
+        interns_pending = GREATEST(0,
+            COALESCE((SELECT g.quiz_level FROM game_stats g WHERE g.user_id = u.user_id), 0)
+            - GREATEST(0, (SELECT COUNT(*) FROM miners m WHERE m.user_id = u.user_id AND m.kind = 'intern')
+                          - CASE WHEN u.intern_claimed THEN 1 ELSE 0 END)),
+        interns_backfilled = TRUE
+    WHERE NOT u.interns_backfilled;
+    """,
     """
     CREATE TABLE IF NOT EXISTS weekly_crafts (
         id BIGSERIAL PRIMARY KEY,

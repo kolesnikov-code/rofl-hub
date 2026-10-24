@@ -250,6 +250,12 @@ STRINGS: dict[str, str] = {
     "farm.btn_activate_intern": "🚀 Activar tu Robot Becario (gratis)",
     "farm.intern_activated": "🤖 ¡Tu Robot Becario entró en turno! +1 🪙 por hora para siempre, sin combustible ni caducidad.",
     "farm.intern_already": "🤖 Tu Robot Becario ya está trabajando.",
+    "farm.btn_claim_intern": "🎁 Recoger Robot Becario ({n})",
+    "farm.intern_pending": "🎁 Por tus niveles de intelecto te esperan Robots Becarios: <b>{n}</b>. ¡Recógelos con el botón de abajo!",
+    "farm.intern_claimed_new": "🤖 ¡Un nuevo Robot Becario entró en turno! +1 🪙 por hora para siempre.",
+    "farm.intern_none": "🤖 Aún no hay nuevos Becarios: sube de nivel de intelecto en la trivia.",
+    "games.intern_ready": "🎁 Tu nuevo nivel te da un <b>Robot Becario</b>: ¡recógelo en la granja!",
+
     "farm.intern_line": "• Robots Becarios ({rate} 🪙/h, eternos): <code>{count}</code>\n",
     "farm.intern_hint": "🎁 ¡Tienes un Robot Becario gratis! Pulsa el botón de abajo y minará 1 🪙 por hora para siempre.",
     "farm.dashboard": (
@@ -881,6 +887,7 @@ MINIAPP: dict[str, str] = {
     "robots": "Robots (mineros / perforadores)",
     "intern": "Robots Becarios (1 🪙/h, eternos)",
     "activateIntern": "🚀 ACTIVAR ROBOT BECARIO",
+    "claimIntern": "🎁 RECOGER BECARIO ({n})",
     "internDone": "🤖 ¡Tu Robot Becario entró en turno!",
     "rank": "🎖 Rango",
     "openFarm": "🏭 ABRIR LA MINA",

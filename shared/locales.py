@@ -271,6 +271,11 @@ RU: dict[str, str] = {
     "farm.btn_activate_intern": "🚀 Активировать Робота Стажёра (бесплатно)",
     "farm.intern_activated": "🤖 Робот Стажёр вышел на смену! +1 🪙 в час навсегда — без топлива и срока службы.",
     "farm.intern_already": "🤖 Твой Робот Стажёр уже работает.",
+    "farm.btn_claim_intern": "🎁 Забрать Робота Стажёра ({n})",
+    "farm.intern_pending": "🎁 За уровни интеллекта тебя ждут Роботы Стажёры: <b>{n}</b> — забери кнопкой ниже!",
+    "farm.intern_claimed_new": "🤖 Новый Робот Стажёр вышел на смену! +1 🪙 в час навсегда.",
+    "farm.intern_none": "🤖 Новых Стажёров пока нет — подними уровень интеллекта в викторине.",
+    "games.intern_ready": "🎁 За новый уровень тебя ждёт <b>Робот Стажёр</b> — забери его на ферме!",
     "farm.intern_line": "• Роботы Стажёры ({rate} 🪙/ч, вечные): <code>{count} шт.</code>\n",
     "farm.intern_hint": "🎁 У тебя есть бесплатный Робот Стажёр! Нажми кнопку ниже — он начнёт добывать 1 🪙 в час навсегда.",
     "farm.dashboard": (
@@ -1101,6 +1106,11 @@ EN: dict[str, str] = {
     "farm.btn_activate_intern": "🚀 Activate your Intern Bot (free)",
     "farm.intern_activated": "🤖 Your Intern Bot is on shift! +1 🪙 per hour forever — no fuel, no expiry.",
     "farm.intern_already": "🤖 Your Intern Bot is already working.",
+    "farm.btn_claim_intern": "🎁 Claim your Intern Bot ({n})",
+    "farm.intern_pending": "🎁 Intern Bots earned with your intellect levels: <b>{n}</b> — claim them below!",
+    "farm.intern_claimed_new": "🤖 A new Intern Bot is on shift! +1 🪙 per hour forever.",
+    "farm.intern_none": "🤖 No new Interns yet — level up your intellect in the quiz.",
+    "games.intern_ready": "🎁 Your new level earned an <b>Intern Bot</b> — claim it on your farm!",
     "farm.intern_line": "• Intern Bots ({rate} 🪙/h, eternal): <code>{count}</code>\n",
     "farm.intern_hint": "🎁 You have a free Intern Bot! Tap the button below — it will mine 1 🪙 per hour forever.",
     "farm.dashboard": (

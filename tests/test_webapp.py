@@ -76,7 +76,7 @@ def test_build_me_payload_shape():
         "balance": 5000, "fridge_cutlets": 3, "fridge_capacity": 10, "inv_cutlets": 7,
         "boost_nuclear_until": now + timedelta(days=1), "boost_nitrogen_until": None,
         "drone_until": None, "last_bonus_claim_at": now - timedelta(hours=25),
-        "created_at": now - timedelta(days=10), "intern_claimed": False,
+        "created_at": now - timedelta(days=10), "intern_claimed": False, "interns_pending": 0,
         "farm_armor_level": 0, "armor_until": None, "has_shuttle": False, "res_capacity": 500,
     }
     miners = [

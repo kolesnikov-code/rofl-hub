@@ -58,14 +58,20 @@ def test_permanent_expiry_is_far_future():
 
 
 # ---------------------------------------------------------------- Стажёры за интеллект
-def test_interns_for_level_every_tenth_level():
-    assert INTERN_LEVEL_STEP == 10
+def test_intern_for_every_intellect_level():
+    """Решение владельца 26.10: Стажёр за КАЖДЫЙ новый уровень интеллекта (было — каждый 10-й)."""
+    assert INTERN_LEVEL_STEP == 1
     assert interns_for_level(0) == 0
-    assert interns_for_level(9) == 0
-    assert interns_for_level(10) == 1
-    assert interns_for_level(19) == 1
-    assert interns_for_level(20) == 2
-    assert interns_for_level(100) == 10
+    assert interns_for_level(1) == 1
+    assert interns_for_level(2) == 2
+    assert interns_for_level(10) == 10
+
+
+def test_claim_button_texts_exist():
+    from shared.locales import STRINGS
+    for lang in ("ru", "en"):
+        assert "{n}" in STRINGS[lang]["farm.btn_claim_intern"]
+        assert STRINGS[lang]["games.intern_ready"].strip()
 
 
 def test_upgrade_requires_three_qualified_referrals():

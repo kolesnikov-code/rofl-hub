@@ -89,6 +89,7 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now,
         "farm": {
             "intern": counts["intern"],
             "intern_claimed": bool(user["intern_claimed"]),
+            "interns_pending": int(user["interns_pending"]),
             "junior": counts["junior"],
             "premium": counts["premium"],
             "premium_fueled": counts["premium_fueled"],
@@ -302,9 +303,13 @@ async def handle_intern(request: web.Request) -> web.Response:
             user, _ = await apply_lazy_farm(conn, user_id, now)
             if not user:
                 return web.json_response({"error": "no_profile"}, status=404)
-            if user["intern_claimed"]:
-                return web.json_response({"ok": False, "error": "already"})
-            await activate_intern(conn, user_id, now)
+            if not user["intern_claimed"]:
+                await activate_intern(conn, user_id, now)
+            else:
+                # Стажёры за уровни интеллекта забираются той же кнопкой
+                from bots.main_bot.handlers.farm import claim_pending_intern
+                if not await claim_pending_intern(conn, user_id, now):
+                    return web.json_response({"ok": False, "error": "already"})
     await track(user_id, "intern_activated", source="webapp")
     return web.json_response({"ok": True})
 
