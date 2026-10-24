@@ -158,3 +158,12 @@ def test_raid_scout_slots_hide_ids_and_expire():
 def test_plain_strips_tags_for_alerts():
     from bots.main_bot.webapp_game import plain
     assert plain("❌ <b>Нет</b> &amp; всё") == "❌ Нет & всё"
+
+
+def test_wide_screen_layout_is_a_grid_and_the_chart_is_capped():
+    """Решение владельца 26.10: на компьютере/планшете карточки — 2–3 в ряд, график не на весь экран."""
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "@media (min-width: 720px)" in html and "grid-template-columns" in html
+    assert "calc((100% - 24px) / 3)" in html           # не больше трёх колонок
+    chart_css = next(line for line in html.splitlines() if line.strip().startswith(".chart {"))
+    assert "max-width" in chart_css and "max-height" in chart_css

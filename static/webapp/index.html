@@ -208,13 +208,27 @@
     color: var(--text); font-weight: 800; font-size: 12px; cursor: pointer; }
   .idx.on { border-color: var(--accent); box-shadow: 0 0 10px rgba(255,217,61,.35); }
   .idx .up { color: var(--ok); } .idx .down { color: #ff8e8e; }
-  .chart { width: 100%; height: auto; display: block; }
+  /* График — фиксированного размера: на широком экране не растягивается на всё окно */
+  .chart { width: 100%; max-width: 480px; max-height: 180px; height: auto; display: block; margin: 0 auto; }
   .chart polyline { fill: none; stroke: var(--neon); stroke-width: 2.5; stroke-linejoin: round; }
   .chart circle { fill: var(--accent); }
   .chart text { fill: var(--muted); font-size: 9px; text-anchor: middle; }
   .swapform { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
   .lbl select { display: block; width: 100%; margin-top: 4px; padding: 11px 8px; border-radius: 10px;
     border: 1px solid rgba(0,255,225,.3); background: #0d1326; color: var(--text); font-size: 15px; font-weight: 700; }
+
+  /* Компьютер и планшет: карточки раздела встают в сетку по 2–3 в ряд (не больше трёх,
+     каждая не уже 340px). На телефоне — как прежде, одна колонка. */
+  @media (min-width: 720px) {
+    #app {
+      display: grid; gap: 12px; align-items: start;
+      grid-template-columns: repeat(auto-fill, minmax(max(340px, calc((100% - 24px) / 3)), 1fr));
+      max-width: 1500px; margin: 0 auto;
+    }
+    #app > .card { margin-bottom: 0; }
+    #app > :not(.card) { grid-column: 1 / -1; }   /* загрузка, ошибки и прочее — на всю ширину */
+    #scene, #footer { max-width: 1000px; margin-left: auto; margin-right: auto; }
+  }
 </style>
 </head>
 <body>
