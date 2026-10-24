@@ -477,7 +477,7 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAM REFERAL ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Undang teman lewat link pribadimu dan dapatkan <b>+{bonus} 🪙</b> "
+        "Undang teman lewat link pribadimu dan dapatkan <b>{bonus}</b> "
         "untuk setiap orang yang menjadi pemain aktif!\n\n"
         "🔗 <b>Link-mu (ketuk untuk menyalin):</b>\n<code>{link}</code>\n\n"
         "📊 <b>STATISTIKMU:</b>\n"
@@ -489,10 +489,10 @@ STRINGS = {
     "ref.btn_share": "📣 Bagikan link",
     "ref.share_text": "Gabung ke ekosistem game ROFL HUB!",
     "ref.qualified_line": ("✅ <b>Teman aktif</b> adalah teman yang mencapai <b>level intelektual {level}</b> di kuis "
-                           "dan mengambil <b>{claims} kotlet harian</b> di peternakan. Setelah itu kamu dapat <b>+{bonus} 🪙</b>, "
+                           "dan mengambil <b>{claims} kotlet harian</b> di peternakan. Setelah itu kamu dapat <b>{bonus}</b>, "
                            "satu kali untuk setiap teman. Daftar tanpa bermain tidak dapat bonus — lebih adil untuk semua."),
     "ref.qualified_notify": ("🤝 <b>Temanmu menjadi pemain aktif!</b>\n"
-                             "Level intelektual {level} dan {claims} kotlet harian — tercapai. Kamu dapat <b>+{bonus} 🪙</b>. Undang lagi!"),
+                             "Level intelektual {level} dan {claims} kotlet harian — tercapai. Kamu dapat <b>{bonus}</b>. Undang lagi!"),
 
     # ---------------- transfer ----------------
     "tr.help": (
@@ -921,7 +921,7 @@ MINIAPP = {
     "eff_shuttle": "hanya milikmu: biaya 5% untuk penjualanmu dan order hingga 500 kotlet — selamanya",
     "eff_storage": "lebih banyak tempat untuk sumber daya — selamanya",
     "tab_friends": "🤝 Teman", "ref_title": "🤝 UNDANG TEMAN",
-    "ref_rules": "+{q} 🪙 untuk setiap teman aktif — satu kali. Teman aktif sudah mencapai level intelektual {l} dan mengambil {c} kotlet harian.",
+    "ref_rules": "{q} untuk setiap teman aktif — satu kali. Teman aktif sudah mencapai level intelektual {l} dan mengambil {c} kotlet harian.",
     "ref_copy": "📋 Salin", "ref_copied": "Link disalin!", "ref_share": "📤 Bagikan",
     "ref_stats": "📊 JARINGANMU", "ref_invited": "diundang", "ref_qualified": "aktif", "ref_earned": "didapat",
     "ref_top": "🏆 SIAPA PUNYA TEMAN TERBANYAK",

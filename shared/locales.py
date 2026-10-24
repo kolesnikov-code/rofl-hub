@@ -497,7 +497,7 @@ RU: dict[str, str] = {
     "ref.text": (
         "🤝 <b>РЕФЕРАЛЬНАЯ ПРОГРАММА ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Приглашай друзей по персональной ссылке и получай <b>+{bonus} 🪙</b> "
+        "Приглашай друзей по персональной ссылке и получай <b>{bonus}</b> "
         "за каждого, кто станет активным игроком!\n\n"
         "🔗 <b>Твоя ссылка (нажми, чтобы скопировать):</b>\n<code>{link}</code>\n\n"
         "📊 <b>ТВОЯ СТАТИСТИКА:</b>\n"
@@ -510,12 +510,12 @@ RU: dict[str, str] = {
     "ref.share_text": "Залетай в игровую экосистему ROFL HUB!",
     "ref.qualified_line": (
         "✅ <b>Активный друг</b> — тот, кто дошёл до <b>{level} уровня интеллекта</b> в викторине "
-        "и забрал <b>{claims} ежедневные котлеты</b> на ферме. Тогда тебе — <b>+{bonus} 🪙</b>, "
+        "и забрал <b>{claims} ежедневные котлеты</b> на ферме. Тогда тебе — <b>{bonus}</b>, "
         "один раз за каждого друга. За регистрацию без игры бонуса нет — так честнее для всех."
     ),
     "ref.qualified_notify": (
         "🤝 <b>Твой друг стал активным игроком!</b>\n"
-        "{level} уровень интеллекта и {claims} ежедневные котлеты — есть. Тебе начислено <b>+{bonus} 🪙</b>. Зови ещё!"
+        "{level} уровень интеллекта и {claims} ежедневные котлеты — есть. Тебе начислено <b>{bonus}</b>. Зови ещё!"
     ),
 
     # ---------------- переводы ----------------
@@ -1334,7 +1334,7 @@ EN: dict[str, str] = {
     "ref.text": (
         "🤝 <b>ROFL HUB REFERRAL PROGRAM</b>\n"
         "..................................................\n\n"
-        "Invite friends via your personal link and get <b>+{bonus} 🪙</b> "
+        "Invite friends via your personal link and get <b>{bonus}</b> "
         "for everyone who becomes an active player!\n\n"
         "🔗 <b>Your link (tap to copy):</b>\n<code>{link}</code>\n\n"
         "📊 <b>YOUR STATS:</b>\n"
@@ -1347,12 +1347,12 @@ EN: dict[str, str] = {
     "ref.share_text": "Join the ROFL HUB gaming ecosystem!",
     "ref.qualified_line": (
         "✅ <b>An active friend</b> is someone who reached <b>intellect level {level}</b> in the quiz "
-        "and claimed <b>{claims} daily cutlets</b> on the farm. Then you get <b>+{bonus} 🪙</b>, "
+        "and claimed <b>{claims} daily cutlets</b> on the farm. Then you get <b>{bonus}</b>, "
         "once per friend. No bonus for sign-ups without play — fairer for everyone."
     ),
     "ref.qualified_notify": (
         "🤝 <b>Your friend is now an active player!</b>\n"
-        "Intellect level {level} and {claims} daily cutlets — done. You've earned <b>+{bonus} 🪙</b>. Invite more!"
+        "Intellect level {level} and {claims} daily cutlets — done. You've earned <b>{bonus}</b>. Invite more!"
     ),
 
     # ---------------- transfers ----------------

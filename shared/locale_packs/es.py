@@ -476,7 +476,7 @@ STRINGS: dict[str, str] = {
     "ref.text": (
         "🤝 <b>PROGRAMA DE REFERIDOS DE ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Invita a tus amigos con tu enlace personal y recibe <b>+{bonus} 🪙</b> "
+        "Invita a tus amigos con tu enlace personal y recibe <b>{bonus}</b> "
         "por cada uno que se convierta en jugador activo.\n\n"
         "🔗 <b>Tu enlace (toca para copiar):</b>\n<code>{link}</code>\n\n"
         "📊 <b>TUS ESTADÍSTICAS:</b>\n"
@@ -488,10 +488,10 @@ STRINGS: dict[str, str] = {
     "ref.btn_share": "📣 Compartir el enlace",
     "ref.share_text": "¡Únete al ecosistema de juegos ROFL HUB!",
     "ref.qualified_line": ("✅ <b>Amigo activo</b> es quien llega al <b>nivel de intelecto {level}</b> en la trivia "
-                           "y recoge <b>{claims} chuletas diarias</b> en la granja. Entonces recibes <b>+{bonus} 🪙</b>, "
+                           "y recoge <b>{claims} chuletas diarias</b> en la granja. Entonces recibes <b>{bonus}</b>, "
                            "una sola vez por cada amigo. Registrarse sin jugar no da bonus: así es más justo para todos."),
     "ref.qualified_notify": ("🤝 <b>¡Tu amigo ya es un jugador activo!</b>\n"
-                             "Nivel de intelecto {level} y {claims} chuletas diarias: listo. Has ganado <b>+{bonus} 🪙</b>. "
+                             "Nivel de intelecto {level} y {claims} chuletas diarias: listo. Has ganado <b>{bonus}</b>. "
                              "¡Invita a más!"),
 
     # ---------------- переводы ----------------
@@ -971,7 +971,7 @@ MINIAPP: dict[str, str] = {
     "eff_shuttle": "solo tuyo: comisión del 5% en tus ventas y órdenes de hasta 500 chuletas, para siempre",
     "eff_storage": "más espacio para recursos, para siempre",
     "ref_title": "🤝 INVITA A TUS AMIGOS",
-    "ref_rules": "+{q} 🪙 por cada amigo activo, una sola vez. Un amigo activo ha llegado al nivel de intelecto {l} y ha recogido {c} chuletas diarias.",
+    "ref_rules": "{q} por cada amigo activo, una sola vez. Un amigo activo ha llegado al nivel de intelecto {l} y ha recogido {c} chuletas diarias.",
     "ref_copy": "📋 Copiar",
     "ref_copied": "¡Enlace copiado!",
     "ref_share": "📤 Compartir",

@@ -476,7 +476,7 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAMMA REFERRAL DI ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Invita gli amici con il tuo link personale e ricevi <b>+{bonus} 🪙</b> "
+        "Invita gli amici con il tuo link personale e ricevi <b>{bonus}</b> "
         "per ognuno che diventa un giocatore attivo!\n\n"
         "🔗 <b>Il tuo link (tocca per copiarlo):</b>\n<code>{link}</code>\n\n"
         "📊 <b>LE TUE STATISTICHE:</b>\n"
@@ -488,10 +488,10 @@ STRINGS = {
     "ref.btn_share": "📣 Condividi il link",
     "ref.share_text": "Entra nell'ecosistema di gioco ROFL HUB!",
     "ref.qualified_line": ("✅ <b>Amico attivo</b> è chi ha raggiunto il <b>livello {level} di intelletto</b> nel quiz "
-                           "e ha ritirato <b>{claims} cotolette giornaliere</b> alla fattoria. Allora ricevi <b>+{bonus} 🪙</b>, "
+                           "e ha ritirato <b>{claims} cotolette giornaliere</b> alla fattoria. Allora ricevi <b>{bonus}</b>, "
                            "una sola volta per amico. Niente bonus per le sole registrazioni senza gioco: è più giusto per tutti."),
     "ref.qualified_notify": ("🤝 <b>Il tuo amico è diventato un giocatore attivo!</b>\n"
-                             "Livello {level} di intelletto e {claims} cotolette giornaliere: fatto. Hai ricevuto <b>+{bonus} 🪙</b>. Invitane altri!"),
+                             "Livello {level} di intelletto e {claims} cotolette giornaliere: fatto. Hai ricevuto <b>{bonus}</b>. Invitane altri!"),
 
     # ---------------- переводы ----------------
     "tr.help": (
@@ -1086,7 +1086,7 @@ MINIAPP = {
     "ws_armorUntil": "🛡 Armatura attiva fino al {t}",
     "tab_friends": "🤝 Amici",
     "ref_title": "🤝 INVITA GLI AMICI",
-    "ref_rules": "+{q} 🪙 per ogni amico attivo, una sola volta. Amico attivo: ha raggiunto il livello d'intelletto {l} e ha ritirato {c} cotolette giornaliere.",
+    "ref_rules": "{q} per ogni amico attivo, una sola volta. Amico attivo: ha raggiunto il livello d'intelletto {l} e ha ritirato {c} cotolette giornaliere.",
     "ref_copy": "📋 Copia",
     "ref_copied": "Link copiato!",
     "ref_share": "📤 Condividi",

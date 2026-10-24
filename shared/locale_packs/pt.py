@@ -476,7 +476,7 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAMA DE INDICAÇÃO DO ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Convide amigos pelo seu link pessoal e ganhe <b>+{bonus} 🪙</b> "
+        "Convide amigos pelo seu link pessoal e ganhe <b>{bonus}</b> "
         "por cada um que virar jogador ativo!\n\n"
         "🔗 <b>Seu link (toque para copiar):</b>\n<code>{link}</code>\n\n"
         "📊 <b>SUAS ESTATÍSTICAS:</b>\n"
@@ -488,10 +488,10 @@ STRINGS = {
     "ref.btn_share": "📣 Compartilhar o link",
     "ref.share_text": "Entra no ecossistema de jogos ROFL HUB!",
     "ref.qualified_line": ("✅ <b>Amigo ativo</b> é quem chegou ao <b>nível de intelecto {level}</b> no quiz "
-                           "e pegou <b>{claims} bifes diários</b> na fazenda. Aí você ganha <b>+{bonus} 🪙</b>, "
+                           "e pegou <b>{claims} bifes diários</b> na fazenda. Aí você ganha <b>{bonus}</b>, "
                            "uma vez por amigo. Cadastro sem jogar não rende bônus — é mais justo para todos."),
     "ref.qualified_notify": ("🤝 <b>Seu amigo virou jogador ativo!</b>\n"
-                             "Nível de intelecto {level} e {claims} bifes diários — feito. Você ganhou <b>+{bonus} 🪙</b>. "
+                             "Nível de intelecto {level} e {claims} bifes diários — feito. Você ganhou <b>{bonus}</b>. "
                              "Convide mais!"),
 
     # ---------------- transferências ----------------
@@ -971,7 +971,7 @@ MINIAPP = {
     "eff_shuttle": "só seu: taxa de 5% nas suas vendas e ordens de até 500 bifes — para sempre",
     "tab_friends": "🤝 Amigos",
     "ref_title": "🤝 CONVIDE AMIGOS",
-    "ref_rules": "+{q} 🪙 por cada amigo ativo — uma vez só. Amigo ativo é quem chegou ao nível de intelecto {l} e pegou {c} bifes diários.",
+    "ref_rules": "{q} por cada amigo ativo — uma vez só. Amigo ativo é quem chegou ao nível de intelecto {l} e pegou {c} bifes diários.",
     "ref_copy": "📋 Copiar",
     "ref_copied": "Link copiado!",
     "ref_share": "📤 Compartilhar",

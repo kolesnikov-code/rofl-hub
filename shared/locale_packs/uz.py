@@ -478,7 +478,7 @@ STRINGS: dict[str, str] = {
         "🤝 <b>ROFL HUB REFERAL DASTURI</b>\n"
         "..................................................\n\n"
         "Do'stlaringni shaxsiy havolang orqali taklif qil va faol o'yinchiga aylangan "
-        "har bir kishi uchun <b>+{bonus} 🪙</b> ol!\n\n"
+        "har bir kishi uchun <b>{bonus}</b> ol!\n\n"
         "🔗 <b>Havolang (nusxalash uchun bos):</b>\n<code>{link}</code>\n\n"
         "📊 <b>SENING STATISTIKANG:</b>\n"
         "👥 Taklif qilingan do'stlar: <b>{invited} kishi</b>\n"
@@ -489,10 +489,10 @@ STRINGS: dict[str, str] = {
     "ref.btn_share": "📣 Havolani ulashish",
     "ref.share_text": "ROFL HUB o'yin ekotizimiga qo'shil!",
     "ref.qualified_line": ("✅ <b>Faol do'st</b> — viktorinada <b>{level}-intellekt darajasiga</b> yetgan "
-                           "va fermada <b>{claims} ta kundalik kotlet</b>ni olgan kishi. Shunda senga — <b>+{bonus} 🪙</b>, "
+                           "va fermada <b>{claims} ta kundalik kotlet</b>ni olgan kishi. Shunda senga — <b>{bonus}</b>, "
                            "har bir do'st uchun bir marta. O'ynamasdan ro'yxatdan o'tgani uchun bonus yo'q — bu hamma uchun adolatliroq."),
     "ref.qualified_notify": ("🤝 <b>Do'sting faol o'yinchiga aylandi!</b>\n"
-                             "{level}-intellekt darajasi va {claims} ta kundalik kotlet — bajarildi. Senga <b>+{bonus} 🪙</b> yozildi. "
+                             "{level}-intellekt darajasi va {claims} ta kundalik kotlet — bajarildi. Senga <b>{bonus}</b> yozildi. "
                              "Yana chaqir!"),
 
     # ---------------- переводы ----------------
@@ -964,7 +964,7 @@ MINIAPP: dict[str, str] = {
     "sw_created": "Taklif qo'yildi, resurslar ajratib qo'yildi", "sw_cancelled": "Taklif olib tashlandi, resurslar qaytdi",
     "ws_armorUntil": "🛡 Zirh {t} gacha amal qiladi",
     "tab_friends": "🤝 Do'stlar", "ref_title": "🤝 DO'STLARNI TAKLIF QIL",
-    "ref_rules": "Har bir faol do'st uchun +{q} 🪙 — bir marta. Faol do'st {l}-intellekt darajasiga yetgan va {c} ta kundalik kotlet olgan.",
+    "ref_rules": "Har bir faol do'st uchun {q} — bir marta. Faol do'st {l}-intellekt darajasiga yetgan va {c} ta kundalik kotlet olgan.",
     "ref_copy": "📋 Nusxa olish", "ref_copied": "Havola nusxalandi!", "ref_share": "📤 Ulashish",
     "ref_stats": "📊 SENING BAZANG", "ref_invited": "taklif qilingan", "ref_qualified": "faol", "ref_earned": "ishlab topilgan",
     "ref_top": "🏆 KIMNING DO'STLARI KO'P",

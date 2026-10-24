@@ -72,8 +72,8 @@ def test_referral_pays_only_for_an_active_friend():
     """Решение владельца 26.10: за регистрацию — ничего; +500 один раз за активного друга."""
     import shared.economy as e
     assert not hasattr(e, "REFERRAL_SIGNUP_BONUS")
-    assert not hasattr(e, "REFERRAL_QUALIFIED_CUTLETS")
     assert e.REFERRAL_QUALIFIED_BONUS == 500
+    assert (e.REFERRAL_QUALIFIED_CUTLETS, e.REFERRAL_QUALIFIED_RESOURCES) == (1, 10)
     assert e.REFERRAL_QUALIFY_QUIZ_LEVEL == 3
     assert e.REFERRAL_QUALIFY_BONUS_CLAIMS == 3
     # 3 уровень интеллекта = 10 + 20 + 30 верных ответов — больше суточного лимита викторины

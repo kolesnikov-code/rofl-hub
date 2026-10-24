@@ -478,7 +478,7 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>ROFL HUB EINLADUNGSPROGRAMM</b>\n"
         "..................................................\n\n"
-        "Lade Freunde über deinen persönlichen Link ein und erhalte <b>+{bonus} 🪙</b> "
+        "Lade Freunde über deinen persönlichen Link ein und erhalte <b>{bonus}</b> "
         "für jeden, der ein aktiver Spieler wird!\n\n"
         "🔗 <b>Dein Link (zum Kopieren antippen):</b>\n<code>{link}</code>\n\n"
         "📊 <b>DEINE STATISTIK:</b>\n"
@@ -490,10 +490,10 @@ STRINGS = {
     "ref.btn_share": "📣 Link teilen",
     "ref.share_text": "Komm ins Spiele-Ökosystem von ROFL HUB!",
     "ref.qualified_line": ("✅ <b>Aktiver Freund</b> ist, wer im Quiz <b>Intelligenz-Level {level}</b> erreicht "
-                           "und auf der Farm <b>{claims} tägliche Frikadellen</b> abgeholt hat. Dann bekommst du <b>+{bonus} 🪙</b>, "
+                           "und auf der Farm <b>{claims} tägliche Frikadellen</b> abgeholt hat. Dann bekommst du <b>{bonus}</b>, "
                            "einmal pro Freund. Für eine Registrierung ohne Spielen gibt es keinen Bonus – das ist fairer für alle."),
     "ref.qualified_notify": ("🤝 <b>Dein Freund ist jetzt ein aktiver Spieler!</b>\n"
-                             "Intelligenz-Level {level} und {claims} tägliche Frikadellen – geschafft. Du hast <b>+{bonus} 🪙</b> erhalten. Lade noch mehr ein!"),
+                             "Intelligenz-Level {level} und {claims} tägliche Frikadellen – geschafft. Du hast <b>{bonus}</b> erhalten. Lade noch mehr ein!"),
 
     # ---------------- Überweisungen ----------------
     "tr.help": (
@@ -974,7 +974,7 @@ MINIAPP = {
     "goals_claimed": "🎁 Die heutige Truhe ist abgeholt. Morgen gibt's neue Ziele!", "goals_reset": "Die Ziele werden um 00:00 UTC erneuert",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · Serie {s} Tage",
     "tab_friends": "🤝 Freunde", "ref_title": "🤝 LADE FREUNDE EIN",
-    "ref_rules": "+{q} 🪙 für jeden aktiven Freund – einmalig. Ein aktiver Freund hat Intelligenz-Level {l} erreicht und {c} tägliche Frikadellen abgeholt.",
+    "ref_rules": "{q} für jeden aktiven Freund – einmalig. Ein aktiver Freund hat Intelligenz-Level {l} erreicht und {c} tägliche Frikadellen abgeholt.",
     "ref_copy": "📋 Kopieren", "ref_copied": "Link kopiert!", "ref_share": "📤 Teilen",
     "ref_stats": "📊 DEIN NETZWERK", "ref_invited": "eingeladen", "ref_qualified": "aktiv", "ref_earned": "verdient",
     "ref_top": "🏆 WER HAT DIE MEISTEN FREUNDE",

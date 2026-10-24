@@ -476,7 +476,7 @@ STRINGS: dict[str, str] = {
     "ref.text": (
         "🤝 <b>PROGRAM POLECEŃ ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Zapraszaj znajomych przez swój osobisty link i otrzymuj <b>+{bonus} 🪙</b> "
+        "Zapraszaj znajomych przez swój osobisty link i otrzymuj <b>{bonus}</b> "
         "za każdego, kto zostanie aktywnym graczem!\n\n"
         "🔗 <b>Twój link (kliknij, aby skopiować):</b>\n<code>{link}</code>\n\n"
         "📊 <b>TWOJE STATYSTYKI:</b>\n"
@@ -488,10 +488,10 @@ STRINGS: dict[str, str] = {
     "ref.btn_share": "📣 Udostępnij link",
     "ref.share_text": "Wbijaj do ekosystemu gier ROFL HUB!",
     "ref.qualified_line": ("✅ <b>Aktywny znajomy</b> to ktoś, kto osiągnął <b>{level}. poziom intelektu</b> w quizie "
-                           "i odebrał <b>{claims} codzienne kotlety</b> na farmie. Wtedy dostajesz <b>+{bonus} 🪙</b>, "
+                           "i odebrał <b>{claims} codzienne kotlety</b> na farmie. Wtedy dostajesz <b>{bonus}</b>, "
                            "jednorazowo za każdego znajomego. Za samą rejestrację bez gry bonusu nie ma — tak jest uczciwiej dla wszystkich."),
     "ref.qualified_notify": ("🤝 <b>Twój znajomy został aktywnym graczem!</b>\n"
-                             "{level}. poziom intelektu i {claims} codzienne kotlety — są. Dostajesz <b>+{bonus} 🪙</b>. Zapraszaj dalej!"),
+                             "{level}. poziom intelektu i {claims} codzienne kotlety — są. Dostajesz <b>{bonus}</b>. Zapraszaj dalej!"),
 
     # ---------------- переводы ----------------
     "tr.help": (
@@ -916,7 +916,7 @@ MINIAPP: dict[str, str] = {
     "shuttle": "🚀 Wahadłowiec zbudowany",
     "resHint": "Każde zwycięstwo przynosi surowiec danej gry, a ze zdjętym limitem — bez ograniczeń. Wydawaj je w warsztacie.",
     "ref_title": "🤝 ZAPRASZAJ ZNAJOMYCH",
-    "ref_rules": "+{q} 🪙 za każdego aktywnego znajomego — jednorazowo. Aktywny znajomy osiągnął {l}. poziom intelektu i odebrał {c} codzienne kotlety.",
+    "ref_rules": "{q} za każdego aktywnego znajomego — jednorazowo. Aktywny znajomy osiągnął {l}. poziom intelektu i odebrał {c} codzienne kotlety.",
     "ref_copy": "📋 Kopiuj",
     "ref_copied": "Link skopiowany!",
     "ref_share": "📤 Udostępnij",

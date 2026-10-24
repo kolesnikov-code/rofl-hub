@@ -22,6 +22,10 @@ REFERRAL_SHARE_DAYS = 365
 REFERRAL_QUALIFY_QUIZ_LEVEL = 3
 REFERRAL_QUALIFY_BONUS_CLAIMS = 3
 REFERRAL_QUALIFIED_BONUS = 500
+# В ту же разовую награду (уточнение владельца 26.10): котлета на склад и по 10 каждого ресурса
+# (ресурсы — с учётом вместимости склада, как любая добыча).
+REFERRAL_QUALIFIED_CUTLETS = 1
+REFERRAL_QUALIFIED_RESOURCES = 10
 REFERRAL_TOP_LIMIT = 20       # рейтинг «у кого больше друзей» в приложении
 
 # --------------------------------------------------------------------------

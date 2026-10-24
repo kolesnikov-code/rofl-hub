@@ -23,7 +23,10 @@ from shared.economy import (
     EVENTS_RETENTION_DAYS,
     PROMOTER_CODE_MAX_LEN,
     REFERRAL_QUALIFIED_BONUS,
+    REFERRAL_QUALIFIED_CUTLETS,
+    REFERRAL_QUALIFIED_RESOURCES,
     REFERRAL_QUALIFY_BONUS_CLAIMS,
+    RESOURCE_KINDS,
     REFERRAL_QUALIFY_QUIZ_LEVEL,
     utcnow,
 )
@@ -90,13 +93,25 @@ async def mark_daily_activity(user_id: int, today: date | None = None) -> None:
         logger.warning("[ANALYTICS] daily_activity user=%s не записана", user_id, exc_info=True)
 
 
+def referral_reward_text() -> str:
+    """«+500 🪙 · 1 🥩 · 10 ⛏ · 10 💧 · 10 💎 · 10 ⚙️» — награда за активного друга."""
+    from shared.resources import RESOURCE_ICONS
+    parts = [f"+{REFERRAL_QUALIFIED_BONUS} 🪙"]
+    if REFERRAL_QUALIFIED_CUTLETS:
+        parts.append(f"{REFERRAL_QUALIFIED_CUTLETS} 🥩")
+    if REFERRAL_QUALIFIED_RESOURCES:
+        parts += [f"{REFERRAL_QUALIFIED_RESOURCES} {RESOURCE_ICONS[k]}" for k in RESOURCE_KINDS]
+    return " · ".join(parts)
+
+
 async def qualify_referral_if_due(conn, user_id: int) -> int | None:
     """
     Вызывается ВНУТРИ транзакции, после которой у приглашённого могло выполниться условие
     «активного друга»: повышение уровня интеллекта и получение ежедневной котлеты.
 
     Анти-фейк (решение владельца 26.10): за регистрацию друга не платится ничего; рефереру —
-    ровно один раз REFERRAL_QUALIFIED_BONUS, когда друг дошёл до REFERRAL_QUALIFY_QUIZ_LEVEL
+    ровно один раз награда (монеты + котлета + по 10 каждого ресурса, referral_reward_text()),
+    когда друг дошёл до REFERRAL_QUALIFY_QUIZ_LEVEL
     уровня интеллекта (60 верных ответов) И забрал REFERRAL_QUALIFY_BONUS_CLAIMS ежедневных
     котлет (кулдаун 24 ч → минимум двое суток живой игры). Заблокированный друг не
     квалифицируется; заблокированному рефереру бонус не начисляется (квалификация фиксируется).
@@ -124,6 +139,14 @@ async def qualify_referral_if_due(conn, user_id: int) -> int | None:
             return None
         await change_balance(conn, referrer_id, REFERRAL_QUALIFIED_BONUS,
                              "referral_qualified", str(user_id))
+        if REFERRAL_QUALIFIED_CUTLETS:
+            await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $2 WHERE user_id = $1",
+                               referrer_id, REFERRAL_QUALIFIED_CUTLETS)
+        if REFERRAL_QUALIFIED_RESOURCES:
+            from shared.resources import grant_bundle, resource_capacity
+            await grant_bundle(conn, referrer_id, {k: REFERRAL_QUALIFIED_RESOURCES for k in RESOURCE_KINDS},
+                               "referral_qualified", str(user_id),
+                               cap=await resource_capacity(conn, referrer_id))
     except Exception:
         # Реферер удалён/сломан — квалификацию фиксируем, бонус сгорает осознанно
         logger.exception("[REFERRAL_QUALIFIED] бонус рефереру %s не начислен", referrer_id)
@@ -139,7 +162,7 @@ async def notify_referrer_qualified(bot, referrer_id: int | None) -> None:
     try:
         lang = resolve_lang(await db.pool.fetchval("SELECT lang FROM users WHERE user_id = $1", referrer_id))
         await bot.send_message(
-            referrer_id, t(lang, "ref.qualified_notify", bonus=REFERRAL_QUALIFIED_BONUS,
+            referrer_id, t(lang, "ref.qualified_notify", bonus=referral_reward_text(),
                            level=REFERRAL_QUALIFY_QUIZ_LEVEL, claims=REFERRAL_QUALIFY_BONUS_CLAIMS),
             parse_mode="HTML")
     except Exception:

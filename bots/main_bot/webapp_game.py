@@ -22,6 +22,7 @@ import time
 
 from aiohttp import web
 
+from shared.analytics import referral_reward_text
 from shared.analytics import track
 from shared.daily_goals import GoalsError, all_done, chest_coins, claim_chest, claimed_today, goal_progress, goals_for
 from shared.database import db
@@ -300,7 +301,8 @@ async def handle_referral(request: web.Request) -> web.Response:
         "share_text": plain(t(ctx.lang, "ref.share_text")),
         "invited": int(stats["invited"]), "qualified": int(stats["qualified"]),
         "earned": int(earned),
-        "rules": {"qualified": REFERRAL_QUALIFIED_BONUS, "level": REFERRAL_QUALIFY_QUIZ_LEVEL,
+        "rules": {"qualified": REFERRAL_QUALIFIED_BONUS, "reward": referral_reward_text(),
+                  "level": REFERRAL_QUALIFY_QUIZ_LEVEL,
                   "claims": REFERRAL_QUALIFY_BONUS_CLAIMS},
         "top": [{"name": f"@{r['username']}" if r["username"] else (r["display_name"] or "#" + str(r["user_id"])[-4:]),
                  "rank": rank_label(ctx.lang, r["created_at"], now),

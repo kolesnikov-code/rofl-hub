@@ -12,8 +12,8 @@ from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 
 from shared.database import db
-from shared.economy import (REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFY_BONUS_CLAIMS,
-                            REFERRAL_QUALIFY_QUIZ_LEVEL)
+from shared.analytics import referral_reward_text
+from shared.economy import REFERRAL_QUALIFY_BONUS_CLAIMS, REFERRAL_QUALIFY_QUIZ_LEVEL
 from shared.locales import t
 
 router = Router()
@@ -36,9 +36,9 @@ async def _referral_stats(user_id: int) -> tuple[int, int] | None:
 def _referral_text(lang: str, link: str, invited: int, earned: int) -> str:
     """Текст /invite: программа + единственное условие бонуса — активный друг."""
     return (t(lang, "ref.text", link=link, invited=invited, earned=earned,
-              bonus=REFERRAL_QUALIFIED_BONUS)
+              bonus=referral_reward_text())
             + "\n\n" + t(lang, "ref.qualified_line", level=REFERRAL_QUALIFY_QUIZ_LEVEL,
-                         claims=REFERRAL_QUALIFY_BONUS_CLAIMS, bonus=REFERRAL_QUALIFIED_BONUS))
+                         claims=REFERRAL_QUALIFY_BONUS_CLAIMS, bonus=referral_reward_text()))
 
 
 @router.message(Command("invite"))

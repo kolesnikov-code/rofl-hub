@@ -1280,18 +1280,20 @@ async def test_weekly_recipe_needs_toggle_and_respects_limit(conn):
 
 
 async def test_active_friend_via_quiz_level_up_pays_500_once(conn, global_db):
-    """Друг с 3 котлетами закрывает 3 уровень в викторине → пригласителю +500, без котлеты, один раз."""
+    """Друг с 3 котлетами закрывает 3 уровень → пригласителю +500, котлета и по 10 ресурсов, один раз."""
     pytest.importorskip("aiogram")
     from bots.main_bot.handlers.games import execute_solo_game_payout
     from shared.analytics import qualify_referral_if_due
-    from shared.economy import REFERRAL_QUALIFIED_BONUS
+    from shared.economy import REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFIED_CUTLETS, REFERRAL_QUALIFIED_RESOURCES
+    from shared.resources import get_resources
     await _mk_user(conn, 940, 0, inv_cutlets=0)
     await _mk_user(conn, 941, 100, referred_by=940, bonus_claims=3)
     await conn.execute("INSERT INTO game_stats (user_id, quiz_level, quiz_level_progress) VALUES (941, 2, 29)")
     ok, _, _ = await execute_solo_game_payout(941, True, "quiz")          # закрыт уровень 3
     assert ok
     row = await conn.fetchrow("SELECT balance, inv_cutlets FROM users WHERE user_id = 940")
-    assert (row["balance"], row["inv_cutlets"]) == (REFERRAL_QUALIFIED_BONUS, 0)
+    assert (row["balance"], row["inv_cutlets"]) == (REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFIED_CUTLETS)
+    assert set((await get_resources(conn, 940)).values()) == {REFERRAL_QUALIFIED_RESOURCES}
     assert await qualify_referral_if_due(conn, 941) is None                # ровно один раз
 
 

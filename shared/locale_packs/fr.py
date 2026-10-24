@@ -477,7 +477,7 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAMME DE PARRAINAGE ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Invite des amis via ton lien personnel et reçois <b>+{bonus} 🪙</b> "
+        "Invite des amis via ton lien personnel et reçois <b>{bonus}</b> "
         "pour chaque ami qui devient joueur actif !\n\n"
         "🔗 <b>Ton lien (tape pour copier) :</b>\n<code>{link}</code>\n\n"
         "📊 <b>TES STATISTIQUES :</b>\n"
@@ -489,10 +489,10 @@ STRINGS = {
     "ref.btn_share": "📣 Partager le lien",
     "ref.share_text": "Rejoins l'écosystème de jeu ROFL HUB !",
     "ref.qualified_line": ("✅ <b>Un ami actif</b> est quelqu'un qui a atteint le <b>niveau d'intelligence {level}</b> "
-                           "au quiz et récupéré <b>{claims} côtelettes quotidiennes</b> à la ferme. Alors tu gagnes <b>+{bonus} 🪙</b>, "
+                           "au quiz et récupéré <b>{claims} côtelettes quotidiennes</b> à la ferme. Alors tu gagnes <b>{bonus}</b>, "
                            "une seule fois par ami. Pas de bonus pour une simple inscription sans jeu : c'est plus juste pour tous."),
     "ref.qualified_notify": ("🤝 <b>Ton ami est devenu un joueur actif !</b>\n"
-                             "Niveau d'intelligence {level} et {claims} côtelettes quotidiennes : c'est fait. Tu gagnes <b>+{bonus} 🪙</b>. "
+                             "Niveau d'intelligence {level} et {claims} côtelettes quotidiennes : c'est fait. Tu gagnes <b>{bonus}</b>. "
                              "Invites-en d'autres !"),
 
     # ---------------- transferts ----------------
@@ -1091,7 +1091,7 @@ MINIAPP = {
     "loading": "⏳ Chargement…",
     "tab_friends": "🤝 Amis",
     "ref_title": "🤝 INVITE TES AMIS",
-    "ref_rules": "+{q} 🪙 pour chaque ami actif, une seule fois. Un ami actif a atteint le niveau d'intelligence {l} et récupéré {c} côtelettes quotidiennes.",
+    "ref_rules": "{q} pour chaque ami actif, une seule fois. Un ami actif a atteint le niveau d'intelligence {l} et récupéré {c} côtelettes quotidiennes.",
     "ref_copy": "📋 Copier",
     "ref_copied": "Lien copié !",
     "ref_share": "📤 Partager",
