@@ -161,9 +161,18 @@ def test_plain_strips_tags_for_alerts():
 
 
 def test_wide_screen_layout_is_a_grid_and_the_chart_is_capped():
-    """Решение владельца 26.10: на компьютере/планшете карточки — 2–3 в ряд, график не на весь экран."""
+    """Решение владельца 26.10: компьютер — до 3 колонок, планшет — 2, уже 720px — одна; график не на весь экран."""
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    assert "@media (min-width: 720px)" in html and "grid-template-columns" in html
-    assert "calc((100% - 24px) / 3)" in html           # не больше трёх колонок
+    assert "@media (min-width: 720px)" in html and "@media (min-width: 1100px)" in html
+    assert '#app[data-cols="3"]' in html and "box.dataset.cols" in html
+    assert "align-items: stretch" in html                     # плашки одного ряда — одной высоты
     chart_css = next(line for line in html.splitlines() if line.strip().startswith(".chart {"))
     assert "max-width" in chart_css and "max-height" in chart_css
+
+
+def test_long_lists_are_paged_and_the_shop_has_three_panels():
+    """Лоты биржи, ТОП и рейтинг друзей листаются страницами; магазин — ферма | игровые | описания."""
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    for pager_id in ('pager("asks-"', 'pager("bids-"', 'pager("swaps"', 'pager("top"', 'pager("reftop"'):
+        assert pager_id in html
+    assert "span-tablet" in html and 'pager("shopinfo"' in html

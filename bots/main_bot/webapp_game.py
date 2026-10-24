@@ -43,7 +43,8 @@ from shared.economy import (
     MARKET_ASSETS,
     MARKET_CUTLET_MIN_PRICE,
     MARKET_MAX_PRICE,
-    MARKET_SHOWCASE_LIMIT,
+    MARKET_APP_LIST_LIMIT,
+    MARKET_APP_SWAPS_LIMIT,
     RAID_ATTACK_COOLDOWN_HOURS,
     RAID_FAIL_CAP,
     RAID_FAIL_PERCENT,
@@ -506,9 +507,9 @@ async def handle_market(request: web.Request) -> web.Response:
     now = utcnow()
     async with db.pool.acquire() as conn:
         stats = await market_stats(conn, asset)
-        asks = await list_open_orders(conn, MARKET_SHOWCASE_LIMIT * 2, exclude_user=ctx.user_id,
+        asks = await list_open_orders(conn, MARKET_APP_LIST_LIMIT, exclude_user=ctx.user_id,
                                       asset=asset, side="sell")
-        bids = await list_open_orders(conn, MARKET_SHOWCASE_LIMIT * 2, exclude_user=ctx.user_id,
+        bids = await list_open_orders(conn, MARKET_APP_LIST_LIMIT, exclude_user=ctx.user_id,
                                       asset=asset, side="buy")
         mine = await my_open_orders(conn, ctx.user_id)
         user = await conn.fetchrow("SELECT inv_cutlets, balance, has_shuttle FROM users WHERE user_id = $1",
@@ -518,7 +519,7 @@ async def handle_market(request: web.Request) -> web.Response:
         index = {}
         for a in MARKET_ASSETS:
             index[a] = index_change(history if a == asset else await price_history(conn, a, now))
-        swaps = await list_swaps(conn, 20, exclude_user=ctx.user_id)
+        swaps = await list_swaps(conn, MARKET_APP_SWAPS_LIMIT, exclude_user=ctx.user_id)
         my_sw = await my_swaps(conn, ctx.user_id)
     shuttle = bool(user["has_shuttle"])
     max_qty, max_orders = market_limits(shuttle, asset)

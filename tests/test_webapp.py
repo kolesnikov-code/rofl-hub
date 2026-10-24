@@ -127,3 +127,7 @@ def test_build_shop_payload_mirrors_catalog():
     for item in ru["farm"] + ru["games"] + en["farm"] + en["games"]:
         assert str(item["stars"]) in item["label"]
         assert "★" in item["label"]
+
+    # Описания товаров для третьей колонки: ru/en, по одному набору на язык
+    assert len(ru["info"]) == len(en["info"]) >= 10
+    assert ru["info"][0]["title"] != en["info"][0]["title"] and all(i["text"] for i in ru["info"] + en["info"])

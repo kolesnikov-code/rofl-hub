@@ -136,6 +136,62 @@ SHOP_LAYOUT: dict[str, list[list[str]]] = {
 }
 
 
+# «Что даёт каждый товар» — карточка рядом с витриной в приложении (те же тексты, что в FAQ).
+# Как и весь каталог, ru/en: остальные языки видят английский вариант.
+SHOP_INFO: list[dict[str, str]] = [
+    {"title": "🤖 Младший Майнер · 49 ★ · 30 дней",
+     "text": "Добывает 5 🪙 в час без топлива — около 3 600 🪙 за месяц. Для тех, кто не хочет следить за заправкой.",
+     "title_en": "🤖 Miner Bot · 49 ★ · 30 days",
+     "text_en": "Mines 5 🪙 per hour with no fuel — about 3,600 🪙 a month. For those who don't want to refuel."},
+    {"title": "⚡ Кибер-Бурильщик · 99 ★ · 30 дней",
+     "text": "10 🪙 в час — вдвое мощнее Майнера, но съедает 1 котлету в сутки. С бустами — до 70 🪙 в час.",
+     "title_en": "⚡ Cyber-Driller · 99 ★ · 30 days",
+     "text_en": "10 🪙 per hour — twice the Miner, but eats 1 cutlet a day. With boosts — up to 70 🪙 per hour."},
+    {"title": "🥩 Паки котлет · 10 / 50 / 100 шт.",
+     "text": "Топливо Бурильщиков: 1 котлета = сутки работы одного робота. Чем больше пак, тем дешевле котлета.",
+     "title_en": "🥩 Cutlet packs · 10 / 50 / 100 pcs",
+     "text_en": "Driller fuel: 1 cutlet = one robot working for a day. The bigger the pack, the cheaper each cutlet."},
+    {"title": "📦 Холодильник · на 10 / 50 / 100 котлет",
+     "text": "Бак, из которого Бурильщики заправляются сами: загрузил котлеты — и ферма работает без тебя.",
+     "title_en": "📦 Fridge · for 10 / 50 / 100 cutlets",
+     "text_en": "A tank the Drillers refuel from on their own: load cutlets and the farm runs without you."},
+    {"title": "🔋 Ядерный Разгон x5 · 199 ★ · 30 дней",
+     "text": "Добыча всех роботов ×5, но Бурильщики едят в 3 раза больше котлет. Самый быстрый путь к большим суммам.",
+     "title_en": "🔋 Nuclear Boost x5 · 199 ★ · 30 days",
+     "text_en": "All robots mine ×5, but Drillers eat 3× more cutlets. The fastest way to big numbers."},
+    {"title": "❄️ Азотное Охлаждение +40% · 299 ★ · 30 дней",
+     "text": "+40% к добыче всех роботов без лишнего топлива. Складывается с Ядерным Разгоном.",
+     "title_en": "❄️ Nitrogen Cooling +40% · 299 ★ · 30 days",
+     "text_en": "+40% to every robot's output with no extra fuel. Stacks with the Nuclear Boost."},
+    {"title": "🛸 Мастер-дрон · 999 ★ · 1 год",
+     "text": "Пока дрон активен, роботы не стареют: их 30-дневная лицензия замирает.",
+     "title_en": "🛸 Master Drone · 999 ★ · 1 year",
+     "text_en": "While the drone is active, robots don't age: their 30-day license is frozen."},
+    {"title": "♾ Вечный Майнер · 999 ★",
+     "text": "Превращает бесплатного Робота Стажёра в вечного Младшего Майнера: 5 🪙 в час навсегда. Нужно 3 активных друга.",
+     "title_en": "♾ Eternal Miner · 999 ★",
+     "text_en": "Turns your free Intern Bot into an eternal Miner Bot: 5 🪙 per hour forever. Needs 3 active friends."},
+    {"title": "⚡ Безлимит · 24 ч за 5 ★ / 30 дней за 99 ★",
+     "text": "Снимает суточный лимит побед: каждая победа приносит монеты и ресурс игры без ограничений.",
+     "title_en": "⚡ Unlimited · 24h for 5 ★ / 30 days for 99 ★",
+     "text_en": "Removes the daily win limit: every win brings coins and the game's resource without caps."},
+    {"title": "💰 Паки монет · 5 000 – 100 000 🪙",
+     "text": "Монеты сразу на баланс: дуэли с большими ставками, биржа, своя команда, Шаттл. Чем больше пак, тем выгоднее курс.",
+     "title_en": "💰 Coin packs · 5,000 – 100,000 🪙",
+     "text_en": "Coins straight to your balance: high-stake duels, the market, your own team, the Shuttle. Bigger pack — better rate."},
+    {"title": "🏆 Мега-Клан · 2499 ★",
+     "text": "Расширяет команду с 50 до 1000 мест: больше бойцов в битвах и быстрее растёт станция команды.",
+     "title_en": "🏆 Mega-Clan · 2499 ★",
+     "text_en": "Expands your team from 50 to 1000 seats: more fighters in battles and a faster-growing team station."},
+]
+
+
+def shop_info(lang: str = "ru") -> list[dict[str, str]]:
+    en = lang != "ru"
+    return [{"title": i["title_en"] if en else i["title"], "text": i["text_en"] if en else i["text"]}
+            for i in SHOP_INFO]
+
+
 class CatalogError(ValueError):
     """Ошибка валидации заказа (неизвестный товар, недопустимая покупка)."""
 

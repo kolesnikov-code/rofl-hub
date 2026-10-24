@@ -14,7 +14,8 @@ from pathlib import Path
 
 from aiohttp import web
 
-from bots.main_bot.catalog import CATALOG, CatalogError, SHOP_LAYOUT, build_order, item_button, item_title
+from bots.main_bot.catalog import (CATALOG, CatalogError, SHOP_LAYOUT, build_order, item_button, item_title,
+                                   shop_info)
 from shared.analytics import notify_referrer_qualified, qualify_referral_if_due, track
 from shared.database import db
 from shared.economy import (
@@ -223,7 +224,7 @@ def build_shop_payload(lang: str) -> dict:
                 result.append({"sku": sku, "label": item_button(item, lang), "stars": item["stars"]})
         return result
 
-    return {"farm": items_of("farm"), "games": items_of("games")}
+    return {"farm": items_of("farm"), "games": items_of("games"), "info": shop_info(lang)}
 
 
 async def handle_shop(request: web.Request) -> web.Response:

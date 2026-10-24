@@ -156,6 +156,8 @@ MARKET_MAX_QTY = 100           # котлет в одном ордере
 MARKET_RESOURCE_MAX_QTY = 1000  # ресурса в одном ордере
 MARKET_MAX_OPEN_ORDERS = 8     # открытых ордеров на игрока (все товары и обе стороны вместе)
 MARKET_SHOWCASE_LIMIT = 6      # ордеров на витрине /market (по одной кнопке в ряд)
+MARKET_APP_LIST_LIMIT = 200    # лучших ордеров в приложении — листаются постранично
+MARKET_APP_SWAPS_LIMIT = 100   # предложений обмена в приложении
 MARKET_ASSETS = ("cutlet", "metal", "hydrogen", "crystal", "parts")
 MARKET_HISTORY_DAYS = 7        # график цены и индекс биржи
 
