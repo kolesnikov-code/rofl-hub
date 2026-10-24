@@ -493,6 +493,48 @@ STRINGS = {
     "ref.qualified_notify": ("🤝 <b>Il tuo amico è diventato un giocatore attivo!</b>\n"
                              "Livello {level} di intelletto e {claims} cotolette giornaliere: fatto. Hai ricevuto <b>{bonus}</b>. Invitane altri!"),
 
+    # ---------------- удаление аккаунта ----------------
+    "profile.btn_delete": "🗑 Elimina account",
+    "acct.warn": (
+        "⚠️ <b>ELIMINAZIONE DELL'ACCOUNT</b>\n"
+        "..................................................\n\n"
+        "Insieme all'account andranno persi <b>per sempre</b>:\n"
+        "• monete, cotolette, risorse e tutti i robot della fattoria;\n"
+        "• potenziamenti, rimozione dei limiti e tutto ciò che è stato acquistato con Stars — <b>le Stars non vengono rimborsate</b>;\n"
+        "• VIP ID, progressi nel quiz e nelle quest;\n"
+        "• il tuo posto nella squadra (il ruolo di capitano passa al membro più anziano).\n"
+        "Gli ordini aperti sulla borsa vengono annullati subito e la merce torna nel tuo inventario.\n\n"
+        "⏳ Prima l'account viene congelato per <b>{days} giorni</b> — puoi cambiare idea con un solo tocco. "
+        "Dopo, l'eliminazione è definitiva. Se tornerai più avanti, ripartirai da zero: il bonus iniziale non viene dato due volte.\n\n"
+        "<i>Il pulsante di eliminazione si attiva tra {seconds} secondi — leggi con attenzione.</i>"
+    ),
+    "acct.btn_keep": "✅ No, tieni il mio account",
+    "acct.btn_confirm": "🗑 Sì, elimina il mio account",
+    "acct.wait": "⏳ Attendi ancora {seconds} s — leggi cosa verrà eliminato esattamente.",
+    "acct.kept": "👍 Perfetto, l'account resta con te!",
+    "acct.scheduled": (
+        "🗑 Il tuo account è congelato e verrà eliminato il <b>{date}</b> (UTC).\n"
+        "Gli ordini sulla borsa sono annullati, la merce è tornata nel tuo inventario.\n\n"
+        "Hai cambiato idea? Tocca il pulsante qui sotto e tutto tornerà com'era."
+    ),
+    "acct.pending_notice": (
+        "⏳ Il tuo account è congelato e verrà eliminato il <b>{date}</b> (UTC).\n"
+        "Vuoi restare nel gioco? Tocca il pulsante qui sotto."
+    ),
+    "acct.btn_undo": "↩️ Annulla l'eliminazione",
+    "acct.undone": "🎉 Eliminazione annullata — l'account è di nuovo tuo!",
+    "acct.purged": "🗑 Il tuo account ROFL HUB è stato eliminato. Grazie per aver giocato! Se vorrai tornare, premi /start.",
+    "acct.deleted_notice": "L'account è stato eliminato. Premi /start per ricominciare.",
+    "acct.welcome_back": (
+        "👋 <b>Bentornato/a!</b>\n"
+        "Il tuo profilo è stato creato di nuovo da zero. Il bonus iniziale si dà una sola volta, quindi il tuo saldo è 0 🪙. "
+        "La fattoria, i giochi e il quiz ti aspettano!"
+    ),
+    "tr.err_not_active": (
+        "🔒 Potrai inviare monete dopo aver raggiunto il livello di intelligenza {level} e aver ritirato {claims} cotolette giornaliere — "
+        "è una protezione dell'ecosistema dagli account falsi."
+    ),
+
     # ---------------- переводы ----------------
     "tr.help": (
         "🔄 <b>TRASFERIMENTO DI MONETE A UN ALTRO GIOCATORE</b>\n"
@@ -938,6 +980,7 @@ MINIAPP = {
     "footer": "Giochi e quiz sono nella chat del bot",
     "noProfile": "Profilo non trovato. Apri il bot e premi /start!",
     "blocked": "Account bloccato dall'amministrazione.",
+    "deleting": "Il tuo account è in coda per l'eliminazione. Hai cambiato idea? Annulla l'eliminazione nella chat del bot.",
     "error": "Impossibile caricare i dati. Riprova più tardi.",
     "outside": "Apri questa app dal bot Telegram di ROFL HUB.",
     "robotsTitle": "🤖 I TUOI ROBOT",

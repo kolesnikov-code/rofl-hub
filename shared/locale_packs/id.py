@@ -494,6 +494,48 @@ STRINGS = {
     "ref.qualified_notify": ("🤝 <b>Temanmu menjadi pemain aktif!</b>\n"
                              "Level intelektual {level} dan {claims} kotlet harian — tercapai. Kamu dapat <b>{bonus}</b>. Undang lagi!"),
 
+    # ---------------- penghapusan akun ----------------
+    "profile.btn_delete": "🗑 Hapus akun",
+    "acct.warn": (
+        "⚠️ <b>PENGHAPUSAN AKUN</b>\n"
+        "..................................................\n\n"
+        "Bersama akun ini, hal berikut akan <b>hilang permanen</b>:\n"
+        "• koin, kotlet siber, sumber daya, dan semua robot ladang;\n"
+        "• boost, Tanpa Batas, dan semua yang dibeli dengan Stars — <b>Stars tidak dikembalikan</b>;\n"
+        "• VIP ID, progres kuis dan quest;\n"
+        "• tempatmu di tim (kapten diteruskan ke veteran tim).\n"
+        "Order terbuka di bursa langsung dibatalkan, barangnya kembali ke gudang.\n\n"
+        "⏳ Awalnya akun dibekukan selama <b>{days} hari</b> — dalam masa itu kamu bisa berubah pikiran dengan satu ketukan. "
+        "Setelah itu penghapusan tidak bisa dibatalkan. Kalau kembali nanti, kamu mulai dari nol: bonus awal tidak diberikan dua kali.\n\n"
+        "<i>Tombol hapus aktif dalam {seconds} detik — baca baik-baik.</i>"
+    ),
+    "acct.btn_keep": "✅ Tidak, pertahankan akunku",
+    "acct.btn_confirm": "🗑 Ya, hapus akunku",
+    "acct.wait": "⏳ Tunggu {seconds} dtk lagi — baca apa saja yang akan dihapus.",
+    "acct.kept": "👍 Bagus, akunmu tetap bersamamu!",
+    "acct.scheduled": (
+        "🗑 Akunmu dibekukan dan akan dihapus pada <b>{date}</b> (UTC).\n"
+        "Order di bursa dibatalkan, barangnya sudah kembali ke gudang.\n\n"
+        "Berubah pikiran? Ketuk tombol di bawah, semuanya kembali seperti semula."
+    ),
+    "acct.pending_notice": (
+        "⏳ Akunmu dibekukan dan akan dihapus pada <b>{date}</b> (UTC).\n"
+        "Ingin tetap bermain? Ketuk tombol di bawah."
+    ),
+    "acct.btn_undo": "↩️ Batalkan penghapusan",
+    "acct.undone": "🎉 Penghapusan dibatalkan — akunmu kembali milikmu!",
+    "acct.purged": "🗑 Akun ROFL HUB-mu telah dihapus. Terima kasih sudah bermain! Ingin kembali? Ketuk /start.",
+    "acct.deleted_notice": "Akun sudah dihapus. Ketuk /start untuk memulai dari awal.",
+    "acct.welcome_back": (
+        "👋 <b>Selamat datang kembali!</b>\n"
+        "Profilmu dibuat ulang dari nol. Bonus awal hanya diberikan sekali, jadi saldomu 0 🪙. "
+        "Ladang, game, dan kuis menunggumu!"
+    ),
+    "tr.err_not_active": (
+        "🔒 Kamu bisa mengirim koin setelah mencapai level intelektual {level} dan mengambil {claims} kotlet harian — "
+        "ini melindungi ekosistem dari akun palsu."
+    ),
+
     # ---------------- transfer ----------------
     "tr.help": (
         "🔄 <b>KIRIM KOIN KE PEMAIN LAIN</b>\n"
@@ -905,6 +947,7 @@ MINIAPP = {
     "footer": "Game dan kuis ada di chat bot",
     "noProfile": "Profil tidak ditemukan. Buka bot dan tekan /start!",
     "blocked": "Akun diblokir oleh admin.",
+    "deleting": "Akunmu dijadwalkan untuk dihapus. Berubah pikiran? Batalkan di chat bot.",
     "error": "Gagal memuat data. Coba lagi nanti.",
     "outside": "Buka aplikasi ini dari bot Telegram ROFL HUB.",
     "robotsTitle": "🤖 ROBOT-ROBOTMU", "buyMore": "🛒 Beli", "rateShort": "{v} 🪙/jam",

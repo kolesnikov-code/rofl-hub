@@ -132,11 +132,14 @@ async def _ctx(request: web.Request) -> Ctx | web.Response:
         return web.json_response({"error": "unauthorized"}, status=401)
     user_id = int(parsed["user"]["id"])
     async with db.pool.acquire() as conn:
-        row = await conn.fetchrow("SELECT lang, is_blocked FROM users WHERE user_id = $1", user_id)
-    if not row:
+        row = await conn.fetchrow(
+            "SELECT lang, is_blocked, deletion_requested_at, deleted_at FROM users WHERE user_id = $1", user_id)
+    if not row or row["deleted_at"] is not None:
         return web.json_response({"error": "no_profile"}, status=404)
     if row["is_blocked"]:
         return web.json_response({"error": "blocked"}, status=403)
+    if row["deletion_requested_at"] is not None:
+        return web.json_response({"error": "deleting"}, status=403)
     return Ctx(user_id, resolve_lang(row["lang"]))
 
 
@@ -291,7 +294,7 @@ async def handle_referral(request: web.Request) -> web.Response:
             """SELECT r.user_id, r.username, r.display_name, r.created_at,
                       COUNT(*) FILTER (WHERE u.qualified_at IS NOT NULL) AS qualified, COUNT(*) AS invited
                FROM users u JOIN users r ON r.user_id = u.referred_by
-               WHERE NOT r.is_blocked
+               WHERE NOT r.is_blocked AND r.deleted_at IS NULL AND r.deletion_requested_at IS NULL
                GROUP BY r.user_id HAVING COUNT(*) > 0
                ORDER BY qualified DESC, invited DESC, r.user_id ASC LIMIT $1""", REFERRAL_TOP_LIMIT)
     username = await _bot_name(request)

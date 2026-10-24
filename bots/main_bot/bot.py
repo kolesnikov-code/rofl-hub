@@ -13,6 +13,7 @@ from aiogram.types import BotCommand, ErrorEvent, MenuButtonWebApp, WebAppInfo
 
 from bots.main_bot.config import BOT_TOKEN, SHOP_TEST_MODE, SHOP_TEST_USER_IDS, WEBAPP_PORT, WEBAPP_URL
 from bots.main_bot.webapp import start_webapp_server
+from bots.main_bot.handlers.account import account_reaper_loop, router as account_router
 from bots.main_bot.handlers.clans import router as clans_router
 from bots.main_bot.handlers.duels import duel_reaper_loop, router as duels_router
 from bots.main_bot.handlers.faq import router as faq_router
@@ -52,7 +53,7 @@ dp.update.outer_middleware(ActivityMiddleware())
 for r in (start_router, payments_router, shop_router, games_router, duels_router, quests_router,
           market_router, workshop_router, raids_router, goals_router, station_router,
           farm_router, profile_router, clans_router, transfer_router, referral_router, menu_router,
-          faq_router, rules_router, rofl_hub_all_router):
+          faq_router, rules_router, account_router, rofl_hub_all_router):
     dp.include_router(r)
 
 
@@ -138,6 +139,8 @@ async def main() -> None:
 
     # Жнец дуэлей: доигрывает зависшие раунды и возвращает ставки протухших очередей
     asyncio.create_task(duel_reaper_loop(bot))
+    # Жнец удалений: через 7 дней заморозки обезличивает аккаунты, игрокам — ЛС
+    asyncio.create_task(account_reaper_loop(bot))
 
     # Mini App: веб-сервер (статика + API + Stars-инвойсы) и кнопка меню чата
     try:

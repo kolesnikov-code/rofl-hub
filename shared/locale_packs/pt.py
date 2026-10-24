@@ -494,6 +494,47 @@ STRINGS = {
                              "Nível de intelecto {level} e {claims} bifes diários — feito. Você ganhou <b>{bonus}</b>. "
                              "Convide mais!"),
 
+    "acct.warn": (
+        "⚠️ <b>EXCLUSÃO DA CONTA</b>\n"
+        "..................................................\n\n"
+        "Junto com a conta, isto será apagado <b>para sempre</b>:\n"
+        "• moedas, bifes, recursos e todos os robôs da fazenda;\n"
+        "• boosts, Sem Limite e tudo o que foi comprado com Stars — <b>as Stars não são devolvidas</b>;\n"
+        "• VIP ID, progresso no quiz e nas missões;\n"
+        "• sua vaga na equipe (a liderança passa ao veterano da equipe).\n"
+        "As ordens abertas na bolsa são canceladas na hora e os itens voltam ao estoque.\n\n"
+        "⏳ Primeiro a conta fica congelada por <b>{days} dias</b> — nesse período você pode desistir com um único botão. "
+        "Depois, a exclusão é irreversível. Se voltar mais tarde, você começa do zero e o bônus inicial não é dado uma segunda vez.\n\n"
+        "<i>O botão de exclusão funcionará em {seconds} segundos — leia com atenção.</i>"
+    ),
+    "profile.btn_delete": "🗑 Excluir conta",
+    "acct.btn_keep": "✅ Não, manter a conta",
+    "acct.btn_confirm": "🗑 Sim, excluir a conta",
+    "acct.wait": "⏳ Aguarde mais {seconds} s — leia o que exatamente será apagado.",
+    "acct.kept": "👍 Ótimo, a conta continua com você!",
+    "acct.scheduled": (
+        "🗑 A conta está congelada e será excluída em <b>{date}</b> (UTC).\n"
+        "As ordens na bolsa foram canceladas e os itens voltaram ao estoque.\n\n"
+        "Se mudar de ideia, toque no botão abaixo e tudo volta como era."
+    ),
+    "acct.pending_notice": (
+        "⏳ A conta está congelada e será excluída em <b>{date}</b> (UTC).\n"
+        "Quer continuar no jogo? Toque no botão abaixo."
+    ),
+    "acct.btn_undo": "↩️ Cancelar exclusão",
+    "acct.undone": "🎉 Exclusão cancelada — a conta voltou a ser sua!",
+    "acct.purged": "🗑 Sua conta ROFL HUB foi excluída. Obrigado por jogar! Se quiser voltar, toque em /start.",
+    "acct.deleted_notice": "A conta foi excluída. Toque em /start para recomeçar.",
+    "acct.welcome_back": (
+        "👋 <b>Bem-vindo de volta!</b>\n"
+        "Seu perfil foi criado de novo, do zero. O bônus inicial é dado uma única vez, por isso o saldo é 0 🪙. "
+        "A fazenda, os jogos e o quiz esperam por você!"
+    ),
+    "tr.err_not_active": (
+        "🔒 Você só pode enviar moedas depois do nível de inteligência {level} e de {claims} bifes diários resgatados — "
+        "assim o ecossistema fica protegido contra contas falsas."
+    ),
+
     # ---------------- transferências ----------------
     "tr.help": (
         "🔄 <b>TRANSFERÊNCIA DE MOEDAS PARA OUTRO JOGADOR</b>\n"
@@ -939,6 +980,7 @@ MINIAPP = {
     "footer": "Jogos e quiz ficam no chat do bot",
     "noProfile": "Perfil não encontrado. Abra o bot e toque em /start!",
     "blocked": "Conta bloqueada pela administração.",
+    "deleting": "Sua conta está na fila de exclusão. Mudou de ideia? Cancele no chat do bot.",
     "error": "Não foi possível carregar os dados. Tente mais tarde.",
     "outside": "Abra este aplicativo pelo bot ROFL HUB no Telegram.",
     "robotsTitle": "🤖 SEUS ROBÔS",

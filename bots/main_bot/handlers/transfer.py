@@ -16,7 +16,7 @@ from bots.main_bot.guards import feature_enabled
 from shared.database import db
 from shared.economy import TRANSFER_MIN_AMOUNT, transfer_fee
 from shared.locales import resolve_lang, t
-from shared.transfers import TransferError, transfer_coins
+from shared.transfers import TransferError, ensure_sender_active, transfer_coins
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -25,13 +25,14 @@ logger = logging.getLogger(__name__)
 async def _resolve_recipient(conn, raw: str) -> dict | None:
     """ID, @username или VIP ID с аукциона → строка users (или None)."""
     raw = raw.strip()
+    alive = " AND deleted_at IS NULL AND deletion_requested_at IS NULL"   # удалённых не видно
     if raw.startswith("@"):
         return await conn.fetchrow(
-            "SELECT user_id, username, display_name, is_blocked FROM users WHERE LOWER(username) = LOWER($1)",
-            raw[1:])
+            "SELECT user_id, username, display_name, is_blocked FROM users WHERE LOWER(username) = LOWER($1)"
+            + alive, raw[1:])
     if raw.isdigit():
         return await conn.fetchrow(
-            "SELECT user_id, username, display_name, is_blocked FROM users WHERE user_id = $1", int(raw))
+            "SELECT user_id, username, display_name, is_blocked FROM users WHERE user_id = $1" + alive, int(raw))
     # VIP ID (например ROFL-HUB-777) — равноправный айдишник для переводов
     return await conn.fetchrow(
         "SELECT u.user_id, u.username, u.display_name, u.is_blocked "
@@ -62,6 +63,11 @@ async def cmd_transfer(message: types.Message, user_lang: str = "ru"):
         sender = await conn.fetchrow("SELECT balance FROM users WHERE user_id = $1", sender_id)
         if not sender:
             await message.answer(t(user_lang, "common.no_profile"))
+            return
+        try:
+            await ensure_sender_active(conn, sender_id)
+        except TransferError as e:
+            await message.answer(e.localized(user_lang))
             return
         recipient = await _resolve_recipient(conn, parts[1])
 

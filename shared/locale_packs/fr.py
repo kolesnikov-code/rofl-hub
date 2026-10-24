@@ -495,6 +495,48 @@ STRINGS = {
                              "Niveau d'intelligence {level} et {claims} côtelettes quotidiennes : c'est fait. Tu gagnes <b>{bonus}</b>. "
                              "Invites-en d'autres !"),
 
+    # ---------------- suppression du compte ----------------
+    "profile.btn_delete": "🗑 Supprimer le compte",
+    "acct.warn": (
+        "⚠️ <b>SUPPRESSION DU COMPTE</b>\n"
+        "..................................................\n\n"
+        "Avec le compte, ces éléments disparaîtront <b>définitivement</b> :\n"
+        "• pièces, côtelettes, ressources et tous les robots de la ferme ;\n"
+        "• boosts, Illimité et tout ce qui a été acheté avec des Stars — <b>les Stars ne sont pas remboursées</b> ;\n"
+        "• VIP ID, progression du quiz et des quêtes ;\n"
+        "• ta place dans l'équipe (la capitainerie passe au vétéran de l'équipe).\n"
+        "Les ordres ouverts sur la bourse sont retirés immédiatement, les biens retournent dans ton stock.\n\n"
+        "⏳ Le compte sera d'abord gelé pendant <b>{days} jours</b> : tu peux changer d'avis d'un seul bouton. "
+        "Ensuite, la suppression est irréversible. Si tu reviens plus tard, tu repars de zéro, et le bonus de départ n'est pas accordé une seconde fois.\n\n"
+        "<i>Le bouton de suppression sera actif dans {seconds} secondes : lis bien.</i>"
+    ),
+    "acct.btn_keep": "✅ Non, garder mon compte",
+    "acct.btn_confirm": "🗑 Oui, supprimer mon compte",
+    "acct.wait": "⏳ Patiente encore {seconds} s : lis ce qui sera supprimé exactement.",
+    "acct.kept": "👍 Parfait, ton compte reste avec toi !",
+    "acct.scheduled": (
+        "🗑 Le compte est gelé et sera supprimé le <b>{date}</b> (UTC).\n"
+        "Les ordres de la bourse sont retirés, les biens sont revenus dans ton stock.\n\n"
+        "Si tu changes d'avis, appuie sur le bouton ci-dessous : tout redeviendra comme avant."
+    ),
+    "acct.pending_notice": (
+        "⏳ Le compte est gelé et sera supprimé le <b>{date}</b> (UTC).\n"
+        "Tu veux rester dans le jeu ? Appuie sur le bouton ci-dessous."
+    ),
+    "acct.btn_undo": "↩️ Annuler la suppression",
+    "acct.undone": "🎉 Suppression annulée : le compte est de nouveau à toi !",
+    "acct.purged": "🗑 Ton compte ROFL HUB a été supprimé. Merci d'avoir joué ! Si tu veux revenir, appuie sur /start.",
+    "acct.deleted_notice": "Le compte a été supprimé. Appuie sur /start pour recommencer.",
+    "acct.welcome_back": (
+        "👋 <b>Content de te revoir !</b>\n"
+        "Le profil a été recréé de zéro. Le bonus de départ n'est accordé qu'une fois, donc ton solde est de 0 🪙. "
+        "La ferme, les jeux et le quiz t'attendent !"
+    ),
+    "tr.err_not_active": (
+        "🔒 Tu peux envoyer des pièces à partir du niveau d'intelligence {level} et après {claims} côtelettes quotidiennes récupérées : "
+        "cela protège l'écosystème des faux comptes."
+    ),
+
     # ---------------- transferts ----------------
     "tr.help": (
         "🔄 <b>ENVOI DE PIÈCES À UN AUTRE JOUEUR</b>\n"
@@ -940,6 +982,7 @@ MINIAPP = {
     "footer": "Les jeux et le quiz sont dans le chat du bot",
     "noProfile": "Profil introuvable. Ouvre le bot et appuie sur /start !",
     "blocked": "Compte bloqué par l'administration.",
+    "deleting": "Ton compte est en cours de suppression. Tu as changé d'avis ? Annule la suppression dans le chat du bot.",
     "error": "Impossible de charger les données. Réessaie plus tard.",
     "outside": "Ouvre cette application depuis le bot Telegram ROFL HUB.",
     "robotsTitle": "🤖 TES ROBOTS",

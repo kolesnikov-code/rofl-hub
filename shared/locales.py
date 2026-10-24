@@ -518,6 +518,48 @@ RU: dict[str, str] = {
         "{level} уровень интеллекта и {claims} ежедневные котлеты — есть. Тебе начислено <b>{bonus}</b>. Зови ещё!"
     ),
 
+    # ---------------- удаление аккаунта ----------------
+    "profile.btn_delete": "🗑 Удалить аккаунт",
+    "acct.warn": (
+        "⚠️ <b>УДАЛЕНИЕ АККАУНТА</b>\n"
+        "..................................................\n\n"
+        "Вместе с аккаунтом <b>безвозвратно</b> исчезнут:\n"
+        "• монеты, котлеты, ресурсы и все роботы фермы;\n"
+        "• бусты, Безлимит и всё купленное за Stars — <b>Stars не возвращаются</b>;\n"
+        "• VIP ID, прогресс викторины и квестов;\n"
+        "• место в команде (капитанство перейдёт ветерану команды).\n"
+        "Открытые ордера на бирже снимутся сразу, товар вернётся на склад.\n\n"
+        "⏳ Сначала аккаунт заморозится на <b>{days} дней</b> — за это время можно передумать одной кнопкой. "
+        "Потом удаление необратимо. Если вернёшься позже — начнёшь с нуля, стартовый бонус второй раз не выдаётся.\n\n"
+        "<i>Кнопка удаления сработает через {seconds} секунд — прочитай внимательно.</i>"
+    ),
+    "acct.btn_keep": "✅ Нет, оставить аккаунт",
+    "acct.btn_confirm": "🗑 Да, удалить аккаунт",
+    "acct.wait": "⏳ Подожди ещё {seconds} с — прочитай, что именно удалится.",
+    "acct.kept": "👍 Отлично, аккаунт остаётся с тобой!",
+    "acct.scheduled": (
+        "🗑 Аккаунт заморожен и будет удалён <b>{date}</b> (UTC).\n"
+        "Ордера на бирже сняты, товар вернулся на склад.\n\n"
+        "Передумаешь — нажми кнопку ниже, всё вернётся как было."
+    ),
+    "acct.pending_notice": (
+        "⏳ Аккаунт заморожен и будет удалён <b>{date}</b> (UTC).\n"
+        "Хочешь остаться в игре? Нажми кнопку ниже."
+    ),
+    "acct.btn_undo": "↩️ Отменить удаление",
+    "acct.undone": "🎉 Удаление отменено — аккаунт снова твой!",
+    "acct.purged": "🗑 Твой аккаунт ROFL HUB удалён. Спасибо за игру! Захочешь вернуться — нажми /start.",
+    "acct.deleted_notice": "Аккаунт удалён. Нажми /start, чтобы начать заново.",
+    "acct.welcome_back": (
+        "👋 <b>С возвращением!</b>\n"
+        "Профиль создан заново, с нуля. Стартовый бонус выдаётся один раз, поэтому баланс — 0 🪙. "
+        "Ферма, игры и викторина ждут!"
+    ),
+    "tr.err_not_active": (
+        "🔒 Отправлять монеты можно после {level} уровня интеллекта и {claims} ежедневных котлет — "
+        "так экосистема защищена от фейковых аккаунтов."
+    ),
+
     # ---------------- переводы ----------------
     "tr.help": (
         "🔄 <b>ПЕРЕВОД МОНЕТ ДРУГОМУ ИГРОКУ</b>\n"
@@ -1353,6 +1395,48 @@ EN: dict[str, str] = {
     "ref.qualified_notify": (
         "🤝 <b>Your friend is now an active player!</b>\n"
         "Intellect level {level} and {claims} daily cutlets — done. You've earned <b>{bonus}</b>. Invite more!"
+    ),
+
+    # ---------------- account deletion ----------------
+    "profile.btn_delete": "🗑 Delete account",
+    "acct.warn": (
+        "⚠️ <b>ACCOUNT DELETION</b>\n"
+        "..................................................\n\n"
+        "Together with the account, these will be gone <b>for good</b>:\n"
+        "• coins, cutlets, resources and every farm robot;\n"
+        "• boosts, Unlimited and everything bought with Stars — <b>Stars are not refunded</b>;\n"
+        "• VIP ID, quiz and quest progress;\n"
+        "• your team spot (captaincy passes to the team veteran).\n"
+        "Open market orders are cancelled right away, the goods return to your storage.\n\n"
+        "⏳ First the account is frozen for <b>{days} days</b> — you can change your mind with one tap. "
+        "After that, deletion is final. If you come back later, you start from scratch: the starting bonus is not given twice.\n\n"
+        "<i>The delete button works in {seconds} seconds — read carefully.</i>"
+    ),
+    "acct.btn_keep": "✅ No, keep my account",
+    "acct.btn_confirm": "🗑 Yes, delete my account",
+    "acct.wait": "⏳ Wait {seconds} more s — read what exactly will be deleted.",
+    "acct.kept": "👍 Great, your account stays with you!",
+    "acct.scheduled": (
+        "🗑 Your account is frozen and will be deleted on <b>{date}</b> (UTC).\n"
+        "Market orders are cancelled, the goods are back in your storage.\n\n"
+        "Changed your mind? Tap the button below and everything is back as it was."
+    ),
+    "acct.pending_notice": (
+        "⏳ Your account is frozen and will be deleted on <b>{date}</b> (UTC).\n"
+        "Want to stay in the game? Tap the button below."
+    ),
+    "acct.btn_undo": "↩️ Cancel deletion",
+    "acct.undone": "🎉 Deletion cancelled — the account is yours again!",
+    "acct.purged": "🗑 Your ROFL HUB account has been deleted. Thanks for playing! Want to come back? Tap /start.",
+    "acct.deleted_notice": "This account has been deleted. Tap /start to begin again.",
+    "acct.welcome_back": (
+        "👋 <b>Welcome back!</b>\n"
+        "Your profile was created again from scratch. The starting bonus is given only once, so your balance is 0 🪙. "
+        "The farm, games and quiz are waiting!"
+    ),
+    "tr.err_not_active": (
+        "🔒 You can send coins after reaching intellect level {level} and claiming {claims} daily cutlets — "
+        "this protects the ecosystem from fake accounts."
     ),
 
     # ---------------- transfers ----------------

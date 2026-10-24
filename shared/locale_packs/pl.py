@@ -493,6 +493,48 @@ STRINGS: dict[str, str] = {
     "ref.qualified_notify": ("🤝 <b>Twój znajomy został aktywnym graczem!</b>\n"
                              "{level}. poziom intelektu i {claims} codzienne kotlety — są. Dostajesz <b>{bonus}</b>. Zapraszaj dalej!"),
 
+    # ---------------- usuwanie konta ----------------
+    "profile.btn_delete": "🗑 Usuń konto",
+    "acct.warn": (
+        "⚠️ <b>USUWANIE KONTA</b>\n"
+        "..................................................\n\n"
+        "Razem z kontem <b>bezpowrotnie</b> znikną:\n"
+        "• monety, kotlety, zasoby i wszystkie roboty farmy;\n"
+        "• boosty, Bezlimit i wszystko kupione za Stars — <b>Stars nie podlegają zwrotowi</b>;\n"
+        "• VIP ID, postępy w quizie i questach;\n"
+        "• miejsce w drużynie (kapitanat przejmie weteran drużyny).\n"
+        "Otwarte zlecenia na giełdzie zostaną zdjęte od razu, towar wróci do magazynu.\n\n"
+        "⏳ Najpierw konto zostanie zamrożone na <b>{days} dni</b> — w tym czasie możesz się rozmyślić jednym przyciskiem. "
+        "Potem usunięcie jest nieodwracalne. Jeśli wrócisz później, zaczniesz od zera — bonus startowy nie jest przyznawany drugi raz.\n\n"
+        "<i>Przycisk usuwania zadziała za {seconds} s — przeczytaj uważnie.</i>"
+    ),
+    "acct.btn_keep": "✅ Nie, zostaw konto",
+    "acct.btn_confirm": "🗑 Tak, usuń konto",
+    "acct.wait": "⏳ Poczekaj jeszcze {seconds} s — przeczytaj, co dokładnie zostanie usunięte.",
+    "acct.kept": "👍 Świetnie, konto zostaje z tobą!",
+    "acct.scheduled": (
+        "🗑 Konto zostało zamrożone i zostanie usunięte <b>{date}</b> (UTC).\n"
+        "Zlecenia na giełdzie zdjęto, towar wrócił do magazynu.\n\n"
+        "Jeśli się rozmyślisz, naciśnij przycisk poniżej — wszystko wróci do poprzedniego stanu."
+    ),
+    "acct.pending_notice": (
+        "⏳ Konto jest zamrożone i zostanie usunięte <b>{date}</b> (UTC).\n"
+        "Chcesz zostać w grze? Naciśnij przycisk poniżej."
+    ),
+    "acct.btn_undo": "↩️ Anuluj usunięcie",
+    "acct.undone": "🎉 Usunięcie anulowane — konto znów jest twoje!",
+    "acct.purged": "🗑 Twoje konto ROFL HUB zostało usunięte. Dzięki za grę! Jeśli zechcesz wrócić, naciśnij /start.",
+    "acct.deleted_notice": "Konto zostało usunięte. Naciśnij /start, aby zacząć od nowa.",
+    "acct.welcome_back": (
+        "👋 <b>Witaj z powrotem!</b>\n"
+        "Profil utworzono od nowa, od zera. Bonus startowy przyznawany jest tylko raz, więc saldo wynosi 0 🪙. "
+        "Farma, gry i quiz czekają!"
+    ),
+    "tr.err_not_active": (
+        "🔒 Przelewy monet są dostępne po osiągnięciu {level}. poziomu intelektu i odebraniu {claims} codziennych kotletów — "
+        "dzięki temu ekosystem jest chroniony przed fałszywymi kontami."
+    ),
+
     # ---------------- переводы ----------------
     "tr.help": (
         "🔄 <b>PRZELEW MONET DO INNEGO GRACZA</b>\n"
@@ -955,6 +997,7 @@ MINIAPP: dict[str, str] = {
     "footer": "Gry i quiz — w czacie bota",
     "noProfile": "Nie znaleziono profilu. Otwórz bota i naciśnij /start!",
     "blocked": "Konto zablokowane przez administrację.",
+    "deleting": "Twoje konto czeka na usunięcie. Rozmyśliłeś(-aś) się? Anuluj usunięcie w czacie bota.",
     "error": "Nie udało się załadować danych. Spróbuj później.",
     "outside": "Otwórz tę aplikację z Telegram-bota ROFL HUB.",
     "robotsTitle": "🤖 TWOJE ROBOTY",

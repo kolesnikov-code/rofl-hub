@@ -16,6 +16,7 @@ from bots.main_bot.handlers.menu import get_reply_main_keyboard
 from shared import analytics
 from shared.analytics import track
 from shared.auction_logic import compute_bid
+from shared.account_deletion import restore_account
 from shared.database import db
 from shared.economy import START_BALANCE, START_CUTLETS_INVENTORY
 from shared.ledger import change_balance
@@ -128,9 +129,15 @@ async def cmd_start(message: types.Message, state: FSMContext):
     referrer_id, auction_id, raw_arg = parse_start_args(message.text, user_id)
     source = analytics.parse_source(raw_arg, referrer_id)
 
+    returned = False
     async with db.pool.acquire() as conn:
-        user = await conn.fetchrow("SELECT lang FROM users WHERE user_id = $1", user_id)
-        if user:
+        user = await conn.fetchrow("SELECT lang, deleted_at FROM users WHERE user_id = $1", user_id)
+        if user and user["deleted_at"] is not None:
+            # Вернулся после удаления: старт с нуля, бонусы новичка не повторяются
+            async with conn.transaction():
+                returned = await restore_account(conn, user_id, message.from_user.username or f"user_{user_id}",
+                                                 message.from_user.full_name)
+        elif user:
             await conn.execute(
                 "UPDATE users SET last_seen_at = NOW(), username = $2, display_name = $3 WHERE user_id = $1",
                 user_id, message.from_user.username or f"user_{user_id}",
@@ -148,6 +155,10 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     lang = resolve_lang(user["lang"])
     await state.clear()
+    if returned:
+        await message.answer(t(lang, "acct.welcome_back"),
+                             reply_markup=get_reply_main_keyboard(lang), parse_mode="HTML")
+        return
     if auction_id:
         await trigger_inline_auction_window(message, auction_id)
         return

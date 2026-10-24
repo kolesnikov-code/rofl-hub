@@ -102,7 +102,8 @@ async def find_targets(conn, attacker_id: int, attacker_team: int | None, now: d
         """
         SELECT u.user_id, u.display_name, u.created_at, SUM(r.qty) AS total
         FROM users u JOIN user_resources r ON r.user_id = u.user_id
-        WHERE u.user_id <> $1 AND NOT u.is_blocked
+        WHERE u.user_id <> $1 AND NOT u.is_blocked AND u.deletion_requested_at IS NULL
+          AND u.deleted_at IS NULL
           AND ($2::int IS NULL OR u.team_id IS DISTINCT FROM $2::int)
           AND u.last_seen_at > $3::timestamptz - make_interval(days => $4::int)
           AND u.created_at < $3::timestamptz - make_interval(days => $5::int)

@@ -1,6 +1,8 @@
 """
 Middleware главного бота (Блок 4):
 - заблокированные игроки (users.is_blocked) не получают ответов бота;
+- аккаунт в очереди на удаление ЗАМОРОЖЕН: на любой апдейт — напоминание и кнопка отмены;
+  удалённый (обезличенный) — только /start, он заводит профиль заново без бонусов;
 - last_seen_at обновляется на ЛЮБОЕ действие (для честного DAU в админ-отчёте),
   с троттлингом записи раз в 5 минут на игрока, чтобы не грузить базу.
 
@@ -24,6 +26,16 @@ logger = logging.getLogger(__name__)
 
 LAST_SEEN_WRITE_INTERVAL = 300   # секунд между записями last_seen_at одного игрока
 BLOCK_NOTICE_INTERVAL = 300      # как часто напоминать заблокированному о блокировке
+
+
+def _is_callback(event: TelegramObject, data: str) -> bool:
+    callback = getattr(event, "callback_query", None)
+    return isinstance(callback, CallbackQuery) and callback.data == data
+
+
+def _is_start(event: TelegramObject) -> bool:
+    message = getattr(event, "message", None)
+    return isinstance(message, Message) and (message.text or "").startswith("/start")
 
 
 class ActivityMiddleware(BaseMiddleware):
@@ -60,13 +72,21 @@ class ActivityMiddleware(BaseMiddleware):
 
         try:
             row = await db.pool.fetchrow(
-                "SELECT is_blocked, lang FROM users WHERE user_id = $1", user.id)
+                "SELECT is_blocked, lang, deletion_requested_at, deleted_at FROM users WHERE user_id = $1",
+                user.id)
             if row:
                 data["user_lang"] = resolve_lang(row["lang"])
 
             if row and row["is_blocked"]:
                 await self._notify_blocked(event, user.id, now, data["user_lang"])
                 return None  # апдейт не доходит до обработчиков
+
+            if row and row["deletion_requested_at"] is not None and not _is_callback(event, "acct_undo"):
+                await self._notify_pending_deletion(event, data["user_lang"], row["deletion_requested_at"])
+                return None
+            if row and row["deleted_at"] is not None and not _is_start(event):
+                await self._reply_to_event(event, t(data["user_lang"], "acct.deleted_notice"))
+                return None
 
             if row and now - self._last_seen_written.get(user.id, 0.0) >= LAST_SEEN_WRITE_INTERVAL:
                 self._last_seen_written[user.id] = now
@@ -89,6 +109,23 @@ class ActivityMiddleware(BaseMiddleware):
                 await update.callback_query.answer(text, show_alert=True)
             elif isinstance(getattr(update, "message", None), Message):
                 await update.message.answer(text)
+        except Exception:
+            pass
+
+    @staticmethod
+    async def _notify_pending_deletion(event: TelegramObject, lang: str, requested_at) -> None:
+        """Напоминание о заморозке с кнопкой «Отменить удаление». Сбои глотает."""
+        from bots.main_bot.handlers.account import pending_notice, undo_keyboard
+        try:
+            text = await pending_notice(lang, requested_at)
+            callback = getattr(event, "callback_query", None)
+            message = getattr(event, "message", None)
+            if isinstance(callback, CallbackQuery):
+                await callback.answer()
+                if callback.message:
+                    await callback.message.answer(text, reply_markup=undo_keyboard(lang), parse_mode="HTML")
+            elif isinstance(message, Message):
+                await message.answer(text, reply_markup=undo_keyboard(lang), parse_mode="HTML")
         except Exception:
             pass
 

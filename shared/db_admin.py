@@ -44,6 +44,8 @@ async def collect_daily_report(conn) -> dict:
             (SELECT COUNT(*) FROM users WHERE last_seen_at >= NOW() - INTERVAL '24 hours')      AS dau,
             (SELECT COUNT(*) FROM users WHERE created_at   >= NOW() - INTERVAL '24 hours')      AS new_users_24h,
             (SELECT COUNT(*) FROM users WHERE is_blocked)                                       AS blocked_users,
+            (SELECT COUNT(*) FROM users WHERE deletion_requested_at IS NOT NULL)                AS deletion_pending,
+            (SELECT COUNT(*) FROM users WHERE deleted_at >= NOW() - INTERVAL '24 hours')        AS deleted_24h,
             (SELECT COALESCE(SUM(balance), 0) FROM users)                                       AS coins_mass,
             (SELECT COUNT(*) FROM teams)                                                        AS teams_count,
             (SELECT COUNT(*) FROM miners WHERE expires_at > NOW())                              AS active_miners,
@@ -123,6 +125,7 @@ def format_daily_report(r: dict) -> str:
         f"👥 Игроков всего: <b>{r['total_users']}</b> (заблокировано: {r['blocked_users']})\n"
         f"🔥 DAU (актив за 24ч): <b>{r['dau']}</b>\n"
         f"🆕 Новых регистраций за 24ч: <b>{r['new_users_24h']}</b>\n"
+        f"🗑 Удалили аккаунт за 24ч: <b>{r.get('deleted_24h', 0)}</b> (в очереди: {r.get('deletion_pending', 0)})\n"
         f"🏆 Команд и кланов: <b>{r['teams_count']}</b>\n"
         f"🤖 Живых роботов на фермах: <b>{r['active_miners']}</b>\n\n"
         f"💵 <b>ПРОДАЖИ:</b>\n"

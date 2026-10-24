@@ -495,6 +495,48 @@ STRINGS = {
     "ref.qualified_notify": ("🤝 <b>Dein Freund ist jetzt ein aktiver Spieler!</b>\n"
                              "Intelligenz-Level {level} und {claims} tägliche Frikadellen – geschafft. Du hast <b>{bonus}</b> erhalten. Lade noch mehr ein!"),
 
+    # ---------------- Account löschen ----------------
+    "profile.btn_delete": "🗑 Account löschen",
+    "acct.warn": (
+        "⚠️ <b>ACCOUNT LÖSCHEN</b>\n"
+        "..................................................\n\n"
+        "Zusammen mit dem Account verschwinden <b>unwiderruflich</b>:\n"
+        "• Münzen, Frikadellen, Ressourcen und alle Farm-Roboter;\n"
+        "• Boosts, Limit-Aufhebung und alles, was du mit Stars gekauft hast — <b>Stars werden nicht erstattet</b>;\n"
+        "• VIP ID, Quiz- und Quest-Fortschritt;\n"
+        "• dein Platz im Team (die Kapitänsrolle geht an den dienstältesten Spieler des Teams).\n"
+        "Offene Börsen-Orders werden sofort storniert, die Ware kommt zurück ins Lager.\n\n"
+        "⏳ Zuerst wird der Account für <b>{days} Tage</b> eingefroren — in dieser Zeit kannst du es dir per Knopfdruck anders überlegen. "
+        "Danach ist die Löschung endgültig. Kommst du später zurück, startest du bei null: Den Startbonus gibt es kein zweites Mal.\n\n"
+        "<i>Der Löschen-Button wird in {seconds} Sekunden aktiv — lies alles sorgfältig.</i>"
+    ),
+    "acct.btn_keep": "✅ Nein, Account behalten",
+    "acct.btn_confirm": "🗑 Ja, Account löschen",
+    "acct.wait": "⏳ Warte noch {seconds} s — lies genau, was gelöscht wird.",
+    "acct.kept": "👍 Super, dein Account bleibt bei dir!",
+    "acct.scheduled": (
+        "🗑 Dein Account ist eingefroren und wird am <b>{date}</b> (UTC) gelöscht.\n"
+        "Die Börsen-Orders sind storniert, die Ware liegt wieder im Lager.\n\n"
+        "Doch umentschieden? Tippe auf den Button unten, dann ist alles wieder wie vorher."
+    ),
+    "acct.pending_notice": (
+        "⏳ Dein Account ist eingefroren und wird am <b>{date}</b> (UTC) gelöscht.\n"
+        "Du willst im Spiel bleiben? Tippe auf den Button unten."
+    ),
+    "acct.btn_undo": "↩️ Löschung abbrechen",
+    "acct.undone": "🎉 Löschung abgebrochen — der Account gehört wieder dir!",
+    "acct.purged": "🗑 Dein ROFL HUB-Account wurde gelöscht. Danke fürs Spielen! Willst du zurückkommen? Tippe /start.",
+    "acct.deleted_notice": "Der Account wurde gelöscht. Tippe /start, um neu zu beginnen.",
+    "acct.welcome_back": (
+        "👋 <b>Willkommen zurück!</b>\n"
+        "Dein Profil wurde komplett neu angelegt. Den Startbonus gibt es nur einmal, daher liegt dein Kontostand bei 0 🪙. "
+        "Farm, Spiele und Quiz warten auf dich!"
+    ),
+    "tr.err_not_active": (
+        "🔒 Münzen senden kannst du, sobald du Intelligenz-Level {level} erreicht und {claims} tägliche Frikadellen abgeholt hast — "
+        "so schützen wir das Ökosystem vor Fake-Accounts."
+    ),
+
     # ---------------- Überweisungen ----------------
     "tr.help": (
         "🔄 <b>MÜNZEN AN ANDERE SPIELER SENDEN</b>\n"
@@ -906,6 +948,7 @@ MINIAPP = {
     "footer": "Spiele und Quiz gibt's im Bot-Chat",
     "noProfile": "Profil nicht gefunden. Öffne den Bot und tippe /start!",
     "blocked": "Account von der Administration gesperrt.",
+    "deleting": "Dein Account steht zur Löschung an. Doch umentschieden? Brich die Löschung im Bot-Chat ab.",
     "error": "Daten konnten nicht geladen werden. Versuch es später noch mal.",
     "outside": "Öffne diese App über den Telegram-Bot von ROFL HUB.",
     "robotsTitle": "🤖 DEINE ROBOTER", "buyMore": "🛒 Kaufen", "rateShort": "{v} 🪙/Std.",

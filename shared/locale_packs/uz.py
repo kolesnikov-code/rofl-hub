@@ -495,6 +495,48 @@ STRINGS: dict[str, str] = {
                              "{level}-intellekt darajasi va {claims} ta kundalik kotlet — bajarildi. Senga <b>{bonus}</b> yozildi. "
                              "Yana chaqir!"),
 
+    # ---------------- akkauntni o'chirish ----------------
+    "profile.btn_delete": "🗑 Akkauntni o'chirish",
+    "acct.warn": (
+        "⚠️ <b>AKKAUNTNI O'CHIRISH</b>\n"
+        "..................................................\n\n"
+        "Akkaunt bilan birga <b>butunlay va qaytarib bo'lmas holda</b> yo'qoladi:\n"
+        "• tangalar, kotletlar, resurslar va fermadagi barcha robotlar;\n"
+        "• buster'lar, Cheksiz rejim va Stars evaziga olingan hamma narsa — <b>Stars qaytarilmaydi</b>;\n"
+        "• VIP ID, viktorina va kvestlar bo'yicha progress;\n"
+        "• jamoadagi o'ring (kapitanlik jamoaning eng qadimgi a'zosiga o'tadi).\n"
+        "Birjadagi ochiq orderlar darhol bekor qilinadi, tovar omborga qaytadi.\n\n"
+        "⏳ Avval akkaunt <b>{days} kunga</b> muzlatiladi — shu vaqt ichida bir tugma bilan fikringdan qaytsang bo'ladi. "
+        "Keyin o'chirish qaytarib bo'lmaydi. Keyinroq qaytsang, noldan boshlaysan: boshlang'ich bonus ikkinchi marta berilmaydi.\n\n"
+        "<i>O'chirish tugmasi {seconds} soniyadan keyin ishlaydi — diqqat bilan o'qi.</i>"
+    ),
+    "acct.btn_keep": "✅ Yo'q, akkauntni saqlab qolaman",
+    "acct.btn_confirm": "🗑 Ha, akkauntni o'chirish",
+    "acct.wait": "⏳ Yana {seconds} soniya kut — aynan nima o'chirilishini o'qi.",
+    "acct.kept": "👍 Ajoyib, akkaunting o'zingda qoladi!",
+    "acct.scheduled": (
+        "🗑 Akkaunting muzlatildi va <b>{date}</b> (UTC) kuni o'chiriladi.\n"
+        "Birjadagi orderlar bekor qilindi, tovar omborga qaytdi.\n\n"
+        "Fikringdan qaytsang — pastdagi tugmani bos, hammasi avvalgidek bo'ladi."
+    ),
+    "acct.pending_notice": (
+        "⏳ Akkaunting muzlatilgan va <b>{date}</b> (UTC) kuni o'chiriladi.\n"
+        "O'yinda qolmoqchimisan? Pastdagi tugmani bos."
+    ),
+    "acct.btn_undo": "↩️ O'chirishni bekor qilish",
+    "acct.undone": "🎉 O'chirish bekor qilindi — akkaunt yana sening qo'lingda!",
+    "acct.purged": "🗑 ROFL HUB akkaunting o'chirildi. O'yining uchun rahmat! Qaytmoqchi bo'lsang — /start ni bos.",
+    "acct.deleted_notice": "Akkaunt o'chirilgan. Qaytadan boshlash uchun /start ni bos.",
+    "acct.welcome_back": (
+        "👋 <b>Qaytganing bilan!</b>\n"
+        "Profil noldan qayta yaratildi. Boshlang'ich bonus bir marta beriladi, shuning uchun balans — 0 🪙. "
+        "Ferma, o'yinlar va viktorina seni kutmoqda!"
+    ),
+    "tr.err_not_active": (
+        "🔒 Tanga yuborish {level}-intellekt darajasi va {claims} ta kundalik kotletdan keyin ochiladi — "
+        "shu tarzda ekotizim soxta akkauntlardan himoyalangan."
+    ),
+
     # ---------------- переводы ----------------
     "tr.help": (
         "🔄 <b>BOSHQA O'YINCHIGA TANGA O'TKAZISH</b>\n"
@@ -906,6 +948,7 @@ MINIAPP: dict[str, str] = {
     "footer": "O'yinlar va viktorina — bot chatida",
     "noProfile": "Profil topilmadi. Botni ochib, /start ni bos!",
     "blocked": "Akkaunt ma'muriyat tomonidan bloklangan.",
+    "deleting": "Akkaunting o'chirish navbatida. Fikringdan qaytdingmi? O'chirishni bot chatida bekor qil.",
     "error": "Ma'lumotlarni yuklab bo'lmadi. Keyinroq urinib ko'r.",
     "outside": "Bu ilovani ROFL HUB Telegram-botidan och.",
     "robotsTitle": "🤖 SENING ROBOTLARING", "buyMore": "🛒 Sotib olish", "rateShort": "{v} 🪙/soat",

@@ -317,9 +317,18 @@ async def test_captain_succession_goes_to_earliest_joined(conn):
     assert next_captain == 51  # старшинство вступления, а не активность
 
 
+async def _make_active(conn, user_id: int):
+    """Активный аккаунт: 3 уровень интеллекта + 3 ежедневные котлеты (право отправлять монеты)."""
+    await conn.execute("UPDATE users SET bonus_claims = 3 WHERE user_id = $1", user_id)
+    await conn.execute(
+        "INSERT INTO game_stats (user_id, quiz_level) VALUES ($1, 3) "
+        "ON CONFLICT (user_id) DO UPDATE SET quiz_level = 3", user_id)
+
+
 async def test_transfer_moves_coins_and_writes_ledger(conn):
     from shared.transfers import transfer_coins
     await _mk_user(conn, 60, 1000)
+    await _make_active(conn, 60)
     await _mk_user(conn, 61, 0)
 
     async with conn.transaction():
@@ -335,6 +344,7 @@ async def test_transfer_moves_coins_and_writes_ledger(conn):
 async def test_transfer_rejects_bad_cases(conn):
     from shared.transfers import TransferError, transfer_coins
     await _mk_user(conn, 62, 100)
+    await _make_active(conn, 62)
     await _mk_user(conn, 63, 0, is_blocked=True)
 
     for sender, recipient, amount in [(62, 62, 50), (62, 999, 50), (62, 63, 50), (62, 63, 5)]:
@@ -524,6 +534,7 @@ async def test_battle_prize_delivery_to_every_member_is_idempotent(conn):
 async def test_transfer_by_vip_alias(conn):
     from shared.transfers import transfer_coins
     await _mk_user(conn, 120, 500)
+    await _make_active(conn, 120)
     await _mk_user(conn, 121, 0)
     await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ('ROFL-HUB-777', 121)")
 
@@ -1320,3 +1331,113 @@ async def test_intern_rebalance_migration_takes_back_extra_interns(conn):
     pending = "SELECT interns_pending FROM users WHERE user_id = $1"
     assert (await conn.fetchval(count, 950), await conn.fetchval(pending, 950)) == (1, 0)
     assert (await conn.fetchval(count, 951), await conn.fetchval(pending, 951)) == (1, 1)
+
+
+# ============================================================================
+# Переводы только с активных аккаунтов; удаление аккаунта (26.10)
+# ============================================================================
+async def test_transfer_needs_an_active_sender_and_a_live_recipient(conn):
+    from shared.transfers import TransferError, transfer_coins
+    await _mk_user(conn, 960, 5000, bonus_claims=3)           # котлеты есть, интеллекта нет
+    await _mk_user(conn, 961, 0)
+    with pytest.raises(TransferError) as e:
+        async with conn.transaction():
+            await transfer_coins(conn, 960, 961, 100)
+    assert e.value.key == "tr.err_not_active"
+    await _make_active(conn, 960)
+    await conn.execute("UPDATE users SET deletion_requested_at = NOW() WHERE user_id = 961")
+    with pytest.raises(TransferError) as e:
+        async with conn.transaction():
+            await transfer_coins(conn, 960, 961, 100)
+    assert e.value.key == "tr.not_found"                       # замороженному не перевести
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 960") == 5000
+
+
+async def test_account_deletion_full_cycle(conn):
+    """Заявка → заморозка (ордера сняты) → обезличивание через 7 дней → возврат без бонусов."""
+    from datetime import timedelta
+    from bots.main_bot.handlers.start import register_user
+    from shared.account_deletion import (cancel_deletion, due_for_purge, purge_account,
+                                         request_deletion, restore_account)
+    from shared.economy import ACCOUNT_DELETE_GRACE_DAYS, utcnow
+    from shared.market import place_sell_order
+    from shared.resources import get_resources, grant_bundle
+    now = utcnow()
+    await _mk_user(conn, 970, 777, inv_cutlets=5, display_name="Тестовый Игрок", referred_by=None)
+    await _mk_user(conn, 971, 0)
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (970, 4)")
+    await grant_bundle(conn, 970, {"metal": 30, "crystal": 7}, "test")
+    await conn.execute("INSERT INTO miners (user_id, kind, expires_at) VALUES (970, 'intern', $1)",
+                       now + timedelta(days=36500))
+    await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ('ROFL-HUB-DEL', 970)")
+    team_id = await conn.fetchval(
+        "INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Del', 970, 2) RETURNING team_id")
+    await conn.execute("UPDATE users SET team_id = $1, team_joined_at = $2 WHERE user_id = 970", team_id, now)
+    await conn.execute("UPDATE users SET team_id = $1, team_joined_at = $2 WHERE user_id = 971",
+                       team_id, now + timedelta(minutes=1))
+    await place_sell_order(conn, 970, 3, 250)
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 970") == 2
+
+    # Передумать можно
+    async with conn.transaction():
+        await request_deletion(conn, 970, now)
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 970") == 5   # ордер снят
+    assert await cancel_deletion(conn, 970) is True
+    assert await cancel_deletion(conn, 970) is False
+
+    # Заявка всерьёз: до срока не удаляется, после — обезличивается
+    async with conn.transaction():
+        due = await request_deletion(conn, 970, now)
+    assert due == now + timedelta(days=ACCOUNT_DELETE_GRACE_DAYS)
+    assert await purge_account(conn, 970, now + timedelta(days=1)) is False
+    later = now + timedelta(days=ACCOUNT_DELETE_GRACE_DAYS, minutes=1)
+    assert await due_for_purge(conn, later) == [970]
+    async with conn.transaction():
+        assert await purge_account(conn, 970, later) is True
+    u = await conn.fetchrow("SELECT * FROM users WHERE user_id = 970")
+    assert (u["username"], u["display_name"], u["balance"], u["inv_cutlets"], u["team_id"]) == \
+        (None, None, 0, 0, None)
+    assert u["deleted_at"] == later and u["deletion_requested_at"] is None
+    assert set((await get_resources(conn, 970)).values()) <= {0}
+    for table in ("miners", "vip_aliases", "game_stats"):
+        assert await conn.fetchval(f"SELECT COUNT(*) FROM {table} WHERE user_id = 970") == 0
+    team = await conn.fetchrow("SELECT captain_id, members_count FROM teams WHERE team_id = $1", team_id)
+    assert (team["captain_id"], team["members_count"]) == (971, 1)        # корона — ветерану
+    assert await conn.fetchval(
+        "SELECT SUM(delta) FROM ledger WHERE user_id = 970 AND reason = 'account_deleted'") == -777
+
+    # Возврат: профиль с нуля, без стартового бонуса
+    assert await register_user(conn, 970, "back", "ru", referrer_id=None) is False
+    async with conn.transaction():
+        assert await restore_account(conn, 970, "back", "Снова Я") is True
+    u = await conn.fetchrow("SELECT balance, deleted_at, username FROM users WHERE user_id = 970")
+    assert (u["balance"], u["deleted_at"], u["username"]) == (0, None, "back")
+    assert await conn.fetchval("SELECT COUNT(*) FROM ledger WHERE user_id = 970 AND reason = 'signup_bonus'") == 0
+
+
+async def test_account_purge_waits_for_an_auction_leader(conn):
+    from datetime import timedelta
+    from shared.account_deletion import purge_account, request_deletion
+    from shared.economy import utcnow
+    now = utcnow()
+    await _mk_user(conn, 980, 100)
+    await conn.execute("INSERT INTO auctions (item_title, highest_bidder_id) VALUES ('VIP', 980)")
+    async with conn.transaction():
+        await request_deletion(conn, 980, now)
+    later = now + timedelta(days=30)
+    assert await purge_account(conn, 980, later) is False                 # ставка-эскроу лидера
+    await conn.execute("UPDATE auctions SET status = 'closed'")
+    assert await purge_account(conn, 980, later) is True
+
+
+async def test_leave_team_disbands_a_lonely_captain(conn):
+    from shared.db_clans import leave_team
+    await _mk_user(conn, 990, 0)
+    team_id = await conn.fetchval(
+        "INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Solo', 990, 1) RETURNING team_id")
+    await conn.execute("UPDATE users SET team_id = $1 WHERE user_id = 990", team_id)
+    assert await leave_team(conn, 990, team_id + 1) is None               # чужая/устаревшая кнопка
+    left = await leave_team(conn, 990, team_id)
+    assert left["outcome"] == "disbanded"
+    assert await conn.fetchval("SELECT COUNT(*) FROM teams") == 0
+    assert await conn.fetchval("SELECT team_id FROM users WHERE user_id = 990") is None

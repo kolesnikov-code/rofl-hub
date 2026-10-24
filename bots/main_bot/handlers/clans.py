@@ -9,7 +9,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from shared.analytics import track
 from shared.database import db
-from shared.db_clans import create_new_team_in_db
+from shared.db_clans import create_new_team_in_db, leave_team
 from shared.economy import TEAM_CREATE_COST, TEAM_LIST_PAGE_SIZE, utcnow
 from shared.locales import btn_variants, t
 from shared.ranks import name_with_rank
@@ -481,60 +481,35 @@ async def process_clan_leave_logic(callback: types.CallbackQuery, user_lang: str
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
-            # Блокируем строку клана и юзера одновременно через жесткий FOR UPDATE
-            team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1 FOR UPDATE", team_id)
-            user = await conn.fetchrow("SELECT team_id FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+            # Вся механика (блокировки, наследование короны) — в shared.db_clans.leave_team
+            left = await leave_team(conn, user_id, team_id)
 
-            # 🔥 ФИКС 7: Проверка, что игрок реально находится именно в этой команде
-            if not user or user["team_id"] != team_id or not team:
-                await callback.message.answer(
-                    "❌ Ошибка безопасности! Ты не состоишь в данной команде или она уже расформирована.")
-                return
-
-            if team["captain_id"] == user_id:
-                # 👑 СЦЕНАРИЙ А: ВЫХОДИТ САМ КАПИТАН БАНДЫ!
-                # Корона переходит самому преданному ветерану — кто ВСТУПИЛ раньше всех
-                next_captain = await conn.fetchrow(
-                    "SELECT user_id, username FROM users WHERE team_id = $1 AND user_id != $2 "
-                    "ORDER BY team_joined_at ASC NULLS LAST, user_id ASC LIMIT 1",
-                    team_id, user_id
-                )
-
-                if next_captain:
-                    # Ветеран найден! Передаем ему корону и списываем одного человека
-                    await conn.execute(
-                        "UPDATE teams SET captain_id = $1, members_count = members_count - 1 WHERE team_id = $2",
-                        next_captain["user_id"], team_id)
-                    await conn.execute(
-                        "UPDATE users SET team_id = NULL, team_joined_at = NULL WHERE user_id = $1", user_id)
-
-                    announce_text = (
-                        f"🚪 <b>РЕВОЛЮЦИЯ В БАНДЕ!</b>\n"
-                        f"..................................................\n\n"
-                        f"Капитан бросил команду <b>{team['team_name']}</b> и ушёл в закат.\n\n"
-                        f"👑 По праву преданности и старшинства, новым <b>Вожаком банды</b> официально объявлен ветеран: "
-                        f"@{html.escape(next_captain['username'] or str(next_captain['user_id']))} (ID: <code>{next_captain['user_id']}</code>)!\n\n"
-                        f"<i>Власть сменилась. Команда продолжает битву за мировой ТОП!</i>"
-                    )
-                    await callback.message.answer(announce_text, parse_mode="HTML")
-                else:
-                    # Капитан был один на лодке — наглухо аннулируем команду, чтоб не спамить базу
-                    await conn.execute("DELETE FROM teams WHERE team_id = $1", team_id)
-                    await conn.execute(
-                        "UPDATE users SET team_id = NULL, team_joined_at = NULL WHERE user_id = $1", user_id)
-                    await callback.message.answer(
-                        "🚪 Ты был единственным участником. Команда официально <b>удалена и расформирована</b>.",
-                        parse_mode="HTML")
-            else:
-                # 👥 СЦЕНАРИЙ Б: ВЫХОДИТ ОБЫЧНЫЙ УЧАСТНИК
-                await conn.execute("UPDATE teams SET members_count = members_count - 1 WHERE team_id = $1", team_id)
-                await conn.execute(
-                    "UPDATE users SET team_id = NULL, team_joined_at = NULL WHERE user_id = $1", user_id)
-                await callback.message.answer(
-                    t(user_lang, "clan.leave_ok", name=team["team_name"]), parse_mode="HTML")
-
-            # Наводим идеальный порядок в чате: удаляем старый дашборд с кнопками
-            try:
-                await callback.message.delete()
-            except Exception:
-                pass
+    # 🔥 ФИКС 7: игрок реально должен состоять именно в этой команде
+    if left is None:
+        await callback.message.answer(
+            "❌ Ошибка безопасности! Ты не состоишь в данной команде или она уже расформирована.")
+        return
+    if left["outcome"] == "passed":
+        # 👑 Капитан ушёл — корона у ветерана, вступившего раньше всех
+        heir = left["new_captain"]
+        announce_text = (
+            f"🚪 <b>РЕВОЛЮЦИЯ В БАНДЕ!</b>\n"
+            f"..................................................\n\n"
+            f"Капитан бросил команду <b>{left['team_name']}</b> и ушёл в закат.\n\n"
+            f"👑 По праву преданности и старшинства, новым <b>Вожаком банды</b> официально объявлен ветеран: "
+            f"@{html.escape(heir['username'] or str(heir['user_id']))} (ID: <code>{heir['user_id']}</code>)!\n\n"
+            f"<i>Власть сменилась. Команда продолжает битву за мировой ТОП!</i>"
+        )
+        await callback.message.answer(announce_text, parse_mode="HTML")
+    elif left["outcome"] == "disbanded":
+        await callback.message.answer(
+            "🚪 Ты был единственным участником. Команда официально <b>удалена и расформирована</b>.",
+            parse_mode="HTML")
+    else:
+        await callback.message.answer(
+            t(user_lang, "clan.leave_ok", name=left["team_name"]), parse_mode="HTML")
+    # Наводим идеальный порядок в чате: удаляем старый дашборд с кнопками
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass

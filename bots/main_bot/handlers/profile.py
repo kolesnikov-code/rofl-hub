@@ -122,7 +122,8 @@ async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
         [
             types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
                                        callback_data="refresh_main_menu")
-        ]
+        ],
+        [types.InlineKeyboardButton(text=t(user_lang, "profile.btn_delete"), callback_data="acct_del")],
     ])
 
     quiz_level = quiz_row["quiz_level"] if quiz_row else 0

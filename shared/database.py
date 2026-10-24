@@ -501,6 +501,20 @@ SCHEMA_STATEMENTS: list[str] = [
     """,
     # Сколько ежедневных котлет забрал игрок — условие «активного друга» в рефералке
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS bonus_claims INT NOT NULL DEFAULT 0;",
+    # Счётчик котлет появился 26.10 — разово досчитываем старые получения из событий
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS bonus_claims_backfilled BOOLEAN NOT NULL DEFAULT FALSE;",
+    """
+    UPDATE users u SET
+        bonus_claims = GREATEST(u.bonus_claims,
+            (SELECT COUNT(*) FROM events e WHERE e.user_id = u.user_id AND e.event = 'bonus_claimed')),
+        bonus_claims_backfilled = TRUE
+    WHERE NOT u.bonus_claims_backfilled;
+    """,
+    # --- 26.10: удаление аккаунта (заморозка 7 дней → обезличивание строки) ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS deletion_requested_at TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE;",
+    "CREATE INDEX IF NOT EXISTS users_deletion_idx ON users (deletion_requested_at) "
+    "WHERE deletion_requested_at IS NOT NULL;",
     """
     CREATE TABLE IF NOT EXISTS weekly_crafts (
         id BIGSERIAL PRIMARY KEY,

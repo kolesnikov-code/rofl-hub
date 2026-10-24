@@ -154,10 +154,12 @@ async def handle_me(request: web.Request) -> web.Response:
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             user, miners = await apply_lazy_farm(conn, user_id, now)
-            if not user:
+            if not user or user["deleted_at"] is not None:
                 return web.json_response({"error": "no_profile"}, status=404)
             if user["is_blocked"]:
                 return web.json_response({"error": "blocked"}, status=403)
+            if user["deletion_requested_at"] is not None:
+                return web.json_response({"error": "deleting"}, status=403)
             quiz_row = await conn.fetchrow(
                 "SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = $1", user_id)
             team_row = None
@@ -333,7 +335,7 @@ async def handle_top(request: web.Request) -> web.Response:
                    (SELECT STRING_AGG(alias, ', ') FROM vip_aliases v WHERE v.user_id = u.user_id) AS vip
             FROM users u
             LEFT JOIN game_stats g ON g.user_id = u.user_id
-            WHERE NOT u.is_blocked
+            WHERE NOT u.is_blocked AND u.deleted_at IS NULL AND u.deletion_requested_at IS NULL
             ORDER BY u.balance DESC, u.user_id ASC
             LIMIT 100
             """)

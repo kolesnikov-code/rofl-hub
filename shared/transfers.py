@@ -10,7 +10,8 @@ from __future__ import annotations
 
 import logging
 
-from shared.economy import TRANSFER_MIN_AMOUNT, transfer_fee
+from shared.economy import (TRANSFER_MIN_AMOUNT, TRANSFER_SENDER_MIN_BONUS_CLAIMS,
+                            TRANSFER_SENDER_MIN_QUIZ_LEVEL, transfer_fee)
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
 
@@ -29,6 +30,16 @@ class TransferError(Exception):
         return t(lang, self.key, **self.kwargs)
 
 
+async def ensure_sender_active(conn, sender_id: int, bonus_claims: int | None = None) -> None:
+    """Отправлять монеты могут только активные аккаунты (3 уровень интеллекта + 3 котлеты)."""
+    if bonus_claims is None:
+        bonus_claims = await conn.fetchval("SELECT bonus_claims FROM users WHERE user_id = $1", sender_id) or 0
+    level = await conn.fetchval("SELECT quiz_level FROM game_stats WHERE user_id = $1", sender_id) or 0
+    if level < TRANSFER_SENDER_MIN_QUIZ_LEVEL or bonus_claims < TRANSFER_SENDER_MIN_BONUS_CLAIMS:
+        raise TransferError("tr.err_not_active", level=TRANSFER_SENDER_MIN_QUIZ_LEVEL,
+                            claims=TRANSFER_SENDER_MIN_BONUS_CLAIMS)
+
+
 async def transfer_coins(conn, sender_id: int, recipient_id: int, amount: int) -> tuple[int, int]:
     """
     Выполняет перевод внутри транзакции вызывающего кода.
@@ -40,17 +51,19 @@ async def transfer_coins(conn, sender_id: int, recipient_id: int, amount: int) -
         raise TransferError("tr.min", min=TRANSFER_MIN_AMOUNT)
 
     rows = await conn.fetch(
-        "SELECT user_id, is_blocked FROM users WHERE user_id = ANY($1::bigint[]) "
-        "ORDER BY user_id FOR UPDATE",
+        "SELECT user_id, is_blocked, bonus_claims, deletion_requested_at, deleted_at "
+        "FROM users WHERE user_id = ANY($1::bigint[]) ORDER BY user_id FOR UPDATE",
         [sender_id, recipient_id],
     )
     by_id = {r["user_id"]: r for r in rows}
     if sender_id not in by_id:
         raise TransferError("common.no_profile")
-    if recipient_id not in by_id:
+    recipient = by_id.get(recipient_id)
+    if recipient is None or recipient["deleted_at"] is not None or recipient["deletion_requested_at"] is not None:
         raise TransferError("tr.not_found")
-    if by_id[recipient_id]["is_blocked"]:
+    if recipient["is_blocked"]:
         raise TransferError("tr.blocked")
+    await ensure_sender_active(conn, sender_id, by_id[sender_id]["bonus_claims"])
 
     try:
         sender_balance = await change_balance(conn, sender_id, -amount, "transfer_out", str(recipient_id))

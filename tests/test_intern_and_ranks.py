@@ -115,3 +115,43 @@ def test_rank_labels_localized_and_latin_top_ranks():
         assert t(lang, "rank.rofl") == "ROFL" and t(lang, "rank.king") == "KING"
     assert name_with_rank("@tolya", "ru", T0 - timedelta(days=400), T0) == "@tolya · 🎖 KING"
     assert name_with_rank("@tolya", "ru", T0, T0) == "@tolya"           # новичок без звания — без хвоста
+
+
+
+# ---------------------------------------------------------------- удаление аккаунта (26.10)
+def test_account_deletion_rules():
+    import shared.economy as e
+    from shared.feature_flags import FLAG_DEFAULTS, FLAG_TITLES
+    assert e.ACCOUNT_DELETE_GRACE_DAYS == 7
+    assert e.ACCOUNT_DELETE_CONFIRM_SECONDS >= 5
+    assert FLAG_DEFAULTS["account_delete"] is True and "account_delete" in FLAG_TITLES
+    # переводы — тот же порог активности, что и у активного друга в рефералке
+    assert (e.TRANSFER_SENDER_MIN_QUIZ_LEVEL, e.TRANSFER_SENDER_MIN_BONUS_CLAIMS) == \
+        (e.REFERRAL_QUALIFY_QUIZ_LEVEL, e.REFERRAL_QUALIFY_BONUS_CLAIMS)
+
+
+def test_account_deletion_texts_exist_in_ru_and_en():
+    from shared.locales import t
+    for lang in ("ru", "en"):
+        warn = t(lang, "acct.warn", days=7, seconds=10)
+        assert "7" in warn and "10" in warn and "Stars" in warn
+        for key in ("profile.btn_delete", "acct.btn_keep", "acct.btn_confirm", "acct.btn_undo",
+                    "acct.undone", "acct.purged", "acct.deleted_notice", "acct.welcome_back"):
+            assert t(lang, key) and t(lang, key) != key
+        assert "/start" in t(lang, "acct.purged")
+
+
+def test_deletion_middleware_lets_through_only_undo_and_start():
+    import os
+    os.environ.setdefault("MAIN_BOT_TOKEN", "123456:TEST")
+    import pytest
+    pytest.importorskip("aiogram")
+    from types import SimpleNamespace
+    from aiogram.types import CallbackQuery, Message
+    from bots.main_bot.middleware import _is_callback, _is_start
+    cb = CallbackQuery.model_construct(data="acct_undo")
+    msg = Message.model_construct(text="/start p_x")
+    assert _is_callback(SimpleNamespace(callback_query=cb), "acct_undo")
+    assert not _is_callback(SimpleNamespace(callback_query=cb), "games_hub")
+    assert _is_start(SimpleNamespace(message=msg))
+    assert not _is_start(SimpleNamespace(message=Message.model_construct(text="/farm")))
