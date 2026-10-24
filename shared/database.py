@@ -458,6 +458,23 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS resource_swaps_open_idx ON resource_swaps (status, created_at);",
+    # --- 26.10: биржа команды (лоты только для тиммейтов, комиссия ниже) и взаимопомощь ---
+    "ALTER TABLE market_orders ADD COLUMN IF NOT EXISTS team_id INT;",
+    "ALTER TABLE resource_swaps ADD COLUMN IF NOT EXISTS team_id INT;",
+    "CREATE INDEX IF NOT EXISTS market_orders_team_idx ON market_orders (team_id, status) WHERE team_id IS NOT NULL;",
+    """
+    CREATE TABLE IF NOT EXISTS team_help (
+        id BIGSERIAL PRIMARY KEY,
+        team_id INT NOT NULL,
+        user_id BIGINT NOT NULL,
+        kind VARCHAR(16) NOT NULL,
+        qty INT NOT NULL CHECK (qty > 0),
+        filled INT NOT NULL DEFAULT 0 CHECK (filled >= 0),
+        status VARCHAR(12) NOT NULL DEFAULT 'open',
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS team_help_open_idx ON team_help (team_id, status);",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS armor_until TIMESTAMP WITH TIME ZONE;",
     # --- 25.10: склад ресурсов с лимитом, рецепты недели ---
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS res_capacity INT NOT NULL DEFAULT 500;",

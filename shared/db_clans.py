@@ -144,6 +144,10 @@ async def leave_team(conn, user_id: int, team_id: int | None = None) -> dict | N
     else:
         await conn.execute("UPDATE teams SET members_count = members_count - 1 WHERE team_id = $1", current)
     await conn.execute(clear_user, user_id)
+    # Командные лоты и просьбы о помощи принадлежат команде — уходя, игрок их снимает
+    from shared.market import close_team_lots
+    await close_team_lots(conn, user_id)
+    await conn.execute("UPDATE team_help SET status = 'cancelled' WHERE user_id = $1 AND status = 'open'", user_id)
     return result
 
 

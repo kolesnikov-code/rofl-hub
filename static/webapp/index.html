@@ -56,6 +56,7 @@
     transition: width .6s ease;
   }
   .hint { color: var(--muted); font-size: 12px; }
+  .btn + .hint { margin-top: 10px; }   /* подписи под кнопкой не прилипают к ней */
   .btn {
     width: 100%; margin-top: 10px; padding: 13px; border: none; border-radius: 12px;
     font-size: 15px; font-weight: 800; letter-spacing: .5px; cursor: pointer;
@@ -159,9 +160,11 @@
   .res { text-align: center; padding: 10px 4px; border-radius: 12px; background: rgba(13,19,38,.7); border: 1px solid rgba(0,255,225,.15); }
   .res .ri { font-size: 22px; } .res .rn { font-weight: 900; font-size: 17px; color: var(--accent); }
   .res .rs { font-size: 10px; color: var(--muted); margin-top: 2px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
   .chips.big .chip { font-size: 14px; padding: 6px 10px; }
-  .chip { padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #0d1326;
+  /* Эмодзи разных ресурсов имеют разную высоту глифа — центруем содержимое фишки по вертикали */
+  .chip { display: inline-flex; align-items: center; gap: 3px; line-height: 1; min-height: 24px;
+    padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #0d1326;
     border: 1px solid rgba(138,147,184,.3); }
   .chip.have { color: var(--ok); border-color: rgba(55,232,95,.45); }
   .chip.lack { color: #ff8e8e; border-color: rgba(255,85,85,.45); }
@@ -230,6 +233,9 @@
   .doc { display: block; width: 100%; height: calc(100vh - 170px); min-height: 480px; border: 1px solid rgba(0,255,225,.14);
     border-radius: 16px; background: var(--bg); }
   .btn.danger-text { color: var(--bad); border-color: rgba(255,85,85,.45); }
+  .bad-text { color: #ff8e8e !important; }
+  .holding { margin-top: 8px; font-size: 13px; color: var(--text); }
+  .holding b { color: var(--accent); }
   .info-item { padding: 8px 0; border-bottom: 1px dashed rgba(138,147,184,.18); }
   .info-item b { display: block; font-size: 13px; margin-bottom: 3px; }
   .info-item span { color: var(--muted); font-size: 12px; line-height: 1.4; }
@@ -310,6 +316,15 @@
       tm_roster: "👥 СОСТАВ КОМАНДЫ", tm_mottoL: "💬 Девиз", tm_leave: "🚪 Выйти из команды",
       tm_leaveAsk: "Точно выйти из команды «{n}»?", tm_leaveAskCaptain: "Ты капитан: корона перейдёт ветерану команды. Точно выйти из «{n}»?",
       tm_left: "Ты больше не в команде",
+      mk_scopePublic: "🌐 Общая биржа", mk_scopeTeam: "🏆 Биржа команды",
+      mk_teamHint: "Биржа команды «{t}»: лоты видят и покупают только тиммейты, комиссия всего {f}%.",
+      mk_yourStock: "📦 У тебя", mk_yourCoins: "💰 У тебя монет",
+      tm_market: "🏪 БИРЖА КОМАНДЫ", tm_marketBtn: "Открыть биржу команды",
+      tm_marketHint: "Торгуй с тиммейтами: комиссия {f}% вместо {p}% на общей бирже. В Мега-Клане — всего {c}%.",
+      hp_title: "🤝 ВЗАИМОПОМОЩЬ", hp_hint: "Не хватает ресурса — попроси команду. Каждый может подарить до {d} ресурсов в сутки.",
+      hp_today: "Подарено тобой сегодня: {g} / {d}", hp_empty: "Пока никто не просит помощи",
+      hp_give: "🎁 +{n}", hp_kind: "Что нужно", hp_qty: "Сколько (до {n})", hp_ask: "🙏 Попросить помощи",
+      hp_given: "Подарено: {q} {k} — спасибо за командную игру!", hp_asked: "Просьба отправлена команде!",
       top: "👑 ТОП-100 БОГАЧЕЙ ЭКОСИСТЕМЫ",
       shop: "🏪 МАГАЗИН", shopFarm: "🚜 ДЛЯ ФЕРМЫ", shopGames: "🕹️ ИГРОВЫЕ",
       shopHint: "Оплата официальными Telegram Stars — прямо здесь, в один тап.",
@@ -434,6 +449,15 @@
       tm_roster: "👥 TEAM ROSTER", tm_mottoL: "💬 Motto", tm_leave: "🚪 Leave the team",
       tm_leaveAsk: "Leave the team “{n}”?", tm_leaveAskCaptain: "You're the captain: the crown passes to the team veteran. Leave “{n}”?",
       tm_left: "You're no longer in a team",
+      mk_scopePublic: "🌐 Public market", mk_scopeTeam: "🏆 Team market",
+      mk_teamHint: "Team market of “{t}”: only teammates see and buy these lots, the fee is just {f}%.",
+      mk_yourStock: "📦 You have", mk_yourCoins: "💰 Your coins",
+      tm_market: "🏪 TEAM MARKET", tm_marketBtn: "Open the team market",
+      tm_marketHint: "Trade with teammates: {f}% fee instead of {p}% on the public market. In a Mega-Clan — just {c}%.",
+      hp_title: "🤝 MUTUAL AID", hp_hint: "Short on a resource? Ask your team. Everyone can give up to {d} resources a day.",
+      hp_today: "You've given today: {g} / {d}", hp_empty: "Nobody is asking for help yet",
+      hp_give: "🎁 +{n}", hp_kind: "What you need", hp_qty: "How much (up to {n})", hp_ask: "🙏 Ask for help",
+      hp_given: "Given: {q} {k} — thanks for playing as a team!", hp_asked: "Your request was sent to the team!",
       top: "👑 TOP-100 RICHEST PLAYERS",
       shop: "🏪 SHOP", shopFarm: "🚜 FOR THE FARM", shopGames: "🕹️ GAMING",
       shopHint: "Pay with official Telegram Stars — right here, in one tap.",
@@ -608,6 +632,24 @@
     "tm_leaveAsk": "هل تريد مغادرة فريق «{n}»؟",
     "tm_leaveAskCaptain": "أنت الكابتن: ستنتقل القيادة إلى قدامى الفريق. هل تريد مغادرة «{n}»؟",
     "tm_left": "لم تعد في أي فريق",
+    "mk_scopePublic": "🌐 البورصة العامة",
+    "mk_scopeTeam": "🏆 بورصة الفريق",
+    "mk_teamHint": "بورصة فريق «{t}»: العروض يراها ويشتريها زملاء الفريق فقط، والعمولة {f}% فقط.",
+    "mk_yourStock": "📦 لديك",
+    "mk_yourCoins": "💰 رصيدك من العملات",
+    "tm_market": "🏪 بورصة الفريق",
+    "tm_marketBtn": "افتح بورصة الفريق",
+    "tm_marketHint": "تاجر مع زملاء الفريق: عمولة {f}% بدل {p}% في البورصة العامة. وفي الميغا-كلان — {c}% فقط.",
+    "hp_title": "🤝 المساعدة المتبادلة",
+    "hp_hint": "ينقصك مورد؟ اطلبه من فريقك. يمكن لكل لاعب إهداء حتى {d} من الموارد يوميًا.",
+    "hp_today": "ما أهديته اليوم: {g} / {d}",
+    "hp_empty": "لا أحد يطلب المساعدة حتى الآن",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "ما الذي تحتاجه",
+    "hp_qty": "الكمية (حتى {n})",
+    "hp_ask": "🙏 اطلب المساعدة",
+    "hp_given": "تم الإهداء: {q} {k} — شكرًا على اللعب بروح الفريق!",
+    "hp_asked": "أُرسل طلبك إلى الفريق!",
     "top": "👑 أغنى 100 لاعب في المنظومة",
     "shop": "🏪 المتجر",
     "shopFarm": "🚜 للمزرعة",
@@ -873,6 +915,24 @@
     "tm_leaveAsk": "সত্যিই «{n}» টিম ছাড়বে?",
     "tm_leaveAskCaptain": "তুমি ক্যাপ্টেন: মুকুট চলে যাবে টিমের সবচেয়ে পুরোনো সদস্যের কাছে। সত্যিই «{n}» ছাড়বে?",
     "tm_left": "তুমি আর কোনো টিমে নেই",
+    "mk_scopePublic": "🌐 সাধারণ বাজার",
+    "mk_scopeTeam": "🏆 টিম বাজার",
+    "mk_teamHint": "«{t}» টিমের বাজার: লট শুধু টিমমেটরা দেখে ও কেনে, ফি মাত্র {f}%।",
+    "mk_yourStock": "📦 তোমার আছে",
+    "mk_yourCoins": "💰 তোমার কয়েন",
+    "tm_market": "🏪 টিম বাজার",
+    "tm_marketBtn": "টিম বাজার খোলো",
+    "tm_marketHint": "টিমমেটদের সাথে লেনদেন করো: সাধারণ বাজারের {p}%-এর বদলে ফি {f}%। মেগা-ক্ল্যানে — মাত্র {c}%।",
+    "hp_title": "🤝 পারস্পরিক সাহায্য",
+    "hp_hint": "রিসোর্স কম পড়ছে? টিমের কাছে চাও। প্রত্যেকে দিনে {d}টি পর্যন্ত রিসোর্স উপহার দিতে পারে।",
+    "hp_today": "আজ তুমি উপহার দিয়েছ: {g} / {d}",
+    "hp_empty": "এখনো কেউ সাহায্য চায়নি",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "কী দরকার",
+    "hp_qty": "কতটা ({n} পর্যন্ত)",
+    "hp_ask": "🙏 সাহায্য চাও",
+    "hp_given": "উপহার দেওয়া হয়েছে: {q} {k} — টিম হয়ে খেলার জন্য ধন্যবাদ!",
+    "hp_asked": "তোমার অনুরোধ টিমের কাছে গেছে!",
     "top": "👑 ইকোসিস্টেমের টপ-100 ধনী",
     "shop": "🏪 দোকান",
     "shopFarm": "🚜 ফার্মের জন্য",
@@ -1136,6 +1196,24 @@
     "tm_leaveAsk": "Das Team „{n}“ wirklich verlassen?",
     "tm_leaveAskCaptain": "Du bist Kapitän: Die Krone geht an den Veteranen des Teams. „{n}“ wirklich verlassen?",
     "tm_left": "Du bist nicht mehr in einem Team",
+    "mk_scopePublic": "🌐 Allgemeine Börse",
+    "mk_scopeTeam": "🏆 Team-Börse",
+    "mk_teamHint": "Team-Börse von „{t}“: Die Angebote sehen und kaufen nur Teammitglieder, die Gebühr beträgt nur {f}%.",
+    "mk_yourStock": "📦 Du hast",
+    "mk_yourCoins": "💰 Deine Münzen",
+    "tm_market": "🏪 TEAM-BÖRSE",
+    "tm_marketBtn": "Team-Börse öffnen",
+    "tm_marketHint": "Handle mit deinem Team: {f}% Gebühr statt {p}% an der allgemeinen Börse. Im Mega-Clan nur {c}%.",
+    "hp_title": "🤝 TEAMHILFE",
+    "hp_hint": "Dir fehlt eine Ressource? Frag dein Team. Jeder kann bis zu {d} Ressourcen pro Tag verschenken.",
+    "hp_today": "Heute von dir verschenkt: {g} / {d}",
+    "hp_empty": "Noch bittet niemand um Hilfe",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "Was du brauchst",
+    "hp_qty": "Wie viel (bis {n})",
+    "hp_ask": "🙏 Um Hilfe bitten",
+    "hp_given": "Verschenkt: {q} {k} — danke fürs Teamplay!",
+    "hp_asked": "Deine Anfrage wurde ans Team geschickt!",
     "top": "👑 TOP-100 DER REICHSTEN SPIELER",
     "shop": "🏪 SHOP",
     "shopFarm": "🚜 FÜR DIE FARM",
@@ -1401,6 +1479,24 @@
     "tm_leaveAsk": "¿Seguro que quieres salir del equipo «{n}»?",
     "tm_leaveAskCaptain": "Eres el capitán: la corona pasará al veterano del equipo. ¿Seguro que quieres salir de «{n}»?",
     "tm_left": "Ya no estás en ningún equipo",
+    "mk_scopePublic": "🌐 Bolsa general",
+    "mk_scopeTeam": "🏆 Bolsa del equipo",
+    "mk_teamHint": "Bolsa del equipo «{t}»: solo tus compañeros ven y compran estos lotes, la comisión es de solo {f}%.",
+    "mk_yourStock": "📦 Tienes",
+    "mk_yourCoins": "💰 Tus monedas",
+    "tm_market": "🏪 BOLSA DEL EQUIPO",
+    "tm_marketBtn": "Abrir la bolsa del equipo",
+    "tm_marketHint": "Comercia con tus compañeros: comisión del {f}% en lugar del {p}% de la bolsa general. En un Mega-Clan, solo {c}%.",
+    "hp_title": "🤝 AYUDA MUTUA",
+    "hp_hint": "¿Te falta un recurso? Pídeselo al equipo. Cada miembro puede regalar hasta {d} recursos al día.",
+    "hp_today": "Has regalado hoy: {g} / {d}",
+    "hp_empty": "Nadie ha pedido ayuda todavía",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "Qué necesitas",
+    "hp_qty": "Cuántos (hasta {n})",
+    "hp_ask": "🙏 Pedir ayuda",
+    "hp_given": "Regalado: {q} {k}. ¡Gracias por jugar en equipo!",
+    "hp_asked": "¡Petición enviada al equipo!",
     "top": "👑 TOP-100 DE LOS MÁS RICOS DEL ECOSISTEMA",
     "shop": "🏪 TIENDA",
     "shopFarm": "🚜 PARA LA GRANJA",
@@ -1664,6 +1760,24 @@
     "tm_leaveAsk": "Vraiment quitter l'équipe « {n} » ?",
     "tm_leaveAskCaptain": "Tu es capitaine : la couronne passera au vétéran de l'équipe. Vraiment quitter « {n} » ?",
     "tm_left": "Tu n'es plus dans une équipe",
+    "mk_scopePublic": "🌐 Bourse commune",
+    "mk_scopeTeam": "🏆 Bourse d'équipe",
+    "mk_teamHint": "Bourse de l'équipe « {t} » : seuls les coéquipiers voient et achètent ces offres, commission de {f}% seulement.",
+    "mk_yourStock": "📦 Tu as",
+    "mk_yourCoins": "💰 Tes pièces",
+    "tm_market": "🏪 BOURSE D'ÉQUIPE",
+    "tm_marketBtn": "Ouvrir la bourse d'équipe",
+    "tm_marketHint": "Échange avec tes coéquipiers : commission de {f}% au lieu de {p}% sur la bourse commune. Dans un Méga-Clan — seulement {c}%.",
+    "hp_title": "🤝 ENTRAIDE",
+    "hp_hint": "Il te manque une ressource ? Demande à ton équipe. Chacun peut offrir jusqu'à {d} ressources par jour.",
+    "hp_today": "Offert par toi aujourd'hui : {g} / {d}",
+    "hp_empty": "Personne ne demande d'aide pour l'instant",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "Ce dont tu as besoin",
+    "hp_qty": "Combien (jusqu'à {n})",
+    "hp_ask": "🙏 Demander de l'aide",
+    "hp_given": "Offert : {q} {k} — merci pour l'esprit d'équipe !",
+    "hp_asked": "Ta demande a été envoyée à l'équipe !",
     "top": "👑 TOP-100 DES PLUS RICHES DE L'ÉCOSYSTÈME",
     "shop": "🏪 BOUTIQUE",
     "shopFarm": "🚜 POUR LA FERME",
@@ -1928,6 +2042,24 @@
     "tm_leaveAsk": "क्या सच में टीम «{n}» छोड़नी है?",
     "tm_leaveAskCaptain": "तुम कप्तान हो: ताज टीम के सबसे पुराने सदस्य को मिल जाएगा। क्या सच में «{n}» छोड़नी है?",
     "tm_left": "अब तुम किसी टीम में नहीं हो",
+    "mk_scopePublic": "🌐 आम बाज़ार",
+    "mk_scopeTeam": "🏆 टीम बाज़ार",
+    "mk_teamHint": "«{t}» का टीम बाज़ार: लॉट सिर्फ़ टीममेट्स देखते और खरीदते हैं, कमीशन सिर्फ़ {f}% है।",
+    "mk_yourStock": "📦 तुम्हारे पास",
+    "mk_yourCoins": "💰 तुम्हारे सिक्के",
+    "tm_market": "🏪 टीम बाज़ार",
+    "tm_marketBtn": "टीम बाज़ार खोलो",
+    "tm_marketHint": "टीममेट्स के साथ ट्रेड करो: आम बाज़ार के {p}% की जगह {f}% कमीशन। मेगा-क्लैन में — सिर्फ़ {c}%।",
+    "hp_title": "🤝 आपसी मदद",
+    "hp_hint": "किसी संसाधन की कमी है? टीम से माँगो। हर कोई दिन में {d} संसाधन तक तोहफ़े में दे सकता है।",
+    "hp_today": "आज तुमने दिए: {g} / {d}",
+    "hp_empty": "अभी कोई मदद नहीं माँग रहा",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "क्या चाहिए",
+    "hp_qty": "कितना (अधिकतम {n})",
+    "hp_ask": "🙏 मदद माँगो",
+    "hp_given": "तोहफ़े में दिया: {q} {k} — टीम भावना के लिए शुक्रिया!",
+    "hp_asked": "तुम्हारी माँग टीम को भेज दी गई!",
     "top": "👑 इकोसिस्टम के टॉप-100 अमीर",
     "shop": "🏪 दुकान",
     "shopFarm": "🚜 फ़ार्म के लिए",
@@ -2192,6 +2324,24 @@
     "tm_leaveAsk": "Yakin keluar dari tim «{n}»?",
     "tm_leaveAskCaptain": "Kamu kapten: mahkota berpindah ke veteran tim. Yakin keluar dari «{n}»?",
     "tm_left": "Kamu tidak lagi berada di tim",
+    "mk_scopePublic": "🌐 Bursa umum",
+    "mk_scopeTeam": "🏆 Bursa tim",
+    "mk_teamHint": "Bursa tim «{t}»: lot hanya terlihat dan bisa dibeli rekan tim, biaya cuma {f}%.",
+    "mk_yourStock": "📦 Kamu punya",
+    "mk_yourCoins": "💰 Koinmu",
+    "tm_market": "🏪 BURSA TIM",
+    "tm_marketBtn": "Buka bursa tim",
+    "tm_marketHint": "Berdagang dengan rekan tim: biaya {f}% dibanding {p}% di bursa umum. Di Mega-Klan — cuma {c}%.",
+    "hp_title": "🤝 GOTONG ROYONG",
+    "hp_hint": "Kurang sumber daya? Minta ke timmu. Setiap orang bisa memberi hingga {d} sumber daya per hari.",
+    "hp_today": "Kamu sudah memberi hari ini: {g} / {d}",
+    "hp_empty": "Belum ada yang meminta bantuan",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "Yang dibutuhkan",
+    "hp_qty": "Berapa banyak (hingga {n})",
+    "hp_ask": "🙏 Minta bantuan",
+    "hp_given": "Diberikan: {q} {k} — terima kasih sudah bermain sebagai tim!",
+    "hp_asked": "Permintaanmu sudah dikirim ke tim!",
     "top": "👑 TOP-100 PEMAIN TERKAYA EKOSISTEM",
     "shop": "🏪 TOKO",
     "shopFarm": "🚜 UNTUK LADANG",
@@ -2456,6 +2606,24 @@
     "tm_leaveAsk": "Uscire davvero dalla squadra «{n}»?",
     "tm_leaveAskCaptain": "Sei il capitano: la corona passerà al veterano della squadra. Uscire davvero da «{n}»?",
     "tm_left": "Non sei più in una squadra",
+    "mk_scopePublic": "🌐 Borsa generale",
+    "mk_scopeTeam": "🏆 Borsa di squadra",
+    "mk_teamHint": "Borsa della squadra «{t}»: i lotti li vedono e li comprano solo i compagni, commissione appena {f}%.",
+    "mk_yourStock": "📦 Ne hai",
+    "mk_yourCoins": "💰 Le tue monete",
+    "tm_market": "🏪 BORSA DI SQUADRA",
+    "tm_marketBtn": "Apri la borsa di squadra",
+    "tm_marketHint": "Scambia con i compagni: commissione {f}% invece del {p}% della borsa generale. Nel Mega-Clan — solo {c}%.",
+    "hp_title": "🤝 MUTUO AIUTO",
+    "hp_hint": "Ti manca una risorsa? Chiedila alla squadra. Ognuno può regalare fino a {d} risorse al giorno.",
+    "hp_today": "Regalate oggi da te: {g} / {d}",
+    "hp_empty": "Per ora nessuno chiede aiuto",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "Di cosa hai bisogno",
+    "hp_qty": "Quante (fino a {n})",
+    "hp_ask": "🙏 Chiedi aiuto",
+    "hp_given": "Regalate: {q} {k} — grazie per il gioco di squadra!",
+    "hp_asked": "Richiesta inviata alla squadra!",
     "top": "👑 TOP-100 DEI PIÙ RICCHI DELL'ECOSISTEMA",
     "shop": "🏪 NEGOZIO",
     "shopFarm": "🚜 PER LA FATTORIA",
@@ -2737,6 +2905,24 @@
     "tm_leaveAsk": "Na pewno wyjść z drużyny „{n}”?",
     "tm_leaveAskCaptain": "Jesteś kapitanem: korona przejdzie na weterana drużyny. Na pewno wyjść z „{n}”?",
     "tm_left": "Nie jesteś już w drużynie",
+    "mk_scopePublic": "🌐 Giełda ogólna",
+    "mk_scopeTeam": "🏆 Giełda drużyny",
+    "mk_teamHint": "Giełda drużyny „{t}”: oferty widzą i kupują tylko koledzy z drużyny, prowizja to zaledwie {f}%.",
+    "mk_yourStock": "📦 Masz",
+    "mk_yourCoins": "💰 Twoje monety",
+    "tm_market": "🏪 GIEŁDA DRUŻYNY",
+    "tm_marketBtn": "Otwórz giełdę drużyny",
+    "tm_marketHint": "Handluj z kolegami z drużyny: prowizja {f}% zamiast {p}% na giełdzie ogólnej. W Mega-Klanie — tylko {c}%.",
+    "hp_title": "🤝 WZAJEMNA POMOC",
+    "hp_hint": "Brakuje surowca? Poproś drużynę. Każdy może podarować do {d} surowców na dobę.",
+    "hp_today": "Podarowano dziś przez ciebie: {g} / {d}",
+    "hp_empty": "Na razie nikt nie prosi o pomoc",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "Czego potrzebujesz",
+    "hp_qty": "Ile (do {n})",
+    "hp_ask": "🙏 Poproś o pomoc",
+    "hp_given": "Podarowano: {q} {k} — dzięki za grę zespołową!",
+    "hp_asked": "Prośba trafiła do drużyny!",
     "top": "👑 TOP-100 BOGACZY EKOSYSTEMU",
     "shop": "🏪 SKLEP",
     "shopFarm": "🚜 DLA FARMY",
@@ -2984,6 +3170,24 @@
     "tm_leaveAsk": "Sair mesmo da equipe «{n}»?",
     "tm_leaveAskCaptain": "Você é o capitão: a coroa passa ao veterano da equipe. Sair mesmo de «{n}»?",
     "tm_left": "Você não está mais em uma equipe",
+    "mk_scopePublic": "🌐 Bolsa geral",
+    "mk_scopeTeam": "🏆 Bolsa da equipe",
+    "mk_teamHint": "Bolsa da equipe «{t}»: só colegas de equipe veem e compram os lotes, a taxa é de apenas {f}%.",
+    "mk_yourStock": "📦 Você tem",
+    "mk_yourCoins": "💰 Suas moedas",
+    "tm_market": "🏪 BOLSA DA EQUIPE",
+    "tm_marketBtn": "Abrir a bolsa da equipe",
+    "tm_marketHint": "Negocie com colegas de equipe: taxa de {f}% em vez de {p}% na bolsa geral. No Mega-Clã — só {c}%.",
+    "hp_title": "🤝 AJUDA MÚTUA",
+    "hp_hint": "Falta um recurso? Peça à equipe. Cada um pode presentear até {d} recursos por dia.",
+    "hp_today": "Presenteado por você hoje: {g} / {d}",
+    "hp_empty": "Ninguém pediu ajuda por enquanto",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "O que você precisa",
+    "hp_qty": "Quanto (até {n})",
+    "hp_ask": "🙏 Pedir ajuda",
+    "hp_given": "Presenteado: {q} {k} — valeu pelo jogo em equipe!",
+    "hp_asked": "Pedido enviado à equipe!",
     "top": "👑 TOP-100 MAIS RICOS DO ECOSSISTEMA",
     "shop": "🏪 LOJA",
     "shopFarm": "🚜 PARA A FAZENDA",
@@ -3248,6 +3452,24 @@
     "tm_leaveAsk": "«{n}» jamoasidan chiqasanmi?",
     "tm_leaveAskCaptain": "Sen sardorsan: toj jamoaning faxriysiga o'tadi. «{n}» dan chiqasanmi?",
     "tm_left": "Sen endi jamoada emassan",
+    "mk_scopePublic": "🌐 Umumiy birja",
+    "mk_scopeTeam": "🏆 Jamoa birjasi",
+    "mk_teamHint": "«{t}» jamoa birjasi: lotlarni faqat jamoadoshlar ko'radi va sotib oladi, komissiya atigi {f}%.",
+    "mk_yourStock": "📦 Senda bor",
+    "mk_yourCoins": "💰 Tangalaring",
+    "tm_market": "🏪 JAMOA BIRJASI",
+    "tm_marketBtn": "Jamoa birjasini ochish",
+    "tm_marketHint": "Jamoadoshlar bilan savdo qil: umumiy birjadagi {p}% o'rniga komissiya {f}%. Mega-Klanda — atigi {c}%.",
+    "hp_title": "🤝 O'ZARO YORDAM",
+    "hp_hint": "Resurs yetishmayaptimi? Jamoadan so'ra. Har kim sutkasiga {d} tagacha resurs sovg'a qila oladi.",
+    "hp_today": "Bugun sovg'a qilganing: {g} / {d}",
+    "hp_empty": "Hozircha hech kim yordam so'ramayapti",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "Nima kerak",
+    "hp_qty": "Qancha ({n} tagacha)",
+    "hp_ask": "🙏 Yordam so'rash",
+    "hp_given": "Sovg'a qilindi: {q} {k} — jamoaviy o'yin uchun rahmat!",
+    "hp_asked": "So'rov jamoaga yuborildi!",
     "top": "👑 EKOTIZIMNING TOP-100 BOYLARI",
     "shop": "🏪 DO'KON",
     "shopFarm": "🚜 FERMA UCHUN",
@@ -3513,6 +3735,24 @@
     "tm_leaveAsk": "确定退出战队「{n}」吗？",
     "tm_leaveAskCaptain": "你是队长：队长之位将传给战队元老。确定退出「{n}」吗？",
     "tm_left": "你已不在战队中",
+    "mk_scopePublic": "🌐 公共交易所",
+    "mk_scopeTeam": "🏆 战队交易所",
+    "mk_teamHint": "「{t}」战队交易所：只有队友能看到并购买这些挂单，手续费仅 {f}%。",
+    "mk_yourStock": "📦 你拥有",
+    "mk_yourCoins": "💰 你的金币",
+    "tm_market": "🏪 战队交易所",
+    "tm_marketBtn": "打开战队交易所",
+    "tm_marketHint": "与队友交易：手续费 {f}%，公共交易所为 {p}%。超级公会仅 {c}%。",
+    "hp_title": "🤝 互助",
+    "hp_hint": "缺资源？向战队求助。每人每天最多可赠送 {d} 个资源。",
+    "hp_today": "你今天已赠送：{g} / {d}",
+    "hp_empty": "暂时没有人求助",
+    "hp_give": "🎁 +{n}",
+    "hp_kind": "需要什么",
+    "hp_qty": "数量（最多 {n}）",
+    "hp_ask": "🙏 请求支援",
+    "hp_given": "已赠送：{q} {k}——感谢团队协作！",
+    "hp_asked": "请求已发送给战队！",
     "top": "👑 生态系统富豪榜 TOP-100",
     "shop": "🏪 商店",
     "shopFarm": "🚜 农场专区",
@@ -4070,7 +4310,7 @@
   // ================= 📈 Биржа v2: котлеты и ресурсы, заявки, график, индекс, обмен =================
   const ASSETS = ["cutlet", "metal", "hydrogen", "crystal", "parts"];
   const A_ICON = { cutlet: "🥩", metal: "⛏", hydrogen: "💧", crystal: "💎", parts: "⚙️" };
-  let mkAsset = "cutlet";
+  let mkAsset = "cutlet", mkScope = "public";   // mkScope: "public" — общая биржа, "team" — биржа команды
   function chartSvg(history) {
     const pts = history.map((d, i) => [i, d.avg]).filter(p => p[1] !== null);
     if (!pts.length) return '<div class="hint">' + L.mk_noTrades + '</div>';
@@ -4094,28 +4334,37 @@
     return '<button class="idx' + (a === mkAsset ? ' on' : '') + '" data-asset="' + a + '">' + A_ICON[a] + ' ' + tail + '</button>';
   }
   async function viewMarket(box) {
-    const m = await api("/api/market?asset=" + mkAsset);
+    let m;
+    try { m = await api("/api/market?asset=" + mkAsset + "&scope=" + mkScope); }
+    catch (e) { if (mkScope !== "team") throw e; mkScope = "public"; m = await api("/api/market?asset=" + mkAsset); }
     const a = m.asset, icon = A_ICON[a], name = L["as_" + a];
+    const scopeKey = m.scope === "team" ? "t-" : "";   // у командной биржи свои номера страниц
+    // Переключатель «Общая биржа / Биржа команды» — у кого есть команда
+    const scopeRow = m.team ? '<div class="idxrow">' +
+      '<button class="idx scope' + (m.scope !== "team" ? ' on' : '') + '" data-scope="public">' + L.mk_scopePublic + '</button>' +
+      '<button class="idx scope' + (m.scope === "team" ? ' on' : '') + '" data-scope="team">' + L.mk_scopeTeam + ' · ' + m.team.fee + '%</button></div>' : '';
+    const stockLine = '<div class="chips">' + resLine(m.stock) + '<span class="chip">🥩 ' + num(m.inv) + '</span></div>';
     const PER = 5;   // лотов на странице: плашка не растёт, сколько бы их ни было
-    const asks = pager("asks-" + a, m.asks.map(o => '<div class="offer"><div class="ol">' + o.qty + ' ' + icon + ' × ' + num(o.price) + ' 🪙</div>' +
+    const asks = pager(scopeKey + "asks-" + a, m.asks.map(o => '<div class="offer"><div class="ol">' + o.qty + ' ' + icon + ' × ' + num(o.price) + ' 🪙</div>' +
       '<button class="mini take" data-id="' + o.id + '" data-q="' + o.qty + '" data-p="' + o.price + '" data-side="sell">🛒</button>' +
       '<div class="buyrow hidden" id="q' + o.id + '"></div></div>'), PER, '<div class="hint">' + L.mk_empty + '</div>', bindMarket);
-    const bids = pager("bids-" + a, m.bids.map(o => '<div class="offer"><div class="ol">' + o.qty + ' ' + icon + ' × ' + num(o.price) + ' 🪙</div>' +
+    const bids = pager(scopeKey + "bids-" + a, m.bids.map(o => '<div class="offer"><div class="ol">' + o.qty + ' ' + icon + ' × ' + num(o.price) + ' 🪙</div>' +
       '<button class="mini ghost take" data-id="' + o.id + '" data-q="' + o.qty + '" data-p="' + o.price + '" data-side="buy">' + L.mk_sellTo + '</button>' +
       '<div class="buyrow hidden" id="q' + o.id + '"></div></div>'), PER, '<div class="hint">' + L.mk_noBids + '</div>', bindMarket);
-    const mine = m.my.length ? pager("my", m.my.map(o => '<div class="offer"><div class="ol">' + (o.side === "sell" ? L.mk_side_sell : L.mk_side_buy) + ': ' +
+    const mine = m.my.length ? pager("my", m.my.map(o => '<div class="offer"><div class="ol">' + (o.team ? '🏆 ' : '') + (o.side === "sell" ? L.mk_side_sell : L.mk_side_buy) + ': ' +
       o.qty + ' ' + A_ICON[o.asset] + ' × ' + num(o.price) + ' 🪙</div><button class="mini ghost cancel" data-id="' + o.id + '">' +
       L.mk_cancel + '</button></div>'), PER, "", bindMarket) : "";
     const startPrice = m.stats.best_price || m.stats.best_bid || m.min_price;
-    const form = (id, title, hint, btn, disabled) => card(title,
+    const form = (id, title, hint, btn, disabled, holding) => card(title,
       (hint ? '<div class="hint">' + hint + '</div>' : '') +
+      '<div class="holding">' + holding + '</div>' +
       '<label class="lbl">' + L.mk_qty + '<input id="' + id + 'Q" type="number" inputmode="numeric" min="1" max="' + m.max_qty + '" value="1"></label>' +
       '<label class="lbl">' + L.mk_price + '<input id="' + id + 'P" type="number" inputmode="numeric" min="' + m.min_price + '" max="' + m.max_price + '" value="' + startPrice + '"></label>' +
       '<div class="hint" id="' + id + 'V"></div>' +
       '<button class="btn" id="' + id + 'B"' + (disabled ? ' disabled' : '') + '>' + btn + '</button>');
     const resOpts = sel => RES.map(k => '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + A_ICON[k] + ' ' + L["as_" + k] + '</option>').join("");
     const amt = (q, k) => q + ' ' + A_ICON[k] + ' ' + L["as_" + k];
-    const swaps = pager("swaps", m.swaps.map(s => '<div class="swapcard">' +
+    const swaps = pager(scopeKey + "swaps", m.swaps.map(s => '<div class="swapcard">' +
       '<div class="row"><span class="k">' + L.sw_youGet + '</span><span class="v status-ok">+' + amt(s.give_qty, s.give_kind) + '</span></div>' +
       '<div class="row"><span class="k">' + L.sw_youGive + '</span><span class="v">−' + amt(s.want_qty, s.want_kind) + '</span></div>' +
       '<button class="mini swapTake" data-id="' + s.id + '">' + fmt(L.sw_takeBtn, { x: amt(s.want_qty, s.want_kind) }) + '</button></div>'),
@@ -4124,7 +4373,9 @@
       fmt(L.sw_mineLine, { g: amt(s.give_qty, s.give_kind), w: amt(s.want_qty, s.want_kind) }) +
       '</div><button class="mini ghost swapCancel" data-id="' + s.id + '">' + L.mk_cancel + '</button></div>'), 3, "", bindMarket) : "";
     box.innerHTML =
-      card(L.mk_index, '<div class="idxrow">' + ASSETS.map(x => idxChip(x, m.index[x])).join("") + '</div>' +
+      card(L.mk_index, scopeRow +
+        (m.scope === "team" ? '<div class="hint status-ok">' + fmt(L.mk_teamHint, { t: esc(m.team.name), f: m.team.fee }) + '</div>' : '') +
+        '<div class="idxrow">' + ASSETS.map(x => idxChip(x, m.index[x])).join("") + '</div>' +
         '<div class="balance small">' + icon + ' ' + name + '</div>' +
         '<div class="hint">' + fmt(L.mk_have, { n: num(m.have) }) + ' · 🪙 ' + num(m.balance) + '</div>' +
         '<div class="hint">' + fmt(L.mk_feeLine, { f: m.fee }) + '</div>' +
@@ -4133,11 +4384,14 @@
       card(L.mk_chart, chartSvg(m.history) + (m.index[a] && m.index[a].last !== null
         ? '<div class="hint">' + fmt(L.mk_avg, { p: m.index[a].week_avg, v: m.index[a].volume }) + '</div>' : '')) +
       card(L.mk_asks, asks) + card(L.mk_bids, bids) +
-      form("sell", L.mk_sellTitle, fmt(L.mk_limits, { q: m.max_qty, o: m.max_orders }), L.mk_sell, !m.have) +
-      form("bid", L.mk_bidTitle, L.mk_bidHint, L.mk_bid, false) +
+      form("sell", L.mk_sellTitle, fmt(L.mk_limits, { q: m.max_qty, o: m.max_orders }), L.mk_sell, !m.have,
+        L.mk_yourStock + ': <b>' + num(m.have) + ' ' + icon + '</b>') +
+      form("bid", L.mk_bidTitle, L.mk_bidHint, L.mk_bid, false, L.mk_yourCoins + ': <b>' + num(m.balance) + ' 🪙</b>') +
       (mine ? card(L.mk_my, mine) : '') +
-      card(L.sw_title, '<div class="hint">' + L.sw_hint + '</div>' + swaps) +
+      card(L.sw_title, '<div class="hint">' + L.sw_hint + '</div>' +
+        '<div class="holding">' + L.mk_yourStock + ':</div>' + stockLine + swaps) +
       card("➕ " + L.sw_create,
+        '<div class="holding">' + L.mk_yourStock + ':</div>' + stockLine +
         '<div class="swapform"><label class="lbl">' + L.sw_give + '<select id="swG">' + resOpts("metal") + '</select></label>' +
         '<label class="lbl">' + L.sw_qty + '<input id="swGQ" type="number" inputmode="numeric" min="1" value="10"></label>' +
         '<label class="lbl">' + L.sw_want + '<select id="swW">' + resOpts("hydrogen") + '</select></label>' +
@@ -4145,18 +4399,23 @@
         '<button class="btn ghost" id="swB">' + L.sw_create + '</button>' +
         (mySwaps ? '<div class="sub2">' + L.sw_mine + '</div>' + mySwaps : ''));
 
-    document.querySelectorAll(".idx").forEach(b => { b.onclick = () => { mkAsset = b.dataset.asset; go("market"); }; });
+    document.querySelectorAll(".idx[data-asset]").forEach(b => { b.onclick = () => { mkAsset = b.dataset.asset; go("market"); }; });
+    document.querySelectorAll(".idx[data-scope]").forEach(b => { b.onclick = () => { mkScope = b.dataset.scope; go("market"); }; });
     const val = id => Math.max(0, parseInt(document.getElementById(id).value || 0));
     const preview = () => {
       const t1 = val("sellQ") * val("sellP"), fee = Math.floor(t1 * m.fee / 100);
       document.getElementById("sellV").textContent = fmt(L.mk_preview, { t: t1, g: t1 - fee, f: fee });
-      document.getElementById("bidV").textContent = fmt(L.mk_bidPreview, { t: val("bidQ") * val("bidP") });
+      const t2 = val("bidQ") * val("bidP"), bv = document.getElementById("bidV");
+      bv.textContent = fmt(L.mk_bidPreview, { t: t2 });
+      bv.classList.toggle("bad-text", t2 > m.balance);          // сумма заявки больше баланса — красным
+      const sv = document.getElementById("sellV");
+      sv.classList.toggle("bad-text", val("sellQ") > m.have);   // продаёшь больше, чем есть — красным
     };
     ["sellQ", "sellP", "bidQ", "bidP"].forEach(id => { document.getElementById(id).oninput = preview; });
     preview();
     const place = (side, btnId, msg) => {
       const b = document.getElementById(btnId), pre = side === "sell" ? "sell" : "bid";
-      b.onclick = () => (val(pre + "Q") <= 0 || val(pre + "P") <= 0) ? notify(L.sw_qtyErr, false) : act(b, "/api/market/order", { asset: a, side: side, qty: val(pre + "Q"), price: val(pre + "P") },
+      b.onclick = () => (val(pre + "Q") <= 0 || val(pre + "P") <= 0) ? notify(L.sw_qtyErr, false) : act(b, "/api/market/order", { asset: a, side: side, qty: val(pre + "Q"), price: val(pre + "P"), scope: m.scope },
         async () => { notify(msg); await refreshMe(); go("market"); });
     };
     place("sell", "sellB", L.mk_listed);
@@ -4165,7 +4424,7 @@
     const sb = document.getElementById("swB");
     sb.onclick = () => (val("swGQ") <= 0 || val("swWQ") <= 0) ? notify(L.sw_qtyErr, false) : act(sb, "/api/swap/create", {
       give_kind: document.getElementById("swG").value, give_qty: val("swGQ"),
-      want_kind: document.getElementById("swW").value, want_qty: val("swWQ")
+      want_kind: document.getElementById("swW").value, want_qty: val("swWQ"), scope: m.scope
     }, async () => { notify(L.sw_created); go("market"); });
 
     // Кнопки строк лотов: привязываются заново после каждой смены страницы списка
@@ -4307,7 +4566,44 @@
         '<div class="hint">' + L.st_feedEmpty + '</div>';
       stHtml = head + progress + '<div class="hint">' + L.st_hint + '</div><div class="sub2">' + L.st_feed + '</div>' + feed;
     }
-    box.innerHTML = card(L.team, teamHtml) + card(L.tm_roster, roster) + card(L.st_title, stHtml);
+    const H = d.help, MK = d.market;
+    const helpRows = pager("tmhelp", H.requests.map(h => {
+      const pct = Math.round(h.filled / h.qty * 100);
+      // Больше остатка просьбы, суточного лимита и своего запаса кнопка не предлагает
+      const left = Math.min(h.qty - h.filled, H.daily - H.given_today, d.stock[h.kind] || 0);
+      const btns = h.mine ? '<button class="mini ghost hpCancel" data-id="' + h.id + '">' + L.mk_cancel + '</button>'
+        : left <= 0 ? '' : [10, 50].filter(x => x < left).map(x => '<button class="mini hpGive" data-id="' + h.id + '" data-q="' + x + '">' + fmt(L.hp_give, { n: x }) + '</button>').join("") +
+          '<button class="mini hpGive" data-id="' + h.id + '" data-q="' + left + '">' + fmt(L.hp_give, { n: left }) + '</button>';
+      return '<div class="stres"><div class="row"><span class="k">' + (h.mine ? '⭐ ' : '') + esc(h.name) + ' · ' + RES_ICON[h.kind] +
+        '</span><span class="v">' + h.filled + ' / ' + h.qty + '</span></div><div class="bar"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="donrow">' + btns + '</div></div>';
+    }), 4, '<div class="hint">' + L.hp_empty + '</div>', bindHelp);
+    const hasOwn = H.requests.some(h => h.mine);
+    const helpForm = hasOwn ? '' : '<div class="swapform"><label class="lbl">' + L.hp_kind + '<select id="hpK">' +
+      RES.map(k => '<option value="' + k + '">' + RES_ICON[k] + ' ' + L["as_" + k] + '</option>').join("") + '</select></label>' +
+      '<label class="lbl">' + fmt(L.hp_qty, { n: H.max_qty }) + '<input id="hpQ" type="number" inputmode="numeric" min="1" max="' + H.max_qty + '" value="50"></label></div>' +
+      '<button class="btn ghost" id="hpAsk">' + L.hp_ask + '</button>';
+    box.innerHTML = card(L.team, teamHtml) + card(L.tm_roster, roster) +
+      card(L.tm_market, '<div class="hint">' + fmt(L.tm_marketHint, { f: MK.fee, p: MK.public_fee, c: MK.clan_fee }) + '</div>' +
+        '<button class="btn" id="tmMarket">' + L.tm_marketBtn + '</button>') +
+      card(L.hp_title, '<div class="hint">' + fmt(L.hp_hint, { d: H.daily }) + '</div>' +
+        '<div class="holding">' + fmt(L.hp_today, { g: H.given_today, d: H.daily }) + '</div>' + helpRows + helpForm) +
+      card(L.st_title, stHtml);
+    document.getElementById("tmMarket").onclick = () => { mkScope = "team"; go("market"); };
+    bindHelp(box);
+    const ask = document.getElementById("hpAsk");
+    if (ask) ask.onclick = () => act(ask, "/api/team/help", {
+      kind: document.getElementById("hpK").value, qty: Number(document.getElementById("hpQ").value || 0)
+    }, async () => { notify(L.hp_asked); go("team"); });
+    function bindHelp(root) {
+      root.querySelectorAll(".hpGive").forEach(b => {
+        b.onclick = () => act(b, "/api/team/help/give", { help_id: Number(b.dataset.id), qty: Number(b.dataset.q) },
+          async r => { notify(fmt(L.hp_given, { q: r.qty, k: RES_ICON[r.kind] })); await refreshMe(); go("team"); });
+      });
+      root.querySelectorAll(".hpCancel").forEach(b => {
+        b.onclick = () => act(b, "/api/team/help/cancel", { help_id: Number(b.dataset.id) }, async () => go("team"));
+      });
+    }
     const lb = document.getElementById("tmLeave");
     lb.onclick = () => askConfirm(fmt(tm.captain ? L.tm_leaveAskCaptain : L.tm_leaveAsk, { n: tm.name }),
       () => act(lb, "/api/team/leave", {}, async () => { notify(L.tm_left); await refreshMe(); go("team"); }));

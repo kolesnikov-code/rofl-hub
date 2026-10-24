@@ -529,6 +529,13 @@ RU: dict[str, str] = {
     "team.err_gone": "❌ Эта команда больше не существует.",
     "team.err_full": "📦 В этой команде закончились места!",
     "team.err_not_member": "❌ Ты не состоишь в команде.",
+    "mk.err_no_team": "🏆 Биржа команды — для участников команд. Вступи в команду или создай свою.",
+    "mk.err_team_only": "🔒 Этот лот только для участников команды продавца.",
+    "help.err_qty": "Попросить можно от 1 до {max} единиц ресурса.",
+    "help.err_open": "У тебя уже есть открытая просьба — дождись помощи или сними её.",
+    "help.err_not_found": "Просьба уже закрыта.",
+    "help.err_self": "Свою просьбу закрыть подарком нельзя 🙂",
+    "help.err_limit": "Сегодня ты уже подарил(а) {max} ресурсов — лимит обновится в 00:00 UTC.",
 
     # ---------------- удаление аккаунта ----------------
     "profile.btn_delete": "🗑 Удалить аккаунт",
@@ -1420,6 +1427,13 @@ EN: dict[str, str] = {
     "team.err_gone": "❌ This team no longer exists.",
     "team.err_full": "📦 This team has no free seats left!",
     "team.err_not_member": "❌ You're not in a team.",
+    "mk.err_no_team": "🏆 The team market is for team members. Join a team or create your own.",
+    "mk.err_team_only": "🔒 This lot is only for members of the seller's team.",
+    "help.err_qty": "You can ask for 1 to {max} units of a resource.",
+    "help.err_open": "You already have an open request — wait for help or cancel it.",
+    "help.err_not_found": "This request is already closed.",
+    "help.err_self": "You can't fill your own request with a gift 🙂",
+    "help.err_limit": "You've already given {max} resources today — the limit resets at 00:00 UTC.",
 
     # ---------------- account deletion ----------------
     "profile.btn_delete": "🗑 Delete account",

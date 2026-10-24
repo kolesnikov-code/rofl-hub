@@ -17,6 +17,10 @@
 Обмен ресурс ↔ ресурс (resource_swaps): «отдам X металла за Y водорода», ресурс мейкера
 в эскроу, принимающий отдаёт свой и забирает чужой целиком. Без комиссии и без монет.
 
+БИРЖА КОМАНДЫ (26.10): ордер или обмен с team_id видят и принимают только участники этой
+команды; комиссия — team_market_fee_percent (5%, Мега-Клан 2%). Ушедший из команды снимает свои
+командные лоты (leave_team), так что продавец всегда тиммейт покупателя.
+
 Строки users блокируются FOR UPDATE в порядке возрастания user_id (анти-дедлок).
 """
 from __future__ import annotations
@@ -34,6 +38,7 @@ from shared.economy import (
     market_fee,
     market_limits,
     market_min_price,
+    team_market_fee_percent,
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
@@ -68,6 +73,28 @@ def validate_order(qty: int, price: int, shuttle: bool = False, asset: str = "cu
     min_price = market_min_price(asset)
     if price < min_price or price > MARKET_MAX_PRICE:
         raise MarketError("mk.err_price", min=min_price, max=MARKET_MAX_PRICE)
+
+
+async def _team_scope(conn, user_id: int, team_only: bool) -> int | None:
+    """team_id для командного лота (игрок обязан быть в команде) или None для общей биржи."""
+    if not team_only:
+        return None
+    team_id = await conn.fetchval("SELECT team_id FROM users WHERE user_id = $1", user_id)
+    if team_id is None:
+        raise MarketError("mk.err_no_team")
+    return team_id
+
+
+async def _check_team_access(conn, user_id: int, team_id: int | None) -> int | None:
+    """Командный лот — только для участников этой команды. Возвращает ставку комиссии команды."""
+    if team_id is None:
+        return None
+    row = await conn.fetchrow(
+        "SELECT u.team_id, t.max_members FROM users u LEFT JOIN teams t ON t.team_id = u.team_id "
+        "WHERE u.user_id = $1", user_id)
+    if not row or row["team_id"] != team_id:
+        raise MarketError("mk.err_team_only")
+    return team_market_fee_percent(row["max_members"] or 0)
 
 
 async def _lock_users(conn, ids: list[int]) -> dict:
@@ -112,14 +139,19 @@ async def _give_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref
 # ============================================================================
 # Ордера
 # ============================================================================
-async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price: int) -> int:
-    """Выставляет ордер (продажа — товар в эскроу, покупка — монеты в эскроу). Возвращает id."""
+async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price: int,
+                      team_only: bool = False) -> int:
+    """
+    Выставляет ордер (продажа — товар в эскроу, покупка — монеты в эскроу). Возвращает id.
+    team_only — лот на бирже команды: видят и принимают только тиммейты.
+    """
     if side not in SIDES:
         raise MarketError("mk.err_asset")
     users = await _lock_users(conn, [user_id])
     user = users.get(user_id)
     if not user:
         raise MarketError("common.no_profile")
+    team_id = await _team_scope(conn, user_id, team_only)
     validate_order(qty, price, shuttle=bool(user["has_shuttle"]), asset=asset)
     _, max_orders = market_limits(bool(user["has_shuttle"]), asset)
     open_orders = await conn.fetchval(
@@ -138,8 +170,9 @@ async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price
         await _ensure_room(conn, user_id, asset, qty)
 
     order_id = await conn.fetchval(
-        "INSERT INTO market_orders (seller_id, qty, price, asset, side) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-        user_id, qty, price, asset, side)
+        "INSERT INTO market_orders (seller_id, qty, price, asset, side, team_id) "
+        "VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+        user_id, qty, price, asset, side, team_id)
     if side == "sell":
         await _take_asset(conn, user_id, asset, qty, "market_escrow", str(order_id))
     else:
@@ -178,12 +211,14 @@ async def fill_order(conn, taker_id: int, order_id: int, qty: int) -> dict:
     if qty <= 0:
         raise MarketError("mk.err_qty", max=market_limits(False)[0])
     order = await conn.fetchrow(
-        "SELECT seller_id, qty, price, status, asset, side FROM market_orders WHERE id = $1 FOR UPDATE", order_id)
+        "SELECT seller_id, qty, price, status, asset, side, team_id FROM market_orders WHERE id = $1 FOR UPDATE",
+        order_id)
     if not order or order["status"] != "open" or order["qty"] <= 0:
         raise MarketError("mk.err_not_found")
     maker_id = order["seller_id"]
     if maker_id == taker_id:
         raise MarketError("mk.err_own")
+    team_percent = await _check_team_access(conn, taker_id, order["team_id"])
     qty = min(qty, order["qty"])          # «всё» — берём остаток
     asset, price = order["asset"], order["price"]
     users = await _lock_users(conn, [taker_id, maker_id])
@@ -205,7 +240,7 @@ async def fill_order(conn, taker_id: int, order_id: int, qty: int) -> dict:
 
     seller = users.get(seller_id)
     shuttle = bool(seller and seller["has_shuttle"])   # льгота — только Шаттл самого продавца
-    fee = market_fee(total, shuttle=shuttle)
+    fee = market_fee(total, shuttle=shuttle, team_percent=team_percent)
     seller_got = total - fee
     if seller is not None and seller_got > 0:
         await change_balance(conn, seller_id, seller_got, "market_sell", str(order_id))
@@ -223,7 +258,7 @@ async def fill_order(conn, taker_id: int, order_id: int, qty: int) -> dict:
                 order_id, order["side"], asset, buyer_id, seller_id, qty, total, fee)
     return {"qty": qty, "price": price, "total": total, "fee": fee, "asset": asset, "side": order["side"],
             "buyer_id": buyer_id, "seller_id": seller_id, "maker_id": maker_id,
-            "seller_got": seller_got, "shuttle": shuttle}
+            "seller_got": seller_got, "shuttle": shuttle, "team": order["team_id"] is not None}
 
 
 async def buy_from_order(conn, buyer_id: int, order_id: int, qty: int) -> dict:
@@ -232,20 +267,24 @@ async def buy_from_order(conn, buyer_id: int, order_id: int, qty: int) -> dict:
 
 
 async def list_open_orders(conn, limit: int = 10, exclude_user: int | None = None,
-                           asset: str = "cutlet", side: str = "sell") -> list[dict]:
-    """Стакан: продажи — дешевле сверху, покупки — дороже сверху; при равной цене — кто раньше."""
+                           asset: str = "cutlet", side: str = "sell", team_id: int | None = None) -> list[dict]:
+    """
+    Стакан: продажи — дешевле сверху, покупки — дороже сверху; при равной цене — кто раньше.
+    team_id=None — общая биржа (командные лоты не видны), иначе — биржа этой команды.
+    """
     order_by = "price ASC" if side == "sell" else "price DESC"
     rows = await conn.fetch(
         f"""SELECT id, seller_id, qty, price, asset, side, created_at FROM market_orders
            WHERE status = 'open' AND qty > 0 AND asset = $3 AND side = $4
              AND ($2::bigint IS NULL OR seller_id <> $2)
-           ORDER BY {order_by}, created_at ASC LIMIT $1""", limit, exclude_user, asset, side)
+             AND team_id IS NOT DISTINCT FROM $5::int
+           ORDER BY {order_by}, created_at ASC LIMIT $1""", limit, exclude_user, asset, side, team_id)
     return [dict(r) for r in rows]
 
 
 async def my_open_orders(conn, user_id: int, asset: str | None = None) -> list[dict]:
     rows = await conn.fetch(
-        "SELECT id, qty, price, asset, side, created_at FROM market_orders "
+        "SELECT id, qty, price, asset, side, created_at, team_id IS NOT NULL AS team FROM market_orders "
         "WHERE seller_id = $1 AND status = 'open' AND ($2::text IS NULL OR asset = $2) ORDER BY created_at",
         user_id, asset)
     return [dict(r) for r in rows]
@@ -259,7 +298,7 @@ async def market_stats(conn, asset: str = "cutlet") -> dict:
                   MIN(price) FILTER (WHERE side = 'sell') AS best,
                   COUNT(*) FILTER (WHERE side = 'buy') AS bids,
                   MAX(price) FILTER (WHERE side = 'buy') AS best_bid
-           FROM market_orders WHERE status = 'open' AND qty > 0 AND asset = $1""", asset)
+           FROM market_orders WHERE status = 'open' AND qty > 0 AND asset = $1 AND team_id IS NULL""", asset)
     return {"orders": int(row["orders"]), "cutlets": int(row["qty"]), "qty": int(row["qty"]),
             "best_price": row["best"], "bids": int(row["bids"]), "best_bid": row["best_bid"]}
 
@@ -309,16 +348,18 @@ def validate_swap(give_kind: str, give_qty: int, want_kind: str, want_qty: int) 
         raise MarketError("sw.err_qty", max=SWAP_MAX_QTY)
 
 
-async def create_swap(conn, maker_id: int, give_kind: str, give_qty: int, want_kind: str, want_qty: int) -> int:
+async def create_swap(conn, maker_id: int, give_kind: str, give_qty: int, want_kind: str, want_qty: int,
+                      team_only: bool = False) -> int:
     validate_swap(give_kind, give_qty, want_kind, want_qty)
     await _lock_users(conn, [maker_id])
+    team_id = await _team_scope(conn, maker_id, team_only)
     open_swaps = await conn.fetchval(
         "SELECT COUNT(*) FROM resource_swaps WHERE maker_id = $1 AND status = 'open'", maker_id)
     if open_swaps >= SWAP_MAX_OPEN:
         raise MarketError("mk.err_too_many", max=SWAP_MAX_OPEN)
     swap_id = await conn.fetchval(
-        "INSERT INTO resource_swaps (maker_id, give_kind, give_qty, want_kind, want_qty) "
-        "VALUES ($1, $2, $3, $4, $5) RETURNING id", maker_id, give_kind, give_qty, want_kind, want_qty)
+        "INSERT INTO resource_swaps (maker_id, give_kind, give_qty, want_kind, want_qty, team_id) "
+        "VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", maker_id, give_kind, give_qty, want_kind, want_qty, team_id)
     await _take_asset(conn, maker_id, give_kind, give_qty, "swap_escrow", str(swap_id))
     return swap_id
 
@@ -329,6 +370,7 @@ async def accept_swap(conn, taker_id: int, swap_id: int) -> dict:
         raise MarketError("mk.err_not_found")
     if swap["maker_id"] == taker_id:
         raise MarketError("mk.err_own")
+    await _check_team_access(conn, taker_id, swap["team_id"])
     await _lock_users(conn, [taker_id, swap["maker_id"]])
     await _ensure_room(conn, taker_id, swap["give_kind"], swap["give_qty"])
     await _ensure_room(conn, swap["maker_id"], swap["want_kind"], swap["want_qty"], "mk.err_buyer_full")
@@ -350,16 +392,28 @@ async def cancel_swap(conn, user_id: int, swap_id: int) -> None:
     await _give_asset(conn, user_id, swap["give_kind"], swap["give_qty"], "swap_refund", str(swap_id))
 
 
-async def list_swaps(conn, limit: int = 20, exclude_user: int | None = None) -> list[dict]:
+async def list_swaps(conn, limit: int = 20, exclude_user: int | None = None,
+                     team_id: int | None = None) -> list[dict]:
     rows = await conn.fetch(
         "SELECT id, maker_id, give_kind, give_qty, want_kind, want_qty FROM resource_swaps "
-        "WHERE status = 'open' AND ($2::bigint IS NULL OR maker_id <> $2) ORDER BY created_at DESC LIMIT $1",
-        limit, exclude_user)
+        "WHERE status = 'open' AND ($2::bigint IS NULL OR maker_id <> $2) "
+        "AND team_id IS NOT DISTINCT FROM $3::int ORDER BY created_at DESC LIMIT $1",
+        limit, exclude_user, team_id)
     return [dict(r) for r in rows]
 
 
 async def my_swaps(conn, user_id: int) -> list[dict]:
     rows = await conn.fetch(
-        "SELECT id, give_kind, give_qty, want_kind, want_qty FROM resource_swaps "
+        "SELECT id, give_kind, give_qty, want_kind, want_qty, team_id IS NOT NULL AS team FROM resource_swaps "
         "WHERE maker_id = $1 AND status = 'open' ORDER BY created_at", user_id)
     return [dict(r) for r in rows]
+
+
+async def close_team_lots(conn, user_id: int) -> None:
+    """Игрок ушёл из команды — его командные ордера и обмены снимаются, эскроу возвращается."""
+    for r in await conn.fetch(
+            "SELECT id FROM market_orders WHERE seller_id = $1 AND status = 'open' AND team_id IS NOT NULL", user_id):
+        await cancel_order(conn, user_id, r["id"])
+    for r in await conn.fetch(
+            "SELECT id FROM resource_swaps WHERE maker_id = $1 AND status = 'open' AND team_id IS NOT NULL", user_id):
+        await cancel_swap(conn, user_id, r["id"])

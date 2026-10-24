@@ -31,7 +31,7 @@ async def conn():
                         "miners, duels, battles, vip_aliases, quest_progress, events, "
                         "daily_activity, promoters, metrics_snapshots, market_orders, "
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
-                        "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts RESTART IDENTITY")
+                        "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help RESTART IDENTITY")
         yield c
     await database.close()
 
@@ -252,13 +252,14 @@ async def test_safe_win_pays_increased_reward(conn, global_db):
 
 async def test_new_day_resets_all_win_counters(conn, global_db):
     pytest.importorskip("aiogram")
-    from datetime import date, timedelta
+    from datetime import timedelta
     from bots.main_bot.handlers.games import execute_solo_game_payout
+    from shared.economy import utcnow
     await _mk_user(conn, 32, 0)
     await conn.execute(
         "INSERT INTO game_stats (user_id, daily_wins_rps, daily_wins_hl, daily_wins_quiz, "
         "daily_wins_safe, last_game_date) "
-        "VALUES (32, 15, 15, 30, 15, $1)", date.today() - timedelta(days=1))
+        "VALUES (32, 15, 15, 30, 15, $1)", utcnow().date() - timedelta(days=1))
 
     ok, text, balance = await execute_solo_game_payout(32, True, "safe")  # вчерашний лимит не мешает
 
@@ -271,11 +272,11 @@ async def test_new_day_resets_all_win_counters(conn, global_db):
 
 async def test_daily_limit_blocks_win_for_new_games(conn, global_db):
     pytest.importorskip("aiogram")
-    from datetime import date
     from bots.main_bot.handlers.games import execute_solo_game_payout
+    from shared.economy import utcnow
     await _mk_user(conn, 33, 0)
     await conn.execute(
-        "INSERT INTO game_stats (user_id, daily_wins_safe, last_game_date) VALUES (33, 15, $1)", date.today())
+        "INSERT INTO game_stats (user_id, daily_wins_safe, last_game_date) VALUES (33, 15, $1)", utcnow().date())
 
     ok, text, balance = await execute_solo_game_payout(33, True, "safe")
 
@@ -1497,3 +1498,99 @@ async def test_team_create_join_search_roulette_and_roster(conn):
 
     roster = await team_members(conn, team_id, 1000)
     assert [m["user_id"] for m in roster] == [1000, 1001]     # капитан первым
+
+
+# ---------------------------------------------------------------- 26.10: биржа команды и взаимопомощь
+async def test_team_market_is_private_cheaper_and_closed_on_leave(conn):
+    from shared.db_clans import leave_team
+    from shared.economy import CLAN_MARKET_FEE_PERCENT, TEAM_MARKET_FEE_PERCENT
+    from shared.market import MarketError, fill_order, list_open_orders, place_order
+    from shared.resources import get_resources, grant_bundle
+    tid = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) "
+                              "VALUES ('Alpha', 1300, 2) RETURNING team_id")
+    await _mk_user(conn, 1300, 0, team_id=tid)
+    await _mk_user(conn, 1301, 10_000, team_id=tid)
+    await _mk_user(conn, 1302, 10_000)                     # чужой
+    await grant_bundle(conn, 1300, {"metal": 500}, "test")
+
+    with pytest.raises(MarketError) as e:
+        await place_order(conn, 1302, "metal", "buy", 1, 1, team_only=True)
+    assert e.value.key == "mk.err_no_team"
+
+    ask = await place_order(conn, 1300, "metal", "sell", 100, 10, team_only=True)
+    assert ask not in [o["id"] for o in await list_open_orders(conn, 50, asset="metal", side="sell")]
+    assert ask in [o["id"] for o in await list_open_orders(conn, 50, asset="metal", side="sell", team_id=tid)]
+    with pytest.raises(MarketError) as e:
+        await fill_order(conn, 1302, ask, 10)
+    assert e.value.key == "mk.err_team_only"
+
+    deal = await fill_order(conn, 1301, ask, 50)            # 500 🪙, комиссия команды 5%
+    assert deal["fee"] == 500 * TEAM_MARKET_FEE_PERCENT // 100
+    await conn.execute("UPDATE teams SET max_members = 1000 WHERE team_id = $1", tid)
+    deal2 = await fill_order(conn, 1301, ask, 50)           # Мега-Клан — 2%
+    assert deal2["fee"] == 500 * CLAN_MARKET_FEE_PERCENT // 100
+
+    ask2 = await place_order(conn, 1300, "metal", "sell", 100, 10, team_only=True)
+    async with conn.transaction():
+        await leave_team(conn, 1300, tid)
+    assert await conn.fetchval("SELECT status FROM market_orders WHERE id = $1", ask2) != "open"
+    assert (await get_resources(conn, 1300))["metal"] == 400  # эскроу вернулся
+
+
+async def test_team_help_rules(conn):
+    from datetime import timedelta
+    from shared.economy import TEAM_HELP_DAILY_GIVE, utcnow
+    from shared.resources import get_resources, grant_bundle
+    from shared.team_help import HelpError, cancel_help, give_help, given_today, request_help
+    now = utcnow()
+    tid = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) "
+                              "VALUES ('Beta', 1310, 3) RETURNING team_id")
+    await _mk_user(conn, 1310, 0, team_id=tid)
+    await _mk_user(conn, 1311, 0, team_id=tid)              # ещё не активный
+    await _mk_user(conn, 1312, 0, team_id=tid)
+    await _mk_user(conn, 1313, 0)                           # чужой
+    await _make_active(conn, 1312)
+    await _make_active(conn, 1313)
+    for uid in (1311, 1312, 1313):
+        await grant_bundle(conn, uid, {"crystal": 300}, "test")
+
+    hid = await request_help(conn, 1310, "crystal", 150)
+    with pytest.raises(HelpError) as e:
+        await request_help(conn, 1310, "metal", 10)
+    assert e.value.key == "help.err_open"
+    with pytest.raises(HelpError) as e:
+        await request_help(conn, 1313, "metal", 10)
+    assert e.value.key == "mk.err_no_team"
+
+    with pytest.raises(HelpError) as e:
+        await give_help(conn, 1310, hid, 10, now)
+    assert e.value.key == "help.err_self"
+    with pytest.raises(HelpError) as e:
+        await give_help(conn, 1313, hid, 10, now)
+    assert e.value.key == "mk.err_no_team"
+    other = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) "
+                                "VALUES ('Gamma', 1313, 1) RETURNING team_id")
+    await conn.execute("UPDATE users SET team_id = $1 WHERE user_id = 1313", other)
+    with pytest.raises(HelpError) as e:
+        await give_help(conn, 1313, hid, 10, now)          # игрок чужой команды
+    assert e.value.key == "mk.err_team_only"
+    with pytest.raises(HelpError) as e:
+        await give_help(conn, 1311, hid, 10, now)
+    assert e.value.key == "tr.err_not_active"
+
+    res = await give_help(conn, 1312, hid, 150, now)        # режется суточным лимитом
+    assert res["qty"] == TEAM_HELP_DAILY_GIVE and not res["done"]
+    assert await given_today(conn, 1312, now) == TEAM_HELP_DAILY_GIVE
+    with pytest.raises(HelpError) as e:
+        await give_help(conn, 1312, hid, 10, now)
+    assert e.value.key == "help.err_limit"
+    res = await give_help(conn, 1312, hid, 999, now + timedelta(days=1))   # новый день, остаток просьбы
+    assert res["qty"] == 150 - TEAM_HELP_DAILY_GIVE and res["done"]
+    assert (await get_resources(conn, 1310))["crystal"] == 150
+    assert (await get_resources(conn, 1312))["crystal"] == 150
+
+    hid2 = await request_help(conn, 1310, "parts", 10)
+    await cancel_help(conn, 1310, hid2)
+    with pytest.raises(HelpError) as e:
+        await give_help(conn, 1312, hid2, 5, now + timedelta(days=1))
+    assert e.value.key == "help.err_not_found"

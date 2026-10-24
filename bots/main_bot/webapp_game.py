@@ -59,6 +59,11 @@ from shared.economy import (
     MARKET_FEE_PERCENT,
     STATION_BONUS_PER_LEVEL,
     STATION_MAX_LEVEL,
+    team_market_fee_percent,
+    TEAM_HELP_MAX_QTY,
+    TEAM_HELP_DAILY_GIVE,
+    MEGA_CLAN_MAX_MEMBERS,
+    CLAN_MARKET_FEE_PERCENT,
     TEAM_SYMBOL_MAX_LEN,
     TEAM_NAME_MAX_LEN,
     TEAM_MOTTO_MAX_LEN,
@@ -102,6 +107,7 @@ from shared.raids import (
     shield_active,
 )
 from shared.ranks import rank_label
+from shared.team_help import HelpError, cancel_help, give_help, given_today, open_requests, request_help
 from shared.db_clans import (TeamError, create_team, join_team, leave_team, public_team, random_teams,
                              search_teams, team_members)
 from shared.resources import get_resources
@@ -510,13 +516,20 @@ async def handle_market(request: web.Request) -> web.Response:
     asset = request.query.get("asset", "cutlet")
     if asset not in MARKET_ASSETS:
         asset = "cutlet"
+    team_scope = request.query.get("scope") == "team"
     now = utcnow()
     async with db.pool.acquire() as conn:
+        team = await conn.fetchrow(
+            "SELECT t.team_id, t.team_name, t.max_members FROM users u JOIN teams t ON t.team_id = u.team_id "
+            "WHERE u.user_id = $1", ctx.user_id)
+        if team_scope and team is None:
+            return fail(plain(t(ctx.lang, "mk.err_no_team")))
+        scope_team = team["team_id"] if team_scope else None   # None — общая биржа
         stats = await market_stats(conn, asset)
         asks = await list_open_orders(conn, MARKET_APP_LIST_LIMIT, exclude_user=ctx.user_id,
-                                      asset=asset, side="sell")
+                                      asset=asset, side="sell", team_id=scope_team)
         bids = await list_open_orders(conn, MARKET_APP_LIST_LIMIT, exclude_user=ctx.user_id,
-                                      asset=asset, side="buy")
+                                      asset=asset, side="buy", team_id=scope_team)
         mine = await my_open_orders(conn, ctx.user_id)
         user = await conn.fetchrow("SELECT inv_cutlets, balance, has_shuttle FROM users WHERE user_id = $1",
                                    ctx.user_id)
@@ -525,7 +538,7 @@ async def handle_market(request: web.Request) -> web.Response:
         index = {}
         for a in MARKET_ASSETS:
             index[a] = index_change(history if a == asset else await price_history(conn, a, now))
-        swaps = await list_swaps(conn, MARKET_APP_SWAPS_LIMIT, exclude_user=ctx.user_id)
+        swaps = await list_swaps(conn, MARKET_APP_SWAPS_LIMIT, exclude_user=ctx.user_id, team_id=scope_team)
         my_sw = await my_swaps(conn, ctx.user_id)
     shuttle = bool(user["has_shuttle"])
     max_qty, max_orders = market_limits(shuttle, asset)
@@ -535,12 +548,16 @@ async def handle_market(request: web.Request) -> web.Response:
         "stats": {"orders": stats["orders"], "qty": stats["qty"], "best_price": stats["best_price"],
                   "bids": stats["bids"], "best_bid": stats["best_bid"]},
         "asks": [slim(o) for o in asks], "bids": [slim(o) for o in bids],
-        "my": [{"id": o["id"], "qty": o["qty"], "price": o["price"], "asset": o["asset"], "side": o["side"]}
-               for o in mine],
+        "my": [{"id": o["id"], "qty": o["qty"], "price": o["price"], "asset": o["asset"], "side": o["side"],
+                "team": o["team"]} for o in mine],
+        "scope": "team" if team_scope else "public",
+        "team": ({"name": html.unescape(team["team_name"]), "fee": team_market_fee_percent(team["max_members"]),
+                  "is_clan": team["max_members"] >= MEGA_CLAN_MAX_MEMBERS} if team else None),
         "have": user["inv_cutlets"] if asset == "cutlet" else stock[asset],
         "inv": user["inv_cutlets"], "stock": stock, "balance": user["balance"],
         "shuttle": shuttle,
-        "fee": SHUTTLE_MARKET_FEE_PERCENT if shuttle else MARKET_FEE_PERCENT,
+        "fee": min(SHUTTLE_MARKET_FEE_PERCENT if shuttle else MARKET_FEE_PERCENT,
+                   team_market_fee_percent(team["max_members"]) if team_scope else 100),
         "max_qty": max_qty, "max_orders": max_orders,
         "min_price": market_min_price(asset), "max_price": MARKET_MAX_PRICE,
         "cutlet_floor": MARKET_CUTLET_MIN_PRICE,
@@ -565,7 +582,8 @@ async def handle_market_order(request: web.Request) -> web.Response:
     try:
         async with db.pool.acquire() as conn:
             async with conn.transaction():
-                order_id = await place_order(conn, ctx.user_id, asset, side, qty, price)
+                order_id = await place_order(conn, ctx.user_id, asset, side, qty, price,
+                                             team_only=data.get("scope") == "team")
     except MarketError as e:
         return fail(e.localized(ctx.lang))
     await track(ctx.user_id, "market_order", asset=asset, side=side, qty=qty, price=price, source="webapp")
@@ -671,7 +689,7 @@ async def handle_swap_create(request: web.Request) -> web.Response:
             async with conn.transaction():
                 swap_id = await create_swap(conn, ctx.user_id, str(data.get("give_kind", "")),
                                             _int(data.get("give_qty")), str(data.get("want_kind", "")),
-                                            _int(data.get("want_qty")))
+                                            _int(data.get("want_qty")), team_only=data.get("scope") == "team")
     except MarketError as e:
         return fail(e.localized(ctx.lang))
     await track(ctx.user_id, "swap_created", source="webapp")
@@ -746,7 +764,9 @@ async def handle_team(request: web.Request) -> web.Response:
         feed = await recent_donations(conn, user["team_id"])
         # Состав виден только своим (как в чате) — @username или имя, 🧠 уровень, звание
         members = await team_members(conn, user["team_id"], team["captain_id"])
-    now = utcnow()
+        now = utcnow()
+        help_rows = await open_requests(conn, user["team_id"])
+        given = await given_today(conn, ctx.user_id, now)
     station_on = await get_flag("station")
     level = station["level"]
     stored = {k: station[k] for k in RESOURCE_KINDS}
@@ -763,12 +783,59 @@ async def handle_team(request: web.Request) -> web.Response:
             "cost": station_level_cost(level + 1) if level < STATION_MAX_LEVEL else 0,
             "stored": stored, "need": progress_to_next(level, stored),
         },
+        "help": {
+            "requests": [{"id": h["id"], "name": _player_name(h), "kind": h["kind"], "qty": h["qty"],
+                          "filled": h["filled"], "mine": h["user_id"] == ctx.user_id} for h in help_rows],
+            "given_today": given, "daily": TEAM_HELP_DAILY_GIVE, "max_qty": TEAM_HELP_MAX_QTY,
+        },
+        "market": {"fee": team_market_fee_percent(team["max_members"]), "public_fee": MARKET_FEE_PERCENT,
+                   "clan_fee": CLAN_MARKET_FEE_PERCENT},
         "feed": [{"name": ("@" + d["username"]) if d.get("username") else
                   ((d.get("display_name") or "").strip() or "#" + str(d["user_id"])[-4:]),
                   "kind": d["kind"], "qty": d["qty"]} for d in feed],
         "stock": stock,
         "res_names": resource_labels(ctx.lang),
     })
+
+
+def _player_name(row) -> str:
+    return ("@" + row["username"]) if row.get("username") else \
+        ((row.get("display_name") or "").strip() or "#" + str(row["user_id"])[-4:])
+
+
+async def _help_call(request: web.Request, action) -> web.Response:
+    """Общая обёртка ручек взаимопомощи: авторизация, транзакция, ошибки на языке игрока."""
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    data = await _json(request)
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                result = await action(conn, ctx.user_id, data)
+    except HelpError as e:
+        return fail(plain(e.localized(ctx.lang)))
+    return web.json_response({"ok": True, **(result or {})})
+
+
+async def handle_help_request(request: web.Request) -> web.Response:
+    async def action(conn, uid, data):
+        return {"id": await request_help(conn, uid, str(data.get("kind", "")), _int(data.get("qty")))}
+    return await _help_call(request, action)
+
+
+async def handle_help_give(request: web.Request) -> web.Response:
+    async def action(conn, uid, data):
+        res = await give_help(conn, uid, _int(data.get("help_id")), _int(data.get("qty")), utcnow())
+        await track(uid, "team_help_give", kind=res["kind"], qty=res["qty"], source="webapp")
+        return {"qty": res["qty"], "kind": res["kind"], "done": res["done"]}
+    return await _help_call(request, action)
+
+
+async def handle_help_cancel(request: web.Request) -> web.Response:
+    async def action(conn, uid, data):
+        await cancel_help(conn, uid, _int(data.get("help_id")))
+    return await _help_call(request, action)
 
 
 async def handle_teams(request: web.Request) -> web.Response:
@@ -947,6 +1014,9 @@ def register_game_routes(app: web.Application) -> None:
     app.router.add_post("/api/team/join", handle_team_join)
     app.router.add_post("/api/team/leave", handle_team_leave)
     app.router.add_post("/api/team/create", handle_team_create)
+    app.router.add_post("/api/team/help", handle_help_request)
+    app.router.add_post("/api/team/help/give", handle_help_give)
+    app.router.add_post("/api/team/help/cancel", handle_help_cancel)
     app.router.add_post("/api/station/donate", handle_station_donate)
     app.router.add_get("/api/goals", handle_goals)
     app.router.add_post("/api/goals/claim", handle_goals_claim)

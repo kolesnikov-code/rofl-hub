@@ -173,7 +173,7 @@ def test_wide_screen_layout_is_a_grid_and_the_chart_is_capped():
 def test_long_lists_are_paged_and_the_shop_has_three_panels():
     """Лоты биржи, ТОП и рейтинг друзей листаются страницами; магазин — ферма | игровые | описания."""
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    for pager_id in ('pager("asks-"', 'pager("bids-"', 'pager("swaps"', 'pager("top"', 'pager("reftop"'):
+    for pager_id in ('scopeKey + "asks-"', 'scopeKey + "bids-"', 'scopeKey + "swaps"', 'pager("top"', 'pager("reftop"'):
         assert pager_id in html
     assert "span-tablet" in html and 'pager("shopinfo"' in html
 
@@ -193,3 +193,24 @@ def test_team_text_filter_and_app_team_hub():
     for needle in ('"/api/teams"', '"/api/team/join"', '"/api/team/leave"', '"/api/team/create"',
                    '"faq", "rules"]', 'viewDoc("/faq")', 'viewDoc("/rules")'):
         assert needle in html
+
+
+def test_team_market_fees_and_help_ui():
+    """Биржа команды дешевле общей (Мега-Клан ещё дешевле), Шаттл не суммируется; взаимопомощь есть в приложении."""
+    from shared.economy import (CLAN_MARKET_FEE_PERCENT, MARKET_FEE_PERCENT, MEGA_CLAN_MAX_MEMBERS,
+                                SHUTTLE_MARKET_FEE_PERCENT, TEAM_MARKET_FEE_PERCENT, market_fee,
+                                team_market_fee_percent)
+    assert CLAN_MARKET_FEE_PERCENT < TEAM_MARKET_FEE_PERCENT < MARKET_FEE_PERCENT
+    assert team_market_fee_percent(50) == TEAM_MARKET_FEE_PERCENT
+    assert team_market_fee_percent(MEGA_CLAN_MAX_MEMBERS) == CLAN_MARKET_FEE_PERCENT
+    assert market_fee(1000) == 1000 * MARKET_FEE_PERCENT // 100
+    assert market_fee(1000, team_percent=TEAM_MARKET_FEE_PERCENT) == 1000 * TEAM_MARKET_FEE_PERCENT // 100
+    assert market_fee(1000, shuttle=True, team_percent=CLAN_MARKET_FEE_PERCENT) == \
+        1000 * min(SHUTTLE_MARKET_FEE_PERCENT, CLAN_MARKET_FEE_PERCENT) // 100
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    for needle in ('mkScope', 'data-scope', '/api/team/help', '/api/team/help/give', 'L.mk_yourStock',
+                   'L.mk_yourCoins', 'L.hp_title', 'L.tm_market', 'pager("tmroster"'):
+        assert needle in html, needle
+    from shared.locales import t
+    for lang in ("ru", "en", "de", "zh", "ar"):
+        assert "{" not in t(lang, "help.err_limit", max=100)

@@ -186,10 +186,34 @@ SWAP_MAX_OPEN = 5
 SWAP_MAX_QTY = 10_000
 
 
-def market_fee(total: int, shuttle: bool = False) -> int:
-    """Комиссия сделки (платит продавец); Шаттл ПРОДАВЦА — льготная, чужим Шаттлом не воспользоваться."""
+# Биржа команды (решение владельца 26.10): лоты видят и покупают только тиммейты, комиссия ниже
+# общей — мотивация собирать команду и прокачивать её до Мега-Клана (за Stars). Пол цены котлеты
+# действует и внутри команды: топливо из магазина по-прежнему выгоднее.
+TEAM_MARKET_FEE_PERCENT = 5
+CLAN_MARKET_FEE_PERCENT = 2
+
+
+def team_market_fee_percent(max_members: int) -> int:
+    """Комиссия биржи команды: Мега-Клан — 2%, обычная команда — 5% (общая биржа — 10%)."""
+    return CLAN_MARKET_FEE_PERCENT if max_members >= MEGA_CLAN_MAX_MEMBERS else TEAM_MARKET_FEE_PERCENT
+
+
+def market_fee(total: int, shuttle: bool = False, team_percent: int | None = None) -> int:
+    """
+    Комиссия сделки (платит продавец); Шаттл ПРОДАВЦА — льготная, чужим Шаттлом не воспользоваться.
+    team_percent — сделка на бирже команды: берётся меньшая из ставок.
+    """
     percent = SHUTTLE_MARKET_FEE_PERCENT if shuttle else MARKET_FEE_PERCENT
+    if team_percent is not None:
+        percent = min(percent, team_percent)
     return total * percent // 100
+
+
+# Взаимопомощь в команде: тиммейт просит ресурс — остальные дарят. Только ресурсы (котлеты —
+# топливо из магазина, их не дарят), дарить могут только активные аккаунты, лимит на дарителя в сутки.
+TEAM_HELP_MAX_QTY = 200          # максимум одной просьбы
+TEAM_HELP_DAILY_GIVE = 100       # сколько ресурсов один игрок может подарить за сутки UTC
+TEAM_HELP_LIST_LIMIT = 50
 DUEL_BURN_PERCENT = 20
 
 
