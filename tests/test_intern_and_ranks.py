@@ -58,13 +58,27 @@ def test_permanent_expiry_is_far_future():
 
 
 # ---------------------------------------------------------------- Стажёры за интеллект
-def test_intern_for_every_intellect_level():
-    """Решение владельца 26.10: Стажёр за КАЖДЫЙ новый уровень интеллекта (было — каждый 10-й)."""
-    assert INTERN_LEVEL_STEP == 1
+def test_intern_only_for_every_tenth_intellect_level():
+    """Решение владельца 26.10 (вечер): Стажёр при активации + за уровни 10, 20, 30… — и всё."""
+    assert INTERN_LEVEL_STEP == 10
     assert interns_for_level(0) == 0
-    assert interns_for_level(1) == 1
-    assert interns_for_level(2) == 2
-    assert interns_for_level(10) == 10
+    assert interns_for_level(9) == 0
+    assert interns_for_level(10) == 1
+    assert interns_for_level(25) == 2
+    assert interns_for_level(50) == 5
+
+
+def test_referral_pays_only_for_an_active_friend():
+    """Решение владельца 26.10: за регистрацию — ничего; +500 один раз за активного друга."""
+    import shared.economy as e
+    assert not hasattr(e, "REFERRAL_SIGNUP_BONUS")
+    assert not hasattr(e, "REFERRAL_QUALIFIED_CUTLETS")
+    assert e.REFERRAL_QUALIFIED_BONUS == 500
+    assert e.REFERRAL_QUALIFY_QUIZ_LEVEL == 3
+    assert e.REFERRAL_QUALIFY_BONUS_CLAIMS == 3
+    # 3 уровень интеллекта = 10 + 20 + 30 верных ответов — больше суточного лимита викторины
+    assert sum(e.quiz_answers_required(n) for n in range(1, e.REFERRAL_QUALIFY_QUIZ_LEVEL + 1)) > \
+        e.DAILY_WIN_LIMITS["quiz"]
 
 
 def test_claim_button_texts_exist():

@@ -15,7 +15,7 @@ from pathlib import Path
 from aiohttp import web
 
 from bots.main_bot.catalog import CATALOG, CatalogError, SHOP_LAYOUT, build_order, item_button, item_title
-from shared.analytics import track
+from shared.analytics import notify_referrer_qualified, qualify_referral_if_due, track
 from shared.database import db
 from shared.economy import (
     armor_level_active,
@@ -202,9 +202,12 @@ async def handle_bonus(request: web.Request) -> web.Response:
             if seconds_left > 0:
                 return web.json_response({"ok": False, "seconds_left": seconds_left})
             await conn.execute(
-                "UPDATE users SET inv_cutlets = inv_cutlets + 1, last_bonus_claim_at = $2 "
-                "WHERE user_id = $1", user_id, now)
+                "UPDATE users SET inv_cutlets = inv_cutlets + 1, last_bonus_claim_at = $2, "
+                "bonus_claims = bonus_claims + 1 WHERE user_id = $1", user_id, now)
+            # 3-я ежедневная котлета могла сделать игрока «активным другом» → +500 рефереру
+            qualified_referrer = await qualify_referral_if_due(conn, user_id)
     await track(user_id, "bonus_claimed", source="webapp")
+    await notify_referrer_qualified(request.app.get("bot"), qualified_referrer)
     return web.json_response({"ok": True, "seconds_left": 0})
 
 

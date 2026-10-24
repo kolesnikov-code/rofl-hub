@@ -475,6 +475,32 @@ SCHEMA_STATEMENTS: list[str] = [
         interns_backfilled = TRUE
     WHERE NOT u.interns_backfilled;
     """,
+    # --- 26.10 (вечер): Стажёр только за уровни, кратные 10; рефералка «активный друг» ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS interns_rebalanced BOOLEAN NOT NULL DEFAULT FALSE;",
+    # Разовый откат правила «Стажёр за каждый уровень»: оставляем стартового + по одному за
+    # каждые 10 уровней, лишних (самых новых) снимаем, ожидающие пересчитываем. Идемпотентно по флагу.
+    """
+    DELETE FROM miners WHERE miner_id IN (
+        SELECT m.miner_id
+        FROM (SELECT miner_id, user_id,
+                     ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY purchased_at, miner_id) AS rn
+              FROM miners WHERE kind = 'intern') m
+        JOIN users u ON u.user_id = m.user_id
+        LEFT JOIN game_stats g ON g.user_id = u.user_id
+        WHERE NOT u.interns_rebalanced
+          AND m.rn > (CASE WHEN u.intern_claimed THEN 1 ELSE 0 END) + COALESCE(g.quiz_level, 0) / 10);
+    """,
+    """
+    UPDATE users u SET
+        interns_pending = GREATEST(0,
+            COALESCE((SELECT g.quiz_level FROM game_stats g WHERE g.user_id = u.user_id), 0) / 10
+            - GREATEST(0, (SELECT COUNT(*) FROM miners m WHERE m.user_id = u.user_id AND m.kind = 'intern')
+                          - CASE WHEN u.intern_claimed THEN 1 ELSE 0 END)),
+        interns_rebalanced = TRUE
+    WHERE NOT u.interns_rebalanced;
+    """,
+    # Сколько ежедневных котлет забрал игрок — условие «активного друга» в рефералке
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS bonus_claims INT NOT NULL DEFAULT 0;",
     """
     CREATE TABLE IF NOT EXISTS weekly_crafts (
         id BIGSERIAL PRIMARY KEY,

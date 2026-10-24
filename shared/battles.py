@@ -39,8 +39,8 @@ BATTLE_NOMINATIONS: dict[str, dict] = {
                   "kind": "ledger_count", "reason": "game_win:safe", "unit": "сейфов"},
     "game_wins_total": {"title": "🏆 Больше всех побед во всех играх против бота",
                         "kind": "ledger_count_like", "reason_like": "game_win:%", "unit": "побед"},
-    "referrals": {"title": "🤝 Больше всех привести новичков в экосистему",
-                  "kind": "referrals", "unit": "новичков"},
+    "referrals": {"title": "🤝 Больше всех привести активных новичков в экосистему",
+                  "kind": "referrals", "unit": "активных новичков"},
     "stars_spent": {"title": "💵 Больше всех поддержать экосистему (Stars)",
                     "kind": "stars", "unit": "★"},
 }
@@ -89,7 +89,7 @@ async def battle_team_scores(conn, nomination_key: str, starts_at: datetime,
             FROM users newbie
             JOIN users ref ON ref.user_id = newbie.referred_by
             JOIN teams t ON t.team_id = ref.team_id
-            WHERE newbie.created_at >= $1 AND newbie.created_at < $2
+            WHERE newbie.qualified_at >= $1 AND newbie.qualified_at < $2   -- фейки не в счёт
             GROUP BY ref.team_id, t.team_name, t.max_members
             ORDER BY COUNT(*) DESC, ref.team_id ASC
             LIMIT {limit}

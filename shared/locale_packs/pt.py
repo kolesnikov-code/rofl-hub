@@ -141,7 +141,7 @@ STRINGS = {
         "• /my_team — Painel da tropa e LISTA DE MEMBROS com níveis 🧠\n"
         "• /all_teams — Roleta de equipes aleatórias\n\n"
         "💸 <b>DINHEIRO E AMIGOS:</b>\n"
-        "• /invite — Seu link de indicação: +1000 🪙 por amigo\n"
+        "• /invite — Seu link de indicação: +500 🪙 por amigo ativo\n"
         "• /transfer — Enviar moedas a outro jogador\n\n"
         "📚 <b>GUIA E REGRAS:</b>\n"
         "• /faq — Guia completo do ecossistema (abre no Mini App)\n"
@@ -253,7 +253,7 @@ STRINGS = {
     "farm.btn_claim_intern": "🎁 Resgatar Robô Estagiário ({n})",
     "farm.intern_pending": "🎁 Robôs Estagiários ganhos com seus níveis de intelecto: <b>{n}</b> — resgate no botão abaixo!",
     "farm.intern_claimed_new": "🤖 Um novo Robô Estagiário entrou em campo! +1 🪙 por hora para sempre.",
-    "farm.intern_none": "🤖 Ainda não há novos Estagiários — suba o nível de intelecto no quiz.",
+    "farm.intern_none": "🤖 Ainda não há novos Estagiários — o próximo espera você no nível de intelecto 10, 20, 30…",
     "games.intern_ready": "🎁 Seu novo nível rendeu um <b>Robô Estagiário</b> — resgate na sua fazenda!",
     "farm.intern_line": "• Robôs Estagiários ({rate} 🪙/h, eternos): <code>{count}</code>\n",
     "farm.intern_hint": "🎁 Você tem um Robô Estagiário grátis! Toque no botão abaixo e ele vai minerar 1 🪙 por hora para sempre.",
@@ -476,8 +476,8 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAMA DE INDICAÇÃO DO ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Convide amigos e ganhe <b>+{bonus} 🪙</b> por cada um "
-        "que se registrar pelo seu link pessoal!\n\n"
+        "Convide amigos pelo seu link pessoal e ganhe <b>+{bonus} 🪙</b> "
+        "por cada um que virar jogador ativo!\n\n"
         "🔗 <b>Seu link (toque para copiar):</b>\n<code>{link}</code>\n\n"
         "📊 <b>SUAS ESTATÍSTICAS:</b>\n"
         "👥 Amigos convidados: <b>{invited}</b>\n"
@@ -487,10 +487,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Compartilhar o link",
     "ref.share_text": "Entra no ecossistema de jogos ROFL HUB!",
-    "ref.qualified_line": ("⭐ <b>Recompensa em dobro:</b> quando um amigo convidado jogar "
-                           "{rounds} rodadas, você ganha mais <b>+{bonus} 🪙</b> e <b>{cutlets} 🥩 ciber-bife</b>!"),
-    "ref.qualified_notify": ("🤝 <b>Seu amigo pegou o gosto: já são {rounds} rodadas!</b>\n"
-                             "Você ganhou <b>+{bonus} 🪙</b> e <b>{cutlets} 🥩 ciber-bife</b> no estoque por um indicado qualificado. "
+    "ref.qualified_line": ("✅ <b>Amigo ativo</b> é quem chegou ao <b>nível de intelecto {level}</b> no quiz "
+                           "e pegou <b>{claims} bifes diários</b> na fazenda. Aí você ganha <b>+{bonus} 🪙</b>, "
+                           "uma vez por amigo. Cadastro sem jogar não rende bônus — é mais justo para todos."),
+    "ref.qualified_notify": ("🤝 <b>Seu amigo virou jogador ativo!</b>\n"
+                             "Nível de intelecto {level} e {claims} bifes diários — feito. Você ganhou <b>+{bonus} 🪙</b>. "
                              "Convide mais!"),
 
     # ---------------- transferências ----------------
@@ -593,7 +594,7 @@ STRINGS = {
     "dlv.err_mega": "Sua equipe já tem o status de Mega-Clã.",
     "dlv.intern_upgrade": "♾ Seu Robô Estagiário foi promovido a <b>Robô Minerador ETERNO</b>: 5 🪙 por hora, sem validade!",
     "dlv.err_no_intern": "Nenhum Robô Estagiário ativado: ative-o primeiro em /farm.",
-    "dlv.err_intern_refs": "O upgrade exige {need} amigos qualificados (30 rodadas cada); você tem {have}.",
+    "dlv.err_intern_refs": "O upgrade exige {need} amigos ativos (as condições estão em /invite); você tem {have}.",
     "mk.header": "📈 <b>BOLSA DE BIFES</b>\n..................................................\n\nOrdens abertas: <b>{orders}</b> · bifes à venda: <b>{cutlets}</b> · melhor preço: <b>{best}</b>\nTaxa do hub: <b>{fee}%</b> por venda (queimada — escudo contra inflação)\n🥩 No seu estoque: <b>{inv}</b> bifes\n\n{body}\n\n<i>Toque numa ordem para comprar. Para vender, use /sell.</i>",
     "mk.empty": "Ainda não há ofertas. Seja o primeiro: /sell quantidade preço",
     "mk.order_line": "🥩 #{id} · <b>{qty} un.</b> a <b>{price}</b> 🪙",
@@ -970,7 +971,7 @@ MINIAPP = {
     "eff_shuttle": "só seu: taxa de 5% nas suas vendas e ordens de até 500 bifes — para sempre",
     "tab_friends": "🤝 Amigos",
     "ref_title": "🤝 CONVIDE AMIGOS",
-    "ref_rules": "+{s} 🪙 na hora por cada amigo. Quando o amigo jogar {r} rodadas — mais +{q} 🪙 e {c} 🥩 ciber-bife.",
+    "ref_rules": "+{q} 🪙 por cada amigo ativo — uma vez só. Amigo ativo é quem chegou ao nível de intelecto {l} e pegou {c} bifes diários.",
     "ref_copy": "📋 Copiar",
     "ref_copied": "Link copiado!",
     "ref_share": "📤 Compartilhar",
@@ -978,9 +979,8 @@ MINIAPP = {
     "ref_invited": "convidados",
     "ref_qualified": "ativos",
     "ref_earned": "ganho",
-    "ref_cutlets": "🥩 Bifes recebidos por amigos ativos: {n}",
     "ref_top": "🏆 QUEM TEM MAIS AMIGOS",
-    "ref_topHint": "✅ — amigos ativos (jogaram 30 rodadas), 👥 — todos os convidados",
+    "ref_topHint": "✅ — amigos ativos, 👥 — todos os convidados",
     "ref_empty": "O ranking ainda está vazio — seja o primeiro lugar!",
     "wk_title": "🔥 RECEITAS DA SEMANA",
     "wk_hint": "Receitas temporárias: aparecem quando o hub decide e depois somem. Monte a tempo!",
@@ -1118,7 +1118,7 @@ COMMANDS = {
     "duel": "⚔️ Duelo 1x1 valendo aposta",
     "quests": "🗺️ Missões: histórias com escolhas",
     "my_team": "🏆 Minha equipe e colegas",
-    "invite": "🤝 Link de indicação: +1000 por amigo",
+    "invite": "🤝 Link de indicação: +500 por amigo ativo",
     "transfer": "🔄 Enviar moedas a um jogador",
     "market": "📈 Bolsa de bifes: comprar ou vender",
     "sell": "💰 Vender bifes: /sell quantidade preço",

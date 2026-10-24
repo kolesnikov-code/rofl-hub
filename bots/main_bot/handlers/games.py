@@ -23,7 +23,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 from bots.main_bot.guards import feature_enabled
 from bots.main_bot.utils.questions_loader import get_question_by_id, get_random_question
-from shared.analytics import qualify_referral_if_due, track
+from shared.analytics import notify_referrer_qualified, qualify_referral_if_due, track
 from shared.database import db
 from shared.economy import (
     DAILY_WIN_LIMITS,
@@ -31,9 +31,6 @@ from shared.economy import (
     INTERN_LEVEL_STEP,
     LOSE_PENALTY,
     QUIZ_ANSWER_SECONDS,
-    REFERRAL_QUALIFIED_BONUS,
-    REFERRAL_QUALIFIED_CUTLETS,
-    REFERRAL_QUALIFY_ROUNDS,
     SAFE_CODES_COUNT,
     SAFE_WIN_REWARD,
     WIN_REWARD,
@@ -106,31 +103,16 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
     (лимит, нет монет, нет профиля) — текст объясняет почему.
 
     Аналитика (events) пишется ПОСЛЕ транзакции — сбой записи события не может
-    откатить монеты. Квалификация реферала (30 раундов → +1000 рефереру) — ВНУТРИ
-    транзакции: это игровая механика, бонус начисляется строго один раз.
+    откатить монеты. Квалификация реферала (новый уровень интеллекта мог сделать друга
+    «активным» → +500 рефереру) — ВНУТРИ транзакции: бонус начисляется строго один раз.
     """
     events: list[tuple[str, dict]] = []
     ok, text, balance, qualified_referrer = await _payout_in_tx(
         user_id, is_win, game_type, is_draw, lang, events)
     for name, props in events:
         await track(user_id, name, **props)
-    if qualified_referrer is not None and bot is not None:
-        await _notify_referrer_qualified(bot, qualified_referrer)
+    await notify_referrer_qualified(bot, qualified_referrer)
     return ok, text, balance
-
-
-async def _notify_referrer_qualified(bot: Bot, referrer_id: int) -> None:
-    """ЛС рефереру о +1000 за квалифицированного друга. Любой сбой — только в лог."""
-    try:
-        row = await db.pool.fetchrow("SELECT lang FROM users WHERE user_id = $1", referrer_id)
-        lang = resolve_lang(row["lang"]) if row else "ru"
-        await bot.send_message(
-            referrer_id, t(lang, "ref.qualified_notify",
-                           bonus=REFERRAL_QUALIFIED_BONUS, rounds=REFERRAL_QUALIFY_ROUNDS,
-                           cutlets=REFERRAL_QUALIFIED_CUTLETS),
-            parse_mode="HTML")
-    except Exception:
-        logger.info("[REFERRAL_QUALIFIED] реферер %s недоступен для ЛС", referrer_id)
 
 
 async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: bool, lang: str,
@@ -212,8 +194,7 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                     """,
                     user_id, 1 if is_win else 0, today)
 
-            # Квалификация реферала: друг доиграл до 30 раундов → рефереру +1000 (один раз)
-            qualified_referrer = await qualify_referral_if_due(conn, user_id, games_played or 0)
+            qualified_referrer = None
             events.append(("game_round", {
                 "game": game_type,
                 "result": "win" if is_win else ("draw" if is_draw else "lose"),
@@ -238,11 +219,13 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                                          next_required=quiz_answers_required(next_level + 1),
                                          next_reward=quiz_level_reward(next_level + 1))
                     if next_level % INTERN_LEVEL_STEP == 0:
-                        # Новый уровень интеллекта — ещё один Робот Стажёр ждёт на ферме:
+                        # Уровень, кратный 10, — ещё один Робот Стажёр ждёт на ферме:
                         # игрок забирает его кнопкой (видит награду, а не получает молча)
                         await conn.execute(
                             "UPDATE users SET interns_pending = interns_pending + 1 WHERE user_id = $1", user_id)
                         status += "\n" + t(lang, "games.intern_ready")
+                    # Новый уровень мог сделать игрока «активным другом» → +500 рефереру (один раз)
+                    qualified_referrer = await qualify_referral_if_due(conn, user_id)
 
             return True, status, new_balance, qualified_referrer
 

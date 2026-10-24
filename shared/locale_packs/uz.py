@@ -142,7 +142,7 @@ STRINGS: dict[str, str] = {
         "• /my_team — Jamoa dashbordi va 🧠 darajali JAMOADOSHLAR RO'YXATI\n"
         "• /all_teams — Tasodifiy jamoalar o'yin ruletkasi\n\n"
         "💸 <b>PUL VA DO'STLAR:</b>\n"
-        "• /invite — Referal havolang: har bir do'st uchun +1000 🪙\n"
+        "• /invite — Referal havolang: faol do'st uchun +500 🪙\n"
         "• /transfer — Boshqa o'yinchiga tanga o'tkazish\n\n"
         "📚 <b>MA'LUMOT VA QOIDALAR:</b>\n"
         "• /faq — Ekotizimning to'liq qo'llanmasi (Mini App'da ochiladi)\n"
@@ -254,7 +254,7 @@ STRINGS: dict[str, str] = {
     "farm.btn_claim_intern": "🎁 Stajyor Robotni olish ({n})",
     "farm.intern_pending": "🎁 Intellekt darajalari uchun seni Stajyor Robotlar kutmoqda: <b>{n}</b> — pastdagi tugma bilan ol!",
     "farm.intern_claimed_new": "🤖 Yangi Stajyor Robot smenaga chiqdi! Abadiy soatiga +1 🪙.",
-    "farm.intern_none": "🤖 Yangi Stajyorlar hozircha yo'q — viktorinada intellekt darajasini oshir.",
+    "farm.intern_none": "🤖 Yangi Stajyorlar hozircha yo'q — keyingisi intellekt darajasi 10, 20, 30… bo'lganda seni kutadi.",
     "games.intern_ready": "🎁 Yangi daraja uchun seni <b>Stajyor Robot</b> kutmoqda — uni fermada ol!",
     "farm.intern_line": "• Stajyor Robotlar ({rate} 🪙/soat, abadiy): <code>{count} dona</code>\n",
     "farm.intern_hint": "🎁 Senda bepul Stajyor Robot bor! Pastdagi tugmani bos — u abadiy soatiga 1 🪙 qazib beradi.",
@@ -477,7 +477,7 @@ STRINGS: dict[str, str] = {
     "ref.text": (
         "🤝 <b>ROFL HUB REFERAL DASTURI</b>\n"
         "..................................................\n\n"
-        "Do'stlaringni taklif qil va shaxsiy havolang orqali ro'yxatdan o'tgan "
+        "Do'stlaringni shaxsiy havolang orqali taklif qil va faol o'yinchiga aylangan "
         "har bir kishi uchun <b>+{bonus} 🪙</b> ol!\n\n"
         "🔗 <b>Havolang (nusxalash uchun bos):</b>\n<code>{link}</code>\n\n"
         "📊 <b>SENING STATISTIKANG:</b>\n"
@@ -488,10 +488,11 @@ STRINGS: dict[str, str] = {
     ),
     "ref.btn_share": "📣 Havolani ulashish",
     "ref.share_text": "ROFL HUB o'yin ekotizimiga qo'shil!",
-    "ref.qualified_line": ("⭐ <b>Ikki karra foyda:</b> taklif qilingan do'sting {rounds} raund "
-                           "o'ynasa — senga yana <b>+{bonus} 🪙</b> va <b>{cutlets} 🥩 kiber-kotlet</b> keladi!"),
-    "ref.qualified_notify": ("🤝 <b>Do'sting o'yinga berilib ketdi: allaqachon {rounds} raund!</b>\n"
-                             "Malakali referal uchun senga <b>+{bonus} 🪙</b> va omborga <b>{cutlets} 🥩 kiber-kotlet</b> yozildi. "
+    "ref.qualified_line": ("✅ <b>Faol do'st</b> — viktorinada <b>{level}-intellekt darajasiga</b> yetgan "
+                           "va fermada <b>{claims} ta kundalik kotlet</b>ni olgan kishi. Shunda senga — <b>+{bonus} 🪙</b>, "
+                           "har bir do'st uchun bir marta. O'ynamasdan ro'yxatdan o'tgani uchun bonus yo'q — bu hamma uchun adolatliroq."),
+    "ref.qualified_notify": ("🤝 <b>Do'sting faol o'yinchiga aylandi!</b>\n"
+                             "{level}-intellekt darajasi va {claims} ta kundalik kotlet — bajarildi. Senga <b>+{bonus} 🪙</b> yozildi. "
                              "Yana chaqir!"),
 
     # ---------------- переводы ----------------
@@ -594,7 +595,7 @@ STRINGS: dict[str, str] = {
     "dlv.err_mega": "Jamoang allaqachon Mega-Klan statusiga ega.",
     "dlv.intern_upgrade": "♾ Stajyor Robot <b>ABADIY Kichik Maynerga</b> ko'tarildi: soatiga 5 🪙, muddatsiz!",
     "dlv.err_no_intern": "Faollashtirilgan Stajyor Robot yo'q — avval uni /farm da faollashtir.",
-    "dlv.err_intern_refs": "Yangilash uchun {need} ta malakali do'st kerak (har biri 30 raund); senda {have} ta.",
+    "dlv.err_intern_refs": "Yangilash uchun {need} ta faol do'st kerak (shartlar — /invite da); senda {have} ta.",
     "mk.header": "📈 <b>KOTLET BIRJASI</b>\n..................................................\n\nOchiq buyurtmalar: <b>{orders}</b> · sotuvdagi kotletlar: <b>{cutlets}</b> · eng yaxshi narx: <b>{best}</b>\nHab komissiyasi: har sotuvdan <b>{fee}%</b> (yondiriladi — inflyatsiyadan himoya)\n🥩 Ombordagi kotletlaring: <b>{inv}</b>\n\n{body}\n\n<i>Sotib olish — buyurtmani bos. Sotish — /sell buyrug'i.</i>",
     "mk.empty": "Hozircha takliflar yo'q. Birinchi bo'l: /sell soni narxi",
     "mk.order_line": "🥩 #{id} · <b>{qty} dona</b>, donasi <b>{price}</b> 🪙",
@@ -963,11 +964,11 @@ MINIAPP: dict[str, str] = {
     "sw_created": "Taklif qo'yildi, resurslar ajratib qo'yildi", "sw_cancelled": "Taklif olib tashlandi, resurslar qaytdi",
     "ws_armorUntil": "🛡 Zirh {t} gacha amal qiladi",
     "tab_friends": "🤝 Do'stlar", "ref_title": "🤝 DO'STLARNI TAKLIF QIL",
-    "ref_rules": "Har bir do'st uchun darhol +{s} 🪙. Do'st {r} raund o'ynasa — yana +{q} 🪙 va {c} 🥩 kiber-kotlet.",
+    "ref_rules": "Har bir faol do'st uchun +{q} 🪙 — bir marta. Faol do'st {l}-intellekt darajasiga yetgan va {c} ta kundalik kotlet olgan.",
     "ref_copy": "📋 Nusxa olish", "ref_copied": "Havola nusxalandi!", "ref_share": "📤 Ulashish",
     "ref_stats": "📊 SENING BAZANG", "ref_invited": "taklif qilingan", "ref_qualified": "faol", "ref_earned": "ishlab topilgan",
-    "ref_cutlets": "🥩 Faol do'stlar uchun olingan kotletlar: {n}", "ref_top": "🏆 KIMNING DO'STLARI KO'P",
-    "ref_topHint": "✅ — faol do'stlar (30 raund o'ynagan), 👥 — barcha taklif qilinganlar", "ref_empty": "Reyting hozircha bo'sh — birinchi bo'l!",
+    "ref_top": "🏆 KIMNING DO'STLARI KO'P",
+    "ref_topHint": "✅ — faol do'stlar, 👥 — barcha taklif qilinganlar", "ref_empty": "Reyting hozircha bo'sh — birinchi bo'l!",
     "wk_title": "🔥 HAFTA RETSEPTLARI", "wk_hint": "Vaqtinchalik retseptlar: hab qaroriga ko'ra paydo bo'ladi va yo'qoladi. Yig'ishga ulgur!",
     "wk_left": "bu hafta qolgan yig'ishlar: {m} tadan {n} ta", "st_cap": "📦 Ombor: har bir resursdan {c} tagacha — ortiqcha o'lja yo'qoladi",
     "st_title": "🛰 JAMOA STANSIYASI", "st_level": "Daraja: {l} / {m}", "st_bonus": "har bir jangchiga qazib olishga +{p}%",
@@ -994,7 +995,7 @@ COMMANDS: dict[str, str] = {
     "duel": "⚔️ Garovga yakkama-yakka duel",
     "quests": "🗺️ Kvestlar: tanlovli hikoyalar",
     "my_team": "🏆 Jamoam va jamoadoshlarim",
-    "invite": "🤝 Referal havola: do'st uchun +1000",
+    "invite": "🤝 Referal havola: faol do'st uchun +500",
     "transfer": "🔄 O'yinchiga tanga o'tkazish",
     "market": "📈 Kotlet birjasi: sotib olish yoki sotish",
     "sell": "💰 Kotlet sotish: /sell soni narxi",

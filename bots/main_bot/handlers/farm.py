@@ -7,7 +7,7 @@ from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.types import FSInputFile
 
-from shared.analytics import track
+from shared.analytics import notify_referrer_qualified, qualify_referral_if_due, track
 from shared.database import db
 from shared.economy import (
     daily_bonus_seconds_left,
@@ -264,6 +264,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
     extra_message: str | None = None
     bonus_given = False
     intern_activated = False
+    qualified_referrer = None
 
     async with db.pool.acquire() as conn:
         async with conn.transaction():
@@ -295,11 +296,13 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
                     toast = t(user_lang, "farm.bonus_wait", hours=hours, minutes=rem // 60)
                 else:
                     await conn.execute(
-                        "UPDATE users SET inv_cutlets = inv_cutlets + 1, last_bonus_claim_at = $2 "
-                        "WHERE user_id = $1",
+                        "UPDATE users SET inv_cutlets = inv_cutlets + 1, last_bonus_claim_at = $2, "
+                        "bonus_claims = bonus_claims + 1 WHERE user_id = $1",
                         user_id, now)
                     toast = t(user_lang, "farm.bonus_ok")
                     bonus_given = True
+                    # 3-я ежедневная котлета могла сделать игрока «активным другом»
+                    qualified_referrer = await qualify_referral_if_due(conn, user_id)
 
             elif action == "load_1":
                 if user["inv_cutlets"] <= 0:
@@ -335,6 +338,7 @@ async def process_farm_inline_actions(callback: types.CallbackQuery, user_lang: 
         await track(user_id, "intern_activated")
     if bonus_given:
         await track(user_id, "bonus_claimed", source="bot")
+        await notify_referrer_qualified(callback.bot, qualified_referrer)
     elif action in ("load_1", "load_all") and not extra_message:
         await track(user_id, "farm_refuel", mode=action)
 

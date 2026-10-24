@@ -142,7 +142,7 @@ STRINGS = {
         "• /my_team — Dasbor geng dan DAFTAR REKAN TIM dengan level 🧠\n"
         "• /all_teams — Rulet tim acak\n\n"
         "💸 <b>UANG & TEMAN:</b>\n"
-        "• /invite — Link referalmu: +1000 🪙 per teman\n"
+        "• /invite — Link referalmu: +500 🪙 per teman aktif\n"
         "• /transfer — Kirim koin ke pemain lain\n\n"
         "📚 <b>PANDUAN & ATURAN:</b>\n"
         "• /faq — Panduan lengkap ekosistem (dibuka di Mini App)\n"
@@ -254,7 +254,7 @@ STRINGS = {
     "farm.btn_claim_intern": "🎁 Ambil Robot Magang ({n})",
     "farm.intern_pending": "🎁 Robot Magang dari level intelektualmu menunggu: <b>{n}</b> — ambil dengan tombol di bawah!",
     "farm.intern_claimed_new": "🤖 Robot Magang baru mulai bekerja! +1 🪙 per jam selamanya.",
-    "farm.intern_none": "🤖 Belum ada Robot Magang baru — naikkan level intelektualmu di kuis.",
+    "farm.intern_none": "🤖 Belum ada Robot Magang baru — robot berikutnya menunggumu di level intelektual 10, 20, 30…",
     "games.intern_ready": "🎁 Level baru memberimu <b>Robot Magang</b> — ambil di farm-mu!",
     "farm.intern_line": "• Robot Magang ({rate} 🪙/jam, abadi): <code>{count}</code>\n",
     "farm.intern_hint": "🎁 Kamu punya Robot Magang gratis! Tekan tombol di bawah — dia akan menambang 1 🪙 per jam selamanya.",
@@ -477,8 +477,8 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAM REFERAL ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Undang teman dan dapatkan <b>+{bonus} 🪙</b> untuk setiap orang "
-        "yang mendaftar lewat link pribadimu!\n\n"
+        "Undang teman lewat link pribadimu dan dapatkan <b>+{bonus} 🪙</b> "
+        "untuk setiap orang yang menjadi pemain aktif!\n\n"
         "🔗 <b>Link-mu (ketuk untuk menyalin):</b>\n<code>{link}</code>\n\n"
         "📊 <b>STATISTIKMU:</b>\n"
         "👥 Teman yang diundang: <b>{invited}</b>\n"
@@ -488,11 +488,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Bagikan link",
     "ref.share_text": "Gabung ke ekosistem game ROFL HUB!",
-    "ref.qualified_line": ("⭐ <b>Hadiah ganda:</b> saat teman yang kamu undang main {rounds} "
-                           "ronde, kamu dapat <b>+{bonus} 🪙</b> lagi dan <b>{cutlets} 🥩 kotlet siber</b>!"),
-    "ref.qualified_notify": ("🤝 <b>Temanmu ketagihan: sudah {rounds} ronde!</b>\n"
-                             "Kamu dapat <b>+{bonus} 🪙</b> dan <b>{cutlets} 🥩 kotlet siber</b> ke gudang "
-                             "untuk referral berkualitas. Undang lagi!"),
+    "ref.qualified_line": ("✅ <b>Teman aktif</b> adalah teman yang mencapai <b>level intelektual {level}</b> di kuis "
+                           "dan mengambil <b>{claims} kotlet harian</b> di peternakan. Setelah itu kamu dapat <b>+{bonus} 🪙</b>, "
+                           "satu kali untuk setiap teman. Daftar tanpa bermain tidak dapat bonus — lebih adil untuk semua."),
+    "ref.qualified_notify": ("🤝 <b>Temanmu menjadi pemain aktif!</b>\n"
+                             "Level intelektual {level} dan {claims} kotlet harian — tercapai. Kamu dapat <b>+{bonus} 🪙</b>. Undang lagi!"),
 
     # ---------------- transfer ----------------
     "tr.help": (
@@ -594,7 +594,7 @@ STRINGS = {
     "dlv.err_mega": "Timmu sudah berstatus Mega-Klan.",
     "dlv.intern_upgrade": "♾ Robot Magang-mu naik jadi <b>Robot Penambang ABADI</b>: 5 🪙 per jam, tanpa kedaluwarsa!",
     "dlv.err_no_intern": "Belum ada Robot Magang aktif — aktifkan dulu di /farm.",
-    "dlv.err_intern_refs": "Upgrade butuh {need} teman berkualitas (30 ronde masing-masing); kamu punya {have}.",
+    "dlv.err_intern_refs": "Upgrade butuh {need} teman aktif (syaratnya ada di /invite); kamu punya {have}.",
     "mk.header": "📈 <b>BURSA KOTLET</b>\n..................................................\n\nOrder terbuka: <b>{orders}</b> · kotlet dijual: <b>{cutlets}</b> · harga terbaik: <b>{best}</b>\nBiaya hub: <b>{fee}%</b> per penjualan (dibakar — pelindung inflasi)\n🥩 Di gudangmu: <b>{inv}</b> kotlet\n\n{body}\n\n<i>Ketuk order untuk membeli. Untuk menjual: /sell.</i>",
     "mk.empty": "Belum ada penawaran. Jadilah yang pertama: /sell jumlah harga",
     "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> seharga <b>{price}</b> 🪙",
@@ -921,11 +921,11 @@ MINIAPP = {
     "eff_shuttle": "hanya milikmu: biaya 5% untuk penjualanmu dan order hingga 500 kotlet — selamanya",
     "eff_storage": "lebih banyak tempat untuk sumber daya — selamanya",
     "tab_friends": "🤝 Teman", "ref_title": "🤝 UNDANG TEMAN",
-    "ref_rules": "Untuk setiap teman langsung +{s} 🪙. Saat teman main {r} ronde — tambah +{q} 🪙 dan {c} 🥩 kotlet siber.",
+    "ref_rules": "+{q} 🪙 untuk setiap teman aktif — satu kali. Teman aktif sudah mencapai level intelektual {l} dan mengambil {c} kotlet harian.",
     "ref_copy": "📋 Salin", "ref_copied": "Link disalin!", "ref_share": "📤 Bagikan",
     "ref_stats": "📊 JARINGANMU", "ref_invited": "diundang", "ref_qualified": "aktif", "ref_earned": "didapat",
-    "ref_cutlets": "🥩 Kotlet yang didapat dari teman aktif: {n}", "ref_top": "🏆 SIAPA PUNYA TEMAN TERBANYAK",
-    "ref_topHint": "✅ — teman aktif (sudah main 30 ronde), 👥 — semua yang diundang", "ref_empty": "Peringkat masih kosong — jadilah yang pertama!",
+    "ref_top": "🏆 SIAPA PUNYA TEMAN TERBANYAK",
+    "ref_topHint": "✅ — teman aktif, 👥 — semua yang diundang", "ref_empty": "Peringkat masih kosong — jadilah yang pertama!",
     "wk_title": "🔥 RESEP MINGGU INI", "wk_hint": "Resep terbatas: muncul atas keputusan hub lalu menghilang. Rakit sebelum terlambat!",
     "wk_left": "sisa rakitan minggu ini: {n} dari {m}", "st_cap": "📦 Gudang: hingga {c} tiap sumber daya — kelebihan hasil tambang hilang",
     "raid_title": "🏴‍☠️ SERBUAN", "raid_how": "📖 Cara kerjanya",
@@ -994,7 +994,7 @@ COMMANDS = {
     "duel": "⚔️ Duel 1-lawan-1 dengan taruhan",
     "quests": "🗺️ Misi: cerita dengan pilihan",
     "my_team": "🏆 Timku & rekan tim",
-    "invite": "🤝 Link referal: +1000 per teman",
+    "invite": "🤝 Link referal: +500 per teman aktif",
     "transfer": "🔄 Kirim koin ke pemain",
     "market": "📈 Bursa kotlet: beli atau jual",
     "sell": "💰 Jual kotlet: /sell jumlah harga",

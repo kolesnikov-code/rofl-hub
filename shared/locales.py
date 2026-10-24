@@ -163,7 +163,7 @@ RU: dict[str, str] = {
         "• /my_team — Дашборд банды и СПИСОК ТИММЕЙТОВ с уровнями 🧠\n"
         "• /all_teams — Игровая рулетка случайных команд мира\n\n"
         "💸 <b>ДЕНЬГИ И ДРУЗЬЯ:</b>\n"
-        "• /invite — Твоя реферальная ссылка: +1000 🪙 за друга\n"
+        "• /invite — Твоя реферальная ссылка: +500 🪙 за активного друга\n"
         "• /transfer — Перевести монеты другому игроку\n\n"
         "📚 <b>СПРАВКА И ПРАВИЛА:</b>\n"
         "• /faq — Полный справочник экосистемы (открывается в Mini App)\n"
@@ -274,7 +274,7 @@ RU: dict[str, str] = {
     "farm.btn_claim_intern": "🎁 Забрать Робота Стажёра ({n})",
     "farm.intern_pending": "🎁 За уровни интеллекта тебя ждут Роботы Стажёры: <b>{n}</b> — забери кнопкой ниже!",
     "farm.intern_claimed_new": "🤖 Новый Робот Стажёр вышел на смену! +1 🪙 в час навсегда.",
-    "farm.intern_none": "🤖 Новых Стажёров пока нет — подними уровень интеллекта в викторине.",
+    "farm.intern_none": "🤖 Новых Стажёров пока нет — следующий ждёт тебя на 10, 20, 30… уровне интеллекта.",
     "games.intern_ready": "🎁 За новый уровень тебя ждёт <b>Робот Стажёр</b> — забери его на ферме!",
     "farm.intern_line": "• Роботы Стажёры ({rate} 🪙/ч, вечные): <code>{count} шт.</code>\n",
     "farm.intern_hint": "🎁 У тебя есть бесплатный Робот Стажёр! Нажми кнопку ниже — он начнёт добывать 1 🪙 в час навсегда.",
@@ -497,8 +497,8 @@ RU: dict[str, str] = {
     "ref.text": (
         "🤝 <b>РЕФЕРАЛЬНАЯ ПРОГРАММА ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Приглашай друзей и получай <b>+{bonus} 🪙</b> за каждого, "
-        "кто зарегистрируется по твоей персональной ссылке!\n\n"
+        "Приглашай друзей по персональной ссылке и получай <b>+{bonus} 🪙</b> "
+        "за каждого, кто станет активным игроком!\n\n"
         "🔗 <b>Твоя ссылка (нажми, чтобы скопировать):</b>\n<code>{link}</code>\n\n"
         "📊 <b>ТВОЯ СТАТИСТИКА:</b>\n"
         "👥 Приглашено друзей: <b>{invited} чел.</b>\n"
@@ -509,12 +509,13 @@ RU: dict[str, str] = {
     "ref.btn_share": "📣 Поделиться ссылкой",
     "ref.share_text": "Залетай в игровую экосистему ROFL HUB!",
     "ref.qualified_line": (
-        "⭐ <b>Двойная выгода:</b> когда приглашённый друг сыграет {rounds} раундов — "
-        "тебе прилетит ещё <b>+{bonus} 🪙</b> и <b>{cutlets} 🥩 кибер-котлета</b>!"
+        "✅ <b>Активный друг</b> — тот, кто дошёл до <b>{level} уровня интеллекта</b> в викторине "
+        "и забрал <b>{claims} ежедневные котлеты</b> на ферме. Тогда тебе — <b>+{bonus} 🪙</b>, "
+        "один раз за каждого друга. За регистрацию без игры бонуса нет — так честнее для всех."
     ),
     "ref.qualified_notify": (
-        "🤝 <b>Твой друг разыгрался: уже {rounds} раундов!</b>\n"
-        "За квалифицированного реферала начислено <b>+{bonus} 🪙</b> и <b>{cutlets} 🥩 кибер-котлета</b> на склад. Зови ещё!"
+        "🤝 <b>Твой друг стал активным игроком!</b>\n"
+        "{level} уровень интеллекта и {claims} ежедневные котлеты — есть. Тебе начислено <b>+{bonus} 🪙</b>. Зови ещё!"
     ),
 
     # ---------------- переводы ----------------
@@ -617,7 +618,7 @@ RU: dict[str, str] = {
     "dlv.err_mega": "Твоя команда уже имеет статус Мега-Клана.",
     "dlv.intern_upgrade": "♾ Робот Стажёр повышен до <b>ВЕЧНОГО Младшего Майнера</b>: 5 🪙 в час без срока службы!",
     "dlv.err_no_intern": "Нет активированного Робота Стажёра — сначала активируй его в /farm.",
-    "dlv.err_intern_refs": "Для апгрейда нужно {need} квалифицированных друга (по 30 раундов), у тебя {have}.",
+    "dlv.err_intern_refs": "Для апгрейда нужно {need} активных друга (условия — в /invite), у тебя {have}.",
     "mk.header": "📈 <b>БИРЖА КОТЛЕТ</b>\n..................................................\n\nОткрытых ордеров: <b>{orders}</b> · котлет на бирже: <b>{cutlets}</b> · лучшая цена: <b>{best}</b>\nКомиссия хаба: <b>{fee}%</b> с продажи (сгорает — защита от инфляции)\n🥩 У тебя на складе: <b>{inv}</b> котлет\n\n{body}\n\n<i>Купить — нажми на ордер. Продать — команда /sell.</i>",
     "mk.empty": "Пока ни одного предложения. Выстави своё первым: /sell количество цена",
     "mk.order_line": "🥩 #{id} · <b>{qty} шт.</b> по <b>{price}</b> 🪙",
@@ -997,7 +998,7 @@ EN: dict[str, str] = {
         "• /my_team — Crew dashboard and the TEAMMATE LIST with 🧠 levels\n"
         "• /all_teams — Roulette of random teams\n\n"
         "💸 <b>MONEY & FRIENDS:</b>\n"
-        "• /invite — Your referral link: +1000 🪙 per friend\n"
+        "• /invite — Your referral link: +500 🪙 per active friend\n"
         "• /transfer — Send coins to another player\n\n"
         "📚 <b>GUIDE & RULES:</b>\n"
         "• /faq — The full ecosystem guide (opens in the Mini App)\n"
@@ -1109,7 +1110,7 @@ EN: dict[str, str] = {
     "farm.btn_claim_intern": "🎁 Claim your Intern Bot ({n})",
     "farm.intern_pending": "🎁 Intern Bots earned with your intellect levels: <b>{n}</b> — claim them below!",
     "farm.intern_claimed_new": "🤖 A new Intern Bot is on shift! +1 🪙 per hour forever.",
-    "farm.intern_none": "🤖 No new Interns yet — level up your intellect in the quiz.",
+    "farm.intern_none": "🤖 No new Interns yet — the next one waits for you at intellect level 10, 20, 30…",
     "games.intern_ready": "🎁 Your new level earned an <b>Intern Bot</b> — claim it on your farm!",
     "farm.intern_line": "• Intern Bots ({rate} 🪙/h, eternal): <code>{count}</code>\n",
     "farm.intern_hint": "🎁 You have a free Intern Bot! Tap the button below — it will mine 1 🪙 per hour forever.",
@@ -1333,8 +1334,8 @@ EN: dict[str, str] = {
     "ref.text": (
         "🤝 <b>ROFL HUB REFERRAL PROGRAM</b>\n"
         "..................................................\n\n"
-        "Invite friends and get <b>+{bonus} 🪙</b> for everyone "
-        "who registers via your personal link!\n\n"
+        "Invite friends via your personal link and get <b>+{bonus} 🪙</b> "
+        "for everyone who becomes an active player!\n\n"
         "🔗 <b>Your link (tap to copy):</b>\n<code>{link}</code>\n\n"
         "📊 <b>YOUR STATS:</b>\n"
         "👥 Friends invited: <b>{invited}</b>\n"
@@ -1345,12 +1346,13 @@ EN: dict[str, str] = {
     "ref.btn_share": "📣 Share the link",
     "ref.share_text": "Join the ROFL HUB gaming ecosystem!",
     "ref.qualified_line": (
-        "⭐ <b>Double reward:</b> when an invited friend plays {rounds} rounds, "
-        "you get another <b>+{bonus} 🪙</b> and <b>{cutlets} 🥩 cyber-cutlet</b>!"
+        "✅ <b>An active friend</b> is someone who reached <b>intellect level {level}</b> in the quiz "
+        "and claimed <b>{claims} daily cutlets</b> on the farm. Then you get <b>+{bonus} 🪙</b>, "
+        "once per friend. No bonus for sign-ups without play — fairer for everyone."
     ),
     "ref.qualified_notify": (
-        "🤝 <b>Your friend is hooked: {rounds} rounds already!</b>\n"
-        "You've earned <b>+{bonus} 🪙</b> and <b>{cutlets} 🥩 cyber-cutlet</b> for a qualified referral. Invite more!"
+        "🤝 <b>Your friend is now an active player!</b>\n"
+        "Intellect level {level} and {claims} daily cutlets — done. You've earned <b>+{bonus} 🪙</b>. Invite more!"
     ),
 
     # ---------------- transfers ----------------
@@ -1453,7 +1455,7 @@ EN: dict[str, str] = {
     "dlv.err_mega": "Your team already has the Mega-Clan status.",
     "dlv.intern_upgrade": "♾ Your Intern Bot was promoted to an <b>ETERNAL Miner Bot</b>: 5 🪙 per hour, no expiry!",
     "dlv.err_no_intern": "No activated Intern Bot — activate it in /farm first.",
-    "dlv.err_intern_refs": "The upgrade needs {need} qualified friends (30 rounds each); you have {have}.",
+    "dlv.err_intern_refs": "The upgrade needs {need} active friends (see /invite for the rules); you have {have}.",
     "mk.header": "📈 <b>CUTLET MARKET</b>\n..................................................\n\nOpen orders: <b>{orders}</b> · cutlets listed: <b>{cutlets}</b> · best price: <b>{best}</b>\nHub fee: <b>{fee}%</b> per sale (burned — inflation shield)\n🥩 In your inventory: <b>{inv}</b> cutlets\n\n{body}\n\n<i>Tap an order to buy. To sell, use /sell.</i>",
     "mk.empty": "No offers yet. Be the first: /sell quantity price",
     "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> at <b>{price}</b> 🪙",

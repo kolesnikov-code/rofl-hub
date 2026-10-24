@@ -104,7 +104,7 @@ async def _deliver_clan_upgrade(conn, user_id: int, order: dict, now: datetime, 
 
 
 async def qualified_referrals_count(conn, user_id: int) -> int:
-    """Друзья игрока, доигравшие до квалификации (30 раундов) — условие апгрейда Стажёра."""
+    """Активные друзья игрока (3 уровень интеллекта + 3 ежедневные котлеты) — условие апгрейда Стажёра."""
     return int(await conn.fetchval(
         "SELECT COUNT(*) FROM users WHERE referred_by = $1 AND qualified_at IS NOT NULL", user_id) or 0)
 

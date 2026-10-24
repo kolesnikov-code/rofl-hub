@@ -141,7 +141,7 @@ STRINGS: dict[str, str] = {
         "• /my_team — Panel ekipy i SKŁAD DRUŻYNY z poziomami 🧠\n"
         "• /all_teams — Ruletka losowych drużyn\n\n"
         "💸 <b>PIENIĄDZE I ZNAJOMI:</b>\n"
-        "• /invite — Twój link polecający: +1000 🪙 za znajomego\n"
+        "• /invite — Twój link polecający: +500 🪙 za aktywnego znajomego\n"
         "• /transfer — Przelej monety innemu graczowi\n\n"
         "📚 <b>POMOC I ZASADY:</b>\n"
         "• /faq — Pełny przewodnik po ekosystemie (otwiera się w Mini App)\n"
@@ -253,7 +253,7 @@ STRINGS: dict[str, str] = {
     "farm.btn_claim_intern": "🎁 Odbierz Robota Stażystę ({n})",
     "farm.intern_pending": "🎁 Za poziomy intelektu czekają na ciebie Roboty Stażyści: <b>{n}</b> — odbierz je przyciskiem poniżej!",
     "farm.intern_claimed_new": "🤖 Nowy Robot Stażysta wyszedł na zmianę! +1 🪙 na godzinę na zawsze.",
-    "farm.intern_none": "🤖 Nowych Stażystów na razie brak — podnieś poziom intelektu w quizie.",
+    "farm.intern_none": "🤖 Nowych Stażystów na razie brak — kolejny czeka na ciebie na 10., 20., 30. poziomie intelektu…",
     "games.intern_ready": "🎁 Za nowy poziom czeka na ciebie <b>Robot Stażysta</b> — odbierz go na farmie!",
     "farm.intern_line": "• Roboty Stażyści ({rate} 🪙/h, wieczne): <code>{count}</code>\n",
     "farm.intern_hint": "🎁 Masz darmowego Robota Stażystę! Naciśnij przycisk poniżej — będzie wydobywać 1 🪙 na godzinę na zawsze.",
@@ -476,8 +476,8 @@ STRINGS: dict[str, str] = {
     "ref.text": (
         "🤝 <b>PROGRAM POLECEŃ ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Zapraszaj znajomych i otrzymuj <b>+{bonus} 🪙</b> za każdego, "
-        "kto zarejestruje się przez twój osobisty link!\n\n"
+        "Zapraszaj znajomych przez swój osobisty link i otrzymuj <b>+{bonus} 🪙</b> "
+        "za każdego, kto zostanie aktywnym graczem!\n\n"
         "🔗 <b>Twój link (kliknij, aby skopiować):</b>\n<code>{link}</code>\n\n"
         "📊 <b>TWOJE STATYSTYKI:</b>\n"
         "👥 Zaproszonych znajomych: <b>{invited}</b>\n"
@@ -487,11 +487,11 @@ STRINGS: dict[str, str] = {
     ),
     "ref.btn_share": "📣 Udostępnij link",
     "ref.share_text": "Wbijaj do ekosystemu gier ROFL HUB!",
-    "ref.qualified_line": ("⭐ <b>Podwójna nagroda:</b> gdy zaproszony znajomy rozegra {rounds} "
-                           "rund, dostajesz kolejne <b>+{bonus} 🪙</b> i <b>{cutlets} 🥩 cyber-kotlet</b>!"),
-    "ref.qualified_notify": ("🤝 <b>Twój znajomy wkręcił się: już {rounds} rund!</b>\n"
-                             "Za kwalifikowanego poleconego dostajesz <b>+{bonus} 🪙</b> i <b>{cutlets} 🥩 cyber-kotlet</b> do magazynu. "
-                             "Zapraszaj dalej!"),
+    "ref.qualified_line": ("✅ <b>Aktywny znajomy</b> to ktoś, kto osiągnął <b>{level}. poziom intelektu</b> w quizie "
+                           "i odebrał <b>{claims} codzienne kotlety</b> na farmie. Wtedy dostajesz <b>+{bonus} 🪙</b>, "
+                           "jednorazowo za każdego znajomego. Za samą rejestrację bez gry bonusu nie ma — tak jest uczciwiej dla wszystkich."),
+    "ref.qualified_notify": ("🤝 <b>Twój znajomy został aktywnym graczem!</b>\n"
+                             "{level}. poziom intelektu i {claims} codzienne kotlety — są. Dostajesz <b>+{bonus} 🪙</b>. Zapraszaj dalej!"),
 
     # ---------------- переводы ----------------
     "tr.help": (
@@ -593,7 +593,7 @@ STRINGS: dict[str, str] = {
     "dlv.err_mega": "Twoja drużyna ma już status Mega-Klanu.",
     "dlv.intern_upgrade": "♾ Twój Robot Stażysta awansował na <b>WIECZNEGO Młodszego Górnika</b>: 5 🪙 na godzinę, bez terminu!",
     "dlv.err_no_intern": "Brak aktywowanego Robota Stażysty — najpierw aktywuj go w /farm.",
-    "dlv.err_intern_refs": "Ulepszenie wymaga {need} kwalifikowanych znajomych (po 30 rund); masz {have}.",
+    "dlv.err_intern_refs": "Ulepszenie wymaga {need} aktywnych znajomych (zasady w /invite); masz {have}.",
     "mk.header": "📈 <b>GIEŁDA KOTLETÓW</b>\n..................................................\n\nOtwarte zlecenia: <b>{orders}</b> · kotletów w ofercie: <b>{cutlets}</b> · najlepsza cena: <b>{best}</b>\nProwizja hubu: <b>{fee}%</b> od sprzedaży (spalana — tarcza antyinflacyjna)\n🥩 W twoim magazynie: <b>{inv}</b> kotletów\n\n{body}\n\n<i>Kliknij zlecenie, aby kupić. Sprzedaż: /sell.</i>",
     "mk.empty": "Nie ma jeszcze ofert. Bądź pierwszy: /sell ilość cena",
     "mk.order_line": "🥩 #{id} · <b>{qty} szt.</b> po <b>{price}</b> 🪙",
@@ -916,7 +916,7 @@ MINIAPP: dict[str, str] = {
     "shuttle": "🚀 Wahadłowiec zbudowany",
     "resHint": "Każde zwycięstwo przynosi surowiec danej gry, a ze zdjętym limitem — bez ograniczeń. Wydawaj je w warsztacie.",
     "ref_title": "🤝 ZAPRASZAJ ZNAJOMYCH",
-    "ref_rules": "Za każdego znajomego od razu +{s} 🪙. Gdy znajomy rozegra {r} rund — kolejne +{q} 🪙 i {c} 🥩 cyber-kotlet.",
+    "ref_rules": "+{q} 🪙 za każdego aktywnego znajomego — jednorazowo. Aktywny znajomy osiągnął {l}. poziom intelektu i odebrał {c} codzienne kotlety.",
     "ref_copy": "📋 Kopiuj",
     "ref_copied": "Link skopiowany!",
     "ref_share": "📤 Udostępnij",
@@ -924,9 +924,8 @@ MINIAPP: dict[str, str] = {
     "ref_invited": "zaproszeni",
     "ref_qualified": "aktywni",
     "ref_earned": "zarobione",
-    "ref_cutlets": "🥩 Kotlety otrzymane za aktywnych znajomych: {n}",
     "ref_top": "🏆 KTO MA NAJWIĘCEJ ZNAJOMYCH",
-    "ref_topHint": "✅ — aktywni znajomi (rozegrali 30 rund), 👥 — wszyscy zaproszeni",
+    "ref_topHint": "✅ — aktywni znajomi, 👥 — wszyscy zaproszeni",
     "ref_empty": "Ranking jest jeszcze pusty — bądź pierwszy(-a)!",
     "wk_title": "🔥 PRZEPISY TYGODNIA",
     "wk_hint": "Przepisy czasowe: pojawiają się z decyzji hubu i znikają. Zdąż je stworzyć!",
@@ -1118,7 +1117,7 @@ COMMANDS: dict[str, str] = {
     "duel": "⚔️ Pojedynek 1 na 1 o stawkę",
     "quests": "🗺️ Questy: historie z wyborami",
     "my_team": "🏆 Moja drużyna i skład",
-    "invite": "🤝 Link polecający: +1000 za znajomego",
+    "invite": "🤝 Link polecający: +500 za aktywnego znajomego",
     "transfer": "🔄 Przelej monety graczowi",
     "market": "📈 Giełda kotletów: kup lub sprzedaj",
     "sell": "💰 Sprzedaj kotlety: /sell ilość cena",

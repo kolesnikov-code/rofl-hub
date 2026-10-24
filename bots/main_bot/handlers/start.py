@@ -17,7 +17,7 @@ from shared import analytics
 from shared.analytics import track
 from shared.auction_logic import compute_bid
 from shared.database import db
-from shared.economy import REFERRAL_SIGNUP_BONUS, START_BALANCE, START_CUTLETS_INVENTORY
+from shared.economy import START_BALANCE, START_CUTLETS_INVENTORY
 from shared.ledger import change_balance
 from shared.locales import resolve_lang, t
 
@@ -89,7 +89,8 @@ def _auction_id_from(cb_part: str) -> int | None:
 
 async def register_user(conn, user_id: int, username: str, lang: str, referrer_id: int | None,
                         display_name: str | None = None, source: str = "organic") -> bool:
-    """Создаёт профиль, если его нет. Начисляет бонус рефереру. Возвращает True, если создан."""
+    """Создаёт профиль, если его нет (реферер только запоминается: бонус — за АКТИВНОГО друга,
+    см. analytics.qualify_referral_if_due). Возвращает True, если создан."""
     exists = await conn.fetchval("SELECT 1 FROM users WHERE user_id = $1", user_id)
     if exists:
         return False
@@ -113,8 +114,6 @@ async def register_user(conn, user_id: int, username: str, lang: str, referrer_i
                        user_id, START_BALANCE)
     await conn.execute("INSERT INTO game_stats (user_id) VALUES ($1) ON CONFLICT DO NOTHING", user_id)
 
-    if referrer_id is not None:
-        await change_balance(conn, referrer_id, REFERRAL_SIGNUP_BONUS, "referral_signup", str(user_id))
     logger.info("[REGISTRATION] user=%s lang=%s referrer=%s", user_id, lang, referrer_id)
     return True
 

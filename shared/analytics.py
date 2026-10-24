@@ -6,7 +6,8 @@
 события не может откатить начисление монет.
 
 Исключение из правила — qualify_referral_if_due(): это ИГРОВАЯ механика (бонус рефереру
-за 30 раундов друга), она живёт ВНУТРИ транзакции раунда и обязана быть атомарной.
+за «активного» друга: 3 уровень интеллекта + 3 ежедневные котлеты), она живёт ВНУТРИ
+транзакции повышения уровня / получения котлеты и обязана быть атомарной.
 «Ровно один раз» гарантирует UPDATE ... WHERE qualified_at IS NULL RETURNING:
 из двух конкурентных транзакций строку получает только одна.
 """
@@ -22,8 +23,8 @@ from shared.economy import (
     EVENTS_RETENTION_DAYS,
     PROMOTER_CODE_MAX_LEN,
     REFERRAL_QUALIFIED_BONUS,
-    REFERRAL_QUALIFIED_CUTLETS,
-    REFERRAL_QUALIFY_ROUNDS,
+    REFERRAL_QUALIFY_BONUS_CLAIMS,
+    REFERRAL_QUALIFY_QUIZ_LEVEL,
     utcnow,
 )
 from shared.ledger import change_balance
@@ -89,36 +90,60 @@ async def mark_daily_activity(user_id: int, today: date | None = None) -> None:
         logger.warning("[ANALYTICS] daily_activity user=%s не записана", user_id, exc_info=True)
 
 
-async def qualify_referral_if_due(conn, user_id: int, games_played: int) -> int | None:
+async def qualify_referral_if_due(conn, user_id: int) -> int | None:
     """
-    Вызывается ВНУТРИ транзакции раунда после инкремента game_stats.games_played.
-    Если приглашённый доиграл до REFERRAL_QUALIFY_ROUNDS раундов — атомарно ставит
-    users.qualified_at и начисляет рефереру REFERRAL_QUALIFIED_BONUS (ровно один раз).
-    Возвращает referrer_id, если квалификация случилась прямо сейчас, иначе None.
+    Вызывается ВНУТРИ транзакции, после которой у приглашённого могло выполниться условие
+    «активного друга»: повышение уровня интеллекта и получение ежедневной котлеты.
+
+    Анти-фейк (решение владельца 26.10): за регистрацию друга не платится ничего; рефереру —
+    ровно один раз REFERRAL_QUALIFIED_BONUS, когда друг дошёл до REFERRAL_QUALIFY_QUIZ_LEVEL
+    уровня интеллекта (60 верных ответов) И забрал REFERRAL_QUALIFY_BONUS_CLAIMS ежедневных
+    котлет (кулдаун 24 ч → минимум двое суток живой игры). Заблокированный друг не
+    квалифицируется; заблокированному рефереру бонус не начисляется (квалификация фиксируется).
+    Атомарный UPDATE ... WHERE qualified_at IS NULL — из двух конкурентных транзакций
+    бонус получает только одна. Возвращает referrer_id, если бонус начислен прямо сейчас.
     """
-    if games_played < REFERRAL_QUALIFY_ROUNDS:
-        return None
     row = await conn.fetchrow(
         """
-        UPDATE users SET qualified_at = NOW()
-        WHERE user_id = $1 AND referred_by IS NOT NULL AND qualified_at IS NULL
-        RETURNING referred_by
+        UPDATE users u SET qualified_at = NOW()
+        FROM game_stats g
+        WHERE u.user_id = $1 AND g.user_id = u.user_id
+          AND u.referred_by IS NOT NULL AND u.referred_by <> u.user_id
+          AND u.qualified_at IS NULL AND NOT u.is_blocked
+          AND u.bonus_claims >= $2 AND g.quiz_level >= $3
+        RETURNING u.referred_by
         """,
-        user_id)
+        user_id, REFERRAL_QUALIFY_BONUS_CLAIMS, REFERRAL_QUALIFY_QUIZ_LEVEL)
     if row is None:
         return None
     referrer_id = row["referred_by"]
     try:
+        blocked = await conn.fetchval("SELECT is_blocked FROM users WHERE user_id = $1", referrer_id)
+        if blocked is None or blocked:
+            logger.info("[REFERRAL_QUALIFIED] реферер %s недоступен — бонус не начислен", referrer_id)
+            return None
         await change_balance(conn, referrer_id, REFERRAL_QUALIFIED_BONUS,
                              "referral_qualified", str(user_id))
-        if REFERRAL_QUALIFIED_CUTLETS:
-            await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $2 WHERE user_id = $1",
-                               referrer_id, REFERRAL_QUALIFIED_CUTLETS)
     except Exception:
         # Реферер удалён/сломан — квалификацию фиксируем, бонус сгорает осознанно
         logger.exception("[REFERRAL_QUALIFIED] бонус рефереру %s не начислен", referrer_id)
         return None
     return referrer_id
+
+
+async def notify_referrer_qualified(bot, referrer_id: int | None) -> None:
+    """ЛС рефереру о бонусе за активного друга на его языке. Любой сбой — только в лог."""
+    if referrer_id is None or bot is None:
+        return
+    from shared.locales import resolve_lang, t
+    try:
+        lang = resolve_lang(await db.pool.fetchval("SELECT lang FROM users WHERE user_id = $1", referrer_id))
+        await bot.send_message(
+            referrer_id, t(lang, "ref.qualified_notify", bonus=REFERRAL_QUALIFIED_BONUS,
+                           level=REFERRAL_QUALIFY_QUIZ_LEVEL, claims=REFERRAL_QUALIFY_BONUS_CLAIMS),
+            parse_mode="HTML")
+    except Exception:
+        logger.info("[REFERRAL_QUALIFIED] реферер %s недоступен для ЛС", referrer_id)
 
 
 async def purge_old_events(retention_days: int = EVENTS_RETENTION_DAYS,

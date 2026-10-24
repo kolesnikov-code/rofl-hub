@@ -143,7 +143,7 @@ STRINGS = {
         "• /my_team — Tableau de bord de la bande et LISTE DES COÉQUIPIERS avec niveaux 🧠\n"
         "• /all_teams — Roulette d'équipes aléatoires\n\n"
         "💸 <b>ARGENT ET AMIS :</b>\n"
-        "• /invite — Ton lien de parrainage : +1000 🪙 par ami\n"
+        "• /invite — Ton lien de parrainage : +500 🪙 par ami actif\n"
         "• /transfer — Envoyer des pièces à un autre joueur\n\n"
         "📚 <b>AIDE ET RÈGLES :</b>\n"
         "• /faq — Le guide complet de l'écosystème (s'ouvre dans la Mini App)\n"
@@ -255,7 +255,7 @@ STRINGS = {
     "farm.btn_claim_intern": "🎁 Récupérer le Robot Stagiaire ({n})",
     "farm.intern_pending": "🎁 Tes niveaux d'intelligence te valent des Robots Stagiaires : <b>{n}</b> — récupère-les avec le bouton ci-dessous !",
     "farm.intern_claimed_new": "🤖 Un nouveau Robot Stagiaire prend son poste ! +1 🪙 par heure pour toujours.",
-    "farm.intern_none": "🤖 Pas de nouveau Stagiaire pour l'instant : monte en niveau d'intelligence dans le quiz.",
+    "farm.intern_none": "🤖 Pas de nouveau Stagiaire pour l'instant : le prochain t'attend au niveau d'intelligence 10, 20, 30…",
     "games.intern_ready": "🎁 Ton nouveau niveau te vaut un <b>Robot Stagiaire</b> : récupère-le dans ta ferme !",
     "farm.intern_line": "• Robots Stagiaires ({rate} 🪙/h, éternels) : <code>{count}</code>\n",
     "farm.intern_hint": "🎁 Tu as un Robot Stagiaire gratuit ! Appuie sur le bouton ci-dessous : il minera 1 🪙 par heure pour toujours.",
@@ -477,8 +477,8 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAMME DE PARRAINAGE ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Invite des amis et reçois <b>+{bonus} 🪙</b> pour chaque ami "
-        "qui s'inscrit via ton lien personnel !\n\n"
+        "Invite des amis via ton lien personnel et reçois <b>+{bonus} 🪙</b> "
+        "pour chaque ami qui devient joueur actif !\n\n"
         "🔗 <b>Ton lien (tape pour copier) :</b>\n<code>{link}</code>\n\n"
         "📊 <b>TES STATISTIQUES :</b>\n"
         "👥 Amis invités : <b>{invited}</b>\n"
@@ -488,12 +488,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Partager le lien",
     "ref.share_text": "Rejoins l'écosystème de jeu ROFL HUB !",
-    "ref.qualified_line": ("⭐ <b>Double récompense :</b> quand un ami invité joue {rounds} "
-                           "manches, tu reçois encore <b>+{bonus} 🪙</b> et "
-                           "<b>{cutlets} 🥩 cyber-côtelette</b> !"),
-    "ref.qualified_notify": ("🤝 <b>Ton ami est accro : déjà {rounds} manches !</b>\n"
-                             "Tu gagnes <b>+{bonus} 🪙</b> et <b>{cutlets} 🥩 cyber-côtelette</b> "
-                             "dans ton stock pour un filleul qualifié. "
+    "ref.qualified_line": ("✅ <b>Un ami actif</b> est quelqu'un qui a atteint le <b>niveau d'intelligence {level}</b> "
+                           "au quiz et récupéré <b>{claims} côtelettes quotidiennes</b> à la ferme. Alors tu gagnes <b>+{bonus} 🪙</b>, "
+                           "une seule fois par ami. Pas de bonus pour une simple inscription sans jeu : c'est plus juste pour tous."),
+    "ref.qualified_notify": ("🤝 <b>Ton ami est devenu un joueur actif !</b>\n"
+                             "Niveau d'intelligence {level} et {claims} côtelettes quotidiennes : c'est fait. Tu gagnes <b>+{bonus} 🪙</b>. "
                              "Invites-en d'autres !"),
 
     # ---------------- transferts ----------------
@@ -596,7 +595,7 @@ STRINGS = {
     "dlv.err_mega": "Ton équipe a déjà le statut Méga-Clan.",
     "dlv.intern_upgrade": "♾ Ton Robot Stagiaire est promu <b>Robot Mineur ÉTERNEL</b> : 5 🪙 par heure, sans expiration !",
     "dlv.err_no_intern": "Aucun Robot Stagiaire activé : active-le d'abord dans /farm.",
-    "dlv.err_intern_refs": "L'amélioration exige {need} amis qualifiés (30 manches chacun) ; tu en as {have}.",
+    "dlv.err_intern_refs": "L'amélioration exige {need} amis actifs (conditions dans /invite) ; tu en as {have}.",
     "mk.header": "📈 <b>BOURSE DES CÔTELETTES</b>\n..................................................\n\nOrdres ouverts : <b>{orders}</b> · côtelettes en vente : <b>{cutlets}</b> · meilleur prix : <b>{best}</b>\nCommission du hub : <b>{fee}%</b> par vente (brûlée — bouclier anti-inflation)\n🥩 Dans ton stock : <b>{inv}</b> côtelettes\n\n{body}\n\n<i>Touche un ordre pour acheter. Pour vendre : /sell.</i>",
     "mk.empty": "Aucune offre pour l'instant. Sois le premier : /sell quantité prix",
     "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> à <b>{price}</b> 🪙",
@@ -1092,7 +1091,7 @@ MINIAPP = {
     "loading": "⏳ Chargement…",
     "tab_friends": "🤝 Amis",
     "ref_title": "🤝 INVITE TES AMIS",
-    "ref_rules": "+{s} 🪙 tout de suite pour chaque ami. Quand ton ami joue {r} manches — encore +{q} 🪙 et {c} 🥩 cyber-côtelette.",
+    "ref_rules": "+{q} 🪙 pour chaque ami actif, une seule fois. Un ami actif a atteint le niveau d'intelligence {l} et récupéré {c} côtelettes quotidiennes.",
     "ref_copy": "📋 Copier",
     "ref_copied": "Lien copié !",
     "ref_share": "📤 Partager",
@@ -1100,9 +1099,8 @@ MINIAPP = {
     "ref_invited": "invités",
     "ref_qualified": "actifs",
     "ref_earned": "gagnées",
-    "ref_cutlets": "🥩 Côtelettes reçues pour tes amis actifs : {n}",
     "ref_top": "🏆 QUI A LE PLUS D'AMIS",
-    "ref_topHint": "✅ — amis actifs (30 manches jouées), 👥 — tous les invités",
+    "ref_topHint": "✅ — amis actifs, 👥 — tous les invités",
     "ref_empty": "Le classement est encore vide — sois le premier ou la première !",
     "wk_title": "🔥 RECETTES DE LA SEMAINE",
     "wk_hint": "Recettes éphémères : elles apparaissent quand le hub le décide, puis disparaissent. Fabrique-les à temps !",
@@ -1121,7 +1119,7 @@ COMMANDS = {
     "duel": "⚔️ Duel 1 contre 1 avec mise",
     "quests": "🗺️ Quêtes : histoires à choix",
     "my_team": "🏆 Mon équipe et mes coéquipiers",
-    "invite": "🤝 Lien de parrainage : +1000 par ami",
+    "invite": "🤝 Lien de parrainage : +500 par ami actif",
     "transfer": "🔄 Envoyer des pièces à un joueur",
     "market": "📈 Bourse des côtelettes : acheter ou vendre",
     "sell": "💰 Vendre des côtelettes : /sell quantité prix",

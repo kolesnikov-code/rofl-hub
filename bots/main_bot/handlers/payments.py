@@ -56,8 +56,8 @@ async def _precheck_deliverable(conn, user_id: int, order: dict) -> str | None:
             return "Сначала активируй Робота Стажёра в /farm — апгрейдить пока некого."
         have = await qualified_referrals_count(conn, user_id)
         if have < INTERN_UPGRADE_REFERRALS:
-            return (f"Для вечного Майнера нужно {INTERN_UPGRADE_REFERRALS} друга, сыгравших по 30 раундов "
-                    f"(у тебя {have}). Пригласи друзей через /invite.")
+            return (f"Для вечного Майнера нужно {INTERN_UPGRADE_REFERRALS} активных друга "
+                    f"(у тебя {have}). Условия и ссылка — в /invite.")
     return None
 
 

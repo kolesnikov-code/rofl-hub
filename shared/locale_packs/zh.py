@@ -142,7 +142,7 @@ STRINGS = {
         "• /my_team — 战队仪表盘和带 🧠 等级的队友名单\n"
         "• /all_teams — 随机战队轮盘\n\n"
         "💸 <b>金钱与朋友：</b>\n"
-        "• /invite — 你的邀请链接：每位好友 +1000 🪙\n"
+        "• /invite — 你的邀请链接：每位活跃好友 +500 🪙\n"
         "• /transfer — 给其他玩家转账金币\n\n"
         "📚 <b>帮助与规则：</b>\n"
         "• /faq — 完整生态系统指南（在 Mini App 中打开）\n"
@@ -254,7 +254,7 @@ STRINGS = {
     "farm.btn_claim_intern": "🎁 领取实习机器人（{n}）",
     "farm.intern_pending": "🎁 你的智力等级为你赢得了实习机器人：<b>{n}</b> 台——点下方按钮领取！",
     "farm.intern_claimed_new": "🤖 新的实习机器人上岗了！永久每小时 +1 🪙。",
-    "farm.intern_none": "🤖 暂时没有新的实习机器人——去问答里提升智力等级吧。",
+    "farm.intern_none": "🤖 暂时没有新的实习机器人——下一个在智力等级 10、20、30…级等你。",
     "games.intern_ready": "🎁 新等级为你赢得了一台<b>实习机器人</b>——去农场领取吧！",
     "farm.intern_line": "• 实习机器人（每小时 {rate} 🪙，永久）：<code>{count} 台</code>\n",
     "farm.intern_hint": "🎁 你有一台免费的实习机器人！点下方按钮，它将永久每小时挖 1 🪙。",
@@ -476,7 +476,7 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>ROFL HUB 邀请计划</b>\n"
         "..................................................\n\n"
-        "邀请好友，每有一人通过你的专属链接注册，"
+        "通过你的专属链接邀请好友，每有一人成为活跃玩家，"
         "你就能获得 <b>+{bonus} 🪙</b>！\n\n"
         "🔗 <b>你的链接（点按复制）：</b>\n<code>{link}</code>\n\n"
         "📊 <b>你的统计：</b>\n"
@@ -487,9 +487,9 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 分享链接",
     "ref.share_text": "快来加入 ROFL HUB 游戏生态系统！",
-    "ref.qualified_line": "⭐ <b>双重奖励：</b>受邀好友玩满 {rounds} 局后，你再得 <b>+{bonus} 🪙</b> 和 <b>{cutlets} 🥩 份赛博肉排</b>！",
-    "ref.qualified_notify": ("🤝 <b>你的好友玩上瘾了：已经 {rounds} 局！</b>\n"
-                             "合格推荐奖励 <b>+{bonus} 🪙</b> 和 <b>{cutlets} 🥩 份赛博肉排</b>已到账（肉排已入仓库）。继续邀请吧！"),
+    "ref.qualified_line": "✅ <b>活跃好友</b>是指在问答中达到 <b>{level} 级智力等级</b>、并在农场领取过 <b>{claims} 次每日肉排</b>的人。此时你可获得 <b>+{bonus} 🪙</b>，每位好友仅一次。仅注册、不玩游戏没有奖励——这样对大家更公平。",
+    "ref.qualified_notify": ("🤝 <b>你的好友成为了活跃玩家！</b>\n"
+                             "智力等级 {level} 级、每日肉排领取 {claims} 次——均已达成。你获得 <b>+{bonus} 🪙</b>。继续邀请吧！"),
 
     # ---------------- переводы ----------------
     "tr.help": (
@@ -591,7 +591,7 @@ STRINGS = {
     "dlv.err_mega": "你的战队已经是超级公会了。",
     "dlv.intern_upgrade": "♾ 实习机器人晋升为<b>永久初级矿工</b>：每小时 5 🪙，没有期限！",
     "dlv.err_no_intern": "还没有激活的实习机器人——先在 /farm 里激活它。",
-    "dlv.err_intern_refs": "升级需要 {need} 位合格好友（各玩 30 局），你目前有 {have} 位。",
+    "dlv.err_intern_refs": "升级需要 {need} 位活跃好友（条件见 /invite），你目前有 {have} 位。",
     "mk.header": "📈 <b>肉排交易所</b>\n..................................................\n\n挂单：<b>{orders}</b> · 在售肉排：<b>{cutlets}</b> · 最低价：<b>{best}</b>\n平台手续费：每笔成交 <b>{fee}%</b>（销毁——抗通胀）\n🥩 你仓库里的肉排：<b>{inv}</b>\n\n{body}\n\n<i>点击挂单即可购买。出售请用 /sell。</i>",
     "mk.empty": "暂时没有挂单。抢先出售：/sell 数量 价格",
     "mk.order_line": "🥩 #{id} · <b>{qty} 块</b>，单价 <b>{price}</b> 🪙",
@@ -968,7 +968,7 @@ MINIAPP = {
     "eff_shuttle": "只属于你：你出售时手续费 5%，挂单最多 500 份肉排——永久",
     "eff_storage": "资源空间更大——永久",
     "ref_title": "🤝 邀请好友",
-    "ref_rules": "每邀请一位好友立得 +{s} 🪙。好友玩满 {r} 局后，再得 +{q} 🪙 和 {c} 🥩 份赛博肉排。",
+    "ref_rules": "每位活跃好友 +{q} 🪙，仅一次。活跃好友是指达到 {l} 级智力等级、并领取过 {c} 次每日肉排的人。",
     "ref_copy": "📋 复制",
     "ref_copied": "链接已复制！",
     "ref_share": "📤 分享",
@@ -976,9 +976,8 @@ MINIAPP = {
     "ref_invited": "已邀请",
     "ref_qualified": "活跃",
     "ref_earned": "已赚取",
-    "ref_cutlets": "🥩 活跃好友带来的肉排：{n}",
     "ref_top": "🏆 谁的好友最多",
-    "ref_topHint": "✅ — 活跃好友（玩满 30 局），👥 — 全部受邀者",
+    "ref_topHint": "✅ — 活跃好友，👥 — 全部受邀者",
     "ref_empty": "排行榜还是空的——快来当第一名！",
     "wk_title": "🔥 本周配方",
     "wk_hint": "限时配方：由中心决定上架，随后消失。抓紧合成！",
@@ -1116,7 +1115,7 @@ COMMANDS = {
     "duel": "⚔️ 1对1 押注对决",
     "quests": "🗺️ 冒险任务：互动分支故事",
     "my_team": "🏆 我的战队与队友",
-    "invite": "🤝 邀请链接：每位好友 +1000",
+    "invite": "🤝 邀请链接：每位活跃好友 +500",
     "transfer": "🔄 给玩家转账金币",
     "market": "📈 肉排交易所：买入或卖出",
     "sell": "💰 出售肉排：/sell 数量 价格",

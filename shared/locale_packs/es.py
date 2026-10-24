@@ -141,7 +141,7 @@ STRINGS: dict[str, str] = {
         "• /my_team — Panel de la banda y la LISTA DE COMPAÑEROS con niveles 🧠\n"
         "• /all_teams — Ruleta de equipos al azar\n\n"
         "💸 <b>DINERO Y AMIGOS:</b>\n"
-        "• /invite — Tu enlace de referido: +1000 🪙 por amigo\n"
+        "• /invite — Tu enlace de referido: +500 🪙 por amigo activo\n"
         "• /transfer — Enviar monedas a otro jugador\n\n"
         "📚 <b>AYUDA Y REGLAS:</b>\n"
         "• /faq — La guía completa del ecosistema (se abre en la Mini App)\n"
@@ -253,7 +253,7 @@ STRINGS: dict[str, str] = {
     "farm.btn_claim_intern": "🎁 Recoger Robot Becario ({n})",
     "farm.intern_pending": "🎁 Por tus niveles de intelecto te esperan Robots Becarios: <b>{n}</b>. ¡Recógelos con el botón de abajo!",
     "farm.intern_claimed_new": "🤖 ¡Un nuevo Robot Becario entró en turno! +1 🪙 por hora para siempre.",
-    "farm.intern_none": "🤖 Aún no hay nuevos Becarios: sube de nivel de intelecto en la trivia.",
+    "farm.intern_none": "🤖 Aún no hay nuevos Becarios: el siguiente te espera en el nivel de intelecto 10, 20, 30…",
     "games.intern_ready": "🎁 Tu nuevo nivel te da un <b>Robot Becario</b>: ¡recógelo en la granja!",
 
     "farm.intern_line": "• Robots Becarios ({rate} 🪙/h, eternos): <code>{count}</code>\n",
@@ -476,8 +476,8 @@ STRINGS: dict[str, str] = {
     "ref.text": (
         "🤝 <b>PROGRAMA DE REFERIDOS DE ROFL HUB</b>\n"
         "..................................................\n\n"
-        "¡Invita a tus amigos y recibe <b>+{bonus} 🪙</b> por cada uno "
-        "que se registre con tu enlace personal!\n\n"
+        "Invita a tus amigos con tu enlace personal y recibe <b>+{bonus} 🪙</b> "
+        "por cada uno que se convierta en jugador activo.\n\n"
         "🔗 <b>Tu enlace (toca para copiar):</b>\n<code>{link}</code>\n\n"
         "📊 <b>TUS ESTADÍSTICAS:</b>\n"
         "👥 Amigos invitados: <b>{invited}</b>\n"
@@ -487,10 +487,11 @@ STRINGS: dict[str, str] = {
     ),
     "ref.btn_share": "📣 Compartir el enlace",
     "ref.share_text": "¡Únete al ecosistema de juegos ROFL HUB!",
-    "ref.qualified_line": ("⭐ <b>Doble recompensa:</b> cuando un amigo invitado juegue {rounds} "
-                           "rondas, ¡recibes <b>+{bonus} 🪙</b> más y <b>{cutlets} 🥩 ciber-chuleta</b>!"),
-    "ref.qualified_notify": ("🤝 <b>¡Tu amigo se enganchó: ya lleva {rounds} rondas!</b>\n"
-                             "Ganaste <b>+{bonus} 🪙</b> y <b>{cutlets} 🥩 ciber-chuleta</b> al inventario por un referido calificado. "
+    "ref.qualified_line": ("✅ <b>Amigo activo</b> es quien llega al <b>nivel de intelecto {level}</b> en la trivia "
+                           "y recoge <b>{claims} chuletas diarias</b> en la granja. Entonces recibes <b>+{bonus} 🪙</b>, "
+                           "una sola vez por cada amigo. Registrarse sin jugar no da bonus: así es más justo para todos."),
+    "ref.qualified_notify": ("🤝 <b>¡Tu amigo ya es un jugador activo!</b>\n"
+                             "Nivel de intelecto {level} y {claims} chuletas diarias: listo. Has ganado <b>+{bonus} 🪙</b>. "
                              "¡Invita a más!"),
 
     # ---------------- переводы ----------------
@@ -593,7 +594,7 @@ STRINGS: dict[str, str] = {
     "dlv.err_mega": "Tu equipo ya tiene el estatus de Mega-Clan.",
     "dlv.intern_upgrade": "♾ Tu Robot Becario ascendió a <b>Robot Minero ETERNO</b>: ¡5 🪙 por hora sin caducidad!",
     "dlv.err_no_intern": "No tienes un Robot Becario activado: actívalo primero en /farm.",
-    "dlv.err_intern_refs": "La mejora necesita {need} amigos calificados (30 rondas cada uno); tienes {have}.",
+    "dlv.err_intern_refs": "La mejora necesita {need} amigos activos (las condiciones están en /invite); tienes {have}.",
     "mk.header": "📈 <b>BOLSA DE CHULETAS</b>\n..................................................\n\nÓrdenes abiertas: <b>{orders}</b> · chuletas en venta: <b>{cutlets}</b> · mejor precio: <b>{best}</b>\nComisión del hub: <b>{fee}%</b> por venta (se quema — escudo antiinflación)\n🥩 En tu inventario: <b>{inv}</b> chuletas\n\n{body}\n\n<i>Toca una orden para comprar. Para vender usa /sell.</i>",
     "mk.empty": "Aún no hay ofertas. Sé el primero: /sell cantidad precio",
     "mk.order_line": "🥩 #{id} · <b>{qty} uds.</b> a <b>{price}</b> 🪙",
@@ -970,7 +971,7 @@ MINIAPP: dict[str, str] = {
     "eff_shuttle": "solo tuyo: comisión del 5% en tus ventas y órdenes de hasta 500 chuletas, para siempre",
     "eff_storage": "más espacio para recursos, para siempre",
     "ref_title": "🤝 INVITA A TUS AMIGOS",
-    "ref_rules": "Por cada amigo, +{s} 🪙 al instante. Cuando tu amigo juegue {r} rondas, otros +{q} 🪙 y {c} 🥩 ciber-chuleta.",
+    "ref_rules": "+{q} 🪙 por cada amigo activo, una sola vez. Un amigo activo ha llegado al nivel de intelecto {l} y ha recogido {c} chuletas diarias.",
     "ref_copy": "📋 Copiar",
     "ref_copied": "¡Enlace copiado!",
     "ref_share": "📤 Compartir",
@@ -978,9 +979,8 @@ MINIAPP: dict[str, str] = {
     "ref_invited": "invitados",
     "ref_qualified": "activos",
     "ref_earned": "ganado",
-    "ref_cutlets": "🥩 Chuletas recibidas por amigos activos: {n}",
     "ref_top": "🏆 QUIÉN TIENE MÁS AMIGOS",
-    "ref_topHint": "✅ — amigos activos (jugaron 30 rondas), 👥 — todos los invitados",
+    "ref_topHint": "✅ — amigos activos, 👥 — todos los invitados",
     "ref_empty": "El ranking aún está vacío: ¡sé quien lo estrene!",
     "wk_title": "🔥 RECETAS DE LA SEMANA",
     "wk_hint": "Recetas temporales: aparecen cuando el hub lo decide y luego desaparecen. ¡Fabrícalas a tiempo!",
@@ -1118,7 +1118,7 @@ COMMANDS: dict[str, str] = {
     "duel": "⚔️ Duelo 1 contra 1 con apuesta",
     "quests": "🗺️ Misiones: historias con decisiones",
     "my_team": "🏆 Mi equipo y compañeros",
-    "invite": "🤝 Enlace de referido: +1000 por amigo",
+    "invite": "🤝 Enlace de referido: +500 por amigo activo",
     "transfer": "🔄 Enviar monedas a un jugador",
     "market": "📈 Bolsa de chuletas: comprar o vender",
     "sell": "💰 Vender chuletas: /sell cantidad precio",

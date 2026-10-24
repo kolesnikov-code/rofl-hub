@@ -13,7 +13,7 @@ asyncpg = pytest.importorskip("asyncpg")
 
 from shared.database import Database  # noqa: E402
 from shared.delivery import DeliveryError, already_delivered, deliver_order  # noqa: E402
-from shared.economy import START_BALANCE, REFERRAL_SIGNUP_BONUS  # noqa: E402
+from shared.economy import START_BALANCE  # noqa: E402
 from shared.ledger import InsufficientFunds, change_balance  # noqa: E402
 from bots.main_bot.catalog import build_order  # noqa: E402
 
@@ -128,12 +128,14 @@ async def test_unlimit_stacks(conn):
 
 
 # ---------------------------------------------------------------- registration
-async def test_register_user_gives_bonus_to_referrer_once(conn):
+async def test_register_user_remembers_referrer_but_pays_nothing(conn):
+    """С 26.10 за регистрацию друга не платится ничего — бонус только за АКТИВНОГО друга."""
     from bots.main_bot.handlers.start import register_user
     await _mk_user(conn, 10, 0)
     assert await register_user(conn, 11, "new", "en", referrer_id=10) is True
     assert await register_user(conn, 11, "new", "en", referrer_id=10) is False
-    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 10") == REFERRAL_SIGNUP_BONUS
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 10") == 0
+    assert await conn.fetchval("SELECT COUNT(*) FROM ledger WHERE user_id = 10") == 0
     u = await conn.fetchrow("SELECT balance, inv_cutlets, lang, referred_by FROM users WHERE user_id = 11")
     assert (u["balance"], u["inv_cutlets"], u["lang"], u["referred_by"]) == (START_BALANCE, 1, "en", 10)
 
@@ -636,24 +638,25 @@ async def test_counter_migration_moves_robots_to_miners_table_once(conn):
 # Продуктовая аналитика: квалификация рефералов, события, метрики
 # ============================================================================
 async def test_referral_qualification_pays_exactly_once_under_race():
-    """Две конкурентные транзакции доводят друга до 30 раундов — бонус строго один."""
+    """Две конкурентные транзакции видят выполненное условие активного друга — бонус строго один."""
     import asyncio
     from shared.analytics import qualify_referral_if_due
-    from shared.economy import REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFY_ROUNDS
+    from shared.economy import REFERRAL_QUALIFIED_BONUS
 
     database = Database()
     await database.connect(TEST_DSN)
     await database.create_tables()
     try:
         async with database.pool.acquire() as c:
-            await c.execute("TRUNCATE users, ledger, events, daily_activity RESTART IDENTITY")
+            await c.execute("TRUNCATE users, ledger, events, daily_activity, game_stats RESTART IDENTITY")
             await _mk_user(c, 100, 0)
-            await _mk_user(c, 101, 0, referred_by=100)
+            await _mk_user(c, 101, 0, referred_by=100, bonus_claims=3)
+            await c.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (101, 3)")
 
         async def attempt():
             async with database.pool.acquire() as c:
                 async with c.transaction():
-                    return await qualify_referral_if_due(c, 101, REFERRAL_QUALIFY_ROUNDS)
+                    return await qualify_referral_if_due(c, 101)
 
         results = await asyncio.gather(attempt(), attempt())
         assert sorted(r is not None for r in results) == [False, True]
@@ -670,17 +673,33 @@ async def test_referral_qualification_pays_exactly_once_under_race():
         await database.close()
 
 
-async def test_referral_qualification_needs_threshold_and_referrer(conn):
+async def test_referral_qualification_needs_both_conditions_and_live_accounts(conn):
+    """Активный друг = 3 уровень интеллекта И 3 ежедневные котлеты; блокировки отсекают фейки."""
     from shared.analytics import qualify_referral_if_due
-    from shared.economy import REFERRAL_QUALIFY_ROUNDS
 
     await _mk_user(conn, 110, 0)
-    await _mk_user(conn, 111, 0, referred_by=110)
-    assert await qualify_referral_if_due(conn, 111, REFERRAL_QUALIFY_ROUNDS - 1) is None
-    await _mk_user(conn, 112, 0)   # игрок без реферера
-    assert await qualify_referral_if_due(conn, 112, 999) is None
+    await _mk_user(conn, 111, 0, referred_by=110, bonus_claims=2)      # котлет мало
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (111, 3)")
+    assert await qualify_referral_if_due(conn, 111) is None
+    await _mk_user(conn, 112, 0, referred_by=110, bonus_claims=3)      # интеллекта мало
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (112, 2)")
+    assert await qualify_referral_if_due(conn, 112) is None
+    await _mk_user(conn, 113, 0, bonus_claims=9)                       # пришёл сам
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (113, 9)")
+    assert await qualify_referral_if_due(conn, 113) is None
+    await _mk_user(conn, 114, 0, referred_by=110, bonus_claims=3, is_blocked=True)   # забанен
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (114, 3)")
+    assert await qualify_referral_if_due(conn, 114) is None
     assert await conn.fetchval(
         "SELECT COUNT(*) FROM ledger WHERE reason = 'referral_qualified'") == 0
+
+    # Заблокированный пригласитель: друг засчитан активным, но бонус не начислен
+    await _mk_user(conn, 115, 0, is_blocked=True)
+    await _mk_user(conn, 116, 0, referred_by=115, bonus_claims=3)
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (116, 3)")
+    assert await qualify_referral_if_due(conn, 116) is None
+    assert await conn.fetchval("SELECT qualified_at FROM users WHERE user_id = 116") is not None
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 115") == 0
 
 
 async def test_track_and_daily_activity_write_rows():
@@ -843,7 +862,7 @@ async def test_intern_upgrade_requires_three_qualified_referrals(conn):
 
 
 async def test_new_intellect_level_gives_a_claimable_intern(conn, global_db):
-    """Новый уровень интеллекта = Стажёр ждёт на ферме; на ферму попадает только по кнопке."""
+    """Уровень, кратный 10, = Стажёр ждёт на ферме; на ферму попадает только по кнопке."""
     pytest.importorskip("aiogram")
     from bots.main_bot.handlers.farm import claim_pending_intern
     from bots.main_bot.handlers.games import execute_solo_game_payout
@@ -852,6 +871,10 @@ async def test_new_intellect_level_gives_a_claimable_intern(conn, global_db):
     await conn.execute(
         "INSERT INTO game_stats (user_id, quiz_level, quiz_level_progress) VALUES (310, 1, 19)")
     ok, text, _ = await execute_solo_game_payout(310, True, "quiz")      # закрыт уровень 2
+    assert ok and "Стажёр" not in text
+    assert await conn.fetchval("SELECT interns_pending FROM users WHERE user_id = 310") == 0
+    await conn.execute("UPDATE game_stats SET quiz_level = 9, quiz_level_progress = 99 WHERE user_id = 310")
+    ok, text, _ = await execute_solo_game_payout(310, True, "quiz")      # закрыт уровень 10
     assert ok and "Стажёр" in text
     assert await conn.fetchval("SELECT interns_pending FROM users WHERE user_id = 310") == 1
     assert await conn.fetchval("SELECT COUNT(*) FROM miners WHERE user_id = 310") == 0   # сам не падает
@@ -1256,12 +1279,42 @@ async def test_weekly_recipe_needs_toggle_and_respects_limit(conn):
     assert await conn.fetchval("SELECT raid_shield_until FROM users WHERE user_id = 930") == now + timedelta(hours=48)
 
 
-async def test_qualified_referral_gives_coins_and_a_cutlet(conn):
+async def test_active_friend_via_quiz_level_up_pays_500_once(conn, global_db):
+    """Друг с 3 котлетами закрывает 3 уровень в викторине → пригласителю +500, без котлеты, один раз."""
+    pytest.importorskip("aiogram")
+    from bots.main_bot.handlers.games import execute_solo_game_payout
     from shared.analytics import qualify_referral_if_due
-    from shared.economy import REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFIED_CUTLETS, REFERRAL_QUALIFY_ROUNDS
-    await _mk_user(conn, 940, 0)
-    await _mk_user(conn, 941, 0, referred_by=940)
-    assert await qualify_referral_if_due(conn, 941, REFERRAL_QUALIFY_ROUNDS) == 940
+    from shared.economy import REFERRAL_QUALIFIED_BONUS
+    await _mk_user(conn, 940, 0, inv_cutlets=0)
+    await _mk_user(conn, 941, 100, referred_by=940, bonus_claims=3)
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level, quiz_level_progress) VALUES (941, 2, 29)")
+    ok, _, _ = await execute_solo_game_payout(941, True, "quiz")          # закрыт уровень 3
+    assert ok
     row = await conn.fetchrow("SELECT balance, inv_cutlets FROM users WHERE user_id = 940")
-    assert (row["balance"], row["inv_cutlets"]) == (REFERRAL_QUALIFIED_BONUS, REFERRAL_QUALIFIED_CUTLETS)
-    assert await qualify_referral_if_due(conn, 941, REFERRAL_QUALIFY_ROUNDS + 5) is None   # ровно один раз
+    assert (row["balance"], row["inv_cutlets"]) == (REFERRAL_QUALIFIED_BONUS, 0)
+    assert await qualify_referral_if_due(conn, 941) is None                # ровно один раз
+
+
+async def test_intern_rebalance_migration_takes_back_extra_interns(conn):
+    """Откат «Стажёр за каждый уровень»: остаются стартовый + по одному за 10 уровней."""
+    from datetime import timedelta
+    from shared.database import SCHEMA_STATEMENTS
+    from shared.economy import utcnow
+    now = utcnow()
+    await _mk_user(conn, 950, 0, intern_claimed=True, interns_pending=1)    # 2 уровень, 3 Стажёра
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (950, 2)")
+    await _mk_user(conn, 951, 0, intern_claimed=True, interns_pending=5)    # 12 уровень, 1 Стажёр
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (951, 12)")
+    for uid, n in ((950, 3), (951, 1)):
+        for i in range(n):
+            await conn.execute(
+                "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES ($1, 'intern', $2, $3)",
+                uid, now + timedelta(minutes=i), now + timedelta(days=36500))
+    await conn.execute("UPDATE users SET interns_rebalanced = FALSE")
+    for stmt in SCHEMA_STATEMENTS:
+        if "interns_rebalanced" in stmt and ("DELETE" in stmt or "UPDATE" in stmt):
+            await conn.execute(stmt)
+    count = "SELECT COUNT(*) FROM miners WHERE user_id = $1 AND kind = 'intern'"
+    pending = "SELECT interns_pending FROM users WHERE user_id = $1"
+    assert (await conn.fetchval(count, 950), await conn.fetchval(pending, 950)) == (1, 0)
+    assert (await conn.fetchval(count, 951), await conn.fetchval(pending, 951)) == (1, 1)

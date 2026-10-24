@@ -143,7 +143,7 @@ STRINGS = {
         "• /my_team — Crew-Dashboard und TEAMMATE-LISTE mit 🧠-Leveln\n"
         "• /all_teams — Roulette zufälliger Teams\n\n"
         "💸 <b>GELD & FREUNDE:</b>\n"
-        "• /invite — Dein Einladungslink: +1000 🪙 pro Freund\n"
+        "• /invite — Dein Einladungslink: +500 🪙 für einen aktiven Freund\n"
         "• /transfer — Münzen an andere Spieler senden\n\n"
         "📚 <b>GUIDE & REGELN:</b>\n"
         "• /faq — Der komplette Ökosystem-Guide (öffnet sich in der Mini App)\n"
@@ -255,7 +255,7 @@ STRINGS = {
     "farm.btn_claim_intern": "🎁 Praktikanten-Bot abholen ({n})",
     "farm.intern_pending": "🎁 Für deine Intelligenz-Level warten Praktikanten-Bots auf dich: <b>{n}</b> – hol sie dir mit dem Button unten!",
     "farm.intern_claimed_new": "🤖 Ein neuer Praktikanten-Bot hat die Schicht angetreten! +1 🪙 pro Stunde für immer.",
-    "farm.intern_none": "🤖 Noch keine neuen Praktikanten – steige im Quiz im Intelligenz-Level auf.",
+    "farm.intern_none": "🤖 Noch keine neuen Praktikanten – der nächste wartet auf dich bei Intelligenz-Level 10, 20, 30…",
     "games.intern_ready": "🎁 Für dein neues Level wartet ein <b>Praktikanten-Bot</b> auf dich – hol ihn dir auf deiner Farm ab!",
     "farm.intern_line": "• Praktikanten-Bots ({rate} 🪙/Std., ewig): <code>{count}</code>\n",
     "farm.intern_hint": "🎁 Du hast einen kostenlosen Praktikanten-Bot! Tippe auf den Button unten – er schürft für immer 1 🪙 pro Stunde.",
@@ -478,8 +478,8 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>ROFL HUB EINLADUNGSPROGRAMM</b>\n"
         "..................................................\n\n"
-        "Lade Freunde ein und erhalte <b>+{bonus} 🪙</b> für jeden, "
-        "der sich über deinen persönlichen Link registriert!\n\n"
+        "Lade Freunde über deinen persönlichen Link ein und erhalte <b>+{bonus} 🪙</b> "
+        "für jeden, der ein aktiver Spieler wird!\n\n"
         "🔗 <b>Dein Link (zum Kopieren antippen):</b>\n<code>{link}</code>\n\n"
         "📊 <b>DEINE STATISTIK:</b>\n"
         "👥 Eingeladene Freunde: <b>{invited}</b>\n"
@@ -489,11 +489,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Link teilen",
     "ref.share_text": "Komm ins Spiele-Ökosystem von ROFL HUB!",
-    "ref.qualified_line": ("⭐ <b>Doppelte Belohnung:</b> Wenn ein eingeladener Freund {rounds} "
-                           "Runden spielt, bekommst du weitere <b>+{bonus} 🪙</b> und <b>{cutlets} 🥩 Cyber-Frikadelle</b>!"),
-    "ref.qualified_notify": ("🤝 <b>Dein Freund ist am Ball: schon {rounds} Runden!</b>\n"
-                             "Du hast <b>+{bonus} 🪙</b> und <b>{cutlets} 🥩 Cyber-Frikadelle</b> fürs Lager "
-                             "für einen qualifizierten Freund erhalten. Lade noch mehr ein!"),
+    "ref.qualified_line": ("✅ <b>Aktiver Freund</b> ist, wer im Quiz <b>Intelligenz-Level {level}</b> erreicht "
+                           "und auf der Farm <b>{claims} tägliche Frikadellen</b> abgeholt hat. Dann bekommst du <b>+{bonus} 🪙</b>, "
+                           "einmal pro Freund. Für eine Registrierung ohne Spielen gibt es keinen Bonus – das ist fairer für alle."),
+    "ref.qualified_notify": ("🤝 <b>Dein Freund ist jetzt ein aktiver Spieler!</b>\n"
+                             "Intelligenz-Level {level} und {claims} tägliche Frikadellen – geschafft. Du hast <b>+{bonus} 🪙</b> erhalten. Lade noch mehr ein!"),
 
     # ---------------- Überweisungen ----------------
     "tr.help": (
@@ -595,7 +595,7 @@ STRINGS = {
     "dlv.err_mega": "Dein Team hat den Mega-Clan-Status bereits.",
     "dlv.intern_upgrade": "♾ Dein Praktikanten-Bot wurde zum <b>EWIGEN Miner-Bot</b> befördert: 5 🪙 pro Stunde, ohne Ablauf!",
     "dlv.err_no_intern": "Kein aktivierter Praktikanten-Bot – aktiviere ihn zuerst in /farm.",
-    "dlv.err_intern_refs": "Das Upgrade braucht {need} qualifizierte Freunde (je 30 Runden); du hast {have}.",
+    "dlv.err_intern_refs": "Das Upgrade braucht {need} aktive Freunde (die Bedingungen stehen in /invite); du hast {have}.",
     "mk.header": "📈 <b>FRIKADELLEN-BÖRSE</b>\n..................................................\n\nOffene Orders: <b>{orders}</b> · Frikadellen im Angebot: <b>{cutlets}</b> · bester Preis: <b>{best}</b>\nHub-Gebühr: <b>{fee}%</b> pro Verkauf (wird verbrannt — Inflationsschutz)\n🥩 In deinem Lager: <b>{inv}</b> Frikadellen\n\n{body}\n\n<i>Tippe auf eine Order zum Kaufen. Verkaufen: /sell.</i>",
     "mk.empty": "Noch keine Angebote. Mach den Anfang: /sell Menge Preis",
     "mk.order_line": "🥩 #{id} · <b>{qty} Stk.</b> zu <b>{price}</b> 🪙",
@@ -974,11 +974,11 @@ MINIAPP = {
     "goals_claimed": "🎁 Die heutige Truhe ist abgeholt. Morgen gibt's neue Ziele!", "goals_reset": "Die Ziele werden um 00:00 UTC erneuert",
     "goals_got": "🎁 +{c} 🪙 · +{q} {n} · Serie {s} Tage",
     "tab_friends": "🤝 Freunde", "ref_title": "🤝 LADE FREUNDE EIN",
-    "ref_rules": "Für jeden Freund sofort +{s} 🪙. Wenn ein Freund {r} Runden spielt — weitere +{q} 🪙 und {c} 🥩 Cyber-Frikadelle.",
+    "ref_rules": "+{q} 🪙 für jeden aktiven Freund – einmalig. Ein aktiver Freund hat Intelligenz-Level {l} erreicht und {c} tägliche Frikadellen abgeholt.",
     "ref_copy": "📋 Kopieren", "ref_copied": "Link kopiert!", "ref_share": "📤 Teilen",
     "ref_stats": "📊 DEIN NETZWERK", "ref_invited": "eingeladen", "ref_qualified": "aktiv", "ref_earned": "verdient",
-    "ref_cutlets": "🥩 Frikadellen für aktive Freunde erhalten: {n}", "ref_top": "🏆 WER HAT DIE MEISTEN FREUNDE",
-    "ref_topHint": "✅ — aktive Freunde (30 Runden gespielt), 👥 — alle Eingeladenen", "ref_empty": "Das Ranking ist noch leer — mach den Anfang!",
+    "ref_top": "🏆 WER HAT DIE MEISTEN FREUNDE",
+    "ref_topHint": "✅ — aktive Freunde, 👥 — alle Eingeladenen", "ref_empty": "Das Ranking ist noch leer — mach den Anfang!",
     "wk_title": "🔥 REZEPTE DER WOCHE", "wk_hint": "Zeitlich begrenzte Rezepte: Sie erscheinen, wann der Hub es entscheidet, und verschwinden wieder. Schnapp sie dir rechtzeitig!",
     "wk_left": "noch {n} von {m} Bauten diese Woche", "st_cap": "📦 Lager: bis zu {c} von jeder Ressource — überschüssiger Ertrag geht verloren",
     "featureOff": "⚙️ Dieser Bereich wird gerade gewartet", "done": "Fertig!", "loading": "⏳ Lädt…",
@@ -995,7 +995,7 @@ COMMANDS = {
     "duel": "⚔️ 1-gegen-1-Duell um den Einsatz",
     "quests": "🗺️ Quests: Storys mit Entscheidungen",
     "my_team": "🏆 Mein Team & Teammates",
-    "invite": "🤝 Einladungslink: +1000 pro Freund",
+    "invite": "🤝 Einladungslink: +500 für aktiven Freund",
     "transfer": "🔄 Münzen an Spieler senden",
     "market": "📈 Frikadellen-Börse: kaufen oder verkaufen",
     "sell": "💰 Frikadellen verkaufen: /sell Menge Preis",

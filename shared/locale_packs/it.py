@@ -142,7 +142,7 @@ STRINGS = {
         "• /my_team — Dashboard della banda e LISTA COMPAGNI con livelli 🧠\n"
         "• /all_teams — Roulette di squadre casuali\n\n"
         "💸 <b>SOLDI E AMICI:</b>\n"
-        "• /invite — Il tuo link d'invito: +1000 🪙 per ogni amico\n"
+        "• /invite — Il tuo link d'invito: +500 🪙 per ogni amico attivo\n"
         "• /transfer — Trasferisci monete a un altro giocatore\n\n"
         "📚 <b>GUIDA E REGOLE:</b>\n"
         "• /faq — La guida completa dell'ecosistema (si apre nella Mini App)\n"
@@ -254,7 +254,7 @@ STRINGS = {
     "farm.btn_claim_intern": "🎁 Ritira il Robot Stagista ({n})",
     "farm.intern_pending": "🎁 Per i livelli di intelletto ti aspettano dei Robot Stagisti: <b>{n}</b> — ritirali con il pulsante qui sotto!",
     "farm.intern_claimed_new": "🤖 Un nuovo Robot Stagista è entrato in turno! +1 🪙 all'ora per sempre.",
-    "farm.intern_none": "🤖 Per ora non ci sono nuovi Stagisti: sali di livello d'intelletto nel quiz.",
+    "farm.intern_none": "🤖 Per ora non ci sono nuovi Stagisti: il prossimo ti aspetta al livello d'intelletto 10, 20, 30…",
     "games.intern_ready": "🎁 Per il nuovo livello ti aspetta un <b>Robot Stagista</b>: ritiralo nella fattoria!",
     "farm.intern_line": "• Robot Stagisti ({rate} 🪙/h, eterni): <code>{count}</code>\n",
     "farm.intern_hint": "🎁 Hai un Robot Stagista gratis! Premi il pulsante qui sotto: estrarrà 1 🪙 all'ora per sempre.",
@@ -476,8 +476,8 @@ STRINGS = {
     "ref.text": (
         "🤝 <b>PROGRAMMA REFERRAL DI ROFL HUB</b>\n"
         "..................................................\n\n"
-        "Invita gli amici e ricevi <b>+{bonus} 🪙</b> per ognuno "
-        "che si registra con il tuo link personale!\n\n"
+        "Invita gli amici con il tuo link personale e ricevi <b>+{bonus} 🪙</b> "
+        "per ognuno che diventa un giocatore attivo!\n\n"
         "🔗 <b>Il tuo link (tocca per copiarlo):</b>\n<code>{link}</code>\n\n"
         "📊 <b>LE TUE STATISTICHE:</b>\n"
         "👥 Amici invitati: <b>{invited}</b>\n"
@@ -487,12 +487,11 @@ STRINGS = {
     ),
     "ref.btn_share": "📣 Condividi il link",
     "ref.share_text": "Entra nell'ecosistema di gioco ROFL HUB!",
-    "ref.qualified_line": ("⭐ <b>Ricompensa doppia:</b> quando un amico invitato gioca {rounds} "
-                           "round, ricevi altre <b>+{bonus} 🪙</b> e <b>{cutlets} 🥩 cyber-cotoletta</b>!"),
-    "ref.qualified_notify": ("🤝 <b>Il tuo amico ci ha preso gusto: già {rounds} round!</b>\n"
-                             "Hai guadagnato <b>+{bonus} 🪙</b> e <b>{cutlets} 🥩 cyber-cotoletta</b> nell'inventario "
-                             "per un invitato qualificato. "
-                             "Invitane altri!"),
+    "ref.qualified_line": ("✅ <b>Amico attivo</b> è chi ha raggiunto il <b>livello {level} di intelletto</b> nel quiz "
+                           "e ha ritirato <b>{claims} cotolette giornaliere</b> alla fattoria. Allora ricevi <b>+{bonus} 🪙</b>, "
+                           "una sola volta per amico. Niente bonus per le sole registrazioni senza gioco: è più giusto per tutti."),
+    "ref.qualified_notify": ("🤝 <b>Il tuo amico è diventato un giocatore attivo!</b>\n"
+                             "Livello {level} di intelletto e {claims} cotolette giornaliere: fatto. Hai ricevuto <b>+{bonus} 🪙</b>. Invitane altri!"),
 
     # ---------------- переводы ----------------
     "tr.help": (
@@ -594,7 +593,7 @@ STRINGS = {
     "dlv.err_mega": "La tua squadra ha già lo status di Mega-Clan.",
     "dlv.intern_upgrade": "♾ Il tuo Robot Stagista è stato promosso a <b>Robot Minatore ETERNO</b>: 5 🪙 all'ora, senza scadenza!",
     "dlv.err_no_intern": "Nessun Robot Stagista attivato: attivalo prima in /farm.",
-    "dlv.err_intern_refs": "L'upgrade richiede {need} amici qualificati (30 round ciascuno); tu ne hai {have}.",
+    "dlv.err_intern_refs": "L'upgrade richiede {need} amici attivi (le condizioni sono in /invite); tu ne hai {have}.",
     "mk.header": "📈 <b>BORSA DELLE COTOLETTE</b>\n..................................................\n\nOrdini aperti: <b>{orders}</b> · cotolette in vendita: <b>{cutlets}</b> · miglior prezzo: <b>{best}</b>\nCommissione hub: <b>{fee}%</b> a vendita (bruciata — scudo anti-inflazione)\n🥩 Nel tuo inventario: <b>{inv}</b> cotolette\n\n{body}\n\n<i>Tocca un ordine per comprare. Per vendere: /sell.</i>",
     "mk.empty": "Ancora nessuna offerta. Sii il primo: /sell quantità prezzo",
     "mk.order_line": "🥩 #{id} · <b>{qty} pz</b> a <b>{price}</b> 🪙",
@@ -1087,7 +1086,7 @@ MINIAPP = {
     "ws_armorUntil": "🛡 Armatura attiva fino al {t}",
     "tab_friends": "🤝 Amici",
     "ref_title": "🤝 INVITA GLI AMICI",
-    "ref_rules": "+{s} 🪙 subito per ogni amico. Quando un amico gioca {r} round: altre +{q} 🪙 e {c} 🥩 cyber-cotoletta.",
+    "ref_rules": "+{q} 🪙 per ogni amico attivo, una sola volta. Amico attivo: ha raggiunto il livello d'intelletto {l} e ha ritirato {c} cotolette giornaliere.",
     "ref_copy": "📋 Copia",
     "ref_copied": "Link copiato!",
     "ref_share": "📤 Condividi",
@@ -1095,9 +1094,8 @@ MINIAPP = {
     "ref_invited": "invitati",
     "ref_qualified": "attivi",
     "ref_earned": "guadagnate",
-    "ref_cutlets": "🥩 Cotolette ricevute per gli amici attivi: {n}",
     "ref_top": "🏆 CHI HA PIÙ AMICI",
-    "ref_topHint": "✅ — amici attivi (hanno giocato 30 round), 👥 — tutti gli invitati",
+    "ref_topHint": "✅ — amici attivi, 👥 — tutti gli invitati",
     "ref_empty": "La classifica è ancora vuota: conquista il primo posto!",
     "wk_title": "🔥 RICETTE DELLA SETTIMANA",
     "wk_hint": "Ricette a tempo: compaiono quando lo decide l'hub e poi spariscono. Creale finché puoi!",
@@ -1119,7 +1117,7 @@ COMMANDS = {
     "duel": "⚔️ Duello 1 contro 1 con puntata",
     "quests": "🗺️ Quest: storie con scelte",
     "my_team": "🏆 La mia squadra e i compagni",
-    "invite": "🤝 Link d'invito: +1000 per ogni amico",
+    "invite": "🤝 Link d'invito: +500 per ogni amico attivo",
     "transfer": "🔄 Trasferisci monete a un giocatore",
     "market": "📈 Borsa delle cotolette: compra o vendi",
     "sell": "💰 Vendi cotolette: /sell quantità prezzo",
