@@ -224,15 +224,54 @@ TEAM_HELP_GIVER_MIN_BONUS_CLAIMS = 10
 # (часы бустов, дрона, щита, пробники Безлимита), ложится на склад и включается кнопкой,
 # когда игроку удобно. Постоянные улучшения (броня, склад, Шаттл) действуют сразу.
 # --------------------------------------------------------------------------
-ITEM_EFFECTS = ("nitrogen", "nuclear", "drone", "shield", "unlimit")
+# Порядок = порядок плашек на складе. Виды изделий:
+# - часовые личные (ITEM_COLUMNS: продлевают users.<колонка>) и Термос (окно thermos_from/until);
+# - часовые командные (TEAM_ITEM_EFFECTS: Знамя — окно бонуса добычи, Купол — щит всей команды);
+# - разовые (ONE_SHOT_COLUMNS: «заряд» на следующее действие; Форсаж — сразу сбрасывает перезарядку).
+ITEM_EFFECTS = (
+    "nitrogen", "nuclear", "drone", "shield", "unlimit",
+    "camo", "trap", "drill", "thermos", "banner", "dome",
+    "forsage", "economizer", "cargo", "stamp", "station_drone",
+)
 ITEM_COLUMNS = {
     "nitrogen": "boost_nitrogen_until",
     "nuclear": "boost_nuclear_until",
     "drone": "drone_until",
     "shield": "raid_shield_until",
     "unlimit": "unlimit_until",
+    "camo": "raid_camo_until",       # 🎭 не показываться в разведке
+    "trap": "raid_trap_until",       # 🪤 провалившийся налётчик отдаёт вдвое больше
+    "drill": "raid_drill_until",     # 🎯 ничья в обороне засчитывается как провал налётчика
 }
-ITEM_FARM_EFFECTS = ("nitrogen", "nuclear", "drone")   # меняют ставки фермы — закрыть прошлое время
+TEAM_ITEM_EFFECTS = ("banner", "dome")
+ONE_SHOT_COLUMNS = {
+    "economizer": "raid_free_fuel",  # ⛽ следующий вылет без водорода
+    "cargo": "raid_cargo",           # 📦 добыча следующего налёта +50%
+    "stamp": "market_free_sales",    # 📜 следующая продажа на бирже без комиссии
+    "station_drone": "station_boost",  # 🛰 следующий вклад в станцию ×1,5
+}
+ITEM_FARM_EFFECTS = ("nitrogen", "nuclear", "drone", "thermos")   # меняют ферму — закрыть прошлое время
+THERMOS_FUEL_CYCLE_SECONDS = 24 * 3600 * 4 // 3   # 🧊 котлеты хватает на 32 ч вместо 24 (едят на 25% медленнее)
+BANNER_BONUS_PERCENT = 5          # 🏳️ Знамя: +5% к добыче всей команде
+CARGO_LOOT_PERCENT = 150          # 📦 Трюм: добыча налёта ×1,5 (и потолок ×1,5)
+TRAP_FAIL_MULTIPLIER = 2          # 🪤 Приманка: провалившийся налётчик отдаёт вдвое больше
+FORSAGE_COOLDOWN_HOURS = 24       # 🔥 Форсаж — не чаще раза в сутки
+STATION_DRONE_PERCENT = 150       # 🛰 Ремдрон станции: вклад засчитывается ×1,5
+
+# --------------------------------------------------------------------------
+# РУДНИКИ (решение владельца 26.10): карта на 40 рудников, каждая битва команд — ровно за
+# один рудник. Победитель держит его 72 ч: КАЖДЫЙ боец команды получает 1 ресурс рудника в час.
+# Потом рудник свободен, но захватить его можно только в новой битве.
+# --------------------------------------------------------------------------
+MINES_COUNT = 40                  # сид рудников — shared/database.py (тест сверяет)
+MINE_HOLD_HOURS = 72
+MINE_YIELD_PER_MEMBER_HOUR = 1
+MINE_PAYOUT_INTERVAL_SECONDS = 300
+
+
+def mine_kind(mine_id: int) -> str:
+    """Ресурс рудника: по кругу металл → водород → кристаллы → детали."""
+    return RESOURCE_KINDS[(mine_id - 1) % len(RESOURCE_KINDS)]
 DUEL_BURN_PERCENT = 20
 
 
@@ -288,6 +327,53 @@ WORKSHOP_RECIPES: dict[str, dict] = {
     "shuttle": {"cost": {"metal": 1000, "hydrogen": 1000, "crystal": 1000, "parts": 1000},
                 "coins": 1000, "effect": "shuttle"},
 }
+# Новые изделия (решение владельца 26.10). week_limit — сборок на игрока за неделю UTC.
+WORKSHOP_RECIPES.update({
+    "camo_12h": {"cost": {"crystal": 20, "parts": 10}, "effect": "camo", "hours": 12},
+    "trap_24h": {"cost": {"metal": 30, "parts": 20}, "effect": "trap", "hours": 24},
+    "drill_24h": {"cost": {"metal": 20}, "effect": "drill", "hours": 24},
+    "forsage": {"cost": {"hydrogen": 40}, "effect": "forsage"},
+    "economizer": {"cost": {"parts": 25}, "effect": "economizer"},
+    "cargo": {"cost": {"metal": 40, "parts": 30}, "effect": "cargo"},
+    "thermos_24h": {"cost": {"crystal": 60, "parts": 40}, "effect": "thermos", "hours": 24, "week_limit": 1},
+    "stamp": {"cost": {"crystal": 50}, "effect": "stamp", "week_limit": 1},
+    "station_drone": {"cost": {"metal": 50, "parts": 50}, "effect": "station_drone"},
+    "banner_24h": {"cost": {"metal": 100, "hydrogen": 100, "crystal": 100, "parts": 100},
+                   "effect": "banner", "hours": 24},
+    "dome_12h": {"cost": {"metal": 150, "hydrogen": 150, "crystal": 150, "parts": 150},
+                 "effect": "dome", "hours": 12},
+})
+# Поэтапное открытие (решение владельца 26.10): новичку — по одному рецепту в сутки с момента
+# старта в экосистеме, от самого простого и полезного к легендарному. Ветераны видят всё.
+WORKSHOP_UNLOCK_HOURS = 24
+WORKSHOP_UNLOCK_ORDER = (
+    "nitro_6h",       # день 1: +40% к добыче — польза сразу
+    "shield_24h",     # день 2: щит впрок — защита новичка кончается на 3-й день
+    "drone_24h",      # роботы не стареют
+    "economizer",     # бесплатный вылет — первый налёт без риска для водорода
+    "storage",        # склад 1000
+    "nuclear_3h",     # ×5 к добыче
+    "camo_12h",
+    "forsage",
+    "cutlet",
+    "trap_24h",
+    "drill_24h",
+    "cargo",
+    "thermos_24h",
+    "armor",
+    "stamp",
+    "station_drone",
+    "banner_24h",
+    "dome_12h",
+    "shuttle",        # легенда
+)
+
+
+def recipe_unlock_at(recipe_id: str, created_at: datetime) -> datetime:
+    """Когда рецепт откроется игроку, пришедшему в created_at."""
+    return created_at + timedelta(hours=WORKSHOP_UNLOCK_HOURS * WORKSHOP_UNLOCK_ORDER.index(recipe_id))
+
+
 # Кибер-броня роботов: +10% к добыче за уровень, 3 уровня, ТОЛЬКО НА 30 ДНЕЙ
 # (решение владельца 24.10: навсегда — только покупки за Stars). Повторный крафт
 # поднимает уровень (или обновляет максимальный) и заново отсчитывает 30 дней.
@@ -366,14 +452,14 @@ def farm_bonus_percent(armor_level: int, station_level: int) -> int:
     return armor + station
 
 
-def raid_loot(defender_stock: int) -> int:
-    """Сколько ресурса уходит атакующему при победе."""
-    return min(RAID_LOOT_CAP, max(0, defender_stock) * RAID_LOOT_PERCENT // 100)
+def raid_loot(defender_stock: int, percent: int = 100) -> int:
+    """Сколько ресурса уходит атакующему при победе (percent — множитель Трюма, 150 = ×1,5)."""
+    return min(RAID_LOOT_CAP * percent // 100, max(0, defender_stock) * RAID_LOOT_PERCENT * percent // 10000)
 
 
-def raid_fail_loss(attacker_stock: int) -> int:
-    """Сколько ресурса атакующий отдаёт цели при провале."""
-    return min(RAID_FAIL_CAP, max(0, attacker_stock) * RAID_FAIL_PERCENT // 100)
+def raid_fail_loss(attacker_stock: int, multiplier: int = 1) -> int:
+    """Сколько ресурса атакующий отдаёт цели при провале (multiplier — Приманка цели)."""
+    return min(RAID_FAIL_CAP * multiplier, max(0, attacker_stock) * RAID_FAIL_PERCENT * multiplier // 100)
 
 
 def market_limits(shuttle: bool, asset: str = "cutlet") -> tuple[int, int]:

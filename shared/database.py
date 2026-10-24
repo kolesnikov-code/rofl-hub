@@ -485,6 +485,43 @@ SCHEMA_STATEMENTS: list[str] = [
         PRIMARY KEY (user_id, effect, hours)
     );
     """,
+    # --- 26.10 (вечер): новые изделия, рудники, поэтапные рецепты ---
+    "ALTER TABLE user_items DROP CONSTRAINT IF EXISTS user_items_hours_check;",   # разовые изделия: hours = 0
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS raid_camo_until TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS raid_trap_until TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS raid_drill_until TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS thermos_from TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS thermos_until TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS forsage_used_at TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS raid_free_fuel INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS raid_cargo INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS market_free_sales INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS station_boost INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE teams ADD COLUMN IF NOT EXISTS dome_until TIMESTAMP WITH TIME ZONE;",
+    """
+    CREATE TABLE IF NOT EXISTS team_banners (
+        id BIGSERIAL PRIMARY KEY,
+        team_id INT NOT NULL,
+        starts_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        ends_at TIMESTAMP WITH TIME ZONE NOT NULL
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS team_banners_team_idx ON team_banners (team_id, ends_at);",
+    """
+    CREATE TABLE IF NOT EXISTS mines (
+        id INT PRIMARY KEY,
+        kind VARCHAR(16) NOT NULL,
+        team_id INT,
+        battle_id INT,
+        captured_at TIMESTAMP WITH TIME ZONE,
+        captured_until TIMESTAMP WITH TIME ZONE,
+        last_paid_at TIMESTAMP WITH TIME ZONE
+    );
+    """,
+    # 40 рудников (economy.MINES_COUNT), ресурс по кругу: металл, водород, кристаллы, детали
+    "INSERT INTO mines (id, kind) SELECT g, (ARRAY['metal', 'hydrogen', 'crystal', 'parts'])[1 + (g - 1) % 4] "
+    "FROM generate_series(1, 40) g ON CONFLICT (id) DO NOTHING;",
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS mine_id INT;",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS armor_until TIMESTAMP WITH TIME ZONE;",
     # --- 25.10: склад ресурсов с лимитом, рецепты недели ---
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS res_capacity INT NOT NULL DEFAULT 500;",

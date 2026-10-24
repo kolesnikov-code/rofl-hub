@@ -99,7 +99,7 @@ async def _check_team_access(conn, user_id: int, team_id: int | None) -> int | N
 
 async def _lock_users(conn, ids: list[int]) -> dict:
     rows = await conn.fetch(
-        "SELECT user_id, inv_cutlets, has_shuttle, is_blocked FROM users "
+        "SELECT user_id, inv_cutlets, has_shuttle, is_blocked, market_free_sales FROM users "
         "WHERE user_id = ANY($1::bigint[]) ORDER BY user_id FOR UPDATE", sorted(set(ids)))
     return {r["user_id"]: r for r in rows}
 
@@ -240,7 +240,11 @@ async def fill_order(conn, taker_id: int, order_id: int, qty: int) -> dict:
 
     seller = users.get(seller_id)
     shuttle = bool(seller and seller["has_shuttle"])   # льгота — только Шаттл самого продавца
-    fee = market_fee(total, shuttle=shuttle, team_percent=team_percent)
+    stamp = bool(seller and seller["market_free_sales"] > 0)   # 📜 Штамп биржи продавца: без комиссии
+    fee = 0 if stamp else market_fee(total, shuttle=shuttle, team_percent=team_percent)
+    if stamp:
+        await conn.execute("UPDATE users SET market_free_sales = market_free_sales - 1 WHERE user_id = $1",
+                           seller_id)
     seller_got = total - fee
     if seller is not None and seller_got > 0:
         await change_balance(conn, seller_id, seller_got, "market_sell", str(order_id))
@@ -258,7 +262,7 @@ async def fill_order(conn, taker_id: int, order_id: int, qty: int) -> dict:
                 order_id, order["side"], asset, buyer_id, seller_id, qty, total, fee)
     return {"qty": qty, "price": price, "total": total, "fee": fee, "asset": asset, "side": order["side"],
             "buyer_id": buyer_id, "seller_id": seller_id, "maker_id": maker_id,
-            "seller_got": seller_got, "shuttle": shuttle, "team": order["team_id"] is not None}
+            "seller_got": seller_got, "shuttle": shuttle, "team": order["team_id"] is not None, "stamp": stamp}
 
 
 async def buy_from_order(conn, buyer_id: int, order_id: int, qty: int) -> dict:

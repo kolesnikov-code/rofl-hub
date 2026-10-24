@@ -55,11 +55,11 @@ def test_format_bundle_orders_by_kind_and_skips_zero():
 # ---------------------------------------------------------------- мастерская
 def test_recipes_have_prices_and_known_effects():
     for rid, recipe in WORKSHOP_RECIPES.items():
-        assert recipe["effect"] in ("nitrogen", "nuclear", "drone", "shield", "cutlet", "armor", "storage", "shuttle")
+        assert recipe["effect"] in economy.ITEM_EFFECTS or recipe["effect"] in ("cutlet", "armor", "storage", "shuttle")
         cost = recipe_cost(rid)
         assert cost and all(k in RESOURCE_KINDS and v > 0 for k, v in cost.items()), rid
-        if recipe["effect"] in ("nitrogen", "nuclear", "drone", "shield"):
-            assert recipe["hours"] > 0
+        if recipe["effect"] in economy.ITEM_EFFECTS and recipe["effect"] not in ("forsage", *economy.ONE_SHOT_COLUMNS):
+            assert recipe["hours"] > 0, rid
 
 
 def test_armor_cost_escalates_and_stops_at_max():

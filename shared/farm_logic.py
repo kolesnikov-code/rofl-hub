@@ -28,6 +28,8 @@ from shared.economy import (
     MINING_ACC_PER_ROFL,
     cutlets_per_cycle,
     farm_bonus_percent,
+    BANNER_BONUS_PERCENT,
+    THERMOS_FUEL_CYCLE_SECONDS,
     is_active,
     miner_hourly_rate,
     utcnow,
@@ -36,6 +38,7 @@ from shared.ledger import change_balance
 
 _MICROSECOND = timedelta(microseconds=1)
 FUEL_CYCLE = timedelta(seconds=CUTLET_ENERGY_SECONDS)
+THERMOS_CYCLE = timedelta(seconds=THERMOS_FUEL_CYCLE_SECONDS)   # 🧊 Термос: котлеты хватает дольше
 
 
 def _micros(td: timedelta) -> int:
@@ -69,17 +72,20 @@ def integrate_rate_micros(start: datetime, end: datetime, kind: str,
                           nitrogen_until: datetime | None,
                           bonus_percent: int = 0,
                           armor_percent: int = 0,
-                          armor_until: datetime | None = None) -> int:
+                          armor_until: datetime | None = None,
+                          windows: tuple = ()) -> int:
     """
     Монето-микросекунды, заработанные роботом kind за [start, end),
     с разбиением на сегменты по моментам окончания бустов.
     bonus_percent — постоянный бонус (станция команды); armor_percent действует до
-    armor_until (Кибер-броня на 30 дней). Бонусы применяются к микросекундам сегмента.
+    armor_until (Кибер-броня на 30 дней). Бонусы применяются к микросекундам сегмента. windows — окна временных бонусов
+    ((начало, конец, процент), …): Знамя команды; действуют только внутри окна.
     """
     if end <= start:
         return 0
     points = {start, end}
-    for boundary in (nuclear_until, nitrogen_until, armor_until if armor_percent else None):
+    window_points = [p for w in windows for p in (w[0], w[1])]
+    for boundary in (nuclear_until, nitrogen_until, armor_until if armor_percent else None, *window_points):
         if boundary is not None and start < boundary < end:
             points.add(boundary)
     total = 0
@@ -91,6 +97,7 @@ def integrate_rate_micros(start: datetime, end: datetime, kind: str,
             nitrogen_active=is_active(nitrogen_until, seg_start),
         )
         seg_bonus = bonus_percent + (armor_percent if is_active(armor_until, seg_start) else 0)
+        seg_bonus += sum(w[2] for w in windows if w[0] <= seg_start < w[1])
         micros = _micros(seg_end - seg_start) * rate
         total += micros * (100 + seg_bonus) // 100 if seg_bonus else micros
     return total
@@ -103,7 +110,10 @@ def simulate_farm(*, last_update: datetime, now: datetime, fridge_cutlets: int,
                   drone_until: datetime | None = None,
                   bonus_percent: int = 0,
                   armor_percent: int = 0,
-                  armor_until: datetime | None = None) -> FarmTick:
+                  armor_until: datetime | None = None,
+                  bonus_windows: tuple = (),
+                  thermos_from: datetime | None = None,
+                  thermos_until: datetime | None = None) -> FarmTick:
     """
     Чистая симуляция фермы за интервал [last_update, now]. Вход не мутирует.
 
@@ -130,7 +140,7 @@ def simulate_farm(*, last_update: datetime, now: datetime, fridge_cutlets: int,
 
             if m.kind in ("junior", "intern"):   # без топлива: Майнер и Стажёр
                 acc += integrate_rate_micros(start, work_end, m.kind, nuclear_until, nitrogen_until,
-                                             bonus_percent, armor_percent, armor_until)
+                                             bonus_percent, armor_percent, armor_until, bonus_windows)
                 continue
 
             # premium: сначала дорабатываем уже оплаченное топливо
@@ -138,7 +148,7 @@ def simulate_farm(*, last_update: datetime, now: datetime, fridge_cutlets: int,
             if m.fuel_until is not None and m.fuel_until > cursor:
                 seg_end = min(m.fuel_until, work_end)
                 acc += integrate_rate_micros(cursor, seg_end, "premium", nuclear_until, nitrogen_until,
-                                             bonus_percent, armor_percent, armor_until)
+                                             bonus_percent, armor_percent, armor_until, bonus_windows)
                 cursor = min(m.fuel_until, work_end)
             if cursor < work_end:
                 heapq.heappush(refuel_queue, (cursor, m.miner_id, m))
@@ -158,11 +168,12 @@ def simulate_farm(*, last_update: datetime, now: datetime, fridge_cutlets: int,
                 continue  # котлет нет — робот простаивает до конца интервала
             fridge_cutlets -= cost
             consumed += cost
-            m.fuel_until = moment + FUEL_CYCLE
+            thermos = thermos_from is not None and thermos_until is not None and thermos_from <= moment < thermos_until
+            m.fuel_until = moment + (THERMOS_CYCLE if thermos else FUEL_CYCLE)
             work_end = min(now, m.expires_at)
             seg_end = min(m.fuel_until, work_end)
             acc += integrate_rate_micros(moment, seg_end, "premium", nuclear_until, nitrogen_until,
-                                         bonus_percent, armor_percent, armor_until)
+                                         bonus_percent, armor_percent, armor_until, bonus_windows)
             if m.fuel_until < work_end:
                 heapq.heappush(refuel_queue, (m.fuel_until, m.miner_id, m))
 
@@ -218,6 +229,12 @@ async def apply_lazy_farm(conn, user_id: int, now: datetime | None = None):
                          r["expires_at"], r["fuel_until"]) for r in rows]
 
     bonus = await user_bonus_percent(conn, user)
+    windows: tuple = ()
+    if user["team_id"] is not None:   # 🏳️ Знамя команды: окна бонуса, пересекающие интервал
+        rows_b = await conn.fetch(
+            "SELECT starts_at, ends_at FROM team_banners WHERE team_id = $1 AND ends_at > $2 AND starts_at < $3",
+            user["team_id"], user["last_update_time"], now)
+        windows = tuple((r["starts_at"], r["ends_at"], BANNER_BONUS_PERCENT) for r in rows_b)
     tick = simulate_farm(
         last_update=user["last_update_time"], now=now,
         fridge_cutlets=user["fridge_cutlets"], acc=user["mining_acc"],
@@ -228,6 +245,9 @@ async def apply_lazy_farm(conn, user_id: int, now: datetime | None = None):
         bonus_percent=bonus,
         armor_percent=farm_bonus_percent(user["farm_armor_level"], 0),
         armor_until=user["armor_until"],
+        bonus_windows=windows,
+        thermos_from=user["thermos_from"],
+        thermos_until=user["thermos_until"],
     )
 
     expired = set(tick.expired_ids)

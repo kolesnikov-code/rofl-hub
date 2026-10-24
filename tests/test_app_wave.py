@@ -191,7 +191,7 @@ def test_team_text_filter_and_app_team_hub():
         assert e.value.key == key
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     for needle in ('"/api/teams"', '"/api/team/join"', '"/api/team/leave"', '"/api/team/create"',
-                   '"faq", "rules"]', 'viewDoc("/faq")', 'viewDoc("/rules")'):
+                   '"top", "info"]', 'viewDoc("/" + infoDoc)', 'TAB_ALIAS'):
         assert needle in html
 
 
@@ -222,9 +222,71 @@ def test_storage_tab_shield_timer_and_giver_threshold():
                                 TEAM_HELP_GIVER_MIN_QUIZ_LEVEL, TRANSFER_SENDER_MIN_QUIZ_LEVEL)
     assert (TEAM_HELP_GIVER_MIN_QUIZ_LEVEL, TEAM_HELP_GIVER_MIN_BONUS_CLAIMS) == (7, 10)
     assert TEAM_HELP_GIVER_MIN_QUIZ_LEVEL > TRANSFER_SENDER_MIN_QUIZ_LEVEL
-    assert set(ITEM_EFFECTS) == set(ITEM_COLUMNS)
+    assert set(ITEM_COLUMNS) <= set(ITEM_EFFECTS)
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     assert '"farm", "storage"' in html
     for needle in ("viewStorage", "/api/storage", "/api/item/use", "card.lava", "card.dim", "shield-card",
                    'id="shTimer"', "L.raid_noFuel", "fuel-pill", "L.hp_who", "res.stored ? L.it_stored"):
         assert needle in html, needle
+
+
+def test_recipes_unlock_one_per_day_and_cover_every_recipe():
+    """Поэтапное открытие: каждый рецепт мастерской в порядке, первый — сразу, по одному в сутки."""
+    from datetime import timedelta
+    from shared.economy import WORKSHOP_RECIPES, WORKSHOP_UNLOCK_HOURS, WORKSHOP_UNLOCK_ORDER, recipe_unlock_at, utcnow
+    assert sorted(WORKSHOP_UNLOCK_ORDER) == sorted(WORKSHOP_RECIPES)
+    assert WORKSHOP_UNLOCK_ORDER[0] == "nitro_6h" and WORKSHOP_UNLOCK_ORDER[-1] == "shuttle"
+    start = utcnow()
+    assert recipe_unlock_at("nitro_6h", start) == start
+    assert recipe_unlock_at(WORKSHOP_UNLOCK_ORDER[3], start) == start + timedelta(hours=3 * WORKSHOP_UNLOCK_HOURS)
+    from bots.main_bot.webapp_game import build_workshop_payload
+    stock = {k: 5000 for k in ("metal", "hydrogen", "crystal", "parts")}
+    p = build_workshop_payload(stock, 0, False, "ru", balance=5000, created_at=start, now=start + timedelta(hours=25),
+                               disabled=("cargo",), week_done={"stamp": 1})
+    by_id = {r["id"]: r for r in p["recipes"]}
+    assert "cargo" not in by_id                                         # выключен владельцем
+    assert not by_id["nitro_6h"]["locked"] and not by_id["shield_24h"]["locked"]
+    assert by_id["drone_24h"]["locked"] and not by_id["drone_24h"]["affordable"]
+    assert 0 < by_id["drone_24h"]["unlock_in"] <= 24 * 3600
+    veteran = build_workshop_payload(stock, 0, False, "ru", balance=5000, created_at=start - timedelta(days=60),
+                                     now=start, week_done={"stamp": 1})
+    vet = {r["id"]: r for r in veteran["recipes"]}
+    assert not any(r["locked"] for r in veteran["recipes"])
+    assert vet["stamp"]["week_left"] == 0 and not vet["stamp"]["affordable"]   # недельный лимит
+    assert vet["camo_12h"]["stored"] and not vet["armor"]["stored"]
+
+
+def test_new_items_raid_formulas_and_mines_seed():
+    """Трюм и Приманка в формулах налёта, сид рудников совпадает с MINES_COUNT, ресурсы по кругу."""
+    from shared import economy
+    assert economy.raid_loot(1000) == economy.RAID_LOOT_CAP
+    assert economy.raid_loot(1000, economy.CARGO_LOOT_PERCENT) == economy.RAID_LOOT_CAP * 3 // 2
+    assert economy.raid_loot(50, 150) == 50 * economy.RAID_LOOT_PERCENT * 150 // 10000
+    assert economy.raid_fail_loss(1000, economy.TRAP_FAIL_MULTIPLIER) == economy.RAID_FAIL_CAP * 2
+    assert economy.THERMOS_FUEL_CYCLE_SECONDS == 32 * 3600
+    assert [economy.mine_kind(i) for i in (1, 2, 3, 4, 5)] == ["metal", "hydrogen", "crystal", "parts", "metal"]
+    from shared.database import SCHEMA_STATEMENTS
+    seed = next(x for x in SCHEMA_STATEMENTS if "INSERT INTO mines" in x)
+    assert f"generate_series(1, {economy.MINES_COUNT})" in seed
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    for needle in ("viewMines", "/api/mines", "L.mn_closed", "map-lock", "pumpRing", "goalsCard(g)", "viewInfo",
+                   "L.ws_locked", "raid_note_", "forsageBtn"):
+        assert needle in html, needle
+
+
+def test_banner_window_and_thermos_cycle_in_farm_engine():
+    """Знамя даёт бонус только внутри окна; Термос растягивает цикл котлеты до 32 ч."""
+    from datetime import timedelta
+    from shared.economy import utcnow
+    from shared.farm_logic import MinerState, integrate_rate_micros, simulate_farm
+    t0 = utcnow()
+    base = integrate_rate_micros(t0, t0 + timedelta(hours=10), "junior", None, None)
+    win = integrate_rate_micros(t0, t0 + timedelta(hours=10), "junior", None, None,
+                                windows=((t0 + timedelta(hours=5), t0 + timedelta(hours=20), 5),))
+    assert win == base + base // 2 * 5 // 100
+    driller = MinerState(1, "premium", t0, t0 + timedelta(days=30), None)
+    plain = simulate_farm(last_update=t0, now=t0 + timedelta(hours=48), fridge_cutlets=10, acc=0, miners=[driller])
+    thermos = simulate_farm(last_update=t0, now=t0 + timedelta(hours=48), fridge_cutlets=10, acc=0, miners=[driller],
+                            thermos_from=t0, thermos_until=t0 + timedelta(hours=24))
+    assert plain.cutlets_consumed == 2 and thermos.cutlets_consumed == 2
+    assert thermos.miners[0].fuel_until == t0 + timedelta(hours=32 + 24)

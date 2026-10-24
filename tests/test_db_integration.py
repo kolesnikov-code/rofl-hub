@@ -31,7 +31,10 @@ async def conn():
                         "miners, duels, battles, vip_aliases, quest_progress, events, "
                         "daily_activity, promoters, metrics_snapshots, market_orders, "
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
-                        "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items RESTART IDENTITY")
+                        "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items, team_banners RESTART IDENTITY")
+        await c.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
+                        "captured_until = NULL, last_paid_at = NULL")
+        await c.execute("DELETE FROM feature_flags WHERE key LIKE 'wsr:%'")
         yield c
     await database.close()
 
@@ -988,7 +991,7 @@ async def test_workshop_crafts_spend_all_or_nothing(conn):
     from shared.resources import get_resources, grant_bundle
     from shared.workshop import WorkshopError, craft
     now = utcnow()
-    await _mk_user(conn, 510, 0)
+    await _mk_user(conn, 510, 0, created_at=utcnow() - timedelta(days=60))   # ветеран: все рецепты открыты
     await grant_bundle(conn, 510, {"metal": 20, "hydrogen": 19}, "test")
 
     with pytest.raises(WorkshopError) as e:
@@ -1231,7 +1234,7 @@ async def test_storage_cap_clips_mining_but_not_transfers(conn, global_db):
     from shared.market import MarketError, fill_order, place_order
     from shared.resources import change_resource, get_resources, grant_bundle
     from shared.workshop import craft
-    await _mk_user(conn, 920, 100, unlimit_until=utcnow() + timedelta(hours=1))
+    await _mk_user(conn, 920, 100, unlimit_until=utcnow() + timedelta(hours=1), created_at=utcnow() - timedelta(days=60))
     await _mk_user(conn, 921, 10_000)
     await grant_bundle(conn, 920, {"parts": 499}, "test")
 
@@ -1606,7 +1609,7 @@ async def test_workshop_items_go_to_storage_and_activate_later(conn):
     from shared.weekly_recipes import craft_weekly
     from shared.workshop import craft
     now = utcnow()
-    await _mk_user(conn, 1320, 0)
+    await _mk_user(conn, 1320, 0, created_at=now - timedelta(days=60))
     await grant_bundle(conn, 1320, {"metal": 300, "hydrogen": 300, "crystal": 300, "parts": 300}, "test")
 
     res = await craft(conn, 1320, "shield_24h", now, to_storage=True)        # приложение: на склад
@@ -1617,9 +1620,9 @@ async def test_workshop_items_go_to_storage_and_activate_later(conn):
     items = {(i["effect"], i["hours"]): i["qty"] for i in await list_items(conn, 1320)}
     assert items == {("shield", 24): 2, ("nitrogen", 12): 1, ("shield", 12): 1}
 
-    until = await activate_item(conn, 1320, "shield", 24, now)
+    until = (await activate_item(conn, 1320, "shield", 24, now))["until"]
     assert until == now + timedelta(hours=24)
-    until2 = await activate_item(conn, 1320, "shield", 24, now)               # второй продлевает
+    until2 = (await activate_item(conn, 1320, "shield", 24, now))["until"]               # второй продлевает
     assert until2 == now + timedelta(hours=48)
     with pytest.raises(ItemError) as e:
         await activate_item(conn, 1320, "shield", 24, now)
@@ -1630,3 +1633,106 @@ async def test_workshop_items_go_to_storage_and_activate_later(conn):
     res = await craft(conn, 1320, "nitro_6h", now)                            # чат: как раньше, сразу
     assert not res.stored and res.until is not None
     assert {(i["effect"], i["hours"]) for i in await list_items(conn, 1320)} == {("shield", 12)}
+
+
+async def test_new_items_unlock_limits_and_effects_in_raids_market_station(conn, global_db):
+    from datetime import timedelta
+    from shared.economy import raid_fail_loss, utcnow
+    from shared.items import ItemError, activate_item
+    from shared.market import fill_order, place_order
+    from shared.raids import execute_raid, find_targets
+    from shared.resources import get_resources, grant_bundle
+    from shared.team_station import donate
+    from shared.workshop import WorkshopError, craft
+    now = utcnow()
+    old = now - timedelta(days=60)
+    await _mk_user(conn, 1330, 0, created_at=now - timedelta(hours=2))      # новичок: открыт только Азот
+    with pytest.raises(WorkshopError) as e:
+        await craft(conn, 1330, "economizer", now, to_storage=True)
+    assert e.value.key == "ws.err_locked"
+
+    tid = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Z', 1331, 1) RETURNING team_id")
+    await _mk_user(conn, 1331, 10_000, created_at=old, team_id=tid, last_seen_at=now)
+    await _mk_user(conn, 1332, 10_000, created_at=old, last_seen_at=now, raid_stance="rock")
+    for uid in (1331, 1332):
+        await grant_bundle(conn, uid, {k: 900 for k in ("metal", "hydrogen", "crystal", "parts")}, "test")
+
+    # Штамп — раз в неделю; выключенный владельцем рецепт не собирается
+    await craft(conn, 1331, "stamp", now, to_storage=True)
+    with pytest.raises(WorkshopError) as e:
+        await craft(conn, 1331, "stamp", now, to_storage=True)
+    assert e.value.key == "wk.err_limit"
+    await conn.execute("INSERT INTO feature_flags (key, enabled) VALUES ('wsr:cargo', FALSE) "
+                       "ON CONFLICT (key) DO UPDATE SET enabled = FALSE")
+    from shared import feature_flags
+    feature_flags._cache.clear()
+    with pytest.raises(WorkshopError) as e:
+        await craft(conn, 1331, "cargo", now, to_storage=True)
+    assert e.value.key == "ws.err_off"
+
+    # Маскировка прячет из разведки (до налёта: потом цель скрыта перезарядкой жертвы)
+    assert 1332 in [x["user_id"] for x in await find_targets(conn, 1331, tid, now, limit=50)]
+    await craft(conn, 1332, "camo_12h", now, to_storage=True)
+    await activate_item(conn, 1332, "camo", 12, now)
+    assert 1332 not in [x["user_id"] for x in await find_targets(conn, 1331, tid, now, limit=50)]
+
+    # Экономайзер: вылет без водорода; Тренажёр стойки цели: ничья → провал налётчика
+    await craft(conn, 1331, "economizer", now, to_storage=True)
+    assert (await activate_item(conn, 1331, "economizer", 0, now))["charges"] == 1
+    await craft(conn, 1332, "drill_24h", now, to_storage=True)
+    await activate_item(conn, 1332, "drill", 24, now)
+    hydro = (await get_resources(conn, 1331))["hydrogen"]
+    res = await execute_raid(conn, 1331, 1332, "rock", now)                # rock vs rock = ничья
+    assert res.result == "lose" and "drill" in res.notes and "economizer" in res.notes
+    # водород ушёл только штрафом за провал (15), а не на вылет (ещё 5)
+    assert hydro - (await get_resources(conn, 1331))["hydrogen"] == raid_fail_loss(hydro)
+
+    # Форсаж сбрасывает перезарядку, второй раз за сутки — нельзя
+    await craft(conn, 1331, "forsage", now, to_storage=True)
+    await craft(conn, 1331, "forsage", now, to_storage=True)
+    await activate_item(conn, 1331, "forsage", 0, now)
+    assert await conn.fetchval("SELECT last_raid_at FROM users WHERE user_id = 1331") is None
+    await conn.execute("UPDATE users SET last_raid_at = $2 WHERE user_id = $1", 1331, now)
+    with pytest.raises(ItemError) as e:
+        await activate_item(conn, 1331, "forsage", 0, now + timedelta(minutes=5))
+    assert e.value.key == "it.err_forsage_daily"
+
+    # Купол команды: нужен игрок в команде; Ремдрон: вклад ×1,5
+    await craft(conn, 1332, "dome_12h", now, to_storage=True)
+    with pytest.raises(ItemError) as e:
+        await activate_item(conn, 1332, "dome", 12, now)
+    assert e.value.key == "mk.err_no_team"
+    await craft(conn, 1331, "station_drone", now, to_storage=True)
+    await activate_item(conn, 1331, "station_drone", 0, now)
+    assert (await donate(conn, 1331, "metal", 100)).credited == 150
+
+    # Штамп: продажа без комиссии
+    await activate_item(conn, 1331, "stamp", 0, now)
+    await conn.execute("UPDATE users SET res_capacity = 5000 WHERE user_id = 1332")   # место под покупку
+    ask = await place_order(conn, 1331, "metal", "sell", 10, 10)
+    assert (await fill_order(conn, 1332, ask, 10))["fee"] == 0
+
+
+async def test_mines_capture_and_hourly_payout_to_every_member(conn):
+    from datetime import timedelta
+    from shared.economy import MINE_HOLD_HOURS, mine_kind, utcnow
+    from shared.mines import capture_mine, free_mine_ids, pay_mine
+    from shared.resources import get_resources
+    now = utcnow()
+    tid = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('M', 1340, 3) RETURNING team_id")
+    for uid in (1340, 1341, 1342):
+        await _mk_user(conn, uid, 0, team_id=tid)
+    await conn.execute("UPDATE users SET is_blocked = TRUE WHERE user_id = 1342")   # заблокированному — ничего
+    assert 3 in await free_mine_ids(conn, now)
+    until = await capture_mine(conn, 3, tid, None, now)
+    assert until == now + timedelta(hours=MINE_HOLD_HOURS)
+    assert 3 not in await free_mine_ids(conn, now)
+    assert await pay_mine(conn, 3, now + timedelta(minutes=59)) == 0
+    assert await pay_mine(conn, 3, now + timedelta(hours=5, minutes=30)) == 5
+    kind = mine_kind(3)
+    assert (await get_resources(conn, 1340))[kind] == 5 and (await get_resources(conn, 1341))[kind] == 5
+    assert (await get_resources(conn, 1342))[kind] == 0
+    assert await pay_mine(conn, 3, now + timedelta(hours=5, minutes=50)) == 0       # тот же час не платится дважды
+    assert await pay_mine(conn, 3, now + timedelta(hours=MINE_HOLD_HOURS + 3)) == MINE_HOLD_HOURS - 5
+    assert (await get_resources(conn, 1340))[kind] == MINE_HOLD_HOURS
+    assert await conn.fetchval("SELECT team_id FROM mines WHERE id = 3") is None    # рудник освободился

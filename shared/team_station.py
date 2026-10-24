@@ -14,7 +14,8 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
-from shared.economy import RESOURCE_KINDS, STATION_FEED_LIMIT, STATION_MAX_LEVEL, station_level_cost
+from shared.economy import (RESOURCE_KINDS, STATION_DRONE_PERCENT, STATION_FEED_LIMIT, STATION_MAX_LEVEL,
+                            station_level_cost)
 from shared.locales import t
 from shared.resources import InsufficientResources, change_resource
 
@@ -37,6 +38,7 @@ class DonateResult:
     levels_gained: int
     stock: dict[str, int]              # вложено на текущий уровень (после переходов)
     need: dict[str, int] = field(default_factory=dict)   # сколько ещё до следующего уровня
+    credited: int = 0                  # засчитано станции (с Ремдроном — ×1,5)
 
 
 def progress_to_next(level: int, stock: dict[str, int]) -> dict[str, int]:
@@ -79,7 +81,8 @@ async def donate(conn, user_id: int, kind: str, qty: int) -> DonateResult:
     """Вклад ресурса в станцию своей команды."""
     if kind not in RESOURCE_KINDS or qty <= 0:
         raise StationError("st.err_qty")
-    team_id = await conn.fetchval("SELECT team_id FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+    me = await conn.fetchrow("SELECT team_id, station_boost FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+    team_id = me["team_id"] if me else None
     if team_id is None:
         raise StationError("st.err_no_team")
     station = await get_station(conn, team_id, lock=True)
@@ -90,8 +93,12 @@ async def donate(conn, user_id: int, kind: str, qty: int) -> DonateResult:
     except InsufficientResources as e:
         raise StationError("st.err_resources", have=e.have) from e
 
+    credited = qty
+    if me["station_boost"] > 0:   # 🛰 Ремдрон станции: вклад ×1,5, заряд тратится
+        credited = qty * STATION_DRONE_PERCENT // 100
+        await conn.execute("UPDATE users SET station_boost = station_boost - 1 WHERE user_id = $1", user_id)
     stock = {k: station[k] for k in RESOURCE_KINDS}
-    stock[kind] += qty
+    stock[kind] += credited
     level, stock, gained = apply_level_ups(station["level"], stock)
     await conn.execute(
         "UPDATE team_stations SET level = $2, metal = $3, hydrogen = $4, crystal = $5, parts = $6, "
@@ -99,10 +106,10 @@ async def donate(conn, user_id: int, kind: str, qty: int) -> DonateResult:
         team_id, level, stock["metal"], stock["hydrogen"], stock["crystal"], stock["parts"])
     await conn.execute(
         "INSERT INTO team_donations (team_id, user_id, kind, qty) VALUES ($1, $2, $3, $4)",
-        team_id, user_id, kind, qty)
+        team_id, user_id, kind, credited)
     logger.info("[STATION] team=%s user=%s +%s %s → level %s (+%s)", team_id, user_id, qty, kind, level, gained)
     return DonateResult(level=level, levels_gained=gained, stock=stock,
-                        need=progress_to_next(level, stock))
+                        need=progress_to_next(level, stock), credited=credited)
 
 
 async def recent_donations(conn, team_id: int, limit: int = STATION_FEED_LIMIT) -> list[dict]:

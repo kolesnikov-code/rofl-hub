@@ -23,6 +23,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from shared.economy import (
+    CARGO_LOOT_PERCENT,
+    TRAP_FAIL_MULTIPLIER,
     RAID_ATTACK_COOLDOWN_HOURS,
     RAID_CANDIDATES,
     RAID_FUEL_HYDROGEN,
@@ -64,6 +66,7 @@ class RaidResult:
     defender_id: int
     loot: dict[str, int] = field(default_factory=dict)   # что перешло (win: к атакующему, lose: к цели)
     is_revenge: bool = False
+    notes: list[str] = field(default_factory=list)       # сработавшие изделия: economizer/cargo/trap/drill
 
 
 def raid_outcome(move: str, stance: str) -> str:
@@ -73,9 +76,9 @@ def raid_outcome(move: str, stance: str) -> str:
     return "win" if BEATS[move] == stance else "lose"
 
 
-def shield_active(user, now: datetime) -> bool:
-    """Щит из мастерской или защита новичка."""
-    if is_active(user["raid_shield_until"], now):
+def shield_active(user, now: datetime, dome_until: datetime | None = None) -> bool:
+    """Щит из мастерской, Купол команды (dome_until) или защита новичка."""
+    if is_active(user["raid_shield_until"], now) or is_active(dome_until, now):
         return True
     created = user["created_at"]
     return created is not None and created > now - timedelta(days=RAID_NEWBIE_SHIELD_DAYS)
@@ -102,12 +105,15 @@ async def find_targets(conn, attacker_id: int, attacker_team: int | None, now: d
         """
         SELECT u.user_id, u.display_name, u.created_at, SUM(r.qty) AS total
         FROM users u JOIN user_resources r ON r.user_id = u.user_id
+        LEFT JOIN teams tm ON tm.team_id = u.team_id
         WHERE u.user_id <> $1 AND NOT u.is_blocked AND u.deletion_requested_at IS NULL
           AND u.deleted_at IS NULL
           AND ($2::int IS NULL OR u.team_id IS DISTINCT FROM $2::int)
           AND u.last_seen_at > $3::timestamptz - make_interval(days => $4::int)
           AND u.created_at < $3::timestamptz - make_interval(days => $5::int)
           AND (u.raid_shield_until IS NULL OR u.raid_shield_until <= $3::timestamptz)
+          AND (u.raid_camo_until IS NULL OR u.raid_camo_until <= $3::timestamptz)
+          AND (tm.dome_until IS NULL OR tm.dome_until <= $3::timestamptz)
           AND NOT EXISTS (SELECT 1 FROM raids x WHERE x.defender_id = u.user_id
                           AND x.created_at > $3::timestamptz - make_interval(hours => $6::int))
         GROUP BY u.user_id HAVING SUM(r.qty) >= $7::int
@@ -157,8 +163,12 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
         raise RaidError("raid.err_gone")
     if attacker["team_id"] is not None and attacker["team_id"] == defender["team_id"]:
         raise RaidError("raid.err_teammate")
-    if shield_active(defender, now):
+    dome = None
+    if defender["team_id"] is not None:
+        dome = await conn.fetchval("SELECT dome_until FROM teams WHERE team_id = $1", defender["team_id"])
+    if shield_active(defender, now, dome):
         raise RaidError("raid.err_shielded")
+    notes: list[str] = []
 
     is_revenge = False
     if revenge_of is not None:
@@ -179,14 +189,31 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
             defender_id, now, RAID_VICTIM_COOLDOWN_HOURS)
         if recent:
             raise RaidError("raid.err_victim_cooldown", hours=RAID_VICTIM_COOLDOWN_HOURS)
-        try:
-            await change_resource(conn, attacker_id, "hydrogen", -RAID_FUEL_HYDROGEN,
-                                  "raid_fuel", str(defender_id))
-        except InsufficientResources as e:
-            raise RaidError("raid.err_fuel", need=RAID_FUEL_HYDROGEN, have=e.have) from e
+        if attacker["raid_free_fuel"] > 0:   # ⛽ Экономайзер: вылет без водорода
+            await conn.execute("UPDATE users SET raid_free_fuel = raid_free_fuel - 1 WHERE user_id = $1", attacker_id)
+            notes.append("economizer")
+        else:
+            try:
+                await change_resource(conn, attacker_id, "hydrogen", -RAID_FUEL_HYDROGEN,
+                                      "raid_fuel", str(defender_id))
+            except InsufficientResources as e:
+                raise RaidError("raid.err_fuel", need=RAID_FUEL_HYDROGEN, have=e.have) from e
 
     stance = defender["raid_stance"] if defender["raid_stance"] in STANCES else random.choice(STANCES)
     result = raid_outcome(move, stance)
+    if result == "draw" and is_active(defender["raid_drill_until"], now):
+        result = "lose"   # 🎯 Тренажёр стойки цели: ничья засчитывается как провал налётчика
+        notes.append("drill")
+    loot_percent = 100
+    if attacker["raid_cargo"] > 0:   # 📦 Трюм: тратится на этом вылете при любом исходе
+        await conn.execute("UPDATE users SET raid_cargo = raid_cargo - 1 WHERE user_id = $1", attacker_id)
+        loot_percent = CARGO_LOOT_PERCENT
+        if result == "win":
+            notes.append("cargo")
+    fail_mult = 1
+    if result == "lose" and is_active(defender["raid_trap_until"], now):
+        fail_mult = TRAP_FAIL_MULTIPLIER   # 🪤 Приманка цели
+        notes.append("trap")
 
     loot: dict[str, int] = {}
     # Блокируем ресурсы обеих сторон в фиксированном порядке (анти-дедлок)
@@ -196,7 +223,7 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
     caps = {uid: await resource_capacity(conn, uid) for uid in (attacker_id, defender_id)}
     if result == "win":
         for kind in RESOURCE_KINDS:
-            amount = raid_loot(stocks[defender_id].get(kind, 0))
+            amount = raid_loot(stocks[defender_id].get(kind, 0), loot_percent)
             if amount > 0:
                 await change_resource(conn, defender_id, kind, -amount, "raid_loss", str(attacker_id))
                 await change_resource(conn, attacker_id, kind, amount, "raid_loot", str(defender_id),
@@ -204,7 +231,7 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
                 loot[kind] = amount
     elif result == "lose":
         for kind in RESOURCE_KINDS:
-            amount = raid_fail_loss(stocks[attacker_id].get(kind, 0))
+            amount = raid_fail_loss(stocks[attacker_id].get(kind, 0), fail_mult)
             if amount > 0:
                 await change_resource(conn, attacker_id, kind, -amount, "raid_fail", str(defender_id))
                 await change_resource(conn, defender_id, kind, amount, "raid_defense", str(attacker_id),
@@ -222,7 +249,7 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
     logger.info("[RAID] #%s %s→%s move=%s stance=%s result=%s loot=%s revenge=%s",
                 raid_id, attacker_id, defender_id, move, stance, result, loot, is_revenge)
     return RaidResult(raid_id=raid_id, result=result, move=move, stance=stance,
-                      defender_id=defender_id, loot=loot, is_revenge=is_revenge)
+                      defender_id=defender_id, loot=loot, is_revenge=is_revenge, notes=notes)
 
 
 async def raid_stats(conn, user_id: int) -> dict:

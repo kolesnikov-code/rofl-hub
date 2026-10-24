@@ -89,6 +89,7 @@ class BattleCreationStates(StatesGroup):
     waiting_ends = State()
     waiting_nom_manual = State()
     waiting_prize_manual = State()
+    waiting_mine = State()
 
 def is_admin(user_id: int) -> bool:
     return user_id in ADMIN_IDS
@@ -119,6 +120,8 @@ async def cmd_admin_start(message: types.Message):
         "мастерская, налёты, цели, станция команды, техработы\n"
         "• /quests_admin — Ротация квестов: скрыть/показать + статистика прохождений\n"
         "• /recipes — Рецепты недели: 40 временных рецептов мастерской, включай по 2–4\n"
+        "• /workshop_recipes — Постоянные рецепты мастерской: включить/выключить любые\n"
+        "• /mines — Рудники: кто держит и до когда · /award_mine [битва] [команда] — рудник за ручную битву\n"
         "• /broadcast [текст] — Объявление всем игрокам (с предпросмотром и подтверждением)\n",
         parse_mode="HTML"
     )
@@ -289,6 +292,7 @@ from shared.battles import (  # noqa: E402
     battle_team_scores,
     build_announce_post,
     build_results_post,
+    mine_prize_line,
     parse_battle_moment,
     prizes_from_row,
     prizes_to_json,
@@ -420,7 +424,7 @@ async def battle_nom_manual(message: types.Message, state: FSMContext):
         return
     await state.update_data(b_nom_key="manual", b_nom_text=text, b_prizes={})
     await state.set_state(None)
-    await _ask_prize_for_place(message, state, 1)
+    await _ask_mine(message, state)
 
 
 @dp.callback_query(F.data.startswith("battle_nom:"))
@@ -434,7 +438,55 @@ async def battle_nom_pick(callback: types.CallbackQuery, state: FSMContext):
     await state.update_data(b_nom_key=key, b_nom_text=BATTLE_NOMINATIONS[key]["title"], b_prizes={})
     await callback.message.answer(f"Номинация: <b>{BATTLE_NOMINATIONS[key]['title']}</b>",
                                   parse_mode="HTML")
-    await _ask_prize_for_place(callback.message, state, 1)
+    await _ask_mine(callback.message, state)
+
+
+# ---- Рудник-приз битвы (решение владельца 26.10: каждая битва — ровно за один рудник)
+async def _ask_mine(message: types.Message, state: FSMContext) -> None:
+    import random as _random
+    from shared.economy import MINES_COUNT, utcnow
+    from shared.mines import free_mine_ids
+    async with db.pool.acquire() as conn:
+        free = await free_mine_ids(conn, utcnow())
+    pick = _random.choice(free) if free else _random.randint(1, MINES_COUNT)
+    await state.update_data(b_mine_suggest=pick)
+    await state.set_state(BattleCreationStates.waiting_mine)
+    kb = types.InlineKeyboardMarkup(inline_keyboard=[[
+        types.InlineKeyboardButton(text=f"🎲 Рудник №{pick}", callback_data=f"battle_mine:{pick}")]])
+    await message.answer(
+        "ШАГ 5. ⛏ РУДНИК — главный приз битвы. Победитель держит его 72 ч, каждый боец команды "
+        "получает 1 ресурс в час.\n\n"
+        f"Свободных рудников: {len(free)} из {MINES_COUNT}. Жми кнопку со случайным свободным "
+        f"или пришли номер рудника (1–{MINES_COUNT}).", reply_markup=kb)
+
+
+async def _set_mine(message: types.Message, state: FSMContext, mine_id: int) -> None:
+    from shared.battles import MINE_RES_RU
+    from shared.economy import mine_kind
+    await state.update_data(b_mine=mine_id)
+    await state.set_state(None)
+    await message.answer(f"✅ Рудник №{mine_id} ({MINE_RES_RU[mine_kind(mine_id)]})")
+    await _ask_prize_for_place(message, state, 1)
+
+
+@dp.callback_query(F.data.startswith("battle_mine:"))
+async def battle_mine_pick(callback: types.CallbackQuery, state: FSMContext):
+    if not is_admin(callback.from_user.id):
+        return
+    await callback.answer()
+    await _set_mine(callback.message, state, int(callback.data.split(":")[1]))
+
+
+@dp.message(BattleCreationStates.waiting_mine)
+async def battle_mine_number(message: types.Message, state: FSMContext):
+    if not is_admin(message.from_user.id):
+        return
+    from shared.economy import MINES_COUNT
+    raw = (message.text or "").strip().lstrip("№#")
+    if not raw.isdigit() or not 1 <= int(raw) <= MINES_COUNT:
+        await message.answer(f"❌ Номер рудника — от 1 до {MINES_COUNT}. Ещё раз:")
+        return
+    await _set_mine(message, state, int(raw))
 
 
 @dp.callback_query(F.data.startswith("battle_przmode:"))
@@ -515,7 +567,8 @@ async def _battle_confirm(message: types.Message, state: FSMContext) -> None:
         f"🏅 Номинация: {data['b_nom_text']}"
         + (" <i>(итоги вручную)</i>" if data["b_nom_key"] == "manual" else "") + "\n"
         f"🕐 Старт: <b>{starts:%d.%m.%Y %H:%M} UTC</b>\n"
-        f"🏁 Финиш: <b>{ends:%d.%m.%Y %H:%M} UTC</b>\n\n"
+        f"🏁 Финиш: <b>{ends:%d.%m.%Y %H:%M} UTC</b>\n"
+        f"⛏ Рудник: <b>№{data.get('b_mine', '—')}</b> (на 72 ч победителю)\n\n"
         "🎁 <b>Призы:</b>\n" + ("\n".join(prize_lines) or "— не заданы —"),
         reply_markup=kb, parse_mode="HTML")
 
@@ -536,12 +589,12 @@ async def battle_launch(callback: types.CallbackQuery, state: FSMContext, bot: B
     async with db.pool.acquire() as conn:
         battle_id = await conn.fetchval(
             """
-            INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, prizes)
-            VALUES ($1, $2, $3, $4, $5, $6::jsonb) RETURNING battle_id
+            INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, prizes, mine_id)
+            VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7) RETURNING battle_id
             """,
             data["b_title"], data["b_nom_key"], data["b_nom_text"],
             datetime.fromisoformat(data["b_starts"]), datetime.fromisoformat(data["b_ends"]),
-            prizes_to_json(prizes))
+            prizes_to_json(prizes), data.get("b_mine"))
         battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", battle_id)
 
     try:
@@ -605,7 +658,10 @@ async def _finish_battle(bot: Bot, battle) -> None:
                 ADMIN_SECRET_CHANNEL_ID,
                 f"🖐 <b>Битва №{battle_id} «{battle['title']}» завершена.</b>\n"
                 f"Номинация ручная («{battle['nomination_text']}») — подведи итоги и "
-                f"опубликуй пост в канал сам.", parse_mode="HTML")
+                f"опубликуй пост в канал сам."
+                + (f"\n⛏ Рудник №{battle['mine_id']} отдай победителю: "
+                   f"<code>/award_mine {battle_id} ID_команды</code>" if battle["mine_id"] else ""),
+                parse_mode="HTML")
             return
 
         scores = await battle_team_scores(
@@ -628,12 +684,19 @@ async def _finish_battle(bot: Bot, battle) -> None:
             else:
                 prize_notes[place] = prize["value"]
 
+        mine_note = None
+        if battle["mine_id"] and scores:
+            from shared.economy import utcnow
+            from shared.mines import capture_mine
+            until = await capture_mine(conn, battle["mine_id"], scores[0]["team_id"], battle_id, utcnow())
+            mine_note = (f"⛏ <b>Рудник №{battle['mine_id']}</b> переходит команде «{scores[0]['team_name']}» "
+                         f"до {until:%d.%m %H:%M} UTC — каждый боец получает 1 ресурс в час!")
         await conn.execute(
             "UPDATE battles SET results = $2::jsonb WHERE battle_id = $1",
             battle_id, _json.dumps({"scores": scores, "prize_notes":
                                     {str(k): v for k, v in prize_notes.items()}}, ensure_ascii=False))
 
-    post = build_results_post(battle, scores, prize_notes)
+    post = build_results_post(battle, scores, prize_notes, mine_note)
     try:
         await bot.send_message(USERS_CHANNEL_ID, post, parse_mode="HTML")
     except Exception as e:
@@ -642,6 +705,94 @@ async def _finish_battle(bot: Bot, battle) -> None:
         await bot.send_message(ADMIN_SECRET_CHANNEL_ID,
                                f"🏁 Битва №{battle_id} закрыта автоматически.\n\n{post}",
                                parse_mode="HTML")
+    except Exception:
+        pass
+
+
+@dp.message(Command("award_mine"))
+async def admin_award_mine(message: types.Message):
+    """Рудник за битву с ручной номинацией: /award_mine <битва> <ID команды>."""
+    if not is_admin(message.from_user.id):
+        return
+    parts = (message.text or "").split()
+    if len(parts) != 3 or not parts[1].isdigit() or not parts[2].isdigit():
+        await message.answer("⚠️ Пример: <code>/award_mine 5 12</code> (битва №5, команда ID 12)", parse_mode="HTML")
+        return
+    from shared.economy import utcnow
+    from shared.mines import capture_mine
+    async with db.pool.acquire() as conn:
+        battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", int(parts[1]))
+        team = await conn.fetchrow("SELECT team_id, team_name FROM teams WHERE team_id = $1", int(parts[2]))
+        if not battle or not battle["mine_id"]:
+            await message.answer("❌ У этой битвы нет рудника.")
+            return
+        if not team:
+            await message.answer("❌ Команда не найдена.")
+            return
+        until = await capture_mine(conn, battle["mine_id"], team["team_id"], battle["battle_id"], utcnow())
+    await message.answer(f"⛏ Рудник №{battle['mine_id']} отдан команде «{html.unescape(team['team_name'])}» "
+                         f"до {until:%d.%m %H:%M} UTC.")
+
+
+@dp.message(Command("mines"))
+async def admin_mines(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    from shared.economy import utcnow
+    from shared.mines import list_mines
+    now = utcnow()
+    async with db.pool.acquire() as conn:
+        mines = await list_mines(conn)
+    held = [m for m in mines if m["team_id"] and m["captured_until"] and m["captured_until"] > now]
+    lines = [f"⛏ <b>РУДНИКИ</b>: занято {len(held)} из {len(mines)}"]
+    for m in held:
+        lines.append(f"№{m['id']} ({m['kind']}) — «{html.unescape(m['team_name'] or '')}» "
+                     f"({m['members_count']} бойцов) до {m['captured_until']:%d.%m %H:%M} UTC")
+    await message.answer("\n".join(lines), parse_mode="HTML")
+
+
+# ---- Постоянные рецепты мастерской: владелец включает/выключает любые (решение 26.10)
+async def _ws_recipes_view() -> tuple[str, types.InlineKeyboardMarkup]:
+    from shared.economy import WORKSHOP_UNLOCK_ORDER
+    from shared.locales import t as _t
+    rows = []
+    for day, rid in enumerate(WORKSHOP_UNLOCK_ORDER, start=1):
+        on = await get_flag(f"wsr:{rid}")
+        title = _t("ru", f"ws.recipe_{rid}", level=1, cap=1000)
+        rows.append([types.InlineKeyboardButton(text=f"{'🟢' if on else '⚫'} д{day} · {title}"[:64],
+                                                callback_data=f"wsr_toggle:{rid}")])
+    rows.append([types.InlineKeyboardButton(text="🟢 Включить все", callback_data="wsr_all:1"),
+                 types.InlineKeyboardButton(text="⚫ Выключить все", callback_data="wsr_all:0")])
+    text = ("🔧 <b>ПОСТОЯННЫЕ РЕЦЕПТЫ МАСТЕРСКОЙ</b>\n"
+            "🟢 — доступен игрокам, ⚫ — скрыт. «д3» — день, в который рецепт открывается новичку "
+            "(по одному в сутки с регистрации; ветераны видят все включённые).")
+    return text, types.InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+@dp.message(Command("workshop_recipes"))
+async def cmd_ws_recipes(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    text, kb = await _ws_recipes_view()
+    await message.answer(text, reply_markup=kb, parse_mode="HTML")
+
+
+@dp.callback_query(F.data.startswith("wsr_toggle:") | F.data.startswith("wsr_all:"))
+async def ws_recipes_actions(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        return
+    from shared.economy import WORKSHOP_UNLOCK_ORDER
+    from shared.feature_flags import set_flag
+    kind, value = callback.data.split(":", 1)
+    if kind == "wsr_toggle" and value in WORKSHOP_UNLOCK_ORDER:
+        await toggle_flag(f"wsr:{value}")
+    elif kind == "wsr_all":
+        for rid in WORKSHOP_UNLOCK_ORDER:
+            await set_flag(f"wsr:{rid}", value == "1")
+    await callback.answer("✅")
+    text, kb = await _ws_recipes_view()
+    try:
+        await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
     except Exception:
         pass
 

@@ -144,7 +144,17 @@ def medals(place: int) -> str:
     return {1: "🥇", 2: "🥈", 3: "🥉"}.get(place, f"{place}.")
 
 
-def build_results_post(battle, scores: list[dict], prize_notes: dict[int, str]) -> str:
+MINE_RES_RU = {"metal": "⛏ металл", "hydrogen": "💧 водород", "crystal": "💎 кристаллы", "parts": "⚙️ детали"}
+
+
+def mine_prize_line(mine_id: int) -> str:
+    from shared.economy import MINE_HOLD_HOURS, mine_kind
+    return (f"⛏ Главный приз — <b>рудник №{mine_id}</b> ({MINE_RES_RU[mine_kind(mine_id)]}) на {MINE_HOLD_HOURS} ч: "
+            "КАЖДЫЙ боец команды-победителя получает 1 ресурс в час. Больше бойцов — больше добычи!")
+
+
+def build_results_post(battle, scores: list[dict], prize_notes: dict[int, str],
+                       mine_note: str | None = None) -> str:
     """
     Публикация итогов в канал: тройка лидеров — ярко, места 4–10 — скромнее.
     prize_notes: {place: строка о призе} (авто-выданные или ручные описания).
@@ -175,6 +185,9 @@ def build_results_post(battle, scores: list[dict], prize_notes: dict[int, str]) 
             lines.append(f"{medals(i)} {row['team_name']} — {row['score']} {unit}{suffix}")
         lines.append("")
 
+    if mine_note:
+        lines.append(mine_note)
+        lines.append("")
     lines.append("..................................................")
     lines.append("<i>Собирай свою банду в /my_team — следующая битва не за горами!</i>")
     return "\n".join(lines)
@@ -188,6 +201,7 @@ def build_announce_post(battle) -> str:
         f"🏅 Номинация: <b>{battle['nomination_text']}</b>\n"
         f"🕐 Старт зачёта: <b>{battle['starts_at']:%d.%m.%Y %H:%M} UTC</b>\n"
         f"🏁 Финиш: <b>{battle['ends_at']:%d.%m.%Y %H:%M} UTC</b>\n\n"
+        + (mine_prize_line(battle["mine_id"]) + "\n\n" if battle.get("mine_id") else "") +
         "⚡ Считается ОБЩИЙ результат всех игроков команды — зови актив в банду, "
         "каждый боец приближает победу!\n"
         "🎁 Призы получит КАЖДЫЙ участник команд-призёров. Подробности — после финиша.\n\n"

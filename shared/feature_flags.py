@@ -34,6 +34,7 @@ FLAG_DEFAULTS: dict[str, bool] = {
     "goals": True,
     "station": True,
     "account_delete": True,
+    "mines": True,
 }
 # Человеческие подписи для пульта в админ-боте
 FLAG_TITLES: dict[str, str] = {
@@ -49,6 +50,7 @@ FLAG_TITLES: dict[str, str] = {
     "goals": "🎯 Ежедневные цели",
     "station": "🛰 Станция команды",
     "account_delete": "🗑 Удаление аккаунта игроком",
+    "mines": "⛏ Рудники (карта и начисления)",
 }
 
 _CACHE_TTL = 20.0

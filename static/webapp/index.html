@@ -301,6 +301,48 @@
                          100% { transform: translate(-4%, 8%) scale(.95); } }
   @media (prefers-reduced-motion: reduce) { .card.lava::before, .card.lava::after, .shield-card.on .sh-timer { animation: none; } }
   .moves + .hint { margin-top: 8px; }
+  /* ----- мастерская: рецепт ещё не открыт новичку ----- */
+  .recipe.locked { filter: grayscale(1); opacity: .5; }
+  .recipe .lockline { color: var(--muted); font-size: 12px; font-weight: 700; }
+  /* ----- 📚 Инфо: FAQ и соглашение в одной вкладке ----- */
+  .doc-switch { display: flex; gap: 8px; margin-bottom: 10px; }
+  .doc-switch .idx { flex: 1; }
+  /* ----- ⛏ Карта рудников ----- */
+  .minemap { position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+    background: radial-gradient(ellipse at 30% 20%, #1c2a4a 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 80%, #2a1d3f 0%, transparent 55%), #0d1426;
+    border: 1px solid rgba(0, 255, 225, .12); }
+  .minemap svg.terrain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .5; }
+  .mine { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, .14); background: #18213a; color: #fff; font-size: 19px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
+    transition: transform .2s; overflow: visible; }
+  .mine:hover { transform: scale(1.12); }
+  .mine.free { opacity: .55; }
+  .mine .no { position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 10px;
+    color: var(--muted); font-weight: 700; white-space: nowrap; }
+  .mine .tb { position: absolute; top: -8px; right: -8px; font-size: 13px; background: #0d1426;
+    border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+  .mine.held { border-color: var(--mc); box-shadow: 0 0 14px var(--mc); animation: pumpBob 2.4s ease-in-out infinite; }
+  .mine.held::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--mc);
+    opacity: 0; animation: pumpRing 2.4s ease-out infinite; }
+  .mine.mine-own { border-color: #fde047; box-shadow: 0 0 18px rgba(253, 224, 71, .55); }
+  .mine.target { border-color: #fb923c; box-shadow: 0 0 16px rgba(251, 146, 60, .6); animation: targetPulse 1.6s ease-in-out infinite; }
+  .mine.sel { outline: 2px solid var(--neon); outline-offset: 3px; }
+  .mine .drop { position: absolute; left: 50%; top: 4px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
+    background: var(--mc); opacity: 0; animation: dropUp 2.1s ease-in infinite; pointer-events: none; }
+  .mine .drop:nth-child(2) { animation-delay: .7s; margin-left: -9px; }
+  .mine .drop:nth-child(3) { animation-delay: 1.4s; margin-left: 3px; }
+  @keyframes pumpBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  @keyframes pumpRing { 0% { transform: scale(.9); opacity: .7; } 100% { transform: scale(1.5); opacity: 0; } }
+  @keyframes dropUp { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateY(-34px); opacity: 0; } }
+  @keyframes targetPulse { 0%, 100% { box-shadow: 0 0 8px rgba(251, 146, 60, .4); } 50% { box-shadow: 0 0 22px rgba(251, 146, 60, .9); } }
+  @media (prefers-reduced-motion: reduce) { .mine.held, .mine.held::after, .mine .drop, .mine.target { animation: none; } }
+  .map-lock { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86%, 460px);
+    background: rgba(10, 14, 28, .88); border: 1px solid rgba(255, 255, 255, .16); border-radius: 14px;
+    padding: 14px 16px; text-align: center; font-weight: 700; font-size: 14px; z-index: 2; }
+  .lead-row { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; }
+  .lead-row.me b { color: #fde047; }
   .big-num { font-size: 30px; font-weight: 900; margin: 2px 0 6px; }
   .unit-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0;
     border-top: 1px solid rgba(255, 255, 255, .06); }
@@ -358,6 +400,37 @@
       tm_leaveAsk: "Точно выйти из команды «{n}»?", tm_leaveAskCaptain: "Ты капитан: корона перейдёт ветерану команды. Точно выйти из «{n}»?",
       tm_left: "Ты больше не в команде",
       tab_storage: "📦 Склад",
+      tab_mines: "⛏ Рудники", tab_info: "📚 Инфо",
+      durDH: "{d} д {h} ч", durHM: "{h} ч {m} мин", durM: "{m} мин",
+      ws_locked: "🔒 Откроется через {t}", ws_toStorage: "📦 Готовое изделие ляжет на склад",
+      eff_camo: "тебя не видно в разведке налётов, а ты нападать можешь", eff_trap: "провалившийся налётчик отдаёт тебе вдвое больше",
+      eff_drill: "ничья в обороне засчитывается как провал налётчика", eff_thermos: "Бурильщики едят котлеты на 25% медленнее",
+      eff_banner: "+5% к добыче всей твоей команде", eff_dome: "щит от налётов на всю команду",
+      eff_forsage: "сбрасывает перезарядку налёта (раз в сутки)", eff_economizer: "следующий вылет без водорода",
+      eff_cargo: "добыча следующего налёта ×1,5", eff_stamp: "следующая продажа на бирже без комиссии",
+      eff_station_drone: "следующий вклад в станцию команды засчитывается ×1,5",
+      it_camo: "МАСКИРОВКА", it_trap: "ПРИМАНКА", it_drill: "ТРЕНАЖЁР СТОЙКИ", it_thermos: "ТЕРМОС КОТЛЕТ",
+      it_banner: "ЗНАМЯ КОМАНДЫ", it_dome: "КУПОЛ КОМАНДЫ", it_forsage: "ФОРСАЖ КОРАБЛЯ", it_economizer: "ЭКОНОМАЙЗЕР",
+      it_cargo: "РАСШИРЕННЫЙ ТРЮМ", it_stamp: "ШТАМП БИРЖИ", it_station_drone: "РЕМДРОН СТАНЦИИ",
+      it_oneShot: "разовое", it_charges: "⚡ Заряжено: {n}", it_needTeam: "Командное изделие — нужно состоять в команде.",
+      it_charged: "⚡ Заряжено! Сработает при следующем действии.", it_forsaged: "🔥 Перезарядка сброшена — можно лететь!",
+      raid_armed: "⚡ Наготове: {l}", raid_guardUntil: "{n} до {t}", raid_domeOn: "🛡 Купол команды до {t}",
+      raid_forsageBtn: "🔥 Форсаж: сбросить перезарядку ({n})",
+      raid_note_economizer: "⛽ Экономайзер: вылет без водорода", raid_note_cargo: "📦 Трюм: добыча ×1,5",
+      raid_note_trap: "🪤 Приманка цели: ты отдаёшь вдвое больше", raid_note_drill: "🎯 Тренажёр стойки цели: ничья засчитана провалом",
+      mn_title: "⛏ КАРТА РУДНИКОВ", mn_closed: "🔒 Вылазка на рудник невозможна, пока не запущена битва команд или кланов.",
+      mn_pick: "Нажми на рудник, чтобы узнать подробности.", mn_info: "⛏ РУДНИК",
+      mn_battle: "⚔️ БИТВА «{t}» ЗА РУДНИК №{n}", mn_soon: "⏳ БИТВА «{t}» ЗА РУДНИК №{n} — СТАРТ {d}",
+      mn_nom: "Номинация: {n}", mn_ends: "Финиш: {d}", mn_leaders: "Лидеры сейчас", mn_noLeaders: "Пока никто не набрал очков — твоя команда может стать первой!",
+      mn_myTeam: "🏆 ТВОЯ КОМАНДА НА РУДНИКАХ", mn_income: "Добыча: {n} ресурсов в час на всю команду",
+      mn_noIncome: "Рудников пока нет — победи в битве команд, и рудник твой на 72 ч.",
+      mn_noTeam: "Рудники берут только командой — вступи в команду или создай свою.", mn_teamBtn: "🏆 К команде",
+      mn_how: "📖 Как это работает", mn_rule1: "Каждая битва команд и кланов — ровно за один рудник. Побеждает команда с лучшим общим результатом всех бойцов в номинации битвы.",
+      mn_rule2: "Победитель держит рудник {h} ч: каждый боец команды получает {y} ресурс рудника в час. Больше бойцов — больше добычи.",
+      mn_rule3: "Потом рудник освобождается, но захватить его можно только в новой битве.",
+      mn_name: "⛏ РУДНИК №{n}", mn_res: "Ресурс", mn_holder: "Владелец", mn_free: "свободен", mn_untilL: "Держит до",
+      mn_pumping: "Качает: {n} {i} в час", mn_targetOf: "⚔️ За этот рудник идёт битва «{t}»",
+      mn_closedOne: "🔒 Захватить можно только в битве команд — следи за объявлениями.",
       raid_noFuel: "⛽ Корабль не готов к вылету — нужно топливо",
       raid_shieldTitle: "🛡 ЩИТ ОТ НАЛЁТОВ", raid_shieldActive: "АКТИВЕН", raid_shieldInactive: "НЕ АКТИВЕН",
       raid_shieldHint: "Пока щит активен, на тебя не нападают. Щит собирается в мастерской и ложится на склад — включишь, когда нужно.",
@@ -509,6 +582,37 @@
       tm_leaveAsk: "Leave the team “{n}”?", tm_leaveAskCaptain: "You're the captain: the crown passes to the team veteran. Leave “{n}”?",
       tm_left: "You're no longer in a team",
       tab_storage: "📦 Storage",
+      tab_mines: "⛏ Mines", tab_info: "📚 Info",
+      durDH: "{d} d {h} h", durHM: "{h} h {m} min", durM: "{m} min",
+      ws_locked: "🔒 Unlocks in {t}", ws_toStorage: "📦 The item goes to your storage",
+      eff_camo: "you're hidden from raid scouting but can still attack", eff_trap: "a failed raider gives you twice as much",
+      eff_drill: "a draw in defense counts as the raider's failure", eff_thermos: "Drillers eat cutlets 25% slower",
+      eff_banner: "+5% mining for your whole team", eff_dome: "raid shield for the whole team",
+      eff_forsage: "skips the raid recharge (once a day)", eff_economizer: "next launch costs no hydrogen",
+      eff_cargo: "next raid's loot ×1.5", eff_stamp: "next market sale with no fee",
+      eff_station_drone: "next team station donation counts ×1.5",
+      it_camo: "CAMOUFLAGE", it_trap: "DECOY", it_drill: "STANCE TRAINER", it_thermos: "CUTLET THERMOS",
+      it_banner: "TEAM BANNER", it_dome: "TEAM DOME", it_forsage: "SHIP AFTERBURNER", it_economizer: "FUEL SAVER",
+      it_cargo: "EXTENDED CARGO HOLD", it_stamp: "MARKET STAMP", it_station_drone: "STATION REPAIR DRONE",
+      it_oneShot: "one-time", it_charges: "⚡ Charged: {n}", it_needTeam: "Team item — you need to be in a team.",
+      it_charged: "⚡ Charged! It triggers on your next action.", it_forsaged: "🔥 Recharge skipped — you can launch!",
+      raid_armed: "⚡ Ready: {l}", raid_guardUntil: "{n} until {t}", raid_domeOn: "🛡 Team dome until {t}",
+      raid_forsageBtn: "🔥 Afterburner: skip recharge ({n})",
+      raid_note_economizer: "⛽ Fuel saver: no hydrogen spent", raid_note_cargo: "📦 Cargo hold: loot ×1.5",
+      raid_note_trap: "🪤 Target's decoy: you give twice as much", raid_note_drill: "🎯 Target's stance trainer: the draw counts as your failure",
+      mn_title: "⛏ MINE MAP", mn_closed: "🔒 No mine raids until a team or clan battle starts.",
+      mn_pick: "Tap a mine to see the details.", mn_info: "⛏ MINE",
+      mn_battle: "⚔️ BATTLE «{t}» FOR MINE #{n}", mn_soon: "⏳ BATTLE «{t}» FOR MINE #{n} — STARTS {d}",
+      mn_nom: "Category: {n}", mn_ends: "Finish: {d}", mn_leaders: "Leading now", mn_noLeaders: "No points yet — your team can be first!",
+      mn_myTeam: "🏆 YOUR TEAM ON THE MINES", mn_income: "Output: {n} resources per hour for the whole team",
+      mn_noIncome: "No mines yet — win a team battle and the mine is yours for 72 h.",
+      mn_noTeam: "Mines are taken by teams only — join a team or create your own.", mn_teamBtn: "🏆 To my team",
+      mn_how: "📖 How it works", mn_rule1: "Every team and clan battle is for exactly one mine. The team with the best combined result of all its fighters in the battle category wins.",
+      mn_rule2: "The winner holds the mine for {h} h: every team member gets {y} of its resource per hour. More fighters — more output.",
+      mn_rule3: "Then the mine is free again, but it can only be taken in a new battle.",
+      mn_name: "⛏ MINE #{n}", mn_res: "Resource", mn_holder: "Holder", mn_free: "free", mn_untilL: "Held until",
+      mn_pumping: "Pumping: {n} {i} per hour", mn_targetOf: "⚔️ Battle «{t}» is on for this mine",
+      mn_closedOne: "🔒 Can only be taken in a team battle — watch for announcements.",
       raid_noFuel: "⛽ Ship isn't ready to launch — it needs fuel",
       raid_shieldTitle: "🛡 RAID SHIELD", raid_shieldActive: "ACTIVE", raid_shieldInactive: "INACTIVE",
       raid_shieldHint: "While the shield is active, nobody can raid you. Build it in the workshop — it goes to storage, switch it on when you need it.",
@@ -728,6 +832,75 @@
     "hp_given": "تم الإهداء: {q} {k} — شكرًا على اللعب بروح الفريق!",
     "hp_asked": "أُرسل طلبك إلى الفريق!",
     "tab_storage": "📦 المخزون",
+    "tab_mines": "⛏ المناجم",
+    "tab_info": "📚 معلومات",
+    "durDH": "{d} ي {h} س",
+    "durHM": "{h} س {m} د",
+    "durM": "{m} د",
+    "ws_locked": "🔒 ستُفتح بعد {t}",
+    "ws_toStorage": "📦 القطعة الجاهزة تذهب إلى المخزون",
+    "eff_camo": "لا تظهر في استطلاع الغارات، وبإمكانك الإغارة",
+    "eff_trap": "المغير الفاشل يعطيك ضعف ما يُفترض",
+    "eff_drill": "التعادل في الدفاع يُحتسب فشلًا للمغير",
+    "eff_thermos": "الحفّارات تأكل الكفتة أبطأ بنسبة 25%",
+    "eff_banner": "+5% تعدين لفريقك كله",
+    "eff_dome": "ترس حماية من الغارات للفريق كله",
+    "eff_forsage": "يلغي إعادة شحن الغارة (مرة في اليوم)",
+    "eff_economizer": "الإقلاع التالي بلا هيدروجين",
+    "eff_cargo": "غنائم الغارة التالية ×1.5",
+    "eff_stamp": "البيع التالي في البورصة بلا عمولة",
+    "eff_station_drone": "المساهمة التالية في محطة الفريق تُحتسب ×1.5",
+    "it_camo": "التمويه",
+    "it_trap": "الطُّعم",
+    "it_drill": "مدرّب الدفاع",
+    "it_thermos": "ثرموس الكفتة",
+    "it_banner": "راية الفريق",
+    "it_dome": "قبة الفريق",
+    "it_forsage": "الدفع الإضافي",
+    "it_economizer": "موفّر الوقود",
+    "it_cargo": "عنبر الشحن الموسّع",
+    "it_stamp": "ختم البورصة",
+    "it_station_drone": "درون المحطة",
+    "it_oneShot": "لمرة واحدة",
+    "it_charges": "⚡ مشحون: {n}",
+    "it_needTeam": "قطعة للفريق — يجب أن تكون في فريق.",
+    "it_charged": "⚡ تم الشحن! ستعمل عند إجرائك التالي.",
+    "it_forsaged": "🔥 أُلغيت إعادة الشحن — انطلق!",
+    "raid_armed": "⚡ جاهز: {l}",
+    "raid_guardUntil": "{n} حتى {t}",
+    "raid_domeOn": "🛡 قبة الفريق حتى {t}",
+    "raid_forsageBtn": "🔥 الدفع الإضافي: إلغاء إعادة الشحن ({n})",
+    "raid_note_economizer": "⛽ موفّر الوقود: إقلاع بلا هيدروجين",
+    "raid_note_cargo": "📦 العنبر: الغنائم ×1.5",
+    "raid_note_trap": "🪤 طُعم الهدف: تعطيه ضعف ما يُفترض",
+    "raid_note_drill": "🎯 مدرّب دفاع الهدف: التعادل يُحتسب فشلًا لك",
+    "mn_title": "⛏ خريطة المناجم",
+    "mn_closed": "🔒 لا غارات على المناجم قبل بدء معركة فرق أو عشائر.",
+    "mn_pick": "اضغط على منجم لمعرفة التفاصيل.",
+    "mn_info": "⛏ المنجم",
+    "mn_battle": "⚔️ معركة «{t}» على المنجم رقم {n}",
+    "mn_soon": "⏳ معركة «{t}» على المنجم رقم {n} — تبدأ {d}",
+    "mn_nom": "الفئة: {n}",
+    "mn_ends": "النهاية: {d}",
+    "mn_leaders": "المتصدرون الآن",
+    "mn_noLeaders": "لم يسجّل أحد نقاطًا بعد — فريقك قد يكون الأول!",
+    "mn_myTeam": "🏆 فريقك في المناجم",
+    "mn_income": "الإنتاج: {n} من الموارد في الساعة للفريق كله",
+    "mn_noIncome": "لا مناجم بعد — فُز في معركة فرق ويصبح المنجم لك 72 ساعة.",
+    "mn_noTeam": "المناجم تُؤخذ بالفرق فقط — انضم إلى فريق أو أنشئ فريقك.",
+    "mn_teamBtn": "🏆 إلى الفريق",
+    "mn_how": "📖 كيف تعمل",
+    "mn_rule1": "كل معركة فرق وعشائر تدور على منجم واحد بالضبط. يفوز الفريق صاحب أفضل نتيجة إجمالية لكل مقاتليه في فئة المعركة.",
+    "mn_rule2": "يحتفظ الفائز بالمنجم {h} ساعة: يحصل كل عضو في الفريق على {y} من مورد المنجم في الساعة. كلما زاد المقاتلون زاد الإنتاج.",
+    "mn_rule3": "بعدها يتحرر المنجم، ولا يمكن الاستيلاء عليه إلا في معركة جديدة.",
+    "mn_name": "⛏ المنجم رقم {n}",
+    "mn_res": "المورد",
+    "mn_holder": "المالك",
+    "mn_free": "حر",
+    "mn_untilL": "يملكه حتى",
+    "mn_pumping": "الإنتاج: {n} {i} في الساعة",
+    "mn_targetOf": "⚔️ تدور معركة «{t}» على هذا المنجم",
+    "mn_closedOne": "🔒 لا يُؤخذ إلا في معركة فرق — تابع الإعلانات.",
     "raid_noFuel": "⛽ السفينة غير جاهزة للإقلاع — تحتاج إلى وقود",
     "raid_shieldTitle": "🛡 ترس الحماية من الغارات",
     "raid_shieldActive": "مفعّل",
@@ -1046,6 +1219,75 @@
     "hp_given": "উপহার দেওয়া হয়েছে: {q} {k} — টিম হয়ে খেলার জন্য ধন্যবাদ!",
     "hp_asked": "তোমার অনুরোধ টিমের কাছে গেছে!",
     "tab_storage": "📦 গুদাম",
+    "tab_mines": "⛏ খনি",
+    "tab_info": "📚 তথ্য",
+    "durDH": "{d} দিন {h} ঘ",
+    "durHM": "{h} ঘ {m} মি",
+    "durM": "{m} মি",
+    "ws_locked": "🔒 খুলবে {t} পরে",
+    "ws_toStorage": "📦 তৈরি জিনিস গুদামে জমা হবে",
+    "eff_camo": "রেইডের রেকিতে তোমাকে দেখা যাবে না, কিন্তু তুমি হামলা করতে পারবে",
+    "eff_trap": "হামলায় হেরে গেলে হামলাকারী তোমাকে দ্বিগুণ দেয়",
+    "eff_drill": "রক্ষণে ড্র হলে সেটা হামলাকারীর হার ধরা হয়",
+    "eff_thermos": "ড্রিলাররা 25% ধীরে কাটলেট খায়",
+    "eff_banner": "পুরো টিমের মাইনিং +5%",
+    "eff_dome": "পুরো টিমের জন্য রেইড-ঢাল",
+    "eff_forsage": "রেইডের রিচার্জ বাদ দেয় (দিনে একবার)",
+    "eff_economizer": "পরের উড়ানে হাইড্রোজেন লাগবে না",
+    "eff_cargo": "পরের রেইডের লুট ×1.5",
+    "eff_stamp": "বাজারে পরের বিক্রিতে কোনো ফি নেই",
+    "eff_station_drone": "টিম-স্টেশনে পরের অবদান ×1.5 ধরা হবে",
+    "it_camo": "ছদ্মবেশ",
+    "it_trap": "টোপ",
+    "it_drill": "ভঙ্গি-ট্রেনার",
+    "it_thermos": "কাটলেট-থার্মস",
+    "it_banner": "টিম-পতাকা",
+    "it_dome": "টিম-গম্বুজ",
+    "it_forsage": "জাহাজের আফটারবার্নার",
+    "it_economizer": "ইকোনোমাইজার",
+    "it_cargo": "বড় কার্গো-হোল্ড",
+    "it_stamp": "বাজারের স্ট্যাম্প",
+    "it_station_drone": "স্টেশনের মেরামত-ড্রোন",
+    "it_oneShot": "একবারের",
+    "it_charges": "⚡ চার্জ করা: {n}",
+    "it_needTeam": "টিমের জিনিস — টিমে থাকতে হবে।",
+    "it_charged": "⚡ চার্জ হয়েছে! পরের কাজেই চালু হবে।",
+    "it_forsaged": "🔥 রিচার্জ বাদ গেছে — উড়ে যাও!",
+    "raid_armed": "⚡ তৈরি: {l}",
+    "raid_guardUntil": "{n} {t} পর্যন্ত",
+    "raid_domeOn": "🛡 টিম-গম্বুজ {t} পর্যন্ত",
+    "raid_forsageBtn": "🔥 আফটারবার্নার: রিচার্জ বাদ দাও ({n})",
+    "raid_note_economizer": "⛽ ইকোনোমাইজার: হাইড্রোজেন ছাড়া উড়ান",
+    "raid_note_cargo": "📦 কার্গো: লুট ×1.5",
+    "raid_note_trap": "🪤 টার্গেটের টোপ: তুমি দ্বিগুণ দাও",
+    "raid_note_drill": "🎯 টার্গেটের ভঙ্গি-ট্রেনার: ড্র মানে তোমার হার",
+    "mn_title": "⛏ খনির মানচিত্র",
+    "mn_closed": "🔒 টিম বা ক্ল্যানের ব্যাটল শুরু না হওয়া পর্যন্ত খনিতে অভিযান বন্ধ।",
+    "mn_pick": "বিস্তারিত দেখতে একটা খনিতে ট্যাপ করো।",
+    "mn_info": "⛏ খনি",
+    "mn_battle": "⚔️ খনি №{n}-এর জন্য ব্যাটল «{t}»",
+    "mn_soon": "⏳ খনি №{n}-এর জন্য ব্যাটল «{t}» — শুরু {d}",
+    "mn_nom": "বিভাগ: {n}",
+    "mn_ends": "শেষ: {d}",
+    "mn_leaders": "এখন এগিয়ে",
+    "mn_noLeaders": "এখনো কেউ পয়েন্ট পায়নি — তোমার টিমই প্রথম হতে পারে!",
+    "mn_myTeam": "🏆 খনিতে তোমার টিম",
+    "mn_income": "উৎপাদন: পুরো টিমের জন্য ঘণ্টায় {n} রিসোর্স",
+    "mn_noIncome": "এখনো কোনো খনি নেই — টিম ব্যাটল জেতো, খনি 72 ঘণ্টার জন্য তোমার।",
+    "mn_noTeam": "খনি নিতে পারে শুধু টিম — কোনো টিমে ঢোকো বা নিজের টিম বানাও।",
+    "mn_teamBtn": "🏆 টিমে যাও",
+    "mn_how": "📖 কীভাবে কাজ করে",
+    "mn_rule1": "টিম ও ক্ল্যানের প্রতিটা ব্যাটল ঠিক একটা খনির জন্য। ব্যাটলের বিভাগে সব যোদ্ধার মিলিত ফল সেরা যে টিমের, সে জেতে।",
+    "mn_rule2": "বিজয়ী খনিটা {h} ঘণ্টা ধরে রাখে: টিমের প্রতিটা যোদ্ধা ঘণ্টায় খনির রিসোর্স {y}টা করে পায়। যোদ্ধা যত বেশি, উৎপাদন তত বেশি।",
+    "mn_rule3": "তারপর খনি আবার খালি হয়, কিন্তু নতুন ব্যাটল ছাড়া সেটা নেওয়া যায় না।",
+    "mn_name": "⛏ খনি №{n}",
+    "mn_res": "রিসোর্স",
+    "mn_holder": "মালিক",
+    "mn_free": "খালি",
+    "mn_untilL": "ধরে রাখবে",
+    "mn_pumping": "উৎপাদন: ঘণ্টায় {n} {i}",
+    "mn_targetOf": "⚔️ এই খনির জন্য ব্যাটল «{t}» চলছে",
+    "mn_closedOne": "🔒 শুধু টিম ব্যাটলে নেওয়া যায় — ঘোষণার দিকে নজর রাখো।",
     "raid_noFuel": "⛽ জাহাজ উড়তে তৈরি নয় — জ্বালানি লাগবে",
     "raid_shieldTitle": "🛡 রেইড-ঢাল",
     "raid_shieldActive": "চালু",
@@ -1362,6 +1604,75 @@
     "hp_given": "Verschenkt: {q} {k} — danke fürs Teamplay!",
     "hp_asked": "Deine Anfrage wurde ans Team geschickt!",
     "tab_storage": "📦 Lager",
+    "tab_mines": "⛏ Minen",
+    "tab_info": "📚 Info",
+    "durDH": "{d} T {h} Std.",
+    "durHM": "{h} Std. {m} Min.",
+    "durM": "{m} Min.",
+    "ws_locked": "🔒 Öffnet in {t}",
+    "ws_toStorage": "📦 Das fertige Stück landet im Lager",
+    "eff_camo": "du bist bei der Raid-Aufklärung unsichtbar, kannst aber selbst angreifen",
+    "eff_trap": "ein gescheiterter Angreifer gibt dir doppelt so viel",
+    "eff_drill": "ein Unentschieden in der Abwehr zählt als Scheitern des Angreifers",
+    "eff_thermos": "Bohrer fressen Frikadellen 25% langsamer",
+    "eff_banner": "+5% Ertrag für dein ganzes Team",
+    "eff_dome": "Raid-Schild für das ganze Team",
+    "eff_forsage": "setzt die Raid-Aufladung zurück (einmal am Tag)",
+    "eff_economizer": "der nächste Start ohne Wasserstoff",
+    "eff_cargo": "Beute des nächsten Raids ×1,5",
+    "eff_stamp": "der nächste Verkauf an der Börse ohne Gebühr",
+    "eff_station_drone": "der nächste Beitrag zur Team-Station zählt ×1,5",
+    "it_camo": "TARNUNG",
+    "it_trap": "KÖDER",
+    "it_drill": "ABWEHRTRAINER",
+    "it_thermos": "FRIKADELLEN-THERMOS",
+    "it_banner": "TEAM-BANNER",
+    "it_dome": "TEAM-KUPPEL",
+    "it_forsage": "SCHIFFS-NACHBRENNER",
+    "it_economizer": "SPAR-ÖKONOMISER",
+    "it_cargo": "ERWEITERTER LADERAUM",
+    "it_stamp": "BÖRSENSTEMPEL",
+    "it_station_drone": "STATIONS-REPARATURDROHNE",
+    "it_oneShot": "einmalig",
+    "it_charges": "⚡ Geladen: {n}",
+    "it_needTeam": "Team-Stück — du musst in einem Team sein.",
+    "it_charged": "⚡ Geladen! Wirkt bei deiner nächsten Aktion.",
+    "it_forsaged": "🔥 Aufladung zurückgesetzt — du kannst starten!",
+    "raid_armed": "⚡ Bereit: {l}",
+    "raid_guardUntil": "{n} bis {t}",
+    "raid_domeOn": "🛡 Team-Kuppel bis {t}",
+    "raid_forsageBtn": "🔥 Nachbrenner: Aufladung überspringen ({n})",
+    "raid_note_economizer": "⛽ Spar-Ökonomiser: Start ohne Wasserstoff",
+    "raid_note_cargo": "📦 Laderaum: Beute ×1,5",
+    "raid_note_trap": "🪤 Köder des Ziels: du gibst doppelt so viel ab",
+    "raid_note_drill": "🎯 Abwehrtrainer des Ziels: Unentschieden zählt als Scheitern",
+    "mn_title": "⛏ MINENKARTE",
+    "mn_closed": "🔒 Ein Minen-Raid ist erst möglich, wenn eine Team- oder Clan-Battle läuft.",
+    "mn_pick": "Tippe auf eine Mine für Details.",
+    "mn_info": "⛏ MINE",
+    "mn_battle": "⚔️ BATTLE „{t}“ UM MINE NR. {n}",
+    "mn_soon": "⏳ BATTLE „{t}“ UM MINE NR. {n} — START {d}",
+    "mn_nom": "Kategorie: {n}",
+    "mn_ends": "Ende: {d}",
+    "mn_leaders": "Aktuell vorn",
+    "mn_noLeaders": "Noch keine Punkte — dein Team kann das erste sein!",
+    "mn_myTeam": "🏆 DEIN TEAM IN DEN MINEN",
+    "mn_income": "Förderung: {n} Ressourcen pro Stunde fürs ganze Team",
+    "mn_noIncome": "Noch keine Minen — gewinne eine Team-Battle, und die Mine gehört 72 Std. dir.",
+    "mn_noTeam": "Minen erobern nur Teams — tritt einem Team bei oder gründe ein eigenes.",
+    "mn_teamBtn": "🏆 Zum Team",
+    "mn_how": "📖 So funktioniert's",
+    "mn_rule1": "Jede Team- und Clan-Battle geht um genau eine Mine. Es gewinnt das Team mit dem besten Gesamtergebnis aller Kämpfer in der Kategorie der Battle.",
+    "mn_rule2": "Der Sieger hält die Mine {h} Std.: Jeder Kämpfer des Teams bekommt {y} Ressource der Mine pro Stunde. Mehr Kämpfer — mehr Ertrag.",
+    "mn_rule3": "Danach wird die Mine wieder frei, ist aber nur in einer neuen Battle zu erobern.",
+    "mn_name": "⛏ MINE NR. {n}",
+    "mn_res": "Ressource",
+    "mn_holder": "Besitzer",
+    "mn_free": "frei",
+    "mn_untilL": "Gehalten bis",
+    "mn_pumping": "Fördert: {n} {i} pro Stunde",
+    "mn_targetOf": "⚔️ Um diese Mine läuft die Battle „{t}“",
+    "mn_closedOne": "🔒 Nur in einer Team-Battle zu erobern — achte auf die Ankündigungen.",
     "raid_noFuel": "⛽ Das Schiff ist nicht startklar — es braucht Treibstoff",
     "raid_shieldTitle": "🛡 RAID-SCHILD",
     "raid_shieldActive": "AKTIV",
@@ -1680,6 +1991,75 @@
     "hp_given": "Regalado: {q} {k}. ¡Gracias por jugar en equipo!",
     "hp_asked": "¡Petición enviada al equipo!",
     "tab_storage": "📦 Inventario",
+    "tab_mines": "⛏ Minas",
+    "tab_info": "📚 Info",
+    "durDH": "{d} d {h} h",
+    "durHM": "{h} h {m} min",
+    "durM": "{m} min",
+    "ws_locked": "🔒 Se abre en {t}",
+    "ws_toStorage": "📦 El artículo terminado va al inventario",
+    "eff_camo": "no apareces en el reconocimiento de asaltos, pero tú sí puedes atacar",
+    "eff_trap": "un asaltante fallido te da el doble",
+    "eff_drill": "un empate en la defensa cuenta como fracaso del asaltante",
+    "eff_thermos": "los Perforadores comen chuletas un 25% más despacio",
+    "eff_banner": "+5% de extracción para todo tu equipo",
+    "eff_dome": "escudo de asaltos para todo el equipo",
+    "eff_forsage": "salta la recarga del asalto (una vez al día)",
+    "eff_economizer": "el próximo despegue sin hidrógeno",
+    "eff_cargo": "el botín del próximo asalto ×1,5",
+    "eff_stamp": "la próxima venta en la bolsa sin comisión",
+    "eff_station_drone": "la próxima aportación a la estación del equipo cuenta ×1,5",
+    "it_camo": "CAMUFLAJE",
+    "it_trap": "SEÑUELO",
+    "it_drill": "ENTRENADOR DE POSTURA",
+    "it_thermos": "TERMO DE CHULETAS",
+    "it_banner": "ESTANDARTE DEL EQUIPO",
+    "it_dome": "CÚPULA DEL EQUIPO",
+    "it_forsage": "POSCOMBUSTIÓN DE LA NAVE",
+    "it_economizer": "ECONOMIZADOR",
+    "it_cargo": "BODEGA AMPLIADA",
+    "it_stamp": "SELLO DE LA BOLSA",
+    "it_station_drone": "DRON REPARADOR DE LA ESTACIÓN",
+    "it_oneShot": "de un solo uso",
+    "it_charges": "⚡ Cargado: {n}",
+    "it_needTeam": "Artículo de equipo: tienes que estar en un equipo.",
+    "it_charged": "⚡ ¡Cargado! Se activará en tu próxima acción.",
+    "it_forsaged": "🔥 Recarga saltada: ¡a despegar!",
+    "raid_armed": "⚡ Listo: {l}",
+    "raid_guardUntil": "{n} hasta {t}",
+    "raid_domeOn": "🛡 Cúpula del equipo hasta {t}",
+    "raid_forsageBtn": "🔥 Poscombustión: saltar recarga ({n})",
+    "raid_note_economizer": "⛽ Economizador: despegue sin hidrógeno",
+    "raid_note_cargo": "📦 Bodega: botín ×1,5",
+    "raid_note_trap": "🪤 Señuelo del objetivo: das el doble",
+    "raid_note_drill": "🎯 Entrenador de postura del objetivo: el empate cuenta como fracaso",
+    "mn_title": "⛏ MAPA DE MINAS",
+    "mn_closed": "🔒 No hay incursiones a las minas hasta que empiece una batalla de equipos o clanes.",
+    "mn_pick": "Toca una mina para ver los detalles.",
+    "mn_info": "⛏ MINA",
+    "mn_battle": "⚔️ BATALLA «{t}» POR LA MINA N.º {n}",
+    "mn_soon": "⏳ BATALLA «{t}» POR LA MINA N.º {n} — EMPIEZA {d}",
+    "mn_nom": "Categoría: {n}",
+    "mn_ends": "Final: {d}",
+    "mn_leaders": "Líderes ahora",
+    "mn_noLeaders": "Aún nadie suma puntos: ¡tu equipo puede ser el primero!",
+    "mn_myTeam": "🏆 TU EQUIPO EN LAS MINAS",
+    "mn_income": "Extracción: {n} recursos por hora para todo el equipo",
+    "mn_noIncome": "Aún no hay minas: gana una batalla de equipos y la mina es tuya durante 72 h.",
+    "mn_noTeam": "Las minas solo las toman los equipos: únete a uno o crea el tuyo.",
+    "mn_teamBtn": "🏆 Al equipo",
+    "mn_how": "📖 Cómo funciona",
+    "mn_rule1": "Cada batalla de equipos y clanes es por una sola mina. Gana el equipo con el mejor resultado conjunto de todos sus luchadores en la categoría de la batalla.",
+    "mn_rule2": "El ganador conserva la mina {h} h: cada miembro del equipo recibe {y} del recurso de la mina por hora. Más luchadores, más extracción.",
+    "mn_rule3": "Después la mina queda libre, pero solo se puede tomar en una batalla nueva.",
+    "mn_name": "⛏ MINA N.º {n}",
+    "mn_res": "Recurso",
+    "mn_holder": "Dueño",
+    "mn_free": "libre",
+    "mn_untilL": "La conserva hasta",
+    "mn_pumping": "Extrae: {n} {i} por hora",
+    "mn_targetOf": "⚔️ Se libra la batalla «{t}» por esta mina",
+    "mn_closedOne": "🔒 Solo se puede tomar en una batalla de equipos: atento a los anuncios.",
     "raid_noFuel": "⛽ La nave no está lista para despegar: necesita combustible",
     "raid_shieldTitle": "🛡 ESCUDO DE ASALTOS",
     "raid_shieldActive": "ACTIVO",
@@ -1996,6 +2376,75 @@
     "hp_given": "Offert : {q} {k} — merci pour l'esprit d'équipe !",
     "hp_asked": "Ta demande a été envoyée à l'équipe !",
     "tab_storage": "📦 Stock",
+    "tab_mines": "⛏ Mines",
+    "tab_info": "📚 Info",
+    "durDH": "{d} j {h} h",
+    "durHM": "{h} h {m} min",
+    "durM": "{m} min",
+    "ws_locked": "🔒 S'ouvre dans {t}",
+    "ws_toStorage": "📦 L'objet ira dans ton stock",
+    "eff_camo": "tu es invisible au repérage des raids, mais tu peux attaquer",
+    "eff_trap": "un raideur qui échoue te donne le double",
+    "eff_drill": "une égalité en défense compte comme un échec du raideur",
+    "eff_thermos": "les Foreurs mangent les côtelettes 25% plus lentement",
+    "eff_banner": "+5% de minage pour toute ton équipe",
+    "eff_dome": "bouclier anti-raids pour toute l'équipe",
+    "eff_forsage": "annule la recharge du raid (une fois par jour)",
+    "eff_economizer": "le prochain vol sans hydrogène",
+    "eff_cargo": "butin du prochain raid ×1,5",
+    "eff_stamp": "la prochaine vente en bourse sans commission",
+    "eff_station_drone": "le prochain apport à la station d'équipe compte ×1,5",
+    "it_camo": "CAMOUFLAGE",
+    "it_trap": "LEURRE",
+    "it_drill": "ENTRAÎNEUR DE POSTURE",
+    "it_thermos": "THERMOS À CÔTELETTES",
+    "it_banner": "BANNIÈRE D'ÉQUIPE",
+    "it_dome": "DÔME D'ÉQUIPE",
+    "it_forsage": "POSTCOMBUSTION DU VAISSEAU",
+    "it_economizer": "ÉCONOMISEUR",
+    "it_cargo": "SOUTE AGRANDIE",
+    "it_stamp": "TAMPON DE LA BOURSE",
+    "it_station_drone": "DRONE DE STATION",
+    "it_oneShot": "usage unique",
+    "it_charges": "⚡ Chargé : {n}",
+    "it_needTeam": "Objet d'équipe — il faut être dans une équipe.",
+    "it_charged": "⚡ Chargé ! Se déclenchera à la prochaine action.",
+    "it_forsaged": "🔥 Recharge annulée — tu peux décoller !",
+    "raid_armed": "⚡ Prêt : {l}",
+    "raid_guardUntil": "{n} jusqu'à {t}",
+    "raid_domeOn": "🛡 Dôme d'équipe jusqu'à {t}",
+    "raid_forsageBtn": "🔥 Postcombustion : annuler la recharge ({n})",
+    "raid_note_economizer": "⛽ Économiseur : vol sans hydrogène",
+    "raid_note_cargo": "📦 Soute : butin ×1,5",
+    "raid_note_trap": "🪤 Leurre de la cible : tu donnes le double",
+    "raid_note_drill": "🎯 Entraîneur de posture de la cible : l'égalité compte comme un échec",
+    "mn_title": "⛏ CARTE DES MINES",
+    "mn_closed": "🔒 Impossible de partir en mine tant qu'aucune bataille d'équipes ou de clans n'est lancée.",
+    "mn_pick": "Appuie sur une mine pour voir les détails.",
+    "mn_info": "⛏ MINE",
+    "mn_battle": "⚔️ BATAILLE « {t} » POUR LA MINE N°{n}",
+    "mn_soon": "⏳ BATAILLE « {t} » POUR LA MINE N°{n} — DÉBUT {d}",
+    "mn_nom": "Catégorie : {n}",
+    "mn_ends": "Fin : {d}",
+    "mn_leaders": "En tête actuellement",
+    "mn_noLeaders": "Personne n'a encore marqué de points — ton équipe peut être la première !",
+    "mn_myTeam": "🏆 TON ÉQUIPE DANS LES MINES",
+    "mn_income": "Production : {n} ressources par heure pour toute l'équipe",
+    "mn_noIncome": "Pas encore de mines — gagne une bataille d'équipes et la mine est à toi pendant 72 h.",
+    "mn_noTeam": "Les mines se prennent en équipe — rejoins une équipe ou crée la tienne.",
+    "mn_teamBtn": "🏆 Vers l'équipe",
+    "mn_how": "📖 Comment ça marche",
+    "mn_rule1": "Chaque bataille d'équipes et de clans se joue pour une seule mine. L'équipe avec le meilleur résultat cumulé de tous ses combattants dans la catégorie de la bataille l'emporte.",
+    "mn_rule2": "Le vainqueur garde la mine {h} h : chaque combattant de l'équipe reçoit {y} ressource de la mine par heure. Plus de combattants, plus de production.",
+    "mn_rule3": "Ensuite la mine est libérée, mais on ne peut la reprendre que lors d'une nouvelle bataille.",
+    "mn_name": "⛏ MINE N°{n}",
+    "mn_res": "Ressource",
+    "mn_holder": "Propriétaire",
+    "mn_free": "libre",
+    "mn_untilL": "Tenue jusqu'au",
+    "mn_pumping": "Produit : {n} {i} par heure",
+    "mn_targetOf": "⚔️ Une bataille « {t} » est en cours pour cette mine",
+    "mn_closedOne": "🔒 On ne peut la prendre que lors d'une bataille d'équipes — surveille les annonces.",
     "raid_noFuel": "⛽ Le vaisseau n'est pas prêt au décollage — il lui faut du carburant",
     "raid_shieldTitle": "🛡 BOUCLIER ANTI-RAIDS",
     "raid_shieldActive": "ACTIF",
@@ -2313,6 +2762,75 @@
     "hp_given": "तोहफ़े में दिया: {q} {k} — टीम भावना के लिए शुक्रिया!",
     "hp_asked": "तुम्हारी माँग टीम को भेज दी गई!",
     "tab_storage": "📦 भंडार",
+    "tab_mines": "⛏ खदानें",
+    "tab_info": "📚 जानकारी",
+    "durDH": "{d} दिन {h} घं.",
+    "durHM": "{h} घं. {m} मि.",
+    "durM": "{m} मि.",
+    "ws_locked": "🔒 {t} में खुलेगा",
+    "ws_toStorage": "📦 तैयार चीज़ भंडार में जाएगी",
+    "eff_camo": "छापों की टोह में तुम दिखते नहीं, पर हमला कर सकते हो",
+    "eff_trap": "हारा हुआ हमलावर तुम्हें दोगुना देता है",
+    "eff_drill": "रक्षा में ड्रॉ हमलावर की हार गिना जाता है",
+    "eff_thermos": "ड्रिलर कटलेट 25% धीमे खाते हैं",
+    "eff_banner": "पूरी टीम की माइनिंग +5%",
+    "eff_dome": "पूरी टीम के लिए छापा-ढाल",
+    "eff_forsage": "छापे का रीचार्ज हटा देता है (दिन में एक बार)",
+    "eff_economizer": "अगली उड़ान बिना हाइड्रोजन के",
+    "eff_cargo": "अगले छापे की लूट ×1,5",
+    "eff_stamp": "बाज़ार में अगली बिक्री बिना फ़ीस के",
+    "eff_station_drone": "टीम स्टेशन में अगला योगदान ×1,5 गिना जाएगा",
+    "it_camo": "छलावरण",
+    "it_trap": "जाल-चारा",
+    "it_drill": "रक्षा-ट्रेनर",
+    "it_thermos": "कटलेट-थर्मस",
+    "it_banner": "टीम-झंडा",
+    "it_dome": "टीम-गुंबद",
+    "it_forsage": "यान का फ़ोर्साज़",
+    "it_economizer": "इकोनॉमाइज़र",
+    "it_cargo": "बड़ा कार्गो-होल्ड",
+    "it_stamp": "बाज़ार की मुहर",
+    "it_station_drone": "स्टेशन का मरम्मत-ड्रोन",
+    "it_oneShot": "एक बार का",
+    "it_charges": "⚡ चार्ज: {n}",
+    "it_needTeam": "टीम की चीज़ — टीम में होना ज़रूरी है।",
+    "it_charged": "⚡ चार्ज हो गया! अगली कार्रवाई पर चलेगा।",
+    "it_forsaged": "🔥 रीचार्ज हट गया — उड़ान भरो!",
+    "raid_armed": "⚡ तैयार: {l}",
+    "raid_guardUntil": "{n} {t} तक",
+    "raid_domeOn": "🛡 टीम-गुंबद {t} तक",
+    "raid_forsageBtn": "🔥 फ़ोर्साज़: रीचार्ज हटाओ ({n})",
+    "raid_note_economizer": "⛽ इकोनॉमाइज़र: उड़ान बिना हाइड्रोजन",
+    "raid_note_cargo": "📦 कार्गो-होल्ड: लूट ×1,5",
+    "raid_note_trap": "🪤 निशाने का जाल-चारा: तुम दोगुना देते हो",
+    "raid_note_drill": "🎯 निशाने का रक्षा-ट्रेनर: ड्रॉ तुम्हारी हार गिना गया",
+    "mn_title": "⛏ खदानों का नक्शा",
+    "mn_closed": "🔒 टीम या क्लान की बैटल शुरू होने तक खदान पर धावा नहीं हो सकता।",
+    "mn_pick": "ब्योरा देखने के लिए खदान पर टैप करो।",
+    "mn_info": "⛏ खदान",
+    "mn_battle": "⚔️ खदान №{n} के लिए बैटल «{t}»",
+    "mn_soon": "⏳ खदान №{n} के लिए बैटल «{t}» — शुरू {d}",
+    "mn_nom": "श्रेणी: {n}",
+    "mn_ends": "समाप्ति: {d}",
+    "mn_leaders": "अभी आगे",
+    "mn_noLeaders": "अभी किसी के पास अंक नहीं — तुम्हारी टीम पहली बन सकती है!",
+    "mn_myTeam": "🏆 खदानों पर तुम्हारी टीम",
+    "mn_income": "पैदावार: पूरी टीम के लिए {n} संसाधन प्रति घंटा",
+    "mn_noIncome": "अभी कोई खदान नहीं — टीम बैटल जीतो, खदान 72 घंटे के लिए तुम्हारी।",
+    "mn_noTeam": "खदानें सिर्फ़ टीम लेती है — किसी टीम में शामिल हो या अपनी बनाओ।",
+    "mn_teamBtn": "🏆 टीम पर जाओ",
+    "mn_how": "📖 यह कैसे काम करता है",
+    "mn_rule1": "हर टीम और क्लान बैटल ठीक एक खदान के लिए होती है। बैटल की श्रेणी में सभी लड़ाकों का सबसे अच्छा कुल नतीजा जिस टीम का हो, वही जीतती है।",
+    "mn_rule2": "विजेता खदान {h} घंटे रखता है: टीम का हर लड़ाका हर घंटे खदान का {y} संसाधन पाता है। लड़ाके ज़्यादा — पैदावार ज़्यादा।",
+    "mn_rule3": "फिर खदान खाली हो जाती है, पर उसे सिर्फ़ नई बैटल में ही जीता जा सकता है।",
+    "mn_name": "⛏ खदान №{n}",
+    "mn_res": "संसाधन",
+    "mn_holder": "मालिक",
+    "mn_free": "खाली",
+    "mn_untilL": "कब्ज़ा रहेगा",
+    "mn_pumping": "निकल रहा: {n} {i} प्रति घंटा",
+    "mn_targetOf": "⚔️ इस खदान के लिए बैटल «{t}» चल रही है",
+    "mn_closedOne": "🔒 इसे सिर्फ़ टीम बैटल में जीता जा सकता है — घोषणाओं पर नज़र रखो।",
     "raid_noFuel": "⛽ यान उड़ान के लिए तैयार नहीं — ईंधन चाहिए",
     "raid_shieldTitle": "🛡 छापा-ढाल",
     "raid_shieldActive": "चालू",
@@ -2630,6 +3148,75 @@
     "hp_given": "Diberikan: {q} {k} — terima kasih sudah bermain sebagai tim!",
     "hp_asked": "Permintaanmu sudah dikirim ke tim!",
     "tab_storage": "📦 Gudang",
+    "tab_mines": "⛏ Tambang",
+    "tab_info": "📚 Info",
+    "durDH": "{d} h {h} j",
+    "durHM": "{h} j {m} mnt",
+    "durM": "{m} mnt",
+    "ws_locked": "🔒 Terbuka dalam {t}",
+    "ws_toStorage": "📦 Barang jadi masuk ke gudang",
+    "eff_camo": "kamu tak terlihat di pengintaian serbuan, tapi tetap bisa menyerang",
+    "eff_trap": "penyerbu yang gagal memberimu dua kali lipat",
+    "eff_drill": "seri saat bertahan dihitung sebagai kegagalan penyerbu",
+    "eff_thermos": "Pengebor makan kotlet 25% lebih lambat",
+    "eff_banner": "+5% penambangan untuk seluruh timmu",
+    "eff_dome": "perisai anti-serbuan untuk seluruh tim",
+    "eff_forsage": "menghapus pengisian ulang serbuan (sekali sehari)",
+    "eff_economizer": "penerbangan berikutnya tanpa hidrogen",
+    "eff_cargo": "jarahan serbuan berikutnya ×1,5",
+    "eff_stamp": "penjualan berikutnya di bursa tanpa biaya",
+    "eff_station_drone": "sumbangan berikutnya ke stasiun tim dihitung ×1,5",
+    "it_camo": "KAMUFLASE",
+    "it_trap": "UMPAN",
+    "it_drill": "PELATIH KUDA-KUDA",
+    "it_thermos": "TERMOS KOTLET",
+    "it_banner": "PANJI TIM",
+    "it_dome": "KUBAH TIM",
+    "it_forsage": "AFTERBURNER KAPAL",
+    "it_economizer": "PENGHEMAT BAHAN BAKAR",
+    "it_cargo": "KARGO DIPERLUAS",
+    "it_stamp": "STEMPEL BURSA",
+    "it_station_drone": "DRONE REPARASI STASIUN",
+    "it_oneShot": "sekali pakai",
+    "it_charges": "⚡ Terisi: {n}",
+    "it_needTeam": "Barang tim — kamu harus berada di sebuah tim.",
+    "it_charged": "⚡ Terisi! Aktif pada aksi berikutnya.",
+    "it_forsaged": "🔥 Pengisian ulang dihapus — siap terbang!",
+    "raid_armed": "⚡ Siap: {l}",
+    "raid_guardUntil": "{n} sampai {t}",
+    "raid_domeOn": "🛡 Kubah tim sampai {t}",
+    "raid_forsageBtn": "🔥 Afterburner: hapus pengisian ulang ({n})",
+    "raid_note_economizer": "⛽ Penghemat: terbang tanpa hidrogen",
+    "raid_note_cargo": "📦 Kargo: jarahan ×1,5",
+    "raid_note_trap": "🪤 Umpan target: kamu memberi dua kali lipat",
+    "raid_note_drill": "🎯 Pelatih kuda-kuda target: seri dihitung kegagalanmu",
+    "mn_title": "⛏ PETA TAMBANG",
+    "mn_closed": "🔒 Ekspedisi ke tambang tidak mungkin sebelum battle tim atau klan dimulai.",
+    "mn_pick": "Ketuk tambang untuk melihat detailnya.",
+    "mn_info": "⛏ TAMBANG",
+    "mn_battle": "⚔️ BATTLE «{t}» UNTUK TAMBANG №{n}",
+    "mn_soon": "⏳ BATTLE «{t}» UNTUK TAMBANG №{n} — MULAI {d}",
+    "mn_nom": "Kategori: {n}",
+    "mn_ends": "Selesai: {d}",
+    "mn_leaders": "Pemimpin saat ini",
+    "mn_noLeaders": "Belum ada yang mencetak poin — timmu bisa jadi yang pertama!",
+    "mn_myTeam": "🏆 TIMMU DI TAMBANG",
+    "mn_income": "Hasil: {n} sumber daya per jam untuk seluruh tim",
+    "mn_noIncome": "Belum ada tambang — menangkan battle tim, dan tambang jadi milikmu selama 72 jam.",
+    "mn_noTeam": "Tambang hanya direbut oleh tim — gabung ke tim atau buat sendiri.",
+    "mn_teamBtn": "🏆 Ke tim",
+    "mn_how": "📖 Cara kerjanya",
+    "mn_rule1": "Setiap battle tim dan klan memperebutkan tepat satu tambang. Menang tim dengan hasil gabungan terbaik dari semua anggotanya di kategori battle.",
+    "mn_rule2": "Pemenang menguasai tambang {h} jam: tiap anggota tim mendapat {y} sumber daya tambang per jam. Makin banyak anggota — makin besar hasilnya.",
+    "mn_rule3": "Setelah itu tambang bebas lagi, tetapi hanya bisa direbut di battle baru.",
+    "mn_name": "⛏ TAMBANG №{n}",
+    "mn_res": "Sumber daya",
+    "mn_holder": "Pemilik",
+    "mn_free": "bebas",
+    "mn_untilL": "Dikuasai sampai",
+    "mn_pumping": "Menghasilkan: {n} {i} per jam",
+    "mn_targetOf": "⚔️ Battle «{t}» sedang memperebutkan tambang ini",
+    "mn_closedOne": "🔒 Hanya bisa direbut di battle tim — pantau pengumuman.",
     "raid_noFuel": "⛽ Kapal belum siap berangkat — butuh bahan bakar",
     "raid_shieldTitle": "🛡 PERISAI SERBUAN",
     "raid_shieldActive": "AKTIF",
@@ -2947,6 +3534,75 @@
     "hp_given": "Regalate: {q} {k} — grazie per il gioco di squadra!",
     "hp_asked": "Richiesta inviata alla squadra!",
     "tab_storage": "📦 Deposito",
+    "tab_mines": "⛏ Miniere",
+    "tab_info": "📚 Info",
+    "durDH": "{d} g {h} h",
+    "durHM": "{h} h {m} min",
+    "durM": "{m} min",
+    "ws_locked": "🔒 Si sblocca tra {t}",
+    "ws_toStorage": "📦 L'oggetto finisce nel deposito",
+    "eff_camo": "non compari nella ricognizione delle incursioni, ma puoi attaccare",
+    "eff_trap": "un predone che fallisce ti dà il doppio",
+    "eff_drill": "un pareggio in difesa conta come fallimento del predone",
+    "eff_thermos": "le Trivelle mangiano cotolette il 25% più lentamente",
+    "eff_banner": "+5% di estrazione a tutta la tua squadra",
+    "eff_dome": "scudo dalle incursioni per tutta la squadra",
+    "eff_forsage": "azzera la ricarica dell'incursione (una volta al giorno)",
+    "eff_economizer": "il prossimo decollo senza idrogeno",
+    "eff_cargo": "bottino della prossima incursione ×1,5",
+    "eff_stamp": "la prossima vendita in borsa senza commissione",
+    "eff_station_drone": "il prossimo contributo alla stazione della squadra conta ×1,5",
+    "it_camo": "MIMETIZZAZIONE",
+    "it_trap": "ESCA",
+    "it_drill": "SIMULATORE DI DIFESA",
+    "it_thermos": "THERMOS PER COTOLETTE",
+    "it_banner": "STENDARDO DELLA SQUADRA",
+    "it_dome": "CUPOLA DELLA SQUADRA",
+    "it_forsage": "POSTBRUCIATORE DELLA NAVE",
+    "it_economizer": "ECONOMIZZATORE",
+    "it_cargo": "STIVA AMPLIATA",
+    "it_stamp": "TIMBRO DELLA BORSA",
+    "it_station_drone": "DRONE RIPARATORE DELLA STAZIONE",
+    "it_oneShot": "monouso",
+    "it_charges": "⚡ Carico: {n}",
+    "it_needTeam": "Oggetto di squadra: devi far parte di una squadra.",
+    "it_charged": "⚡ Carico! Scatta alla prossima azione.",
+    "it_forsaged": "🔥 Ricarica azzerata: puoi decollare!",
+    "raid_armed": "⚡ Pronto: {l}",
+    "raid_guardUntil": "{n} fino a {t}",
+    "raid_domeOn": "🛡 Cupola della squadra fino a {t}",
+    "raid_forsageBtn": "🔥 Postbruciatore: azzera la ricarica ({n})",
+    "raid_note_economizer": "⛽ Economizzatore: decollo senza idrogeno",
+    "raid_note_cargo": "📦 Stiva: bottino ×1,5",
+    "raid_note_trap": "🪤 Esca del bersaglio: tu dai il doppio",
+    "raid_note_drill": "🎯 Simulatore di difesa del bersaglio: il pareggio conta come fallimento",
+    "mn_title": "⛏ MAPPA DELLE MINIERE",
+    "mn_closed": "🔒 Non si può andare in miniera finché non parte una battaglia tra squadre o clan.",
+    "mn_pick": "Tocca una miniera per vedere i dettagli.",
+    "mn_info": "⛏ MINIERA",
+    "mn_battle": "⚔️ BATTAGLIA «{t}» PER LA MINIERA N. {n}",
+    "mn_soon": "⏳ BATTAGLIA «{t}» PER LA MINIERA N. {n}: INIZIO {d}",
+    "mn_nom": "Categoria: {n}",
+    "mn_ends": "Fine: {d}",
+    "mn_leaders": "In testa ora",
+    "mn_noLeaders": "Ancora nessun punto: la tua squadra può essere la prima!",
+    "mn_myTeam": "🏆 LA TUA SQUADRA NELLE MINIERE",
+    "mn_income": "Estrazione: {n} risorse all'ora per tutta la squadra",
+    "mn_noIncome": "Ancora nessuna miniera: vinci una battaglia tra squadre e la miniera è tua per 72 h.",
+    "mn_noTeam": "Le miniere le conquistano solo le squadre: entra in una squadra o creane una.",
+    "mn_teamBtn": "🏆 Alla squadra",
+    "mn_how": "📖 Come funziona",
+    "mn_rule1": "Ogni battaglia tra squadre e clan è per una sola miniera. Vince la squadra con il miglior risultato complessivo di tutti i combattenti nella categoria della battaglia.",
+    "mn_rule2": "Il vincitore tiene la miniera per {h} h: ogni membro della squadra riceve {y} della sua risorsa all'ora. Più combattenti, più estrazione.",
+    "mn_rule3": "Poi la miniera si libera, ma si può conquistare solo in una nuova battaglia.",
+    "mn_name": "⛏ MINIERA N. {n}",
+    "mn_res": "Risorsa",
+    "mn_holder": "Proprietario",
+    "mn_free": "libera",
+    "mn_untilL": "La tiene fino a",
+    "mn_pumping": "Estrae: {n} {i} all'ora",
+    "mn_targetOf": "⚔️ Per questa miniera è in corso la battaglia «{t}»",
+    "mn_closedOne": "🔒 Si conquista solo in una battaglia tra squadre: segui gli annunci.",
     "raid_noFuel": "⛽ La nave non è pronta al decollo: serve carburante",
     "raid_shieldTitle": "🛡 SCUDO DALLE INCURSIONI",
     "raid_shieldActive": "ATTIVO",
@@ -3281,6 +3937,75 @@
     "hp_given": "Podarowano: {q} {k} — dzięki za grę zespołową!",
     "hp_asked": "Prośba trafiła do drużyny!",
     "tab_storage": "📦 Magazyn",
+    "tab_mines": "⛏ Kopalnie",
+    "tab_info": "📚 Info",
+    "durDH": "{d} d {h} godz.",
+    "durHM": "{h} godz. {m} min",
+    "durM": "{m} min",
+    "ws_locked": "🔒 Odblokuje się za {t}",
+    "ws_toStorage": "📦 Gotowy przedmiot trafi do magazynu",
+    "eff_camo": "nie widać cię w zwiadzie najazdów, a ty możesz atakować",
+    "eff_trap": "najeźdźca, który przegra, oddaje ci dwa razy więcej",
+    "eff_drill": "remis w obronie liczy się jako porażka najeźdźcy",
+    "eff_thermos": "Wiertacze zjadają kotlety o 25% wolniej",
+    "eff_banner": "+5% do wydobycia dla całej twojej drużyny",
+    "eff_dome": "tarcza przed najazdami dla całej drużyny",
+    "eff_forsage": "zeruje przeładowanie najazdu (raz na dobę)",
+    "eff_economizer": "następny wylot bez wodoru",
+    "eff_cargo": "łup z następnego najazdu ×1,5",
+    "eff_stamp": "następna sprzedaż na giełdzie bez prowizji",
+    "eff_station_drone": "następny wkład w stację drużyny liczy się ×1,5",
+    "it_camo": "KAMUFLAŻ",
+    "it_trap": "PRZYNĘTA",
+    "it_drill": "TRENER POSTAWY",
+    "it_thermos": "TERMOS NA KOTLETY",
+    "it_banner": "SZTANDAR DRUŻYNY",
+    "it_dome": "KOPUŁA DRUŻYNY",
+    "it_forsage": "DOPALACZ STATKU",
+    "it_economizer": "EKONOMIZER",
+    "it_cargo": "POWIĘKSZONA ŁADOWNIA",
+    "it_stamp": "PIECZĘĆ GIEŁDY",
+    "it_station_drone": "DRON NAPRAWCZY STACJI",
+    "it_oneShot": "jednorazowy",
+    "it_charges": "⚡ Naładowano: {n}",
+    "it_needTeam": "Przedmiot drużynowy — musisz należeć do drużyny.",
+    "it_charged": "⚡ Naładowano! Zadziała przy następnym działaniu.",
+    "it_forsaged": "🔥 Przeładowanie zresetowane — możesz lecieć!",
+    "raid_armed": "⚡ W gotowości: {l}",
+    "raid_guardUntil": "{n} do {t}",
+    "raid_domeOn": "🛡 Kopuła drużyny do {t}",
+    "raid_forsageBtn": "🔥 Dopalacz: zresetuj przeładowanie ({n})",
+    "raid_note_economizer": "⛽ Ekonomizer: wylot bez wodoru",
+    "raid_note_cargo": "📦 Ładownia: łup ×1,5",
+    "raid_note_trap": "🪤 Przynęta celu: oddajesz dwa razy więcej",
+    "raid_note_drill": "🎯 Trener postawy celu: remis liczy się jako twoja porażka",
+    "mn_title": "⛏ MAPA KOPALŃ",
+    "mn_closed": "🔒 Wyprawa do kopalni jest niemożliwa, dopóki nie ruszy bitwa drużyn lub klanów.",
+    "mn_pick": "Kliknij kopalnię, aby poznać szczegóły.",
+    "mn_info": "⛏ KOPALNIA",
+    "mn_battle": "⚔️ BITWA „{t}” O KOPALNIĘ NR {n}",
+    "mn_soon": "⏳ BITWA „{t}” O KOPALNIĘ NR {n} — START {d}",
+    "mn_nom": "Kategoria: {n}",
+    "mn_ends": "Koniec: {d}",
+    "mn_leaders": "Liderzy teraz",
+    "mn_noLeaders": "Nikt jeszcze nie zdobył punktów — twoja drużyna może być pierwsza!",
+    "mn_myTeam": "🏆 TWOJA DRUŻYNA W KOPALNIACH",
+    "mn_income": "Wydobycie: {n} surowców na godzinę dla całej drużyny",
+    "mn_noIncome": "Jeszcze nie masz kopalni — wygraj bitwę drużyn, a kopalnia jest twoja na 72 godz.",
+    "mn_noTeam": "Kopalnie zdobywają tylko drużyny — dołącz do drużyny albo załóż własną.",
+    "mn_teamBtn": "🏆 Do drużyny",
+    "mn_how": "📖 Jak to działa",
+    "mn_rule1": "Każda bitwa drużyn i klanów toczy się dokładnie o jedną kopalnię. Wygrywa drużyna z najlepszym łącznym wynikiem wszystkich zawodników w kategorii bitwy.",
+    "mn_rule2": "Zwycięzca trzyma kopalnię przez {h} godz.: każdy zawodnik drużyny dostaje {y} surowca z kopalni na godzinę. Więcej zawodników — więcej wydobycia.",
+    "mn_rule3": "Potem kopalnia się zwalnia, ale zdobyć ją można tylko w nowej bitwie.",
+    "mn_name": "⛏ KOPALNIA NR {n}",
+    "mn_res": "Surowiec",
+    "mn_holder": "Właściciel",
+    "mn_free": "wolna",
+    "mn_untilL": "Trzyma do",
+    "mn_pumping": "Wydobywa: {n} {i} na godzinę",
+    "mn_targetOf": "⚔️ O tę kopalnię trwa bitwa „{t}”",
+    "mn_closedOne": "🔒 Zdobyć ją można tylko w bitwie drużyn — śledź ogłoszenia.",
     "raid_noFuel": "⛽ Statek nie jest gotowy do wylotu — potrzebne paliwo",
     "raid_shieldTitle": "🛡 TARCZA PRZED NAJAZDAMI",
     "raid_shieldActive": "AKTYWNA",
@@ -3581,6 +4306,75 @@
     "hp_given": "Presenteado: {q} {k} — valeu pelo jogo em equipe!",
     "hp_asked": "Pedido enviado à equipe!",
     "tab_storage": "📦 Estoque",
+    "tab_mines": "⛏ Minas",
+    "tab_info": "📚 Info",
+    "durDH": "{d} d {h} h",
+    "durHM": "{h} h {m} min",
+    "durM": "{m} min",
+    "ws_locked": "🔒 Abre em {t}",
+    "ws_toStorage": "📦 O item pronto vai para o estoque",
+    "eff_camo": "você some do reconhecimento de saques, mas ainda pode atacar",
+    "eff_trap": "um saqueador que falha entrega o dobro a você",
+    "eff_drill": "empate na defesa conta como falha do saqueador",
+    "eff_thermos": "os Perfuradores comem bifes 25% mais devagar",
+    "eff_banner": "+5% de mineração para toda a sua equipe",
+    "eff_dome": "escudo contra saques para toda a equipe",
+    "eff_forsage": "pula a recarga do saque (uma vez por dia)",
+    "eff_economizer": "a próxima decolagem sem hidrogênio",
+    "eff_cargo": "butim do próximo saque ×1,5",
+    "eff_stamp": "a próxima venda na bolsa sem taxa",
+    "eff_station_drone": "a próxima contribuição à estação da equipe vale ×1,5",
+    "it_camo": "CAMUFLAGEM",
+    "it_trap": "ISCA",
+    "it_drill": "TREINO DE POSTURA",
+    "it_thermos": "TÉRMICA DE BIFES",
+    "it_banner": "BANDEIRA DA EQUIPE",
+    "it_dome": "CÚPULA DA EQUIPE",
+    "it_forsage": "PÓS-COMBUSTOR DA NAVE",
+    "it_economizer": "ECONOMIZADOR",
+    "it_cargo": "PORÃO AMPLIADO",
+    "it_stamp": "SELO DA BOLSA",
+    "it_station_drone": "DRONE DE REPAROS DA ESTAÇÃO",
+    "it_oneShot": "único",
+    "it_charges": "⚡ Carregado: {n}",
+    "it_needTeam": "Item de equipe — você precisa estar em uma equipe.",
+    "it_charged": "⚡ Carregado! Dispara na sua próxima ação.",
+    "it_forsaged": "🔥 Recarga pulada — pode decolar!",
+    "raid_armed": "⚡ Pronto: {l}",
+    "raid_guardUntil": "{n} até {t}",
+    "raid_domeOn": "🛡 Cúpula da equipe até {t}",
+    "raid_forsageBtn": "🔥 Pós-combustor: pular recarga ({n})",
+    "raid_note_economizer": "⛽ Economizador: decolagem sem hidrogênio",
+    "raid_note_cargo": "📦 Porão: butim ×1,5",
+    "raid_note_trap": "🪤 Isca do alvo: você entrega o dobro",
+    "raid_note_drill": "🎯 Treino de postura do alvo: o empate conta como sua falha",
+    "mn_title": "⛏ MAPA DAS MINAS",
+    "mn_closed": "🔒 Não dá para atacar minas até começar uma batalha de equipes ou clãs.",
+    "mn_pick": "Toque em uma mina para ver os detalhes.",
+    "mn_info": "⛏ MINA",
+    "mn_battle": "⚔️ BATALHA «{t}» PELA MINA Nº {n}",
+    "mn_soon": "⏳ BATALHA «{t}» PELA MINA Nº {n} — COMEÇA {d}",
+    "mn_nom": "Categoria: {n}",
+    "mn_ends": "Fim: {d}",
+    "mn_leaders": "Líderes agora",
+    "mn_noLeaders": "Ninguém pontuou ainda — sua equipe pode ser a primeira!",
+    "mn_myTeam": "🏆 SUA EQUIPE NAS MINAS",
+    "mn_income": "Produção: {n} recursos por hora para toda a equipe",
+    "mn_noIncome": "Ainda sem minas — vença uma batalha de equipes e a mina é sua por 72 h.",
+    "mn_noTeam": "Minas só são conquistadas em equipe — entre em uma equipe ou crie a sua.",
+    "mn_teamBtn": "🏆 Para a equipe",
+    "mn_how": "📖 Como funciona",
+    "mn_rule1": "Cada batalha de equipes e clãs é por exatamente uma mina. Vence a equipe com o melhor resultado somado de todos os combatentes na categoria da batalha.",
+    "mn_rule2": "O vencedor mantém a mina por {h} h: cada membro da equipe recebe {y} do recurso da mina por hora. Mais combatentes — mais produção.",
+    "mn_rule3": "Depois a mina fica livre de novo, mas só pode ser conquistada em uma nova batalha.",
+    "mn_name": "⛏ MINA Nº {n}",
+    "mn_res": "Recurso",
+    "mn_holder": "Dono",
+    "mn_free": "livre",
+    "mn_untilL": "Mantida até",
+    "mn_pumping": "Produz: {n} {i} por hora",
+    "mn_targetOf": "⚔️ A batalha «{t}» é por esta mina",
+    "mn_closedOne": "🔒 Só dá para conquistar em uma batalha de equipes — fique de olho nos anúncios.",
     "raid_noFuel": "⛽ A nave não está pronta para decolar — falta combustível",
     "raid_shieldTitle": "🛡 ESCUDO CONTRA SAQUES",
     "raid_shieldActive": "ATIVO",
@@ -3898,6 +4692,75 @@
     "hp_given": "Sovg'a qilindi: {q} {k} — jamoaviy o'yin uchun rahmat!",
     "hp_asked": "So'rov jamoaga yuborildi!",
     "tab_storage": "📦 Ombor",
+    "tab_mines": "⛏ Konlar",
+    "tab_info": "📚 Ma'lumot",
+    "durDH": "{d} k {h} s",
+    "durHM": "{h} s {m} daq",
+    "durM": "{m} daq",
+    "ws_locked": "🔒 {t} dan keyin ochiladi",
+    "ws_toStorage": "📦 Tayyor buyum omborga tushadi",
+    "eff_camo": "razvedkada seni ko'rib bo'lmaydi, lekin o'zing hujum qila olasan",
+    "eff_trap": "muvaffaqiyatsiz bosqinchi senga ikki baravar ko'p beradi",
+    "eff_drill": "himoyadagi durang bosqinchining mag'lubiyati hisoblanadi",
+    "eff_thermos": "Burg'ulovchilar kotletni 25% sekinroq yeydi",
+    "eff_banner": "butun jamoangga +5% qazib olish",
+    "eff_dome": "butun jamoaga bosqinlardan qalqon",
+    "eff_forsage": "bosqinning qayta zaryadini tushiradi (sutkada bir marta)",
+    "eff_economizer": "keyingi parvoz vodorodsiz",
+    "eff_cargo": "keyingi bosqin o'ljasi ×1,5",
+    "eff_stamp": "birjadagi keyingi sotuv komissiyasiz",
+    "eff_station_drone": "jamoa stansiyasiga keyingi hissa ×1,5 hisoblanadi",
+    "it_camo": "NIQOBLANISH",
+    "it_trap": "YEM",
+    "it_drill": "POZITSIYA TRENAJYORI",
+    "it_thermos": "KOTLET TERMOSI",
+    "it_banner": "JAMOA BAYROG'I",
+    "it_dome": "JAMOA GUMBAZI",
+    "it_forsage": "KEMA FORSAJI",
+    "it_economizer": "EKONOMAYZER",
+    "it_cargo": "KENGAYTIRILGAN YUK BO'LIMI",
+    "it_stamp": "BIRJA SHTAMPI",
+    "it_station_drone": "STANSIYA TA'MIR-DRONI",
+    "it_oneShot": "bir martalik",
+    "it_charges": "⚡ Zaryadlangan: {n}",
+    "it_needTeam": "Jamoaviy buyum — jamoada bo'lishing kerak.",
+    "it_charged": "⚡ Zaryadlandi! Keyingi harakatda ishga tushadi.",
+    "it_forsaged": "🔥 Qayta zaryad tushirildi — parvoz qilsa bo'ladi!",
+    "raid_armed": "⚡ Tayyor: {l}",
+    "raid_guardUntil": "{n} {t} gacha",
+    "raid_domeOn": "🛡 Jamoa gumbazi {t} gacha",
+    "raid_forsageBtn": "🔥 Forsaj: qayta zaryadni tushirish ({n})",
+    "raid_note_economizer": "⛽ Ekonomayzer: parvoz vodorodsiz",
+    "raid_note_cargo": "📦 Yuk bo'limi: o'lja ×1,5",
+    "raid_note_trap": "🪤 Nishonning yemi: sen ikki baravar ko'p berasan",
+    "raid_note_drill": "🎯 Nishonning pozitsiya trenajyori: durang mag'lubiyat hisoblanadi",
+    "mn_title": "⛏ KONLAR XARITASI",
+    "mn_closed": "🔒 Jamoa yoki klanlar jangi boshlanmaguncha konga yurish mumkin emas.",
+    "mn_pick": "Tafsilotlar uchun konni bos.",
+    "mn_info": "⛏ KON",
+    "mn_battle": "⚔️ №{n} KON UCHUN «{t}» JANGI",
+    "mn_soon": "⏳ №{n} KON UCHUN «{t}» JANGI — BOSHLANISHI {d}",
+    "mn_nom": "Nominatsiya: {n}",
+    "mn_ends": "Yakun: {d}",
+    "mn_leaders": "Hozirgi peshqadamlar",
+    "mn_noLeaders": "Hozircha hech kim ochko to'plamadi — jamoang birinchi bo'lishi mumkin!",
+    "mn_myTeam": "🏆 JAMOANG KONLARDA",
+    "mn_income": "Qazib olish: butun jamoaga soatiga {n} resurs",
+    "mn_noIncome": "Hozircha konlar yo'q — jamoalar jangida g'alaba qozon, kon 72 soatga seniki bo'ladi.",
+    "mn_noTeam": "Konlarni faqat jamoa egallaydi — jamoaga qo'shil yoki o'zingnikini yarat.",
+    "mn_teamBtn": "🏆 Jamoaga",
+    "mn_how": "📖 Bu qanday ishlaydi",
+    "mn_rule1": "Jamoalar va klanlarning har bir jangi aynan bitta kon uchun o'tadi. Jang nominatsiyasida barcha jangchilarning umumiy natijasi eng yaxshi bo'lgan jamoa g'olib bo'ladi.",
+    "mn_rule2": "G'olib konni {h} soat ushlab turadi: jamoaning har bir jangchisi soatiga konning {y} resursini oladi. Jangchilar ko'p bo'lsa — qazib olish ham ko'p.",
+    "mn_rule3": "Keyin kon bo'shaydi, lekin uni faqat yangi jangda egallash mumkin.",
+    "mn_name": "⛏ №{n} KON",
+    "mn_res": "Resurs",
+    "mn_holder": "Egasi",
+    "mn_free": "bo'sh",
+    "mn_untilL": "Ushlab turadi",
+    "mn_pumping": "Qazib beradi: soatiga {n} {i}",
+    "mn_targetOf": "⚔️ Bu kon uchun «{t}» jangi ketmoqda",
+    "mn_closedOne": "🔒 Faqat jamoalar jangida egallash mumkin — e'lonlarni kuzat.",
     "raid_noFuel": "⛽ Kema uchishga tayyor emas — yoqilg'i kerak",
     "raid_shieldTitle": "🛡 BOSQINLARDAN HIMOYA QALQONI",
     "raid_shieldActive": "FAOL",
@@ -4216,6 +5079,75 @@
     "hp_given": "已赠送：{q} {k}——感谢团队协作！",
     "hp_asked": "请求已发送给战队！",
     "tab_storage": "📦 仓库",
+    "tab_mines": "⛏ 矿区",
+    "tab_info": "📚 资讯",
+    "durDH": "{d} 天 {h} 时",
+    "durHM": "{h} 时 {m} 分",
+    "durM": "{m} 分",
+    "ws_locked": "🔒 {t}后解锁",
+    "ws_toStorage": "📦 成品会存入仓库",
+    "eff_camo": "突袭侦察看不到你，但你仍可发动突袭",
+    "eff_trap": "突袭失败的人会多给你一倍",
+    "eff_drill": "防守平局算突袭者失败",
+    "eff_thermos": "钻机吃肉排的速度慢 25%",
+    "eff_banner": "全战队产量 +5%",
+    "eff_dome": "全战队获得突袭护盾",
+    "eff_forsage": "跳过突袭冷却（每天一次）",
+    "eff_economizer": "下次出击不消耗氢气",
+    "eff_cargo": "下次突袭战利品 ×1.5",
+    "eff_stamp": "下次交易所出售免手续费",
+    "eff_station_drone": "下次向战队空间站的投入按 ×1.5 计算",
+    "it_camo": "伪装",
+    "it_trap": "诱饵",
+    "it_drill": "姿态训练器",
+    "it_thermos": "肉排保温壶",
+    "it_banner": "战队旗帜",
+    "it_dome": "战队穹顶",
+    "it_forsage": "飞船加力",
+    "it_economizer": "节能器",
+    "it_cargo": "扩容货舱",
+    "it_stamp": "交易所印章",
+    "it_station_drone": "空间站维修无人机",
+    "it_oneShot": "一次性",
+    "it_charges": "⚡ 已充能：{n}",
+    "it_needTeam": "战队道具——需要先加入战队。",
+    "it_charged": "⚡ 已充能！下次行动时触发。",
+    "it_forsaged": "🔥 冷却已跳过——可以出击了！",
+    "raid_armed": "⚡ 待命：{l}",
+    "raid_guardUntil": "{n}，至 {t}",
+    "raid_domeOn": "🛡 战队穹顶生效至 {t}",
+    "raid_forsageBtn": "🔥 加力：跳过冷却（{n}）",
+    "raid_note_economizer": "⛽ 节能器：出击不耗氢气",
+    "raid_note_cargo": "📦 货舱：战利品 ×1.5",
+    "raid_note_trap": "🪤 目标有诱饵：你要多给一倍",
+    "raid_note_drill": "🎯 目标有姿态训练器：平局算你失败",
+    "mn_title": "⛏ 矿区地图",
+    "mn_closed": "🔒 战队或联盟对战开始前，无法进攻矿区。",
+    "mn_pick": "点按矿区查看详情。",
+    "mn_info": "⛏ 矿区",
+    "mn_battle": "⚔️ 对战「{t}」争夺 {n} 号矿区",
+    "mn_soon": "⏳ 对战「{t}」争夺 {n} 号矿区——{d} 开始",
+    "mn_nom": "项目：{n}",
+    "mn_ends": "结束：{d}",
+    "mn_leaders": "当前领先",
+    "mn_noLeaders": "还没有人得分——你的战队可以拔得头筹！",
+    "mn_myTeam": "🏆 你的战队矿区",
+    "mn_income": "产出：全战队每小时 {n} 个资源",
+    "mn_noIncome": "暂无矿区——赢下战队对战，矿区归你 72 小时。",
+    "mn_noTeam": "矿区只有战队才能占领——加入战队或创建自己的战队。",
+    "mn_teamBtn": "🏆 前往战队",
+    "mn_how": "📖 玩法说明",
+    "mn_rule1": "每场战队或联盟对战只争夺一座矿区。在对战项目中，全体成员总成绩最好的战队获胜。",
+    "mn_rule2": "获胜者占有矿区 {h} 小时：战队每位成员每小时获得 {y} 个该矿区资源。成员越多，产出越多。",
+    "mn_rule3": "之后矿区重新空出，但只能通过新的对战夺取。",
+    "mn_name": "⛏ {n} 号矿区",
+    "mn_res": "资源",
+    "mn_holder": "持有者",
+    "mn_free": "空闲",
+    "mn_untilL": "占有至",
+    "mn_pumping": "产出：每小时 {n} {i}",
+    "mn_targetOf": "⚔️ 对战「{t}」正在争夺这座矿区",
+    "mn_closedOne": "🔒 只能通过战队对战夺取——请留意公告。",
     "raid_noFuel": "⛽ 飞船无法起飞——需要燃料",
     "raid_shieldTitle": "🛡 突袭护盾",
     "raid_shieldActive": "生效中",
@@ -4445,8 +5377,10 @@
   const RES = ["metal", "hydrogen", "crystal", "parts"];
   const RES_ICON = { metal: "⛏", hydrogen: "💧", crystal: "💎", parts: "⚙️" };
   const KINDS = ["intern", "junior", "premium"];   // от самого слабого к самому мощному
-  const TABS = ["passport", "farm", "storage", "goals", "workshop", "raids", "market", "team", "friends", "shop", "top", "faq", "rules"];
-  const TAB_FLAG = { goals: "goals", workshop: "workshop", raids: "raids", market: "market", shop: "shop" };
+  const TABS = ["passport", "farm", "storage", "workshop", "raids", "market", "team", "mines", "friends", "shop", "top", "info"];
+  // Старые ссылки (?tab=goals и т.п.) ведут туда, куда переехали разделы
+  const TAB_ALIAS = { goals: "passport", faq: "info", rules: "info" };
+  const TAB_FLAG = { workshop: "workshop", raids: "raids", market: "market", shop: "shop", mines: "mines" };
 
   async function api(path, opts) {
     const res = await fetch(path, Object.assign({
@@ -4523,7 +5457,7 @@
   }
   const bindPagers = root => (root || document).querySelectorAll(".pager").forEach(bindPager);
   // Сколько колонок плашек у вкладки на широком экране (см. CSS #app[data-cols])
-  const VIEW_COLS = { passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
+  const VIEW_COLS = { mines: 2, info: 1, passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
                       team: 3, friends: 3, shop: 3, top: 1, faq: 1, rules: 1 };
   const resLine = stock => RES.map(k => '<span class="chip">' + RES_ICON[k] + ' ' + num(stock[k]) + '</span>').join("");
   const bundle = b => RES.filter(k => b && b[k]).map(k => RES_ICON[k] + ' ' + b[k]).join(" · ") || "—";
@@ -4539,6 +5473,8 @@
     let tab = null;
     try { tab = new URLSearchParams(location.search).get("tab"); } catch (e) {}
     if (!tab) { try { tab = localStorage.getItem("rofl_tab"); } catch (e) {} }
+    if (tab === "rules") infoDoc = "rules";
+    tab = TAB_ALIAS[tab] || tab;
     return visibleTabs().includes(tab) ? tab : "passport";
   }
   function renderTabs() {
@@ -4567,7 +5503,7 @@
   async function refreshMe() { me = await api("/api/me"); }
 
   // ================= 📋 Паспорт =================
-  function viewPassport(box) {
+  async function viewPassport(box) {
     const q = me.quiz;
     const pct = Math.min(100, Math.round(q.progress / q.required * 100));
     const vip = me.vip_aliases.map(a => '<span class="vip">💎 ' + esc(a) + '</span>').join(" ");
@@ -4586,6 +5522,12 @@
         '<div class="hint">' + fmt(L.st_cap, { c: num(me.res_capacity || 500) }) + '</div>' +
         (me.bonus_percent ? row(L.bonusPct, "+" + me.bonus_percent + "%", "status-ok") : '') +
         (me.has_shuttle ? '<div class="hint">' + L.shuttle + '</div>' : ''));
+    // 🎯 Ежедневные цели живут в паспорте (решение владельца 26.10); раздел выключен — карточки нет
+    if ((me.features || {}).goals === false) return;
+    let g;
+    try { g = await api("/api/goals"); } catch (e) { return; }
+    box.insertAdjacentHTML("beforeend", goalsCard(g));
+    bindGoals(box);
   }
 
   // ================= 🚜 Ферма =================
@@ -4672,8 +5614,7 @@
   }
 
   // ================= 🎯 Цели =================
-  async function viewGoals(box) {
-    const g = await api("/api/goals");
+  function goalsCard(g) {
     const list = g.goals.map(x => {
       const pct = Math.min(100, Math.round(x.progress / x.target * 100));
       return '<div class="goal' + (x.progress >= x.target ? ' ok' : '') + '"><div class="gh"><div class="gt">' +
@@ -4683,14 +5624,16 @@
     let action;
     if (g.claimed) action = '<div class="hint ok-text">' + L.goals_claimed + '</div>';
     else action = '<button class="btn scene-btn" id="chestBtn"' + (g.done ? '' : ' disabled') + '>' + L.goals_claim + '</button>';
-    box.innerHTML = card(L.goals_title, list + action +
+    return card(L.goals_title, list + action +
       '<div class="hint">' + fmt(L.goals_chest, { c: g.chest_coins, r: g.chest_res }) + '</div>' +
       '<div class="hint">' + fmt(L.goals_streak, { s: g.streak, e: g.every, b: g.streak_bonus }) + '</div>' +
       '<div class="hint">' + L.goals_reset + '</div>');
-    const cb = document.getElementById("chestBtn");
+  }
+  function bindGoals(root) {
+    const cb = root.querySelector("#chestBtn");
     if (cb) cb.onclick = () => act(cb, "/api/goals/claim", {}, async res => {
       notify(fmt(L.goals_got, { c: res.coins, q: res.qty, n: res.res_name, s: res.streak }));
-      await refreshMe(); go("goals");
+      await refreshMe(); go("passport");
     });
   }
 
@@ -4703,9 +5646,14 @@
         RES_ICON[k] + ' ' + num(w.stock[k] || 0) + '/' + r.cost[k] + '</span>').join("") +
         (r.coins ? '<span class="chip ' + (w.balance >= r.coins ? 'have' : 'lack') + '">🪙 ' + num(w.balance) + '/' + num(r.coins) + '</span>' : '');
       const btn = r.done ? '<span class="owned">' + L.ws_owned + '</span>'
+        : r.locked ? '<span class="lockline">🔒</span>'
         : '<button class="mini craft" data-id="' + r.id + '"' + (r.affordable ? '' : ' disabled') + '>' + L.ws_craft + '</button>';
-      return '<div class="recipe' + (r.affordable ? ' ready' : '') + '"><div class="rh"><b>' + esc(r.title) + '</b>' + btn + '</div>' +
-        '<div class="hint">' + (L["eff_" + r.effect] || "") + '</div>' + (r.done ? '' : '<div class="chips">' + cost + '</div>') + '</div>';
+      // Новичку рецепты открываются по одному в сутки — закрытые серые, со временем до открытия
+      const extra = (r.locked ? '<div class="lockline">' + fmt(L.ws_locked, { t: dur(r.unlock_in) }) + '</div>' : '') +
+        (r.week_limit ? '<div class="hint">' + fmt(L.wk_left, { n: r.week_left, m: r.week_limit }) + '</div>' : '') +
+        (r.stored && !r.locked ? '<div class="hint">' + L.ws_toStorage + '</div>' : '');
+      return '<div class="recipe' + (r.affordable ? ' ready' : '') + (r.locked ? ' locked' : '') + '"><div class="rh"><b>' + esc(r.title) + '</b>' + btn + '</div>' +
+        '<div class="hint">' + (L["eff_" + r.effect] || "") + '</div>' + extra + (r.done ? '' : '<div class="chips">' + cost + '</div>') + '</div>';
     }).join("");
     const weekly = (w.weekly || []).map(r => {
       const cost = RES.filter(k => r.cost[k]).map(k =>
@@ -4750,6 +5698,11 @@
     return p(Math.floor(sec / 3600)) + ":" + p(Math.floor(sec % 3600 / 60)) + ":" + p(sec % 60);
   }
   let shieldTick = null;
+  // «1 д 5 ч» / «5 ч 12 мин» / «12 мин» — сколько ждать
+  function dur(sec) {
+    const d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.max(1, Math.ceil(sec % 3600 / 60));
+    return d ? fmt(L.durDH, { d: d, h: h }) : h ? fmt(L.durHM, { h: h, m: m % 60 }) : fmt(L.durM, { m: m });
+  }
   async function viewRaids(box) {
     const d = await api("/api/raids");
     const R = d.rules;
@@ -4762,18 +5715,29 @@
     const revenge = d.revenge.map(r => '<button class="btn danger rv" data-id="' + r.raid_id + '" data-name="' + esc(r.name) + '">' +
       fmt(L.raid_revengeBtn, { name: esc(r.name) }) + ' · ' + bundle(r.loot) + '</button>').join("");
     const sh = d.shield, shOn = !!sh.active, shUntil = sh.until ? new Date(sh.until).getTime() : null;
+    // Что «наготове» на следующий вылет и что охраняет склад (изделия со склада)
+    const ch = d.charges || {}, gd = d.guards || {};
+    const armed = [ch.economizer ? '⛽ ' + L.it_economizer + ' ×' + ch.economizer : '', ch.cargo ? '📦 ' + L.it_cargo + ' ×' + ch.cargo : '']
+      .filter(Boolean).join(" · ");
+    const guards = ["camo", "trap", "drill"].filter(k => gd[k]).map(k =>
+      '<div class="hint status-ok">' + IT_ICON[k] + ' ' + fmt(L.raid_guardUntil, { n: L["it_" + k], t: dateShort(gd[k]) }) + '</div>').join("");
+    const fs = d.forsage || {};
+    const forsageBtn = d.cooldown_left > 0 && fs.qty > 0 && fs.ready
+      ? '<button class="btn ghost" id="forsageBtn">' + fmt(L.raid_forsageBtn, { n: fs.qty }) + '</button>' : '';
     const shieldCard = '<div class="card shield-card ' + (shOn ? 'on' : 'off') + '"><h2>' + L.raid_shieldTitle + '</h2>' +
       '<div class="sh-state">' + (shOn ? L.raid_shieldActive : L.raid_shieldInactive) + '</div>' +
       (shOn && !shUntil ? '<div class="balance small">' + L.raid_shieldNewbie + '</div>'
         : '<div class="sh-timer" id="shTimer">' + (shUntil ? hms(shUntil - Date.now()) : "00:00:00") + '</div>') +
       (shUntil ? '<div class="hint">' + fmt(L.raid_shieldOn, { t: dateShort(sh.until) }) + '</div>' : '') +
+      (sh.dome ? '<div class="hint status-ok">' + fmt(L.raid_domeOn, { t: dateShort(sh.dome) }) + '</div>' : '') + guards +
       '<div class="hint">' + L.raid_shieldHint + '</div>' +
       (shOn ? '' : '<button class="btn ghost" id="shStore">' + L.raid_toStorage + '</button>') + '</div>';
     box.innerHTML =
       '<div class="card"><div class="card-head"><h2>' + L.raid_title + '</h2>' +
         '<span class="fuel-pill' + (fuelOk ? '' : ' low') + '">💧 ' + num(d.stock.hydrogen) + ' / ' + R.fuel + '</span></div>' +
-        ship +
+        ship + (armed ? '<div class="hint status-ok">' + fmt(L.raid_armed, { l: armed }) + '</div>' : '') +
         '<div class="hint">' + fmt(L.raid_stats, { a: d.stats.attacks, w: d.stats.attack_wins, h: d.stats.defense_holds, d: d.stats.defenses }) + '</div>' +
+        forsageBtn +
         '<button class="btn scene-btn" id="scoutBtn">' + L.raid_scout + '</button>' +
         '<div id="raidStage"></div></div>' +
       shieldCard +
@@ -4795,6 +5759,10 @@
     }, 1000);
     const shb = document.getElementById("shStore");
     if (shb) shb.onclick = () => go("storage");
+    const fb = document.getElementById("forsageBtn");
+    if (fb) fb.onclick = () => act(fb, "/api/item/use", { effect: "forsage", hours: 0 }, async () => {
+      notify(L.it_forsaged); go("raids");
+    });
     document.querySelectorAll(".mv[data-st]").forEach(b => {
       b.onclick = () => act(b, "/api/raid/stance", { stance: b.dataset.st }, async () => { notify(L.raid_stanceSaved); go("raids"); });
     });
@@ -4816,9 +5784,77 @@
     });
   }
 
+  // ================= ⛏ Рудники: карта, битва за рудник, добыча команды =================
+  const MINE_COLOR = { metal: "#c0c7d6", hydrogen: "#60a5fa", crystal: "#c084fc", parts: "#fbbf24" };
+  let mineSel = null;
+  function minePos(id, cols, rows) {
+    // Детерминированная «карта»: сетка со смещением каждого рудника — выглядит живо, но не перекрывается
+    const i = id - 1, c = i % cols, r = Math.floor(i / cols);
+    const jx = ((id * 37) % 11 - 5) / 22, jy = ((id * 53) % 11 - 5) / 22;
+    return { x: (c + 0.5 + jx) / cols * 100, y: 3 + (r + 0.5 + jy) / rows * 90 };   // снизу место под подпись «№»
+  }
+  async function viewMines(box) {
+    const d = await api("/api/mines");
+    const narrow = box.clientWidth < 560, cols = narrow ? 5 : 8, rows = Math.ceil(d.mines.length / cols);
+    const battleBy = {}; d.battles.forEach(b => { battleBy[b.mine_id] = b; });
+    const tiles = d.mines.map(m => {
+      const p = minePos(m.id, cols, rows), held = !!m.team;
+      const cls = 'mine ' + (held ? 'held' : 'free') + (m.mine ? ' mine-own' : '') + (m.target ? ' target' : '') + (mineSel === m.id ? ' sel' : '');
+      return '<button class="' + cls + '" data-id="' + m.id + '" style="left:' + p.x.toFixed(2) + '%;top:' + p.y.toFixed(2) + '%;--mc:' + MINE_COLOR[m.kind] + '">' +
+        (held ? '<i class="drop"></i><i class="drop"></i><i class="drop"></i>' : '') + RES_ICON[m.kind] +
+        (m.target ? '<span class="tb">⚔️</span>' : held ? '<span class="tb">' + esc(m.team.symbol || '🏆') + '</span>' : '') +
+        '<span class="no">№' + m.id + '</span></button>';
+    }).join("");
+    const terrain = '<svg class="terrain" viewBox="0 0 100 60" preserveAspectRatio="none">' +
+      '<path d="M0 42 Q15 30 30 38 T60 34 T100 40" fill="none" stroke="#2c3d66" stroke-width=".5"/>' +
+      '<path d="M0 22 Q20 12 40 20 T80 16 T100 22" fill="none" stroke="#3a2c5c" stroke-width=".5"/>' +
+      '<path d="M0 52 Q25 46 50 52 T100 50" fill="none" stroke="#24405a" stroke-width=".4"/></svg>';
+    const lock = d.battles.length ? '' : '<div class="map-lock">' + L.mn_closed + '</div>';
+    const mapCard = '<div class="card span-all"><h2>' + L.mn_title + '</h2>' +
+      '<div class="minemap" style="aspect-ratio:' + (narrow ? '5 / 8.6' : '16 / 9.4') + '">' + terrain + tiles + lock + '</div>' +
+      '<div class="hint" style="margin-top:8px">' + L.mn_pick + '</div></div>';
+    const battleCards = d.battles.map(b => {
+      const leaders = b.leaders.length ? b.leaders.map((x, i) => '<div class="lead-row' + (x.mine ? ' me' : '') + '"><b>' +
+          ['🥇', '🥈', '🥉'][i] + ' ' + esc(x.name) + '</b><span>' + num(x.score) + '</span></div>').join("")
+        : '<div class="hint">' + L.mn_noLeaders + '</div>';
+      return card(fmt(b.started ? L.mn_battle : L.mn_soon, { t: esc(b.title), n: b.mine_id, d: dateShort(b.starts_at) }),
+        '<div class="hint">' + fmt(L.mn_nom, { n: esc(b.nomination) }) + '</div>' +
+        '<div class="hint">' + fmt(L.mn_ends, { d: dateShort(b.ends_at) }) + '</div>' +
+        (b.started ? '<div class="sub2">' + L.mn_leaders + '</div>' + leaders : ''));
+    }).join("");
+    const teamCard = card(L.mn_myTeam, d.in_team
+      ? (d.my_income ? '<div class="balance small">' + fmt(L.mn_income, { n: d.my_income }) + '</div>' : '<div class="hint">' + L.mn_noIncome + '</div>')
+      : '<div class="hint">' + L.mn_noTeam + '</div><button class="btn ghost" data-go="team">' + L.mn_teamBtn + '</button>');
+    const rules = card(L.mn_how, '<ol class="rules"><li>' + L.mn_rule1 + '</li><li>' +
+      fmt(L.mn_rule2, { h: d.hold_hours, y: d.yield }) + '</li><li>' + L.mn_rule3 + '</li></ol>');
+    box.innerHTML = mapCard + '<div class="card" id="mineInfo"><h2>' + L.mn_info + '</h2><div class="hint">' + L.mn_pick + '</div></div>' +
+      battleCards + teamCard + rules;
+    const info = id => {
+      const m = d.mines.find(x => x.id === id), b = battleBy[id];
+      let body = row(L.mn_res, RES_ICON[m.kind] + ' ' + esc(d.res_names[m.kind]));
+      if (m.team) body += row(L.mn_holder, esc(m.team.symbol) + ' ' + esc(m.team.name) + (m.mine ? ' 🏆' : '')) +
+        row(L.mn_untilL, dateShort(m.until)) + '<div class="hint status-ok">' + fmt(L.mn_pumping, { n: m.team.members * d.yield, i: RES_ICON[m.kind] }) + '</div>';
+      else body += row(L.mn_holder, L.mn_free);
+      body += b ? '<div class="hint status-ok">' + fmt(L.mn_targetOf, { t: esc(b.title) }) + '</div>'
+        : '<div class="hint">' + L.mn_closedOne + '</div>';
+      document.getElementById("mineInfo").innerHTML = '<h2>' + fmt(L.mn_name, { n: id }) + '</h2>' + body;
+    };
+    box.querySelectorAll(".mine").forEach(el => {
+      el.onclick = () => {
+        mineSel = Number(el.dataset.id);
+        box.querySelectorAll(".mine.sel").forEach(x => x.classList.remove("sel"));
+        el.classList.add("sel"); info(mineSel);
+      };
+    });
+    box.querySelectorAll("[data-go]").forEach(b => { b.onclick = () => go(b.dataset.go); });
+    if (mineSel && d.mines.some(x => x.id === mineSel)) info(mineSel);
+  }
+
   // ================= 📦 Склад: ресурсы, котлеты, изделия мастерской, улучшения =================
   // Пустое — серое и неприметное; есть хоть одно — плашка медленно переливается, как лавовая лампа.
-  const IT_ICON = { nitrogen: "❄️", nuclear: "☢️", drone: "🚁", shield: "🛡", unlimit: "♾" };
+  const IT_ICON = { nitrogen: "❄️", nuclear: "☢️", drone: "🚁", shield: "🛡", unlimit: "♾", camo: "🎭", trap: "🪤",
+    drill: "🎯", thermos: "🧊", banner: "🏳️", dome: "🛡", forsage: "🔥", economizer: "⛽", cargo: "📦", stamp: "📜", station_drone: "🛰" };
+  const TEAM_FX = ["banner", "dome"];
   async function viewStorage(box) {
     const d = await api("/api/storage");
     const resCard = card(L.sk_res, RES.map(k => {
@@ -4831,15 +5867,18 @@
       '<button class="btn ghost" data-go="farm">' + L.sk_refuel + '</button></div>';
     const itemCards = d.effects.map(e => {
       const units = d.items.filter(it => it.effect === e);
-      const until = d.active[e];
+      const until = d.active[e], charged = (d.charges || {})[e] || 0;
+      const needTeam = TEAM_FX.includes(e) && !d.in_team;
       const body = units.length
-        ? units.map(it => '<div class="unit-row"><b>⏱ ' + fmt(L.it_hours, { h: it.hours }) + ' × ' + it.qty + '</b>' +
-            '<button class="mini itUse" data-e="' + e + '" data-h="' + it.hours + '">' + L.it_use + '</button></div>').join("")
+        ? units.map(it => '<div class="unit-row"><b>' + (it.hours ? '⏱ ' + fmt(L.it_hours, { h: it.hours }) : '⚡ ' + L.it_oneShot) + ' × ' + it.qty + '</b>' +
+            '<button class="mini itUse" data-e="' + e + '" data-h="' + it.hours + '"' + (needTeam ? ' disabled' : '') + '>' + L.it_use + '</button></div>').join("") +
+          (needTeam ? '<div class="hint status-bad">' + L.it_needTeam + '</div>' : '')
         : '<div class="hint">' + L.it_empty + '</div><button class="btn ghost" data-go="workshop">' + L.it_toWorkshop + '</button>';
       // Запас есть — «лава»; запаса нет, но эффект действует — обычная плашка; ничего — серая
-      return '<div class="card ' + (units.length ? 'lava' : until ? '' : 'dim') + '"><h2>' + IT_ICON[e] + ' ' + L["it_" + e] + '</h2>' +
+      return '<div class="card ' + (units.length ? 'lava' : (until || charged) ? '' : 'dim') + '"><h2>' + IT_ICON[e] + ' ' + L["it_" + e] + '</h2>' +
         '<div class="hint">' + (e === "unlimit" ? L.it_unlimitDesc : L["eff_" + e]) + '</div>' +
-        (until ? '<div class="hint status-ok">' + fmt(L.it_active, { t: dateShort(until) }) + '</div>' : '') + body + '</div>';
+        (until ? '<div class="hint status-ok">' + fmt(L.it_active, { t: dateShort(until) }) + '</div>' : '') +
+        (charged ? '<div class="hint status-ok">' + fmt(L.it_charges, { n: charged }) + '</div>' : '') + body + '</div>';
     }).join("");
     const P = d.perm;
     const perm = (on, title, text) => '<div class="card ' + (on ? 'lava' : 'dim') + '"><h2>' + title + '</h2><div class="hint">' + text + '</div></div>';
@@ -4853,7 +5892,9 @@
     box.querySelectorAll("[data-go]").forEach(b => { b.onclick = () => go(b.dataset.go); });
     box.querySelectorAll(".itUse").forEach(b => {
       b.onclick = () => act(b, "/api/item/use", { effect: b.dataset.e, hours: Number(b.dataset.h) }, async res => {
-        notify(fmt(L.it_used, { t: dateShort(res.until) })); await refreshMe(); go("storage");
+        notify(res.effect === "forsage" ? L.it_forsaged : res.charges !== null && res.charges !== undefined ? L.it_charged
+          : fmt(L.it_used, { t: dateShort(res.until) }));
+        await refreshMe(); go("storage");
       });
     });
   }
@@ -4867,7 +5908,8 @@
         const loot = res.result === "win" ? fmt(L.raid_loot, { l: bundle(res.loot) })
           : res.result === "lose" ? fmt(L.raid_lost, { l: bundle(res.loot) }) : "";
         const vs = fmt(L.raid_vs, { m: L[res.move], s: L[res.stance] });
-        notify(title + "\n" + vs + (loot ? "\n" + loot : ""), res.result !== "lose");
+        const notes = (res.notes || []).map(n => L["raid_note_" + n]).filter(Boolean).join("\n");
+        notify(title + "\n" + vs + (loot ? "\n" + loot : "") + (notes ? "\n" + notes : ""), res.result !== "lose");
         await refreshMe(); go("raids");
       });
     });
@@ -5231,7 +6273,7 @@
       '<div class="card span-tablet"><h2>' + L.shop_info + '</h2>' + pager("shopinfo", info, 4, "") +
       '<button class="btn ghost" id="shopInfo">FAQ ↗</button></div>';
     document.querySelectorAll(".shop-item").forEach(b => { b.onclick = () => buy(b.dataset.sku, b); });
-    document.getElementById("shopInfo").onclick = () => { docSection = "shop-items"; go("faq"); };
+    document.getElementById("shopInfo").onclick = () => { docSection = "shop-items"; infoDoc = "faq"; go("info"); };
   }
   async function buy(sku, btn) {
     if (!tg || !tg.openInvoice) return notify(L.oldClient, false);
@@ -5267,9 +6309,18 @@
     docSection = "";
     box.innerHTML = '<iframe class="doc" src="' + src + '" title="' + path.slice(1) + '"></iframe>';
   };
-  const VIEWS = { passport: viewPassport, farm: viewFarm, storage: viewStorage, goals: viewGoals, workshop: viewWorkshop,
-                  raids: viewRaids, market: viewMarket, team: viewTeam, friends: viewFriends, shop: viewShop, top: viewTop,
-                  faq: viewDoc("/faq"), rules: viewDoc("/rules") };
+  // 📚 Инфо: FAQ и соглашение в одной вкладке, переключатель сверху
+  let infoDoc = "faq";
+  function viewInfo(box) {
+    box.innerHTML = '<div class="span-all"><div class="doc-switch">' +
+      ['faq', 'rules'].map(d => '<button class="idx' + (infoDoc === d ? ' on' : '') + '" data-doc="' + d + '">' + L["tab_" + d] + '</button>').join("") +
+      '</div><div id="docBox"></div></div>';
+    viewDoc("/" + infoDoc)(document.getElementById("docBox"));
+    box.querySelectorAll("[data-doc]").forEach(b => { b.onclick = () => { infoDoc = b.dataset.doc; go("info"); }; });
+  }
+  const VIEWS = { passport: viewPassport, farm: viewFarm, storage: viewStorage, workshop: viewWorkshop,
+                  raids: viewRaids, market: viewMarket, team: viewTeam, mines: viewMines, friends: viewFriends, shop: viewShop,
+                  top: viewTop, info: viewInfo };
 
   // ================= Шахта: визуальная сцена фермы =================
   let sceneTimer = null, coinTimer = null, minedVisit = 0;

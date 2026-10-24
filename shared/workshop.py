@@ -19,6 +19,8 @@ from datetime import datetime
 
 from shared.economy import (
     ARMOR_DAYS,
+    WORKSHOP_UNLOCK_ORDER,
+    recipe_unlock_at,
     ARMOR_MAX_LEVEL,
     RES_CAPACITY_BASE,
     WORKSHOP_RECIPES,
@@ -31,7 +33,7 @@ from shared.economy import (
 from shared.ledger import InsufficientFunds, change_balance
 from shared.farm_logic import apply_lazy_farm
 from shared.locales import t
-from shared.items import add_item
+from shared.items import add_item, is_item_effect
 from shared.resources import RESOURCE_ICONS, InsufficientResources, spend_bundle
 
 logger = logging.getLogger(__name__)
@@ -101,7 +103,12 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
     if recipe is None:
         raise WorkshopError("ws.err_unknown")
     effect = recipe["effect"]
-    store = to_storage and effect in EFFECT_COLUMNS
+    # Новые изделия (маскировка, приманка, форсаж…) ВСЕГДА ложатся на склад; четыре старых —
+    # на склад только из приложения (чатовая мастерская-фолбэк включает их сразу, как раньше)
+    store = is_item_effect(effect) and (to_storage or effect not in EFFECT_COLUMNS)
+    from shared.feature_flags import get_flag
+    if not await get_flag(f"wsr:{recipe_id}"):
+        raise WorkshopError("ws.err_off")
 
     # Для бустов/дрона/брони сначала закрываем прошлое время фермы по старым ставкам
     if effect in ("nitrogen", "nuclear", "drone", "armor") and not store:
@@ -111,6 +118,19 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
     if not user:
         raise WorkshopError("common.no_profile")
 
+    # Поэтапное открытие: новичку — по рецепту в сутки (WORKSHOP_UNLOCK_ORDER)
+    if recipe_id in WORKSHOP_UNLOCK_ORDER and user["created_at"] is not None:
+        opens = recipe_unlock_at(recipe_id, user["created_at"])
+        if opens > now:
+            raise WorkshopError("ws.err_locked", hours=max(1, -(-int((opens - now).total_seconds()) // 3600)))
+    week_limit = recipe.get("week_limit")
+    if week_limit:
+        from shared.weekly_recipes import week_start
+        done = await conn.fetchval(
+            "SELECT COUNT(*) FROM weekly_crafts WHERE user_id = $1 AND recipe_id = $2 AND created_at >= $3",
+            user_id, f"ws:{recipe_id}", week_start(now))
+        if done >= week_limit:
+            raise WorkshopError("wk.err_limit", limit=week_limit)
     if effect == "shuttle" and user["has_shuttle"]:
         raise WorkshopError("ws.err_shuttle_owned")
     armor_now = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
@@ -133,8 +153,11 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
             raise WorkshopError("ws.err_coins", need=coins, have=user["balance"]) from e
 
     result = CraftResult(recipe_id=recipe_id, effect=effect, cost=cost, stock=stock)
+    if recipe.get("week_limit"):
+        await conn.execute("INSERT INTO weekly_crafts (user_id, recipe_id, created_at) VALUES ($1, $2, $3)",
+                           user_id, f"ws:{recipe_id}", now)
     if store:
-        await add_item(conn, user_id, effect, recipe["hours"])
+        await add_item(conn, user_id, effect, recipe.get("hours", 0))
         result.stored = True
     elif effect in EFFECT_COLUMNS:
         column = EFFECT_COLUMNS[effect]
