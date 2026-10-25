@@ -245,9 +245,9 @@ def test_recipes_unlock_one_per_day_and_cover_every_recipe():
                                disabled=("cargo",), week_done={"stamp": 1})
     by_id = {r["id"]: r for r in p["recipes"]}
     assert "cargo" not in by_id                                         # выключен владельцем
-    assert not by_id["nitro_6h"]["locked"] and not by_id["shield_24h"]["locked"]
-    assert by_id["drone_24h"]["locked"] and not by_id["drone_24h"]["affordable"]
-    assert 0 < by_id["drone_24h"]["unlock_in"] <= 24 * 3600
+    assert not by_id["nitro_6h"]["locked"] and not by_id["bonfire"]["locked"] and by_id["shield_24h"]["locked"]
+    assert by_id["shield_24h"]["locked"] and not by_id["shield_24h"]["affordable"]
+    assert 0 < by_id["shield_24h"]["unlock_in"] <= 24 * 3600
     veteran = build_workshop_payload(stock, 0, False, "ru", balance=5000, created_at=start - timedelta(days=60),
                                      now=start, week_done={"stamp": 1})
     vet = {r["id"]: r for r in veteran["recipes"]}
@@ -264,7 +264,7 @@ def test_new_items_raid_formulas_and_mines_seed():
     assert economy.raid_loot(50, 150) == 50 * economy.RAID_LOOT_PERCENT * 150 // 10000
     assert economy.raid_fail_loss(1000, economy.TRAP_FAIL_MULTIPLIER) == economy.RAID_FAIL_CAP * 2
     assert economy.THERMOS_FUEL_CYCLE_SECONDS == 32 * 3600
-    assert [economy.mine_kind(i) for i in (1, 2, 3, 4, 5)] == ["metal", "hydrogen", "crystal", "parts", "metal"]
+    assert [economy.mine_kind(i) for i in (1, 2, 3, 4, 5)] == ["metal", "hydrogen", "crystal", "parts", "stone"]
     from shared.database import SCHEMA_STATEMENTS
     seed = next(x for x in SCHEMA_STATEMENTS if "INSERT INTO mines" in x)
     assert f"generate_series(1, {economy.MINES_COUNT})" in seed

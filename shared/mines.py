@@ -14,8 +14,8 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 
-from shared.economy import (MINE_HOLD_HOURS, MINE_PAYOUT_INTERVAL_SECONDS, MINE_YIELD_PER_MEMBER_HOUR,
-                            utcnow)
+from shared.economy import (MINE_CORE_EVERY_HOURS, MINE_CORE_MAX, MINE_HOLD_HOURS, MINE_PAYOUT_INTERVAL_SECONDS,
+                            MINE_SICK_EVERY_HOURS, MINE_YIELD_PER_MEMBER_HOUR, utcnow)
 from shared.resources import change_resource, resource_capacity
 
 logger = logging.getLogger(__name__)
@@ -47,11 +47,25 @@ async def free_mine_ids(conn, now: datetime) -> list[int]:
     return [r["id"] for r in rows]
 
 
-async def _members(conn, team_id: int) -> list[int]:
+async def _members(conn, team_id: int) -> list[dict]:
+    """Бойцы, которым идёт доход рудника: живые и с 📡 связью (командные активности без связи невозможны)."""
     rows = await conn.fetch(
-        "SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked "
-        "AND deletion_requested_at IS NULL AND deleted_at IS NULL ORDER BY user_id", team_id)
-    return [r["user_id"] for r in rows]
+        """SELECT u.user_id, u.meds_until FROM users u
+           JOIN user_tech tc ON tc.user_id = u.user_id AND tc.tech = 'comm' AND tc.level >= 1
+           WHERE u.team_id = $1 AND NOT u.is_blocked AND u.deletion_requested_at IS NULL
+             AND u.deleted_at IS NULL ORDER BY u.user_id""", team_id)
+    return [dict(r) for r in rows]
+
+
+def sick_hours(first_hour: int, hours: int) -> int:
+    """Сколько часов из [first_hour, first_hour + hours) «больных» (каждый MINE_SICK_EVERY_HOURS-й)."""
+    return sum(1 for h in range(first_hour, first_hour + hours) if h % MINE_SICK_EVERY_HOURS == MINE_SICK_EVERY_HOURS - 1)
+
+
+def core_marks(first_hour: int, hours: int, already: int) -> int:
+    """☢️ Сколько суточных отметок удержания пройдено за эти часы (не больше MINE_CORE_MAX за рудник)."""
+    marks = sum(1 for h in range(first_hour, first_hour + hours) if (h + 1) % MINE_CORE_EVERY_HOURS == 0)
+    return max(0, min(marks, MINE_CORE_MAX - already))
 
 
 async def pay_mine(conn, mine_id: int, now: datetime) -> int:
@@ -67,20 +81,29 @@ async def pay_mine(conn, mine_id: int, now: datetime) -> int:
         until = mine["captured_until"]
         end = min(now, until)
         hours = int((end - mine["last_paid_at"]) / HOUR) if end > mine["last_paid_at"] else 0
+        first_hour = int((mine["last_paid_at"] - mine["captured_at"]) / HOUR)
+        cores = core_marks(first_hour, hours, mine["cores_paid"]) if hours > 0 else 0
         if hours > 0:
-            await conn.execute("UPDATE mines SET last_paid_at = last_paid_at + $2 WHERE id = $1",
-                               mine_id, hours * HOUR)
+            await conn.execute("UPDATE mines SET last_paid_at = last_paid_at + $2, cores_paid = cores_paid + $3 "
+                               "WHERE id = $1", mine_id, hours * HOUR, cores)
         if now >= until and mine["last_paid_at"] + hours * HOUR + HOUR > until:
             await conn.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
-                               "captured_until = NULL, last_paid_at = NULL WHERE id = $1", mine_id)
+                               "captured_until = NULL, last_paid_at = NULL, cores_paid = 0 WHERE id = $1", mine_id)
     if hours <= 0:
         return 0
-    qty = hours * MINE_YIELD_PER_MEMBER_HOUR
-    for uid in await _members(conn, mine["team_id"]):
+    sick = sick_hours(first_hour, hours)
+    for m in await _members(conn, mine["team_id"]):
+        uid = m["user_id"]
+        # 💊 Аптечка спасает от «болезней» в походе: без неё каждый 7-й час добычи пропадает
+        healthy = m["meds_until"] is not None and m["meds_until"] > now
+        qty = (hours - (0 if healthy else sick)) * MINE_YIELD_PER_MEMBER_HOUR
         try:
             async with conn.transaction():
-                await change_resource(conn, uid, mine["kind"], qty, f"mine:{mine_id}",
-                                      cap=await resource_capacity(conn, uid))
+                cap = await resource_capacity(conn, uid)
+                if qty > 0:
+                    await change_resource(conn, uid, mine["kind"], qty, f"mine:{mine_id}", cap=cap)
+                if cores:
+                    await change_resource(conn, uid, "core", cores, f"mine:{mine_id}", cap=cap)
         except Exception:
             logger.exception("[MINES] не удалось начислить user=%s mine=%s", uid, mine_id)
     return hours
@@ -91,8 +114,8 @@ async def capture_mine(conn, mine_id: int, team_id: int, battle_id: int | None, 
     await pay_mine(conn, mine_id, now)
     until = now + timedelta(hours=MINE_HOLD_HOURS)
     await conn.execute(
-        "UPDATE mines SET team_id = $2, battle_id = $3, captured_at = $4, captured_until = $5, last_paid_at = $4 "
-        "WHERE id = $1", mine_id, team_id, battle_id, now, until)
+        "UPDATE mines SET team_id = $2, battle_id = $3, captured_at = $4, captured_until = $5, last_paid_at = $4, "
+        "cores_paid = 0 WHERE id = $1", mine_id, team_id, battle_id, now, until)
     logger.info("[MINES] рудник %s → команда %s до %s (битва %s)", mine_id, team_id, until, battle_id)
     return until
 

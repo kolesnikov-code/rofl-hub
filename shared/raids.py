@@ -24,6 +24,10 @@ from datetime import datetime, timedelta
 
 from shared.economy import (
     CARGO_LOOT_PERCENT,
+    RAID_SICK_LOSS_PERCENT,
+    raid_candidates,
+    raid_cooldown_hours,
+    raid_loot_percent,
     TRAP_FAIL_MULTIPLIER,
     RAID_ATTACK_COOLDOWN_HOURS,
     RAID_CANDIDATES,
@@ -84,11 +88,11 @@ def shield_active(user, now: datetime, dome_until: datetime | None = None) -> bo
     return created is not None and created > now - timedelta(days=RAID_NEWBIE_SHIELD_DAYS)
 
 
-def attack_cooldown_left(last_raid_at: datetime | None, now: datetime) -> int:
-    """Секунд до следующего вылета (0 — можно лететь)."""
+def attack_cooldown_left(last_raid_at: datetime | None, now: datetime, comm_level: int = 1) -> int:
+    """Секунд до следующего вылета (0 — можно лететь). 📡 связь укорачивает перезарядку."""
     if last_raid_at is None:
         return 0
-    left = last_raid_at + timedelta(hours=RAID_ATTACK_COOLDOWN_HOURS) - now
+    left = last_raid_at + timedelta(hours=raid_cooldown_hours(comm_level)) - now
     return max(0, int(left.total_seconds()))
 
 
@@ -122,6 +126,34 @@ async def find_targets(conn, attacker_id: int, attacker_team: int | None, now: d
         attacker_id, attacker_team, now, RAID_TARGET_ACTIVE_DAYS, RAID_NEWBIE_SHIELD_DAYS,
         RAID_VICTIM_COOLDOWN_HOURS, RAID_MIN_TARGET_RESOURCES, limit)
     return [dict(r) for r in rows]
+
+
+async def scout(conn, user_id: int, now: datetime) -> list[dict]:
+    """
+    «Разведка» с проверками (27.10): нужны 📡 связь, 🔭 разведка и ⚔️ нападение 1-го уровня,
+    топливо на вылет (или заряд Экономайзера) и 1 🔋 батарейка — она тратится на разведку.
+    Целей в списке = 2 + уровень разведки.
+    """
+    from shared.tech import tech_levels
+    user = await conn.fetchrow("SELECT team_id, last_raid_at, raid_free_fuel FROM users WHERE user_id = $1 FOR UPDATE",
+                               user_id)
+    if user is None:
+        raise RaidError("common.no_profile")
+    tech = await tech_levels(conn, user_id)
+    for need in ("comm", "scout", "attack"):
+        if tech[need] < 1:
+            raise RaidError("raid.err_need_tech", tech=need)
+    left = attack_cooldown_left(user["last_raid_at"], now, tech["comm"])
+    if left > 0:
+        raise RaidError("raid.err_cooldown", minutes=-(-left // 60))
+    stock = await lock_resources(conn, user_id)
+    if user["raid_free_fuel"] <= 0 and stock.get("hydrogen", 0) < RAID_FUEL_HYDROGEN:
+        raise RaidError("raid.err_fuel", need=RAID_FUEL_HYDROGEN, have=stock.get("hydrogen", 0))
+    try:
+        await change_resource(conn, user_id, "battery", -1, "raid_scout")
+    except InsufficientResources as e:
+        raise RaidError("raid.err_battery") from e
+    return await find_targets(conn, user_id, user["team_id"], now, limit=raid_candidates(tech["scout"]))
 
 
 async def revenge_options(conn, user_id: int, now: datetime) -> list[dict]:
@@ -161,6 +193,9 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
         raise RaidError("common.no_profile")
     if defender is None or defender["is_blocked"]:
         raise RaidError("raid.err_gone")
+    from shared.tech import tech_levels
+    a_tech = await tech_levels(conn, attacker_id)
+    d_tech = await tech_levels(conn, defender_id)
     if attacker["team_id"] is not None and attacker["team_id"] == defender["team_id"]:
         raise RaidError("raid.err_teammate")
     dome = None
@@ -181,7 +216,9 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
             raise RaidError("raid.err_revenge_gone")
         is_revenge = True
     else:
-        left = attack_cooldown_left(attacker["last_raid_at"], now)
+        if a_tech["attack"] < 1:   # реванш — право обороны, без технологий
+            raise RaidError("raid.err_need_tech", tech="attack")
+        left = attack_cooldown_left(attacker["last_raid_at"], now, a_tech["comm"])
         if left > 0:
             raise RaidError("raid.err_cooldown", minutes=-(-left // 60))
         recent = await conn.fetchval(
@@ -204,10 +241,11 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
     if result == "draw" and is_active(defender["raid_drill_until"], now):
         result = "lose"   # 🎯 Тренажёр стойки цели: ничья засчитывается как провал налётчика
         notes.append("drill")
-    loot_percent = 100
+    # Технологии: ⚔️ нападение и 📚 наука атакующего против 🛡 обороны цели
+    loot_percent = raid_loot_percent(a_tech["attack"], d_tech["defense"], a_tech["science"])
     if attacker["raid_cargo"] > 0:   # 📦 Трюм: тратится на этом вылете при любом исходе
         await conn.execute("UPDATE users SET raid_cargo = raid_cargo - 1 WHERE user_id = $1", attacker_id)
-        loot_percent = CARGO_LOOT_PERCENT
+        loot_percent = loot_percent * CARGO_LOOT_PERCENT // 100
         if result == "win":
             notes.append("cargo")
     fail_mult = 1
@@ -222,13 +260,19 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
     # Трофей сверх вместимости склада победителя пропадает (склад с лимитом, 25.10)
     caps = {uid: await resource_capacity(conn, uid) for uid in (attacker_id, defender_id)}
     if result == "win":
+        # 💊 Без Аптечки часть трофея «пропадает в лазарете»: цель теряет всё, налётчик получает меньше
+        sick = not is_active(attacker["meds_until"], now)
+        if sick:
+            notes.append("sick")
         for kind in RESOURCE_KINDS:
             amount = raid_loot(stocks[defender_id].get(kind, 0), loot_percent)
             if amount > 0:
+                got = amount - amount * RAID_SICK_LOSS_PERCENT // 100 if sick else amount
                 await change_resource(conn, defender_id, kind, -amount, "raid_loss", str(attacker_id))
-                await change_resource(conn, attacker_id, kind, amount, "raid_loot", str(defender_id),
-                                      cap=caps[attacker_id])
-                loot[kind] = amount
+                if got > 0:
+                    await change_resource(conn, attacker_id, kind, got, "raid_loot", str(defender_id),
+                                          cap=caps[attacker_id])
+                loot[kind] = got
     elif result == "lose":
         for kind in RESOURCE_KINDS:
             amount = raid_fail_loss(stocks[attacker_id].get(kind, 0), fail_mult)

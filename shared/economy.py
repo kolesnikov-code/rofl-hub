@@ -163,7 +163,10 @@ MARKET_MAX_OPEN_ORDERS = 8     # открытых ордеров на игрок
 MARKET_SHOWCASE_LIMIT = 6      # ордеров на витрине /market (по одной кнопке в ряд)
 MARKET_APP_LIST_LIMIT = 200    # лучших ордеров в приложении — листаются постранично
 MARKET_APP_SWAPS_LIMIT = 100   # предложений обмена в приложении
-MARKET_ASSETS = ("cutlet", "metal", "hydrogen", "crystal", "parts")
+# Новые сырьё и материалы (27.10) тоже торгуются; Ядро ☢️ — нет (только командная добыча)
+MARKET_ASSETS = ("cutlet", "metal", "hydrogen", "crystal", "parts",
+                 "stone", "wood", "fire", "energy", "battery", "cow")
+MARKET_COW_MIN_PRICE = 100     # 🐄 корова — пропуск к синтезу котлеты: дешевле не продать
 MARKET_HISTORY_DAYS = 7        # график цены и индекс биржи
 
 # ПОЛ ЦЕНЫ КОТЛЕТЫ (решение владельца 24.10): топливо — исключительное право магазина.
@@ -178,7 +181,9 @@ MARKET_CUTLET_MIN_PRICE = 200
 
 
 def market_min_price(asset: str) -> int:
-    return MARKET_CUTLET_MIN_PRICE if asset == "cutlet" else MARKET_MIN_PRICE
+    if asset == "cutlet":
+        return MARKET_CUTLET_MIN_PRICE
+    return MARKET_COW_MIN_PRICE if asset == "cow" else MARKET_MIN_PRICE
 
 
 # Обмен ресурс ↔ ресурс без монет (предложения «отдам X за Y»)
@@ -231,7 +236,7 @@ TEAM_HELP_GIVER_MIN_BONUS_CLAIMS = 10
 ITEM_EFFECTS = (
     "nitrogen", "nuclear", "drone", "shield", "unlimit",
     "camo", "trap", "drill", "thermos", "banner", "dome",
-    "forsage", "economizer", "cargo", "stamp", "station_drone",
+    "meds", "forsage", "economizer", "cargo", "stamp",
 )
 ITEM_COLUMNS = {
     "nitrogen": "boost_nitrogen_until",
@@ -242,13 +247,13 @@ ITEM_COLUMNS = {
     "camo": "raid_camo_until",       # 🎭 не показываться в разведке
     "trap": "raid_trap_until",       # 🪤 провалившийся налётчик отдаёт вдвое больше
     "drill": "raid_drill_until",     # 🎯 ничья в обороне засчитывается как провал налётчика
+    "meds": "meds_until",            # 💊 иммунитет: без него в походах «болеют» и теряют часть добычи
 }
 TEAM_ITEM_EFFECTS = ("banner", "dome")
 ONE_SHOT_COLUMNS = {
     "economizer": "raid_free_fuel",  # ⛽ следующий вылет без водорода
     "cargo": "raid_cargo",           # 📦 добыча следующего налёта +50%
     "stamp": "market_free_sales",    # 📜 следующая продажа на бирже без комиссии
-    "station_drone": "station_boost",  # 🛰 следующий вклад в станцию ×1,5
 }
 ITEM_FARM_EFFECTS = ("nitrogen", "nuclear", "drone", "thermos")   # меняют ферму — закрыть прошлое время
 THERMOS_FUEL_CYCLE_SECONDS = 24 * 3600 * 4 // 3   # 🧊 котлеты хватает на 32 ч вместо 24 (едят на 25% медленнее)
@@ -256,7 +261,7 @@ BANNER_BONUS_PERCENT = 5          # 🏳️ Знамя: +5% к добыче вс
 CARGO_LOOT_PERCENT = 150          # 📦 Трюм: добыча налёта ×1,5 (и потолок ×1,5)
 TRAP_FAIL_MULTIPLIER = 2          # 🪤 Приманка: провалившийся налётчик отдаёт вдвое больше
 FORSAGE_COOLDOWN_HOURS = 24       # 🔥 Форсаж — не чаще раза в сутки
-STATION_DRONE_PERCENT = 150       # 🛰 Ремдрон станции: вклад засчитывается ×1,5
+# Ремдрон станции убран (решение владельца 27.10: ресурсы из воздуха не создаём)
 
 # --------------------------------------------------------------------------
 # РУДНИКИ (решение владельца 26.10): карта на 40 рудников, каждая битва команд — ровно за
@@ -269,9 +274,14 @@ MINE_YIELD_PER_MEMBER_HOUR = 1
 MINE_PAYOUT_INTERVAL_SECONDS = 300
 
 
+MINE_KINDS = ("metal", "hydrogen", "crystal", "parts", "stone", "wood", "energy")
+MINE_CORE_EVERY_HOURS = 24        # ☢️ каждые сутки удержания — каждому бойцу 1 Ядро (не больше 3 за рудник)
+MINE_SICK_EVERY_HOURS = 7         # 💊 без Аптечки каждый 7-й час добычи «болеешь» (≈15% потерь)
+
+
 def mine_kind(mine_id: int) -> str:
-    """Ресурс рудника: по кругу металл → водород → кристаллы → детали."""
-    return RESOURCE_KINDS[(mine_id - 1) % len(RESOURCE_KINDS)]
+    """Ресурс рудника: по кругу металл → водород → кристаллы → детали → камень → древесина → ⚡."""
+    return MINE_KINDS[(mine_id - 1) % len(MINE_KINDS)]
 DUEL_BURN_PERCENT = 20
 
 
@@ -287,12 +297,154 @@ GAME_RESOURCE = {          # игра → ресурс за победу
     "safe": "parts",       # ⚙️ Детали — Кибер-Сейф (шанс 1 из 4 — даём больше)
 }
 RESOURCE_PER_WIN = {"rps": 1, "hl": 1, "quiz": 1, "safe": 3}
-DUEL_RESOURCE_REWARD = {10: 2, 100: 4, 1000: 8}   # ⛏ Металл победителю дуэли по столу
+DUEL_RESOURCE_REWARD = {10: 2, 100: 4, 1000: 8}   # 🪨 Камень победителю дуэли по столу (27.10: был металл)
+DUEL_RESOURCE_KIND = "stone"
 QUEST_RESOURCE_BUNDLE = 5     # каждого ресурса за ПЕРВОЕ прохождение квеста
+QUEST_EXTRA_BUNDLE = {"wood": 10, "cow": 1}   # + древесина и корова (коровы редкие: топливо — право магазина)
 RESOURCE_MAX_STOCK = 100_000  # технический потолок запаса на ресурс (защита от переполнения)
 # СКЛАД С ЛИМИТОМ (решение владельца 25.10): добыча сверх вместимости пропадает — ресурсы
 # не лежат мёртвым грузом, их тратят или продают на бирже. Расширение — в мастерской.
 RES_CAPACITY_BASE = 500           # вместимость на КАЖДЫЙ ресурс
+
+# --------------------------------------------------------------------------
+# НОВЫЕ РЕСУРСЫ (решение владельца 27.10: «экономика с хитростью, чтобы интерес не угасал»).
+# Склад, вместимость и журнал — те же, что у базовых (user_resources / resource_ledger).
+# RESOURCE_KINDS (4 базовых) по-прежнему участвуют в налётах, станции, взаимопомощи и сундуке;
+# новые — в своих механиках. Откуда берутся:
+#   🪨 камень — дуэли, рудники, сундук;   🪵 древесина — квесты, рудники, сундук;
+#   🔥 огонь — Костёр в мастерской (древесина + камень);   ⚡ электричество — шанс в любой победе, рудники, сундук;
+#   🔋 батарейки — мастерская (⚡ + металл + огонь);   🐄 коровы — квесты, 7-й день серии сундука, биржа;
+#   ☢️ Ядро — ТОЛЬКО командные активности: призовые места битв и сутки удержания рудника.
+# --------------------------------------------------------------------------
+EXTRA_KINDS = ("stone", "wood", "fire", "energy", "battery", "cow", "core")
+ALL_KINDS = RESOURCE_KINDS + EXTRA_KINDS
+TRADEABLE_KINDS = RESOURCE_KINDS + ("stone", "wood", "fire", "energy", "battery", "cow")   # без Ядра
+ENERGY_WIN_CHANCE_PERCENT = 25    # ⚡ шанс получить 1 электричество за любую победу в соло-игре
+CHEST_SPECIALS = (("wood", 10), ("stone", 10), ("energy", 3))   # особый бонус сундука (по дню)
+CHEST_STREAK_COW = 1              # 🐄 корова в сундук каждого 7-го дня серии
+BATTLE_CORE_REWARD = {1: 3, 2: 2, 3: 1}   # ☢️ каждому бойцу команд-призёров битвы
+MINE_CORE_MAX = 3                 # ☢️ за один рудник одному бойцу — не больше
+RAID_SICK_LOSS_PERCENT = 15       # 💊 без Аптечки часть трофея налёта «пропадает в лазарете»
+
+# --------------------------------------------------------------------------
+# ЛАБОРАТОРИЯ: инструменты (как в S.T.A.L.K.E.R. — набор открывает уровень сложных сборок, не
+# тратится) и технологии. Темп роста ограничен ПЕРЕЗАРЯДКОЙ между уровнями: за 2–3 месяца
+# новичок догоняет старожила, науку качают ~полгода (+5%). Стоимости растут с уровнем.
+# --------------------------------------------------------------------------
+TOOL_ICONS = {1: "⚒️", 2: "🛠", 3: "🔬", 4: "🧬"}
+TOOL_COSTS = {
+    1: {"metal": 60, "wood": 40, "fire": 5},
+    2: {"parts": 120, "crystal": 60, "energy": 20, "fire": 10},
+    3: {"crystal": 250, "parts": 200, "energy": 60, "battery": 5},
+    4: {"crystal": 500, "parts": 400, "energy": 150, "core": 5},
+}
+TECHS: dict[str, dict] = {
+    # 📡 связь: 1 — налёты и командные активности (доход с рудника); дальше −20 мин перезарядки налёта
+    "comm": {"icon": "📡", "max": 3, "base": {"metal": 30, "energy": 10, "battery": 0}, "cooldown_days": 5},
+    # 🔭 разведка: без неё налётов нет; цели в разведке = 2 + уровень
+    "scout": {"icon": "🔭", "max": 5, "base": {"crystal": 20, "energy": 10}, "cooldown_days": 4},
+    # ⚔️ нападение: без него налётов нет; каждый уровень после первого +8% к добыче
+    "attack": {"icon": "⚔️", "max": 5, "base": {"metal": 40, "parts": 20, "energy": 10}, "cooldown_days": 7},
+    # 🛡 оборона: каждый уровень −8% к тому, что налётчик унесёт у тебя
+    "defense": {"icon": "🛡", "max": 5, "base": {"hydrogen": 40, "parts": 20, "energy": 10}, "cooldown_days": 7},
+    # 📚 наука: +1% к добыче фермы и трофеям за уровень; ~36 дней на уровень, нужно Ядро
+    "science": {"icon": "📚", "max": 5, "base": {"crystal": 100, "parts": 100, "energy": 50, "core": 3},
+                "cooldown_days": 36, "linear": True},
+}
+TECH_ORDER = ("comm", "scout", "attack", "defense", "science")
+RAID_ATTACK_BONUS_PER_LEVEL = 8
+RAID_DEFENSE_PER_LEVEL = 8
+SCIENCE_PERCENT_PER_LEVEL = 1
+COMM_COOLDOWN_MINUTES_PER_LEVEL = 20
+
+
+def tech_tool_required(tech: str, level: int) -> int:
+    """Какой набор инструментов нужен для уровня level технологии."""
+    if tech == "science":
+        return 2 if level <= 2 else (3 if level == 3 else 4)
+    if tech == "comm":
+        return level            # 1 → ⚒️, 2 → 🛠, 3 → 🔬
+    return 1 if level <= 2 else level - 1   # 3 → 🛠, 4 → 🔬, 5 → 🧬
+
+
+def tech_cost(tech: str, level: int) -> dict[str, int]:
+    """Цена уровня level (растёт квадратично; наука — линейно, но с Ядром и долгой перезарядкой)."""
+    info = TECHS[tech]
+    mult = level if info.get("linear") else level * level
+    cost = {k: v * mult for k, v in info["base"].items() if v}
+    if tech == "comm" and level >= 2:
+        cost["battery"] = 2 if level == 2 else 5
+    return cost
+
+
+def tech_cooldown_days(tech: str, level: int) -> int:
+    """Сколько дней ждать после получения уровня level, чтобы взять следующий."""
+    info = TECHS[tech]
+    return info["cooldown_days"] if info.get("linear") else info["cooldown_days"] * level
+
+
+def raid_loot_percent(attack: int, defense: int, science: int) -> int:
+    """Итоговый процент трофея: нападение атакующего и наука против обороны цели (не ниже 50%)."""
+    pct = 100 + RAID_ATTACK_BONUS_PER_LEVEL * max(0, attack - 1) + SCIENCE_PERCENT_PER_LEVEL * science
+    pct -= RAID_DEFENSE_PER_LEVEL * defense
+    return max(50, pct)
+
+
+def raid_candidates(scout_level: int) -> int:
+    return 2 + max(1, scout_level)
+
+
+def raid_cooldown_hours(comm_level: int) -> float:
+    return RAID_ATTACK_COOLDOWN_HOURS - COMM_COOLDOWN_MINUTES_PER_LEVEL * max(0, comm_level - 1) / 60
+
+
+# --------------------------------------------------------------------------
+# 🐎 ЛОШАДИ И ТЕЛЕГИ: логистика биржи. Лошадей продаёт сама игра за монеты (монеты сгорают —
+# дефляция), телега собирается в мастерской и ездит только с лошадью.
+# Лотов = база + лошади + 2 × телеги (телег не больше, чем лошадей); заряженный Шаттл — свой лимит.
+# --------------------------------------------------------------------------
+HORSE_PRICES = (1500, 3000, 6000)
+MAX_HORSES = len(HORSE_PRICES)
+MAX_CARTS = 3
+MARKET_BASE_LOTS = 2
+SHUTTLE_CHARGE_DAYS = 30          # 🔋 Шаттл летает на батарейке: 1 батарейка = 30 дней льгот
+
+
+def market_lots(horses: int, carts: int, shuttle_active: bool) -> int:
+    if shuttle_active:
+        return SHUTTLE_MARKET_MAX_OPEN_ORDERS
+    return MARKET_BASE_LOTS + horses + 2 * min(carts, horses)
+
+
+# --------------------------------------------------------------------------
+# 🏆 СЕЗОНЫ (решение владельца 27.10): сезон = календарный месяц UTC (12 в году — удобно под
+# каникулы и праздники). Монеты, роботы и покупки НЕ сбрасываются — сбрасываются только таблицы:
+# ТОП «заработано за сезон», рейтинг команд по битвам сезона, рейтинг друзей.
+# --------------------------------------------------------------------------
+SEASON_EARN_REASONS = ("mining", "quiz_level_up", "duel_win", "quest_reward", "daily_chest",
+                       "market_sell", "referral_qualified")   # + game_win:* — честный заработок в игре
+SEASON_BATTLE_POINTS = {1: 10, 2: 7, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1, 9: 1, 10: 1}
+SEASON_TOP_SIZE = 100
+SEASON_FIRST = "2026-10"          # первый сезон (раньше сезонов не было — итоги не подводятся)
+# Призы ТОП-10 — временные премиум-вещи из магазина (дразнят: после сезона хочется продолжить за ★)
+SEASON_PRIZES: dict[int, tuple[str, ...]] = {
+    1: ("miner_premium", "cutlet_50", "boost_nitrogen_30"),
+    2: ("miner_premium", "cutlet_10"),
+    3: ("miner_premium", "cutlet_10"),
+    **{p: ("cutlet_10", "unlimit_24h") for p in range(4, 11)},
+}
+SEASON_TEAM_CORES = {1: 3, 2: 2, 3: 1}   # ☢️ каждому бойцу команд-призёров сезона
+
+
+def season_key(moment: datetime) -> str:
+    return f"{moment.year:04d}-{moment.month:02d}"
+
+
+def season_bounds(moment: datetime) -> tuple[datetime, datetime]:
+    """[начало, конец) сезона, в который попадает moment (UTC)."""
+    start = moment.astimezone(timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    end = start.replace(year=start.year + 1, month=1) if start.month == 12 else start.replace(month=start.month + 1)
+    return start, end
 STORAGE_LEVELS: tuple[tuple[int, dict], ...] = (   # (новая вместимость, цена расширения)
     (1000, {"metal": 150, "parts": 150}),
     (2000, {"metal": 300, "hydrogen": 100, "crystal": 100, "parts": 300}),
@@ -337,23 +489,37 @@ WORKSHOP_RECIPES.update({
     "cargo": {"cost": {"metal": 40, "parts": 30}, "effect": "cargo"},
     "thermos_24h": {"cost": {"crystal": 60, "parts": 40}, "effect": "thermos", "hours": 24, "week_limit": 1},
     "stamp": {"cost": {"crystal": 50}, "effect": "stamp", "week_limit": 1},
-    "station_drone": {"cost": {"metal": 50, "parts": 50}, "effect": "station_drone"},
-    "banner_24h": {"cost": {"metal": 100, "hydrogen": 100, "crystal": 100, "parts": 100},
-                   "effect": "banner", "hours": 24},
-    "dome_12h": {"cost": {"metal": 150, "hydrogen": 150, "crystal": 150, "parts": 150},
-                 "effect": "dome", "hours": 12},
+    # Командные изделия — дорогие (тиммейты скидываются ресурсами), у Мега-Клана ×TEAM_ITEM_CLAN_MULTIPLIER
+    "banner_24h": {"cost": {"metal": 150, "hydrogen": 150, "crystal": 150, "parts": 150, "fire": 10, "core": 1},
+                   "effect": "banner", "hours": 24, "tool": 2, "team": True},
+    "dome_12h": {"cost": {"metal": 300, "hydrogen": 300, "crystal": 300, "parts": 300, "fire": 20, "battery": 10,
+                          "core": 3}, "effect": "dome", "hours": 12, "tool": 3, "team": True},
+    # ---- 27.10: новое сырьё. Костёр — огонь из древесины и камня
+    "bonfire": {"cost": {"wood": 10, "stone": 5}, "effect": "make", "make": {"fire": 5}},
+    "battery": {"cost": {"energy": 5, "metal": 5, "fire": 1}, "effect": "make", "make": {"battery": 2}, "tool": 1},
+    "cart": {"cost": {"wood": 40, "metal": 20, "fire": 2}, "effect": "cart", "tool": 1},
+    "meds_72h": {"cost": {"crystal": 20, "fire": 2, "energy": 3}, "effect": "meds", "hours": 72, "tool": 2},
 })
+# Синтез котлеты теперь требует корову и огонь (решение владельца 27.10)
+WORKSHOP_RECIPES["cutlet"]["cost"] = {"metal": 50, "hydrogen": 50, "crystal": 50, "parts": 50, "cow": 1, "fire": 5}
+WORKSHOP_RECIPES["shuttle"]["tool"] = 3
+WORKSHOP_RECIPES["thermos_24h"]["tool"] = 2
+TEAM_ITEM_CLAN_MULTIPLIER = 5     # Купол/Знамя Мега-Клана защищают до 1000 бойцов — и стоят в 5 раз дороже
 # Поэтапное открытие (решение владельца 26.10): новичку — по одному рецепту в сутки с момента
 # старта в экосистеме, от самого простого и полезного к легендарному. Ветераны видят всё.
 WORKSHOP_UNLOCK_HOURS = 24
 WORKSHOP_UNLOCK_ORDER = (
     "nitro_6h",       # день 1: +40% к добыче — польза сразу
-    "shield_24h",     # день 2: щит впрок — защита новичка кончается на 3-й день
+    "bonfire",        # день 2: огонь — без него ни инструментов, ни батареек
+    "shield_24h",     # день 3: щит впрок — защита новичка кончается на 3-й день
+    "battery",        # батарейки для разведки (нужны ⚒️ грубые инструменты из Лаборатории)
     "drone_24h",      # роботы не стареют
-    "economizer",     # бесплатный вылет — первый налёт без риска для водорода
+    "economizer",     # бесплатный вылет
     "storage",        # склад 1000
+    "cart",           # телега: +2 лота на бирже к лошади
     "nuclear_3h",     # ×5 к добыче
     "camo_12h",
+    "meds_72h",
     "forsage",
     "cutlet",
     "trap_24h",
@@ -362,7 +528,6 @@ WORKSHOP_UNLOCK_ORDER = (
     "thermos_24h",
     "armor",
     "stamp",
-    "station_drone",
     "banner_24h",
     "dome_12h",
     "shuttle",        # легенда

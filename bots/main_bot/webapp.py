@@ -32,6 +32,8 @@ from shared.farm_logic import apply_lazy_farm, farm_counts
 from shared.locales import resolve_lang, t
 from shared.ranks import rank_label
 from shared.resources import get_resources
+from shared.economy import ALL_KINDS, SEASON_PRIZES, season_bounds, season_key
+from shared.seasons import season_place, season_teams, season_top, user_badges
 from shared.webapp_auth import validate_init_data
 
 logger = logging.getLogger(__name__)
@@ -171,7 +173,8 @@ async def handle_me(request: web.Request) -> web.Response:
                     "FROM teams WHERE team_id = $1", user["team_id"], user_id)
             vip = [r["alias"] for r in await conn.fetch(
                 "SELECT alias FROM vip_aliases WHERE user_id = $1 ORDER BY created_at", user_id)]
-            resources = await get_resources(conn, user_id)
+            resources = await get_resources(conn, user_id, ALL_KINDS)
+            badges = await user_badges(conn, user_id)
             station_level = 0
             if user["team_id"] is not None:
                 station_level = await conn.fetchval(
@@ -182,6 +185,7 @@ async def handle_me(request: web.Request) -> web.Response:
     # Какие разделы включены в пульте — выключенные вкладки приложение прячет
     from shared.feature_flags import all_feature_flags
     payload["features"] = await all_feature_flags()
+    payload["badges"] = badges   # 🏅 значки сезонов: [{season, place}]
     return web.json_response(payload)
 
 
@@ -321,7 +325,7 @@ async def handle_intern(request: web.Request) -> web.Response:
 
 
 async def handle_top(request: web.Request) -> web.Response:
-    """Топ-100 игроков по балансу (витрина богатства, интеллекта и званий)."""
+    """ТОП-100: по умолчанию — сезон (заработано за месяц), ?mode=rich — по балансу."""
     viewer_id = await _auth_user_id(request)
     if viewer_id is None:
         return _unauthorized()
@@ -329,6 +333,20 @@ async def handle_top(request: web.Request) -> web.Response:
     async with db.pool.acquire() as conn:
         viewer_lang = resolve_lang(await conn.fetchval(
             "SELECT lang FROM users WHERE user_id = $1", viewer_id))
+        if request.query.get("mode") != "rich":
+            rows = await season_top(conn, now)
+            me_place = await season_place(conn, viewer_id, now)
+            teams = await season_teams(conn, now)
+            start, end = season_bounds(now)
+            return web.json_response({
+                "mode": "season", "season": season_key(now), "ends_at": end.isoformat(),
+                "me": me_place, "prizes": {str(k): list(v) for k, v in SEASON_PRIZES.items()},
+                "top": [{"name": (f"@{r['username']}" if r["username"] else (r["display_name"] or f"ID {r['user_id']}")),
+                         "earned": int(r["earned"]), "quiz_level": r["quiz_level"],
+                         "rank": rank_label(viewer_lang, r["created_at"], now),
+                         "me": r["user_id"] == viewer_id} for r in rows],
+                "teams": [{"name": html.unescape(x["name"]), "points": x["points"]} for x in teams],
+            })
         rows = await conn.fetch(
             """
             SELECT u.user_id, u.username, u.display_name, u.balance, u.created_at,

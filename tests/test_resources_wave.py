@@ -55,9 +55,9 @@ def test_format_bundle_orders_by_kind_and_skips_zero():
 # ---------------------------------------------------------------- мастерская
 def test_recipes_have_prices_and_known_effects():
     for rid, recipe in WORKSHOP_RECIPES.items():
-        assert recipe["effect"] in economy.ITEM_EFFECTS or recipe["effect"] in ("cutlet", "armor", "storage", "shuttle")
+        assert recipe["effect"] in economy.ITEM_EFFECTS or recipe["effect"] in ("cutlet", "armor", "storage", "shuttle", "make", "cart")
         cost = recipe_cost(rid)
-        assert cost and all(k in RESOURCE_KINDS and v > 0 for k, v in cost.items()), rid
+        assert cost and all(k in economy.ALL_KINDS and v > 0 for k, v in cost.items()), rid
         if recipe["effect"] in economy.ITEM_EFFECTS and recipe["effect"] not in ("forsage", *economy.ONE_SHOT_COLUMNS):
             assert recipe["hours"] > 0, rid
 
@@ -72,7 +72,7 @@ def test_armor_cost_escalates_and_stops_at_max():
 
 def test_owner_rules_24_10_for_workshop():
     """Решения владельца 24.10: синтез котлеты дорогой, броня на 30 дней, Шаттл — 1000 всего + 1000 🪙."""
-    assert WORKSHOP_RECIPES["cutlet"]["cost"] == {k: 50 for k in RESOURCE_KINDS}
+    assert WORKSHOP_RECIPES["cutlet"]["cost"] == {**{k: 50 for k in RESOURCE_KINDS}, "cow": 1, "fire": 5}
     assert economy.ARMOR_DAYS == 30
     assert WORKSHOP_RECIPES["shuttle"]["cost"] == {k: 1000 for k in RESOURCE_KINDS}
     assert WORKSHOP_RECIPES["shuttle"]["coins"] == 1000

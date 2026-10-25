@@ -140,6 +140,21 @@ async def award_sku_to_team(conn, team_id: int, sku: str, order: dict,
     return delivered, skipped
 
 
+async def award_battle_cores(conn, scores: list[dict]) -> int:
+    """☢️ Ядро каждому бойцу команд-призёров (BATTLE_CORE_REWARD). Возвращает число выданных."""
+    from shared.economy import BATTLE_CORE_REWARD
+    from shared.resources import change_resource, resource_capacity
+    given = 0
+    for place, row in enumerate(scores[:len(BATTLE_CORE_REWARD)], start=1):
+        members = await conn.fetch("SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked", row["team_id"])
+        for m in members:
+            async with conn.transaction():
+                await change_resource(conn, m["user_id"], "core", BATTLE_CORE_REWARD[place], f"battle_core:{place}",
+                                      cap=await resource_capacity(conn, m["user_id"]))
+            given += 1
+    return given
+
+
 def medals(place: int) -> str:
     return {1: "🥇", 2: "🥈", 3: "🥉"}.get(place, f"{place}.")
 

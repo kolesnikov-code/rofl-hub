@@ -91,6 +91,11 @@ class BattleCreationStates(StatesGroup):
     waiting_prize_manual = State()
     waiting_mine = State()
 
+
+class RewardStates(StatesGroup):
+    waiting_target = State()
+    waiting_gift_value = State()
+
 def is_admin(user_id: int) -> bool:
     return user_id in ADMIN_IDS
 
@@ -122,6 +127,8 @@ async def cmd_admin_start(message: types.Message):
         "• /recipes — Рецепты недели: 40 временных рецептов мастерской, включай по 2–4\n"
         "• /workshop_recipes — Постоянные рецепты мастерской: включить/выключить любые\n"
         "• /mines — Рудники: кто держит и до когда · /award_mine [битва] [команда] — рудник за ручную битву\n"
+        "• /reward — Подарок игроку, команде/клану, ТОПу сезона или призёрам битвы\n"
+        "• /season — Таблица текущего сезона (игроки и команды)\n"
         "• /broadcast [текст] — Объявление всем игрокам (с предпросмотром и подтверждением)\n",
         parse_mode="HTML"
     )
@@ -292,6 +299,7 @@ from shared.battles import (  # noqa: E402
     battle_team_scores,
     build_announce_post,
     build_results_post,
+    medals,
     mine_prize_line,
     parse_battle_moment,
     prizes_from_row,
@@ -684,6 +692,8 @@ async def _finish_battle(bot: Bot, battle) -> None:
             else:
                 prize_notes[place] = prize["value"]
 
+        from shared.battles import award_battle_cores
+        await award_battle_cores(conn, scores)   # ☢️ Ядро бойцам команд-призёров
         mine_note = None
         if battle["mine_id"] and scores:
             from shared.economy import utcnow
@@ -795,6 +805,181 @@ async def ws_recipes_actions(callback: types.CallbackQuery):
         await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
     except Exception:
         pass
+
+
+# ---- 🏆 Сезоны и подарки (решение владельца 27.10)
+_season_checked: str | None = None
+
+
+async def check_season_end(bot: Bot) -> None:
+    global _season_checked
+    from shared.economy import season_key, utcnow
+    from shared.seasons import finalize_season, previous_season_moment
+    now = utcnow()
+    if _season_checked == season_key(now):
+        return
+    prev = previous_season_moment(now)
+
+    async def deliver(conn, user_id, sku, charge_id):
+        from shared.delivery import deliver_order
+        async with conn.transaction():
+            await conn.fetchval("SELECT 1 FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+            await deliver_order(conn, user_id, {**get_item(sku), "stars": 0}, charge_id)
+
+    async with db.pool.acquire() as conn:
+        result = await finalize_season(conn, prev, deliver)
+    _season_checked = season_key(now)
+    if not result or not (result["players"] or result["teams"]):
+        return   # до первого сезона или пустой сезон — в канал не пишем
+    lines = [f"🏆 <b>СЕЗОН {season_key(prev)} ЗАВЕРШЁН!</b>", "..................................................", ""]
+    for w in result["players"]:
+        lines.append(f"{medals(w['place'])} {html.escape(w['name'] or '—')} — {w['earned']} 🪙")
+    if result["teams"]:
+        lines += ["", "<b>Команды сезона:</b>"]
+        lines += [f"{medals(i)} {html.escape(x['name'])} — {x['points']} очк." for i, x in enumerate(result['teams'], 1)]
+    lines += ["", "🎁 Призы ТОП-10 уже выданы, бойцам команд-призёров — ☢️ Ядро. Новый сезон стартовал — удачи!"]
+    try:
+        await bot.send_message(USERS_CHANNEL_ID, "\n".join(lines), parse_mode="HTML")
+    except Exception as e:
+        logger.error("[SEASON] пост в канал не ушёл: %s", e)
+
+
+@dp.message(Command("season"))
+async def admin_season(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    from shared.economy import season_bounds, season_key, utcnow
+    from shared.seasons import season_teams, season_top
+    now = utcnow()
+    async with db.pool.acquire() as conn:
+        top = await season_top(conn, now, limit=15)
+        teams = await season_teams(conn, now, limit=10)
+    _, end = season_bounds(now)
+    lines = [f"🏆 <b>СЕЗОН {season_key(now)}</b> · финиш {end:%d.%m %H:%M} UTC", "", "<b>Игроки (заработано за сезон):</b>"]
+    lines += [f"{i}. {html.escape('@' + r['username'] if r['username'] else (r['display_name'] or str(r['user_id'])))} "
+              f"(ID {r['user_id']}) — {r['earned']} 🪙" for i, r in enumerate(top, 1)] or ["—"]
+    lines += ["", "<b>Команды (очки битв):</b>"]
+    lines += [f"{i}. {html.escape(x['name'])} (ID {x['team_id']}) — {x['points']}" for i, x in enumerate(teams, 1)] or ["—"]
+    lines += ["", "Подарить: /reward"]
+    await message.answer("\n".join(lines), parse_mode="HTML")
+
+
+_REWARD_TARGETS = {"player": "👤 Игрок", "team": "🏆 Команда / клан (все бойцы)",
+                   "season": "📊 ТОП сезона", "battle": "⚔️ Призёры битвы"}
+_REWARD_PROMPTS = {"player": "ID, @username или VIP ID игрока:", "team": "ID или точное название команды:",
+                   "season": "Сколько лучших игроков сезона наградить (1–100)?",
+                   "battle": "Номер битвы и место через пробел, например: <code>5 1</code>"}
+_REWARD_GIFTS = {"coins": "🪙 Монеты", "resource": "📦 Ресурс", "sku": "🛒 Товар магазина", "item": "🧪 Изделие на склад"}
+
+
+@dp.message(Command("reward"))
+async def admin_reward(message: types.Message, state: FSMContext):
+    if not is_admin(message.from_user.id):
+        return
+    await state.clear()
+    rows = [[types.InlineKeyboardButton(text=v, callback_data=f"rw_t:{k}")] for k, v in _REWARD_TARGETS.items()]
+    await message.answer("🎁 <b>ПОДАРОК</b>\nКому дарим? (Статистика для выбора — /season, /find, /battles)",
+                         reply_markup=types.InlineKeyboardMarkup(inline_keyboard=rows), parse_mode="HTML")
+
+
+@dp.callback_query(F.data.startswith("rw_t:"))
+async def reward_target_kind(callback: types.CallbackQuery, state: FSMContext):
+    if not is_admin(callback.from_user.id):
+        return
+    await callback.answer()
+    kind = callback.data.split(":", 1)[1]
+    await state.update_data(rw_target=kind)
+    await state.set_state(RewardStates.waiting_target)
+    await callback.message.answer(_REWARD_PROMPTS[kind], parse_mode="HTML")
+
+
+@dp.message(RewardStates.waiting_target)
+async def reward_target_value(message: types.Message, state: FSMContext):
+    if not is_admin(message.from_user.id):
+        return
+    from shared.rewards import resolve_recipients
+    data = await state.get_data()
+    async with db.pool.acquire() as conn:
+        ids, label = await resolve_recipients(conn, data["rw_target"], message.text or "")
+    if not ids:
+        await message.answer(f"❌ Получатели не найдены ({label}). Ещё раз:")
+        return
+    await state.update_data(rw_ids=ids, rw_label=label)
+    await state.set_state(None)
+    rows = [[types.InlineKeyboardButton(text=v, callback_data=f"rw_g:{k}")] for k, v in _REWARD_GIFTS.items()]
+    await message.answer(f"✅ Получатели: {label} — {len(ids)} чел.\nЧто дарим?",
+                         reply_markup=types.InlineKeyboardMarkup(inline_keyboard=rows))
+
+
+@dp.callback_query(F.data.startswith("rw_g:"))
+async def reward_gift_kind(callback: types.CallbackQuery, state: FSMContext):
+    if not is_admin(callback.from_user.id):
+        return
+    await callback.answer()
+    from shared.economy import ALL_KINDS, ITEM_EFFECTS
+    kind = callback.data.split(":", 1)[1]
+    await state.update_data(rw_gift=kind)
+    if kind == "sku":
+        rows = [[types.InlineKeyboardButton(text=item["button"], callback_data=f"rw_sku:{sku}")]
+                for sku, item in CATALOG.items()]
+        await callback.message.answer("Какой товар (получит каждый)?", reply_markup=types.InlineKeyboardMarkup(inline_keyboard=rows))
+        return
+    hint = {"coins": "Сколько монет каждому? Например: <code>500</code>",
+            "resource": "Ресурс и количество, например <code>core 2</code>. Виды: " + ", ".join(ALL_KINDS),
+            "item": "Изделие и часы (разовые — 0), например <code>shield 24</code>. Виды: " + ", ".join(ITEM_EFFECTS)}[kind]
+    await state.set_state(RewardStates.waiting_gift_value)
+    await callback.message.answer(hint, parse_mode="HTML")
+
+
+async def _reward_confirm(message: types.Message, state: FSMContext, gift: dict) -> None:
+    data = await state.get_data()
+    await state.update_data(rw_parsed=gift)
+    await state.set_state(None)
+    kb = types.InlineKeyboardMarkup(inline_keyboard=[[
+        types.InlineKeyboardButton(text="🎁 ВЫДАТЬ", callback_data="rw_go:1"),
+        types.InlineKeyboardButton(text="❌ Отмена", callback_data="rw_go:0")]])
+    await message.answer(f"Проверь: {data['rw_label']} ({len(data['rw_ids'])} чел.) получат <code>{html.escape(str(gift))}</code>",
+                         reply_markup=kb, parse_mode="HTML")
+
+
+@dp.callback_query(F.data.startswith("rw_sku:"))
+async def reward_sku(callback: types.CallbackQuery, state: FSMContext):
+    if not is_admin(callback.from_user.id):
+        return
+    await callback.answer()
+    from shared.rewards import parse_gift
+    gift = parse_gift("sku", callback.data.split(":", 1)[1])
+    if gift:
+        await _reward_confirm(callback.message, state, gift)
+
+
+@dp.message(RewardStates.waiting_gift_value)
+async def reward_gift_value(message: types.Message, state: FSMContext):
+    if not is_admin(message.from_user.id):
+        return
+    from shared.rewards import parse_gift
+    data = await state.get_data()
+    gift = parse_gift(data.get("rw_gift", ""), message.text or "")
+    if not gift:
+        await message.answer("❌ Не понял. Ещё раз по образцу:")
+        return
+    await _reward_confirm(message, state, gift)
+
+
+@dp.callback_query(F.data.startswith("rw_go:"))
+async def reward_go(callback: types.CallbackQuery, state: FSMContext):
+    if not is_admin(callback.from_user.id):
+        return
+    await callback.answer()
+    data = await state.get_data()
+    await state.clear()
+    if callback.data.endswith(":0") or not data.get("rw_parsed"):
+        await callback.message.answer("❌ Подарок отменён.")
+        return
+    from shared.rewards import give_all
+    async with db.pool.acquire() as conn:
+        ok, bad = await give_all(conn, data["rw_ids"], data["rw_parsed"])
+    await callback.message.answer(f"🎁 Выдано: {ok}" + (f", сбоев: {bad} (см. логи)" if bad else ""))
 
 
 async def check_finished_battles(bot: Bot) -> None:
@@ -1415,6 +1600,12 @@ async def dynamic_analytics_daemon(bot: Bot):
     while True:
         try:
             await asyncio.sleep(20)
+
+            # 🏆 Итоги прошлого сезона (месяца) — один раз, идемпотентно
+            try:
+                await check_season_end(bot)
+            except Exception:
+                logger.exception("[SEASON] сбой подведения сезона")
 
             # Авто-закрытие битв, чьё время вышло (итоги + призы + пост в канал)
             try:

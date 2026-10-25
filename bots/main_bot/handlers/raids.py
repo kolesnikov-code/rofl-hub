@@ -162,22 +162,17 @@ async def raid_scout(callback: types.CallbackQuery, user_lang: str = "ru"):
         return
     user_id = callback.from_user.id
     now = utcnow()
-    async with db.pool.acquire() as conn:
-        user = await conn.fetchrow(
-            "SELECT team_id, last_raid_at FROM users WHERE user_id = $1", user_id)
-        if not user:
-            await callback.answer(t(user_lang, "common.no_profile"), show_alert=True)
-            return
-        left = attack_cooldown_left(user["last_raid_at"], now)
-        if left > 0:
-            await callback.answer(t(user_lang, "raid.err_cooldown", minutes=-(-left // 60)), show_alert=True)
-            return
-        stock = await get_resources(conn, user_id)
-        if stock["hydrogen"] < RAID_FUEL_HYDROGEN:
-            await callback.answer(t(user_lang, "raid.err_fuel", need=RAID_FUEL_HYDROGEN,
-                                    have=stock["hydrogen"]), show_alert=True)
-            return
-        targets = await find_targets(conn, user_id, user["team_id"], now)
+    # Те же проверки, что в приложении: технологии, перезарядка, топливо, 🔋 батарейка (тратится)
+    from shared.raids import RaidError, scout
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                targets = await scout(conn, user_id, now)
+    except RaidError as e:
+        text = (t(user_lang, "raid.err_need_tech", tech=t(user_lang, f"tech.{e.kwargs['tech']}"))
+                if e.key == "raid.err_need_tech" else e.localized(user_lang))
+        await callback.answer(text, show_alert=True)
+        return
     await callback.answer()
     if not targets:
         await _safe_edit(callback.message, t(user_lang, "raid.no_targets"),

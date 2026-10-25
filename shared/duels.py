@@ -16,7 +16,7 @@ import random
 from dataclasses import dataclass
 
 from shared.economy import DUEL_TABLES, duel_payout
-from shared.economy import DUEL_RESOURCE_REWARD
+from shared.economy import DUEL_RESOURCE_KIND, DUEL_RESOURCE_REWARD
 from shared.ledger import InsufficientFunds, change_balance
 from shared.resources import change_resource, resource_capacity
 
@@ -54,7 +54,7 @@ class MoveResult:
     payout: int = 0
     burned: int = 0
     rounds: int = 1
-    metal: int = 0              # ⛏ Металл победителю (ресурсы, волна 22.10)
+    metal: int = 0              # 🪨 Камень победителю (27.10; поле осталось metal — совместимость)
 
 
 async def active_duel_of(conn, user_id: int):
@@ -168,7 +168,7 @@ async def _resolve_round(conn, duel) -> MoveResult:
     await change_balance(conn, winner_id, payout, "duel_win", str(duel["duel_id"]))
     metal = DUEL_RESOURCE_REWARD.get(duel["stake"], 0)
     if metal:
-        await change_resource(conn, winner_id, "metal", metal, "duel_win", str(duel["duel_id"]),
+        await change_resource(conn, winner_id, DUEL_RESOURCE_KIND, metal, "duel_win", str(duel["duel_id"]),
                               cap=await resource_capacity(conn, winner_id))
     await conn.execute(
         "UPDATE duels SET status = 'finished', winner_id = $2, finished_at = NOW() WHERE duel_id = $1",

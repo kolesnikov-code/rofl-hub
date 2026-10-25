@@ -43,6 +43,7 @@ from shared.economy import (
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import resolve_lang, t
+from shared.economy import ENERGY_WIN_CHANCE_PERCENT
 from shared.resources import RESOURCE_ICONS, change_resource, game_resource_gain, resource_capacity
 
 router = Router()
@@ -157,6 +158,11 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                                         qty=qty, name=t(lang, f"res.{kind}"), total=stock)
                     if stock >= cap:
                         status += "\n" + t(lang, "games.resource_full", icon=RESOURCE_ICONS[kind], cap=cap)
+                # ⚡ Электричество иногда «выпадает» в любой победе (27.10)
+                if random.randrange(100) < ENERGY_WIN_CHANCE_PERCENT:
+                    await change_resource(conn, user_id, "energy", 1, f"game_win:{game_type}",
+                                          cap=await resource_capacity(conn, user_id))
+                    status += "\n" + t(lang, "games.energy_gain")
             else:
                 try:
                     new_balance = await change_balance(conn, user_id, -LOSE_PENALTY, f"game_loss:{game_type}")

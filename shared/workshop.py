@@ -19,6 +19,9 @@ from datetime import datetime
 
 from shared.economy import (
     ARMOR_DAYS,
+    MAX_CARTS,
+    MEGA_CLAN_MAX_MEMBERS,
+    TEAM_ITEM_CLAN_MULTIPLIER,
     WORKSHOP_UNLOCK_ORDER,
     recipe_unlock_at,
     ARMOR_MAX_LEVEL,
@@ -70,7 +73,21 @@ class CraftResult:
     stored: bool = False   # изделие легло на склад (активируется игроком позже)
 
 
-def recipe_cost(recipe_id: str, armor_level: int = 0, capacity: int = RES_CAPACITY_BASE) -> dict[str, int] | None:
+def team_cost_multiplier(max_members: int | None) -> int:
+    """Командные изделия у Мега-Клана дороже в TEAM_ITEM_CLAN_MULTIPLIER раз."""
+    return TEAM_ITEM_CLAN_MULTIPLIER if (max_members or 0) >= MEGA_CLAN_MAX_MEMBERS else 1
+
+
+def recipe_tool(recipe_id: str, armor_level: int = 0) -> int:
+    """Какой набор инструментов нужен рецепту (броня: уровень = набор)."""
+    recipe = WORKSHOP_RECIPES.get(recipe_id) or {}
+    if recipe.get("effect") == "armor":
+        return min(armor_level + 1, ARMOR_MAX_LEVEL)
+    return int(recipe.get("tool", 0))
+
+
+def recipe_cost(recipe_id: str, armor_level: int = 0, capacity: int = RES_CAPACITY_BASE,
+                team_mult: int = 1) -> dict[str, int] | None:
     """
     Цена рецепта в ресурсах; для брони зависит от ДЕЙСТВУЮЩЕГО уровня
     (на максимуме — цена продления максимального уровня). None — рецепта нет.
@@ -83,7 +100,8 @@ def recipe_cost(recipe_id: str, armor_level: int = 0, capacity: int = RES_CAPACI
     if recipe["effect"] == "storage":
         nxt = next_storage_level(capacity)
         return nxt[1] if nxt else None
-    return dict(recipe["cost"])
+    mult = team_mult if recipe.get("team") else 1
+    return {k: v * mult for k, v in recipe["cost"].items()}
 
 
 def recipe_coins(recipe_id: str) -> int:
@@ -134,8 +152,22 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
     if effect == "shuttle" and user["has_shuttle"]:
         raise WorkshopError("ws.err_shuttle_owned")
     armor_now = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
+    # Наборы инструментов из Лаборатории открывают сложные сборки
+    need_tool = recipe_tool(recipe_id, armor_now)
+    if need_tool:
+        from shared.tech import tech_levels
+        if (await tech_levels(conn, user_id))["tools"] < need_tool:
+            raise WorkshopError("tech.err_tool", tool=need_tool)
+    team_mult = 1
+    if recipe.get("team"):   # командное изделие: нужна команда, Мега-Клан платит больше
+        if user["team_id"] is None:
+            raise WorkshopError("mk.err_no_team")
+        team_mult = team_cost_multiplier(await conn.fetchval(
+            "SELECT max_members FROM teams WHERE team_id = $1", user["team_id"]))
+    if effect == "cart" and (user["carts"] >= MAX_CARTS or user["carts"] >= user["horses"]):
+        raise WorkshopError("cart.err_horse", max=MAX_CARTS)
 
-    cost = recipe_cost(recipe_id, armor_now, user["res_capacity"])
+    cost = recipe_cost(recipe_id, armor_now, user["res_capacity"], team_mult)
     if cost is None:
         raise WorkshopError("ws.err_storage_max" if effect == "storage" else "ws.err_unknown")
     coins = recipe_coins(recipe_id)
@@ -164,6 +196,14 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
         until = extend_expiry_hours(user[column], now, recipe["hours"])
         await conn.execute(f"UPDATE users SET {column} = $2 WHERE user_id = $1", user_id, until)
         result.until = until
+    elif effect == "make":   # костёр, батарейки: сырьё → материал на склад (в пределах вместимости)
+        from shared.resources import change_resource
+        for kind, qty in recipe["make"].items():
+            await change_resource(conn, user_id, kind, qty, f"craft:{recipe_id}", cap=user["res_capacity"])
+        result.qty = sum(recipe["make"].values())
+    elif effect == "cart":
+        await conn.execute("UPDATE users SET carts = carts + 1 WHERE user_id = $1", user_id)
+        result.level = user["carts"] + 1
     elif effect == "cutlet":
         await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $2 WHERE user_id = $1",
                            user_id, recipe["qty"])
@@ -174,8 +214,10 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
         result.until = extend_expiry(user["armor_until"] if armor_now else None, now, ARMOR_DAYS)
         await conn.execute("UPDATE users SET farm_armor_level = $2, armor_until = $3 WHERE user_id = $1",
                            user_id, result.level, result.until)
-    elif effect == "shuttle":
-        await conn.execute("UPDATE users SET has_shuttle = TRUE WHERE user_id = $1", user_id)
+    elif effect == "shuttle":   # новый Шаттл приходит заряженным на месяц
+        from shared.economy import SHUTTLE_CHARGE_DAYS
+        await conn.execute("UPDATE users SET has_shuttle = TRUE, shuttle_until = $2 WHERE user_id = $1",
+                           user_id, extend_expiry(None, now, SHUTTLE_CHARGE_DAYS))
     elif effect == "storage":
         result.level = next_storage_level(user["res_capacity"])[0]   # новая вместимость
         await conn.execute("UPDATE users SET res_capacity = $2 WHERE user_id = $1", user_id, result.level)

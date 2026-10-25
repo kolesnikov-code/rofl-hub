@@ -33,6 +33,8 @@ from shared.economy import (
     REFERRAL_QUALIFY_QUIZ_LEVEL,
     REFERRAL_TOP_LIMIT,
     RES_CAPACITY_BASE,
+    season_bounds,
+    season_key,
     next_storage_level,
     ARMOR_DAYS,
     armor_level_active,
@@ -67,6 +69,24 @@ from shared.economy import (
     TEAM_HELP_GIVER_MIN_QUIZ_LEVEL,
     ITEM_COLUMNS,
     ITEM_EFFECTS,
+    ALL_KINDS,
+    TRADEABLE_KINDS,
+    HORSE_PRICES,
+    MAX_HORSES,
+    MAX_CARTS,
+    TECHS,
+    TECH_ORDER,
+    TOOL_COSTS,
+    market_lots,
+    raid_candidates,
+    tech_cost,
+    tech_tool_required,
+    tech_cooldown_days,
+    RAID_ATTACK_BONUS_PER_LEVEL,
+    RAID_DEFENSE_PER_LEVEL,
+    SCIENCE_PERCENT_PER_LEVEL,
+    COMM_COOLDOWN_MINUTES_PER_LEVEL,
+    SHUTTLE_CHARGE_DAYS,
     ONE_SHOT_COLUMNS,
     FORSAGE_COOLDOWN_HOURS,
     MINE_HOLD_HOURS,
@@ -106,6 +126,8 @@ from shared.market import (
     price_history,
 )
 from shared.raids import (
+    RaidError,
+    scout as raid_scout,
     STANCES,
     RaidError,
     attack_cooldown_left,
@@ -121,6 +143,9 @@ from shared.ranks import rank_label
 from shared.team_help import HelpError, can_give, cancel_help, give_help, given_today, open_requests, request_help
 from shared.items import ItemError, activate_item, list_items
 from shared.mines import list_mines, mine_battles
+from shared.tech import (TechError, buy_horse, charge_shuttle, get_tech, next_tech_at, shuttle_active,
+                         tech_levels, upgrade_tech, upgrade_tools)
+from shared.workshop import recipe_tool, team_cost_multiplier
 from shared.battles import battle_team_scores
 from shared.db_clans import (TeamError, create_team, join_team, leave_team, public_team, random_teams,
                              search_teams, team_members)
@@ -198,7 +223,7 @@ def fail(message: str) -> web.Response:
 
 
 def resource_labels(lang: str) -> dict[str, str]:
-    return {k: t(lang, f"res.{k}") for k in RESOURCE_KINDS}
+    return {k: t(lang, f"res.{k}") for k in ALL_KINDS}
 
 
 # ============================================================================
@@ -207,7 +232,8 @@ def resource_labels(lang: str) -> dict[str, str]:
 def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lang: str,
                            balance: int = 0, armor_until=None, capacity: int = RES_CAPACITY_BASE,
                            weekly: list | None = None, created_at=None, now=None,
-                           disabled=(), week_done: dict | None = None) -> dict:
+                           disabled=(), week_done: dict | None = None, tools_level: int = 0,
+                           team_mult: int = 1, in_team: bool = True) -> dict:
     """
     Чистый сборщик витрины мастерской (юнит-тесты без aiohttp). armor_level — действующий.
     created_at/now — поэтапное открытие (по рецепту в сутки); disabled — выключенные владельцем.
@@ -224,7 +250,9 @@ def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lan
         week_left = max(0, limit - week_done.get(rid, 0)) if limit else None
         effect = recipe["effect"]
         done = (effect == "shuttle" and has_shuttle) or (effect == "storage" and next_storage_level(capacity) is None)
-        cost = None if done else recipe_cost(rid, armor_level, capacity)
+        cost = None if done else recipe_cost(rid, armor_level, capacity, team_mult)
+        need_tool = recipe_tool(rid, armor_level)
+        team_ok = in_team or not recipe.get("team")
         coins = recipe_coins(rid)
         recipes.append({
             "id": rid,
@@ -237,7 +265,9 @@ def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lan
             "days": ARMOR_DAYS if effect == "armor" else None,
             "done": done,
             "affordable": (bool(cost) and can_afford(stock, cost) and balance >= coins and not locked
-                           and week_left != 0),
+                           and week_left != 0 and tools_level >= need_tool and team_ok),
+            "tool": need_tool, "tool_ok": tools_level >= need_tool, "team": bool(recipe.get("team")),
+            "team_ok": team_ok,
             "locked": locked,
             "unlock_in": int((opens - now).total_seconds()) if locked else 0,
             "week_limit": limit, "week_left": week_left,
@@ -252,6 +282,7 @@ def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lan
         "capacity": capacity,
         "weekly": weekly or [],
         "armor_max": ARMOR_MAX_LEVEL,
+        "tools_level": tools_level, "team_mult": team_mult,
         "armor_pct": ARMOR_BONUS_PER_LEVEL,
         "has_shuttle": has_shuttle,
         "shuttle_fee": SHUTTLE_MARKET_FEE_PERCENT,
@@ -267,10 +298,13 @@ async def handle_workshop(request: web.Request) -> web.Response:
     if off := await _feature_off("workshop", ctx.lang):
         return off
     async with db.pool.acquire() as conn:
-        stock = await get_resources(conn, ctx.user_id)
+        stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
         user = await conn.fetchrow(
-            "SELECT farm_armor_level, armor_until, has_shuttle, balance, res_capacity, created_at "
+            "SELECT farm_armor_level, armor_until, has_shuttle, balance, res_capacity, created_at, team_id "
             "FROM users WHERE user_id = $1", ctx.user_id)
+        tools_level = (await tech_levels(conn, ctx.user_id))["tools"]
+        team_mult = team_cost_multiplier(await conn.fetchval(
+            "SELECT max_members FROM teams WHERE team_id = $1", user["team_id"])) if user["team_id"] else 1
         now = utcnow()
         week_done = {r["recipe_id"][3:]: r["n"] for r in await conn.fetch(
             "SELECT recipe_id, COUNT(*) AS n FROM weekly_crafts WHERE user_id = $1 AND recipe_id LIKE 'ws:%' "
@@ -288,7 +322,8 @@ async def handle_workshop(request: web.Request) -> web.Response:
                                                     balance=user["balance"], armor_until=user["armor_until"],
                                                     capacity=user["res_capacity"], weekly=weekly,
                                                     created_at=user["created_at"], now=now, disabled=disabled,
-                                                    week_done=week_done))
+                                                    week_done=week_done, tools_level=tools_level,
+                                                    team_mult=team_mult, in_team=user["team_id"] is not None))
 
 
 async def handle_craft_weekly(request: web.Request) -> web.Response:
@@ -341,13 +376,18 @@ async def handle_referral(request: web.Request) -> web.Response:
         earned = await conn.fetchval(
             "SELECT COALESCE(SUM(delta), 0) FROM ledger WHERE user_id = $1 "
             "AND reason IN ('referral_signup', 'referral_qualified')", ctx.user_id)
+        # 🏆 Рейтинг друзей — сезонный (27.10): считаются друзья, приглашённые или ставшие
+        # активными в этом месяце; личная статистика выше — за всё время.
+        start, end = season_bounds(now)
         rows = await conn.fetch(
             """SELECT r.user_id, r.username, r.display_name, r.created_at,
-                      COUNT(*) FILTER (WHERE u.qualified_at IS NOT NULL) AS qualified, COUNT(*) AS invited
+                      COUNT(*) FILTER (WHERE u.qualified_at >= $2 AND u.qualified_at < $3) AS qualified,
+                      COUNT(*) FILTER (WHERE u.created_at >= $2 AND u.created_at < $3) AS invited
                FROM users u JOIN users r ON r.user_id = u.referred_by
                WHERE NOT r.is_blocked AND r.deleted_at IS NULL AND r.deletion_requested_at IS NULL
-               GROUP BY r.user_id HAVING COUNT(*) > 0
-               ORDER BY qualified DESC, invited DESC, r.user_id ASC LIMIT $1""", REFERRAL_TOP_LIMIT)
+                 AND ((u.created_at >= $2 AND u.created_at < $3) OR (u.qualified_at >= $2 AND u.qualified_at < $3))
+               GROUP BY r.user_id
+               ORDER BY qualified DESC, invited DESC, r.user_id ASC LIMIT $1""", REFERRAL_TOP_LIMIT, start, end)
     username = await _bot_name(request)
     link = f"https://t.me/{username}?start={ctx.user_id}" if username else ""
     return web.json_response({
@@ -358,6 +398,7 @@ async def handle_referral(request: web.Request) -> web.Response:
         "rules": {"qualified": REFERRAL_QUALIFIED_BONUS, "reward": referral_reward_text(),
                   "level": REFERRAL_QUALIFY_QUIZ_LEVEL,
                   "claims": REFERRAL_QUALIFY_BONUS_CLAIMS},
+        "season": season_key(now), "ends_at": end.isoformat(),
         "top": [{"name": f"@{r['username']}" if r["username"] else (r["display_name"] or "#" + str(r["user_id"])[-4:]),
                  "rank": rank_label(ctx.lang, r["created_at"], now),
                  "qualified": int(r["qualified"]), "invited": int(r["invited"]),
@@ -399,6 +440,7 @@ async def handle_storage(request: web.Request) -> web.Response:
         items = await list_items(conn, ctx.user_id)
         user = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", ctx.user_id)
         team_fx = await _team_effects(conn, user["team_id"], now)
+        stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
     armor = armor_level_active(user["farm_armor_level"], user["armor_until"], now)
     iso = lambda v: v.isoformat() if v and v > now else None   # noqa: E731
     active = {e: iso(user[c]) for e, c in ITEM_COLUMNS.items()}
@@ -409,6 +451,14 @@ async def handle_storage(request: web.Request) -> web.Response:
         "res_names": resource_labels(ctx.lang),
         "items": items, "effects": list(ITEM_EFFECTS), "active": active, "charges": charges,
         "in_team": user["team_id"] is not None,
+        "kinds": list(ALL_KINDS),
+        "stable": {"horses": user["horses"], "carts": user["carts"], "max_horses": MAX_HORSES,
+                   "max_carts": MAX_CARTS,
+                   "next_price": HORSE_PRICES[user["horses"]] if user["horses"] < MAX_HORSES else None,
+                   "lots": market_lots(user["horses"], user["carts"], shuttle_active(user, now)),
+                   "balance": user["balance"]},
+        "shuttle": {"owned": bool(user["has_shuttle"]), "active": shuttle_active(user, now),
+                    "until": iso(user["shuttle_until"]), "days": SHUTTLE_CHARGE_DAYS},
         "perm": {"shuttle": bool(user["has_shuttle"]), "shuttle_fee": SHUTTLE_MARKET_FEE_PERCENT,
                  "armor_level": armor, "armor_max": ARMOR_MAX_LEVEL, "armor_pct": ARMOR_BONUS_PER_LEVEL,
                  "armor_until": user["armor_until"].isoformat() if armor and user["armor_until"] else None,
@@ -432,6 +482,87 @@ async def handle_item_use(request: web.Request) -> web.Response:
     await track(ctx.user_id, "item_used", effect=effect, hours=hours, source="webapp")
     return web.json_response({"ok": True, "effect": effect, "charges": res["charges"],
                               "until": res["until"].isoformat() if res["until"] else None})
+
+
+# ============================================================================
+# 🔬 Лаборатория: инструменты и технологии; 🐎 конюшня; 🔋 заряд Шаттла
+# ============================================================================
+def _raid_err(e: RaidError, lang: str) -> str:
+    if e.key == "raid.err_need_tech":
+        return t(lang, "raid.err_need_tech", tech=TECHS[e.kwargs["tech"]]["icon"] + " " + t(lang, f"tech.{e.kwargs['tech']}"))
+    return e.localized(lang)
+
+
+def build_tech_payload(state: dict, stock: dict, now) -> dict:
+    """Чистый сборщик витрины Лаборатории (юнит-тесты без aiohttp)."""
+    tools = state["tools"]["level"]
+    techs = []
+    for key in TECH_ORDER:
+        level = state[key]["level"]
+        nxt = level + 1 if level < TECHS[key]["max"] else None
+        ready = next_tech_at(key, level, state[key]["updated_at"])
+        cost = tech_cost(key, nxt) if nxt else {}
+        tool = tech_tool_required(key, nxt) if nxt else 0
+        wait = int((ready - now).total_seconds()) if ready and ready > now else 0
+        techs.append({"key": key, "icon": TECHS[key]["icon"], "level": level, "max": TECHS[key]["max"],
+                      "next": nxt, "cost": cost, "tool": tool, "tool_ok": tools >= tool, "wait": wait,
+                      "cooldown_days": tech_cooldown_days(key, nxt) if nxt else 0,
+                      "affordable": bool(nxt) and tools >= tool and not wait and can_afford(stock, cost)})
+    nxt_tool = tools + 1 if tools < len(TOOL_COSTS) else None
+    return {
+        "tools": {"level": tools, "next": nxt_tool, "cost": TOOL_COSTS.get(nxt_tool, {}),
+                  "affordable": bool(nxt_tool) and can_afford(stock, TOOL_COSTS.get(nxt_tool, {}))},
+        "techs": techs, "stock": stock,
+        "effects": {"attack": RAID_ATTACK_BONUS_PER_LEVEL, "defense": RAID_DEFENSE_PER_LEVEL,
+                    "science": SCIENCE_PERCENT_PER_LEVEL, "comm": COMM_COOLDOWN_MINUTES_PER_LEVEL},
+    }
+
+
+async def handle_tech(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    async with db.pool.acquire() as conn:
+        state = await get_tech(conn, ctx.user_id)
+        stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
+    payload = build_tech_payload(state, stock, utcnow())
+    payload["res_names"] = resource_labels(ctx.lang)
+    return web.json_response(payload)
+
+
+async def _tech_call(request: web.Request, action) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    data = await _json(request)
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                result = await action(conn, ctx.user_id, data)
+    except TechError as e:
+        return fail(plain(e.localized(ctx.lang)))
+    return web.json_response({"ok": True, **result})
+
+
+async def handle_tech_up(request: web.Request) -> web.Response:
+    async def action(conn, uid, data):
+        tech = str(data.get("tech", ""))[:16]
+        if tech == "tools":
+            return {"tech": tech, "level": await upgrade_tools(conn, uid, utcnow())}
+        return {"tech": tech, "level": await upgrade_tech(conn, uid, tech, utcnow())}
+    return await _tech_call(request, action)
+
+
+async def handle_horse_buy(request: web.Request) -> web.Response:
+    async def action(conn, uid, data):
+        return {"horses": await buy_horse(conn, uid)}
+    return await _tech_call(request, action)
+
+
+async def handle_shuttle_charge(request: web.Request) -> web.Response:
+    async def action(conn, uid, data):
+        return {"until": (await charge_shuttle(conn, uid, utcnow())).isoformat()}
+    return await _tech_call(request, action)
 
 
 async def _team_effects(conn, team_id, now) -> dict:
@@ -478,6 +609,14 @@ async def handle_mines(request: web.Request) -> web.Response:
         battles = await mine_battles(conn)
         for b in battles:
             b["leaders"] = await _battle_leaders(conn, b)
+        my_mines = []
+        for m in mines:
+            if team_id is not None and m["team_id"] == team_id and m["captured_until"] and m["captured_until"] > now:
+                mined = await conn.fetchval(
+                    "SELECT COALESCE(SUM(delta), 0) FROM resource_ledger WHERE reason = $1 AND kind = $2 "
+                    "AND created_at >= $3", f"mine:{m['id']}", m["kind"], m["captured_at"])
+                my_mines.append({"id": m["id"], "kind": m["kind"], "mined": int(mined),
+                                 "captured_at": m["captured_at"].isoformat(), "until": m["captured_until"].isoformat()})
     target = {b["mine_id"]: b["battle_id"] for b in battles}
     out, my_income = [], 0
     for m in mines:
@@ -492,7 +631,7 @@ async def handle_mines(request: web.Request) -> web.Response:
             "until": m["captured_until"].isoformat() if held else None, "mine": bool(mine),
         })
     return web.json_response({
-        "mines": out, "in_team": team_id is not None, "my_income": my_income,
+        "mines": out, "in_team": team_id is not None, "my_income": my_income, "my_mines": my_mines,
         "hold_hours": MINE_HOLD_HOURS, "yield": MINE_YIELD_PER_MEMBER_HOUR,
         "res_names": resource_labels(ctx.lang),
         "battles": [{"id": b["battle_id"], "title": b["title"], "nomination": b["nomination_text"],
@@ -553,6 +692,8 @@ async def handle_raids(request: web.Request) -> web.Response:
         stats = await raid_stats(conn, ctx.user_id)
         revenges = await revenge_options(conn, ctx.user_id, now)
         team_fx = await _team_effects(conn, user["team_id"], now)
+        tech = await tech_levels(conn, ctx.user_id)
+        batteries = (await get_resources(conn, ctx.user_id, ("battery",)))["battery"]
         forsage_qty = await conn.fetchval(
             "SELECT qty FROM user_items WHERE user_id = $1 AND effect = 'forsage' AND hours = 0", ctx.user_id) or 0
     # Щит = личный щит или Купол команды (берём более поздний конец)
@@ -563,7 +704,10 @@ async def handle_raids(request: web.Request) -> web.Response:
     return web.json_response({
         "stock": stock,
         "res_names": resource_labels(ctx.lang),
-        "cooldown_left": attack_cooldown_left(user["last_raid_at"], now),
+        "cooldown_left": attack_cooldown_left(user["last_raid_at"], now, tech["comm"]),
+        "tech": {k: tech[k] for k in ("comm", "scout", "attack", "defense")}, "batteries": batteries,
+        "candidates": raid_candidates(tech["scout"]),
+        "meds": iso(user["meds_until"]),
         "shield": {
             "active": shield_active(user, now, team_fx["dome"]),
             "dome": iso(team_fx["dome"]),
@@ -603,15 +747,12 @@ async def handle_raid_scout(request: web.Request) -> web.Response:
     if off := await _feature_off("raids", ctx.lang):
         return off
     now = utcnow()
-    async with db.pool.acquire() as conn:
-        user = await conn.fetchrow("SELECT team_id, last_raid_at FROM users WHERE user_id = $1", ctx.user_id)
-        left = attack_cooldown_left(user["last_raid_at"], now)
-        if left > 0:
-            return fail(t(ctx.lang, "raid.err_cooldown", minutes=-(-left // 60)))
-        hydrogen = (await get_resources(conn, ctx.user_id))["hydrogen"]
-        if hydrogen < RAID_FUEL_HYDROGEN:
-            return fail(t(ctx.lang, "raid.err_fuel", need=RAID_FUEL_HYDROGEN, have=hydrogen))
-        targets = await find_targets(conn, ctx.user_id, user["team_id"], now)
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():   # разведка тратит батарейку
+                targets = await raid_scout(conn, ctx.user_id, now)
+    except RaidError as e:
+        return fail(plain(_raid_err(e, ctx.lang)))
     _remember_slots(ctx.user_id, [tg["user_id"] for tg in targets])
     return web.json_response({"ok": True, "targets": [{
         "slot": i,
@@ -646,7 +787,7 @@ async def handle_raid_go(request: web.Request) -> web.Response:
                 result = await execute_raid(conn, ctx.user_id, target_id, move, now,
                                             revenge_of=revenge_id or None)
         except RaidError as e:
-            return fail(e.localized(ctx.lang))
+            return fail(plain(_raid_err(e, ctx.lang)))
         defender = await conn.fetchrow(
             "SELECT user_id, display_name, lang, created_at FROM users WHERE user_id = $1", target_id)
         attacker = await conn.fetchrow(
@@ -700,17 +841,18 @@ async def handle_market(request: web.Request) -> web.Response:
         bids = await list_open_orders(conn, MARKET_APP_LIST_LIMIT, exclude_user=ctx.user_id,
                                       asset=asset, side="buy", team_id=scope_team)
         mine = await my_open_orders(conn, ctx.user_id)
-        user = await conn.fetchrow("SELECT inv_cutlets, balance, has_shuttle FROM users WHERE user_id = $1",
-                                   ctx.user_id)
-        stock = await get_resources(conn, ctx.user_id)
+        user = await conn.fetchrow("SELECT inv_cutlets, balance, has_shuttle, shuttle_until, horses, carts "
+                                   "FROM users WHERE user_id = $1", ctx.user_id)
+        stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
         history = await price_history(conn, asset, now)
         index = {}
         for a in MARKET_ASSETS:
             index[a] = index_change(history if a == asset else await price_history(conn, a, now))
         swaps = await list_swaps(conn, MARKET_APP_SWAPS_LIMIT, exclude_user=ctx.user_id, team_id=scope_team)
         my_sw = await my_swaps(conn, ctx.user_id)
-    shuttle = bool(user["has_shuttle"])
-    max_qty, max_orders = market_limits(shuttle, asset)
+    shuttle = shuttle_active(user, now)
+    max_qty, _ = market_limits(shuttle, asset)
+    max_orders = market_lots(user["horses"], user["carts"], shuttle)
     slim = lambda o: {"id": o["id"], "qty": o["qty"], "price": o["price"]}  # noqa: E731
     return web.json_response({
         "asset": asset,
@@ -727,7 +869,8 @@ async def handle_market(request: web.Request) -> web.Response:
         "shuttle": shuttle,
         "fee": min(SHUTTLE_MARKET_FEE_PERCENT if shuttle else MARKET_FEE_PERCENT,
                    team_market_fee_percent(team["max_members"]) if team_scope else 100),
-        "max_qty": max_qty, "max_orders": max_orders,
+        "max_qty": max_qty, "max_orders": max_orders, "open_orders": len(mine),
+        "lots": {"horses": user["horses"], "carts": user["carts"]}, "swap_kinds": list(TRADEABLE_KINDS),
         "min_price": market_min_price(asset), "max_price": MARKET_MAX_PRICE,
         "cutlet_floor": MARKET_CUTLET_MIN_PRICE,
         "history": history, "index": index,
@@ -1169,6 +1312,10 @@ def register_game_routes(app: web.Application) -> None:
     app.router.add_post("/api/craft_weekly", handle_craft_weekly)
     app.router.add_get("/api/storage", handle_storage)
     app.router.add_get("/api/mines", handle_mines)
+    app.router.add_get("/api/tech", handle_tech)
+    app.router.add_post("/api/tech/up", handle_tech_up)
+    app.router.add_post("/api/horse/buy", handle_horse_buy)
+    app.router.add_post("/api/shuttle/charge", handle_shuttle_charge)
     app.router.add_post("/api/item/use", handle_item_use)
     app.router.add_get("/api/referral", handle_referral)
     app.router.add_get("/api/raids", handle_raids)

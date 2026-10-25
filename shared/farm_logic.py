@@ -201,12 +201,15 @@ def farm_counts(miners: list[MinerState], now: datetime) -> dict[str, int]:
 # Слой БД: вызывается ВНУТРИ транзакции обработчика
 # --------------------------------------------------------------------------
 async def user_bonus_percent(conn, user) -> int:
-    """Постоянный бонус к добыче от станции команды (броня считается отдельно — у неё срок)."""
+    """Постоянный бонус к добыче: станция команды + 📚 наука (броня — отдельно, у неё срок)."""
+    from shared.economy import SCIENCE_PERCENT_PER_LEVEL
+    science = await conn.fetchval(
+        "SELECT level FROM user_tech WHERE user_id = $1 AND tech = 'science'", user["user_id"]) or 0
     station_level = 0
     if user["team_id"] is not None:
         station_level = await conn.fetchval(
             "SELECT level FROM team_stations WHERE team_id = $1", user["team_id"]) or 0
-    return farm_bonus_percent(0, station_level)
+    return farm_bonus_percent(0, station_level) + science * SCIENCE_PERCENT_PER_LEVEL
 
 
 async def apply_lazy_farm(conn, user_id: int, now: datetime | None = None):

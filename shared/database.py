@@ -522,6 +522,55 @@ SCHEMA_STATEMENTS: list[str] = [
     "INSERT INTO mines (id, kind) SELECT g, (ARRAY['metal', 'hydrogen', 'crystal', 'parts'])[1 + (g - 1) % 4] "
     "FROM generate_series(1, 40) g ON CONFLICT (id) DO NOTHING;",
     "ALTER TABLE battles ADD COLUMN IF NOT EXISTS mine_id INT;",
+    # --- 27.10: новые ресурсы, Лаборатория, лошади, сезоны ---
+    """
+    CREATE TABLE IF NOT EXISTS user_tech (
+        user_id BIGINT NOT NULL,
+        tech VARCHAR(16) NOT NULL,
+        level INT NOT NULL DEFAULT 0 CHECK (level >= 0),
+        updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, tech)
+    );
+    """,
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS horses INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS carts INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS meds_until TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS shuttle_until TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE mines ADD COLUMN IF NOT EXISTS cores_paid INT NOT NULL DEFAULT 0;",
+    """
+    CREATE TABLE IF NOT EXISTS user_badges (
+        user_id BIGINT NOT NULL,
+        season VARCHAR(7) NOT NULL,
+        place INT NOT NULL,
+        PRIMARY KEY (user_id, season)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS season_results (
+        season VARCHAR(7) PRIMARY KEY,
+        processed_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        payload JSONB
+    );
+    """,
+    # Разовые миграции 27.10 (флаги в feature_flags — повторно не выполняются):
+    # — Ремдрон станции убран: изделия и заряды снимаются;
+    # — рудники получают 7 видов ресурса (свободные перекрашиваются);
+    # — старожилам (до обновления) — 📡/🔭/⚔️ 1 уровня, чтобы налёты не встали; Шаттлу — заряд на 30 дней.
+    """
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM feature_flags WHERE key = 'migr:resources_v3') THEN
+        DELETE FROM user_items WHERE effect = 'station_drone';
+        UPDATE users SET station_boost = 0 WHERE station_boost <> 0;
+        UPDATE mines SET kind = (ARRAY['metal', 'hydrogen', 'crystal', 'parts', 'stone', 'wood', 'energy'])[1 + (id - 1) % 7]
+          WHERE team_id IS NULL;
+        INSERT INTO user_tech (user_id, tech, level)
+          SELECT u.user_id, x.tech, 1 FROM users u CROSS JOIN (VALUES ('comm'), ('scout'), ('attack')) AS x(tech)
+          ON CONFLICT DO NOTHING;
+        UPDATE users SET shuttle_until = NOW() + INTERVAL '30 days' WHERE has_shuttle AND shuttle_until IS NULL;
+        INSERT INTO feature_flags (key, enabled) VALUES ('migr:resources_v3', TRUE);
+      END IF;
+    END $$;
+    """,
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS armor_until TIMESTAMP WITH TIME ZONE;",
     # --- 25.10: склад ресурсов с лимитом, рецепты недели ---
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS res_capacity INT NOT NULL DEFAULT 500;",

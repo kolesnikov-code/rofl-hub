@@ -37,6 +37,8 @@ from shared.economy import (
     SWAP_MAX_QTY,
     market_fee,
     market_limits,
+    market_lots,
+    TRADEABLE_KINDS,
     market_min_price,
     team_market_fee_percent,
 )
@@ -99,7 +101,9 @@ async def _check_team_access(conn, user_id: int, team_id: int | None) -> int | N
 
 async def _lock_users(conn, ids: list[int]) -> dict:
     rows = await conn.fetch(
-        "SELECT user_id, inv_cutlets, has_shuttle, is_blocked, market_free_sales FROM users "
+        # has_shuttle = льготы Шаттла действуют, только пока он заряжен батарейкой (27.10)
+        "SELECT user_id, inv_cutlets, (has_shuttle AND COALESCE(shuttle_until > NOW(), FALSE)) AS has_shuttle, "
+        "is_blocked, market_free_sales, horses, carts FROM users "
         "WHERE user_id = ANY($1::bigint[]) ORDER BY user_id FOR UPDATE", sorted(set(ids)))
     return {r["user_id"]: r for r in rows}
 
@@ -153,7 +157,8 @@ async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price
         raise MarketError("common.no_profile")
     team_id = await _team_scope(conn, user_id, team_only)
     validate_order(qty, price, shuttle=bool(user["has_shuttle"]), asset=asset)
-    _, max_orders = market_limits(bool(user["has_shuttle"]), asset)
+    # Лоты везут лошади и телеги (27.10); заряженный Шаттл — свой большой лимит
+    max_orders = market_lots(user["horses"], user["carts"], bool(user["has_shuttle"]))
     open_orders = await conn.fetchval(
         "SELECT COUNT(*) FROM market_orders WHERE seller_id = $1 AND status = 'open'", user_id)
     if open_orders >= max_orders:
@@ -344,7 +349,7 @@ def index_change(history: list[dict]) -> dict:
 # Обмен ресурс ↔ ресурс
 # ============================================================================
 def validate_swap(give_kind: str, give_qty: int, want_kind: str, want_qty: int) -> None:
-    if give_kind not in RESOURCE_KINDS or want_kind not in RESOURCE_KINDS:
+    if give_kind not in TRADEABLE_KINDS or want_kind not in TRADEABLE_KINDS:
         raise MarketError("mk.err_asset")
     if give_kind == want_kind:
         raise MarketError("sw.err_same")

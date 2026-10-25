@@ -13,12 +13,14 @@ from __future__ import annotations
 
 import logging
 
-from shared.economy import GAME_RESOURCE, RES_CAPACITY_BASE, RESOURCE_KINDS, RESOURCE_MAX_STOCK, RESOURCE_PER_WIN
+from shared.economy import (ALL_KINDS, GAME_RESOURCE, RES_CAPACITY_BASE, RESOURCE_KINDS, RESOURCE_MAX_STOCK,
+                            RESOURCE_PER_WIN)
 from shared.locales import t
 
 logger = logging.getLogger(__name__)
 
-RESOURCE_ICONS = {"metal": "⛏", "hydrogen": "💧", "crystal": "💎", "parts": "⚙️"}
+RESOURCE_ICONS = {"metal": "⛏", "hydrogen": "💧", "crystal": "💎", "parts": "⚙️",
+                  "stone": "🪨", "wood": "🪵", "fire": "🔥", "energy": "⚡", "battery": "🔋", "cow": "🐄", "core": "☢️"}
 
 
 class InsufficientResources(Exception):
@@ -35,7 +37,7 @@ def resource_name(lang: str, kind: str) -> str:
 def format_bundle(lang: str, bundle: dict[str, int], sep: str = " · ") -> str:
     """«⛏ 20 Металл · 💧 20 Водород» — для цен и добычи."""
     parts = [f"{RESOURCE_ICONS[k]} {bundle[k]} {t(lang, f'res.{k}')}"
-             for k in RESOURCE_KINDS if bundle.get(k)]
+             for k in ALL_KINDS if bundle.get(k)]
     return sep.join(parts) if parts else "—"
 
 
@@ -47,10 +49,10 @@ def game_resource_gain(game_type: str) -> tuple[str, int] | None:
     return kind, RESOURCE_PER_WIN.get(game_type, 1)
 
 
-async def get_resources(conn, user_id: int) -> dict[str, int]:
-    """Запасы всех видов (нулевые тоже), без блокировки."""
+async def get_resources(conn, user_id: int, kinds: tuple = RESOURCE_KINDS) -> dict[str, int]:
+    """Запасы видов kinds (по умолчанию 4 базовых; нулевые тоже), без блокировки."""
     rows = await conn.fetch("SELECT kind, qty FROM user_resources WHERE user_id = $1", user_id)
-    stock = {k: 0 for k in RESOURCE_KINDS}
+    stock = {k: 0 for k in kinds}
     for r in rows:
         if r["kind"] in stock:
             stock[r["kind"]] = r["qty"]
@@ -61,7 +63,7 @@ async def lock_resources(conn, user_id: int) -> dict[str, int]:
     """То же, но строки заблокированы FOR UPDATE (внутри транзакции)."""
     rows = await conn.fetch(
         "SELECT kind, qty FROM user_resources WHERE user_id = $1 ORDER BY kind FOR UPDATE", user_id)
-    stock = {k: 0 for k in RESOURCE_KINDS}
+    stock = {k: 0 for k in ALL_KINDS}
     for r in rows:
         if r["kind"] in stock:
             stock[r["kind"]] = r["qty"]
@@ -84,10 +86,10 @@ async def change_resource(conn, user_id: int, kind: str, delta: int, reason: str
     эскроу) вызывают без cap — место проверяется до сделки. Технический потолок —
     RESOURCE_MAX_STOCK.
     """
-    if kind not in RESOURCE_KINDS:
+    if kind not in ALL_KINDS:
         raise ValueError(f"unknown resource {kind}")
     if delta == 0:
-        return (await get_resources(conn, user_id))[kind]
+        return (await get_resources(conn, user_id, ALL_KINDS))[kind]
 
     if delta > 0:
         limit = min(cap, RESOURCE_MAX_STOCK) if cap is not None else RESOURCE_MAX_STOCK
@@ -111,7 +113,7 @@ async def change_resource(conn, user_id: int, kind: str, delta: int, reason: str
             RETURNING qty
             """, user_id, kind, delta)
         if new_qty is None:
-            have = (await get_resources(conn, user_id))[kind]
+            have = (await get_resources(conn, user_id, ALL_KINDS))[kind]
             raise InsufficientResources(kind, -delta, have)
 
     await conn.execute(
@@ -147,7 +149,7 @@ async def grant_bundle(conn, user_id: int, bundle: dict[str, int], reason: str,
 async def free_space(conn, user_id: int, kind: str) -> int:
     """Сколько ресурса ещё влезет на склад (для проверок перед покупкой/обменом)."""
     cap = await resource_capacity(conn, user_id)
-    have = (await get_resources(conn, user_id))[kind]
+    have = (await get_resources(conn, user_id, ALL_KINDS))[kind]
     return max(0, cap - have)
 
 

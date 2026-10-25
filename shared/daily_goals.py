@@ -18,7 +18,10 @@ from datetime import date, datetime, timedelta
 
 from shared.economy import (
     DAILY_CHEST_COINS,
+    CHEST_SPECIALS,
+    CHEST_STREAK_COW,
     DAILY_CHEST_RESOURCE,
+    DAILY_STREAK_BONUS_EVERY,
     DAILY_GOALS_PER_DAY,
     DAILY_STREAK_BONUS_COINS,
     DAILY_STREAK_BONUS_EVERY,
@@ -175,8 +178,21 @@ async def claim_chest(conn, user_id: int, goals: list[Goal], day: date) -> dict:
     await change_balance(conn, user_id, coins, "daily_chest", day.isoformat())
     await change_resource(conn, user_id, kind, DAILY_CHEST_RESOURCE, "daily_chest", day.isoformat(),
                           cap=await resource_capacity(conn, user_id))
+    # Особый бонус сундука (27.10): древесина / камень / электричество по дню; 7-й день серии — корова
+    sp_kind, sp_qty = chest_special(user_id, day)
+    cap = await resource_capacity(conn, user_id)
+    await change_resource(conn, user_id, sp_kind, sp_qty, "daily_chest", day.isoformat(), cap=cap)
+    cow = CHEST_STREAK_COW if streak % DAILY_STREAK_BONUS_EVERY == 0 else 0
+    if cow:
+        await change_resource(conn, user_id, "cow", cow, "daily_chest", day.isoformat(), cap=cap)
     await conn.execute("UPDATE users SET goal_streak = $2, goal_last_claim = $3 WHERE user_id = $1",
                        user_id, streak, day)
     logger.info("[GOALS] chest user=%s day=%s coins=%s %s=%s streak=%s",
                 user_id, day, coins, kind, DAILY_CHEST_RESOURCE, streak)
-    return {"coins": coins, "kind": kind, "qty": DAILY_CHEST_RESOURCE, "streak": streak}
+    return {"coins": coins, "kind": kind, "qty": DAILY_CHEST_RESOURCE, "streak": streak,
+            "special": {sp_kind: sp_qty, **({"cow": cow} if cow else {})}}
+
+
+def chest_special(user_id: int, day) -> tuple[str, int]:
+    """Особый ресурс сундука: детерминирован по (игрок, дата), как и цели."""
+    return CHEST_SPECIALS[(user_id + day.toordinal()) % len(CHEST_SPECIALS)]
