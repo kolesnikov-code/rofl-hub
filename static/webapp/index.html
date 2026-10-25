@@ -318,12 +318,19 @@
     display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
     transition: transform .2s; overflow: visible; }
   .mine:hover { transform: scale(1.12); }
-  .mine.free { opacity: .55; }
+  .mine.free { border-color: rgba(0, 255, 225, .55); background: #1f2c4f;
+    box-shadow: 0 0 12px rgba(0, 255, 225, .35); animation: freeGlow 3s ease-in-out infinite; }
   .mine .no { position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 10px;
     color: var(--muted); font-weight: 700; white-space: nowrap; }
   .mine .tb { position: absolute; top: -8px; right: -8px; font-size: 13px; background: #0d1426;
     border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
   .mine.held { border-color: var(--mc); box-shadow: 0 0 14px var(--mc); animation: pumpBob 2.4s ease-in-out infinite; }
+  /* занятый рудник: «бронированное» зубчатое кольцо — на шахте идёт добыча чужой командой */
+  .mine.held::before { content: ""; position: absolute; inset: -10px; border-radius: 50%; pointer-events: none;
+    background: repeating-conic-gradient(var(--mc) 0deg 11deg, rgba(0, 0, 0, 0) 11deg 22.5deg);
+    -webkit-mask: radial-gradient(circle, transparent 0 62%, #000 63% 76%, transparent 77%);
+            mask: radial-gradient(circle, transparent 0 62%, #000 63% 76%, transparent 77%);
+    filter: drop-shadow(0 0 3px var(--mc)); animation: armorSpin 14s linear infinite; }
   .mine.held::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--mc);
     opacity: 0; animation: pumpRing 2.4s ease-out infinite; }
   .mine.mine-own { border-color: #fde047; box-shadow: 0 0 18px rgba(253, 224, 71, .55); }
@@ -334,10 +341,16 @@
   .mine .drop:nth-child(2) { animation-delay: .7s; margin-left: -9px; }
   .mine .drop:nth-child(3) { animation-delay: 1.4s; margin-left: 3px; }
   @keyframes pumpBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  @keyframes armorSpin { to { transform: rotate(360deg); } }
+  @keyframes freeGlow { 0%, 100% { box-shadow: 0 0 8px rgba(0, 255, 225, .25); } 50% { box-shadow: 0 0 18px rgba(0, 255, 225, .6); } }
   @keyframes pumpRing { 0% { transform: scale(.9); opacity: .7; } 100% { transform: scale(1.5); opacity: 0; } }
   @keyframes dropUp { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateY(-34px); opacity: 0; } }
   @keyframes targetPulse { 0%, 100% { box-shadow: 0 0 8px rgba(251, 146, 60, .4); } 50% { box-shadow: 0 0 22px rgba(251, 146, 60, .9); } }
-  @media (prefers-reduced-motion: reduce) { .mine.held, .mine.held::after, .mine .drop, .mine.target { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .mine.held, .mine.held::after, .mine.held::before, .mine.free, .mine .drop, .mine.target { animation: none; } }
+  /* Склад: ресурсы — одна плашка во всю ширину, внутри 1–3 колонки */
+  .res-cols { display: grid; gap: 4px 22px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .res-cols .resbar .k { white-space: nowrap; }
+  .res-actions { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 6px; }
   .map-lock { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86%, 460px);
     background: rgba(10, 14, 28, .88); border: 1px solid rgba(255, 255, 255, .16); border-radius: 14px;
     padding: 14px 16px; text-align: center; font-weight: 700; font-size: 14px; z-index: 2; }
@@ -417,19 +430,19 @@
       sk_shuttleCharge: "🚀 ЗАРЯД ШАТТЛА", sk_shuttleUntil: "🔋 Шаттл заряжен до {t}", sk_shuttleEmpty: "🪫 Шаттл разряжен — льготы биржи не действуют.",
       sk_chargeBtn: "🔋 Зарядить: 1 батарейка = {d} дней",
       raid_needTech: "Для налётов нужны 📡 связь, 🔭 разведка и ⚔️ нападение 1 уровня.", raid_toLab: "🔬 В Лабораторию",
-      raid_scoutInfo: "Разведка тратит 1 🔋 и показывает целей: {n}", raid_medsOn: "💊 Аптечка до {t}: болезни не страшны",
+      raid_scoutInfo: "Разведка показывает целей: {n}. Топливо налёта — водород 💧", raid_medsOn: "💊 Аптечка до {t}: болезни не страшны",
       raid_medsOff: "💊 Без Аптечки 15% трофея пропадает в лазарете", raid_note_sick: "🤒 Без Аптечки часть трофея пропала в лазарете",
       mn_mined: "добыто {n} {i}", mn_left: "до конца добычи: {t}", mn_commNote: "Доход идёт бойцам с 📡 связью 1+; без 💊 Аптечки каждый 7-й час пропадает.",
       top_season: "🏆 Сезон", top_rich: "💰 Богачи", top_seasonTitle: "🏆 СЕЗОН {s}", top_left: "До конца сезона: {t}",
       top_myPlace: "Твоё место: {p} из {n} · заработано {e} 🪙", top_noPlace: "Ты ещё не в таблице — сыграй, и место появится.",
       top_prizes: "Призы победителям сезона объявляет организатор. ТОП-10 получает значок сезона в паспорт.", top_rules: "Считаются монеты, заработанные в игре за месяц: ферма, победы, дуэли, квесты, сундук, продажи. Баланс не сбрасывается.",
       top_players: "👤 ИГРОКИ СЕЗОНА", top_teams: "🏆 КОМАНДЫ СЕЗОНА", top_empty: "Сезон только начался — стань первым!",
-      top_noTeams: "Битв в этом сезоне ещё не было.", top_teamRules: "Очки за места в битвах сезона: 10 · 7 · 5 · 4 · 3 · 2 · 1. Тройке лучших — ☢️ Ядро каждому бойцу.",
+      top_noTeams: "Битв в этом сезоне ещё не было.", top_teamRules: "Очки за места в битвах сезона: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
      
       lab_tools: "🧰 ИНСТРУМЕНТЫ", lab_toolsHint: "Наборы не тратятся — они открывают сложные сборки и уровни технологий.",
       lab_nextTool: "Следующий набор: {t}", lab_craftTool: "Собрать набор", lab_toolsMax: "🧬 Все наборы собраны!",
       lab_level: "Уровень {l} из {m}", lab_max: "🏆 Максимальный уровень", lab_wait: "⏳ Следующий уровень через {t}",
-      lab_up: "Изучить уровень {l}", lab_sciGate: "📚 Уровень {l} откроется, когда все технологии будут изучены до уровня {l}", lab_cooldown: "После изучения следующий уровень — через {d} дн.", lab_done: "🔬 Готово! Уровень {l}",
+      lab_up: "Изучить уровень {l}", res_stone_src: "дуэли, рудники, сундук", res_wood_src: "квесты, рудники, сундук", res_fire_src: "Костёр в мастерской", res_energy_src: "шанс за победу, рудники, сундук", res_battery_src: "мастерская", res_cow_src: "квесты, сундук 7-го дня, биржа", res_core_src: "рудники и призы организатора", sk_items: "🧪 Изделий на складе: {n} / {m} (10% вместимости)", sk_cutletsName: "Кибер-котлеты", it_total: "На складе: {n} шт.", lab_sciGate: "📚 Уровень {l} откроется, когда все технологии будут изучены до уровня {l}", lab_cooldown: "После изучения следующий уровень — через {d} дн.", lab_done: "🔬 Готово! Уровень {l}",
       lab_eff_comm: "1 уровень — налёты и доход с рудников; каждый следующий −{c} мин перезарядки налёта",
       lab_eff_scout: "Без неё налётов нет; целей в разведке: 2 + уровень",
       lab_eff_attack: "Без него налётов нет; каждый уровень после первого +{a}% к трофеям",
@@ -512,7 +525,7 @@
       outside: "Открой это приложение из Telegram-бота ROFL HUB.",
       robotsTitle: "🤖 ТВОИ РОБОТЫ", buyMore: "🛒 Купить", rateShort: "{v} 🪙/ч",
       refuelOne: "🥩 Заправить 1", refuelAll: "⚡ Заправить все", refueled: "Заправлено: {n} 🥩",
-      res_metal_src: "КНБ и дуэли", res_hydrogen_src: "Больше/Меньше", res_crystal_src: "Викторина",
+      res_metal_src: "КНБ", res_hydrogen_src: "Больше/Меньше", res_crystal_src: "Викторина",
       res_parts_src: "Кибер-Сейф", resWhere: "где добывать",
       ws_title: "🔧 МАСТЕРСКАЯ", ws_hint: "Ресурсы из игр превращаются в усиления. Хватает ресурсов — жми «Собрать».",
       ws_craft: "Собрать", ws_owned: "✅ Уже есть", ws_crafted: "Готово! Усиление уже работает.",
@@ -636,19 +649,19 @@
       sk_shuttleCharge: "🚀 SHUTTLE CHARGE", sk_shuttleUntil: "🔋 Shuttle charged until {t}", sk_shuttleEmpty: "🪫 Shuttle is out of charge — market perks are off.",
       sk_chargeBtn: "🔋 Charge: 1 battery = {d} days",
       raid_needTech: "Raids need 📡 comms, 🔭 scouting and ⚔️ attack at level 1.", raid_toLab: "🔬 To the Lab",
-      raid_scoutInfo: "Scouting costs 1 🔋 and shows targets: {n}", raid_medsOn: "💊 First-aid kit until {t}: no sickness",
+      raid_scoutInfo: "Scouting shows targets: {n}. Raid fuel is hydrogen 💧", raid_medsOn: "💊 First-aid kit until {t}: no sickness",
       raid_medsOff: "💊 Without a first-aid kit 15% of the loot is lost to sickness", raid_note_sick: "🤒 No first-aid kit: part of the loot was lost to sickness",
       mn_mined: "mined {n} {i}", mn_left: "mining ends in: {t}", mn_commNote: "Income goes to members with 📡 comms 1+; without a 💊 kit every 7th hour is lost.",
       top_season: "🏆 Season", top_rich: "💰 Richest", top_seasonTitle: "🏆 SEASON {s}", top_left: "Season ends in: {t}",
       top_myPlace: "Your place: {p} of {n} · earned {e} 🪙", top_noPlace: "You're not in the table yet — play and you'll get a place.",
       top_prizes: "Season prizes are announced by the organizer. The TOP-10 get a season badge in their passport.", top_rules: "Counts coins earned in the game this month: farm, wins, duels, quests, chest, sales. Balances are never reset.",
       top_players: "👤 SEASON PLAYERS", top_teams: "🏆 SEASON TEAMS", top_empty: "The season has just started — be the first!",
-      top_noTeams: "No battles this season yet.", top_teamRules: "Points for places in season battles: 10 · 7 · 5 · 4 · 3 · 2 · 1. The top three get ☢️ Core for every member.",
+      top_noTeams: "No battles this season yet.", top_teamRules: "Points for places in season battles: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
      
       lab_tools: "🧰 TOOLS", lab_toolsHint: "Tool kits are never used up — they unlock advanced recipes and tech levels.",
       lab_nextTool: "Next kit: {t}", lab_craftTool: "Build the kit", lab_toolsMax: "🧬 All kits built!",
       lab_level: "Level {l} of {m}", lab_max: "🏆 Max level", lab_wait: "⏳ Next level in {t}",
-      lab_up: "Research level {l}", lab_sciGate: "📚 Level {l} opens once every tech is researched to level {l}", lab_cooldown: "After researching, the next level opens in {d} d.", lab_done: "🔬 Done! Level {l}",
+      lab_up: "Research level {l}", res_stone_src: "duels, mines, chest", res_wood_src: "quests, mines, chest", res_fire_src: "Bonfire in the workshop", res_energy_src: "a chance per win, mines, chest", res_battery_src: "workshop", res_cow_src: "quests, 7th-day chest, market", res_core_src: "mines and organizer prizes", sk_items: "🧪 Items in storage: {n} / {m} (10% of capacity)", sk_cutletsName: "Cyber-cutlets", it_total: "In storage: {n} pcs", lab_sciGate: "📚 Level {l} opens once every tech is researched to level {l}", lab_cooldown: "After researching, the next level opens in {d} d.", lab_done: "🔬 Done! Level {l}",
       lab_eff_comm: "Level 1 — raids and mine income; each next level −{c} min raid recharge",
       lab_eff_scout: "No raids without it; targets in scouting: 2 + level",
       lab_eff_attack: "No raids without it; each level after the first +{a}% loot",
@@ -731,7 +744,7 @@
       outside: "Open this app from the ROFL HUB Telegram bot.",
       robotsTitle: "🤖 YOUR ROBOTS", buyMore: "🛒 Buy", rateShort: "{v} 🪙/h",
       refuelOne: "🥩 Load 1", refuelAll: "⚡ Load all", refueled: "Loaded: {n} 🥩",
-      res_metal_src: "RPS & duels", res_hydrogen_src: "High/Low", res_crystal_src: "Quiz",
+      res_metal_src: "RPS", res_hydrogen_src: "High/Low", res_crystal_src: "Quiz",
       res_parts_src: "Cyber-Safe", resWhere: "where to mine",
       ws_title: "🔧 WORKSHOP", ws_hint: "Game resources turn into upgrades. Enough resources — tap “Build”.",
       ws_craft: "Build", ws_owned: "✅ Owned", ws_crafted: "Done! The upgrade is already working.",
@@ -944,7 +957,7 @@
     "sk_chargeBtn": "🔋 اشحن: بطارية واحدة = {d} أيام",
     "raid_needTech": "الغارات تحتاج إلى 📡 الاتصالات و🔭 الاستطلاع و⚔️ الهجوم من المستوى 1.",
     "raid_toLab": "🔬 إلى المختبر",
-    "raid_scoutInfo": "الاستطلاع يستهلك 1 🔋 ويعرض الأهداف: {n}",
+    "raid_scoutInfo": "الاستطلاع يعرض الأهداف: {n}. وقود الغارة هو الهيدروجين 💧",
     "raid_medsOn": "💊 حقيبة الإسعاف حتى {t}: لا خوف من الأمراض",
     "raid_medsOff": "💊 بلا حقيبة إسعاف يضيع 15% من الغنيمة في المستوصف",
     "raid_note_sick": "🤒 بلا حقيبة إسعاف ضاع جزء من الغنيمة في المستوصف",
@@ -963,7 +976,7 @@
     "top_teams": "🏆 فرق الموسم",
     "top_empty": "الموسم بدأ للتو — كن الأول!",
     "top_noTeams": "لم تُقم معارك في هذا الموسم بعد.",
-    "top_teamRules": "نقاط المراكز في معارك الموسم: 10 · 7 · 5 · 4 · 3 · 2 · 1. لكل مقاتل في الفرق الثلاثة الأولى ☢️ نواة.",
+    "top_teamRules": "نقاط المراكز في معارك الموسم: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 الأدوات",
     "lab_toolsHint": "الأطقم لا تُستهلك — فهي تفتح التجميعات المعقدة ومستويات التقنيات.",
     "lab_nextTool": "الطقم التالي: {t}",
@@ -973,6 +986,16 @@
     "lab_max": "🏆 المستوى الأقصى",
     "lab_wait": "⏳ المستوى التالي بعد {t}",
     "lab_up": "ادرس المستوى {l}",
+    "res_stone_src": "المبارزات، المناجم، الصندوق",
+    "res_wood_src": "المهمات، المناجم، الصندوق",
+    "res_fire_src": "نار المخيم في الورشة",
+    "res_energy_src": "فرصة مع كل فوز، المناجم، الصندوق",
+    "res_battery_src": "الورشة",
+    "res_cow_src": "المهمات، صندوق اليوم السابع، البورصة",
+    "res_core_src": "المناجم وجوائز المنظّم",
+    "sk_items": "🧪 العناصر في المخزن: {n} / {m} (10% من السعة)",
+    "sk_cutletsName": "شرائح سايبر",
+    "it_total": "في المخزن: {n} قطعة",
     "lab_sciGate": "📚 يُفتح المستوى {l} عندما تصل كل التقنيات إلى المستوى {l}",
     "lab_cooldown": "بعد الدراسة يأتي المستوى التالي بعد {d} يومًا.",
     "lab_done": "🔬 تم! المستوى {l}",
@@ -1108,7 +1131,7 @@
     "refuelOne": "🥩 زوّد 1",
     "refuelAll": "⚡ زوّد الكل",
     "refueled": "تم التزويد: {n} 🥩",
-    "res_metal_src": "حجر-ورقة-مقص والمبارزات",
+    "res_metal_src": "حجر-ورقة-مقص",
     "res_hydrogen_src": "أعلى/أقل",
     "res_crystal_src": "الكويز",
     "res_parts_src": "الخزنة السيبرانية",
@@ -1406,7 +1429,7 @@
     "sk_chargeBtn": "🔋 চার্জ দাও: 1টা ব্যাটারি = {d} দিন",
     "raid_needTech": "রেইডের জন্য 📡 যোগাযোগ, 🔭 রেকি আর ⚔️ হামলা — তিনটারই লেভেল 1 লাগবে।",
     "raid_toLab": "🔬 ল্যাবে যাও",
-    "raid_scoutInfo": "রেকিতে খরচ 1 🔋, দেখা যাবে টার্গেট: {n}",
+    "raid_scoutInfo": "রেকি টার্গেট দেখায়: {n}। হানার জ্বালানি হাইড্রোজেন 💧",
     "raid_medsOn": "💊 ফার্স্ট-এইড কিট {t} পর্যন্ত: অসুস্থতার ভয় নেই",
     "raid_medsOff": "💊 ফার্স্ট-এইড কিট ছাড়া লুটের 15% হাসপাতালে চলে যায়",
     "raid_note_sick": "🤒 ফার্স্ট-এইড কিট ছিল না: লুটের একটা অংশ হাসপাতালে গেছে",
@@ -1425,7 +1448,7 @@
     "top_teams": "🏆 সিজনের টিম",
     "top_empty": "সিজন মাত্র শুরু হয়েছে — প্রথম হও!",
     "top_noTeams": "এই সিজনে এখনো কোনো লড়াই হয়নি।",
-    "top_teamRules": "সিজনের লড়াইয়ে স্থান অনুযায়ী পয়েন্ট: 10 · 7 · 5 · 4 · 3 · 2 · 1। প্রথম তিন টিমের প্রতিটি সদস্য পায় ☢️ কোর।",
+    "top_teamRules": "সিজনের লড়াইয়ে স্থান অনুযায়ী পয়েন্ট: 10 · 7 · 5 · 4 · 3 · 2 · 1।",
     "lab_tools": "🧰 যন্ত্রসেট",
     "lab_toolsHint": "যন্ত্রসেট খরচ হয় না — এগুলো জটিল রেসিপি আর প্রযুক্তির লেভেল খুলে দেয়।",
     "lab_nextTool": "পরের সেট: {t}",
@@ -1435,6 +1458,16 @@
     "lab_max": "🏆 সর্বোচ্চ লেভেল",
     "lab_wait": "⏳ পরের লেভেল {t} পরে",
     "lab_up": "লেভেল {l} শেখো",
+    "res_stone_src": "ডুয়েল, খনি, সিন্দুক",
+    "res_wood_src": "কোয়েস্ট, খনি, সিন্দুক",
+    "res_fire_src": "ওয়ার্কশপে আগুনের কুণ্ড",
+    "res_energy_src": "প্রতি জয়ে সুযোগ, খনি, সিন্দুক",
+    "res_battery_src": "ওয়ার্কশপ",
+    "res_cow_src": "কোয়েস্ট, ৭ম দিনের সিন্দুক, বাজার",
+    "res_core_src": "খনি আর আয়োজকের পুরস্কার",
+    "sk_items": "🧪 গুদামে জিনিস: {n} / {m} (ধারণক্ষমতার 10%)",
+    "sk_cutletsName": "সাইবার-কাটলেট",
+    "it_total": "গুদামে: {n} টি",
     "lab_sciGate": "📚 লেভেল {l} খুলবে, যখন সব প্রযুক্তি লেভেল {l} পর্যন্ত শেখা হবে",
     "lab_cooldown": "শেখার পর পরের লেভেল খুলবে {d} দিন পরে।",
     "lab_done": "🔬 হয়ে গেছে! লেভেল {l}",
@@ -1570,7 +1603,7 @@
     "refuelOne": "🥩 1টা ভরো",
     "refuelAll": "⚡ সব ভরো",
     "refueled": "ভরা হলো: {n} 🥩",
-    "res_metal_src": "পাথর-কাঁচি ও ডুয়েল",
+    "res_metal_src": "রক-পেপার-সিজার্স",
     "res_hydrogen_src": "বেশি/কম",
     "res_crystal_src": "কুইজ",
     "res_parts_src": "সাইবার-সিন্দুক",
@@ -1866,7 +1899,7 @@
     "sk_chargeBtn": "🔋 Laden: 1 Batterie = {d} Tage",
     "raid_needTech": "Für Raids brauchst du 📡 Funk, 🔭 Aufklärung und ⚔️ Angriff auf Stufe 1.",
     "raid_toLab": "🔬 Zum Labor",
-    "raid_scoutInfo": "Die Aufklärung kostet 1 🔋 und zeigt Ziele: {n}",
+    "raid_scoutInfo": "Die Aufklärung zeigt Ziele: {n}. Treibstoff für Überfälle ist Wasserstoff 💧",
     "raid_medsOn": "💊 Erste Hilfe bis {t}: Krankheiten sind egal",
     "raid_medsOff": "💊 Ohne Erste Hilfe gehen 15% der Beute im Lazarett verloren",
     "raid_note_sick": "🤒 Ohne Erste Hilfe ging ein Teil der Beute im Lazarett verloren",
@@ -1885,7 +1918,7 @@
     "top_teams": "🏆 TEAMS DER SAISON",
     "top_empty": "Die Saison hat gerade erst begonnen — sei der Erste!",
     "top_noTeams": "In dieser Saison gab es noch keine Schlachten.",
-    "top_teamRules": "Punkte für Plätze in den Saison-Schlachten: 10 · 7 · 5 · 4 · 3 · 2 · 1. Die drei Besten bekommen ☢️ Kern für jeden Kämpfer.",
+    "top_teamRules": "Punkte für Plätze in den Saison-Schlachten: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 WERKZEUG",
     "lab_toolsHint": "Die Sets verbrauchen sich nicht — sie schalten komplexe Bauten und Technologiestufen frei.",
     "lab_nextTool": "Nächstes Set: {t}",
@@ -1895,6 +1928,16 @@
     "lab_max": "🏆 Höchste Stufe",
     "lab_wait": "⏳ Nächste Stufe in {t}",
     "lab_up": "Stufe {l} erforschen",
+    "res_stone_src": "Duelle, Minen, Truhe",
+    "res_wood_src": "Quests, Minen, Truhe",
+    "res_fire_src": "Lagerfeuer in der Werkstatt",
+    "res_energy_src": "Chance pro Sieg, Minen, Truhe",
+    "res_battery_src": "Werkstatt",
+    "res_cow_src": "Quests, Truhe am 7. Tag, Börse",
+    "res_core_src": "Minen und Preise des Veranstalters",
+    "sk_items": "🧪 Gegenstände im Lager: {n} / {m} (10 % der Kapazität)",
+    "sk_cutletsName": "Cyber-Koteletts",
+    "it_total": "Im Lager: {n} Stk.",
     "lab_sciGate": "📚 Stufe {l} öffnet sich, sobald alle Technologien auf Stufe {l} sind",
     "lab_cooldown": "Nach der Forschung öffnet sich die nächste Stufe in {d} T.",
     "lab_done": "🔬 Fertig! Stufe {l}",
@@ -2030,7 +2073,7 @@
     "refuelOne": "🥩 1 tanken",
     "refuelAll": "⚡ Alle tanken",
     "refueled": "Getankt: {n} 🥩",
-    "res_metal_src": "SSP & Duelle",
+    "res_metal_src": "SSP",
     "res_hydrogen_src": "Höher/Tiefer",
     "res_crystal_src": "Quiz",
     "res_parts_src": "Cyber-Tresor",
@@ -2328,7 +2371,7 @@
     "sk_chargeBtn": "🔋 Cargar: 1 batería = {d} días",
     "raid_needTech": "Para los asaltos hacen falta 📡 comunicaciones, 🔭 exploración y ⚔️ ataque de nivel 1.",
     "raid_toLab": "🔬 Al Laboratorio",
-    "raid_scoutInfo": "La exploración gasta 1 🔋 y muestra objetivos: {n}",
+    "raid_scoutInfo": "La exploración muestra objetivos: {n}. El combustible del asalto es hidrógeno 💧",
     "raid_medsOn": "💊 Botiquín hasta {t}: sin miedo a las enfermedades",
     "raid_medsOff": "💊 Sin botiquín, el 15% del botín se pierde en la enfermería",
     "raid_note_sick": "🤒 Sin botiquín, parte del botín se perdió en la enfermería",
@@ -2347,7 +2390,7 @@
     "top_teams": "🏆 EQUIPOS DE LA TEMPORADA",
     "top_empty": "La temporada acaba de empezar: ¡sé el primero!",
     "top_noTeams": "Aún no ha habido batallas esta temporada.",
-    "top_teamRules": "Puntos por puesto en las batallas de la temporada: 10 · 7 · 5 · 4 · 3 · 2 · 1. Los tres mejores reciben ☢️ Núcleo para cada miembro.",
+    "top_teamRules": "Puntos por puesto en las batallas de la temporada: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 HERRAMIENTAS",
     "lab_toolsHint": "Los kits no se gastan: abren recetas complejas y niveles de tecnología.",
     "lab_nextTool": "Siguiente kit: {t}",
@@ -2357,6 +2400,16 @@
     "lab_max": "🏆 Nivel máximo",
     "lab_wait": "⏳ Siguiente nivel en {t}",
     "lab_up": "Investigar nivel {l}",
+    "res_stone_src": "duelos, minas, cofre",
+    "res_wood_src": "misiones, minas, cofre",
+    "res_fire_src": "Hoguera en el taller",
+    "res_energy_src": "probabilidad por victoria, minas, cofre",
+    "res_battery_src": "taller",
+    "res_cow_src": "misiones, cofre del 7.º día, bolsa",
+    "res_core_src": "minas y premios del organizador",
+    "sk_items": "🧪 Objetos en el almacén: {n} / {m} (10% de la capacidad)",
+    "sk_cutletsName": "Ciber-chuletas",
+    "it_total": "En el almacén: {n} uds.",
     "lab_sciGate": "📚 El nivel {l} se abre cuando todas las tecnologías estén en el nivel {l}",
     "lab_cooldown": "Tras investigar, el siguiente nivel llega en {d} d.",
     "lab_done": "🔬 ¡Listo! Nivel {l}",
@@ -2492,7 +2545,7 @@
     "refuelOne": "🥩 Cargar 1",
     "refuelAll": "⚡ Cargar todas",
     "refueled": "Cargadas: {n} 🥩",
-    "res_metal_src": "PPT y duelos",
+    "res_metal_src": "PPT",
     "res_hydrogen_src": "Mayor/Menor",
     "res_crystal_src": "Trivia",
     "res_parts_src": "Ciber-Caja Fuerte",
@@ -2788,7 +2841,7 @@
     "sk_chargeBtn": "🔋 Recharger : 1 pile = {d} jours",
     "raid_needTech": "Les raids exigent 📡 communications, 🔭 reconnaissance et ⚔️ attaque niveau 1.",
     "raid_toLab": "🔬 Au Labo",
-    "raid_scoutInfo": "La reconnaissance coûte 1 🔋 et montre des cibles : {n}",
+    "raid_scoutInfo": "La reconnaissance montre des cibles : {n}. Le carburant du raid, c'est l'hydrogène 💧",
     "raid_medsOn": "💊 Trousse de secours jusqu'au {t} : pas de maladie",
     "raid_medsOff": "💊 Sans trousse de secours, 15 % du butin se perd à l'infirmerie",
     "raid_note_sick": "🤒 Sans trousse de secours, une partie du butin s'est perdue à l'infirmerie",
@@ -2807,7 +2860,7 @@
     "top_teams": "🏆 ÉQUIPES DE LA SAISON",
     "top_empty": "La saison vient de commencer — sois le premier !",
     "top_noTeams": "Aucune bataille cette saison pour l'instant.",
-    "top_teamRules": "Points selon la place dans les batailles de la saison : 10 · 7 · 5 · 4 · 3 · 2 · 1. Le trio de tête reçoit ☢️ Noyau pour chaque membre.",
+    "top_teamRules": "Points selon la place dans les batailles de la saison : 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 OUTILS",
     "lab_toolsHint": "Les kits ne s'usent jamais — ils débloquent les recettes avancées et les niveaux de technologie.",
     "lab_nextTool": "Kit suivant : {t}",
@@ -2817,6 +2870,16 @@
     "lab_max": "🏆 Niveau maximal",
     "lab_wait": "⏳ Niveau suivant dans {t}",
     "lab_up": "Étudier le niveau {l}",
+    "res_stone_src": "duels, mines, coffre",
+    "res_wood_src": "quêtes, mines, coffre",
+    "res_fire_src": "Feu de camp à l'atelier",
+    "res_energy_src": "chance à chaque victoire, mines, coffre",
+    "res_battery_src": "atelier",
+    "res_cow_src": "quêtes, coffre du 7e jour, bourse",
+    "res_core_src": "mines et récompenses de l'organisateur",
+    "sk_items": "🧪 Objets en réserve : {n} / {m} (10 % de la capacité)",
+    "sk_cutletsName": "Cyber-côtelettes",
+    "it_total": "En réserve : {n} pcs",
     "lab_sciGate": "📚 Le niveau {l} s'ouvre quand toutes les technologies sont au niveau {l}",
     "lab_cooldown": "Après l'étude, le niveau suivant s'ouvre dans {d} j.",
     "lab_done": "🔬 Terminé ! Niveau {l}",
@@ -2952,7 +3015,7 @@
     "refuelOne": "🥩 Charger 1",
     "refuelAll": "⚡ Tout charger",
     "refueled": "Chargé : {n} 🥩",
-    "res_metal_src": "Chifoumi et duels",
+    "res_metal_src": "PFC",
     "res_hydrogen_src": "Plus/Moins",
     "res_crystal_src": "Quiz",
     "res_parts_src": "Cyber-Coffre",
@@ -3249,7 +3312,7 @@
     "sk_chargeBtn": "🔋 चार्ज करो: 1 बैटरी = {d} दिन",
     "raid_needTech": "छापों के लिए 📡 संचार, 🔭 टोह और ⚔️ हमला — तीनों का लेवल 1 चाहिए।",
     "raid_toLab": "🔬 लैब में जाओ",
-    "raid_scoutInfo": "टोह में 1 🔋 लगती है और निशाने दिखाती है: {n}",
+    "raid_scoutInfo": "टोह निशाने दिखाती है: {n}। छापे का ईंधन हाइड्रोजन है 💧",
     "raid_medsOn": "💊 किट {t} तक: बीमारी का डर नहीं",
     "raid_medsOff": "💊 किट के बिना लूट का 15% बीमारखाने में चला जाता है",
     "raid_note_sick": "🤒 किट नहीं थी: लूट का कुछ हिस्सा बीमारखाने में चला गया",
@@ -3268,7 +3331,7 @@
     "top_teams": "🏆 सीज़न की टीमें",
     "top_empty": "सीज़न अभी शुरू हुआ है — पहले बनो!",
     "top_noTeams": "इस सीज़न में अभी कोई बैटल नहीं हुई।",
-    "top_teamRules": "सीज़न की बैटल में जगह के अंक: 10 · 7 · 5 · 4 · 3 · 2 · 1। टॉप-3 को हर साथी के लिए ☢️ कोर मिलता है।",
+    "top_teamRules": "सीज़न की बैटल में जगह के अंक: 10 · 7 · 5 · 4 · 3 · 2 · 1।",
     "lab_tools": "🧰 औज़ार",
     "lab_toolsHint": "औज़ार-सेट खर्च नहीं होते — वे मुश्किल रेसिपी और तकनीक के लेवल खोलते हैं।",
     "lab_nextTool": "अगला सेट: {t}",
@@ -3278,6 +3341,16 @@
     "lab_max": "🏆 सबसे ऊँचा लेवल",
     "lab_wait": "⏳ अगला लेवल {t} में",
     "lab_up": "लेवल {l} सीखो",
+    "res_stone_src": "द्वंद्व, खदानें, संदूक",
+    "res_wood_src": "क्वेस्ट, खदानें, संदूक",
+    "res_fire_src": "वर्कशॉप में अलाव",
+    "res_energy_src": "हर जीत पर मौका, खदानें, संदूक",
+    "res_battery_src": "वर्कशॉप",
+    "res_cow_src": "क्वेस्ट, 7वें दिन का संदूक, बाज़ार",
+    "res_core_src": "खदानें और आयोजक के इनाम",
+    "sk_items": "🧪 गोदाम में चीज़ें: {n} / {m} (क्षमता का 10%)",
+    "sk_cutletsName": "साइबर-कटलेट",
+    "it_total": "गोदाम में: {n} नग",
     "lab_sciGate": "📚 लेवल {l} तब खुलेगा जब सभी तकनीकें लेवल {l} तक सीखी जाएँगी",
     "lab_cooldown": "सीखने के बाद अगला लेवल {d} दिन में खुलेगा।",
     "lab_done": "🔬 हो गया! लेवल {l}",
@@ -3413,7 +3486,7 @@
     "refuelOne": "🥩 1 भरो",
     "refuelAll": "⚡ सब भरो",
     "refueled": "भरा गया: {n} 🥩",
-    "res_metal_src": "पत्थर-कैंची और डुएल",
+    "res_metal_src": "पत्थर-कैंची-कागज़",
     "res_hydrogen_src": "ज़्यादा/कम",
     "res_crystal_src": "क्विज़",
     "res_parts_src": "साइबर-तिजोरी",
@@ -3710,7 +3783,7 @@
     "sk_chargeBtn": "🔋 Isi: 1 baterai = {d} hari",
     "raid_needTech": "Serbuan butuh 📡 komunikasi, 🔭 pengintaian, dan ⚔️ serangan level 1.",
     "raid_toLab": "🔬 Ke Laboratorium",
-    "raid_scoutInfo": "Pengintaian memakai 1 🔋 dan menampilkan target: {n}",
+    "raid_scoutInfo": "Pengintaian menampilkan target: {n}. Bahan bakar serbuan adalah hidrogen 💧",
     "raid_medsOn": "💊 Kotak P3K sampai {t}: bebas sakit",
     "raid_medsOff": "💊 Tanpa Kotak P3K, 15% jarahan hilang di rumah sakit",
     "raid_note_sick": "🤒 Tanpa Kotak P3K, sebagian jarahan hilang di rumah sakit",
@@ -3729,7 +3802,7 @@
     "top_teams": "🏆 TIM MUSIM INI",
     "top_empty": "Musim baru dimulai — jadilah yang pertama!",
     "top_noTeams": "Belum ada battle di musim ini.",
-    "top_teamRules": "Poin untuk peringkat di battle musim ini: 10 · 7 · 5 · 4 · 3 · 2 · 1. Tiga terbaik mendapat ☢️ Inti untuk tiap anggota.",
+    "top_teamRules": "Poin untuk peringkat di battle musim ini: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 PERKAKAS",
     "lab_toolsHint": "Set perkakas tidak habis dipakai — ia membuka resep rumit dan level teknologi.",
     "lab_nextTool": "Set berikutnya: {t}",
@@ -3739,6 +3812,16 @@
     "lab_max": "🏆 Level maksimum",
     "lab_wait": "⏳ Level berikutnya dalam {t}",
     "lab_up": "Pelajari level {l}",
+    "res_stone_src": "duel, tambang, peti",
+    "res_wood_src": "misi, tambang, peti",
+    "res_fire_src": "Api unggun di bengkel",
+    "res_energy_src": "peluang tiap menang, tambang, peti",
+    "res_battery_src": "bengkel",
+    "res_cow_src": "misi, peti hari ke-7, bursa",
+    "res_core_src": "tambang dan hadiah penyelenggara",
+    "sk_items": "🧪 Barang di gudang: {n} / {m} (10% kapasitas)",
+    "sk_cutletsName": "Siber-kotlet",
+    "it_total": "Di gudang: {n} buah",
     "lab_sciGate": "📚 Level {l} terbuka saat semua teknologi sudah di level {l}",
     "lab_cooldown": "Setelah dipelajari, level berikutnya terbuka dalam {d} hr.",
     "lab_done": "🔬 Selesai! Level {l}",
@@ -3874,7 +3957,7 @@
     "refuelOne": "🥩 Isi 1",
     "refuelAll": "⚡ Isi semua",
     "refueled": "Terisi: {n} 🥩",
-    "res_metal_src": "Suit & duel",
+    "res_metal_src": "BGK",
     "res_hydrogen_src": "Besar/Kecil",
     "res_crystal_src": "Kuis",
     "res_parts_src": "Brankas Siber",
@@ -4171,7 +4254,7 @@
     "sk_chargeBtn": "🔋 Ricarica: 1 batteria = {d} giorni",
     "raid_needTech": "Per le incursioni servono 📡 comunicazioni, 🔭 ricognizione e ⚔️ attacco di livello 1.",
     "raid_toLab": "🔬 Al Laboratorio",
-    "raid_scoutInfo": "La ricognizione costa 1 🔋 e mostra i bersagli: {n}",
+    "raid_scoutInfo": "L'esplorazione mostra bersagli: {n}. Il carburante del raid è l'idrogeno 💧",
     "raid_medsOn": "💊 Kit di pronto soccorso fino alle {t}: le malattie non fanno paura",
     "raid_medsOff": "💊 Senza kit di pronto soccorso il 15% del bottino si perde in infermeria",
     "raid_note_sick": "🤒 Senza kit di pronto soccorso parte del bottino si è persa in infermeria",
@@ -4190,7 +4273,7 @@
     "top_teams": "🏆 SQUADRE DELLA STAGIONE",
     "top_empty": "La stagione è appena iniziata: sii il primo!",
     "top_noTeams": "In questa stagione non ci sono ancora state battaglie.",
-    "top_teamRules": "Punti per i posti nelle battaglie della stagione: 10 · 7 · 5 · 4 · 3 · 2 · 1. Alle prime tre: ☢️ Nucleo a ogni combattente.",
+    "top_teamRules": "Punti per posizione nelle battaglie della stagione: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 ATTREZZI",
     "lab_toolsHint": "I kit non si consumano: sbloccano assemblaggi complessi e livelli di tecnologia.",
     "lab_nextTool": "Kit successivo: {t}",
@@ -4200,6 +4283,16 @@
     "lab_max": "🏆 Livello massimo",
     "lab_wait": "⏳ Livello successivo tra {t}",
     "lab_up": "Studia il livello {l}",
+    "res_stone_src": "duelli, miniere, forziere",
+    "res_wood_src": "missioni, miniere, forziere",
+    "res_fire_src": "Falò in officina",
+    "res_energy_src": "possibilità a ogni vittoria, miniere, forziere",
+    "res_battery_src": "officina",
+    "res_cow_src": "missioni, forziere del 7° giorno, borsa",
+    "res_core_src": "miniere e premi dell'organizzatore",
+    "sk_items": "🧪 Oggetti in magazzino: {n} / {m} (10% della capienza)",
+    "sk_cutletsName": "Cyber-cotolette",
+    "it_total": "In magazzino: {n} pz",
     "lab_sciGate": "📚 Il livello {l} si apre quando tutte le tecnologie sono al livello {l}",
     "lab_cooldown": "Dopo lo studio, il livello successivo arriva tra {d} g",
     "lab_done": "🔬 Fatto! Livello {l}",
@@ -4335,7 +4428,7 @@
     "refuelOne": "🥩 Carica 1",
     "refuelAll": "⚡ Carica tutte",
     "refueled": "Caricate: {n} 🥩",
-    "res_metal_src": "Morra Cinese e duelli",
+    "res_metal_src": "SCF",
     "res_hydrogen_src": "Alto/Basso",
     "res_crystal_src": "Quiz",
     "res_parts_src": "Cyber-Cassaforte",
@@ -4649,7 +4742,7 @@
     "sk_chargeBtn": "🔋 Naładuj: 1 bateria = {d} dni",
     "raid_needTech": "Do najazdów potrzebne są 📡 łączność, 🔭 zwiad i ⚔️ atak poziomu 1.",
     "raid_toLab": "🔬 Do Laboratorium",
-    "raid_scoutInfo": "Zwiad zużywa 1 🔋 i pokazuje cele: {n}",
+    "raid_scoutInfo": "Zwiad pokazuje cele: {n}. Paliwem najazdu jest wodór 💧",
     "raid_medsOn": "💊 Apteczka do {t}: choroby niestraszne",
     "raid_medsOff": "💊 Bez Apteczki 15% łupu przepada w lazarecie",
     "raid_note_sick": "🤒 Bez Apteczki część łupu przepadła w lazarecie",
@@ -4668,7 +4761,7 @@
     "top_teams": "🏆 DRUŻYNY SEZONU",
     "top_empty": "Sezon dopiero się zaczął — bądź pierwszy(a)!",
     "top_noTeams": "W tym sezonie nie było jeszcze bitew.",
-    "top_teamRules": "Punkty za miejsca w bitwach sezonu: 10 · 7 · 5 · 4 · 3 · 2 · 1. Trójka najlepszych dostaje ☢️ Rdzeń dla każdego wojownika.",
+    "top_teamRules": "Punkty za miejsca w bitwach sezonu: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 NARZĘDZIA",
     "lab_toolsHint": "Zestawy się nie zużywają — otwierają trudne receptury i poziomy technologii.",
     "lab_nextTool": "Następny zestaw: {t}",
@@ -4678,6 +4771,16 @@
     "lab_max": "🏆 Maksymalny poziom",
     "lab_wait": "⏳ Następny poziom za {t}",
     "lab_up": "Zbadaj poziom {l}",
+    "res_stone_src": "pojedynki, kopalnie, skrzynia",
+    "res_wood_src": "zadania, kopalnie, skrzynia",
+    "res_fire_src": "Ognisko w warsztacie",
+    "res_energy_src": "szansa za zwycięstwo, kopalnie, skrzynia",
+    "res_battery_src": "warsztat",
+    "res_cow_src": "zadania, skrzynia 7. dnia, giełda",
+    "res_core_src": "kopalnie i nagrody organizatora",
+    "sk_items": "🧪 Przedmioty w magazynie: {n} / {m} (10% pojemności)",
+    "sk_cutletsName": "Cyber-kotlety",
+    "it_total": "W magazynie: {n} szt.",
     "lab_sciGate": "📚 Poziom {l} odblokuje się, gdy wszystkie technologie osiągną poziom {l}",
     "lab_cooldown": "Po zbadaniu kolejny poziom odblokuje się za {d} dni.",
     "lab_done": "🔬 Gotowe! Poziom {l}",
@@ -4813,7 +4916,7 @@
     "refuelOne": "🥩 Zatankuj 1",
     "refuelAll": "⚡ Zatankuj wszystkie",
     "refueled": "Zatankowano: {n} 🥩",
-    "res_metal_src": "Kamień-Papier-Nożyce i pojedynki",
+    "res_metal_src": "PKN",
     "res_hydrogen_src": "Wyżej/Niżej",
     "res_crystal_src": "Quiz",
     "res_parts_src": "Cyber-Sejf",
@@ -5093,7 +5196,7 @@
     "sk_chargeBtn": "🔋 Carregar: 1 bateria = {d} dias",
     "raid_needTech": "Para os saques você precisa de 📡 comunicação, 🔭 reconhecimento e ⚔️ ataque no nível 1.",
     "raid_toLab": "🔬 Ao Laboratório",
-    "raid_scoutInfo": "O reconhecimento gasta 1 🔋 e mostra alvos: {n}",
+    "raid_scoutInfo": "A exploração mostra alvos: {n}. O combustível do ataque é hidrogênio 💧",
     "raid_medsOn": "💊 Kit de primeiros socorros até {t}: sem medo de doenças",
     "raid_medsOff": "💊 Sem o kit, 15% do espólio se perde na enfermaria",
     "raid_note_sick": "🤒 Sem o kit, parte do espólio se perdeu na enfermaria",
@@ -5112,7 +5215,7 @@
     "top_teams": "🏆 EQUIPES DA TEMPORADA",
     "top_empty": "A temporada acabou de começar — seja o primeiro!",
     "top_noTeams": "Ainda não houve batalhas nesta temporada.",
-    "top_teamRules": "Pontos pelas posições nas batalhas da temporada: 10 · 7 · 5 · 4 · 3 · 2 · 1. Os três primeiros ganham ☢️ Núcleo para cada guerreiro.",
+    "top_teamRules": "Pontos por posição nas batalhas da temporada: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 FERRAMENTAS",
     "lab_toolsHint": "Os kits não se gastam — eles liberam montagens avançadas e níveis de tecnologia.",
     "lab_nextTool": "Próximo kit: {t}",
@@ -5122,6 +5225,16 @@
     "lab_max": "🏆 Nível máximo",
     "lab_wait": "⏳ Próximo nível em {t}",
     "lab_up": "Estudar nível {l}",
+    "res_stone_src": "duelos, minas, baú",
+    "res_wood_src": "missões, minas, baú",
+    "res_fire_src": "Fogueira na oficina",
+    "res_energy_src": "chance por vitória, minas, baú",
+    "res_battery_src": "oficina",
+    "res_cow_src": "missões, baú do 7º dia, bolsa",
+    "res_core_src": "minas e prêmios do organizador",
+    "sk_items": "🧪 Itens no armazém: {n} / {m} (10% da capacidade)",
+    "sk_cutletsName": "Ciber-costeletas",
+    "it_total": "No armazém: {n} un.",
     "lab_sciGate": "📚 O nível {l} abre quando todas as tecnologias estiverem no nível {l}",
     "lab_cooldown": "Depois de estudar, o próximo nível abre em {d} d.",
     "lab_done": "🔬 Pronto! Nível {l}",
@@ -5257,7 +5370,7 @@
     "refuelOne": "🥩 Carregar 1",
     "refuelAll": "⚡ Carregar todos",
     "refueled": "Carregado: {n} 🥩",
-    "res_metal_src": "PPT e duelos",
+    "res_metal_src": "PPT",
     "res_hydrogen_src": "Maior/Menor",
     "res_crystal_src": "Quiz",
     "res_parts_src": "Ciber-Cofre",
@@ -5554,7 +5667,7 @@
     "sk_chargeBtn": "🔋 Zaryadlash: 1 batareya = {d} kun",
     "raid_needTech": "Bosqinlar uchun 1-darajali 📡 aloqa, 🔭 razvedka va ⚔️ hujum kerak.",
     "raid_toLab": "🔬 Laboratoriyaga",
-    "raid_scoutInfo": "Razvedka 1 🔋 sarflaydi va nishonlarni ko'rsatadi: {n}",
+    "raid_scoutInfo": "Razvedka nishonlarni ko'rsatadi: {n}. Hujum yoqilg'isi — vodorod 💧",
     "raid_medsOn": "💊 Dori qutisi {t} gacha: kasallikdan qo'rqmasa bo'ladi",
     "raid_medsOff": "💊 Dori qutisiz o'ljaning 15% i lazaretda yo'qoladi",
     "raid_note_sick": "🤒 Dori qutisi yo'q: o'ljaning bir qismi lazaretda yo'qoldi",
@@ -5573,7 +5686,7 @@
     "top_teams": "🏆 MAVSUM JAMOALARI",
     "top_empty": "Mavsum endigina boshlandi — birinchi bo'l!",
     "top_noTeams": "Bu mavsumda hali janglar bo'lmadi.",
-    "top_teamRules": "Mavsum janglaridagi o'rinlar uchun ochkolar: 10 · 7 · 5 · 4 · 3 · 2 · 1. Eng yaxshi uchlikka — har bir jangchiga ☢️ Yadro.",
+    "top_teamRules": "Mavsum janglaridagi o'rinlar uchun ochkolar: 10 · 7 · 5 · 4 · 3 · 2 · 1.",
     "lab_tools": "🧰 ASBOBLAR",
     "lab_toolsHint": "To'plamlar sarflanmaydi — ular murakkab yig'ishlar va texnologiya darajalarini ochadi.",
     "lab_nextTool": "Keyingi to'plam: {t}",
@@ -5583,6 +5696,16 @@
     "lab_max": "🏆 Eng yuqori daraja",
     "lab_wait": "⏳ Keyingi daraja {t} dan keyin",
     "lab_up": "{l}-darajani o'rganish",
+    "res_stone_src": "duellar, konlar, sandiq",
+    "res_wood_src": "kvestlar, konlar, sandiq",
+    "res_fire_src": "Ustaxonadagi gulxan",
+    "res_energy_src": "g'alaba uchun imkoniyat, konlar, sandiq",
+    "res_battery_src": "ustaxona",
+    "res_cow_src": "kvestlar, 7-kun sandig'i, birja",
+    "res_core_src": "konlar va tashkilotchi sovrinlari",
+    "sk_items": "🧪 Ombordagi buyumlar: {n} / {m} (sig'imning 10%)",
+    "sk_cutletsName": "Kiber-kotletlar",
+    "it_total": "Omborda: {n} dona",
     "lab_sciGate": "📚 {l}-daraja barcha texnologiyalar {l}-darajagacha o'rganilganda ochiladi",
     "lab_cooldown": "O'rganilgandan keyin keyingi daraja {d} kundan so'ng ochiladi.",
     "lab_done": "🔬 Tayyor! {l}-daraja",
@@ -5718,7 +5841,7 @@
     "refuelOne": "🥩 1 ta quyish",
     "refuelAll": "⚡ Hammasini quyish",
     "refueled": "Quyildi: {n} 🥩",
-    "res_metal_src": "Tosh-Qaychi va duellar",
+    "res_metal_src": "TQQ",
     "res_hydrogen_src": "Katta/Kichik",
     "res_crystal_src": "Viktorina",
     "res_parts_src": "Kiber-Seyf",
@@ -6016,7 +6139,7 @@
     "sk_chargeBtn": "🔋 充电：1 块电池 = {d} 天",
     "raid_needTech": "突袭需要 1 级 📡 通讯、🔭 侦察和 ⚔️ 进攻。",
     "raid_toLab": "🔬 去实验室",
-    "raid_scoutInfo": "侦察消耗 1 🔋，并显示目标：{n}",
+    "raid_scoutInfo": "侦察显示目标：{n}。突袭燃料是氢 💧",
     "raid_medsOn": "💊 急救包生效至 {t}：不怕生病",
     "raid_medsOff": "💊 没有急救包，15% 的战利品会损失在医务室",
     "raid_note_sick": "🤒 没有急救包：部分战利品损失在医务室",
@@ -6035,7 +6158,7 @@
     "top_teams": "🏆 赛季战队",
     "top_empty": "赛季刚刚开始——来当第一名吧！",
     "top_noTeams": "本赛季还没有对战。",
-    "top_teamRules": "赛季对战名次积分：10 · 7 · 5 · 4 · 3 · 2 · 1。前三名战队的每位成员获得 ☢️ 核心。",
+    "top_teamRules": "赛季战斗名次积分：10 · 7 · 5 · 4 · 3 · 2 · 1。",
     "lab_tools": "🧰 工具",
     "lab_toolsHint": "工具套装不会消耗——它们用来解锁高级配方和技术等级。",
     "lab_nextTool": "下一套：{t}",
@@ -6045,6 +6168,16 @@
     "lab_max": "🏆 最高等级",
     "lab_wait": "⏳ {t}后可升下一级",
     "lab_up": "研究 {l} 级",
+    "res_stone_src": "决斗、矿场、宝箱",
+    "res_wood_src": "任务、矿场、宝箱",
+    "res_fire_src": "工坊里的篝火",
+    "res_energy_src": "每次获胜有几率、矿场、宝箱",
+    "res_battery_src": "工坊",
+    "res_cow_src": "任务、第 7 天宝箱、交易所",
+    "res_core_src": "矿场和主办方奖励",
+    "sk_items": "🧪 仓库中的物品：{n} / {m}（容量的 10%）",
+    "sk_cutletsName": "赛博肉排",
+    "it_total": "仓库中：{n} 件",
     "lab_sciGate": "📚 当所有技术都研究到 {l} 级时，开放第 {l} 级",
     "lab_cooldown": "研究完成后，{d} 天后开放下一级。",
     "lab_done": "🔬 完成！等级 {l}",
@@ -6180,7 +6313,7 @@
     "refuelOne": "🥩 加 1 份",
     "refuelAll": "⚡ 全部加满",
     "refueled": "已加注：{n} 🥩",
-    "res_metal_src": "石头剪刀布和对决",
+    "res_metal_src": "石头剪刀布",
     "res_hydrogen_src": "比大小",
     "res_crystal_src": "竞答",
     "res_parts_src": "赛博保险箱",
@@ -6657,7 +6790,7 @@
         { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) }) + '</div>' : '') +
       '<div class="hint">' + fmt(w.has_shuttle ? L.ws_shuttleOn : L.ws_shuttleOff,
         { fee: w.has_shuttle ? w.shuttle_fee : w.market_fee }) + '</div>') +
-      card(L.resources + " · " + L.resWhere, RES.map(k => row(RES_ICON[k] + " " + esc(w.res_names[k]), L["res_" + k + "_src"])).join("")) +
+      card(L.resources + " · " + L.resWhere, RES_ALL.map(k => row(RES_ICON[k] + " " + esc(w.res_names[k] || k), L["res_" + k + "_src"] || "")).join("")) +
       '<div class="recipes">' + recipes + '</div>';
     document.querySelectorAll(".wcraft").forEach(b => {
       b.onclick = () => act(b, "/api/craft_weekly", { recipe: b.dataset.id }, async res => {
@@ -6719,9 +6852,9 @@
       '<div class="card"><div class="card-head"><h2>' + L.raid_title + '</h2>' +
         '<span class="fuel-pill' + (fuelOk ? '' : ' low') + '">💧 ' + num(d.stock.hydrogen) + ' / ' + R.fuel + '</span></div>' +
         ship + (armed ? '<div class="hint status-ok">' + fmt(L.raid_armed, { l: armed }) + '</div>' : '') +
-        // Технологии и батарейки (27.10): без 📡🔭⚔️ первого уровня налётов нет, разведка тратит 🔋
+        // Технологии (27.10): без 📡🔭⚔️ первого уровня налётов нет; топливо налёта — водород, батарейки не нужны
         '<div class="chips">' + ["comm", "scout", "attack", "defense"].map(k => '<span class="chip ' + (d.tech[k] || k === "defense" ? 'have' : 'lack') + '">' +
-          TECH_ICON[k] + ' ' + d.tech[k] + '</span>').join("") + '<span class="chip ' + (d.batteries ? 'have' : 'lack') + '">🔋 ' + d.batteries + '</span></div>' +
+          TECH_ICON[k] + ' ' + d.tech[k] + '</span>').join("") + '</div>' +
         (["comm", "scout", "attack"].some(k => !d.tech[k]) ? '<div class="hint status-bad">' + L.raid_needTech + '</div><button class="btn ghost" data-go="lab">' + L.raid_toLab + '</button>' : '') +
         '<div class="hint">' + fmt(L.raid_scoutInfo, { n: d.candidates }) + '</div>' +
         '<div class="hint ' + (d.meds ? 'status-ok' : '') + '">' + (d.meds ? fmt(L.raid_medsOn, { t: dateShort(d.meds) }) : L.raid_medsOff) + '</div>' +
@@ -6855,20 +6988,27 @@
   const TEAM_FX = ["banner", "dome"];
   async function viewStorage(box) {
     const d = await api("/api/storage");
-    const resCard = card(L.sk_res, (d.kinds || RES).map(k => {
+    // Котлеты — тоже ресурс склада (первая строка, без лимита вместимости); изделия — общий счётчик
+    const cutRow = '<div class="resbar"><div class="row"><span class="k">🥩 ' + L.sk_cutletsName + '</span><span class="v">' +
+      num(d.cutlets) + '</span></div><div class="hint">' + L.sk_cutletsHint + '</div></div>';
+    const resRows = (d.kinds || RES).map(k => {
       const have = d.stock[k] || 0, pct = Math.min(100, Math.round(have / d.capacity * 100));
       return '<div class="resbar"><div class="row"><span class="k">' + RES_ICON[k] + ' ' + esc(d.res_names[k]) +
         '</span><span class="v">' + num(have) + ' / ' + num(d.capacity) + '</span></div><div class="bar"><i style="width:' + pct + '%"></i></div></div>';
-    }).join("") + '<button class="btn ghost" data-go="workshop">' + L.sk_expand + '</button>');
-    const cutCard = '<div class="card ' + (d.cutlets > 0 ? 'lava' : 'dim') + '"><h2>' + L.sk_cutlets + '</h2>' +
-      '<div class="big-num">🥩 ' + num(d.cutlets) + '</div><div class="hint">' + L.sk_cutletsHint + '</div>' +
-      '<button class="btn ghost" data-go="farm">' + L.sk_refuel + '</button></div>';
+    }).join("");
+    const itemsFull = d.items_count >= d.items_cap;
+    const resCard = '<div class="card span-all"><h2>' + L.sk_res + '</h2>' +
+      '<div class="hint' + (itemsFull ? ' status-bad' : '') + '">' + fmt(L.sk_items, { n: d.items_count, m: d.items_cap }) + '</div>' +
+      '<div class="res-cols">' + cutRow + resRows + '</div>' +
+      '<div class="res-actions"><button class="btn ghost" data-go="workshop">' + L.sk_expand + '</button>' +
+      '<button class="btn ghost" data-go="farm">' + L.sk_refuel + '</button></div></div>';
     const itemCards = d.effects.map(e => {
       const units = d.items.filter(it => it.effect === e);
       const until = d.active[e], charged = (d.charges || {})[e] || 0;
       const needTeam = TEAM_FX.includes(e) && !d.in_team;
+      const total = units.reduce((a, it) => a + it.qty, 0);
       const body = units.length
-        ? units.map(it => '<div class="unit-row"><b>' + (it.hours ? '⏱ ' + fmt(L.it_hours, { h: it.hours }) : '⚡ ' + L.it_oneShot) + ' × ' + it.qty + '</b>' +
+        ? '<div class="hint">' + fmt(L.it_total, { n: total }) + '</div>' + units.map(it => '<div class="unit-row"><b>' + (it.hours ? '⏱ ' + fmt(L.it_hours, { h: it.hours }) : '⚡ ' + L.it_oneShot) + ' × ' + it.qty + '</b>' +
             '<button class="mini itUse" data-e="' + e + '" data-h="' + it.hours + '"' + (needTeam ? ' disabled' : '') + '>' + L.it_use + '</button></div>').join("") +
           (needTeam ? '<div class="hint status-bad">' + L.it_needTeam + '</div>' : '')
         : '<div class="hint">' + L.it_empty + '</div><button class="btn ghost" data-go="workshop">' + L.it_toWorkshop + '</button>';
@@ -6896,7 +7036,7 @@
     const shuttleCard = sh.owned ? '<div class="card ' + (sh.active ? 'lava' : 'dim') + '"><h2>' + L.sk_shuttleCharge + '</h2>' +
       '<div class="hint ' + (sh.active ? 'status-ok' : 'status-bad') + '">' + (sh.active ? fmt(L.sk_shuttleUntil, { t: dateShort(sh.until) }) : L.sk_shuttleEmpty) + '</div>' +
       '<button class="btn ghost" id="shChargeBtn"' + ((d.stock.battery || 0) > 0 ? '' : ' disabled') + '>' + fmt(L.sk_chargeBtn, { d: sh.days }) + '</button></div>' : '';
-    box.innerHTML = resCard + cutCard + stableCard + shuttleCard + itemCards + permCards;
+    box.innerHTML = resCard + stableCard + shuttleCard + itemCards + permCards;
     const hb = document.getElementById("horseBtn");
     if (hb) hb.onclick = () => act(hb, "/api/horse/buy", {}, async () => { notify(L.sk_horseBought); await refreshMe(); go("storage"); });
     const sc = document.getElementById("shChargeBtn");
@@ -7286,7 +7426,7 @@
     const info = (shop.info || []).map(i => '<div class="info-item"><b>' + esc(i.title) + '</b><span>' + esc(i.text) + '</span></div>');
     box.innerHTML =
       card(L.shopFarm, '<div class="hint">' + L.shopHint + '</div>' + shop.farm.map(btn).join("")) +
-      card(L.shopGames, shop.games.map(btn).join("")) +
+      card(L.shopGames, '<div class="hint">' + L.shopHint + '</div>' + shop.games.map(btn).join("")) +
       '<div class="card span-tablet"><h2>' + L.shop_info + '</h2>' + pager("shopinfo", info, 4, "") +
       '<button class="btn ghost" id="shopInfo">FAQ ↗</button></div>';
     document.querySelectorAll(".shop-item").forEach(b => { b.onclick = () => buy(b.dataset.sku, b); });

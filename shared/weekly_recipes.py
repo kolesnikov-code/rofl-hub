@@ -171,6 +171,13 @@ async def craft_weekly(conn, user_id: int, rid: str, now: datetime | None = None
         raise WeeklyError("ws.err_resources", need=e.need, have=e.have, kind=RESOURCE_ICONS[e.kind]) from e
 
     cap = await resource_capacity(conn, user_id)
+    to_store = sum(1 for e in effects if e["type"] in HOURS_COLUMNS) if to_storage else 0
+    if to_store:
+        from shared.items import ItemError, ensure_items_room
+        try:
+            await ensure_items_room(conn, user_id, cap, to_store)
+        except ItemError as e:
+            raise WeeklyError(e.key, **e.kwargs) from e
     for effect in effects:
         kind = effect["type"]
         if kind in HOURS_COLUMNS and to_storage:

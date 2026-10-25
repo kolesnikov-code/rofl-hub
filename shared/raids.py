@@ -131,7 +131,7 @@ async def find_targets(conn, attacker_id: int, attacker_team: int | None, now: d
 async def scout(conn, user_id: int, now: datetime) -> list[dict]:
     """
     «Разведка» с проверками (27.10): нужны 📡 связь, 🔭 разведка и ⚔️ нападение 1-го уровня,
-    топливо на вылет (или заряд Экономайзера) и 1 🔋 батарейка — она тратится на разведку.
+    топливо на вылет (или заряд Экономайзера). Батарейки разведка НЕ тратит (27.10: они для командных активностей).
     Целей в списке = 2 + уровень разведки.
     """
     from shared.tech import tech_levels
@@ -149,10 +149,6 @@ async def scout(conn, user_id: int, now: datetime) -> list[dict]:
     stock = await lock_resources(conn, user_id)
     if user["raid_free_fuel"] <= 0 and stock.get("hydrogen", 0) < RAID_FUEL_HYDROGEN:
         raise RaidError("raid.err_fuel", need=RAID_FUEL_HYDROGEN, have=stock.get("hydrogen", 0))
-    try:
-        await change_resource(conn, user_id, "battery", -1, "raid_scout")
-    except InsufficientResources as e:
-        raise RaidError("raid.err_battery") from e
     return await find_targets(conn, user_id, user["team_id"], now, limit=raid_candidates(tech["scout"]))
 
 

@@ -51,7 +51,7 @@ def test_sources_of_new_resources():
 
 def test_core_only_from_team_activities_and_small():
     """Ядро — только битвы/рудники/командный ТОП сезона; немного на бойца."""
-    assert max(economy.BATTLE_CORE_REWARD.values()) <= 3
+    assert not hasattr(economy, "BATTLE_CORE_REWARD")   # призы битв назначает владелец
     assert economy.MINE_CORE_MAX <= 3
     for rid, r in WORKSHOP_RECIPES.items():                   # ни один рецепт не производит Ядро
         assert "core" not in (r.get("make") or {}), rid
@@ -363,8 +363,9 @@ def test_api_routes_registered():
 
 def test_admin_has_reward_and_season():
     src = (ROOT / "bots" / "admin_notifier_bot" / "bot.py").read_text(encoding="utf-8")
-    for needle in ('Command("reward")', 'Command("season")', "check_season_end", "award_battle_cores", "give_all"):
+    for needle in ('Command("reward")', 'Command("season")', "check_season_end", "give_all"):
         assert needle in src, needle
+    assert "award_battle_cores" not in src          # автоматического Ядра за битвы больше нет
 
 
 def test_schema_has_new_tables_and_migration():
@@ -399,3 +400,54 @@ def test_full_reset_migration_is_last_backed_up_and_keeps_payments():
     import re
     created = set(re.findall(r"CREATE TABLE IF NOT EXISTS (\w+)", "\n".join(SCHEMA_STATEMENTS)))
     assert set(RESET_TABLES) <= created
+
+
+def test_storage_levels_grow_20_percent_and_one_kind_each():
+    """Склад 27.10: 500 → 1000 → 2000 → 3000 → 4000 → 5000; каждое расширение на 20% дороже и на вид сложнее."""
+    from shared.economy import RES_CAPACITY_MAX, STORAGE_LEVELS, items_capacity, next_storage_level
+    caps = [c for c, _ in STORAGE_LEVELS]
+    assert caps == [1000, 2000, 3000, 4000, 5000] and RES_CAPACITY_MAX == 5000
+    kinds = [len(cost) for _, cost in STORAGE_LEVELS]
+    assert kinds == [2, 3, 4, 5, 6]
+    totals = [sum(cost.values()) for _, cost in STORAGE_LEVELS]
+    for prev, cur in zip(totals, totals[1:]):
+        assert prev * 1.15 <= cur <= prev * 1.30, totals                 # ≈ +20% (округление до десятков)
+    capacity = 500
+    for cap, cost in STORAGE_LEVELS:                                     # каждое оплачивается в пределах текущей вместимости
+        assert all(v <= capacity for v in cost.values()), cap
+        capacity = cap
+    assert next_storage_level(5000) is None
+    assert [items_capacity(c) for c in (500, 1000, 2000, 5000)] == [50, 100, 200, 500]
+
+
+def test_raid_scout_spends_no_battery_and_ui_matches():
+    import inspect
+    from shared import raids
+    assert '"battery"' not in inspect.getsource(raids.scout)
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "🔋 ' + d.batteries" not in html
+
+
+def test_storage_ui_merges_cutlets_and_counts_items():
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "cutCard" not in html and "L.sk_cutletsName" in html and "L.sk_items" in html
+    assert "resCard = '<div class=\"card span-all\">" in html             # одна плашка во всю ширину
+    assert ".res-cols {" in html
+
+
+def test_mines_map_free_brighter_held_armored():
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert ".mine.held::before" in html and "repeating-conic-gradient" in html
+    assert ".mine.free { opacity: .55; }" not in html
+
+
+def test_shop_stars_hint_on_both_showcases():
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert html.count("'<div class=\"hint\">' + L.shopHint + '</div>'") == 2
+
+
+def test_workshop_sources_cover_every_resource():
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    for k in ALL_KINDS:
+        assert f"res_{k}_src:" in html, k
+    assert 'res_metal_src: "КНБ"' in html                                # дуэли дают камень, не металл

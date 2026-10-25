@@ -1886,7 +1886,7 @@ async def test_shuttle_charge_spends_a_battery(conn):
     assert (await get_resources(conn, 1420, ("battery",)))["battery"] == 0
 
 
-async def test_scout_needs_tech_and_spends_a_battery(conn):
+async def test_scout_needs_tech_and_fuel_but_no_battery(conn):
     from datetime import timedelta
     from shared.economy import raid_candidates, utcnow
     from shared.raids import RaidError, scout
@@ -1903,17 +1903,37 @@ async def test_scout_needs_tech_and_spends_a_battery(conn):
     await _tech(conn, 1430, comm=1, scout=1, attack=1)
     with pytest.raises(RaidError) as e:
         await scout(conn, 1430, now)
-    assert e.value.key == "raid.err_fuel"
+    assert e.value.key == "raid.err_fuel"                          # топливо налёта — водород
     await grant_bundle(conn, 1430, {"hydrogen": 10}, "test")
-    with pytest.raises(RaidError) as e:
-        await scout(conn, 1430, now)
-    assert e.value.key == "raid.err_battery"
-    await grant_bundle(conn, 1430, {"battery": 2}, "test")
-    assert len(await scout(conn, 1430, now)) == raid_candidates(1)
+    assert len(await scout(conn, 1430, now)) == raid_candidates(1)  # батарейки не нужны
     await _tech(conn, 1430, scout=4)
     assert len(await scout(conn, 1430, now)) == raid_candidates(4)
-    assert (await get_resources(conn, 1430, ("battery",)))["battery"] == 0
     assert (await get_resources(conn, 1430))["hydrogen"] == 10      # топливо тратит вылет, не разведка
+    assert await conn.fetchval("SELECT COUNT(*) FROM resource_ledger WHERE user_id = 1430 AND kind = 'battery'") == 0
+
+
+async def test_item_storage_holds_ten_percent_of_capacity(conn):
+    from datetime import timedelta
+    from shared.economy import items_capacity, utcnow
+    from shared.items import items_count
+    from shared.resources import grant_bundle
+    from shared.workshop import WorkshopError, craft
+    now = utcnow()
+    await _mk_user(conn, 1560, 0, created_at=now - timedelta(days=60), res_capacity=500)
+    assert items_capacity(500) == 50
+    await conn.execute("INSERT INTO user_items (user_id, effect, hours, qty) VALUES (1560, 'shield', 24, 30), "
+                       "(1560, 'economizer', 0, 19)")
+    await grant_bundle(conn, 1560, {"metal": 100, "hydrogen": 100, "parts": 100}, "test")
+    await craft(conn, 1560, "nitro_6h", now, to_storage=True)          # 50-е изделие — помещается
+    assert await items_count(conn, 1560) == 50
+    metal = await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 1560 AND kind = 'metal'")
+    with pytest.raises(WorkshopError) as e:                            # 51-е — нет, ресурсы не списаны
+        await craft(conn, 1560, "economizer", now, to_storage=True)
+    assert (e.value.key, e.value.kwargs) == ("ws.err_items_full", {"max": 50})
+    assert await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 1560 AND kind = 'metal'") == metal
+    await conn.execute("UPDATE users SET res_capacity = 1000 WHERE user_id = 1560")
+    await craft(conn, 1560, "economizer", now, to_storage=True)        # расширил склад — место есть
+    assert await items_count(conn, 1560) == 51
 
 
 async def test_raid_without_meds_loses_part_of_loot_and_tech_shifts_it(conn):
@@ -1994,24 +2014,6 @@ async def test_duel_win_gives_stone(conn):
     async with conn.transaction():
         await record_move(conn, r1.duel_id, 1471, "scissors")
     assert (await get_resources(conn, 1470, ("stone", "metal"))) == {"stone": DUEL_RESOURCE_REWARD[100], "metal": 0}
-
-
-async def test_battle_cores_go_to_every_member_of_top3(conn):
-    from shared.battles import award_battle_cores
-    from shared.economy import BATTLE_CORE_REWARD
-    from shared.resources import get_resources
-    teams = []
-    for i in range(4):
-        tid = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) VALUES ($1, $2, 2) "
-                                  "RETURNING team_id", f"T{i}", 1480 + i * 10)
-        for j in range(2):
-            await _mk_user(conn, 1480 + i * 10 + j, 0, team_id=tid)
-        teams.append({"team_id": tid, "team_name": f"T{i}", "score": 100 - i})
-    await award_battle_cores(conn, teams)
-    for i in range(4):
-        for j in range(2):
-            got = (await get_resources(conn, 1480 + i * 10 + j, ("core",)))["core"]
-            assert got == BATTLE_CORE_REWARD.get(i + 1, 0), (i, j)
 
 
 async def test_finalize_season_is_idempotent_and_gives_only_badges(conn):

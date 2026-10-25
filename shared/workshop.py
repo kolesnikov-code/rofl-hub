@@ -166,6 +166,12 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
             "SELECT max_members FROM teams WHERE team_id = $1", user["team_id"]))
     if effect == "cart" and (user["carts"] >= MAX_CARTS or user["carts"] >= user["horses"]):
         raise WorkshopError("cart.err_horse", max=MAX_CARTS)
+    if store:   # склад изделий: суммарно не больше 10% вместимости
+        from shared.items import ItemError, ensure_items_room
+        try:
+            await ensure_items_room(conn, user_id, user["res_capacity"])
+        except ItemError as e:
+            raise WorkshopError(e.key, **e.kwargs) from e
 
     cost = recipe_cost(recipe_id, armor_now, user["res_capacity"], team_mult)
     if cost is None:

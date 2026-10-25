@@ -36,6 +36,7 @@ from shared.economy import (
     season_bounds,
     season_key,
     next_storage_level,
+    items_capacity,
     ARMOR_DAYS,
     armor_level_active,
     ARMOR_BONUS_PER_LEVEL,
@@ -449,6 +450,7 @@ async def handle_storage(request: web.Request) -> web.Response:
     charges = {e: int(user[c]) for e, c in ONE_SHOT_COLUMNS.items()}
     return web.json_response({
         "stock": stock, "capacity": user["res_capacity"], "cutlets": user["inv_cutlets"],
+        "items_count": sum(it["qty"] for it in items), "items_cap": items_capacity(user["res_capacity"]),
         "res_names": resource_labels(ctx.lang),
         "items": items, "effects": list(ITEM_EFFECTS), "active": active, "charges": charges,
         "in_team": user["team_id"] is not None,

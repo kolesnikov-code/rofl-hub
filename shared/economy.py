@@ -322,7 +322,6 @@ TRADEABLE_KINDS = RESOURCE_KINDS + ("stone", "wood", "fire", "energy", "battery"
 ENERGY_WIN_CHANCE_PERCENT = 25    # ⚡ шанс получить 1 электричество за любую победу в соло-игре
 CHEST_SPECIALS = (("wood", 10), ("stone", 10), ("energy", 3))   # особый бонус сундука (по дню)
 CHEST_STREAK_COW = 1              # 🐄 корова в сундук каждого 7-го дня серии
-BATTLE_CORE_REWARD = {1: 3, 2: 2, 3: 1}   # ☢️ каждому бойцу команд-призёров битвы
 MINE_CORE_MAX = 3                 # ☢️ за один рудник одному бойцу — не больше
 RAID_SICK_LOSS_PERCENT = 15       # 💊 без Аптечки часть трофея налёта «пропадает в лазарете»
 
@@ -446,12 +445,33 @@ def season_bounds(moment: datetime) -> tuple[datetime, datetime]:
     start = moment.astimezone(timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     end = start.replace(year=start.year + 1, month=1) if start.month == 12 else start.replace(month=start.month + 1)
     return start, end
-STORAGE_LEVELS: tuple[tuple[int, dict], ...] = (   # (новая вместимость, цена расширения)
-    (1000, {"metal": 150, "parts": 150}),
-    (2000, {"metal": 300, "hydrogen": 100, "crystal": 100, "parts": 300}),
-    (5000, {"metal": 800, "hydrogen": 400, "crystal": 400, "parts": 800}),
-    (10000, {"metal": 1500, "hydrogen": 1500, "crystal": 1500, "parts": 1500}),
-)
+# СКЛАД (решение владельца 27.10): 500 → 1000 → 2000 → 3000 → 4000 → 5000 каждого ресурса.
+# Каждое расширение на 20% дороже прошлого и требует на одно наименование ресурса больше.
+# Изделий на складе — суммарно до ITEMS_CAPACITY_PERCENT от вместимости (500 → 50 изделий всех видов).
+STORAGE_CAPS = (1000, 2000, 3000, 4000, 5000)
+STORAGE_COST_KINDS = ("metal", "parts", "hydrogen", "crystal", "stone", "wood")
+STORAGE_BASE_COST = 400           # всего ресурсов за первое расширение (дальше ×1,2 за уровень)
+STORAGE_COST_GROWTH_PERCENT = 20
+ITEMS_CAPACITY_PERCENT = 10
+
+
+def _storage_levels() -> tuple[tuple[int, dict], ...]:
+    levels, total = [], STORAGE_BASE_COST
+    for i, cap in enumerate(STORAGE_CAPS):
+        kinds = STORAGE_COST_KINDS[:2 + i]
+        each = -(-total // len(kinds) // 10) * 10            # поровну, вверх до десятков
+        levels.append((cap, {k: each for k in kinds}))
+        total = total * (100 + STORAGE_COST_GROWTH_PERCENT) // 100
+    return tuple(levels)
+
+
+STORAGE_LEVELS: tuple[tuple[int, dict], ...] = _storage_levels()   # (новая вместимость, цена расширения)
+RES_CAPACITY_MAX = STORAGE_CAPS[-1]
+
+
+def items_capacity(res_capacity: int) -> int:
+    """Сколько изделий (суммарно всех видов) помещается на склад такой вместимости."""
+    return max(1, res_capacity * ITEMS_CAPACITY_PERCENT // 100)
 
 
 def next_storage_level(capacity: int) -> tuple[int, dict] | None:

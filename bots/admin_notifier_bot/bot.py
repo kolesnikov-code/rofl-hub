@@ -692,8 +692,6 @@ async def _finish_battle(bot: Bot, battle) -> None:
             else:
                 prize_notes[place] = prize["value"]
 
-        from shared.battles import award_battle_cores
-        await award_battle_cores(conn, scores)   # ☢️ Ядро бойцам команд-призёров
         mine_note = None
         if battle["mine_id"] and scores:
             from shared.economy import utcnow

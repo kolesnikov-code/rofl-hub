@@ -49,6 +49,19 @@ async def add_item(conn, user_id: int, effect: str, hours: int, qty: int = 1) ->
         user_id, effect, hours, qty)
 
 
+async def items_count(conn, user_id: int) -> int:
+    """Изделий на складе суммарно (все виды и сроки)."""
+    return int(await conn.fetchval("SELECT COALESCE(SUM(qty), 0) FROM user_items WHERE user_id = $1", user_id))
+
+
+async def ensure_items_room(conn, user_id: int, res_capacity: int, qty: int = 1) -> None:
+    """Склад изделий не резиновый: не больше items_capacity(вместимость) суммарно."""
+    from shared.economy import items_capacity
+    cap = items_capacity(res_capacity)
+    if await items_count(conn, user_id) + qty > cap:
+        raise ItemError("ws.err_items_full", max=cap)
+
+
 async def list_items(conn, user_id: int) -> list[dict]:
     rows = await conn.fetch(
         "SELECT effect, hours, qty FROM user_items WHERE user_id = $1 AND qty > 0 ORDER BY effect, hours",
