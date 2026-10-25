@@ -489,7 +489,7 @@ def test_farm_fridge_card_and_lab_spacing():
     assert "L.fr_title" in html and "L.fr_max" in html
     assert ".chips + .hint { margin-top: 10px; }" in html
     # переворачиваются мини-карточки холодильников, а не вся плашка (уточнение владельца)
-    assert "const fridgeMini" in html and ".fmini.on .fm-in" in html and "fridgeFlip" not in html
+    assert "const fridgeMini" in html and "function fridgeSvg" in html and ".fmini.on .fm-in" in html and "fridgeFlip" not in html
 
 
 def test_fridge_art_exists_for_every_catalog_fridge():
