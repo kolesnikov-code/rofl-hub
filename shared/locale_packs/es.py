@@ -1004,6 +1004,10 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод): холодильник на ферме — пока английский, переводится следующим заходом
+    "fr_title": "🧊 FRIDGE", "fr_cap": "holds {n} 🥩",
+    "fr_hint": "Drillers take cutlets from the fridge on their own — the bigger it is, the longer the farm runs without you.",
+    "fr_up": "Bigger:", "fr_max": "You have the biggest fridge.",
     "subtitle": "tu imperio de juego en una sola pantalla",
     "tab_passport": "📋 Pasaporte",
     "tab_farm": "🚜 Granja",
@@ -1102,7 +1106,7 @@ MINIAPP: dict[str, str] = {
     "tool_1": "Herramientas toscas", "tool_2": "Herramientas de ajuste fino", "tool_3": "Calibración", "tool_4": "Nanotecnología",
     "tech_comm": "COMUNICACIONES", "tech_scout": "EXPLORACIÓN", "tech_attack": "ATAQUE", "tech_defense": "DEFENSA", "tech_science": "CIENCIA",
     "ws_needTool": "Necesitas: {t}", "ws_teamItem": "🏆 Artículo de equipo: protege a todo el equipo (para un Mega-Clan el precio es ×{x})",
-    "eff_make": "convierte materia prima en un material en el inventario", "eff_cart": "un carro para el caballo: +2 lotes en la bolsa",
+    "eff_make": "convierte materia prima en un material en el inventario", "eff_cart": "un carro para el caballo: +1 lotes en la bolsa",
     "eff_meds": "sin enfermedades en asaltos ni en minas", "it_meds": "BOTIQUÍN",
     "mk_lots": "Lotes abiertos: {o} de {m} (🐎 {h} · 🛒 {c})",
     "badges": "🏅 Premios de temporada",

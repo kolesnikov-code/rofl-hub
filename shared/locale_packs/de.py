@@ -1005,6 +1005,10 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод): холодильник на ферме — пока английский, переводится следующим заходом
+    "fr_title": "🧊 FRIDGE", "fr_cap": "holds {n} 🥩",
+    "fr_hint": "Drillers take cutlets from the fridge on their own — the bigger it is, the longer the farm runs without you.",
+    "fr_up": "Bigger:", "fr_max": "You have the biggest fridge.",
     "subtitle": "dein Spiele-Imperium auf einem Screen",
     "tab_passport": "📋 Pass", "tab_farm": "🚜 Farm", "tab_goals": "🎯 Ziele", "tab_workshop": "🔧 Werkstatt",
     "tab_raids": "🏴‍☠️ Raids", "tab_market": "📈 Börse", "tab_team": "🏆 Team", "tab_shop": "🏪 Shop", "tab_top": "👑 TOP",
@@ -1055,7 +1059,7 @@ MINIAPP = {
     "tool_1": "Grobes Werkzeug", "tool_2": "Feinwerkzeug", "tool_3": "Kalibrierung", "tool_4": "Nanotechnik",
     "tech_comm": "FUNK", "tech_scout": "AUFKLÄRUNG", "tech_attack": "ANGRIFF", "tech_defense": "VERTEIDIGUNG", "tech_science": "WISSENSCHAFT",
     "ws_needTool": "Nötig: {t}", "ws_teamItem": "🏆 Team-Stück — schützt das ganze Team (für den Mega-Clan Preis ×{x})",
-    "eff_make": "macht aus Rohstoffen ein Material im Lager", "eff_cart": "ein Karren für ein Pferd: +2 Lose an der Börse",
+    "eff_make": "macht aus Rohstoffen ein Material im Lager", "eff_cart": "ein Karren für ein Pferd: +1 Lose an der Börse",
     "eff_meds": "keine Krankheiten bei Raids und in den Minen", "it_meds": "ERSTE HILFE",
     "mk_lots": "Offene Lose: {o} von {m} (🐎 {h} · 🛒 {c})",
     "badges": "🏅 Saison-Auszeichnungen",

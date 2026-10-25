@@ -1005,6 +1005,10 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод): холодильник на ферме — пока английский, переводится следующим заходом
+    "fr_title": "🧊 FRIDGE", "fr_cap": "holds {n} 🥩",
+    "fr_hint": "Drillers take cutlets from the fridge on their own — the bigger it is, the longer the farm runs without you.",
+    "fr_up": "Bigger:", "fr_max": "You have the biggest fridge.",
     "subtitle": "এক স্ক্রিনে তোমার গেম-সাম্রাজ্য",
     "tab_passport": "📋 পাসপোর্ট",
     "tab_farm": "🚜 ফার্ম",
@@ -1113,7 +1117,7 @@ MINIAPP = {
     "tool_1": "মোটা যন্ত্র", "tool_2": "সূক্ষ্ম টিউনিংয়ের যন্ত্র", "tool_3": "ক্যালিব্রেশন", "tool_4": "ন্যানোপ্রযুক্তি",
     "tech_comm": "যোগাযোগ", "tech_scout": "রেকি", "tech_attack": "হামলা", "tech_defense": "প্রতিরক্ষা", "tech_science": "বিজ্ঞান",
     "ws_needTool": "লাগবে: {t}", "ws_teamItem": "🏆 টিমের জিনিস — পুরো টিমকে রক্ষা করে (মেগা-ক্ল্যানের জন্য দাম ×{x})",
-    "eff_make": "কাঁচামাল গুদামে উপকরণ হয়ে যায়", "eff_cart": "ঘোড়ার জন্য গাড়ি: বাজারে +2টা লট",
+    "eff_make": "কাঁচামাল গুদামে উপকরণ হয়ে যায়", "eff_cart": "ঘোড়ার জন্য গাড়ি: বাজারে +1টা লট",
     "eff_meds": "রেইড আর খনিতে অসুস্থতা নেই", "it_meds": "ফার্স্ট-এইড কিট",
     "mk_lots": "খোলা লট: {m}-এর মধ্যে {o} (🐎 {h} · 🛒 {c})",
     "badges": "🏅 সিজনের পুরস্কার",

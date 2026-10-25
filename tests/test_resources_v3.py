@@ -454,3 +454,37 @@ def test_workshop_sources_cover_every_resource():
     for k in ALL_KINDS:
         assert f"res_{k}_src:" in html, k
     assert 'res_metal_src: "КНБ"' in html                                # дуэли дают камень, не металл
+
+
+# ---------- 28.10: холодильник на ферме, старт 500, телега +1 лот, отступ в Лаборатории ----------
+def test_fridge_levels_show_only_bigger_fridges():
+    from bots.main_bot.webapp import fridge_levels
+    assert [x["capacity"] for x in fridge_levels(1)] == [10, 50, 100]
+    assert [x["capacity"] for x in fridge_levels(10)] == [50, 100]
+    assert fridge_levels(100) == []
+    assert all(x["sku"].startswith("fridge_") and x["stars"] > 0 for x in fridge_levels(1))
+
+
+def test_start_balance_is_500_everywhere():
+    from shared.economy import START_BALANCE
+    assert START_BALANCE == 500
+    faq = (ROOT / "static" / "webapp" / "faq.html").read_text(encoding="utf-8")
+    assert "+500 🪙</b> сразу при регистрации" in faq and "+1000 🪙</b> сразу" not in faq
+
+
+def test_cart_gives_one_lot_in_every_text():
+    from shared.economy import market_lots
+    assert market_lots(3, 3, False) == market_lots(3, 2, False) + 1 == market_lots(2, 2, False) + 2
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "+2 лота" not in html and "+2 market lots" not in html
+    for code in ("de", "es", "uz", "zh", "bn"):
+        src = (ROOT / "shared" / "locale_packs" / f"{code}.py").read_text(encoding="utf-8")
+        line = next(l for l in src.splitlines() if '"eff_cart"' in l)
+        assert "+2" not in line.split('"eff_cart"')[1], code
+
+
+def test_farm_fridge_card_and_lab_spacing():
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "function fridgeSvg" in html and "data-fridge" in html and "f.fridge_levels" in html
+    assert "L.fr_title" in html and "L.fr_max" in html
+    assert ".chips + .hint { margin-top: 10px; }" in html

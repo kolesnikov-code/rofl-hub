@@ -1005,6 +1005,10 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод): холодильник на ферме — пока английский, переводится следующим заходом
+    "fr_title": "🧊 FRIDGE", "fr_cap": "holds {n} 🥩",
+    "fr_hint": "Drillers take cutlets from the fridge on their own — the bigger it is, the longer the farm runs without you.",
+    "fr_up": "Bigger:", "fr_max": "You have the biggest fridge.",
     "subtitle": "kerajaan game-mu dalam satu layar",
     "tab_passport": "📋 Paspor", "tab_farm": "🚜 Ladang", "tab_goals": "🎯 Target", "tab_workshop": "🔧 Bengkel",
     "tab_raids": "🏴‍☠️ Serbuan", "tab_market": "📈 Bursa", "tab_team": "🏆 Tim", "tab_shop": "🏪 Toko", "tab_top": "👑 TOP",
@@ -1069,7 +1073,7 @@ MINIAPP = {
     "ws_needTool": "Butuh: {t}",
     "ws_teamItem": "🏆 Barang tim — melindungi seluruh tim (untuk Mega-Klan harga ×{x})",
     "eff_make": "bahan mentah diubah jadi material di gudang",
-    "eff_cart": "gerobak untuk kuda: +2 lot di bursa",
+    "eff_cart": "gerobak untuk kuda: +1 lot di bursa",
     "eff_meds": "tanpa sakit saat serbuan dan di tambang",
     "it_meds": "KOTAK P3K",
     "mk_lots": "Lot terbuka: {o} dari {m} (🐎 {h} · 🛒 {c})",

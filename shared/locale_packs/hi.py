@@ -1009,6 +1009,10 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод): холодильник на ферме — пока английский, переводится следующим заходом
+    "fr_title": "🧊 FRIDGE", "fr_cap": "holds {n} 🥩",
+    "fr_hint": "Drillers take cutlets from the fridge on their own — the bigger it is, the longer the farm runs without you.",
+    "fr_up": "Bigger:", "fr_max": "You have the biggest fridge.",
     "subtitle": "एक स्क्रीन पर तुम्हारा गेम साम्राज्य",
     "tab_passport": "📋 पासपोर्ट",
     "tab_farm": "🚜 फ़ार्म",
@@ -1130,7 +1134,7 @@ MINIAPP: dict[str, str] = {
     "ws_needTool": "चाहिए: {t}",
     "ws_teamItem": "🏆 टीम की चीज़ — पूरी टीम को बचाती है (मेगा-क्लान के लिए कीमत ×{x})",
     "eff_make": "कच्चा माल भंडार में तैयार सामग्री बन जाता है",
-    "eff_cart": "घोड़े के लिए गाड़ी: बाज़ार में +2 लॉट",
+    "eff_cart": "घोड़े के लिए गाड़ी: बाज़ार में +1 लॉट",
     "eff_meds": "छापों और खदानों में बीमारी नहीं लगती",
     "it_meds": "फ़र्स्ट-एड किट",
     "mk_lots": "खुले लॉट: {m} में से {o} (🐎 {h} · 🛒 {c})",

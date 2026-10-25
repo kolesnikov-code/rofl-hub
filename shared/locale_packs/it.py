@@ -1003,6 +1003,10 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод): холодильник на ферме — пока английский, переводится следующим заходом
+    "fr_title": "🧊 FRIDGE", "fr_cap": "holds {n} 🥩",
+    "fr_hint": "Drillers take cutlets from the fridge on their own — the bigger it is, the longer the farm runs without you.",
+    "fr_up": "Bigger:", "fr_max": "You have the biggest fridge.",
     "subtitle": "il tuo impero di gioco su un unico schermo",
     "tab_passport": "📋 Passaporto",
     "tab_farm": "🚜 Fattoria",
@@ -1100,7 +1104,7 @@ MINIAPP = {
     "tool_1": "Attrezzi grezzi", "tool_2": "Attrezzi di precisione", "tool_3": "Calibrazione", "tool_4": "Nanotecnologie",
     "tech_comm": "COMUNICAZIONI", "tech_scout": "RICOGNIZIONE", "tech_attack": "ATTACCO", "tech_defense": "DIFESA", "tech_science": "SCIENZA",
     "ws_needTool": "Serve: {t}", "ws_teamItem": "🏆 Oggetto di squadra: protegge tutta la squadra (per il Mega-Clan il prezzo è ×{x})",
-    "eff_make": "la materia prima diventa materiale nel deposito", "eff_cart": "un carro per il cavallo: +2 lotti in borsa",
+    "eff_make": "la materia prima diventa materiale nel deposito", "eff_cart": "un carro per il cavallo: +1 lotti in borsa",
     "eff_meds": "niente malattie nelle incursioni e nelle miniere", "it_meds": "KIT DI PRONTO SOCCORSO",
     "mk_lots": "Lotti aperti: {o} di {m} (🐎 {h} · 🛒 {c})",
     "badges": "🏅 Premi delle stagioni",

@@ -1005,6 +1005,10 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод): холодильник на ферме — пока английский, переводится следующим заходом
+    "fr_title": "🧊 FRIDGE", "fr_cap": "holds {n} 🥩",
+    "fr_hint": "Drillers take cutlets from the fridge on their own — the bigger it is, the longer the farm runs without you.",
+    "fr_up": "Bigger:", "fr_max": "You have the biggest fridge.",
     "subtitle": "bitta ekrandagi o'yin imperiyang",
     "tab_passport": "📋 Pasport", "tab_farm": "🚜 Ferma", "tab_goals": "🎯 Maqsadlar", "tab_workshop": "🔧 Ustaxona",
     "tab_raids": "🏴‍☠️ Bosqinlar", "tab_market": "📈 Birja", "tab_team": "🏆 Jamoa", "tab_shop": "🏪 Do'kon", "tab_top": "👑 TOP",
@@ -1055,7 +1059,7 @@ MINIAPP: dict[str, str] = {
     "tool_1": "Qo'pol asboblar", "tool_2": "Nozik sozlash asboblari", "tool_3": "Kalibrovka", "tool_4": "Nanotexnologiyalar",
     "tech_comm": "ALOQA", "tech_scout": "RAZVEDKA", "tech_attack": "HUJUM", "tech_defense": "MUDOFAA", "tech_science": "FAN",
     "ws_needTool": "Kerak: {t}", "ws_teamItem": "🏆 Jamoaviy buyum — butun jamoani himoyalaydi (Mega-Klan uchun narx ×{x})",
-    "eff_make": "xomashyo omborda materialga aylanadi", "eff_cart": "otga arava: birjada +2 lot",
+    "eff_make": "xomashyo omborda materialga aylanadi", "eff_cart": "otga arava: birjada +1 lot",
     "eff_meds": "bosqin va konlarda kasallik yo'q", "it_meds": "DORI QUTISI",
     "mk_lots": "Ochiq lotlar: {o} / {m} (🐎 {h} · 🛒 {c})",
     "badges": "🏅 Mavsum mukofotlari",

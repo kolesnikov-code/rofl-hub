@@ -1003,6 +1003,10 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод): холодильник на ферме — пока английский, переводится следующим заходом
+    "fr_title": "🧊 FRIDGE", "fr_cap": "holds {n} 🥩",
+    "fr_hint": "Drillers take cutlets from the fridge on their own — the bigger it is, the longer the farm runs without you.",
+    "fr_up": "Bigger:", "fr_max": "You have the biggest fridge.",
     "subtitle": "seu império de jogos em uma única tela",
     "tab_passport": "📋 Passaporte",
     "tab_farm": "🚜 Fazenda",
@@ -1124,7 +1128,7 @@ MINIAPP = {
     "ws_needTool": "Precisa de: {t}",
     "ws_teamItem": "🏆 Item de equipe — protege a equipe toda (para Mega-Clã o preço é ×{x})",
     "eff_make": "transforma matéria-prima em material no estoque",
-    "eff_cart": "uma carroça para o cavalo: +2 lotes na bolsa",
+    "eff_cart": "uma carroça para o cavalo: +1 lotes na bolsa",
     "eff_meds": "sem doenças nos saques e nas minas",
     "it_meds": "KIT DE PRIMEIROS SOCORROS",
     "mk_lots": "Lotes abertos: {o} de {m} (🐎 {h} · 🛒 {c})",

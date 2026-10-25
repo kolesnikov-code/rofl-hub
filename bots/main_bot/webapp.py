@@ -41,6 +41,13 @@ logger = logging.getLogger(__name__)
 WEBAPP_DIR = Path(__file__).resolve().parents[2] / "static" / "webapp"
 
 
+def fridge_levels(current: int) -> list[dict]:
+    """Холодильники из каталога объёмом больше текущего: [{sku, capacity, stars}] по возрастанию."""
+    items = [{"sku": sku, "capacity": it["capacity"], "stars": it["stars"]}
+             for sku, it in CATALOG.items() if it["type"] == "fridge_upgrade" and it["capacity"] > current]
+    return sorted(items, key=lambda x: x["capacity"])
+
+
 def _iso(moment: datetime | None) -> str | None:
     return moment.isoformat() if moment else None
 
@@ -100,6 +107,8 @@ def build_me_payload(user, miners, quiz_row, team_row, vip_aliases, now,
             "rates": {"intern": intern_rate, "junior": junior_rate, "premium": premium_rate},
             "fridge": user["fridge_cutlets"],
             "fridge_capacity": user["fridge_capacity"],
+            # Холодильники побольше текущего — мягкий намёк на расширение (вкладка «Ферма»)
+            "fridge_levels": fridge_levels(user["fridge_capacity"]),
             "inv_cutlets": user["inv_cutlets"],
             "nearest_burnout": _iso(min(
                 (m.expires_at for m in alive if m.kind != "intern"), default=None)),
