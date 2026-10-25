@@ -348,6 +348,117 @@ async def handle_admin_vip_auction(request: web.Request) -> web.Response:
     return web.json_response({"ok": True, "id": auction_id})
 
 
+# ---------------------------------------------------------------- 🗺 экспедиции: цели на карте мира
+EXP_ICONS = ("🎯", "💎", "☢️", "🏰", "🛸", "🗿", "🌋", "🧊", "🏝", "⚓", "🛰", "🐉")
+
+
+def validate_target_form(data: dict, now: datetime, open_count: int) -> tuple[dict | None, str | None]:
+    """Проверяет форму цели экспедиции. (поля для INSERT, None) или (None, текст ошибки)."""
+    from shared.economy import EXP_FORKS_MAX, EXP_MAP_H, EXP_MAP_W, EXP_MAX_PLACES, EXP_MAX_TARGETS, EXP_SCOPES
+    from shared.prizes import normalize_rewards
+    if open_count >= EXP_MAX_TARGETS:
+        return None, f"На карте уже {EXP_MAX_TARGETS} целей — закрой одну"
+    title = str(data.get("title") or "").strip()
+    if not 1 <= len(title) <= 100:
+        return None, "Название — от 1 до 100 символов"
+    descr = str(data.get("descr") or "").strip()[:500]
+    icon = str(data.get("icon") or "🎯")[:8]
+    scope = data.get("scope")
+    if scope not in EXP_SCOPES:
+        return None, "Выбери зачёт"
+    try:
+        x, y = float(data.get("x")), float(data.get("y"))
+    except (TypeError, ValueError):
+        return None, "Поставь цель на карте"
+    if not (8 <= x <= EXP_MAP_W - 8 and 8 <= y <= EXP_MAP_H - 8):
+        return None, "Цель — подальше от края карты"
+    forks = _int(data.get("forks"), 3)
+    if not 1 <= forks <= EXP_FORKS_MAX:
+        return None, f"Развилок — от 1 до {EXP_FORKS_MAX}"
+    hours = _int(data.get("hours"))
+    if not 1 <= hours <= 24 * 60:
+        return None, "Итоги — через 1 час … 60 дней"
+    places = _int(data.get("places"))
+    if not 0 <= places <= EXP_MAX_PLACES:
+        return None, f"Призовых мест — от 0 до {EXP_MAX_PLACES}"
+    prizes = {}
+    for p, items in (data.get("prizes") or {}).items() if isinstance(data.get("prizes"), dict) else []:
+        p = _int(p)
+        clean = normalize_rewards(items)
+        if 1 <= p <= max(places, 1) and clean:
+            prizes[str(p)] = clean
+    reward_all = normalize_rewards(data.get("reward_all"))
+    return {"title": title, "descr": descr, "icon": icon, "scope": scope, "x": round(x, 1), "y": round(y, 1),
+            "forks": forks, "resolve_at": now + timedelta(hours=hours), "places": places, "prizes": prizes,
+            "reward_all": reward_all}, None
+
+
+async def handle_admin_targets(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared.economy import EXP_MAP_H, EXP_MAP_W, EXP_MAX_TARGETS
+    async with db.pool.acquire() as conn:
+        rows = await conn.fetch("SELECT * FROM expedition_targets ORDER BY (status = 'open') DESC, id DESC LIMIT 30")
+        counts = {r["target_id"]: (r["n"], r["marching"]) for r in await conn.fetch(
+            "SELECT target_id, COUNT(*) AS n, COUNT(*) FILTER (WHERE status = 'marching') AS marching "
+            "FROM expeditions GROUP BY target_id")}
+    out = []
+    for r in rows:
+        results = r["results"]
+        results = json.loads(results) if isinstance(results, str) else (results or {})
+        n, marching = counts.get(r["id"], (0, 0))
+        out.append({"id": r["id"], "title": r["title"], "icon": r["icon"], "x": r["x"], "y": r["y"], "scope": r["scope"],
+                    "forks": r["forks"], "resolve_at": _iso(r["resolve_at"]), "places": r["places"],
+                    "status": r["status"], "announced": r["announced"], "squads": n, "marching": marching,
+                    "results": [{"place": x.get("place"), "name": x.get("name"), "cargo": x.get("cargo")}
+                                for x in (results.get("places") or [])][:20]})
+    return web.json_response({"targets": out, "map": {"w": EXP_MAP_W, "h": EXP_MAP_H}, "max": EXP_MAX_TARGETS,
+                              "icons": list(EXP_ICONS)})
+
+
+async def handle_admin_target_create(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    data = await _body(request)
+    now = utcnow()
+    async with db.pool.acquire() as conn:
+        async with conn.transaction():
+            await conn.execute("SELECT pg_advisory_xact_lock(281028)")
+            open_count = await conn.fetchval("SELECT COUNT(*) FROM expedition_targets WHERE status = 'open'")
+            form, err = validate_target_form(data, now, open_count)
+            if err:
+                return _fail(err)
+            target_id = await conn.fetchval(
+                """INSERT INTO expedition_targets (title, descr, icon, x, y, scope, forks, resolve_at, places, prizes,
+                                                   reward_all, announced)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, FALSE) RETURNING id""",
+                form["title"], form["descr"], form["icon"], form["x"], form["y"], form["scope"], form["forks"],
+                form["resolve_at"], form["places"], json.dumps(form["prizes"], ensure_ascii=False),
+                json.dumps(form["reward_all"], ensure_ascii=False))
+    return web.json_response({"ok": True, "id": target_id})
+
+
+async def handle_admin_target_close(request: web.Request) -> web.Response:
+    """finish — итоги сейчас (демон админ-бота подведёт и опубликует); cancel — отменить, снаряжение вернуть."""
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    data = await _body(request)
+    target_id, mode = _int(data.get("id")), data.get("mode")
+    async with db.pool.acquire() as conn:
+        if mode == "finish":
+            done = await conn.fetchval("UPDATE expedition_targets SET resolve_at = LEAST(resolve_at, NOW()) "
+                                       "WHERE id = $1 AND status = 'open' RETURNING 1", target_id)
+        elif mode == "cancel":
+            from shared.expeditions import cancel_target
+            done = await cancel_target(conn, target_id)
+        else:
+            return _fail("Неизвестное действие")
+    return web.json_response({"ok": True}) if done else _fail("Цель уже закрыта")
+
+
 # ---------------------------------------------------------------- тумблеры
 async def handle_admin_flag(request: web.Request) -> web.Response:
     uid = _admin(request)
@@ -373,3 +484,6 @@ def register_admin_routes(app: web.Application) -> None:
     app.router.add_get("/api/admin/vip", handle_admin_vip)
     app.router.add_post("/api/admin/vip/auction", handle_admin_vip_auction)
     app.router.add_post("/api/admin/flag", handle_admin_flag)
+    app.router.add_get("/api/admin/targets", handle_admin_targets)
+    app.router.add_post("/api/admin/target", handle_admin_target_create)
+    app.router.add_post("/api/admin/target/close", handle_admin_target_close)

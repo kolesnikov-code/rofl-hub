@@ -7,7 +7,8 @@
 - shield — щит от налётов (users.raid_shield_until);
 - cutlet — кибер-котлета на склад (inv_cutlets);
 - armor — Кибер-броня: постоянный +10% к добыче за уровень (users.farm_armor_level, макс 3);
-- shuttle — Шаттл: постоянная льгота на бирже (комиссия 5%, лимиты шире), один на игрока.
+- shuttle — Шаттл: постоянная льгота на бирже (комиссия 5%, лимиты шире), один на игрока;
+- bdrone — боевой дрон (защитник / атакующий / шпион): +1 к users.drones_<вид>, без лимита склада.
 
 Всё — внутри транзакции вызывающего кода; списание ресурсов — spend_bundle (всё или ничего).
 """
@@ -224,8 +225,42 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
         from shared.economy import SHUTTLE_CHARGE_DAYS
         await conn.execute("UPDATE users SET has_shuttle = TRUE, shuttle_until = $2 WHERE user_id = $1",
                            user_id, extend_expiry(None, now, SHUTTLE_CHARGE_DAYS))
+    elif effect == "bdrone":
+        result.level = await add_drone(conn, user_id, recipe["drone"])
     elif effect == "storage":
         result.level = next_storage_level(user["res_capacity"])[0]   # новая вместимость
         await conn.execute("UPDATE users SET res_capacity = $2 WHERE user_id = $1", user_id, result.level)
     logger.info("[WORKSHOP] user=%s crafted %s cost=%s", user_id, recipe_id, cost)
     return result
+
+
+DRONE_COLUMNS = {"guard": "drones_guard", "attack": "drones_attack", "spy": "drones_spy"}
+
+
+async def add_drone(conn, user_id: int, kind: str, qty: int = 1) -> int:
+    """+qty боевых дронов вида kind; возвращает, сколько их теперь у игрока."""
+    column = DRONE_COLUMNS[kind]
+    return await conn.fetchval(f"UPDATE users SET {column} = {column} + $2 WHERE user_id = $1 RETURNING {column}",
+                               user_id, qty)
+
+
+async def buy_drone(conn, user_id: int, kind: str) -> int:
+    """🤖 Покупка боевого дрона за монеты (DRONE_COIN_PRICE сгорает). Ошибки — WorkshopError."""
+    from shared.economy import DRONE_COIN_PRICE
+    from shared.feature_flags import get_flag
+    if kind not in DRONE_COLUMNS:
+        raise WorkshopError("ws.err_unknown")
+    if not await get_flag(f"wsr:drone_{kind}"):
+        raise WorkshopError("ws.err_off")
+    balance = await conn.fetchval("SELECT balance FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+    if balance is None:
+        raise WorkshopError("common.no_profile")
+    if balance < DRONE_COIN_PRICE:
+        raise WorkshopError("ws.err_coins", need=DRONE_COIN_PRICE, have=balance)
+    try:
+        await change_balance(conn, user_id, -DRONE_COIN_PRICE, f"drone_buy:{kind}")
+    except InsufficientFunds as e:
+        raise WorkshopError("ws.err_coins", need=DRONE_COIN_PRICE, have=balance) from e
+    count = await add_drone(conn, user_id, kind)
+    logger.info("[DRONE] user=%s купил %s за %s 🪙 (теперь %s)", user_id, kind, DRONE_COIN_PRICE, count)
+    return count

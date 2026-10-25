@@ -24,6 +24,8 @@ from datetime import datetime, timedelta
 
 from shared.economy import (
     CARGO_LOOT_PERCENT,
+    drone_raid_loot_percent,
+    drone_spy_targets,
     RAID_SICK_LOSS_PERCENT,
     raid_candidates,
     raid_cooldown_hours,
@@ -135,8 +137,8 @@ async def scout(conn, user_id: int, now: datetime) -> list[dict]:
     Целей в списке = 2 + уровень разведки.
     """
     from shared.tech import tech_levels
-    user = await conn.fetchrow("SELECT team_id, last_raid_at, raid_free_fuel FROM users WHERE user_id = $1 FOR UPDATE",
-                               user_id)
+    user = await conn.fetchrow("SELECT team_id, last_raid_at, raid_free_fuel, drones_spy FROM users WHERE user_id = $1 "
+                               "FOR UPDATE", user_id)
     if user is None:
         raise RaidError("common.no_profile")
     tech = await tech_levels(conn, user_id)
@@ -149,7 +151,9 @@ async def scout(conn, user_id: int, now: datetime) -> list[dict]:
     stock = await lock_resources(conn, user_id)
     if user["raid_free_fuel"] <= 0 and stock.get("hydrogen", 0) < RAID_FUEL_HYDROGEN:
         raise RaidError("raid.err_fuel", need=RAID_FUEL_HYDROGEN, have=stock.get("hydrogen", 0))
-    return await find_targets(conn, user_id, user["team_id"], now, limit=raid_candidates(tech["scout"]))
+    # 🛰 Дроны-шпионы: +1 цель каждый (с потолком)
+    limit = raid_candidates(tech["scout"]) + drone_spy_targets(user["drones_spy"])
+    return await find_targets(conn, user_id, user["team_id"], now, limit=limit)
 
 
 async def revenge_options(conn, user_id: int, now: datetime) -> list[dict]:
@@ -239,6 +243,11 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
         notes.append("drill")
     # Технологии: ⚔️ нападение и 📚 наука атакующего против 🛡 обороны цели
     loot_percent = raid_loot_percent(a_tech["attack"], d_tech["defense"], a_tech["science"])
+    # 🤖 Боевые дроны: атакующие налётчика против защитников цели (суммируются, с потолком)
+    with_drones = drone_raid_loot_percent(loot_percent, attacker["drones_attack"], defender["drones_guard"])
+    if with_drones != loot_percent:
+        notes.append("drones")
+        loot_percent = with_drones
     if attacker["raid_cargo"] > 0:   # 📦 Трюм: тратится на этом вылете при любом исходе
         await conn.execute("UPDATE users SET raid_cargo = raid_cargo - 1 WHERE user_id = $1", attacker_id)
         loot_percent = loot_percent * CARGO_LOOT_PERCENT // 100

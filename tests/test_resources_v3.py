@@ -90,7 +90,7 @@ def test_unlock_order_starts_simple_ends_legendary():
     assert sorted(order) == sorted(WORKSHOP_RECIPES)
     assert order.index("bonfire") < order.index("battery") < order.index("cart")   # огонь раньше батареек
     assert order.index("bonfire") < order.index("cutlet")
-    assert order[-1] == "shuttle"
+    assert order[-4] == "shuttle" and order[-3:] == ("drone_guard", "drone_attack", "drone_spy")   # 28.10: дроны — после Шаттла
 
 
 def test_team_items_expensive_and_clan_pays_multiple():

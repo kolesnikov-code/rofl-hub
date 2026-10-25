@@ -713,6 +713,86 @@ SCHEMA_STATEMENTS: list[str] = [
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     """,
+    # --- 28.10: 🤖 боевые дроны (личные спутники в налётах и экспедициях) ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS drones_guard INT NOT NULL DEFAULT 0 CHECK (drones_guard >= 0);",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS drones_attack INT NOT NULL DEFAULT 0 CHECK (drones_attack >= 0);",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS drones_spy INT NOT NULL DEFAULT 0 CHECK (drones_spy >= 0);",
+    # --- 28.10: 🗺 экспедиции: цели на карте мира, отряды, развилки с голосованием ---
+    """
+    CREATE TABLE IF NOT EXISTS expedition_targets (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(100) NOT NULL,
+        descr TEXT NOT NULL DEFAULT '',
+        icon VARCHAR(16) NOT NULL DEFAULT '🎯',
+        x REAL NOT NULL,
+        y REAL NOT NULL,
+        scope VARCHAR(8) NOT NULL,
+        forks INT NOT NULL DEFAULT 3,
+        resolve_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        places INT NOT NULL DEFAULT 3,
+        prizes JSONB NOT NULL DEFAULT '{}'::jsonb,
+        reward_all JSONB NOT NULL DEFAULT '[]'::jsonb,
+        status VARCHAR(12) NOT NULL DEFAULT 'open',
+        announced BOOLEAN NOT NULL DEFAULT FALSE,
+        results JSONB,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS expeditions (
+        id BIGSERIAL PRIMARY KEY,
+        target_id INT NOT NULL,
+        mode VARCHAR(8) NOT NULL,
+        user_id BIGINT,
+        team_id BIGINT,
+        status VARCHAR(12) NOT NULL DEFAULT 'gathering',
+        batteries INT NOT NULL DEFAULT 0,
+        cutlets INT NOT NULL DEFAULT 0,
+        ox REAL NOT NULL,
+        oy REAL NOT NULL,
+        departed_at TIMESTAMP WITH TIME ZONE,
+        planned_minutes INT,
+        arrive_at TIMESTAMP WITH TIME ZONE,
+        cargo INT NOT NULL DEFAULT 100,
+        forks_done INT NOT NULL DEFAULT 0,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS expeditions_solo_uq ON expeditions (target_id, user_id) WHERE mode = 'solo';",
+    "CREATE UNIQUE INDEX IF NOT EXISTS expeditions_team_uq ON expeditions (target_id, team_id) WHERE mode <> 'solo';",
+    "CREATE INDEX IF NOT EXISTS expeditions_target_idx ON expeditions (target_id, status);",
+    """
+    CREATE TABLE IF NOT EXISTS expedition_members (
+        expedition_id BIGINT NOT NULL,
+        user_id BIGINT NOT NULL,
+        batteries INT NOT NULL DEFAULT 0,
+        cutlets INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (expedition_id, user_id)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS expedition_votes (
+        expedition_id BIGINT NOT NULL,
+        fork_no INT NOT NULL,
+        user_id BIGINT NOT NULL,
+        option INT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (expedition_id, fork_no, user_id)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS expedition_log (
+        expedition_id BIGINT NOT NULL,
+        fork_no INT NOT NULL,
+        event_id VARCHAR(32) NOT NULL,
+        option INT NOT NULL,
+        votes INT NOT NULL DEFAULT 0,
+        cargo_delta INT NOT NULL DEFAULT 0,
+        delay_min INT NOT NULL DEFAULT 0,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (expedition_id, fork_no)
+    );
+    """,
 ]
 
 

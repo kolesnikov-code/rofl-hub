@@ -526,6 +526,14 @@ WORKSHOP_RECIPES.update({
 # Синтез котлеты теперь требует корову и огонь (решение владельца 27.10)
 WORKSHOP_RECIPES["cutlet"]["cost"] = {"metal": 50, "hydrogen": 50, "crystal": 50, "parts": 50, "cow": 1, "fire": 5}
 WORKSHOP_RECIPES["shuttle"]["tool"] = 3
+# 🤖 Боевые дроны (28.10): эксклюзив уровня Шаттла — 1000 каждого базового ресурса + своё + 1000 🪙,
+# набор 🔬; одна сборка = один дрон. Альтернатива — DRONE_COIN_PRICE монет (кнопка «Купить» в мастерской).
+_DRONE_BASE = {"metal": 1000, "hydrogen": 1000, "crystal": 1000, "parts": 1000, "battery": 10}
+WORKSHOP_RECIPES.update({
+    "drone_guard": {"cost": {**_DRONE_BASE, "stone": 300}, "coins": 1000, "effect": "bdrone", "drone": "guard", "tool": 3},
+    "drone_attack": {"cost": {**_DRONE_BASE, "fire": 50}, "coins": 1000, "effect": "bdrone", "drone": "attack", "tool": 3},
+    "drone_spy": {"cost": {**_DRONE_BASE, "energy": 150}, "coins": 1000, "effect": "bdrone", "drone": "spy", "tool": 3},
+})
 WORKSHOP_RECIPES["thermos_24h"]["tool"] = 2
 TEAM_ITEM_CLAN_MULTIPLIER = 5     # Купол/Знамя Мега-Клана защищают до 1000 бойцов — и стоят в 5 раз дороже
 # Поэтапное открытие (решение владельца 26.10): новичку — по одному рецепту в сутки с момента
@@ -554,6 +562,9 @@ WORKSHOP_UNLOCK_ORDER = (
     "banner_24h",
     "dome_12h",
     "shuttle",        # легенда
+    "drone_guard",    # 🤖 боевые дроны — эксклюзив после Шаттла
+    "drone_attack",
+    "drone_spy",
 )
 
 
@@ -778,3 +789,77 @@ def duel_payout(stake_each: int) -> tuple[int, int]:
     bank = stake_each * 2
     burned = bank * DUEL_BURN_PERCENT // 100
     return bank - burned, burned
+
+
+# --------------------------------------------------------------------------
+# 🤖 БОЕВЫЕ ДРОНЫ (решение владельца 28.10): Дрон-защитник, Атакующий дрон, Дрон-шпион — личные спутники
+# в налётах и экспедициях. Количество не ограничено, действие суммируется (с потолком), но каждый —
+# эксклюзивная ачивка: сборка как у Шаттла или покупка за большие монеты (монеты сгорают).
+# Дроны не лежат на складе изделий (лимит 10% их не касается) и не тратятся.
+# --------------------------------------------------------------------------
+DRONE_KINDS = ("guard", "attack", "spy")
+DRONE_COIN_PRICE = 50_000            # 🪙 за дрона в мастерской (ledger drone_buy, сгорают)
+DRONE_RAID_ATTACK_PCT = 5            # ⚔️ каждый атакующий дрон: +5% к трофею налёта…
+DRONE_RAID_GUARD_PCT = 5             # 🛡 каждый защитник цели: −5% к трофею налётчика…
+DRONE_RAID_CAP_PCT = 50              # …но не больше ±50% (суммарно)
+DRONE_RAID_MIN_LOOT_PCT = 25         # трофей с дронами не опускается ниже четверти
+DRONE_SPY_TARGETS = 1                # 🛰 каждый шпион: +1 цель в разведке налётов…
+DRONE_SPY_TARGETS_CAP = 5            # …не больше +5
+DRONE_EXP_CARGO_PCT = 3              # экспедиции: атакующие дроны отряда — +3% к добыче на силовых развилках
+DRONE_EXP_GUARD_PCT = 5              # защитники отряда — −5% к потерям груза
+DRONE_EXP_SPEED_PCT = 2              # шпионы отряда — путь короче на 2%
+DRONE_EXP_CARGO_CAP = 60
+DRONE_EXP_GUARD_CAP = 60
+DRONE_EXP_SPEED_CAP = 30
+
+
+def drone_raid_loot_percent(base_percent: int, attacker_attack: int, defender_guard: int) -> int:
+    """Процент трофея налёта с учётом атакующих дронов налётчика и защитников цели."""
+    bonus = min(DRONE_RAID_CAP_PCT, max(0, attacker_attack) * DRONE_RAID_ATTACK_PCT)
+    cut = min(DRONE_RAID_CAP_PCT, max(0, defender_guard) * DRONE_RAID_GUARD_PCT)
+    if not bonus and not cut:
+        return base_percent
+    return max(DRONE_RAID_MIN_LOOT_PCT, base_percent + bonus - cut)
+
+
+def drone_spy_targets(spies: int) -> int:
+    return min(DRONE_SPY_TARGETS_CAP, max(0, spies) * DRONE_SPY_TARGETS)
+
+
+def drone_exp_effects(attack: int, guard: int, spy: int) -> dict[str, int]:
+    """Проценты отряда в экспедиции: cargo (+к добыче силовых развилок), guard (−потери), speed (−путь)."""
+    return {"cargo": min(DRONE_EXP_CARGO_CAP, max(0, attack) * DRONE_EXP_CARGO_PCT),
+            "guard": min(DRONE_EXP_GUARD_CAP, max(0, guard) * DRONE_EXP_GUARD_PCT),
+            "speed": min(DRONE_EXP_SPEED_CAP, max(0, spy) * DRONE_EXP_SPEED_PCT)}
+
+
+# --------------------------------------------------------------------------
+# 🗺 ЭКСПЕДИЦИИ (решение владельца 28.10): цели на карте мира ставит владелец в пульте (до 10 сразу),
+# у каждой — свой час итогов. Отряды идут с разных сторон карты; по дороге — развилки, которые
+# решает голосование команды (в соло — сам игрок). Не успел дойти к часу итогов — не участвуешь.
+# Снаряжение: соло — водород; команда — батарейки; Мега-Клан — батарейки + котлеты в провиант.
+# --------------------------------------------------------------------------
+EXP_MAP_W, EXP_MAP_H = 160, 100      # условные единицы карты (широкая карта под экран)
+EXP_MAX_TARGETS = 10                 # целей на карте одновременно
+EXP_SCOPES = ("solo", "team", "clan", "teams")   # teams — команды и кланы в одном зачёте
+EXP_SPEED = {"solo": 14, "team": 11, "clan": 9}  # единиц карты в час: большой отряд идёт медленнее
+EXP_MIN_TRAVEL_MINUTES = 20
+EXP_SOLO_HYDROGEN = 10               # 💧 соло-вылазка
+EXP_BATTERIES = {"team": 5, "clan": 25}           # 🔋 снаряжение отряда (вносят бойцы по одной)
+EXP_CLAN_CUTLETS = 10                # 🥩 провиант Мега-Клана (решение владельца: командам котлеты не нужны)
+EXP_BASE_CARGO = 100                 # стартовый груз — по нему места в итогах
+EXP_FORKS_DEFAULT = 3
+EXP_FORKS_MAX = 5
+EXP_HINT_SCOUT_LEVEL = 2             # 🔭 разведка 2+ у кого-то в отряде показывает последствия выбора
+EXP_MAX_PLACES = 100
+
+
+def exp_mode_allowed(scope: str, mode: str) -> bool:
+    """Может ли отряд такого вида (solo/team/clan) идти к цели с таким зачётом."""
+    return mode == scope or (scope == "teams" and mode in ("team", "clan"))
+
+
+def exp_travel_minutes(distance: float, mode: str, spy_pct: int = 0) -> int:
+    """Минуты пути: расстояние / скорость отряда, шпионы сокращают путь."""
+    minutes = distance / EXP_SPEED[mode] * 60 * (100 - max(0, min(spy_pct, DRONE_EXP_SPEED_CAP))) / 100
+    return max(EXP_MIN_TRAVEL_MINUTES, int(round(minutes)))

@@ -55,7 +55,7 @@ def test_format_bundle_orders_by_kind_and_skips_zero():
 # ---------------------------------------------------------------- мастерская
 def test_recipes_have_prices_and_known_effects():
     for rid, recipe in WORKSHOP_RECIPES.items():
-        assert recipe["effect"] in economy.ITEM_EFFECTS or recipe["effect"] in ("cutlet", "armor", "storage", "shuttle", "make", "cart")
+        assert recipe["effect"] in economy.ITEM_EFFECTS or recipe["effect"] in ("cutlet", "armor", "storage", "shuttle", "make", "cart", "bdrone")
         cost = recipe_cost(rid)
         assert cost and all(k in economy.ALL_KINDS and v > 0 for k, v in cost.items()), rid
         if recipe["effect"] in economy.ITEM_EFFECTS and recipe["effect"] not in ("forsage", *economy.ONE_SHOT_COLUMNS):

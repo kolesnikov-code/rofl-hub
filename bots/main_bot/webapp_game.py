@@ -28,6 +28,13 @@ from shared.analytics import track
 from shared.daily_goals import GoalsError, all_done, chest_coins, claim_chest, claimed_today, goal_progress, goals_for
 from shared.database import db
 from shared.economy import (
+    DRONE_COIN_PRICE,
+    DRONE_EXP_CARGO_PCT,
+    DRONE_EXP_GUARD_PCT,
+    DRONE_EXP_SPEED_PCT,
+    DRONE_RAID_ATTACK_PCT,
+    DRONE_RAID_GUARD_PCT,
+    DRONE_SPY_TARGETS,
     REFERRAL_QUALIFIED_BONUS,
     REFERRAL_QUALIFY_BONUS_CLAIMS,
     REFERRAL_QUALIFY_QUIZ_LEVEL,
@@ -232,11 +239,16 @@ def resource_labels(lang: str) -> dict[str, str]:
 # ============================================================================
 # Мастерская
 # ============================================================================
+# Сила одного боевого дрона — для подписей в мастерской (числа только из economy)
+DRONE_FX = {"ra": DRONE_RAID_ATTACK_PCT, "rg": DRONE_RAID_GUARD_PCT, "st": DRONE_SPY_TARGETS,
+            "ec": DRONE_EXP_CARGO_PCT, "eg": DRONE_EXP_GUARD_PCT, "es": DRONE_EXP_SPEED_PCT}
+
+
 def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lang: str,
                            balance: int = 0, armor_until=None, capacity: int = RES_CAPACITY_BASE,
                            weekly: list | None = None, created_at=None, now=None,
                            disabled=(), week_done: dict | None = None, tools_level: int = 0,
-                           team_mult: int = 1, in_team: bool = True) -> dict:
+                           team_mult: int = 1, in_team: bool = True, drones: dict | None = None) -> dict:
     """
     Чистый сборщик витрины мастерской (юнит-тесты без aiohttp). armor_level — действующий.
     created_at/now — поэтапное открытие (по рецепту в сутки); disabled — выключенные владельцем.
@@ -275,6 +287,8 @@ def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lan
             "unlock_in": int((opens - now).total_seconds()) if locked else 0,
             "week_limit": limit, "week_left": week_left,
             "stored": effect in ITEM_EFFECTS,
+            "drone": recipe.get("drone"),
+            "buy_coins": DRONE_COIN_PRICE if effect == "bdrone" else 0,
         })
     return {
         "stock": stock,
@@ -291,6 +305,8 @@ def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lan
         "shuttle_fee": SHUTTLE_MARKET_FEE_PERCENT,
         "market_fee": MARKET_FEE_PERCENT,
         "recipes": recipes,
+        "drones": drones or {"guard": 0, "attack": 0, "spy": 0},
+        "drone_fx": DRONE_FX,
     }
 
 
@@ -303,8 +319,8 @@ async def handle_workshop(request: web.Request) -> web.Response:
     async with db.pool.acquire() as conn:
         stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
         user = await conn.fetchrow(
-            "SELECT farm_armor_level, armor_until, has_shuttle, balance, res_capacity, created_at, team_id "
-            "FROM users WHERE user_id = $1", ctx.user_id)
+            "SELECT farm_armor_level, armor_until, has_shuttle, balance, res_capacity, created_at, team_id, "
+            "drones_guard, drones_attack, drones_spy FROM users WHERE user_id = $1", ctx.user_id)
         tools_level = (await tech_levels(conn, ctx.user_id))["tools"]
         team_mult = team_cost_multiplier(await conn.fetchval(
             "SELECT max_members FROM teams WHERE team_id = $1", user["team_id"])) if user["team_id"] else 1
@@ -326,7 +342,26 @@ async def handle_workshop(request: web.Request) -> web.Response:
                                                     capacity=user["res_capacity"], weekly=weekly,
                                                     created_at=user["created_at"], now=now, disabled=disabled,
                                                     week_done=week_done, tools_level=tools_level,
-                                                    team_mult=team_mult, in_team=user["team_id"] is not None))
+                                                    team_mult=team_mult, in_team=user["team_id"] is not None,
+                                                    drones={k: user[f"drones_{k}"] for k in ("guard", "attack", "spy")}))
+
+
+async def handle_drone_buy(request: web.Request) -> web.Response:
+    """🤖 Купить боевого дрона за монеты (монеты сгорают)."""
+    from shared.workshop import WorkshopError, buy_drone
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    if off := await _feature_off("workshop", ctx.lang):
+        return off
+    data = await _json(request)
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                count = await buy_drone(conn, ctx.user_id, str(data.get("kind") or ""))
+    except WorkshopError as e:
+        return fail(e.localized(ctx.lang))
+    return web.json_response({"ok": True, "count": count})
 
 
 async def handle_craft_weekly(request: web.Request) -> web.Response:
@@ -468,6 +503,7 @@ async def handle_storage(request: web.Request) -> web.Response:
                  "armor_until": user["armor_until"].isoformat() if armor and user["armor_until"] else None,
                  "capacity": user["res_capacity"], "capacity_base": RES_CAPACITY_BASE,
                  "capacity_max": next_storage_level(user["res_capacity"]) is None},
+        "drones": {k: user[f"drones_{k}"] for k in ("guard", "attack", "spy")},
     })
 
 
@@ -1405,6 +1441,7 @@ async def handle_refuel(request: web.Request) -> web.Response:
 def register_game_routes(app: web.Application) -> None:
     app.router.add_get("/api/workshop", handle_workshop)
     app.router.add_post("/api/craft", handle_craft)
+    app.router.add_post("/api/drone/buy", handle_drone_buy)
     app.router.add_post("/api/craft_weekly", handle_craft_weekly)
     app.router.add_get("/api/storage", handle_storage)
     app.router.add_get("/api/mines", handle_mines)

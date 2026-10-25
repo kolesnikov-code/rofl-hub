@@ -1,0 +1,194 @@
+"""
+🗺 Экспедиции и 🤖 боевые дроны (решение владельца 28.10): чистые правила, тексты, маршруты, пульт.
+Сценарии с базой (выход, развилки, голосование, итоги, возвраты, покупка дронов) — в test_db_integration.py.
+"""
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import pytest
+
+from shared import economy
+from shared.expedition_events import EVENTS, EVENTS_BY_ID, event_for, event_text
+from shared.expeditions import (apply_option, decide, distance, fork_schedule, gear_needed, origin_for, progress,
+                                squad_mode)
+
+ROOT = Path(__file__).resolve().parents[1]
+NOW = datetime(2026, 10, 28, 12, 0, tzinfo=timezone.utc)
+
+
+# ---------------------------------------------------------------- дроны
+def test_drone_raid_percent_stacks_with_caps_and_floor():
+    f = economy.drone_raid_loot_percent
+    assert f(100, 0, 0) == 100                       # без дронов — как было
+    assert f(100, 3, 0) == 115 and f(100, 0, 2) == 90 and f(100, 2, 2) == 100
+    assert f(100, 50, 0) == 100 + economy.DRONE_RAID_CAP_PCT          # потолок бонуса
+    assert f(60, 0, 50) == economy.DRONE_RAID_MIN_LOOT_PCT            # пол трофея
+    assert economy.drone_spy_targets(2) == 2 and economy.drone_spy_targets(99) == economy.DRONE_SPY_TARGETS_CAP
+
+
+def test_drone_expedition_effects_capped():
+    eff = economy.drone_exp_effects(2, 3, 4)
+    assert eff == {"cargo": 6, "guard": 15, "speed": 8}
+    big = economy.drone_exp_effects(1000, 1000, 1000)
+    assert big == {"cargo": economy.DRONE_EXP_CARGO_CAP, "guard": economy.DRONE_EXP_GUARD_CAP,
+                   "speed": economy.DRONE_EXP_SPEED_CAP}
+
+
+def test_drones_are_exclusive_like_the_shuttle():
+    shuttle = economy.WORKSHOP_RECIPES["shuttle"]
+    for kind in economy.DRONE_KINDS:
+        r = economy.WORKSHOP_RECIPES[f"drone_{kind}"]
+        assert r["effect"] == "bdrone" and r["drone"] == kind and r["tool"] == 3
+        assert all(r["cost"][k] >= v for k, v in shuttle["cost"].items())   # не дешевле Шаттла
+        assert r["coins"] >= shuttle["coins"]
+        assert r["effect"] not in economy.ITEM_EFFECTS                     # не лежат на складе изделий
+    assert economy.DRONE_COIN_PRICE >= 50_000                              # купить — только за большие монеты
+
+
+# ---------------------------------------------------------------- экспедиции: правила
+def test_scope_and_travel_rules():
+    assert economy.exp_mode_allowed("solo", "solo") and not economy.exp_mode_allowed("solo", "team")
+    assert economy.exp_mode_allowed("teams", "team") and economy.exp_mode_allowed("teams", "clan")
+    assert not economy.exp_mode_allowed("teams", "solo") and not economy.exp_mode_allowed("clan", "team")
+    solo, team, clan = (economy.exp_travel_minutes(100, m) for m in ("solo", "team", "clan"))
+    assert solo < team < clan                         # большой отряд идёт медленнее
+    assert economy.exp_travel_minutes(100, "team", 20) < team   # шпионы сокращают путь
+    assert economy.exp_travel_minutes(0.1, "solo") == economy.EXP_MIN_TRAVEL_MINUTES
+    assert economy.exp_travel_minutes(100, "solo", 999) == economy.exp_travel_minutes(100, "solo", economy.DRONE_EXP_SPEED_CAP)
+
+
+def test_gear_by_squad_type():
+    assert gear_needed("solo") == {"hydrogen": economy.EXP_SOLO_HYDROGEN}
+    assert gear_needed("team") == {"battery": economy.EXP_BATTERIES["team"]}           # командам котлеты не нужны
+    assert gear_needed("clan") == {"battery": economy.EXP_BATTERIES["clan"], "cutlet": economy.EXP_CLAN_CUTLETS}
+    assert squad_mode(50) == "team" and squad_mode(1000) == "clan" and squad_mode(None) == "team"
+
+
+def test_origins_on_map_edge_and_stable():
+    seen = set()
+    for i in range(1, 60):
+        x, y = origin_for("team", i)
+        assert 0 <= x <= economy.EXP_MAP_W and 0 <= y <= economy.EXP_MAP_H
+        assert distance(x, y, economy.EXP_MAP_W / 2, economy.EXP_MAP_H / 2) > 30   # на краю, а не в центре
+        seen.add((round(x), round(y)))
+    assert len(seen) > 40                                              # с разных направлений
+    assert origin_for("solo", 7) == origin_for("solo", 7) and origin_for("solo", 7) != origin_for("team", 7)
+
+
+def test_fork_schedule_equal_parts():
+    sched = fork_schedule(NOW, 400, 3)
+    assert [o for o, _ in sched] == [NOW + timedelta(minutes=100 * i) for i in (1, 2, 3)]
+    assert sched[-1][1] == NOW + timedelta(minutes=400)               # последнее голосование — до прибытия
+    assert all(c > o for o, c in sched)
+
+
+def test_decide_majority_tie_earliest_and_default():
+    t = lambda m: NOW + timedelta(minutes=m)    # noqa: E731
+    assert decide([], 3) == (0, 0)                                    # молчание — самый осторожный вариант
+    assert decide([(2, t(5)), (2, t(6)), (1, t(1))], 3) == (2, 2)     # большинство
+    assert decide([(1, t(3)), (2, t(1))], 3) == (2, 1)                # ничья — кто раньше
+    assert decide([(9, t(1)), (1, t(2))], 3) == (1, 1)                # мусорный вариант не считается
+
+
+def test_apply_option_drones_change_outcome():
+    fight = {"cargo": 40, "loss": 20, "delay": 10, "fight": True}
+    assert apply_option(100, fight, {}) == (120, 10)                  # +40 − 20% от 100
+    assert apply_option(100, fight, {"cargo": 50, "guard": 50}) == (150, 10)   # +60 − 10
+    calm = {"cargo": 10, "loss": 0, "delay": -30}
+    assert apply_option(100, calm, {"cargo": 60}) == (110, -30)       # не силовой — атакующие не помогают
+    assert apply_option(0, {"cargo": -10}, {}) == (0, 0)              # груз не уходит в минус
+
+
+def test_progress_of_marker():
+    exp = {"departed_at": NOW, "arrive_at": NOW + timedelta(hours=4)}
+    assert progress(exp, NOW) == 0 and progress(exp, NOW + timedelta(hours=1)) == 0.25
+    assert progress(exp, NOW + timedelta(hours=9)) == 1 and progress({"departed_at": None, "arrive_at": None}, NOW) == 0
+
+
+def test_events_are_decisions_with_texts():
+    assert len(EVENTS) >= 10 and len(EVENTS_BY_ID) == len(EVENTS)
+    for e in EVENTS:
+        assert e["text"]["ru"] and e["text"]["en"] and 2 <= len(e["options"]) <= 3
+        outcomes = {(o.get("cargo", 0), o.get("loss", 0), o.get("delay", 0)) for o in e["options"]}
+        assert len(outcomes) == len(e["options"])                      # варианты действительно разные
+        for o in e["options"]:
+            assert o["text"]["ru"] and o["text"]["en"] and 0 <= o.get("loss", 0) <= 30
+            assert "рофл" not in o["text"]["ru"].lower()
+    assert event_text({"ru": "А", "en": "B"}, "de") == "B"
+
+
+def test_event_sequence_has_no_repeats_within_squad():
+    for exp_id in range(1, 40):
+        ids = [event_for(exp_id, k)["id"] for k in range(1, economy.EXP_FORKS_MAX + 1)]
+        assert len(set(ids)) == len(ids)
+
+
+# ---------------------------------------------------------------- пульт, маршруты, тексты
+def test_admin_target_form_validation():
+    from bots.main_bot.webapp_admin import validate_target_form
+    base = {"title": "Цитадель", "scope": "teams", "x": 80, "y": 50, "forks": 3, "hours": 24, "places": 2,
+            "prizes": {"1": [{"kind": "coins", "amount": 500}], "5": [{"kind": "coins", "amount": 5}]},
+            "reward_all": [{"kind": "resource", "res": "core", "qty": 1}]}
+    form, err = validate_target_form(base, NOW, 0)
+    assert err is None and form["resolve_at"] == NOW + timedelta(hours=24)
+    assert form["prizes"] == {"1": [{"kind": "coins", "amount": 500}]} and form["reward_all"][0]["res"] == "core"
+    for patch, needle in (({"title": ""}, "Название"), ({"scope": "x"}, "зачёт"), ({"x": None}, "карте"),
+                          ({"x": 1}, "края"), ({"forks": 9}, "Развилок"), ({"hours": 0}, "Итоги"), ({"places": 101}, "мест")):
+        form, err = validate_target_form({**base, **patch}, NOW, 0)
+        assert form is None and needle in err, (patch, err)
+    form, err = validate_target_form(base, NOW, economy.EXP_MAX_TARGETS)
+    assert form is None and str(economy.EXP_MAX_TARGETS) in err       # не больше 10 целей сразу
+
+
+def test_routes_registered():
+    from bots.main_bot.webapp import create_webapp
+    app = create_webapp("123456:TEST")
+    paths = {r.resource.canonical for r in app.router.routes() if r.resource is not None}
+    for p in ("/api/map", "/api/exp/solo", "/api/exp/gear", "/api/exp/vote", "/api/drone/buy",
+              "/api/admin/targets", "/api/admin/target", "/api/admin/target/close"):
+        assert p in paths, p
+
+
+def test_feature_flag_and_tab():
+    from shared.feature_flags import FLAG_DEFAULTS, FLAG_TITLES
+    assert FLAG_DEFAULTS["expeditions"] is True and "expeditions" in FLAG_TITLES
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert '"mines", "map", "friends"' in html and 'map: "expeditions"' in html and "function viewMap" in html
+    for needle in ("/api/map", "/api/exp/solo", "/api/exp/gear", "/api/exp/vote", "/api/drone/buy", "L.dr_title",
+                   "data-countdown", "mapPos("):
+        assert needle in html, needle
+    admin = (ROOT / "static" / "webapp" / "admin.html").read_text(encoding="utf-8")
+    for needle in ("viewExp", "/api/admin/targets", "/api/admin/target/close", '["bdrone",'):
+        assert needle in admin, needle
+
+
+def test_expedition_texts_in_every_language():
+    from shared.locales import MINIAPP_PACKS, PACK_CODES, t
+    for lang in ("ru", "en") + tuple(PACK_CODES):
+        for key in ("post.exp_line", "post.exp_results_line", "exp.err_late", "ws.recipe_drone_spy"):
+            assert t(lang, key, scope="X", need=1, have=0) != key, (lang, key)
+    for code in PACK_CODES:
+        assert "tab_map" in MINIAPP_PACKS[code] and "dr_eff_spy" in MINIAPP_PACKS[code]
+    ru = t("ru", "post.exp_line", scope="Команды")
+    assert "Railway" not in ru and "рофл" not in ru.lower() and "/" not in ru     # без слэш-команд в приложении
+
+
+def test_expedition_posts_one_message_all_languages():
+    from shared.battle_posts import POST_LANGS, TG_LIMIT, build_expedition_announce, build_expedition_results
+    target = {"title": "Ледяная <цитадель>", "icon": "🧊", "descr": "Сюжет", "scope": "teams",
+              "resolve_at": NOW + timedelta(hours=24)}
+    post = build_expedition_announce(target, {1: [{"kind": "coins", "amount": 1000}]}, [{"kind": "resource", "res": "core", "qty": 1}])
+    assert "&lt;цитадель&gt;" in post and "1 000 🪙" in post and "🎒" in post and len(post) <= TG_LIMIT
+    assert all(flag in post for _, flag in POST_LANGS)
+    res = build_expedition_results(target, {"places": [{"place": 1, "name": "Альфа", "cargo": 180, "rewards": []}],
+                                            "arrived": 3, "late": 1})
+    assert "Альфа" in res and "📦 180" in res and "⌛ 1" in res
+    empty = build_expedition_results(target, {"places": [], "arrived": 0, "late": 0})
+    assert all(flag in empty for _, flag in POST_LANGS)
+
+
+@pytest.mark.parametrize("kind", ["guard", "attack", "spy"])
+def test_drone_reward_kind(kind):
+    from shared.prizes import normalize_reward, rewards_label
+    r = normalize_reward({"kind": "bdrone", "drone": kind, "qty": 3})
+    assert r == {"kind": "bdrone", "drone": kind, "qty": 3} and "×3" in rewards_label([r])

@@ -396,6 +396,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     # Игровые разделы приложения: мастерская, налёты, биржа, станция, цели, заправка
     from bots.main_bot.webapp_game import register_game_routes
     register_game_routes(app)
+    from bots.main_bot.webapp_map import register_map_routes
+    register_map_routes(app)     # 🗺 карта мира и экспедиции
     # Арты роботов для сцены фермы: img/robots/<kind>.png (арты владельца) или .svg (заглушки)
     app.router.add_static("/img", WEBAPP_DIR / "img")
     return app

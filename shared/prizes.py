@@ -8,6 +8,7 @@
 - item      {effect, hours}          — изделие на склад (часовое; у разовых hours = 0);
 - robot     {robot, hours}           — робот junior/premium на свой срок (часы; годы = 8760 ч);
 - boost     {boost, hours}           — сразу включить: nitrogen/nuclear/drone/unlimit/shield на срок;
+- bdrone    {drone, qty}             — боевой дрон guard/attack/spy (навсегда, 28.10);
 - text      {text}                   — ручной приз (вручает владелец: телефон, Premium…) — только в посте.
 Выдача идемпотентна: ключ ref (битва/место/игрок) пишется в reward_grants, повтор — пропуск.
 Всё — внутри транзакции вызывающего; для ферменных наград сначала закрывается прошлое время фермы.
@@ -22,7 +23,8 @@ from shared.economy import ALL_KINDS, ITEM_COLUMNS, ITEM_EFFECTS, ONE_SHOT_COLUM
 
 logger = logging.getLogger(__name__)
 
-REWARD_KINDS = ("coins", "resource", "cutlets", "item", "robot", "boost", "text")
+REWARD_KINDS = ("coins", "resource", "cutlets", "item", "robot", "boost", "bdrone", "text")
+DRONE_ICONS = {"guard": "🛡🤖", "attack": "⚔️🤖", "spy": "🛰🤖"}
 ROBOT_KINDS = ("junior", "premium")
 BOOST_COLUMNS = {"nitrogen": "boost_nitrogen_until", "nuclear": "boost_nuclear_until", "drone": "drone_until",
                  "unlimit": "unlimit_until", "shield": "raid_shield_until"}
@@ -67,6 +69,9 @@ def normalize_reward(r: dict) -> dict | None:
     if kind == "boost":
         boost, hours = r.get("boost"), _int(r.get("hours"))
         return {"kind": "boost", "boost": boost, "hours": hours} if boost in BOOST_COLUMNS and 0 < hours <= MAX_REWARD_HOURS else None
+    if kind == "bdrone":
+        drone, qty = r.get("drone"), max(1, _int(r.get("qty")) or 1)
+        return {"kind": "bdrone", "drone": drone, "qty": qty} if drone in DRONE_ICONS and qty <= 100 else None
     if kind == "text":
         text = str(r.get("text") or "").strip()[:200]
         return {"kind": "text", "text": text} if text else None
@@ -104,6 +109,8 @@ def reward_label(r: dict) -> str:
     if k == "boost":
         icon = {"nitrogen": "❄️", "nuclear": "☢️", "drone": "🛸", "unlimit": "♾", "shield": "🛡"}[r["boost"]]
         return f"{icon} {dur}"
+    if k == "bdrone":
+        return DRONE_ICONS[r["drone"]] + (f" ×{r['qty']}" if r.get("qty", 1) > 1 else "")
     return "🎁 " + r.get("text", "")
 
 
@@ -155,6 +162,9 @@ async def grant(conn, user_id: int, rewards: list[dict], ref: str, now: datetime
                 await conn.execute(
                     "INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES ($1, $2, $3, $4)",
                     user_id, r["robot"], now, now + timedelta(hours=r["hours"]))
+        elif k == "bdrone":
+            from shared.workshop import add_drone
+            await add_drone(conn, user_id, r["drone"], r.get("qty", 1))
         elif k == "boost":
             column = BOOST_COLUMNS[r["boost"]]
             current = await conn.fetchval(f"SELECT {column} FROM users WHERE user_id = $1", user_id)

@@ -375,6 +375,39 @@ async def announce_new_battles(bot: Bot) -> None:
             logger.info("[BATTLE_ANNOUNCE] №%s за рудники %s", battle["battle_id"], list(battle["mine_ids"]))
 
 
+async def expedition_daemon_step(bot: Bot) -> None:
+    """🗺 Экспедиции: анонс новых целей с пульта и итоги в назначенный час — посты в канал на 14 языках."""
+    from shared.battle_posts import build_expedition_announce, build_expedition_results
+    from shared.battles import prizes_by_place
+    from shared.economy import utcnow
+    from shared.expeditions import finalize_target
+    from shared.prizes import normalize_rewards
+    async with db.pool.acquire() as conn:
+        fresh = await conn.fetch("SELECT * FROM expedition_targets WHERE status = 'open' AND NOT announced ORDER BY id")
+        due = await conn.fetch("SELECT * FROM expedition_targets WHERE status = 'open' AND resolve_at <= NOW() ORDER BY id")
+    for target in fresh:
+        async with db.pool.acquire() as conn:
+            if not await conn.fetchval("UPDATE expedition_targets SET announced = TRUE WHERE id = $1 AND NOT announced "
+                                       "RETURNING 1", target["id"]):
+                continue
+        raw = target["reward_all"]
+        reward_all = normalize_rewards(json.loads(raw) if isinstance(raw, str) else (raw or []))
+        try:
+            await bot.send_message(USERS_CHANNEL_ID, build_expedition_announce(
+                target, prizes_by_place(target["prizes"]), reward_all), parse_mode="HTML")
+        except Exception as e:
+            logger.error("[EXP_ANNOUNCE] цель %s: анонс не ушёл: %s", target["id"], e)
+    for target in due:
+        async with db.pool.acquire() as conn:
+            results = await finalize_target(conn, target, utcnow())
+        if results.get("skipped"):
+            continue
+        try:
+            await bot.send_message(USERS_CHANNEL_ID, build_expedition_results(target, results), parse_mode="HTML")
+        except Exception as e:
+            logger.error("[EXP_RESULTS] цель %s: итоги не ушли: %s", target["id"], e)
+
+
 @dp.message(Command("award_mine"))
 async def admin_award_mine(message: types.Message):
     """Рудник за битву с ручной номинацией: /award_mine <битва> <ID команды>."""
@@ -650,6 +683,10 @@ async def check_finished_battles(bot: Bot) -> None:
         await auction_daemon_step(bot)
     except Exception:
         logger.exception("[AUCTION_DAEMON] сбой")
+    try:
+        await expedition_daemon_step(bot)
+    except Exception:
+        logger.exception("[EXP_DAEMON] сбой")
     async with db.pool.acquire() as conn:
         due = await conn.fetch(
             "SELECT * FROM battles WHERE status = 'active' AND ends_at <= NOW()")

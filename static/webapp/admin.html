@@ -103,6 +103,7 @@
   const ROBOT_NAME = { junior: "🤖 Младший Майнер", premium: "⚡ Кибер-Бурильщик" };
   const BOOST_NAME = { nitrogen: "❄️ Азотное Охлаждение +40%", nuclear: "☢️ Ядерный Разгон x5", drone: "🛸 Мастер-дрон",
                        unlimit: "♾ Безлимит игр", shield: "🛡 Щит от налётов" };
+  const DRONE_NAME = { guard: "🛡 Дрон-защитник", attack: "⚔️ Атакующий дрон", spy: "🛰 Дрон-шпион" };
   const SCOPES = { team: "🏆 Команды", clan: "👑 Кланы", teams: "🏆👑 Команды и кланы", solo: "👤 Личный" };
   const STATUS = { active: "🟢 идёт", finished: "🏁 итоги", cancelled: "⛔ отменена" };
   const UNIT = { h: 1, d: 24, y: 8760 };
@@ -116,6 +117,7 @@
     if (r.kind === "item") return ITEM_NAME[r.effect] + (r.hours ? " " + durLabel(r.hours) : "") + (r.qty > 1 ? " ×" + r.qty : "");
     if (r.kind === "robot") return ROBOT_NAME[r.robot] + " " + durLabel(r.hours) + (r.qty > 1 ? " ×" + r.qty : "");
     if (r.kind === "boost") return BOOST_NAME[r.boost] + " " + durLabel(r.hours);
+    if (r.kind === "bdrone") return DRONE_NAME[r.drone] + (r.qty > 1 ? " ×" + r.qty : "");
     return "🎁 " + r.text;
   }
 
@@ -127,7 +129,7 @@
         list.map((r, i) => '<div class="rw"><span>' + esc(rewardLabel(r)) + '</span><button class="mini" data-del="' + i + '">✕</button></div>').join("") +
         '<div class="grid2" style="margin-top:8px"><select class="rk">' +
         [["coins", "🪙 Монеты"], ["resource", "📦 Ресурс"], ["cutlets", "🥩 Котлеты"], ["item", "🧪 Изделие на склад"],
-         ["robot", "🤖 Робот на срок"], ["boost", "⚡ Буст / Безлимит / Щит"], ["text", "🎁 Ручной приз (текст)"]]
+         ["robot", "🤖 Робот на срок"], ["boost", "⚡ Буст / Безлимит / Щит"], ["bdrone", "🤖 Боевой дрон (навсегда)"], ["text", "🎁 Ручной приз (текст)"]]
           .map(([k, t]) => '<option value="' + k + '"' + (k === kind ? " selected" : "") + '>' + t + '</option>').join("") +
         '</select><div class="rp"></div></div><button class="mini" style="margin-top:8px" data-add="1">➕ Добавить в награду</button>';
       params();
@@ -153,6 +155,7 @@
               '<input class="rq" type="number" min="1" value="1" placeholder="штук" style="margin-top:6px">',
         robot: '<select class="rs">' + opts(ROBOT_NAME) + '</select>' + dur() + '<input class="rq" type="number" min="1" value="1" style="margin-top:6px">',
         boost: '<select class="rs">' + opts(BOOST_NAME) + '</select>' + dur(),
+        bdrone: '<select class="rs">' + opts(DRONE_NAME) + '</select><input class="rq" type="number" min="1" value="1" style="margin-top:6px">',
         text: '<input class="rt" placeholder="например: Telegram Premium на 3 месяца">',
       }[k];
     }
@@ -164,6 +167,7 @@
       if (k === "item") { const e = q(".rs").value; const one = ONE_SHOT.includes(e); return (one || hours > 0) ? { kind: k, effect: e, hours: one ? 0 : hours, qty: Math.max(1, Number(q(".rq").value) || 1) } : null; }
       if (k === "robot") return hours > 0 ? { kind: k, robot: q(".rs").value, hours: hours, qty: Math.max(1, Number(q(".rq").value) || 1) } : null;
       if (k === "boost") return hours > 0 ? { kind: k, boost: q(".rs").value, hours: hours } : null;
+      if (k === "bdrone") return { kind: k, drone: q(".rs").value, qty: Math.max(1, Number(q(".rq").value) || 1) };
       const t = q(".rt").value.trim(); return t ? { kind: "text", text: t } : null;
     }
     draw();
@@ -311,6 +315,89 @@
       r => { say("✅ Аукцион №" + r.id + " создан, анонс уйдёт в канал в течение минуты."); go(); });
   }
 
+  // ---------------- 🗺 Экспедиции: цели на карте мира
+  const EXP_SCOPES = { solo: "👤 Соло", team: "🏆 Команды", clan: "👑 Кланы", teams: "🏆👑 Команды и кланы" };
+  const TSTATUS = { open: "🟢 открыта", finished: "🏁 итоги", cancelled: "⛔ отменена" };
+  const tform = { title: "", descr: "", icon: "🎯", scope: "teams", x: null, y: null, forks: 3, hours: 24, places: 3, prizes: {}, all: [] };
+  async function viewExp(app) {
+    const d = await api("/api/admin/targets");
+    const open = d.targets.filter(t => t.status === "open");
+    const list = d.targets.map(t => '<div class="card"><h2>' + esc(t.icon) + ' №' + t.id + ' · ' + esc(t.title) + '</h2>' +
+      '<div class="row"><span>' + (EXP_SCOPES[t.scope] || t.scope) + ' · развилок ' + t.forks + ' · мест ' + t.places + '</span><span class="status">' + (TSTATUS[t.status] || t.status) + '</span></div>' +
+      '<div class="hint">итоги ' + dt(t.resolve_at) + ' · отрядов ' + t.squads + ' (в пути ' + t.marching + ')' + (t.announced ? '' : ' · анонс в очереди') + '</div>' +
+      t.results.map(x => '<div class="row"><span>' + x.place + '. ' + esc(x.name) + '</span><span>📦 ' + x.cargo + '</span></div>').join("") +
+      (t.status === "open" ? '<div class="grid2"><button class="btn ghost" data-tclose="finish" data-id="' + t.id + '">🏁 Итоги сейчас</button>' +
+        '<button class="btn warn" data-tclose="cancel" data-id="' + t.id + '">⛔ Отменить</button></div>' : '') + '</div>').join("");
+    app.innerHTML = '<div class="cols"><div><div class="card"><h2>➕ Новая цель на карте (' + open.length + '/' + d.max + ')</h2><div id="tform"></div></div></div>' +
+      '<div><div class="card"><h2>Цели</h2><div class="hint">Анонс и итоги уходят в канал сами — на 14 языках. Итоги подводятся в назначенный час: ' +
+      'кто не успел дойти — не участвует.</div></div>' + (list || '<div class="card hint">Пока пусто.</div>') + '</div></div>';
+    drawTargetForm($("tform"), d, open);
+    app.querySelectorAll("[data-tclose]").forEach(b => {
+      b.onclick = () => {
+        const cancel = b.dataset.tclose === "cancel";
+        if (!confirm(cancel ? "Отменить цель? Снаряжение вернётся участникам." : "Подвести итоги сейчас?")) return;
+        act(b, "/api/admin/target/close", { id: Number(b.dataset.id), mode: b.dataset.tclose }, () => { say(cancel ? "Отменено" : "Итоги будут через ~20 секунд"); go(); });
+      };
+    });
+  }
+  function drawTargetForm(host, d, open) {
+    const W = d.map.w, H = d.map.h;
+    let svg = '<svg id="tMap" viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;aspect-ratio:16/10;border-radius:12px;background:#0d1a2e;cursor:crosshair">';
+    for (let x = 10; x < W; x += 10) svg += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
+    for (let y = 10; y < H; y += 10) svg += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
+    open.forEach(t => { svg += '<text x="' + t.x + '" y="' + t.y + '" font-size="5" text-anchor="middle" dominant-baseline="middle" opacity=".55">' + esc(t.icon) + '</text>'; });
+    if (tform.x != null) svg += '<circle cx="' + tform.x + '" cy="' + tform.y + '" r="5" fill="rgba(255,217,61,.3)" stroke="#ffd93d" stroke-width=".6"/>' +
+      '<text x="' + tform.x + '" y="' + tform.y + '" font-size="5" text-anchor="middle" dominant-baseline="middle">' + esc(tform.icon) + '</text>';
+    svg += '</svg>';
+    host.innerHTML =
+      '<label>Название</label><input id="tTitle" maxlength="100" value="' + esc(tform.title) + '" placeholder="Ледяная цитадель">' +
+      '<label>Описание (сюжет, можно на нескольких языках)</label><textarea id="tDescr" maxlength="500">' + esc(tform.descr) + '</textarea>' +
+      '<label>Значок</label><div class="chips">' + d.icons.map(i => '<button class="chip' + (tform.icon === i ? ' on' : '') + '" data-icon="' + i + '">' + i + '</button>').join("") + '</div>' +
+      '<label>Зачёт</label><div class="chips">' + Object.entries(EXP_SCOPES).map(([k, t]) => '<button class="chip' + (tform.scope === k ? ' on' : '') + '" data-tscope="' + k + '">' + t + '</button>').join("") + '</div>' +
+      '<label>Место на карте — нажми (полупрозрачные — уже открытые цели)</label>' + svg +
+      '<div class="grid3"><div><label>Развилок (1–5)</label><input id="tForks" type="number" min="1" max="5" value="' + tform.forks + '"></div>' +
+      '<div><label>Итоги через, часов</label><input id="tHours" type="number" min="1" value="' + tform.hours + '"></div>' +
+      '<div><label>Призовых мест</label><input id="tPlaces" type="number" min="0" max="100" value="' + tform.places + '"></div></div>' +
+      '<div class="chips" style="margin-top:6px">' + [[6, "6 ч"], [12, "12 ч"], [24, "сутки"], [72, "3 дня"], [168, "неделя"]].map(([h, t]) => '<button class="chip" data-th="' + h + '">' + t + '</button>').join("") + '</div>' +
+      '<div class="hint">Скорость: соло быстрее, команда медленнее, клан ещё медленнее. Снаряжение: соло — водород, команда — батарейки, клан — батарейки и котлеты.</div>' +
+      '<h3>🎁 Призы по местам (по грузу)</h3><div id="tPrizes"></div>' +
+      '<h3>🎒 Каждому дошедшему (необязательно)</h3><div id="tAll"></div>' +
+      '<button class="btn" id="tGo">🚀 Поставить цель</button>';
+    const keep = () => {
+      tform.title = $("tTitle").value; tform.descr = $("tDescr").value;
+      tform.forks = Math.max(1, Math.min(5, Number($("tForks").value) || 3)); tform.hours = Math.max(1, Number($("tHours").value) || 24);
+      tform.places = Math.max(0, Math.min(100, Number($("tPlaces").value) || 0));
+    };
+    host.querySelectorAll("[data-icon]").forEach(b => { b.onclick = () => { keep(); tform.icon = b.dataset.icon; drawTargetForm(host, d, open); }; });
+    host.querySelectorAll("[data-tscope]").forEach(b => { b.onclick = () => { keep(); tform.scope = b.dataset.tscope; drawTargetForm(host, d, open); }; });
+    host.querySelectorAll("[data-th]").forEach(b => { b.onclick = () => { $("tHours").value = b.dataset.th; }; });
+    $("tMap").onclick = ev => {
+      const r = $("tMap").getBoundingClientRect();
+      keep();
+      tform.x = Math.round((ev.clientX - r.left) / r.width * W * 10) / 10;
+      tform.y = Math.round((ev.clientY - r.top) / r.height * H * 10) / 10;
+      drawTargetForm(host, d, open);
+    };
+    $("tPlaces").onchange = () => { keep(); drawTargetForm(host, d, open); };
+    const ph = $("tPrizes"), n = tform.places;
+    ph.innerHTML = n ? Array.from({ length: n }, (_, i) => '<div class="place"><div class="row"><b>' + (["🥇", "🥈", "🥉"][i] || (i + 1) + ".") + ' ' + (i + 1) +
+      ' место</b>' + (i ? '<button class="mini" data-tcopy="' + (i + 1) + '">как у ' + i + '-го</button>' : '') + '</div><div data-tpb="' + (i + 1) + '"></div></div>').join("")
+      : '<div class="hint">Без мест — только награда каждому дошедшему.</div>';
+    ph.querySelectorAll("[data-tpb]").forEach(el => { const p = el.dataset.tpb; tform.prizes[p] = tform.prizes[p] || []; rewardBuilder(el, tform.prizes[p]); });
+    ph.querySelectorAll("[data-tcopy]").forEach(b => { b.onclick = () => { keep(); const p = Number(b.dataset.tcopy); tform.prizes[p] = JSON.parse(JSON.stringify(tform.prizes[p - 1] || [])); drawTargetForm(host, d, open); }; });
+    rewardBuilder($("tAll"), tform.all);
+    $("tGo").onclick = e => {
+      keep();
+      const prizes = {};
+      Object.entries(tform.prizes).forEach(([p, l]) => { if (l.length && Number(p) <= tform.places) prizes[p] = l; });
+      act(e.target, "/api/admin/target", { title: tform.title, descr: tform.descr, icon: tform.icon, scope: tform.scope, x: tform.x, y: tform.y,
+        forks: tform.forks, hours: tform.hours, places: tform.places, prizes: prizes, reward_all: tform.all }, res => {
+        say("✅ Цель №" + res.id + " на карте. Анонс уйдёт в канал в течение минуты.");
+        Object.assign(tform, { title: "", descr: "", x: null, y: null, prizes: {}, all: [] }); go();
+      });
+    };
+  }
+
   // ---------------- 🎛 Тумблеры
   function viewFlags(app) {
     app.innerHTML = '<div class="card"><h2>🎛 Разделы и рецепты</h2>' + Object.entries(meta.flags).map(([k, on]) =>
@@ -320,7 +407,8 @@
     });
   }
 
-  const TABS = { battles: ["⚔️ Битвы и акции", viewBattles], gift: ["🎁 Подарки", viewGift], vip: ["💎 VIP-аукционы", viewVip], flags: ["🎛 Тумблеры", viewFlags] };
+  const TABS = { battles: ["⚔️ Битвы и акции", viewBattles], exp: ["🗺 Экспедиции", viewExp], gift: ["🎁 Подарки", viewGift],
+                 vip: ["💎 VIP-аукционы", viewVip], flags: ["🎛 Тумблеры", viewFlags] };
   async function go() {
     $("tabs").innerHTML = Object.entries(TABS).map(([k, [t]]) => '<button class="tab' + (tab === k ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>').join("");
     $("tabs").querySelectorAll("[data-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.tab; go(); }; });

@@ -114,3 +114,43 @@ def build_results(battle, results: dict) -> str:
     lines.append(DOTS)
     return _fit(lines)
 
+
+
+def build_expedition_announce(target, prizes: dict[int, list[dict]], reward_all: list[dict]) -> str:
+    """🗺 Новая цель экспедиции на карте мира: название, час итогов, призы — и строка на каждый язык."""
+    from shared.prizes import rewards_label
+    lines = [f"{html.escape(target['icon'])} <b>{html.escape(target['title'])}</b>",
+             f"🏁 {target['resolve_at']:%d.%m %H:%M} UTC", ""]
+    if target["descr"]:
+        lines[2:2] = [f"<i>{html.escape(target['descr'][:300])}</i>"]
+    for place in sorted(prizes)[:MAX_PRIZE_LINES]:
+        lines.append(f"{_medal(place)} {html.escape(rewards_label(prizes[place]))}")
+    if reward_all:
+        lines.append(f"🎒 {html.escape(rewards_label(reward_all))}")
+    lines += ["", DOTS]
+    for lang, flag in POST_LANGS:
+        lines.append(f"{flag} {t(lang, 'post.exp_line', scope=t(lang, 'post.scope_' + target['scope']))}")
+    bot = os.getenv("MAIN_BOT_USERNAME", "RoflHubGame_Bot").lstrip("@")
+    lines += [DOTS] + ([f"👉 @{bot}"] if bot else [])
+    return _fit(lines)
+
+
+def build_expedition_results(target, results: dict) -> str:
+    """🏁 Итоги экспедиции: места по грузу (топ-3 ярко), сколько дошло и опоздало."""
+    from shared.prizes import rewards_label
+    places = results.get("places") or []
+    lines = [f"🏁 {html.escape(target['icon'])} <b>{html.escape(target['title'])}</b>", ""]
+    for row in places[:MAX_PRIZE_LINES]:
+        name = html.escape(str(row["name"]))
+        name = f"<b>{name}</b>" if row["place"] <= 3 else name
+        extra = " · 🎁 " + html.escape(rewards_label(row["rewards"])) if row.get("rewards") else ""
+        lines.append(f"{_medal(row['place'])} {name} — 📦 {row['cargo']}{extra}")
+    if len(places) > MAX_PRIZE_LINES:
+        lines.append(f"… +{len(places) - MAX_PRIZE_LINES}")
+    lines.append(f"🚶 {results.get('arrived', 0)} · ⌛ {results.get('late', 0)}")
+    lines += ["", DOTS]
+    key = "post.exp_results_line" if places else "post.exp_results_empty"
+    for lang, flag in POST_LANGS:
+        lines.append(f"{flag} {t(lang, key)}")
+    lines.append(DOTS)
+    return _fit(lines)

@@ -32,7 +32,8 @@ async def conn():
                         "daily_activity, promoters, metrics_snapshots, market_orders, "
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
                         "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items, team_banners, user_tech, user_badges, "
-                        "season_results, battle_entries, battle_entry_log, reward_grants RESTART IDENTITY")
+                        "season_results, battle_entries, battle_entry_log, reward_grants, expedition_targets, expeditions, "
+                        "expedition_members, expedition_votes, expedition_log RESTART IDENTITY")
         await c.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
                         "captured_until = NULL, last_paid_at = NULL")
         await c.execute("DELETE FROM feature_flags WHERE key LIKE 'wsr:%'")
@@ -2321,3 +2322,240 @@ async def test_events_api_for_players(conn, global_db):
     finally:
         await client.close()
     assert tid
+
+
+# ======================================================================== 🗺 экспедиции и 🤖 дроны (28.10)
+async def _exp_target(conn, scope: str, now, hours: float = 48, forks: int = 2, x: float = 80, y: float = 50,
+                      prizes: str = '{}', reward_all: str = '[]') -> int:
+    from datetime import timedelta
+    return await conn.fetchval(
+        "INSERT INTO expedition_targets (title, x, y, scope, forks, resolve_at, places, prizes, reward_all) "
+        "VALUES ('Цель', $1, $2, $3, $4, $5, 3, $6::jsonb, $7::jsonb) RETURNING id",
+        x, y, scope, forks, now + timedelta(hours=hours), prizes, reward_all)
+
+
+async def test_expedition_solo_forks_and_results(conn):
+    from datetime import timedelta
+    from shared.economy import EXP_SOLO_HYDROGEN, utcnow
+    from shared.expeditions import ExpError, finalize_target, fork_schedule, resolve_due_forks, start_solo, vote
+    from shared.resources import get_resources, grant_bundle
+    now = utcnow()
+    tid = await _exp_target(conn, "solo", now, prizes='{"1": [{"kind": "coins", "amount": 500}]}',
+                            reward_all='[{"kind": "resource", "res": "stone", "qty": 3}]')
+    for uid in (1700, 1701):
+        await _mk_user(conn, uid, 0)
+        await grant_bundle(conn, uid, {"hydrogen": 20}, "test")
+    await _mk_user(conn, 1702, 0)
+    async with conn.transaction():
+        res = await start_solo(conn, 1700, tid, now)
+    assert res["departed"] and (await get_resources(conn, 1700))["hydrogen"] == 20 - EXP_SOLO_HYDROGEN
+    with pytest.raises(ExpError) as e:
+        await start_solo(conn, 1700, tid, now)
+    assert e.value.key == "exp.err_already"
+    with pytest.raises(ExpError) as e:                                # без водорода не выйти
+        await start_solo(conn, 1702, tid, now)
+    assert e.value.key == "exp.err_hydrogen"
+    async with conn.transaction():
+        await start_solo(conn, 1701, tid, now)
+    e1 = await conn.fetchrow("SELECT * FROM expeditions WHERE user_id = 1700")
+    sched = fork_schedule(e1["departed_at"], e1["planned_minutes"], 2)
+    with pytest.raises(ExpError) as e:                                # развилка ещё не открылась
+        await vote(conn, 1700, e1["id"], 1, now)
+    assert e.value.key == "exp.err_no_fork"
+    async with conn.transaction():
+        v = await vote(conn, 1700, e1["id"], 1, sched[0][0] + timedelta(minutes=1))
+    assert v["resolved"] and v["fork"] == 1                            # соло — решение сразу
+    log = await conn.fetchrow("SELECT * FROM expedition_log WHERE expedition_id = $1 AND fork_no = 1", e1["id"])
+    assert log["option"] == 1 and log["votes"] == 1
+    with pytest.raises(ExpError) as e:                                # чужой отряд
+        await vote(conn, 1701, e1["id"], 0, sched[1][0] + timedelta(minutes=1))
+    assert e.value.key == "exp.err_not_member"
+    # Отряд 1701 молчит — после закрытия голосования берётся первый (осторожный) вариант
+    e2 = await conn.fetchrow("SELECT * FROM expeditions WHERE user_id = 1701")
+    s2 = fork_schedule(e2["departed_at"], e2["planned_minutes"], 2)
+    async with conn.transaction():
+        await resolve_due_forks(conn, e2["id"], s2[1][1] + timedelta(minutes=1))
+    assert [r["option"] for r in await conn.fetch(
+        "SELECT option FROM expedition_log WHERE expedition_id = $1 ORDER BY fork_no", e2["id"])] == [0, 0]
+    target = await conn.fetchrow("SELECT * FROM expedition_targets WHERE id = $1", tid)
+    results = await finalize_target(conn, target, target["resolve_at"] + timedelta(minutes=1))
+    assert results["arrived"] == 2 and results["late"] == 0
+    winner = await conn.fetchval("SELECT user_id FROM expeditions WHERE target_id = $1 "
+                                 "ORDER BY cargo DESC, arrive_at, id LIMIT 1", tid)
+    assert results["places"][0]["cargo"] == await conn.fetchval("SELECT cargo FROM expeditions WHERE user_id = $1", winner)
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", winner) == 500
+    for uid in (1700, 1701):                                           # награда каждому дошедшему
+        assert (await get_resources(conn, uid, ("stone",)))["stone"] == 3
+    assert (await finalize_target(conn, target, target["resolve_at"]))["skipped"]   # итоги — один раз
+    assert set(r["status"] for r in await conn.fetch("SELECT status FROM expeditions WHERE target_id = $1", tid)) == {"done"}
+
+
+async def test_expedition_too_far_for_the_deadline(conn):
+    from shared.economy import utcnow
+    from shared.expeditions import ExpError, start_solo
+    from shared.resources import get_resources, grant_bundle
+    now = utcnow()
+    tid = await _exp_target(conn, "solo", now, hours=0.3)
+    await _mk_user(conn, 1705, 0)
+    await grant_bundle(conn, 1705, {"hydrogen": 20}, "test")
+    with pytest.raises(ExpError) as e:
+        await start_solo(conn, 1705, tid, now)
+    assert e.value.key == "exp.err_late"
+    assert (await get_resources(conn, 1705))["hydrogen"] == 20         # водород не списан
+
+
+async def test_expedition_team_gathers_and_votes_by_majority(conn):
+    from datetime import timedelta
+    from shared.economy import EXP_BATTERIES, utcnow
+    from shared.expeditions import ExpError, contribute, finalize_target, fork_schedule, vote
+    from shared.resources import grant_bundle
+    now = utcnow()
+    tid = await _exp_target(conn, "teams", now, hours=72, forks=3, prizes='{"1": [{"kind": "coins", "amount": 300}]}')
+    await _team(conn, "Gamma", 1710, [1710, 1711, 1712])
+    await _mk_user(conn, 1799, 0)
+    await grant_bundle(conn, 1710, {"battery": 10}, "test")
+    await grant_bundle(conn, 1711, {"battery": 2}, "test")
+    with pytest.raises(ExpError) as e:                                 # котлеты берёт только клан
+        await contribute(conn, 1710, tid, "cutlet", now)
+    assert e.value.key == "exp.err_no_cutlets_needed"
+    with pytest.raises(ExpError) as e:
+        await contribute(conn, 1799, tid, "battery", now)
+    assert e.value.key == "exp.err_no_team"
+    for _ in range(EXP_BATTERIES["team"] - 1):
+        async with conn.transaction():
+            r = await contribute(conn, 1710, tid, "battery", now)
+    assert not r["departed"] and r["batteries"] == EXP_BATTERIES["team"] - 1
+    async with conn.transaction():
+        r = await contribute(conn, 1711, tid, "battery", now)
+    assert r["departed"]                                               # полный комплект — отряд вышел сам
+    with pytest.raises(ExpError) as e:
+        await contribute(conn, 1711, tid, "battery", now)
+    assert e.value.key == "exp.err_departed"
+    exp = await conn.fetchrow("SELECT * FROM expeditions WHERE team_id IS NOT NULL")
+    t1 = fork_schedule(exp["departed_at"], exp["planned_minutes"], 3)[0][0] + timedelta(minutes=1)
+    async with conn.transaction():
+        assert not (await vote(conn, 1710, exp["id"], 1, t1))["resolved"]
+    async with conn.transaction():
+        assert not (await vote(conn, 1711, exp["id"], 1, t1))["resolved"]
+    with pytest.raises(ExpError) as e:
+        await vote(conn, 1799, exp["id"], 0, t1)
+    assert e.value.key == "exp.err_not_member"
+    async with conn.transaction():
+        assert (await vote(conn, 1712, exp["id"], 2, t1))["resolved"]   # проголосовали все — решение сразу
+    log = await conn.fetchrow("SELECT * FROM expedition_log WHERE expedition_id = $1 AND fork_no = 1", exp["id"])
+    assert (log["option"], log["votes"]) == (1, 2)                      # решает большинство
+    target = await conn.fetchrow("SELECT * FROM expedition_targets WHERE id = $1", tid)
+    results = await finalize_target(conn, target, target["resolve_at"])
+    assert results["places"][0]["name"] == "Gamma" and results["places"][0]["members"] == 3
+    for uid in (1710, 1711, 1712):                                      # вносившие и голосовавшие
+        assert await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", uid) == 300
+
+
+async def test_expedition_clan_needs_cutlets_and_unfinished_gear_returns(conn):
+    from shared.economy import EXP_BATTERIES, EXP_CLAN_CUTLETS, utcnow
+    from shared.expeditions import cancel_target, contribute, finalize_target, start_solo
+    from shared.resources import get_resources, grant_bundle
+    now = utcnow()
+    tid = await _exp_target(conn, "teams", now, hours=72)
+    await _team(conn, "Mega", 1720, [1720], clan=True)
+    await conn.execute("UPDATE users SET inv_cutlets = 20 WHERE user_id = 1720")
+    await grant_bundle(conn, 1720, {"battery": 40}, "test")
+    for _ in range(EXP_BATTERIES["clan"]):
+        async with conn.transaction():
+            r = await contribute(conn, 1720, tid, "battery", now)
+    assert not r["departed"]                                            # клану нужен ещё провиант
+    for _ in range(EXP_CLAN_CUTLETS):
+        async with conn.transaction():
+            r = await contribute(conn, 1720, tid, "cutlet", now)
+    assert r["departed"] and await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 1720") == 20 - EXP_CLAN_CUTLETS
+    # Команда собрала не всё — к итогам батарейки возвращаются
+    tid2 = await _exp_target(conn, "team", now, hours=72)
+    await _team(conn, "Half", 1730, [1730])
+    await grant_bundle(conn, 1730, {"battery": 5}, "test")
+    for _ in range(2):
+        async with conn.transaction():
+            await contribute(conn, 1730, tid2, "battery", now)
+    assert (await get_resources(conn, 1730, ("battery",)))["battery"] == 3
+    target2 = await conn.fetchrow("SELECT * FROM expedition_targets WHERE id = $1", tid2)
+    res = await finalize_target(conn, target2, target2["resolve_at"])
+    assert res["arrived"] == 0 and (await get_resources(conn, 1730, ("battery",)))["battery"] == 5
+    assert await conn.fetchval("SELECT status FROM expeditions WHERE target_id = $1", tid2) == "refunded"
+    # Отмена цели владельцем: водород соло возвращается
+    tid3 = await _exp_target(conn, "solo", now, hours=72)
+    await _mk_user(conn, 1740, 0)
+    await grant_bundle(conn, 1740, {"hydrogen": 10}, "test")
+    async with conn.transaction():
+        await start_solo(conn, 1740, tid3, now)
+    assert await cancel_target(conn, tid3) and not await cancel_target(conn, tid3)
+    assert (await get_resources(conn, 1740))["hydrogen"] == 10
+
+
+async def test_drones_buy_craft_scout_and_raid(conn):
+    from datetime import timedelta
+    from shared.economy import DRONE_COIN_PRICE, WORKSHOP_RECIPES, raid_candidates, raid_loot, raid_loot_percent, utcnow
+    from shared.raids import execute_raid, scout
+    from shared.resources import get_resources, grant_bundle
+    from shared.workshop import WorkshopError, buy_drone, craft
+    now = utcnow()
+    old = now - timedelta(days=90)
+    await _mk_user(conn, 1750, DRONE_COIN_PRICE + 500, created_at=old, last_seen_at=now, res_capacity=5000)
+    async with conn.transaction():
+        assert await buy_drone(conn, 1750, "attack") == 1
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1750") == 500
+    assert await conn.fetchval("SELECT reason FROM ledger WHERE user_id = 1750 AND delta < 0") == "drone_buy:attack"
+    with pytest.raises(WorkshopError) as e:
+        await buy_drone(conn, 1750, "attack")
+    assert e.value.key == "ws.err_coins"
+    # Сборка — как Шаттл: набор 🔬, ресурсы и монеты
+    recipe = WORKSHOP_RECIPES["drone_spy"]
+    await grant_bundle(conn, 1750, recipe["cost"], "test", cap=5000)
+    await conn.execute("UPDATE users SET balance = balance + $1 WHERE user_id = 1750", recipe["coins"])
+    with pytest.raises(WorkshopError) as e:
+        await craft(conn, 1750, "drone_spy", now)
+    assert e.value.key == "tech.err_tool"
+    await _tech(conn, 1750, tools=3, comm=1, scout=1, attack=1)
+    async with conn.transaction():
+        await craft(conn, 1750, "drone_spy", now)
+    assert await conn.fetchval("SELECT drones_spy FROM users WHERE user_id = 1750") == 1
+    # 🛰 шпион: +1 цель в разведке
+    for uid in range(1760, 1768):
+        await _mk_user(conn, uid, 0, created_at=old, last_seen_at=now)
+        await grant_bundle(conn, uid, {"metal": 100}, "test")
+    await grant_bundle(conn, 1750, {"hydrogen": 10}, "test", cap=5000)
+    assert len(await scout(conn, 1750, now)) == raid_candidates(1) + 1
+    # ⚔️ атакующий дрон налётчика: трофей больше на 5%
+    await conn.execute("UPDATE users SET raid_stance = 'scissors' WHERE user_id = 1760")
+    res = await execute_raid(conn, 1750, 1760, "rock", now)
+    assert res.result == "win" and "drones" in res.notes
+    taken = raid_loot(100, raid_loot_percent(1, 0, 0) + 5)
+    assert 100 - (await get_resources(conn, 1760))["metal"] == taken
+
+
+async def test_map_api_shows_targets_and_squads(conn, global_db):
+    import time as _t
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.economy import utcnow
+    from shared.resources import grant_bundle
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    now = utcnow()
+    tid = await _exp_target(conn, "teams", now, hours=72, prizes='{"1": [{"kind": "bdrone", "drone": "guard", "qty": 1}]}')
+    await _team(conn, "Map", 1780, [1780])
+    await grant_bundle(conn, 1780, {"battery": 2, "hydrogen": 30}, "test")
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1780}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    try:
+        d = await (await client.get("/api/map", headers=head)).json()
+        t = d["targets"][0]
+        assert t["id"] == tid and t["prizes"][0]["label"] == "🛡🤖" and [o["mode"] for o in t["options"]] == ["team"]
+        assert t["options"][0]["ok"] and d["me"]["in_team"] and d["me"]["batteries"] == 2
+        r = await (await client.post("/api/exp/solo", headers=head, json={"target_id": tid})).json()
+        assert r["ok"] is False and r["message"]                                   # цель только для команд
+        r = await (await client.post("/api/exp/gear", headers=head, json={"target_id": tid, "what": "battery"})).json()
+        assert r["ok"] and r["batteries"] == 1
+        d = await (await client.get("/api/map", headers=head)).json()
+        assert d["my"][0]["status"] == "gathering" and d["squads"][0]["mine"] and d["squads"][0]["name"] == "Map"
+    finally:
+        await client.close()

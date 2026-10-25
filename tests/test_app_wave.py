@@ -235,7 +235,7 @@ def test_recipes_unlock_one_per_day_and_cover_every_recipe():
     from datetime import timedelta
     from shared.economy import WORKSHOP_RECIPES, WORKSHOP_UNLOCK_HOURS, WORKSHOP_UNLOCK_ORDER, recipe_unlock_at, utcnow
     assert sorted(WORKSHOP_UNLOCK_ORDER) == sorted(WORKSHOP_RECIPES)
-    assert WORKSHOP_UNLOCK_ORDER[0] == "nitro_6h" and WORKSHOP_UNLOCK_ORDER[-1] == "shuttle"
+    assert WORKSHOP_UNLOCK_ORDER[0] == "nitro_6h" and WORKSHOP_UNLOCK_ORDER[-4] == "shuttle"   # дальше — боевые дроны
     start = utcnow()
     assert recipe_unlock_at("nitro_6h", start) == start
     assert recipe_unlock_at(WORKSHOP_UNLOCK_ORDER[3], start) == start + timedelta(hours=3 * WORKSHOP_UNLOCK_HOURS)
