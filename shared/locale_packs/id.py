@@ -37,6 +37,7 @@ BUTTONS = {
 }
 
 STRINGS = {
+    "profile.btn_app": "📱 OPEN THE APP",
     "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
     "exp.err_peeked": "This fork is already scouted.",
     # TODO(перевод 28.10): экспедиции и дроны — пока английский
@@ -148,7 +149,7 @@ STRINGS = {
     # ---------------- menu & zona game ----------------
     "menu.text": (
         "📱 <b>MENU UTAMA EKOSISTEM ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👤 <b>PROFIL PRIBADI & PASPOR:</b>\n"
         "• /start — Mulai perkenalan dan daftarkan akun\n"
         "• /profile — Paspormu, saldo, dan tim secara real time\n"
@@ -177,13 +178,13 @@ STRINGS = {
     ),
     "menu.games_hub": (
         "🕹️ <b>SELAMAT DATANG DI ZONA GAME ROFL HUB!</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Lawan bot dalam duel cepat atau ikuti tes sprint intelektual "
         "untuk menang besar — atau kehilangan semuanya!\n\n"
         "💸 Tiap kemenangan: <b>+2 🪙</b> (Brankas Siber: <b>+5</b>)\n"
         "💀 Kalah atau seri: dipotong <b>-1 🪙</b>\n"
         "🧠 Di Kuis ada timer 15 detik dan level kecerdasan: level 1 = 10 jawaban benar dan <b>+100 🪙</b>, "
-        "setiap level berikutnya 10 jawaban lebih panjang — tapi hadiahnya naik 100!\n\n"
+        "setiap level berikutnya 10 jawaban lebih panjang — tapi hadiahnya naik 100!\n"
         "..................................................\n"
         "👇 <b>KETUK TOMBOL DI BAWAH UNTUK LANGSUNG MULAI RONDE:</b>"
     ),
@@ -202,28 +203,28 @@ STRINGS = {
     "app.unavailable": "⚙️ Mini App masih dihubungkan ke server ekosistem. Cek lagi nanti ya!",
     "faq.teaser": (
         "📚 <b>PANDUAN EKOSISTEM ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Versi singkatnya:\n"
         "🚜 Robot menambang koin nonstop: Robot Penambang — 5/jam tanpa bahan bakar, "
         "Pengebor Siber — 10/jam, dan SETIAP Pengebor memakan 1 kotlet sibernya sendiri per hari. "
         "Semua robot bertahan 30 hari (Drone Master menghentikan sementara keausan).\n"
         "🧠 Kuis: 15 detik per jawaban, level kecerdasan dengan hadiah yang terus naik.\n"
         "⚔️ Duel melawan pemain sungguhan di meja 10/100/1000 🪙.\n"
-        "🏆 Tim hingga 50 petarung (Mega-Klan — hingga 1000) dan event Pertempuran berhadiah untuk semua.\n\n"
+        "🏆 Tim hingga 50 petarung (Mega-Klan — hingga 1000) dan event Pertempuran berhadiah untuk semua.\n"
         "..................................................\n"
         "👇 <b>Panduan lengkap dengan semua mekanik — satu ketukan saja:</b>"
     ),
     "faq.btn_open": "📖 BUKA PANDUAN LENGKAP",
     "rules.teaser": (
         "📜 <b>PERJANJIAN PENGGUNA ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Intinya:\n"
         "🪙 Koin dan semua item dalam game adalah elemen hiburan virtual: "
         "bukan uang dan tidak bisa ditukar dengan dana nyata.\n"
         "💫 Pembelian hanya lewat Telegram Stars resmi; barang digital dikirim "
         "instan, dan Stars dikembalikan otomatis jika pengiriman gagal.\n"
         "🛡️ Kami tidak mengumpulkan nomor telepon, lokasi, atau data pribadi.\n"
-        "🤝 Dilarang menghina, memakai trik curang, dan multi-akun — pelanggaran bisa berujung blokir.\n\n"
+        "🤝 Dilarang menghina, memakai trik curang, dan multi-akun — pelanggaran bisa berujung blokir.\n"
         "..................................................\n"
         "👇 <b>Teks lengkap perjanjian dan disclaimer — satu ketukan saja:</b>\n"
         "<i>⚖️ Dengan menggunakan bot ini kamu menyatakan setuju dengan ketentuannya.</i>"
@@ -231,7 +232,7 @@ STRINGS = {
     "rules.btn_open": "📜 BUKA PERJANJIAN LENGKAP",
     "quest.list_header": (
         "🗺️ <b>MISI ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Cerita interaktif dengan pilihan dan percabangan: detektif, komedi, teka-teki. "
         "Kemenangan pertama di setiap misi memberi koin, dan kamu bisa mengulanginya sepuasnya!\n"
         "🌐 <i>Cerita misi masih berbahasa Rusia untuk saat ini — paket bahasa baru segera hadir.</i>\n\n"
@@ -240,7 +241,7 @@ STRINGS = {
     "quest.card": (
         "{title}\n"
         "🎭 {genre} · ⏱ {minutes} mnt · 🏆 +{reward} 🪙 untuk kemenangan pertama\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{teaser}\n\n{status}"
     ),
     "quest.card_done": "✅ <i>Misi selesai, hadiah sudah diklaim. Ulangi kapan saja untuk seru-seruan!</i>",
@@ -285,7 +286,7 @@ STRINGS = {
     "farm.intern_hint": "🎁 Kamu punya Robot Magang gratis! Tekan tombol di bawah — dia akan menambang 1 🪙 per jam selamanya.",
     "farm.dashboard": (
         "🚜 <b>HUB BAHAN BAKAR PUSAT ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🤖 Robot aktif di pabrik: <b>{total}</b>\n"
         "{intern}"
         "• Robot Penambang ({junior_rate} 🪙/jam): <code>{junior}</code>\n"
@@ -296,12 +297,12 @@ STRINGS = {
         "• Produksi per hari: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>BOOST:</b>\n{boosts}\n\n"
         "📋 <b>STATUS PABRIK GAME:</b>\n"
-        "{status}\n\n"
-        "..................................................\n\n"
+        "{status}\n"
+        "..................................................\n"
         "📦 <b>STATUS KULKAS OTOMATIS:</b>\n"
         "🥩 Stok bahan bakar: <b>{fridge} / {capacity}</b>\n"
-        "💼 Kotlet di gudang: <code>{inv}</code>\n\n"
-        "..................................................\n\n"
+        "💼 Kotlet di gudang: <code>{inv}</code>\n"
+        "..................................................\n"
         "<i>💿 Penting: robot bertahan 30 hari (Drone Master menghentikan sementara keausan). "
         "SETIAP Pengebor Siber memakan SATU kotlet utuhnya sendiri dari kulkas per "
         "24 jam kerja: 3 robot — 3 kotlet sehari. Awasi bahan bakarnya!</i>"
@@ -314,13 +315,13 @@ STRINGS = {
     # ---------------- profil ----------------
     "profile.caption": (
         "📋 <b>DASBOR PEMAIN ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🆔 ID Paspormu: <code>{user_id}</code>\n"
         "{vip}"
         "💰 Koin saat ini: <b>{balance} 🪙</b>\n"
         "🏆 Statusmu: <b>{team}</b>\n"
         "🧠 Level kecerdasan: <b>{level}</b> · menuju level {next_level}: "
-        "<b>{left}</b> jawaban benar di /quiz (hadiah: +{reward} 🪙)\n\n"
+        "<b>{left}</b> jawaban benar di /quiz (hadiah: +{reward} 🪙)\n"
         "..................................................\n"
         "<i>Ini yang kamu miliki saat ini. Gunakan tombol untuk melompat ke bagian lain!</i>"
     ),
@@ -331,11 +332,11 @@ STRINGS = {
     "profile.btn_shop": "🏪 Toko",
     "profile.stats": (
         "📊 <b>STATISTIK PENCAPAIAN GAME (30 HARI)</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧠 Level kecerdasan game: <b>{level}</b> (total jawaban benar: {total})\n"
         "🎮 Ronde duel dimainkan: <b>{played}</b>\n"
         "🏆 Kemenangan diraih: <code>{won}</code>\n"
-        "👥 Teman aktif yang diundang: <b>{refs}</b>\n\n"
+        "👥 Teman aktif yang diundang: <b>{refs}</b>\n"
         "..................................................\n"
         "<i>Statistik menyimpan rekam jejak dan pencapaian historismu, bahkan jika koin yang kamu menangkan sudah dibelanjakan di market!</i>"
     ),
@@ -433,7 +434,7 @@ STRINGS = {
     # ---------------- duel ----------------
     "duel.intro": (
         "⚔️ <b>DUEL 1-LAWAN-1: BATU-GUNTING-KERTAS DENGAN TARUHAN</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Pilih meja sesuai kantongmu — seperti di poker. Taruhan langsung dipotong, "
         "dan lawanmu adalah pemain ROFL HUB sungguhan!\n\n"
         "💰 Pot = kedua taruhan. Pemenang mengambil <b>{payout_percent}%</b> pot, "
@@ -501,13 +502,13 @@ STRINGS = {
     # ---------------- referal ----------------
     "ref.text": (
         "🤝 <b>PROGRAM REFERAL ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Undang teman lewat link pribadimu dan dapatkan <b>{bonus}</b> "
         "untuk setiap orang yang menjadi pemain aktif!\n\n"
         "🔗 <b>Link-mu (ketuk untuk menyalin):</b>\n<code>{link}</code>\n\n"
         "📊 <b>STATISTIKMU:</b>\n"
         "👥 Teman yang diundang: <b>{invited}</b>\n"
-        "💰 Penghasilan dari referal: <b>{earned} 🪙</b>\n\n"
+        "💰 Penghasilan dari referal: <b>{earned} 🪙</b>\n"
         "..................................................\n"
         "<i>Sebarkan link ke teman sekelas, sahabat, dan media sosial — makin besar gengmu, makin cepat saldomu tumbuh!</i>"
     ),
@@ -605,7 +606,7 @@ STRINGS = {
     "profile.btn_delete": "🗑 Hapus akun",
     "acct.warn": (
         "⚠️ <b>PENGHAPUSAN AKUN</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Bersama akun ini, hal berikut akan <b>hilang permanen</b>:\n"
         "• koin, kotlet siber, sumber daya, dan semua robot ladang;\n"
         "• boost, Tanpa Batas, dan semua yang dibeli dengan Stars — <b>Stars tidak dikembalikan</b>;\n"
@@ -646,7 +647,7 @@ STRINGS = {
     # ---------------- transfer ----------------
     "tr.help": (
         "🔄 <b>KIRIM KOIN KE PEMAIN LAIN</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Format perintah:\n"
         "<code>/transfer ID jumlah</code> — lewat ID Paspor (lihat /profile)\n"
         "<code>/transfer @username jumlah</code> — lewat username\n"
@@ -713,7 +714,7 @@ STRINGS = {
     "pay.already": "✅ Pembayaran ini sudah diproses, barangnya sudah dikirim sebelumnya.",
     "pay.support": (
         "🛟 <b>DUKUNGAN PEMBAYARAN TELEGRAM STARS</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Semua barang ROFL HUB bersifat digital dan dikirim instan setelah pembayaran.\n\n"
         "⚙️ <b>Jika sudah bayar tapi barang tidak sampai:</b>\n"
         "bot otomatis mengembalikan Stars saat pengiriman gagal. Kalau itu tidak terjadi — "
@@ -721,7 +722,7 @@ STRINGS = {
         "Admin akan memeriksa pembayaranmu di database dan menyelesaikannya dalam 24 jam.\n\n"
         "💫 <b>Kebijakan refund:</b>\n"
         "refund dimungkinkan jika barang tidak diterima atau dikirim dengan kesalahan. "
-        "Barang digital yang terkirim dengan benar tidak bisa di-refund.\n\n"
+        "Barang digital yang terkirim dengan benar tidak bisa di-refund.\n"
         "..................................................\n"
         "<i>Bagian ini adalah titik dukungan pembelian resmi sesuai aturan Telegram.</i>"
     ),
@@ -744,7 +745,7 @@ STRINGS = {
     "dlv.intern_upgrade": "♾ Robot Magang-mu naik jadi <b>Robot Penambang ABADI</b>: 5 🪙 per jam, tanpa kedaluwarsa!",
     "dlv.err_no_intern": "Belum ada Robot Magang aktif — aktifkan dulu di /farm.",
     "dlv.err_intern_refs": "Upgrade butuh {need} teman aktif (syaratnya ada di /invite); kamu punya {have}.",
-    "mk.header": "📈 <b>BURSA KOTLET</b>\n..................................................\n\nOrder terbuka: <b>{orders}</b> · kotlet dijual: <b>{cutlets}</b> · harga terbaik: <b>{best}</b>\nBiaya hub: <b>{fee}%</b> per penjualan (dibakar — pelindung inflasi)\n🥩 Di gudangmu: <b>{inv}</b> kotlet\n\n{body}\n\n<i>Ketuk order untuk membeli. Untuk menjual: /sell.</i>",
+    "mk.header": "📈 <b>BURSA KOTLET</b>\n..................................................\nOrder terbuka: <b>{orders}</b> · kotlet dijual: <b>{cutlets}</b> · harga terbaik: <b>{best}</b>\nBiaya hub: <b>{fee}%</b> per penjualan (dibakar — pelindung inflasi)\n🥩 Di gudangmu: <b>{inv}</b> kotlet\n\n{body}\n\n<i>Ketuk order untuk membeli. Untuk menjual: /sell.</i>",
     "mk.empty": "Belum ada penawaran. Jadilah yang pertama: /sell jumlah harga",
     "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> seharga <b>{price}</b> 🪙",
     "mk.btn_order": "🛒 #{id}: {qty} pcs seharga {price} 🪙",
@@ -831,7 +832,7 @@ STRINGS = {
     # ---------------- bengkel ----------------
     "ws.header": (
         "🔧 <b>BENGKEL</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧰 Sumber dayamu: {stock}\n"
         "⛏ Logam — Suit & duel · 💧 Hidrogen — Besar/Kecil · "
         "💎 Kristal — Kuis · ⚙️ Komponen — Brankas Siber. Misi memberi paket lengkap.\n\n"
@@ -881,7 +882,7 @@ STRINGS = {
     # ---------------- serbuan ----------------
     "raid.header": (
         "🏴‍☠️ <b>SERBUAN</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "💧 Hidrogen: <b>{hydrogen}</b> (sekali terbang butuh {fuel})\n"
         "🚀 {ready}\n"
         "🛡 {shield}\n"
@@ -932,7 +933,7 @@ STRINGS = {
     # ---------------- target harian ----------------
     "goal.header": (
         "🎯 <b>TARGET HARI INI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{goals}\n\n"
         "{status}\n"
         "🎁 Peti: <b>+{coins} 🪙</b> dan <b>+{res}</b> sumber daya acak\n"
@@ -964,7 +965,7 @@ STRINGS = {
     # ---------------- stasiun tim ----------------
     "st.header": (
         "🛰 <b>STASIUN TIM “{team}”</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Level: <b>{level}/{max}</b> → tiap petarung dapat <b>+{percent}%</b> penambangan ladang "
         "(+{per_level}% per level)\n\n"
         "📦 Menuju level berikutnya:\n{progress}\n\n"
@@ -997,14 +998,14 @@ STRINGS = {
     "clan.status_team": "👥 STATUS: TIM BIASA",
     "clan.dashboard": (
         "🏆 <b>DASBOR INFORMASI TIMMU</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "📌 Nama: <b>{name}</b>\n"
         "⚡ {status}\n"
         "👤 Kapten geng: 🧠{captain_level} · <b>{captain}</b>\n"
         "💬 Moto: <i>“{motto}”</i>\n"
         "🔮 Simbol lambang: {symbol}\n\n"
         "👥 Anggota: <b>{members} / {max_members}</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👇 <b>NAVIGASI:</b>"
     ),
     "clan.members_only": "🔒 Daftar anggota hanya bisa dilihat oleh anggota tim ini!",
@@ -1012,10 +1013,10 @@ STRINGS = {
     "clan.members_header": (
         "👥 <b>SUSUNAN TIM “{name}”</b>\n"
         "🧠 — level kecerdasan game (hanya bisa dilatih di /quiz)\n"
-        "..................................................\n\n"
+        "..................................................\n"
     ),
     "clan.members_footer": (
-        "\n\n..................................................\n"
+        "\n..................................................\n"
         "📄 Halaman <b>{page} / {pages}</b> · Total petarung: <b>{members}</b>\n"
         "<i>Ketuk @username rekan timmu untuk mengiriminya pesan, bangun chat kalian sendiri, "
         "dan ajak geng ke kompetisi tim!</i>"

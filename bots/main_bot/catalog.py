@@ -58,9 +58,9 @@ CATALOG: dict[str, dict] = {
                           "button": "❄️ Азотное Охлаждение +40% | 299 ★",
                           "title_en": "❄️ Nitrogen Cooling +40% (30 days)",
                           "button_en": "❄️ Nitrogen Cooling +40% | 299 ★"},
-    # --- Апгрейд Робота Стажёра до ВЕЧНОГО Младшего Майнера (условие: 3 квалифицированных друга) ---
+    # --- Апгрейд Робота-Стажёра до ВЕЧНОГО Младшего Майнера (условие: 3 квалифицированных друга) ---
     "intern_upgrade": {"type": "intern_upgrade", "stars": 999, "category": CATEGORY_FARM,
-                       "title": "♾ Вечный Майнер: апгрейд Робота Стажёра", "button": "♾ Вечный Майнер | 999 ★",
+                       "title": "♾ Вечный Майнер: апгрейд Робота-Стажёра", "button": "♾ Вечный Майнер | 999 ★",
                        "title_en": "♾ Eternal Miner: upgrade your Intern Bot",
                        "button_en": "♾ Eternal Miner | 999 ★"},
     # --- Мастер-дрон ---
@@ -168,7 +168,7 @@ SHOP_INFO: list[dict[str, str]] = [
      "title_en": "🛸 Master Drone · 999 ★ · 1 year",
      "text_en": "While the drone is active, robots don't age: their 30-day license is frozen."},
     {"title": "♾ Вечный Майнер · 999 ★",
-     "text": "Превращает бесплатного Робота Стажёра в вечного Младшего Майнера: 5 🪙 в час навсегда. Нужно 3 активных друга.",
+     "text": "Превращает бесплатного Робота-Стажёра в вечного Младшего Майнера: 5 🪙 в час навсегда. Нужно 3 активных друга.",
      "title_en": "♾ Eternal Miner · 999 ★",
      "text_en": "Turns your free Intern Bot into an eternal Miner Bot: 5 🪙 per hour forever. Needs 3 active friends."},
     {"title": "⚡ Безлимит · 24 ч за 5 ★ / 30 дней за 99 ★",

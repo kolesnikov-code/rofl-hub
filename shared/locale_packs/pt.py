@@ -36,6 +36,7 @@ BUTTONS = {
 }
 
 STRINGS = {
+    "profile.btn_app": "📱 OPEN THE APP",
     "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
     "exp.err_peeked": "This fork is already scouted.",
     # TODO(перевод 28.10): экспедиции и дроны — пока английский
@@ -147,7 +148,7 @@ STRINGS = {
     # ---------------- menu e zona de jogos ----------------
     "menu.text": (
         "📱 <b>MENU PRINCIPAL DO ECOSSISTEMA ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👤 <b>PERFIL PESSOAL E PASSAPORTE:</b>\n"
         "• /start — Começar a apresentação e registrar a conta\n"
         "• /profile — Seu passaporte, saldo e equipe em tempo real\n"
@@ -176,13 +177,13 @@ STRINGS = {
     ),
     "menu.games_hub": (
         "🕹️ <b>BOAS-VINDAS À ZONA DE JOGOS DO ROFL HUB!</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Aqui você pode enfrentar o bot em duelos rápidos ou encarar o "
         "teste relâmpago de inteligência para faturar alto — ou zerar o saldo!\n\n"
         "💸 Vitória paga: <b>+2 🪙</b> (Ciber-Cofre: <b>+5</b>)\n"
         "💀 Derrota ou empate desconta: <b>-1 🪙</b>\n"
         "🧠 No Quiz há um cronômetro de 15 segundos e níveis de inteligência: o nível 1 pede 10 respostas certas e paga <b>+100 🪙</b>, "
-        "cada nível seguinte é 10 respostas mais longo — mas a recompensa cresce em 100!\n\n"
+        "cada nível seguinte é 10 respostas mais longo — mas a recompensa cresce em 100!\n"
         "..................................................\n"
         "👇 <b>TOQUE EM UM BOTÃO ABAIXO PARA COMEÇAR UMA RODADA AGORA:</b>"
     ),
@@ -201,28 +202,28 @@ STRINGS = {
     "app.unavailable": "⚙️ O Mini App ainda está se conectando aos servidores do ecossistema. Volte daqui a pouco!",
     "faq.teaser": (
         "📚 <b>GUIA DO ECOSSISTEMA ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "O resumo do que importa:\n"
         "🚜 Os robôs mineram moedas 24 horas por dia: Robô Minerador — 5/h sem combustível, "
         "Ciber-Perfurador — 10/h, e CADA Perfurador come o próprio ciber-bife por dia. "
         "Todos os robôs duram 30 dias (o Drone Mestre pausa o desgaste).\n"
         "🧠 Quiz: 15 segundos por resposta, níveis de inteligência com recompensas crescentes.\n"
         "⚔️ Duelos contra jogadores reais em mesas de 10/100/1000 🪙.\n"
-        "🏆 Equipes de até 50 guerreiros (Mega-Clã — até 1000) e eventos de Batalha com prêmios para todos.\n\n"
+        "🏆 Equipes de até 50 guerreiros (Mega-Clã — até 1000) e eventos de Batalha com prêmios para todos.\n"
         "..................................................\n"
         "👇 <b>O guia completo com todas as mecânicas — a um toque:</b>"
     ),
     "faq.btn_open": "📖 ABRIR O GUIA COMPLETO",
     "rules.teaser": (
         "📜 <b>TERMOS DE USO DO ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "O essencial em poucas palavras:\n"
         "🪙 Moedas e todos os itens do jogo são elementos virtuais de entretenimento: "
         "não são dinheiro e não podem ser trocados por valores reais.\n"
         "💫 Compras somente via Telegram Stars oficiais; itens digitais são entregues "
         "na hora e, se a entrega falhar, as Stars são devolvidas automaticamente.\n"
         "🛡️ Não coletamos telefones, localização nem dados pessoais.\n"
-        "🤝 Ofensas, esquemas de trapaça e multicontas são proibidos — violações podem levar a bloqueio.\n\n"
+        "🤝 Ofensas, esquemas de trapaça e multicontas são proibidos — violações podem levar a bloqueio.\n"
         "..................................................\n"
         "👇 <b>O texto completo dos termos e o aviso de isenção — a um toque:</b>\n"
         "<i>⚖️ Ao usar o bot, você confirma que aceita as condições.</i>"
@@ -230,7 +231,7 @@ STRINGS = {
     "rules.btn_open": "📜 ABRIR OS TERMOS COMPLETOS",
     "quest.list_header": (
         "🗺️ <b>MISSÕES DO ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Histórias interativas com escolhas e caminhos diferentes: detetives, comédias, enigmas. "
         "A primeira vitória em cada missão paga moedas, e você pode rejogar quantas vezes quiser!\n"
         "🌐 <i>Por enquanto as histórias das missões estão em russo — novos idiomas chegam em breve.</i>\n\n"
@@ -239,7 +240,7 @@ STRINGS = {
     "quest.card": (
         "{title}\n"
         "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} 🪙 pela primeira vitória\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{teaser}\n\n{status}"
     ),
     "quest.card_done": "✅ <i>Missão concluída, recompensa recebida. Rejogue à vontade!</i>",
@@ -284,7 +285,7 @@ STRINGS = {
     "farm.intern_hint": "🎁 Você tem um Robô Estagiário grátis! Toque no botão abaixo e ele vai minerar 1 🪙 por hora para sempre.",
     "farm.dashboard": (
         "🚜 <b>HUB CENTRAL DE COMBUSTÍVEL DO ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🤖 Robôs ativos na usina: <b>{total}</b>\n"
         "{intern}"
         "• Robôs Mineradores ({junior_rate} 🪙/h): <code>{junior}</code>\n"
@@ -295,12 +296,12 @@ STRINGS = {
         "• Produção por dia: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>BOOSTS:</b>\n{boosts}\n\n"
         "📋 <b>STATUS DA USINA DO JOGO:</b>\n"
-        "{status}\n\n"
-        "..................................................\n\n"
+        "{status}\n"
+        "..................................................\n"
         "📦 <b>ESTADO DA GELADEIRA AUTOMÁTICA:</b>\n"
         "🥩 Reserva de combustível: <b>{fridge} / {capacity}</b>\n"
-        "💼 Bifes no estoque: <code>{inv}</code>\n\n"
-        "..................................................\n\n"
+        "💼 Bifes no estoque: <code>{inv}</code>\n"
+        "..................................................\n"
         "<i>💿 Importante: os robôs duram 30 dias (o Drone Mestre pausa o desgaste). "
         "CADA Ciber-Perfurador gasta o PRÓPRIO bife inteiro da geladeira a cada "
         "24 horas de trabalho: 3 robôs — 3 bifes por dia. Fique de olho no abastecimento!</i>"
@@ -313,13 +314,13 @@ STRINGS = {
     # ---------------- perfil ----------------
     "profile.caption": (
         "📋 <b>PAINEL DO JOGADOR ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🆔 Seu ID de Passaporte: <code>{user_id}</code>\n"
         "{vip}"
         "💰 Moedas agora: <b>{balance} 🪙</b>\n"
         "🏆 Seu status: <b>{team}</b>\n"
         "🧠 Nível de inteligência: <b>{level}</b> · até o nível {next_level}: "
-        "<b>{left}</b> respostas certas no /quiz (recompensa: +{reward} 🪙)\n\n"
+        "<b>{left}</b> respostas certas no /quiz (recompensa: +{reward} 🪙)\n"
         "..................................................\n"
         "<i>Aqui aparece o que você tem neste exato momento. Use os botões para voar até as outras seções!</i>"
     ),
@@ -330,11 +331,11 @@ STRINGS = {
     "profile.btn_shop": "🏪 Loja",
     "profile.stats": (
         "📊 <b>ESTATÍSTICAS DE CONQUISTAS (30 DIAS)</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧠 Nível de inteligência no jogo: <b>{level}</b> (total de respostas certas: {total})\n"
         "🎮 Rodadas de duelo jogadas: <b>{played}</b>\n"
         "🏆 Vitórias conquistadas: <code>{won}</code>\n"
-        "👥 Amigos ativos convidados: <b>{refs}</b>\n\n"
+        "👥 Amigos ativos convidados: <b>{refs}</b>\n"
         "..................................................\n"
         "<i>As estatísticas guardam suas conquistas históricas mesmo que as moedas ganhas já tenham sido gastas no mercado!</i>"
     ),
@@ -432,7 +433,7 @@ STRINGS = {
     # ---------------- duelos ----------------
     "duel.intro": (
         "⚔️ <b>DUELOS 1x1: PEDRA-PAPEL-TESOURA VALENDO APOSTA</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Escolha a mesa que cabe no seu bolso — igual no pôquer. A aposta é descontada na hora, "
         "e o adversário é um jogador real do ROFL HUB!\n\n"
         "💰 O pote = as duas apostas. O vencedor leva <b>{payout_percent}%</b> do pote, "
@@ -500,13 +501,13 @@ STRINGS = {
     # ---------------- indicações ----------------
     "ref.text": (
         "🤝 <b>PROGRAMA DE INDICAÇÃO DO ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Convide amigos pelo seu link pessoal e ganhe <b>{bonus}</b> "
         "por cada um que virar jogador ativo!\n\n"
         "🔗 <b>Seu link (toque para copiar):</b>\n<code>{link}</code>\n\n"
         "📊 <b>SUAS ESTATÍSTICAS:</b>\n"
         "👥 Amigos convidados: <b>{invited}</b>\n"
-        "💰 Ganho com indicações: <b>{earned} 🪙</b>\n\n"
+        "💰 Ganho com indicações: <b>{earned} 🪙</b>\n"
         "..................................................\n"
         "<i>Mande o link nos grupos da escola, para os amigos e nas redes — quanto maior a tropa, mais rápido o saldo cresce!</i>"
     ),
@@ -541,7 +542,7 @@ STRINGS = {
 
     "acct.warn": (
         "⚠️ <b>EXCLUSÃO DA CONTA</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Junto com a conta, isto será apagado <b>para sempre</b>:\n"
         "• moedas, bifes, recursos e todos os robôs da fazenda;\n"
         "• boosts, Sem Limite e tudo o que foi comprado com Stars — <b>as Stars não são devolvidas</b>;\n"
@@ -583,7 +584,7 @@ STRINGS = {
     # ---------------- transferências ----------------
     "tr.help": (
         "🔄 <b>TRANSFERÊNCIA DE MOEDAS PARA OUTRO JOGADOR</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Formato do comando:\n"
         "<code>/transfer ID quantia</code> — pelo ID de Passaporte (aparece no /profile)\n"
         "<code>/transfer @username quantia</code> — pelo nome de usuário\n"
@@ -650,7 +651,7 @@ STRINGS = {
     "pay.already": "✅ Este pagamento já foi processado, o item foi entregue antes.",
     "pay.support": (
         "🛟 <b>SUPORTE DE PAGAMENTOS TELEGRAM STARS</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Todos os itens do ROFL HUB são digitais e entregues na hora após o pagamento.\n\n"
         "⚙️ <b>Se você pagou e o item não chegou:</b>\n"
         "o bot devolve as Stars automaticamente quando a entrega falha. Se isso não aconteceu — "
@@ -658,7 +659,7 @@ STRINGS = {
         "A administração vai conferir o pagamento no banco de dados e resolver em até 24 horas.\n\n"
         "💫 <b>Política de reembolso:</b>\n"
         "o reembolso é possível se o item não foi recebido ou foi entregue com erro. "
-        "Itens digitais entregues corretamente não são reembolsáveis.\n\n"
+        "Itens digitais entregues corretamente não são reembolsáveis.\n"
         "..................................................\n"
         "<i>Esta seção é o ponto oficial de suporte a compras conforme as regras do Telegram.</i>"
     ),
@@ -681,7 +682,7 @@ STRINGS = {
     "dlv.intern_upgrade": "♾ Seu Robô Estagiário foi promovido a <b>Robô Minerador ETERNO</b>: 5 🪙 por hora, sem validade!",
     "dlv.err_no_intern": "Nenhum Robô Estagiário ativado: ative-o primeiro em /farm.",
     "dlv.err_intern_refs": "O upgrade exige {need} amigos ativos (as condições estão em /invite); você tem {have}.",
-    "mk.header": "📈 <b>BOLSA DE BIFES</b>\n..................................................\n\nOrdens abertas: <b>{orders}</b> · bifes à venda: <b>{cutlets}</b> · melhor preço: <b>{best}</b>\nTaxa do hub: <b>{fee}%</b> por venda (queimada — escudo contra inflação)\n🥩 No seu estoque: <b>{inv}</b> bifes\n\n{body}\n\n<i>Toque numa ordem para comprar. Para vender, use /sell.</i>",
+    "mk.header": "📈 <b>BOLSA DE BIFES</b>\n..................................................\nOrdens abertas: <b>{orders}</b> · bifes à venda: <b>{cutlets}</b> · melhor preço: <b>{best}</b>\nTaxa do hub: <b>{fee}%</b> por venda (queimada — escudo contra inflação)\n🥩 No seu estoque: <b>{inv}</b> bifes\n\n{body}\n\n<i>Toque numa ordem para comprar. Para vender, use /sell.</i>",
     "mk.empty": "Ainda não há ofertas. Seja o primeiro: /sell quantidade preço",
     "mk.order_line": "🥩 #{id} · <b>{qty} un.</b> a <b>{price}</b> 🪙",
     "mk.btn_order": "🛒 #{id}: {qty} un. a {price} 🪙",
@@ -768,7 +769,7 @@ STRINGS = {
     # ---------------- oficina ----------------
     "ws.header": (
         "🔧 <b>OFICINA</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧰 Seus recursos: {stock}\n"
         "⛏ Metal — PPT e duelos · 💧 Hidrogênio — Maior/Menor · "
         "💎 Cristais — Quiz · ⚙️ Peças — Ciber-Cofre. As missões dão um kit.\n\n"
@@ -879,7 +880,7 @@ STRINGS = {
     # ---------------- saques ----------------
     "raid.header": (
         "🏴‍☠️ <b>SAQUES</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "💧 Hidrogênio: <b>{hydrogen}</b> (cada voo custa {fuel})\n"
         "🚀 {ready}\n"
         "🛡 {shield}\n"
@@ -930,7 +931,7 @@ STRINGS = {
     # ---------------- metas diárias ----------------
     "goal.header": (
         "🎯 <b>METAS DE HOJE</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{goals}\n\n"
         "{status}\n"
         "🎁 Baú: <b>+{coins} 🪙</b> e <b>+{res}</b> de um recurso aleatório\n"
@@ -962,7 +963,7 @@ STRINGS = {
     # ---------------- estação da equipe ----------------
     "st.header": (
         "🛰 <b>ESTAÇÃO DA EQUIPE “{team}”</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Nível: <b>{level}/{max}</b> → cada guerreiro ganha <b>+{percent}%</b> de mineração na fazenda "
         "(+{per_level}% por nível)\n\n"
         "📦 Para o próximo nível:\n{progress}\n\n"
@@ -995,14 +996,14 @@ STRINGS = {
     "clan.status_team": "👥 STATUS: EQUIPE COMUM",
     "clan.dashboard": (
         "🏆 <b>PAINEL DE INFORMAÇÕES DA SUA EQUIPE</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "📌 Nome: <b>{name}</b>\n"
         "⚡ {status}\n"
         "👤 Capitão da tropa: 🧠{captain_level} · <b>{captain}</b>\n"
         "💬 Lema: <i>“{motto}”</i>\n"
         "🔮 Símbolo do emblema: {symbol}\n\n"
         "👥 Membros: <b>{members} / {max_members}</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👇 <b>NAVEGAÇÃO:</b>"
     ),
     "clan.members_only": "🔒 A lista de membros só é visível para quem faz parte desta equipe!",
@@ -1010,10 +1011,10 @@ STRINGS = {
     "clan.members_header": (
         "👥 <b>ELENCO DA EQUIPE “{name}”</b>\n"
         "🧠 — nível de inteligência no jogo (só evolui no /quiz)\n"
-        "..................................................\n\n"
+        "..................................................\n"
     ),
     "clan.members_footer": (
-        "\n\n..................................................\n"
+        "\n..................................................\n"
         "📄 Página <b>{page} / {pages}</b> · Total de guerreiros: <b>{members}</b>\n"
         "<i>Toque no @username de um colega para falar com ele, montar seu próprio chat "
         "e chamar a tropa para as competições de equipe!</i>"

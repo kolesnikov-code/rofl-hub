@@ -37,6 +37,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "profile.btn_app": "📱 OPEN THE APP",
     "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
     "exp.err_peeked": "This fork is already scouted.",
     # TODO(перевод 28.10): экспедиции и дроны — пока английский
@@ -148,7 +149,7 @@ STRINGS: dict[str, str] = {
     # ---------------- меню и игровая зона ----------------
     "menu.text": (
         "📱 <b>ROFL HUB EKOTIZIMINING BOSH MENYUSI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👤 <b>SHAXSIY PROFIL VA PASPORT:</b>\n"
         "• /start — Tanishuvni boshlash va akkaunt ochish\n"
         "• /profile — Pasporting, balansing va jamoang real vaqtda\n"
@@ -177,13 +178,13 @@ STRINGS: dict[str, str] = {
     ),
     "menu.games_hub": (
         "🕹️ <b>ROFL HUB O'YIN ZONASIGA XUSH KELIBSAN!</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Bu yerda botga qarshi tezkor bellashuvlarga kirishing yoki intellektual sprint-testdan "
         "o'tishing mumkin — jekpotni urasan yoki balansni yutqazib qo'yasan!\n\n"
         "💸 G'alaba keltiradi: <b>+2 🪙</b> (Kiber-Seyf: <b>+5</b>)\n"
         "💀 Mag'lubiyat yoki durang olib ketadi: <b>-1 🪙</b>\n"
         "🧠 Viktorinada — 15 soniyalik taymer va intellekt darajalari: 1-daraja — 10 to'g'ri javob va <b>+100 🪙</b>, "
-        "keyin har bir daraja 10 javobga uzunroq, lekin mukofot ham 100 ga o'sadi!\n\n"
+        "keyin har bir daraja 10 javobga uzunroq, lekin mukofot ham 100 ga o'sadi!\n"
         "..................................................\n"
         "👇 <b>RAUNDNI HOZIROQ BOSHLASH UCHUN PASTDAGI TUGMANI BOS:</b>"
     ),
@@ -202,28 +203,28 @@ STRINGS: dict[str, str] = {
     "app.unavailable": "⚙️ Mini App hali ekotizim serverlariga ulanmoqda. Birozdan keyin kirib ko'r!",
     "faq.teaser": (
         "📚 <b>ROFL HUB EKOTIZIMI QO'LLANMASI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Eng muhimi qisqacha:\n"
         "🚜 Robotlar tangani kecha-yu kunduz qazib beradi: Kichik Mayner — yoqilg'isiz 5/soat, "
         "Kiber-Burg'ulovchi — 10/soat, va HAR BIR Burg'ulovchi kuniga o'zining 1 kiber-kotletini yeydi. "
         "Barcha robotlar 30 kun yashaydi (Master-Dron eskirishni to'xtatib turadi).\n"
         "🧠 Viktorina: javobga 15 soniya, o'sib boruvchi mukofotli intellekt darajalari.\n"
         "⚔️ Jonli o'yinchilar bilan 10/100/1000 🪙 stollarida duellar.\n"
-        "🏆 50 jangchigacha jamoalar (Mega-Klan — 1000 tagacha) va har kimga sovrinli Jang tadbirlari.\n\n"
+        "🏆 50 jangchigacha jamoalar (Mega-Klan — 1000 tagacha) va har kimga sovrinli Jang tadbirlari.\n"
         "..................................................\n"
         "👇 <b>Barcha mexanikalar yoritilgan to'liq qo'llanma — tugmada:</b>"
     ),
     "faq.btn_open": "📖 TO'LIQ QO'LLANMANI OCHISH",
     "rules.teaser": (
         "📜 <b>ROFL HUB FOYDALANUVCHI SHARTNOMASI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Ikki og'iz so'z bilan eng muhimi:\n"
         "🪙 Tangalar va barcha o'yin buyumlari — virtual ko'ngilochar elementlar: "
         "ular pul emas va real mablag'ga almashtirilmaydi.\n"
         "💫 Xaridlar — faqat rasmiy Telegram Stars orqali; raqamli tovarlar bir zumda "
         "yetkaziladi, yetkazishda nosozlik bo'lsa, Stars avtomatik qaytariladi.\n"
         "🛡️ Biz telefon raqamlari, geolokatsiya va shaxsiy ma'lumotlarni yig'maymiz.\n"
-        "🤝 Haqorat, sun'iy ko'tarish va multiakkauntlar taqiqlangan — buzganlar bloklanishi mumkin.\n\n"
+        "🤝 Haqorat, sun'iy ko'tarish va multiakkauntlar taqiqlangan — buzganlar bloklanishi mumkin.\n"
         "..................................................\n"
         "👇 <b>Shartnomaning to'liq matni va mas'uliyatdan voz kechish — tugmada:</b>\n"
         "<i>⚖️ Botdan foydalanar ekansan, shartlarga roziligingni tasdiqlaysan.</i>"
@@ -231,7 +232,7 @@ STRINGS: dict[str, str] = {
     "rules.btn_open": "📜 TO'LIQ SHARTNOMANI OCHISH",
     "quest.list_header": (
         "🗺️ <b>ROFL HUB KVESTLARI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Tanlovlar va burilishlarga boy interaktiv hikoyalar: detektivlar, komediyalar, boshqotirmalar. "
         "Har bir kvestdagi ilk g'alaba tanga keltiradi, qayta o'ynash esa cheksiz!\n"
         "🌐 <i>Kvest hikoyalari hozircha rus tilida — o'zbekcha to'plam yo'lda.</i>\n\n"
@@ -240,7 +241,7 @@ STRINGS: dict[str, str] = {
     "quest.card": (
         "{title}\n"
         "🎭 {genre} · ⏱ {minutes} daqiqa · 🏆 ilk g'alaba uchun +{reward} 🪙\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{teaser}\n\n{status}"
     ),
     "quest.card_done": "✅ <i>Kvest o'tilgan, mukofot olingan. Xohlaganingcha qayta o'yna!</i>",
@@ -285,7 +286,7 @@ STRINGS: dict[str, str] = {
     "farm.intern_hint": "🎁 Senda bepul Stajyor Robot bor! Pastdagi tugmani bos — u abadiy soatiga 1 🪙 qazib beradi.",
     "farm.dashboard": (
         "🚜 <b>ROFL HUB MARKAZIY YOQILG'I HUBI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🤖 Zavoddagi faol robotlar: <b>{total} dona</b>\n"
         "{intern}"
         "• Kichik Maynerlar ({junior_rate} 🪙/soat): <code>{junior} dona</code>\n"
@@ -296,12 +297,12 @@ STRINGS: dict[str, str] = {
         "• Kuniga ishlab chiqarish: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>KUCHAYTIRGICHLAR:</b>\n{boosts}\n\n"
         "📋 <b>O'YIN ZAVODI HOLATI:</b>\n"
-        "{status}\n\n"
-        "..................................................\n\n"
+        "{status}\n"
+        "..................................................\n"
         "📦 <b>AVTOMATIK MUZLATKICH HOLATI:</b>\n"
         "🥩 Yoqilg'i zaxirasi: <b>{fridge} / {capacity} dona</b>\n"
-        "💼 Ombordagi kotletlar: <code>{inv} dona</code>\n\n"
-        "..................................................\n\n"
+        "💼 Ombordagi kotletlar: <code>{inv} dona</code>\n"
+        "..................................................\n"
         "<i>💿 Muhim: robotlar 30 kun yashaydi (Master-Dron eskirishni to'xtatib turadi). "
         "HAR BIR Kiber-Burg'ulovchi har 24 soat ish uchun muzlatkichdan O'ZINING butun kotletini "
         "yeydi: 3 robot — kuniga 3 kotlet. To'ldirishni kuzatib bor!</i>"
@@ -314,13 +315,13 @@ STRINGS: dict[str, str] = {
     # ---------------- профиль ----------------
     "profile.caption": (
         "📋 <b>ROFL HUB O'YINCHISINING SHAXSIY KABINETI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🆔 Pasport ID'ing: <code>{user_id}</code>\n"
         "{vip}"
         "💰 Hozirgi tangalar: <b>{balance} 🪙</b>\n"
         "🏆 Statusing: <b>{team}</b>\n"
         "🧠 Intellekt darajasi: <b>{level}</b> · {next_level}-darajagacha: "
-        "/quiz da <b>{left}</b> to'g'ri javob (mukofot: +{reward} 🪙)\n\n"
+        "/quiz da <b>{left}</b> to'g'ri javob (mukofot: +{reward} 🪙)\n"
         "..................................................\n"
         "<i>Bu yerda hozir senda bor narsalar ko'rsatilgan. Boshqa bo'limlarga uchish uchun tugmalardan foydalan!</i>"
     ),
@@ -331,11 +332,11 @@ STRINGS: dict[str, str] = {
     "profile.btn_shop": "🏪 Do'kon",
     "profile.stats": (
         "📊 <b>O'YIN YUTUQLARI STATISTIKASI (30 KUN)</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧠 O'yin intellekti darajasi: <b>{level}</b> (jami to'g'ri javoblar: {total})\n"
         "🎮 Duellarda o'ynalgan raundlar: <b>{played} ta</b>\n"
         "🏆 Raqiblar ustidan g'alabalar: <code>{won} marta</code>\n"
-        "👥 Taklif qilingan faol do'stlar: <b>{refs} kishi</b>\n\n"
+        "👥 Taklif qilingan faol do'stlar: <b>{refs} kishi</b>\n"
         "..................................................\n"
         "<i>Statistika tarixiy xizmatlaring va o'tgan yutuqlaringni saqlaydi — yutilgan tangalar allaqachon marketda sarflangan bo'lsa ham!</i>"
     ),
@@ -433,7 +434,7 @@ STRINGS: dict[str, str] = {
     # ---------------- дуэли ----------------
     "duel.intro": (
         "⚔️ <b>YAKKAMA-YAKKA DUELLAR: GAROVGA TOSH-QAYCHI-QOG'OZ</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Cho'ntagingga mos stolni tanla — xuddi pokerdagidek. Garov darhol yechib olinadi, "
         "raqibing — jonli ROFL HUB o'yinchisi!\n\n"
         "💰 Bank = ikkala garov. G'olib bankning <b>{payout_percent}%</b>ini oladi, "
@@ -501,13 +502,13 @@ STRINGS: dict[str, str] = {
     # ---------------- рефералка ----------------
     "ref.text": (
         "🤝 <b>ROFL HUB REFERAL DASTURI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Do'stlaringni shaxsiy havolang orqali taklif qil va faol o'yinchiga aylangan "
         "har bir kishi uchun <b>{bonus}</b> ol!\n\n"
         "🔗 <b>Havolang (nusxalash uchun bos):</b>\n<code>{link}</code>\n\n"
         "📊 <b>SENING STATISTIKANG:</b>\n"
         "👥 Taklif qilingan do'stlar: <b>{invited} kishi</b>\n"
-        "💰 Referallardan topilgani: <b>{earned} 🪙</b>\n\n"
+        "💰 Referallardan topilgani: <b>{earned} 🪙</b>\n"
         "..................................................\n"
         "<i>Havolani sinfdoshlar chatiga, do'stlarga va ijtimoiy tarmoqlarga tashla — davrang qancha katta bo'lsa, balansing shuncha tez o'sadi!</i>"
     ),
@@ -544,7 +545,7 @@ STRINGS: dict[str, str] = {
     "profile.btn_delete": "🗑 Akkauntni o'chirish",
     "acct.warn": (
         "⚠️ <b>AKKAUNTNI O'CHIRISH</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Akkaunt bilan birga <b>butunlay va qaytarib bo'lmas holda</b> yo'qoladi:\n"
         "• tangalar, kotletlar, resurslar va fermadagi barcha robotlar;\n"
         "• buster'lar, Cheksiz rejim va Stars evaziga olingan hamma narsa — <b>Stars qaytarilmaydi</b>;\n"
@@ -585,7 +586,7 @@ STRINGS: dict[str, str] = {
     # ---------------- переводы ----------------
     "tr.help": (
         "🔄 <b>BOSHQA O'YINCHIGA TANGA O'TKAZISH</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Buyruq formati:\n"
         "<code>/transfer ID summa</code> — Pasport ID bo'yicha (/profile da ko'rinadi)\n"
         "<code>/transfer @username summa</code> — username bo'yicha\n"
@@ -652,7 +653,7 @@ STRINGS: dict[str, str] = {
     "pay.already": "✅ Bu to'lov allaqachon qayta ishlangan, tovar avvalroq berilgan.",
     "pay.support": (
         "🛟 <b>TELEGRAM STARS TO'LOVLARI BO'YICHA YORDAM</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Barcha ROFL HUB tovarlari — raqamli va to'lovdan keyin bir zumda yetkaziladi.\n\n"
         "⚙️ <b>Agar to'lov o'tgan-u, tovar kelmagan bo'lsa:</b>\n"
         "yetkazishda nosozlik bo'lsa, bot Stars'ni avtomatik qaytaradi. Agar bu sodir bo'lmasa — "
@@ -660,7 +661,7 @@ STRINGS: dict[str, str] = {
         "Ma'muriyat to'lovni baza bo'yicha tekshiradi va masalani 24 soat ichida hal qiladi.\n\n"
         "💫 <b>Qaytarish siyosati:</b>\n"
         "tovar olinmagan yoki xato berilgan bo'lsa, qaytarish mumkin. "
-        "To'g'ri yetkazilgan raqamli tovarlar qaytarilmaydi.\n\n"
+        "To'g'ri yetkazilgan raqamli tovarlar qaytarilmaydi.\n"
         "..................................................\n"
         "<i>Bu bo'lim — Telegram qoidalariga ko'ra xaridlar bo'yicha rasmiy yordam nuqtasi.</i>"
     ),
@@ -683,7 +684,7 @@ STRINGS: dict[str, str] = {
     "dlv.intern_upgrade": "♾ Stajyor Robot <b>ABADIY Kichik Maynerga</b> ko'tarildi: soatiga 5 🪙, muddatsiz!",
     "dlv.err_no_intern": "Faollashtirilgan Stajyor Robot yo'q — avval uni /farm da faollashtir.",
     "dlv.err_intern_refs": "Yangilash uchun {need} ta faol do'st kerak (shartlar — /invite da); senda {have} ta.",
-    "mk.header": "📈 <b>KOTLET BIRJASI</b>\n..................................................\n\nOchiq buyurtmalar: <b>{orders}</b> · sotuvdagi kotletlar: <b>{cutlets}</b> · eng yaxshi narx: <b>{best}</b>\nHab komissiyasi: har sotuvdan <b>{fee}%</b> (yondiriladi — inflyatsiyadan himoya)\n🥩 Ombordagi kotletlaring: <b>{inv}</b>\n\n{body}\n\n<i>Sotib olish — buyurtmani bos. Sotish — /sell buyrug'i.</i>",
+    "mk.header": "📈 <b>KOTLET BIRJASI</b>\n..................................................\nOchiq buyurtmalar: <b>{orders}</b> · sotuvdagi kotletlar: <b>{cutlets}</b> · eng yaxshi narx: <b>{best}</b>\nHab komissiyasi: har sotuvdan <b>{fee}%</b> (yondiriladi — inflyatsiyadan himoya)\n🥩 Ombordagi kotletlaring: <b>{inv}</b>\n\n{body}\n\n<i>Sotib olish — buyurtmani bos. Sotish — /sell buyrug'i.</i>",
     "mk.empty": "Hozircha takliflar yo'q. Birinchi bo'l: /sell soni narxi",
     "mk.order_line": "🥩 #{id} · <b>{qty} dona</b>, donasi <b>{price}</b> 🪙",
     "mk.btn_order": "🛒 #{id}: {qty} dona, donasi {price} 🪙",
@@ -770,7 +771,7 @@ STRINGS: dict[str, str] = {
     # ---------------- мастерская ----------------
     "ws.header": (
         "🔧 <b>USTAXONA</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧰 Resurslaring: {stock}\n"
         "⛏ Metall — Tosh-Qaychi va duellar · 💧 Vodorod — Katta/Kichik · "
         "💎 Kristallar — Viktorina · ⚙️ Detallar — Kiber-Seyf. Kvestlar to'plam beradi.\n\n"
@@ -881,7 +882,7 @@ STRINGS: dict[str, str] = {
     # ---------------- налёты ----------------
     "raid.header": (
         "🏴‍☠️ <b>BOSQINLAR</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "💧 Vodorod: <b>{hydrogen}</b> (bitta parvoz {fuel} turadi)\n"
         "🚀 {ready}\n"
         "🛡 {shield}\n"
@@ -932,7 +933,7 @@ STRINGS: dict[str, str] = {
     # ---------------- ежедневные цели ----------------
     "goal.header": (
         "🎯 <b>BUGUNGI MAQSADLAR</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{goals}\n\n"
         "{status}\n"
         "🎁 Sandiq: <b>+{coins} 🪙</b> va tasodifiy resursdan <b>+{res}</b> ta\n"
@@ -964,7 +965,7 @@ STRINGS: dict[str, str] = {
     # ---------------- станция команды ----------------
     "st.header": (
         "🛰 <b>«{team}» JAMOA STANSIYASI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Daraja: <b>{level}/{max}</b> → har bir jangchiga ferma qazib olishiga <b>+{percent}%</b> "
         "(har daraja +{per_level}%)\n\n"
         "📦 Keyingi darajagacha:\n{progress}\n\n"
@@ -997,14 +998,14 @@ STRINGS: dict[str, str] = {
     "clan.status_team": "👥 STATUS: ODDIY JAMOA",
     "clan.dashboard": (
         "🏆 <b>JAMOANGNING AXBOROT DASHBORDI</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "📌 Nomi: <b>{name}</b>\n"
         "⚡ {status}\n"
         "👤 Jamoa sardori: 🧠{captain_level} · <b>{captain}</b>\n"
         "💬 Shior: <i>«{motto}»</i>\n"
         "🔮 Emblema belgisi: {symbol}\n\n"
         "👥 A'zolar tarkibi: <b>{members} / {max_members} kishi</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👇 <b>NAVIGATSIYA:</b>"
     ),
     "clan.members_only": "🔒 A'zolar ro'yxati faqat shu jamoa a'zolariga ko'rinadi!",
@@ -1012,10 +1013,10 @@ STRINGS: dict[str, str] = {
     "clan.members_header": (
         "👥 <b>«{name}» JAMOASI TARKIBI</b>\n"
         "🧠 — o'yin intellekti darajasi (faqat /quiz da oshiriladi)\n"
-        "..................................................\n\n"
+        "..................................................\n"
     ),
     "clan.members_footer": (
-        "\n\n..................................................\n"
+        "\n..................................................\n"
         "📄 Sahifa: <b>{page} / {pages}</b> · Jami jangchilar: <b>{members}</b>\n"
         "<i>Jamoadoshingga yozish, o'z chatingni yig'ish va jamoani jamoaviy bellashuvlarga "
         "chaqirish uchun uning @username'iga bos!</i>"

@@ -36,6 +36,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "profile.btn_app": "📱 OPEN THE APP",
     "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
     "exp.err_peeked": "This fork is already scouted.",
     # TODO(перевод 28.10): экспедиции и дроны — пока английский
@@ -147,7 +148,7 @@ STRINGS: dict[str, str] = {
     # ---------------- меню и игровая зона ----------------
     "menu.text": (
         "📱 <b>MENU GŁÓWNE EKOSYSTEMU ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👤 <b>PROFIL OSOBISTY I PASZPORT:</b>\n"
         "• /start — Rozpocznij wprowadzenie i zarejestruj konto\n"
         "• /profile — Twój paszport, saldo i drużyna w czasie rzeczywistym\n"
@@ -176,13 +177,13 @@ STRINGS: dict[str, str] = {
     ),
     "menu.games_hub": (
         "🕹️ <b>WITAJ W STREFIE GIER ROFL HUB!</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Tutaj możesz zmierzyć się z botem w szybkich starciach albo przejść "
         "intelektualny sprint — i zgarnąć pulę albo spłukać się do zera!\n\n"
         "💸 Zwycięstwo daje: <b>+2 🪙</b> (Cyber-Sejf: <b>+5</b>)\n"
         "💀 Porażka lub remis kosztuje: <b>-1 🪙</b>\n"
         "🧠 W Quizie — licznik 15 sekund i poziomy intelektu: 1. poziom to 10 poprawnych odpowiedzi i <b>+100 🪙</b>, "
-        "każdy kolejny poziom jest o 10 odpowiedzi dłuższy, ale nagroda rośnie o 100!\n\n"
+        "każdy kolejny poziom jest o 10 odpowiedzi dłuższy, ale nagroda rośnie o 100!\n"
         "..................................................\n"
         "👇 <b>KLIKNIJ PRZYCISK PONIŻEJ, ABY NATYCHMIAST ROZPOCZĄĆ RUNDĘ:</b>"
     ),
@@ -201,28 +202,28 @@ STRINGS: dict[str, str] = {
     "app.unavailable": "⚙️ Mini App wciąż łączy się z serwerami ekosystemu. Zajrzyj trochę później!",
     "faq.teaser": (
         "📚 <b>PRZEWODNIK PO EKOSYSTEMIE ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Najważniejsze w skrócie:\n"
         "🚜 Roboty wydobywają monety całą dobę: Młodszy Górnik — 5/h bez paliwa, "
         "Cyber-Wiertacz — 10/h, a KAŻDY Wiertacz zjada swój własny cyber-kotlet raz na dobę. "
         "Wszystkie roboty żyją 30 dni (Mistrzowski Dron wstrzymuje zużycie).\n"
         "🧠 Quiz: 15 sekund na odpowiedź, poziomy intelektu z rosnącymi nagrodami.\n"
         "⚔️ Pojedynki z żywymi graczami przy stołach 10/100/1000 🪙.\n"
-        "🏆 Drużyny do 50 wojowników (Mega-Klan — do 1000) i okazjonalne Bitwy z nagrodami dla każdego.\n\n"
+        "🏆 Drużyny do 50 wojowników (Mega-Klan — do 1000) i okazjonalne Bitwy z nagrodami dla każdego.\n"
         "..................................................\n"
         "👇 <b>Pełny przewodnik ze wszystkimi mechanikami — pod przyciskiem:</b>"
     ),
     "faq.btn_open": "📖 OTWÓRZ PEŁNY PRZEWODNIK",
     "rules.teaser": (
         "📜 <b>REGULAMIN UŻYTKOWNIKA ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Najważniejsze w dwóch słowach:\n"
         "🪙 Monety i wszystkie przedmioty w grze to wirtualne elementy rozrywkowe: "
         "nie są pieniędzmi i nie podlegają wymianie na prawdziwe środki.\n"
         "💫 Zakupy — wyłącznie przez oficjalne Telegram Stars; towary cyfrowe dostarczane są "
         "natychmiast, a przy błędzie dostawy Stars wracają automatycznie.\n"
         "🛡️ Nie zbieramy numerów telefonów, lokalizacji ani danych osobowych.\n"
-        "🤝 Zakazane są obelgi, sztuczne nabijanie statystyk i multikonta — za naruszenie grozi blokada.\n\n"
+        "🤝 Zakazane są obelgi, sztuczne nabijanie statystyk i multikonta — za naruszenie grozi blokada.\n"
         "..................................................\n"
         "👇 <b>Pełny tekst regulaminu i zastrzeżenia — pod przyciskiem:</b>\n"
         "<i>⚖️ Korzystając z bota, potwierdzasz akceptację warunków.</i>"
@@ -230,7 +231,7 @@ STRINGS: dict[str, str] = {
     "rules.btn_open": "📜 OTWÓRZ PEŁNY REGULAMIN",
     "quest.list_header": (
         "🗺️ <b>QUESTY ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Interaktywne historie z wyborami i rozgałęzieniami: kryminały, komedie, łamigłówki. "
         "Pierwsze zwycięstwo w każdym queście daje monety, a powtarzać możesz do woli!\n"
         "🌐 <i>Historie questów są na razie po rosyjsku — polski pakiet już w drodze.</i>\n\n"
@@ -239,7 +240,7 @@ STRINGS: dict[str, str] = {
     "quest.card": (
         "{title}\n"
         "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} 🪙 za pierwsze zwycięstwo\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{teaser}\n\n{status}"
     ),
     "quest.card_done": "✅ <i>Quest ukończony, nagroda odebrana. Powtarzaj dla przyjemności!</i>",
@@ -284,7 +285,7 @@ STRINGS: dict[str, str] = {
     "farm.intern_hint": "🎁 Masz darmowego Robota Stażystę! Naciśnij przycisk poniżej — będzie wydobywać 1 🪙 na godzinę na zawsze.",
     "farm.dashboard": (
         "🚜 <b>CENTRALNY HUB PALIWOWY ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🤖 Aktywne roboty w fabryce: <b>{total} szt.</b>\n"
         "{intern}"
         "• Młodsi Górnicy ({junior_rate} 🪙/h): <code>{junior} szt.</code>\n"
@@ -295,12 +296,12 @@ STRINGS: dict[str, str] = {
         "• Produkcja na dobę: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>WZMOCNIENIA:</b>\n{boosts}\n\n"
         "📋 <b>STATUS TWOJEJ FABRYKI:</b>\n"
-        "{status}\n\n"
-        "..................................................\n\n"
+        "{status}\n"
+        "..................................................\n"
         "📦 <b>STAN AUTOMATYCZNEJ LODÓWKI:</b>\n"
         "🥩 Zapas paliwa: <b>{fridge} / {capacity} szt.</b>\n"
-        "💼 Kotlety w magazynie: <code>{inv} szt.</code>\n\n"
-        "..................................................\n\n"
+        "💼 Kotlety w magazynie: <code>{inv} szt.</code>\n"
+        "..................................................\n"
         "<i>💿 Ważne: roboty żyją 30 dni (Mistrzowski Dron wstrzymuje zużycie). "
         "KAŻDY Cyber-Wiertacz zjada SWÓJ cały kotlet z lodówki na każde "
         "24 godziny pracy: 3 roboty — 3 kotlety na dobę. Pilnuj tankowania!</i>"
@@ -313,13 +314,13 @@ STRINGS: dict[str, str] = {
     # ---------------- профиль ----------------
     "profile.caption": (
         "📋 <b>PANEL GRACZA ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🆔 Twój ID Paszportu: <code>{user_id}</code>\n"
         "{vip}"
         "💰 Monety teraz: <b>{balance} 🪙</b>\n"
         "🏆 Twój status: <b>{team}</b>\n"
         "🧠 Poziom intelektu: <b>{level}</b> · do poziomu {next_level}: "
-        "<b>{left}</b> poprawnych odpowiedzi w /quiz (nagroda: +{reward} 🪙)\n\n"
+        "<b>{left}</b> poprawnych odpowiedzi w /quiz (nagroda: +{reward} 🪙)\n"
         "..................................................\n"
         "<i>Tutaj widzisz to, co masz w tej chwili. Używaj przycisków, aby przeskoczyć do innych sekcji!</i>"
     ),
@@ -330,11 +331,11 @@ STRINGS: dict[str, str] = {
     "profile.btn_shop": "🏪 Sklep",
     "profile.stats": (
         "📊 <b>STATYSTYKI OSIĄGNIĘĆ W GRZE (30 DNI)</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧠 Poziom intelektu w grze: <b>{level}</b> (łącznie poprawnych odpowiedzi: {total})\n"
         "🎮 Rozegranych rund w pojedynkach: <b>{played}</b>\n"
         "🏆 Zwycięstw nad rywalami: <code>{won}</code>\n"
-        "👥 Zaproszonych aktywnych znajomych: <b>{refs}</b>\n\n"
+        "👥 Zaproszonych aktywnych znajomych: <b>{refs}</b>\n"
         "..................................................\n"
         "<i>Statystyki przechowują twoje historyczne zasługi i dawne osiągnięcia, nawet jeśli wygrane monety zostały już wydane w markecie!</i>"
     ),
@@ -432,7 +433,7 @@ STRINGS: dict[str, str] = {
     # ---------------- дуэли ----------------
     "duel.intro": (
         "⚔️ <b>POJEDYNKI 1 NA 1: KAMIEŃ-PAPIER-NOŻYCE O STAWKĘ</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Wybierz stół na swoją kieszeń — jak w pokerze. Stawka schodzi z konta od razu, "
         "a przeciwnikiem jest żywy gracz ROFL HUB!\n\n"
         "💰 Pula = obie stawki. Zwycięzca zabiera <b>{payout_percent}%</b> puli, "
@@ -500,13 +501,13 @@ STRINGS: dict[str, str] = {
     # ---------------- рефералка ----------------
     "ref.text": (
         "🤝 <b>PROGRAM POLECEŃ ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Zapraszaj znajomych przez swój osobisty link i otrzymuj <b>{bonus}</b> "
         "za każdego, kto zostanie aktywnym graczem!\n\n"
         "🔗 <b>Twój link (kliknij, aby skopiować):</b>\n<code>{link}</code>\n\n"
         "📊 <b>TWOJE STATYSTYKI:</b>\n"
         "👥 Zaproszonych znajomych: <b>{invited}</b>\n"
-        "💰 Zarobione na poleconych: <b>{earned} 🪙</b>\n\n"
+        "💰 Zarobione na poleconych: <b>{earned} 🪙</b>\n"
         "..................................................\n"
         "<i>Podsyłaj link znajomym, wrzucaj na czaty klasowe i do social mediów — im większa ekipa, tym szybciej rośnie twoje saldo!</i>"
     ),
@@ -541,7 +542,7 @@ STRINGS: dict[str, str] = {
     "profile.btn_delete": "🗑 Usuń konto",
     "acct.warn": (
         "⚠️ <b>USUWANIE KONTA</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Razem z kontem <b>bezpowrotnie</b> znikną:\n"
         "• monety, kotlety, zasoby i wszystkie roboty farmy;\n"
         "• boosty, Bezlimit i wszystko kupione za Stars — <b>Stars nie podlegają zwrotowi</b>;\n"
@@ -582,7 +583,7 @@ STRINGS: dict[str, str] = {
     # ---------------- переводы ----------------
     "tr.help": (
         "🔄 <b>PRZELEW MONET DO INNEGO GRACZA</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Format komendy:\n"
         "<code>/transfer ID kwota</code> — po ID Paszportu (widoczny w /profile)\n"
         "<code>/transfer @username kwota</code> — po nazwie użytkownika\n"
@@ -649,7 +650,7 @@ STRINGS: dict[str, str] = {
     "pay.already": "✅ Ta płatność została już przetworzona, towar wydano wcześniej.",
     "pay.support": (
         "🛟 <b>WSPARCIE PŁATNOŚCI TELEGRAM STARS</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Wszystkie towary ROFL HUB są cyfrowe i dostarczane natychmiast po opłaceniu.\n\n"
         "⚙️ <b>Jeśli płatność przeszła, a towar nie dotarł:</b>\n"
         "bot automatycznie zwraca Stars przy błędzie dostawy. Jeśli tak się nie stało — "
@@ -657,7 +658,7 @@ STRINGS: dict[str, str] = {
         "Administracja sprawdzi płatność w bazie i rozwiąże sprawę w ciągu 24 godzin.\n\n"
         "💫 <b>Polityka zwrotów:</b>\n"
         "zwrot jest możliwy, jeśli towar nie został dostarczony albo wydano go z błędem. "
-        "Poprawnie dostarczone towary cyfrowe nie podlegają zwrotowi.\n\n"
+        "Poprawnie dostarczone towary cyfrowe nie podlegają zwrotowi.\n"
         "..................................................\n"
         "<i>Ta sekcja to oficjalny punkt wsparcia zakupów zgodnie z zasadami Telegramu.</i>"
     ),
@@ -680,7 +681,7 @@ STRINGS: dict[str, str] = {
     "dlv.intern_upgrade": "♾ Twój Robot Stażysta awansował na <b>WIECZNEGO Młodszego Górnika</b>: 5 🪙 na godzinę, bez terminu!",
     "dlv.err_no_intern": "Brak aktywowanego Robota Stażysty — najpierw aktywuj go w /farm.",
     "dlv.err_intern_refs": "Ulepszenie wymaga {need} aktywnych znajomych (zasady w /invite); masz {have}.",
-    "mk.header": "📈 <b>GIEŁDA KOTLETÓW</b>\n..................................................\n\nOtwarte zlecenia: <b>{orders}</b> · kotletów w ofercie: <b>{cutlets}</b> · najlepsza cena: <b>{best}</b>\nProwizja hubu: <b>{fee}%</b> od sprzedaży (spalana — tarcza antyinflacyjna)\n🥩 W twoim magazynie: <b>{inv}</b> kotletów\n\n{body}\n\n<i>Kliknij zlecenie, aby kupić. Sprzedaż: /sell.</i>",
+    "mk.header": "📈 <b>GIEŁDA KOTLETÓW</b>\n..................................................\nOtwarte zlecenia: <b>{orders}</b> · kotletów w ofercie: <b>{cutlets}</b> · najlepsza cena: <b>{best}</b>\nProwizja hubu: <b>{fee}%</b> od sprzedaży (spalana — tarcza antyinflacyjna)\n🥩 W twoim magazynie: <b>{inv}</b> kotletów\n\n{body}\n\n<i>Kliknij zlecenie, aby kupić. Sprzedaż: /sell.</i>",
     "mk.empty": "Nie ma jeszcze ofert. Bądź pierwszy: /sell ilość cena",
     "mk.order_line": "🥩 #{id} · <b>{qty} szt.</b> po <b>{price}</b> 🪙",
     "mk.btn_order": "🛒 #{id}: {qty} szt. po {price} 🪙",
@@ -767,7 +768,7 @@ STRINGS: dict[str, str] = {
     # ---------------- мастерская ----------------
     "ws.header": (
         "🔧 <b>WARSZTAT</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧰 Twoje surowce: {stock}\n"
         "⛏ Metal — Kamień-Papier-Nożyce i pojedynki · 💧 Wodór — Wyżej/Niżej · "
         "💎 Kryształy — Quiz · ⚙️ Części — Cyber-Sejf. Questy dają cały zestaw.\n\n"
@@ -878,7 +879,7 @@ STRINGS: dict[str, str] = {
     # ---------------- налёты ----------------
     "raid.header": (
         "🏴‍☠️ <b>NAJAZDY</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "💧 Wodór: <b>{hydrogen}</b> (wylot kosztuje {fuel})\n"
         "🚀 {ready}\n"
         "🛡 {shield}\n"
@@ -929,7 +930,7 @@ STRINGS: dict[str, str] = {
     # ---------------- ежедневные цели ----------------
     "goal.header": (
         "🎯 <b>CELE NA DZIŚ</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{goals}\n\n"
         "{status}\n"
         "🎁 Skrzynia: <b>+{coins} 🪙</b> i <b>+{res}</b> losowego surowca\n"
@@ -961,7 +962,7 @@ STRINGS: dict[str, str] = {
     # ---------------- станция команды ----------------
     "st.header": (
         "🛰 <b>STACJA DRUŻYNY „{team}”</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Poziom: <b>{level}/{max}</b> → każdy wojownik dostaje <b>+{percent}%</b> do wydobycia farmy "
         "(+{per_level}% za poziom)\n\n"
         "📦 Do następnego poziomu:\n{progress}\n\n"
@@ -994,14 +995,14 @@ STRINGS: dict[str, str] = {
     "clan.status_team": "👥 STATUS: ZWYKŁA DRUŻYNA",
     "clan.dashboard": (
         "🏆 <b>PANEL INFORMACYJNY TWOJEJ DRUŻYNY</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "📌 Nazwa: <b>{name}</b>\n"
         "⚡ {status}\n"
         "👤 Kapitan ekipy: 🧠{captain_level} · <b>{captain}</b>\n"
         "💬 Motto: <i>„{motto}”</i>\n"
         "🔮 Symbol emblematu: {symbol}\n\n"
         "👥 Skład: <b>{members} / {max_members} os.</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👇 <b>NAWIGACJA:</b>"
     ),
     "clan.members_only": "🔒 Lista członków jest widoczna tylko dla członków tej drużyny!",
@@ -1009,10 +1010,10 @@ STRINGS: dict[str, str] = {
     "clan.members_header": (
         "👥 <b>SKŁAD DRUŻYNY „{name}”</b>\n"
         "🧠 — poziom intelektu w grze (rośnie tylko w /quiz)\n"
-        "..................................................\n\n"
+        "..................................................\n"
     ),
     "clan.members_footer": (
-        "\n\n..................................................\n"
+        "\n..................................................\n"
         "📄 Strona <b>{page} / {pages}</b> · Łącznie wojowników: <b>{members}</b>\n"
         "<i>Klikaj w @username kolegi z drużyny, aby do niego napisać, zebrać własny czat "
         "i wezwać ekipę na drużynowe rozgrywki!</i>"

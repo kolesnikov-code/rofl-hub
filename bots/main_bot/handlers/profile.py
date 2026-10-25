@@ -76,6 +76,20 @@ def generate_profile_image(user_id: int, username: str, data: dict, lang: str = 
 # ============================================================================
 @router.message(Command("profile"))
 @router.message(F.text.in_(btn_variants("profile")))
+def profile_keyboard_for(lang: str) -> types.InlineKeyboardMarkup:
+    """Решение владельца 28.10: под профилем одна кнопка — «Открыть приложение» (удаление аккаунта —
+    командой /delete_account в меню). Без приложения — прежние кнопки фермы, магазина и меню."""
+    from bots.main_bot.webapp_links import app_button
+    button = app_button(t(lang, "profile.btn_app"), "passport")
+    if button is not None:
+        return types.InlineKeyboardMarkup(inline_keyboard=[[button]])
+    return types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text=t(lang, "profile.btn_farm"), callback_data="open_farm_from_profile"),
+         types.InlineKeyboardButton(text=t(lang, "profile.btn_shop"), callback_data="open_shop_from_farm")],
+        [types.InlineKeyboardButton(text=t(lang, "common.btn_menu"), callback_data="refresh_main_menu")],
+    ])
+
+
 async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
     user_id = message.from_user.id
     username = html.escape(message.from_user.username or f"user_{user_id}")
@@ -112,19 +126,7 @@ async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
 
     photo_path = generate_profile_image(user_id, username, user_data_dict, user_lang)
 
-    profile_keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [
-            types.InlineKeyboardButton(text=t(user_lang, "profile.btn_farm"),
-                                       callback_data="open_farm_from_profile"),
-            types.InlineKeyboardButton(text=t(user_lang, "profile.btn_shop"),
-                                       callback_data="open_shop_from_farm")
-        ],
-        [
-            types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
-                                       callback_data="refresh_main_menu")
-        ],
-        [types.InlineKeyboardButton(text=t(user_lang, "profile.btn_delete"), callback_data="acct_del")],
-    ])
+    profile_keyboard = profile_keyboard_for(user_lang)
 
     quiz_level = quiz_row["quiz_level"] if quiz_row else 0
     quiz_progress = quiz_row["quiz_level_progress"] if quiz_row else 0

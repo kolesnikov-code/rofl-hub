@@ -62,18 +62,25 @@ async def cmd_clan_hub(message: types.Message | types.CallbackQuery, user_lang: 
             return
 
     welcome_text = (
-        f"👥 <b>ЦЕНТРАЛЬНЫЙ ОФИС КОМАНД И КЛАНОВ ROFL HUB</b>\n"
-        f"..................................................\n\n"
+        f"👥 <b>КОМАНДЫ И КЛАНЫ ROFL HUB</b>\n"
+        f"..................................................\n"
         f"Изначально ВСЕГДА создаётся обычная команда за 100 000 монет до 50 человек. "
         f"И уже затем в магазине /shop её можно прокачать звёздами до уровня КЛАН на 1000 человек!\n\n"
         f"👇 <b>ВЫБЕРИ ДЕЙСТВИЕ:</b>"
     )
-    keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🏆 Создать команду", callback_data="clan_action:start_create")],
-        [types.InlineKeyboardButton(text="🔍 Найти команду / клан", callback_data="clan_action:search_name")],
-        [types.InlineKeyboardButton(text="📍 Игровая рулетка команд", callback_data="clan_action:search_city")],
-        [types.InlineKeyboardButton(text="💿 Главное меню", callback_data="refresh_main_menu")]
-    ])
+    # Решение владельца 28.10: обе кнопки ведут во вкладку «Команда» приложения (там красиво и интерактивно);
+    # без приложения — прежнее чатовое меню команд
+    from bots.main_bot.webapp_links import app_button
+    create_btn = app_button("🏆 Создать команду", "team")
+    if create_btn is not None:
+        keyboard = types.InlineKeyboardMarkup(inline_keyboard=[[create_btn], [app_button("👥 Команды и кланы", "team")]])
+    else:
+        keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+            [types.InlineKeyboardButton(text="🏆 Создать команду", callback_data="clan_action:start_create")],
+            [types.InlineKeyboardButton(text="🔍 Найти команду / клан", callback_data="clan_action:search_name")],
+            [types.InlineKeyboardButton(text="📍 Игровая рулетка команд", callback_data="clan_action:search_city")],
+            [types.InlineKeyboardButton(text="💿 Главное меню", callback_data="refresh_main_menu")]
+        ])
     await target_msg.answer(welcome_text, reply_markup=keyboard, parse_mode="HTML")
 
 
@@ -353,10 +360,10 @@ async def process_fsm_clan_symbol_finalize(message: types.Message, state: FSMCon
 
     await message.answer(
         f"👑 <b>КОМАНДА УСПЕШНО ЗАРЕГИСТРИРОВАНА!</b>\n"
-        f"..................................................\n\n"
+        f"..................................................\n"
         f"🏆 Название: <b>{data.get('clan_name')}</b>\n"
         f"💬 Девиз: <i>«{data.get('clan_motto')}»</i>\n"
-        f"🔮 Твой символ: {validated_symbol}\n\n"
+        f"🔮 Твой символ: {validated_symbol}\n"
         f"..................................................\n"
         f"💳 Списано: <b>100 000 монет</b>. Управляй бандой через /my_team!",
         parse_mode="HTML"
@@ -464,7 +471,7 @@ async def process_clan_leave_logic(callback: types.CallbackQuery, user_lang: str
         heir = left["new_captain"]
         announce_text = (
             f"🚪 <b>РЕВОЛЮЦИЯ В БАНДЕ!</b>\n"
-            f"..................................................\n\n"
+            f"..................................................\n"
             f"Капитан бросил команду <b>{left['team_name']}</b> и ушёл в закат.\n\n"
             f"👑 По праву преданности и старшинства, новым <b>Вожаком банды</b> официально объявлен ветеран: "
             f"@{html.escape(heir['username'] or str(heir['user_id']))} (ID: <code>{heir['user_id']}</code>)!\n\n"

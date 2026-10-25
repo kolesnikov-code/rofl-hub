@@ -110,7 +110,7 @@ async def qualified_referrals_count(conn, user_id: int) -> int:
 
 
 async def _deliver_intern_upgrade(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
-    """Робот Стажёр → ВЕЧНЫЙ Младший Майнер (5 монет/ч, без срока). Условие: 3 квалифицированных друга."""
+    """Робот-Стажёр → ВЕЧНЫЙ Младший Майнер (5 монет/ч, без срока). Условие: 3 квалифицированных друга."""
     have = await qualified_referrals_count(conn, user_id)
     if have < INTERN_UPGRADE_REFERRALS:
         raise DeliveryError(t(lang, "dlv.err_intern_refs", need=INTERN_UPGRADE_REFERRALS, have=have))

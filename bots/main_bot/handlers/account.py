@@ -1,5 +1,5 @@
 """
-🗑 Удаление аккаунта по желанию игрока (кнопка в /profile).
+🗑 Удаление аккаунта по желанию игрока (команда /delete_account в меню; 28.10 — вместо кнопки в /profile).
 
 Защита от случайного нажатия: экран-предупреждение, кнопки «Оставить» / «Да, удалить»
 в случайном порядке, «Да, удалить» срабатывает не раньше ACCOUNT_DELETE_CONFIRM_SECONDS
@@ -14,6 +14,7 @@ import random
 import time
 
 from aiogram import Bot, F, Router, types
+from aiogram.filters import Command
 
 from bots.main_bot.guards import feature_enabled
 from shared.account_deletion import cancel_deletion, due_for_purge, purge_account, request_deletion
@@ -37,18 +38,30 @@ def _fmt_date(dt) -> str:
     return dt.strftime("%d.%m.%Y %H:%M")
 
 
+@router.message(Command("delete_account"))
+async def cmd_delete_account(message: types.Message, user_lang: str = "ru"):
+    """🗑 /delete_account — тот же экран-предупреждение, что и прежняя кнопка в профиле (решение 28.10)."""
+    if not await feature_enabled(message, "account_delete", user_lang):
+        return
+    await _send_delete_warning(message, user_lang)
+
+
 @router.callback_query(F.data == "acct_del")
 async def ask_delete(callback: types.CallbackQuery, user_lang: str = "ru"):
     if not await feature_enabled(callback, "account_delete", user_lang):
         return
     await callback.answer()
+    await _send_delete_warning(callback.message, user_lang)
+
+
+async def _send_delete_warning(target: types.Message, user_lang: str) -> None:
     buttons = [
         types.InlineKeyboardButton(text=t(user_lang, "acct.btn_keep"), callback_data="acct_keep"),
         types.InlineKeyboardButton(text=t(user_lang, "acct.btn_confirm"),
                                    callback_data=f"acct_del_go:{int(time.time())}"),
     ]
     random.shuffle(buttons)   # «Да» не всегда на одном месте — палец не нажмёт по привычке
-    await callback.message.answer(
+    await target.answer(
         t(user_lang, "acct.warn", days=ACCOUNT_DELETE_GRACE_DAYS, seconds=ACCOUNT_DELETE_CONFIRM_SECONDS),
         reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[b] for b in buttons]),
         parse_mode="HTML")

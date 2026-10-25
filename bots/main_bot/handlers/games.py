@@ -225,7 +225,7 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                                          next_required=quiz_answers_required(next_level + 1),
                                          next_reward=quiz_level_reward(next_level + 1))
                     if next_level % INTERN_LEVEL_STEP == 0:
-                        # Уровень, кратный 10, — ещё один Робот Стажёр ждёт на ферме:
+                        # Уровень, кратный 10, — ещё один Робот-Стажёр ждёт на ферме:
                         # игрок забирает его кнопкой (видит награду, а не получает молча)
                         await conn.execute(
                             "UPDATE users SET interns_pending = interns_pending + 1 WHERE user_id = $1", user_id)

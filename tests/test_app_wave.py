@@ -65,7 +65,7 @@ def test_farm_dashboard_lists_intern_first_and_uses_coin_emoji():
 def test_farm_shows_intern_line_even_with_zero_robots():
     from bots.main_bot.handlers.farm import render_farm_text
     text = render_farm_text(_farm_user(intern_claimed=False), [], NOW, "ru")
-    assert "Роботы Стажёры" in text and "Бесплатный" not in text
+    assert "Роботы-Стажёры" in text and "Бесплатный" not in text
 
 
 # ---------------------------------------------------------------- 🪙 вместо слова при числе

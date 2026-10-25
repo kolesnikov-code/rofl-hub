@@ -113,7 +113,7 @@ async def claim_pending_intern(conn, user_id: int, now: datetime) -> bool:
 
 
 def get_farm_keyboard(lang: str = "ru", intern_claimed: bool = True, pending: int = 0) -> types.InlineKeyboardMarkup:
-    """Кнопки фермы: Стажёры (стартовый и за уровни), бонус, заправка, магазин."""
+    """Кнопки фермы: Стажёры (стартовый и за уровни), бонус, заправка и ферма с биржей в приложении."""
     rows = []
     if not intern_claimed:
         rows.append([types.InlineKeyboardButton(text=t(lang, "farm.btn_activate_intern"),
@@ -130,23 +130,15 @@ def get_farm_keyboard(lang: str = "ru", intern_claimed: bool = True, pending: in
             types.InlineKeyboardButton(text=t(lang, "farm.btn_load1"), callback_data="farm_action:load_1"),
             types.InlineKeyboardButton(text=t(lang, "farm.btn_loadall"), callback_data="farm_action:load_all")
         ],
-    ] + _app_rows(lang) + [
-        [
-            types.InlineKeyboardButton(text=t(lang, "farm.btn_shop"), callback_data="open_shop_from_farm")
-        ]
-    ])
+    ] + _app_rows(lang))
 
 
 def _app_rows(lang: str) -> list[list[types.InlineKeyboardButton]]:
-    """Ферма с артами, биржа и мастерская — в приложении; без приложения — чатовая биржа."""
+    """Решение владельца 28.10: в чате — одна кнопка «Ферма и биржа в приложении»; без приложения — чатовая биржа."""
     farm_btn = app_button(t(lang, "farm.btn_app"), "farm")
     if farm_btn is None:
         return [[types.InlineKeyboardButton(text=t(lang, "farm.btn_market"), callback_data="open_market")]]
-    return [
-        [farm_btn],
-        [app_button(t(lang, "farm.btn_market"), "market")],
-        [app_button(t(lang, "farm.btn_workshop"), "workshop")],
-    ]
+    return [[farm_btn]]
 
 
 def render_farm_text(user, miners: list[MinerState], now: datetime, lang: str = "ru",

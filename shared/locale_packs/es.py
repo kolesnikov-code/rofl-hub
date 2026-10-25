@@ -36,6 +36,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "profile.btn_app": "📱 OPEN THE APP",
     "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
     "exp.err_peeked": "This fork is already scouted.",
     # TODO(перевод 28.10): экспедиции и дроны — пока английский
@@ -147,7 +148,7 @@ STRINGS: dict[str, str] = {
     # ---------------- меню и игровая зона ----------------
     "menu.text": (
         "📱 <b>MENÚ PRINCIPAL DEL ECOSISTEMA ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👤 <b>PERFIL PERSONAL Y PASAPORTE:</b>\n"
         "• /start — Comenzar la presentación y registrar tu cuenta\n"
         "• /profile — Tu pasaporte, saldo y equipo en tiempo real\n"
@@ -176,13 +177,13 @@ STRINGS: dict[str, str] = {
     ),
     "menu.games_hub": (
         "🕹️ <b>¡TE DAMOS LA BIENVENIDA A LA ZONA DE JUEGOS DE ROFL HUB!</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Aquí puedes enfrentarte al bot en duelos rápidos o ponerte a prueba en el sprint intelectual "
         "para llevarte el premio gordo... ¡o perderlo todo!\n\n"
         "💸 Una victoria paga: <b>+2 🪙</b> (Ciber-Caja Fuerte: <b>+5</b>)\n"
         "💀 Una derrota o un empate cuesta: <b>-1 🪙</b>\n"
         "🧠 La Trivia tiene cronómetro de 15 segundos y niveles de inteligencia: el nivel 1 son 10 respuestas correctas y <b>+100 🪙</b>; "
-        "cada nivel siguiente es 10 respuestas más largo, ¡pero la recompensa crece en 100!\n\n"
+        "cada nivel siguiente es 10 respuestas más largo, ¡pero la recompensa crece en 100!\n"
         "..................................................\n"
         "👇 <b>TOCA UN BOTÓN ABAJO PARA EMPEZAR UNA RONDA AHORA MISMO:</b>"
     ),
@@ -201,28 +202,28 @@ STRINGS: dict[str, str] = {
     "app.unavailable": "⚙️ La Mini App todavía se está conectando a los servidores del ecosistema. ¡Vuelve en un rato!",
     "faq.teaser": (
         "📚 <b>GUÍA DEL ECOSISTEMA ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "La versión corta:\n"
         "🚜 Los robots extraen monedas las 24 horas: el Robot Minero — 5/h sin combustible, "
         "el Ciber-Perforador — 10/h, y CADA Perforador come su propia ciber-chuleta al día. "
         "Todos los robots viven 30 días (el Dron Maestro pausa el desgaste).\n"
         "🧠 Trivia: 15 segundos por respuesta, niveles de inteligencia con recompensas crecientes.\n"
         "⚔️ Duelos con jugadores reales en mesas de 10/100/1000 🪙.\n"
-        "🏆 Equipos de hasta 50 combatientes (Mega-Clan: hasta 1000) y Batallas especiales con premios para todos.\n\n"
+        "🏆 Equipos de hasta 50 combatientes (Mega-Clan: hasta 1000) y Batallas especiales con premios para todos.\n"
         "..................................................\n"
         "👇 <b>La guía completa con todas las mecánicas, a un toque:</b>"
     ),
     "faq.btn_open": "📖 ABRIR LA GUÍA COMPLETA",
     "rules.teaser": (
         "📜 <b>ACUERDO DE USUARIO DE ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Lo esencial en dos palabras:\n"
         "🪙 Las monedas y todos los objetos del juego son elementos virtuales de entretenimiento: "
         "no son dinero y no se cambian por fondos reales.\n"
         "💫 Las compras se hacen solo con Telegram Stars oficiales; los artículos digitales se entregan "
         "al instante y, si la entrega falla, las Stars se devuelven automáticamente.\n"
         "🛡️ No recopilamos teléfonos, geolocalización ni datos personales.\n"
-        "🤝 Están prohibidos los insultos, las trampas y las multicuentas: las infracciones pueden terminar en bloqueo.\n\n"
+        "🤝 Están prohibidos los insultos, las trampas y las multicuentas: las infracciones pueden terminar en bloqueo.\n"
         "..................................................\n"
         "👇 <b>El texto completo del acuerdo y el descargo de responsabilidad, a un toque:</b>\n"
         "<i>⚖️ Al usar el bot confirmas que aceptas las condiciones.</i>"
@@ -230,7 +231,7 @@ STRINGS: dict[str, str] = {
     "rules.btn_open": "📜 ABRIR EL ACUERDO COMPLETO",
     "quest.list_header": (
         "🗺️ <b>MISIONES DE ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Historias interactivas con decisiones y caminos alternos: detectives, comedias, acertijos. "
         "¡La primera victoria en cada misión paga monedas y puedes rejugarlas cuantas veces quieras!\n"
         "🌐 <i>Por ahora las historias están en ruso; el paquete en español viene en camino.</i>\n\n"
@@ -239,7 +240,7 @@ STRINGS: dict[str, str] = {
     "quest.card": (
         "{title}\n"
         "🎭 {genre} · ⏱ {minutes} min · 🏆 +{reward} 🪙 por la primera victoria\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{teaser}\n\n{status}"
     ),
     "quest.card_done": "✅ <i>Misión completada, recompensa reclamada. ¡Rejuega cuando quieras!</i>",
@@ -285,7 +286,7 @@ STRINGS: dict[str, str] = {
     "farm.intern_hint": "🎁 ¡Tienes un Robot Becario gratis! Pulsa el botón de abajo y minará 1 🪙 por hora para siempre.",
     "farm.dashboard": (
         "🚜 <b>HUB CENTRAL DE COMBUSTIBLE DE ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🤖 Robots activos en la planta: <b>{total}</b>\n"
         "{intern}• Robots Mineros ({junior_rate} 🪙/h): <code>{junior}</code>\n"
         "• Ciber-Perforadores ({premium_rate} 🪙/h): <code>{premium}</code>\n"
@@ -295,12 +296,12 @@ STRINGS: dict[str, str] = {
         "• Producción por día: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>MEJORAS:</b>\n{boosts}\n\n"
         "📋 <b>ESTADO DE LA PLANTA DE JUEGO:</b>\n"
-        "{status}\n\n"
-        "..................................................\n\n"
+        "{status}\n"
+        "..................................................\n"
         "📦 <b>ESTADO DEL REFRIGERADOR AUTOMÁTICO:</b>\n"
         "🥩 Reserva de combustible: <b>{fridge} / {capacity}</b>\n"
-        "💼 Chuletas en el inventario: <code>{inv}</code>\n\n"
-        "..................................................\n\n"
+        "💼 Chuletas en el inventario: <code>{inv}</code>\n"
+        "..................................................\n"
         "<i>💿 Importante: los robots viven 30 días (el Dron Maestro pausa el desgaste). "
         "CADA Ciber-Perforador consume SU propia chuleta entera del refrigerador por cada "
         "24 horas de trabajo: 3 robots — 3 chuletas al día. ¡No descuides la recarga!</i>"
@@ -313,13 +314,13 @@ STRINGS: dict[str, str] = {
     # ---------------- профиль ----------------
     "profile.caption": (
         "📋 <b>PANEL PERSONAL DEL JUGADOR DE ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🆔 Tu ID de Pasaporte: <code>{user_id}</code>\n"
         "{vip}"
         "💰 Monedas ahora mismo: <b>{balance} 🪙</b>\n"
         "🏆 Tu estatus: <b>{team}</b>\n"
         "🧠 Nivel de inteligencia: <b>{level}</b> · para el nivel {next_level}: "
-        "<b>{left}</b> respuestas correctas en /quiz (recompensa: +{reward} 🪙)\n\n"
+        "<b>{left}</b> respuestas correctas en /quiz (recompensa: +{reward} 🪙)\n"
         "..................................................\n"
         "<i>Aquí ves lo que tienes ahora mismo. ¡Usa los botones para volar a otras secciones!</i>"
     ),
@@ -330,11 +331,11 @@ STRINGS: dict[str, str] = {
     "profile.btn_shop": "🏪 Tienda",
     "profile.stats": (
         "📊 <b>ESTADÍSTICAS DE LOGROS DE JUEGO (30 DÍAS)</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧠 Nivel de inteligencia de juego: <b>{level}</b> (respuestas correctas en total: {total})\n"
         "🎮 Rondas de duelos jugadas: <b>{played}</b>\n"
         "🏆 Victorias conseguidas: <code>{won}</code>\n"
-        "👥 Amigos activos invitados: <b>{refs}</b>\n\n"
+        "👥 Amigos activos invitados: <b>{refs}</b>\n"
         "..................................................\n"
         "<i>¡Las estadísticas guardan tus méritos históricos y logros pasados aunque las monedas ganadas ya se hayan gastado en el mercado!</i>"
     ),
@@ -432,7 +433,7 @@ STRINGS: dict[str, str] = {
     # ---------------- дуэли ----------------
     "duel.intro": (
         "⚔️ <b>DUELOS 1 CONTRA 1: PIEDRA-PAPEL-TIJERA POR UNA APUESTA</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Elige una mesa según tu bolsillo, como en el póker. La apuesta se descuenta de inmediato, "
         "¡y tu rival es un jugador real de ROFL HUB!\n\n"
         "💰 El pozo = ambas apuestas. El ganador se lleva el <b>{payout_percent}%</b> del pozo, "
@@ -500,13 +501,13 @@ STRINGS: dict[str, str] = {
     # ---------------- рефералка ----------------
     "ref.text": (
         "🤝 <b>PROGRAMA DE REFERIDOS DE ROFL HUB</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Invita a tus amigos con tu enlace personal y recibe <b>{bonus}</b> "
         "por cada uno que se convierta en jugador activo.\n\n"
         "🔗 <b>Tu enlace (toca para copiar):</b>\n<code>{link}</code>\n\n"
         "📊 <b>TUS ESTADÍSTICAS:</b>\n"
         "👥 Amigos invitados: <b>{invited}</b>\n"
-        "💰 Ganado con referidos: <b>{earned} 🪙</b>\n\n"
+        "💰 Ganado con referidos: <b>{earned} 🪙</b>\n"
         "..................................................\n"
         "<i>Comparte el enlace en los chats de tu clase, con tus amigos y en redes: ¡cuanto más grande sea la banda, más rápido crece tu saldo!</i>"
     ),
@@ -543,7 +544,7 @@ STRINGS: dict[str, str] = {
     "profile.btn_delete": "🗑 Eliminar cuenta",
     "acct.warn": (
         "⚠️ <b>ELIMINACIÓN DE CUENTA</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Junto con la cuenta desaparecerán <b>para siempre</b>:\n"
         "• monedas, chuletas, recursos y todos los robots de la granja;\n"
         "• boosts, Sin Límite y todo lo comprado con Stars: <b>las Stars no se devuelven</b>;\n"
@@ -584,7 +585,7 @@ STRINGS: dict[str, str] = {
     # ---------------- переводы ----------------
     "tr.help": (
         "🔄 <b>TRANSFERENCIA DE MONEDAS A OTRO JUGADOR</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Formato del comando:\n"
         "<code>/transfer ID cantidad</code> — por ID de Pasaporte (visible en /profile)\n"
         "<code>/transfer @username cantidad</code> — por nombre de usuario\n"
@@ -651,7 +652,7 @@ STRINGS: dict[str, str] = {
     "pay.already": "✅ Este pago ya fue procesado; el artículo se entregó antes.",
     "pay.support": (
         "🛟 <b>SOPORTE DE PAGOS DE TELEGRAM STARS</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Todos los artículos de ROFL HUB son digitales y se entregan al instante tras el pago.\n\n"
         "⚙️ <b>Si pagaste y el artículo no llegó:</b>\n"
         "el bot devuelve las Stars automáticamente cuando la entrega falla. Si eso no ocurrió, "
@@ -659,7 +660,7 @@ STRINGS: dict[str, str] = {
         "La administración revisará el pago en la base de datos y resolverá el caso en un plazo de 24 horas.\n\n"
         "💫 <b>Política de reembolsos:</b>\n"
         "el reembolso es posible si el artículo no fue recibido o se entregó con errores. "
-        "Los artículos digitales entregados correctamente no admiten reembolso.\n\n"
+        "Los artículos digitales entregados correctamente no admiten reembolso.\n"
         "..................................................\n"
         "<i>Esta sección es el punto oficial de soporte de compras según las reglas de Telegram.</i>"
     ),
@@ -682,7 +683,7 @@ STRINGS: dict[str, str] = {
     "dlv.intern_upgrade": "♾ Tu Robot Becario ascendió a <b>Robot Minero ETERNO</b>: ¡5 🪙 por hora sin caducidad!",
     "dlv.err_no_intern": "No tienes un Robot Becario activado: actívalo primero en /farm.",
     "dlv.err_intern_refs": "La mejora necesita {need} amigos activos (las condiciones están en /invite); tienes {have}.",
-    "mk.header": "📈 <b>BOLSA DE CHULETAS</b>\n..................................................\n\nÓrdenes abiertas: <b>{orders}</b> · chuletas en venta: <b>{cutlets}</b> · mejor precio: <b>{best}</b>\nComisión del hub: <b>{fee}%</b> por venta (se quema — escudo antiinflación)\n🥩 En tu inventario: <b>{inv}</b> chuletas\n\n{body}\n\n<i>Toca una orden para comprar. Para vender usa /sell.</i>",
+    "mk.header": "📈 <b>BOLSA DE CHULETAS</b>\n..................................................\nÓrdenes abiertas: <b>{orders}</b> · chuletas en venta: <b>{cutlets}</b> · mejor precio: <b>{best}</b>\nComisión del hub: <b>{fee}%</b> por venta (se quema — escudo antiinflación)\n🥩 En tu inventario: <b>{inv}</b> chuletas\n\n{body}\n\n<i>Toca una orden para comprar. Para vender usa /sell.</i>",
     "mk.empty": "Aún no hay ofertas. Sé el primero: /sell cantidad precio",
     "mk.order_line": "🥩 #{id} · <b>{qty} uds.</b> a <b>{price}</b> 🪙",
     "mk.btn_order": "🛒 #{id}: {qty} uds. a {price} 🪙",
@@ -769,7 +770,7 @@ STRINGS: dict[str, str] = {
     # ---------------- мастерская ----------------
     "ws.header": (
         "🔧 <b>TALLER</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "🧰 Tus recursos: {stock}\n"
         "⛏ Metal — PPT y duelos · 💧 Hidrógeno — Mayor/Menor · "
         "💎 Cristales — Trivia · ⚙️ Piezas — Ciber-Caja Fuerte. Las misiones dan un lote.\n\n"
@@ -880,7 +881,7 @@ STRINGS: dict[str, str] = {
     # ---------------- налёты ----------------
     "raid.header": (
         "🏴‍☠️ <b>ASALTOS</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "💧 Hidrógeno: <b>{hydrogen}</b> (cada salida cuesta {fuel})\n"
         "🚀 {ready}\n"
         "🛡 {shield}\n"
@@ -931,7 +932,7 @@ STRINGS: dict[str, str] = {
     # ---------------- ежедневные цели ----------------
     "goal.header": (
         "🎯 <b>METAS DE HOY</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "{goals}\n\n"
         "{status}\n"
         "🎁 Cofre: <b>+{coins} 🪙</b> y <b>+{res}</b> de un recurso al azar\n"
@@ -963,7 +964,7 @@ STRINGS: dict[str, str] = {
     # ---------------- станция команды ----------------
     "st.header": (
         "🛰 <b>ESTACIÓN DEL EQUIPO «{team}»</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "Nivel: <b>{level}/{max}</b> → cada combatiente recibe <b>+{percent}%</b> de extracción en la granja "
         "(+{per_level}% por nivel)\n\n"
         "📦 Para el siguiente nivel:\n{progress}\n\n"
@@ -996,14 +997,14 @@ STRINGS: dict[str, str] = {
     "clan.status_team": "👥 ESTATUS: EQUIPO REGULAR",
     "clan.dashboard": (
         "🏆 <b>PANEL INFORMATIVO DE TU EQUIPO</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "📌 Nombre: <b>{name}</b>\n"
         "⚡ {status}\n"
         "👤 Capitán de la banda: 🧠{captain_level} · <b>{captain}</b>\n"
         "💬 Lema: <i>«{motto}»</i>\n"
         "🔮 Símbolo del emblema: {symbol}\n\n"
         "👥 Integrantes: <b>{members} / {max_members}</b>\n"
-        "..................................................\n\n"
+        "..................................................\n"
         "👇 <b>NAVEGACIÓN:</b>"
     ),
     "clan.members_only": "🔒 ¡La lista de integrantes solo es visible para los miembros de este equipo!",
@@ -1011,10 +1012,10 @@ STRINGS: dict[str, str] = {
     "clan.members_header": (
         "👥 <b>PLANTILLA DEL EQUIPO «{name}»</b>\n"
         "🧠 — nivel de inteligencia de juego (solo se entrena en /quiz)\n"
-        "..................................................\n\n"
+        "..................................................\n"
     ),
     "clan.members_footer": (
-        "\n\n..................................................\n"
+        "\n..................................................\n"
         "📄 Página <b>{page} / {pages}</b> · Combatientes en total: <b>{members}</b>\n"
         "<i>¡Toca el @username de un compañero para escribirle, armar tu propio chat "
         "y llamar a la banda a las competencias de equipos!</i>"

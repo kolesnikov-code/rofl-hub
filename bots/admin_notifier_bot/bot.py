@@ -96,7 +96,7 @@ async def cmd_admin_start(message: types.Message):
         await message.answer("❌ Доступ заблокирован. Этот бот — закрытый пульт управления.")
         return
     await message.answer(
-        "🛠️ <b>ШТАБ-КВАРТИРА МОДЕРАЦИИ ROFL HUB</b>\n..................................................\n\n"
+        "🛠️ <b>ШТАБ-КВАРТИРА МОДЕРАЦИИ ROFL HUB</b>\n..................................................\n"
         "🟢 <b>ДОСТУПНЫЕ КОМАНДЫ ПУЛЬТА:</b>\n"
         "• /new_auction — Запустить лот и вывесить автоматический анонс в канал юзеров\n"
         "• /close_auction [ID] — Принудительно закрыть торги\n"
@@ -872,12 +872,12 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
 
     channel_post_text = (
         f"🔥 <b>БИТВА ВОЖАКОВ ЗА ВЕЧНЫЙ ПОНТ И VIP-ПРИЗЫ!</b>\n"
-        f"..................................................\n\n"
+        f"..................................................\n"
         f"Объявляются официальные торги холдинга экосистемы!\n\n"
         f"🎁 Лот раунда: <b>{data.get('auc_title')}</b>\n"
         f"📝 Детали: <i>{data.get('auc_desc')}</i>\n\n"
         f"💰 Стартовая цена: <b>{data.get('auc_price')} монет</b>\n"
-        f"🚀 Шаг повышения: <b>+{step} монет</b>\n\n"
+        f"🚀 Шаг повышения: <b>+{step} монет</b>\n"
         f"..................................................\n"
         f"⚠️ <i>Ставки возвратные: если тебя перебили, монеты вернутся на баланс. Платит только победитель!</i>\n\n"
         f"👇 <b>КЛИКАЙ ПО ССЫЛКЕ НИЖЕ ДЛЯ ВХОДА И СТАВКИ:</b>\n"
@@ -893,11 +893,11 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
 
     success_text = (
         f"👑 <b>ЛОТ АУКЦИОНА УСПЕШНО СФОРМИРОВАН!</b>\n"
-        f"..................................................\n\n"
+        f"..................................................\n"
         f"🆔 ID Лота в базе Railway: <code>{auction_id}</code>\n"
         f"🎁 Название: <b>{data.get('auc_title')}</b>\n"
-        f"💰 Стартовая цена: <b>{data.get('auc_price')} монет</b>\n\n"
-        f"..................................................\n\n"
+        f"💰 Стартовая цена: <b>{data.get('auc_price')} монет</b>\n"
+        f"..................................................\n"
         f"{channel_status}\n\n"
         f"🔗 Ссылка: <code>{deep_link}</code>"
     )
@@ -992,7 +992,7 @@ def _features_kb(flags: dict[str, bool]) -> types.InlineKeyboardMarkup:
 
 async def _features_text() -> str:
     return ("🎛 <b>ПУЛЬТ ЭКОСИСТЕМЫ ROFL HUB</b>\n"
-            "..................................................\n\n"
+            "..................................................\n"
             "Нажми на тумблер, чтобы включить/выключить раздел.\n"
             "Выключенный раздел отвечает игрокам «на техобслуживании»;\n"
             "начатые раунды и квесты всегда доигрываются.\n\n"
@@ -1042,7 +1042,7 @@ async def _quests_admin_view() -> tuple[str, types.InlineKeyboardMarkup]:
             text=f"{'🟢 Скрыть' if visible else '⚫ Показать'}: {q['title'][:30]}",
             callback_data=f"quest_toggle:{q['id']}")])
     text = ("🗺 <b>РОТАЦИЯ КВЕСТОВ</b>\n"
-            "..................................................\n\n"
+            "..................................................\n"
             + "\n".join(lines) +
             "\n\n<i>⚫ Скрытый квест пропадает из списка у игроков; кто начал — доиграет.</i>")
     return text, types.InlineKeyboardMarkup(inline_keyboard=rows)
@@ -1104,7 +1104,7 @@ async def _recipes_view(page: int = 0) -> tuple[str, types.InlineKeyboardMarkup]
         rows.append(nav)
     rows.append([types.InlineKeyboardButton(text="⚫ Выключить все", callback_data=f"recipes_off:{page}")])
     lines = [f"🟢 {recipe_title('ru', rid)} — собрали на этой неделе: {crafted.get(rid, 0)}" for rid in active]
-    text = ("🔥 <b>РЕЦЕПТЫ НЕДЕЛИ</b>\n..................................................\n\n"
+    text = ("🔥 <b>РЕЦЕПТЫ НЕДЕЛИ</b>\n..................................................\n"
             "Нажми на рецепт, чтобы включить/выключить его в мастерской у всех игроков. "
             "Лимит сборок на игрока сбрасывается в понедельник 00:00 UTC.\n\n"
             f"<b>Сейчас включено: {len(active)} из {len(ids)}</b>\n" + ("\n".join(lines) or "— ни одного —")
@@ -1166,7 +1166,7 @@ async def cmd_broadcast(message: types.Message):
         [types.InlineKeyboardButton(text="❌ Отмена", callback_data="bc_cancel")],
     ])
     await message.answer("📢 <b>ПРЕДПРОСМОТР РАССЫЛКИ:</b>\n"
-                         "..................................................\n\n" + text[1].strip(),
+                         "..................................................\n" + text[1].strip(),
                          reply_markup=kb, parse_mode="HTML")
 
 
