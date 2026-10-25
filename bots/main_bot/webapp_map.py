@@ -35,6 +35,8 @@ from shared.expeditions import (
     fork_schedule,
     gear_needed,
     origin_for,
+    peek,
+    peek_state,
     resolve_due_forks,
     squad_effects,
     squad_mode,
@@ -70,10 +72,11 @@ async def _resolve_overdue(conn, now) -> None:
                 await resolve_due_forks(conn, r["id"], now)
 
 
-def _fork_payload(exp: dict, forks: int, now, lang: str, votes: list, my_id: int, hint: bool) -> dict | None:
+def _fork_payload(exp: dict, forks: int, now, lang: str, votes: list, my_id: int, peeked: list) -> dict | None:
     k = current_fork(exp, forks, now)
     if k is None:
         return None
+    hint = k in peeked          # 🔎 последствия видны только у разведанной развилки
     event = event_for(exp["id"], k)
     _, close_at = fork_schedule(exp["departed_at"], exp["planned_minutes"], forks)[k - 1]
     counts: dict[int, int] = {}
@@ -84,7 +87,7 @@ def _fork_payload(exp: dict, forks: int, now, lang: str, votes: list, my_id: int
             if v["user_id"] == my_id:
                 mine = v["option"]
     return {
-        "no": k, "of": forks, "icon": event["icon"], "text": event_text(event["text"], lang),
+        "no": k, "of": forks, "icon": event["icon"], "text": event_text(event["text"], lang), "peeked": hint,
         "closes_at": _iso(min(close_at, exp["arrive_at"])),
         "options": [{"i": i, "text": event_text(o["text"], lang), "votes": counts.get(i, 0), "mine": mine == i,
                      "hint": ({"cargo": o.get("cargo", 0), "loss": o.get("loss", 0), "delay": o.get("delay", 0),
@@ -139,6 +142,7 @@ async def handle_map(request: web.Request) -> web.Response:
                                  "WHERE expedition_id = ANY($1::bigint[])", my_ids)
         logs = await conn.fetch("SELECT * FROM expedition_log WHERE expedition_id = ANY($1::bigint[]) ORDER BY fork_no",
                                 my_ids)
+        peeks = {s["id"]: await peek_state(conn, s) for s in my_rows if s["status"] == "marching"}
     by_target = {}
     for s in squads:
         by_target[s["target_id"]] = by_target.get(s["target_id"], 0) + 1
@@ -182,9 +186,11 @@ async def handle_map(request: web.Request) -> web.Response:
             "forks_done": s["forks_done"], "forks": target["forks"],
             "late": bool(s["arrive_at"] and s["arrive_at"] > target["resolve_at"]),
             "arrived": bool(s["arrive_at"] and s["arrive_at"] <= now),
-            "fork": _fork_payload(exp, target["forks"], now, ctx.lang, exp_votes, ctx.user_id, eff["hint"]) if s["status"] == "marching" else None,
+            "fork": (_fork_payload(exp, target["forks"], now, ctx.lang, exp_votes, ctx.user_id, peeks[s["id"]]["peeked"])
+                     if s["status"] == "marching" else None),
+            "peeks": peeks.get(s["id"]),
             "log": _log_payload([l for l in logs if l["expedition_id"] == s["id"]], ctx.lang),
-            "effects": {k: eff[k] for k in ("cargo", "guard", "speed")}, "hint": eff["hint"],
+            "effects": {k: eff[k] for k in ("cargo", "guard", "speed")},
         })
     return web.json_response({
         "map": {"w": EXP_MAP_W, "h": EXP_MAP_H}, "now": _iso(now),
@@ -224,6 +230,10 @@ async def handle_exp_gear(request: web.Request) -> web.Response:
         conn, uid, _int(d.get("target_id")), str(d.get("what") or "battery"), utcnow()))
 
 
+async def handle_exp_peek(request: web.Request) -> web.Response:
+    return await _exp_call(request, lambda conn, uid, d: peek(conn, uid, _int(d.get("expedition_id")), utcnow()))
+
+
 async def handle_exp_vote(request: web.Request) -> web.Response:
     return await _exp_call(request, lambda conn, uid, d: vote(
         conn, uid, _int(d.get("expedition_id")), _int(d.get("option"), -1), utcnow()))
@@ -234,3 +244,4 @@ def register_map_routes(app: web.Application) -> None:
     app.router.add_post("/api/exp/solo", handle_exp_solo)
     app.router.add_post("/api/exp/gear", handle_exp_gear)
     app.router.add_post("/api/exp/vote", handle_exp_vote)
+    app.router.add_post("/api/exp/peek", handle_exp_peek)

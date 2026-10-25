@@ -33,7 +33,7 @@ async def conn():
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
                         "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items, team_banners, user_tech, user_badges, "
                         "season_results, battle_entries, battle_entry_log, reward_grants, expedition_targets, expeditions, "
-                        "expedition_members, expedition_votes, expedition_log RESTART IDENTITY")
+                        "expedition_members, expedition_votes, expedition_log, expedition_peeks RESTART IDENTITY")
         await c.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
                         "captured_until = NULL, last_paid_at = NULL")
         await c.execute("DELETE FROM feature_flags WHERE key LIKE 'wsr:%'")
@@ -2260,7 +2260,7 @@ async def test_admin_panel_api_creates_battle_and_gives_rewards(conn, global_db,
     await client.start_server()
     try:
         meta = await (await client.get("/api/admin/meta", headers=head)).json()
-        assert len(meta["mines"]) == 40 and meta["fee"] == {"team": 5, "clan": 25}
+        assert len(meta["mines"]) == 100 and meta["fee"] == {"team": 5, "clan": 25}
         r = await client.post("/api/admin/battle", headers=head, json={
             "title": "Пульт", "scope": "teams", "nomination": "farm_mined", "starts_at": "now", "hours": 24,
             "places": 2, "mine_ids": [7, 8], "prizes": {"1": [{"kind": "coins", "amount": 100}]}})
@@ -2559,3 +2559,41 @@ async def test_map_api_shows_targets_and_squads(conn, global_db):
         assert d["my"][0]["status"] == "gathering" and d["squads"][0]["mine"] and d["squads"][0]["name"] == "Map"
     finally:
         await client.close()
+
+
+async def test_expedition_peek_first_blind_then_min_of_spies_and_scout(conn):
+    from datetime import timedelta
+    from shared.economy import utcnow
+    from shared.expeditions import ExpError, finalize_target, fork_schedule, peek, start_solo
+    from shared.resources import grant_bundle
+    now = utcnow()
+    await _mk_user(conn, 1790, 0, drones_spy=1)
+    await _tech(conn, 1790, scout=2)
+    await grant_bundle(conn, 1790, {"hydrogen": 30}, "test")
+    t1 = await _exp_target(conn, "solo", now, hours=48, forks=3)
+    async with conn.transaction():
+        await start_solo(conn, 1790, t1, now)
+    e1 = await conn.fetchrow("SELECT * FROM expeditions WHERE target_id = $1", t1)
+    at = fork_schedule(e1["departed_at"], e1["planned_minutes"], 3)[0][0] + timedelta(minutes=1)
+    with pytest.raises(ExpError) as e:                                 # первая экспедиция сезона — вслепую
+        await peek(conn, 1790, e1["id"], at)
+    assert e.value.key == "exp.err_no_peeks"
+    target = await conn.fetchrow("SELECT * FROM expedition_targets WHERE id = $1", t1)
+    await finalize_target(conn, target, target["resolve_at"])
+    t2 = await _exp_target(conn, "solo", now, hours=48, forks=3, x=200, y=120)
+    async with conn.transaction():
+        await start_solo(conn, 1790, t2, now + timedelta(minutes=1))
+    e2 = await conn.fetchrow("SELECT * FROM expeditions WHERE target_id = $1", t2)
+    sched = fork_schedule(e2["departed_at"], e2["planned_minutes"], 3)
+    async with conn.transaction():
+        assert (await peek(conn, 1790, e2["id"], sched[0][0] + timedelta(minutes=1)))["left"] == 0   # min(1 шпион, разведка 2) = 1
+    with pytest.raises(ExpError) as e:
+        await peek(conn, 1790, e2["id"], sched[0][0] + timedelta(minutes=2))
+    assert e.value.key == "exp.err_peeked"
+    async with conn.transaction():
+        from shared.expeditions import vote
+        await vote(conn, 1790, e2["id"], 0, sched[0][0] + timedelta(minutes=3))
+    with pytest.raises(ExpError) as e:                                 # вторая развилка — разведки кончились
+        await peek(conn, 1790, e2["id"], sched[1][0] + timedelta(minutes=1))
+    assert e.value.key == "exp.err_no_peeks"
+    assert await conn.fetchval("SELECT COUNT(*) FROM mines") == 100

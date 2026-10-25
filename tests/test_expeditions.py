@@ -192,3 +192,35 @@ def test_drone_reward_kind(kind):
     from shared.prizes import normalize_reward, rewards_label
     r = normalize_reward({"kind": "bdrone", "drone": kind, "qty": 3})
     assert r == {"kind": "bdrone", "drone": kind, "qty": 3} and "×3" in rewards_label([r])
+
+
+# ---------------------------------------------------------------- 28.10 (вечер): разведка развилок, большие карты
+def test_peek_budget_is_min_of_spies_and_scouting():
+    f = economy.exp_peek_budget
+    assert f(5, 5, 5, False) == 5                      # 5 шпионов и разведка 5 — видно все 5 развилок
+    assert f(1, 1, 5, False) == 1 and f(5, 1, 5, False) == 1 and f(1, 5, 5, False) == 1   # по меньшему
+    assert f(5, 5, 3, False) == 3                      # не больше развилок
+    assert f(5, 5, 5, True) == 0 and f(0, 5, 5, False) == 0   # первая экспедиция сезона — вслепую
+
+
+def test_big_world_and_hundred_mines():
+    assert economy.EXP_MAX_TARGETS == 100 and economy.MINES_COUNT == 100
+    assert economy.EXP_MAP_W >= 320 and economy.EXP_MAP_H >= 200
+    from shared.database import SCHEMA_STATEMENTS
+    seed = next(x for x in SCHEMA_STATEMENTS if "INSERT INTO mines" in x)
+    assert "generate_series(1, 100)" in seed and "'energy'" in seed   # новые рудники — все 7 ресурсов
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "function dragScroll" in html and "minemap-scroll" in html and "centerOn(wrap" in html
+    assert "/api/exp/peek" in html and "L.map_peekBlind" in html and "setPointerCapture" in html
+
+
+def test_row_labels_never_wrap_values_do():
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert ".row .k { color: var(--muted); white-space: nowrap;" in html
+    assert ".row .k:only-child { white-space: normal;" in html
+
+
+def test_rules_mention_only_the_safe_as_random():
+    rules = (ROOT / "static" / "webapp" / "rules.html").read_text(encoding="utf-8")
+    assert "кубики" not in rules.lower() and "подбрасывание монеты" not in rules.lower()
+    assert "Кибер-Сейф" in rules and "28.10.2026" in rules

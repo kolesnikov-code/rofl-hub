@@ -43,6 +43,8 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
+    "exp.err_peeked": "This fork is already scouted.",
     # TODO(перевод 28.10): экспедиции и дроны — пока английский
     "post.exp_line": "{scope}: a new expedition target on the world map! Gather your squad and arrive before the results — in the app, “Map” tab.",
     "post.exp_results_line": "Expedition results: places by cargo, rewards already delivered to squad members.",
@@ -1032,6 +1034,9 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     # TODO(перевод 28.10): карта мира и дроны — пока английский
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
@@ -1065,7 +1070,7 @@ MINIAPP: dict[str, str] = {
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -1082,7 +1087,7 @@ MINIAPP: dict[str, str] = {
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",

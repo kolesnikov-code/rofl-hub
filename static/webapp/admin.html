@@ -342,19 +342,20 @@
   }
   function drawTargetForm(host, d, open) {
     const W = d.map.w, H = d.map.h;
-    let svg = '<svg id="tMap" viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;aspect-ratio:16/10;border-radius:12px;background:#0d1a2e;cursor:crosshair">';
-    for (let x = 10; x < W; x += 10) svg += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
-    for (let y = 10; y < H; y += 10) svg += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
+    let svg = '<div style="overflow:auto;max-height:60vh;border-radius:12px"><svg id="tMap" viewBox="0 0 ' + W + ' ' + H +
+      '" style="width:max(100%,1000px);aspect-ratio:16/10;display:block;background:#0d1a2e;cursor:crosshair">';
+    for (let x = 20; x < W; x += 20) svg += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
+    for (let y = 20; y < H; y += 20) svg += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
     open.forEach(t => { svg += '<text x="' + t.x + '" y="' + t.y + '" font-size="5" text-anchor="middle" dominant-baseline="middle" opacity=".55">' + esc(t.icon) + '</text>'; });
     if (tform.x != null) svg += '<circle cx="' + tform.x + '" cy="' + tform.y + '" r="5" fill="rgba(255,217,61,.3)" stroke="#ffd93d" stroke-width=".6"/>' +
       '<text x="' + tform.x + '" y="' + tform.y + '" font-size="5" text-anchor="middle" dominant-baseline="middle">' + esc(tform.icon) + '</text>';
-    svg += '</svg>';
+    svg += '</svg></div>';
     host.innerHTML =
       '<label>Название</label><input id="tTitle" maxlength="100" value="' + esc(tform.title) + '" placeholder="Ледяная цитадель">' +
       '<label>Описание (сюжет, можно на нескольких языках)</label><textarea id="tDescr" maxlength="500">' + esc(tform.descr) + '</textarea>' +
       '<label>Значок</label><div class="chips">' + d.icons.map(i => '<button class="chip' + (tform.icon === i ? ' on' : '') + '" data-icon="' + i + '">' + i + '</button>').join("") + '</div>' +
       '<label>Зачёт</label><div class="chips">' + Object.entries(EXP_SCOPES).map(([k, t]) => '<button class="chip' + (tform.scope === k ? ' on' : '') + '" data-tscope="' + k + '">' + t + '</button>').join("") + '</div>' +
-      '<label>Место на карте — нажми (полупрозрачные — уже открытые цели)</label>' + svg +
+      '<label>Место на карте — нажми (карта листается; полупрозрачные — уже открытые цели)</label>' + svg +
       '<div class="grid3"><div><label>Развилок (1–5)</label><input id="tForks" type="number" min="1" max="5" value="' + tform.forks + '"></div>' +
       '<div><label>Итоги через, часов</label><input id="tHours" type="number" min="1" value="' + tform.hours + '"></div>' +
       '<div><label>Призовых мест</label><input id="tPlaces" type="number" min="0" max="100" value="' + tform.places + '"></div></div>' +

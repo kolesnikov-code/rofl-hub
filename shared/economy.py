@@ -268,7 +268,7 @@ FORSAGE_COOLDOWN_HOURS = 24       # 🔥 Форсаж — не чаще раза
 # один рудник. Победитель держит его 72 ч: КАЖДЫЙ боец команды получает 1 ресурс рудника в час.
 # Потом рудник свободен, но захватить его можно только в новой битве.
 # --------------------------------------------------------------------------
-MINES_COUNT = 40                  # сид рудников — shared/database.py (тест сверяет)
+MINES_COUNT = 100                 # сид рудников — shared/database.py (тест сверяет)
 MINE_HOLD_HOURS = 72
 MINE_YIELD_PER_MEMBER_HOUR = 1
 MINE_PAYOUT_INTERVAL_SECONDS = 300
@@ -839,10 +839,10 @@ def drone_exp_effects(attack: int, guard: int, spy: int) -> dict[str, int]:
 # решает голосование команды (в соло — сам игрок). Не успел дойти к часу итогов — не участвуешь.
 # Снаряжение: соло — водород; команда — батарейки; Мега-Клан — батарейки + котлеты в провиант.
 # --------------------------------------------------------------------------
-EXP_MAP_W, EXP_MAP_H = 160, 100      # условные единицы карты (широкая карта под экран)
-EXP_MAX_TARGETS = 10                 # целей на карте одновременно
+EXP_MAP_W, EXP_MAP_H = 320, 200      # условные единицы карты мира (карта листается и двигается)
+EXP_MAX_TARGETS = 100                # целей на карте одновременно (28.10: «на весь мир хватит»)
 EXP_SCOPES = ("solo", "team", "clan", "teams")   # teams — команды и кланы в одном зачёте
-EXP_SPEED = {"solo": 14, "team": 11, "clan": 9}  # единиц карты в час: большой отряд идёт медленнее
+EXP_SPEED = {"solo": 24, "team": 19, "clan": 15}  # единиц карты в час: большой отряд идёт медленнее
 EXP_MIN_TRAVEL_MINUTES = 20
 EXP_SOLO_HYDROGEN = 10               # 💧 соло-вылазка
 EXP_BATTERIES = {"team": 5, "clan": 25}           # 🔋 снаряжение отряда (вносят бойцы по одной)
@@ -850,13 +850,23 @@ EXP_CLAN_CUTLETS = 10                # 🥩 провиант Мега-Клана
 EXP_BASE_CARGO = 100                 # стартовый груз — по нему места в итогах
 EXP_FORKS_DEFAULT = 3
 EXP_FORKS_MAX = 5
-EXP_HINT_SCOUT_LEVEL = 2             # 🔭 разведка 2+ у кого-то в отряде показывает последствия выбора
 EXP_MAX_PLACES = 100
 
 
 def exp_mode_allowed(scope: str, mode: str) -> bool:
     """Может ли отряд такого вида (solo/team/clan) идти к цели с таким зачётом."""
     return mode == scope or (scope == "teams" and mode in ("team", "clan"))
+
+
+def exp_peek_budget(spies: int, scout_level: int, forks: int, first_of_season: bool) -> int:
+    """
+    🔎 Сколько развилок отряд может разведать (увидеть последствия до решения) — решение владельца 28.10:
+    первая экспедиция сезона — вслепую; дальше столько, сколько у лидера отряда (соло — сам игрок,
+    команда — капитан) 🛰 Дронов-шпионов И уровней 🔭 разведки — по меньшему, но не больше развилок.
+    """
+    if first_of_season:
+        return 0
+    return max(0, min(spies, scout_level, forks))
 
 
 def exp_travel_minutes(distance: float, mode: str, spy_pct: int = 0) -> int:

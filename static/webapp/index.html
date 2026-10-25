@@ -42,8 +42,10 @@
   .balance { font-size: 34px; font-weight: 900; color: var(--accent); line-height: 1.1; }
   .balance small { font-size: 14px; color: var(--muted); font-weight: 500; }
   .row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 14px; }
-  .row .k { color: var(--muted); }
-  .row .v { font-weight: 700; }
+  .row { gap: 10px; }
+  .row .k { color: var(--muted); white-space: nowrap; flex: 0 0 auto; }   /* подпись с эмодзи — всегда одной строкой */
+  .row .v { font-weight: 700; min-width: 0; text-align: right; }          /* переносится значение, а не подпись */
+  .row .k:only-child { white-space: normal; flex: 1 1 auto; }              /* строка без значения — текст переносится */
   .vip {
     display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 999px;
     background: rgba(255, 77, 141, .15); border: 1px solid var(--pink);
@@ -163,32 +165,29 @@
   .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
   .chips.big .chip { font-size: 14px; padding: 6px 10px; }
   /* 🗺 Карта мира (28.10) */
-  .world-wrap { margin: 8px 0; border-radius: 14px; overflow: hidden; border: 1px solid rgba(0,229,255,.25); }
-  .world { display: block; width: 100%; aspect-ratio: 16 / 10; }
-  .world .wgrid { stroke: rgba(0,229,255,.06); stroke-width: .25; }
+  .world-wrap { margin: 8px 0; border-radius: 14px; overflow: auto; border: 1px solid rgba(0,229,255,.25);
+    max-height: 70vh; cursor: grab; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+  .world-wrap.dragging { cursor: grabbing; }
+  .world { display: block; width: max(100%, 1100px); aspect-ratio: 16 / 10; }
+  .world .wgrid { stroke: rgba(0,229,255,.06); stroke-width: .3; }
   .world .wland { fill: rgba(60,120,140,.18); stroke: rgba(0,229,255,.15); stroke-width: .3; }
   .world .wpath { stroke: rgba(255,255,255,.18); stroke-width: .35; stroke-dasharray: 1.2 1.2; }
   .world .wpath.mine { stroke: var(--accent); stroke-width: .5; }
-  .world .whome { font-size: 4px; text-anchor: middle; dominant-baseline: middle; }
+  .world .whome { font-size: 6px; text-anchor: middle; dominant-baseline: middle; }
   .world .wtgt { cursor: pointer; }
   .world .wglow { fill: rgba(0,229,255,.18); animation: wpulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
   .world .wtgt.on .wglow { fill: rgba(255,217,61,.35); }
   .world .wcore { fill: #0b1a2e; stroke: var(--neon); stroke-width: .5; }
-  .world .wicon { font-size: 3.6px; text-anchor: middle; dominant-baseline: middle; }
-  .world .wlabel { font-size: 2.6px; fill: #e8ecff; text-anchor: middle; font-weight: 700; paint-order: stroke; stroke: #070b16; stroke-width: .6px; }
-  .world .wtime { font-size: 2.3px; fill: var(--accent); text-anchor: middle; paint-order: stroke; stroke: #070b16; stroke-width: .5px; }
+  .world .wicon { font-size: 4.4px; text-anchor: middle; dominant-baseline: middle; }
+  .world .wlabel { font-size: 4px; fill: #e8ecff; text-anchor: middle; font-weight: 700; paint-order: stroke; stroke: #070b16; stroke-width: .6px; }
+  .world .wtime { font-size: 3.4px; fill: var(--accent); text-anchor: middle; paint-order: stroke; stroke: #070b16; stroke-width: .5px; }
   .world .wsq circle { fill: #9fb3d9; stroke: #070b16; stroke-width: .3; }
   .world .wsq.team circle { fill: #00e5ff; } .world .wsq.clan circle { fill: #b48cff; }
   .world .wsq.mine circle { fill: var(--accent); stroke: #fff; stroke-width: .4; }
   .world .wsq.wait circle { fill: none; stroke: #9fb3d9; stroke-dasharray: .6 .6; }
-  .world .wsq text { font-size: 2.2px; fill: #e8ecff; text-anchor: middle; paint-order: stroke; stroke: #070b16; stroke-width: .5px; }
+  .world .wsq text { font-size: 3.2px; fill: #e8ecff; text-anchor: middle; paint-order: stroke; stroke: #070b16; stroke-width: .5px; }
   @keyframes wpulse { 0%, 100% { transform: scale(.85); opacity: .7; } 50% { transform: scale(1.15); opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .world .wglow { animation: none; } }
-  .world { max-height: 72vh; }
-  @media (max-width: 600px) {   /* на телефоне карта узкая — подписи крупнее */
-    .world .wlabel { font-size: 4.2px; } .world .wtime { font-size: 3.6px; } .world .wsq text { font-size: 3.4px; }
-    .world .wicon { font-size: 4.6px; } .world .whome { font-size: 5.5px; }
-  }
   .exp-target.picked { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
   .fork { margin-top: 10px; padding: 10px; border-radius: 12px; background: rgba(0,229,255,.06); border: 1px solid rgba(0,229,255,.2); }
   .fork-text { font-weight: 700; margin: 6px 0; }
@@ -364,7 +363,11 @@
   .doc-switch { display: flex; gap: 8px; margin-bottom: 10px; }
   .doc-switch .idx { flex: 1; }
   /* ----- ⛏ Карта рудников ----- */
-  .minemap { position: relative; width: 100%; border-radius: 14px; overflow: hidden;
+  .minemap-box { position: relative; }
+  .minemap-scroll { overflow: auto; max-height: 70vh; border-radius: 14px; cursor: grab; -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; }
+  .minemap-scroll.dragging { cursor: grabbing; }
+  .minemap { position: relative; width: max(100%, 900px); border-radius: 14px; overflow: hidden;
     background: radial-gradient(ellipse at 30% 20%, #1c2a4a 0%, transparent 55%),
                 radial-gradient(ellipse at 75% 80%, #2a1d3f 0%, transparent 55%), #0d1426;
     border: 1px solid rgba(0, 255, 225, .12); }
@@ -407,7 +410,7 @@
   .res-cols { display: grid; gap: 4px 22px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
   .res-cols .resbar .k { white-space: nowrap; }
   .res-actions { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 6px; }
-  .map-lock { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86%, 460px);
+  .map-lock { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86%, 460px); pointer-events: none;
     background: rgba(10, 14, 28, .88); border: 1px solid rgba(255, 255, 255, .16); border-radius: 14px;
     padding: 14px 16px; text-align: center; font-weight: 700; font-size: 14px; z-index: 2; }
   .lead-row { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; }
@@ -435,7 +438,8 @@
 
   const I18N = {
     ru: {
-      tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "Отряды идут к целям с разных сторон карты. К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "Каждому дошедшему: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Решаешь ты — выбор применится сразу.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Последствия выбора видны отряду с 🛰 Дроном-шпионом или 🔭 разведкой 2-го уровня.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Голос принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка: +{st} цель · экспедиции: путь короче на {es}% и видны последствия развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
+      map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
+      tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "Отряды идут к целям с разных сторон карты. К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "Каждому дошедшему: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Решаешь ты — выбор применится сразу.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Голос принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
       subtitle: "твоя игровая империя в одном экране",
       tab_passport: "📋 Паспорт", tab_farm: "🚜 Ферма", tab_goals: "🎯 Цели", tab_workshop: "🔧 Мастерская",
       tab_raids: "🏴‍☠️ Налёты", tab_market: "📈 Биржа", tab_team: "🏆 Команда", tab_shop: "🏪 Магазин", tab_top: "👑 ТОП",
@@ -657,7 +661,8 @@
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
-      tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "Everyone who arrives: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your call — it applies at once.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Vote counted", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
+      map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
+      tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "Everyone who arrives: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your call — it applies at once.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Vote counted", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
       subtitle: "your game empire on one screen",
       tab_passport: "📋 Passport", tab_farm: "🚜 Farm", tab_goals: "🎯 Goals", tab_workshop: "🔧 Workshop",
       tab_raids: "🏴‍☠️ Raids", tab_market: "📈 Market", tab_team: "🏆 Team", tab_shop: "🏪 Shop", tab_top: "👑 TOP",
@@ -882,6 +887,9 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -914,7 +922,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -931,7 +939,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -1428,6 +1436,9 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -1460,7 +1471,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -1477,7 +1488,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -1974,6 +1985,9 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -2006,7 +2020,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -2023,7 +2037,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -2520,6 +2534,9 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -2552,7 +2569,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -2569,7 +2586,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -3066,6 +3083,9 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -3098,7 +3118,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -3115,7 +3135,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -3612,6 +3632,9 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -3644,7 +3667,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -3661,7 +3684,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -4158,6 +4181,9 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -4190,7 +4216,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -4207,7 +4233,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -4704,6 +4730,9 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -4736,7 +4765,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -4753,7 +4782,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -5250,6 +5279,9 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -5282,7 +5314,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -5299,7 +5331,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -5796,6 +5828,9 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -5828,7 +5863,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -5845,7 +5880,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -6342,6 +6377,9 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -6374,7 +6412,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -6391,7 +6429,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -6888,6 +6926,9 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "map_peek": "🔎 Scout this fork · {n} left",
+    "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
+    "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
@@ -6920,7 +6961,7 @@
     "map_voteSolo": "Your call — it applies at once.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
-    "map_noHint": "Choice outcomes are visible to a squad with a 🛰 Spy drone or 🔭 Scouting level 2.",
+    "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
     "map_waitFork": "The next fork is further down the road.",
     "map_log": "Travel log",
     "map_effects": "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel",
@@ -6937,7 +6978,7 @@
     "dr_hint": "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.",
     "dr_eff_guard": "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.",
     "dr_eff_attack": "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.",
-    "dr_eff_spy": "Scouting: +{st} target · expeditions: {es}% shorter trip and visible fork outcomes. Per drone.",
+    "dr_eff_spy": "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.",
     "dr_buy": "Buy for {c} 🪙",
     "dr_bought": "🤖 Drone deployed!",
     "dr_have": "You have: {n}",
@@ -7572,6 +7613,7 @@
       await VIEWS[tab](box);
       bindPagers(box);
     } catch (e) {
+      if (window.console) console.error("[tab " + tab + "]", e);   // причина в консоли — для отладки
       if (e && e.status === 503) box.innerHTML = '<div class="err">' + L.featureOff + '</div>';
       else box.innerHTML = '<div class="err">' + L.error + '</div>';
     }
@@ -7929,7 +7971,7 @@
   }
   async function viewMines(box) {
     const d = await api("/api/mines");
-    const narrow = box.clientWidth < 560, cols = narrow ? 5 : 8, rows = Math.ceil(d.mines.length / cols);
+    const cols = 10, rows = Math.ceil(d.mines.length / cols);   // 100 рудников — карта листается и двигается
     const battleBy = {}; d.battles.forEach(b => { (b.mine_ids || [b.mine_id]).forEach(id => { battleBy[id] = b; }); });
     const tiles = d.mines.map(m => {
       const p = minePos(m.id, cols, rows), held = !!m.team;
@@ -7945,7 +7987,8 @@
       '<path d="M0 52 Q25 46 50 52 T100 50" fill="none" stroke="#24405a" stroke-width=".4"/></svg>';
     const lock = d.battles.length ? '' : '<div class="map-lock">' + L.mn_closed + '</div>';
     const mapCard = '<div class="card span-all"><h2>' + L.mn_title + '</h2>' +
-      '<div class="minemap" style="aspect-ratio:' + (narrow ? '5 / 8.6' : '16 / 9.4') + '">' + terrain + tiles + lock + '</div>' +
+      '<div class="minemap-box"><div class="minemap-scroll"><div class="minemap" style="aspect-ratio:10 / ' + (rows * 0.94).toFixed(2) + '">' +
+      terrain + tiles + '</div></div>' + lock + '</div>' +
       '<div class="hint" style="margin-top:8px">' + L.mn_pick + '</div></div>';
     const battleCards = d.battles.map(b => {
       const leaders = b.leaders.length ? b.leaders.map((x, i) => '<div class="lead-row' + (x.mine ? ' me' : '') + '"><b>' +
@@ -7989,6 +8032,10 @@
         : '<div class="hint">' + L.mn_closedOne + '</div>';
       document.getElementById("mineInfo").innerHTML = '<h2>' + fmt(L.mn_name, { n: id }) + '</h2>' + body;
     };
+    const mscroll = box.querySelector(".minemap-scroll");
+    dragScroll(mscroll);
+    const focusMine = d.mines.find(m => m.mine) || d.mines.find(m => m.target) || d.mines.find(m => m.id === mineSel);
+    if (focusMine) { const fp = minePos(focusMine.id, cols, rows); centerOn(mscroll, fp.x / 100, fp.y / 100); }
     box.querySelectorAll(".mine").forEach(el => {
       el.onclick = () => {
         mineSel = Number(el.dataset.id);
@@ -8578,6 +8625,31 @@
     viewDoc("/" + infoDoc)(document.getElementById("docBox"));
     box.querySelectorAll("[data-doc]").forEach(b => { b.onclick = () => { infoDoc = b.dataset.doc; go("info"); }; });
   }
+  // Большие карты (мир, рудники) листаются: пальцем — как обычно, мышью — перетаскиванием
+  function dragScroll(el) {
+    let down = null, moved = false;
+    el.addEventListener("pointerdown", e => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      down = { x: e.clientX, y: e.clientY, l: el.scrollLeft, t: el.scrollTop, id: e.pointerId }; moved = false;
+    });
+    el.addEventListener("pointermove", e => {
+      if (!down) return;
+      const dx = e.clientX - down.x, dy = e.clientY - down.y;
+      if (!moved && Math.abs(dx) + Math.abs(dy) > 5) {   // начали тащить — ведём карту, даже если мышь ушла за край
+        moved = true; el.classList.add("dragging");
+        try { el.setPointerCapture(down.id); } catch (err) {}
+      }
+      if (moved) { el.scrollLeft = down.l - dx; el.scrollTop = down.t - dy; }
+    });
+    const up = () => { down = null; el.classList.remove("dragging"); };
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+    el.addEventListener("click", e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  }
+  function centerOn(el, fx, fy) {   // fx, fy — доли ширины/высоты содержимого
+    el.scrollLeft = Math.max(0, fx * el.scrollWidth - el.clientWidth / 2);
+    el.scrollTop = Math.max(0, fy * el.scrollHeight - el.clientHeight / 2);
+  }
   // ================= 🗺 Карта мира: цели экспедиций, отряды в пути, развилки =================
   // Маркеры отрядов ползут к цели пропорционально пройденному времени (очень медленно — как в жизни);
   // цели ставит владелец в пульте, у каждой свой час итогов.
@@ -8595,10 +8667,11 @@
     let g = '<svg class="world" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
       '<defs><radialGradient id="wg" cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#14304a"/><stop offset="1" stop-color="#070b16"/></radialGradient></defs>' +
       '<rect width="' + W + '" height="' + H + '" rx="4" fill="url(#wg)"/>';
-    for (let x = 10; x < W; x += 10) g += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" class="wgrid"/>';
-    for (let y = 10; y < H; y += 10) g += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" class="wgrid"/>';
+    for (let x = 20; x < W; x += 20) g += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" class="wgrid"/>';
+    for (let y = 20; y < H; y += 20) g += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" class="wgrid"/>';
     // Материки — декорация (одинаковые у всех игроков)
-    [[38, 30, 22, 13], [112, 26, 26, 12], [70, 68, 30, 14], [132, 74, 16, 11], [22, 76, 13, 9]].forEach(([cx, cy, rx, ry]) => {
+    [[60, 50, 40, 24], [170, 40, 48, 20], [270, 60, 34, 26], [120, 130, 52, 28], [240, 150, 40, 24], [40, 150, 26, 18],
+     [200, 100, 18, 12], [300, 180, 14, 10]].forEach(([cx, cy, rx, ry]) => {
       g += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" class="wland"/>';
     });
     d.squads.forEach(s => {
@@ -8612,16 +8685,16 @@
     });
     d.targets.forEach(t => {
       g += '<g class="wtgt' + (mapPick === t.id ? ' on' : '') + '" data-t="' + t.id + '"><circle cx="' + t.x + '" cy="' + t.y + '" r="6" class="wglow"/>' +
-        '<circle cx="' + t.x + '" cy="' + t.y + '" r="3.6" class="wcore"/><text x="' + t.x + '" y="' + (t.y + 1.4) + '" class="wicon">' + esc(t.icon) + '</text>' +
-        '<text x="' + t.x + '" y="' + (t.y - 6.5) + '" class="wlabel">' + esc(t.title.length > 22 ? t.title.slice(0, 21) + "…" : t.title) + '</text>' +
-        '<text x="' + t.x + '" y="' + (t.y + 9) + '" class="wtime" data-resolve="' + t.resolve_at + '"></text></g>';
+        '<circle cx="' + t.x + '" cy="' + t.y + '" r="3.8" class="wcore"/><text x="' + t.x + '" y="' + (t.y + 1.6) + '" class="wicon">' + esc(t.icon) + '</text>' +
+        '<text x="' + t.x + '" y="' + (t.y - 7.5) + '" class="wlabel">' + esc(t.title.length > 22 ? t.title.slice(0, 21) + "…" : t.title) + '</text>' +
+        '<text x="' + t.x + '" y="' + (t.y + 10.5) + '" class="wtime" data-resolve="' + t.resolve_at + '"></text></g>';
     });
     d.squads.forEach(s => {
       if (!T[s.target_id]) return;
       const label = s.mine ? L.map_you : (s.symbol || "") + (s.name ? " " + s.name.slice(0, 10) : "");
       g += '<g class="wsq ' + s.mode + (s.mine ? ' mine' : '') + (s.status === "gathering" ? ' wait' : '') + '" data-sq="' + s.id + '">' +
         '<circle r="' + (s.mode === "solo" ? 1.3 : s.mode === "clan" ? 2.3 : 1.8) + '"/>' +
-        (label.trim() ? '<text y="-2.6">' + esc(label.trim()) + '</text>' : '') + '</g>';
+        (label.trim() ? '<text y="-3.2">' + esc(label.trim()) + '</text>' : '') + '</g>';
     });
     return g + '</svg>';
   }
@@ -8681,6 +8754,13 @@
       (h.delay ? '<span class="chip ' + (h.delay < 0 ? 'have' : '') + '">⏱ ' + sign(h.delay) + '′</span>' : '') +
       (h.fight ? '<span class="chip">⚔️ ' + L.map_fight + '</span>' : '') + '</span>';
   }
+  // 🔎 Разведка развилки: min(🛰 шпионов, 🔭 разведки) лидера отряда; первая экспедиция сезона — вслепую
+  function peekBlock(e, f) {
+    const P = e.peeks || {};
+    if (f.peeked) return '<div class="hint status-ok">' + L.map_peeked + '</div>';
+    if (P.left > 0) return '<button class="btn ghost expPeek" data-e="' + e.id + '">' + fmt(L.map_peek, { n: P.left }) + '</button>';
+    return '<div class="hint">' + (P.blind ? L.map_peekBlind + ' ' : '') + L.map_noHint + '</div>';
+  }
   function mySquadCard(e, d) {
     const t = d.targets.find(x => x.id === e.target_id);
     if (!t) return "";
@@ -8704,7 +8784,7 @@
             esc(o.text) + (e.mode === "solo" ? '' : ' · ' + fmt(L.map_votes, { n: o.votes })) + (o.mine ? ' · ✓ ' + L.map_myVote : '') +
             hintChips(o.hint) + '</button>').join("") +
           '<div class="hint">' + (e.mode === "solo" ? L.map_voteSolo : '<span data-key="map_vote" data-countdown="' + f.closes_at + '"></span>') + '</div>' +
-          (e.hint ? '' : '<div class="hint">' + L.map_noHint + '</div>') + '</div>';
+          peekBlock(e, f) + '</div>';
       } else if (!e.arrived && e.forks_done < e.forks) {
         body += '<div class="hint">' + L.map_waitFork + '</div>';
       }
@@ -8725,6 +8805,11 @@
       '<div class="hint">' + (d.targets.length ? L.map_pick : L.map_empty) + '</div></div>' + my +
       d.targets.map(t => targetCard(t, d)).join("");
     placeSquads(d);
+    const wrap = box.querySelector(".world-wrap");
+    dragScroll(wrap);
+    const mine = d.squads.find(s => s.mine), T0 = d.targets.find(t => mine && t.id === mine.target_id);
+    const focus = mine && T0 ? mapPos(mine, T0, Date.now()) : (d.me.home.team || d.me.home.solo);
+    centerOn(wrap, focus[0] / d.map.w, focus[1] / d.map.h);
     mapTimer = setInterval(() => {
       if (!document.querySelector(".world")) return clearInterval(mapTimer);
       placeSquads(d);
@@ -8745,6 +8830,9 @@
       b.onclick = () => act(b, "/api/exp/gear", { target_id: Number(b.dataset.t), what: b.dataset.w }, async res => {
         notify(res.departed ? L.map_done : L.map_added); go("map");
       });
+    });
+    box.querySelectorAll(".expPeek").forEach(b => {
+      b.onclick = () => act(b, "/api/exp/peek", { expedition_id: Number(b.dataset.e) }, async () => { notify(L.map_peeked); go("map"); });
     });
     box.querySelectorAll(".expVote").forEach(b => {
       b.onclick = () => act(b, "/api/exp/vote", { expedition_id: Number(b.dataset.e), option: Number(b.dataset.o) }, async () => {

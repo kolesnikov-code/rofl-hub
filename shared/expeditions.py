@@ -29,12 +29,12 @@ from shared.economy import (
     EXP_BASE_CARGO,
     EXP_BATTERIES,
     EXP_CLAN_CUTLETS,
-    EXP_HINT_SCOUT_LEVEL,
     EXP_MAP_H,
     EXP_MAP_W,
     EXP_SOLO_HYDROGEN,
     MEGA_CLAN_MAX_MEMBERS,
     drone_exp_effects,
+    exp_peek_budget,
     exp_mode_allowed,
     exp_travel_minutes,
 )
@@ -128,21 +128,44 @@ async def squad_members(conn, exp) -> list[int]:
 
 
 async def squad_effects(conn, mode: str, user_id: int | None, team_id: int | None) -> dict:
-    """Суммарные дроны отряда → проценты (cargo/guard/speed) + видны ли последствия выбора (hint)."""
+    """Суммарные дроны отряда → проценты (cargo/guard/speed)."""
     if mode == "solo":
         where, arg = "u.user_id = $1", user_id
     else:
         where, arg = f"u.team_id = $1 AND {ALIVE}", team_id
     row = await conn.fetchrow(
         f"""SELECT COALESCE(SUM(u.drones_attack), 0) AS a, COALESCE(SUM(u.drones_guard), 0) AS g,
-                   COALESCE(SUM(u.drones_spy), 0) AS s,
-                   COALESCE(MAX(t.level), 0) AS scout
-            FROM users u LEFT JOIN user_tech t ON t.user_id = u.user_id AND t.tech = 'scout'
-            WHERE {where}""", arg)
+                   COALESCE(SUM(u.drones_spy), 0) AS s
+            FROM users u WHERE {where}""", arg)
     eff = drone_exp_effects(int(row["a"]), int(row["g"]), int(row["s"]))
     eff["drones"] = {"attack": int(row["a"]), "guard": int(row["g"]), "spy": int(row["s"])}
-    eff["hint"] = int(row["s"]) > 0 or int(row["scout"]) >= EXP_HINT_SCOUT_LEVEL
     return eff
+
+
+async def peek_state(conn, exp) -> dict:
+    """
+    🔎 Разведка развилок отряда: {total, used, left, blind, peeked: [номера развилок]}.
+    Первая экспедиция отряда в сезоне — вслепую; дальше min(🛰 шпионов, 🔭 разведки) лидера отряда.
+    """
+    from shared.economy import season_bounds
+    start, _ = season_bounds(exp["created_at"])
+    if exp["mode"] == "solo":
+        leader, same = exp["user_id"], "user_id = $2 AND mode = 'solo'"
+        key = exp["user_id"]
+    else:
+        leader = await conn.fetchval("SELECT captain_id FROM teams WHERE team_id = $1", exp["team_id"])
+        same, key = "team_id = $2 AND mode <> 'solo'", exp["team_id"]
+    blind = not await conn.fetchval(
+        f"""SELECT 1 FROM expeditions WHERE {same} AND id < $1 AND created_at >= $3
+              AND status IN ('marching', 'done', 'late') LIMIT 1""", exp["id"], key, start)
+    row = await conn.fetchrow(
+        "SELECT u.drones_spy, COALESCE(t.level, 0) AS scout FROM users u "
+        "LEFT JOIN user_tech t ON t.user_id = u.user_id AND t.tech = 'scout' WHERE u.user_id = $1", leader)
+    forks = await conn.fetchval("SELECT forks FROM expedition_targets WHERE id = $1", exp["target_id"])
+    total = exp_peek_budget(int(row["drones_spy"]) if row else 0, int(row["scout"]) if row else 0, forks, blind)
+    peeked = [r["fork_no"] for r in await conn.fetch(
+        "SELECT fork_no FROM expedition_peeks WHERE expedition_id = $1 ORDER BY fork_no", exp["id"])]
+    return {"total": total, "used": len(peeked), "left": max(0, total - len(peeked)), "blind": blind, "peeked": peeked}
 
 
 # ============================================================================ развилки
@@ -324,8 +347,8 @@ async def contribute(conn, user_id: int, target_id: int, what: str, now: datetim
 
 
 # ============================================================================ голосование
-async def vote(conn, user_id: int, exp_id: int, option: int, now: datetime) -> dict:
-    """🗳 Голос за вариант на текущей развилке. Соло — решение сразу; команда — когда проголосовали все."""
+async def _open_fork(conn, user_id: int, exp_id: int, now: datetime) -> tuple[dict, int]:
+    """Отряд игрока и номер развилки, открытой сейчас (с проверкой, что игрок — боец этого отряда)."""
     exp = await resolve_due_forks(conn, exp_id, now)
     if exp is None:
         raise ExpError("exp.err_closed")
@@ -342,6 +365,27 @@ async def vote(conn, user_id: int, exp_id: int, option: int, now: datetime) -> d
     k = current_fork(exp, target["forks"], now)
     if k is None:
         raise ExpError("exp.err_no_fork")
+    return exp, k
+
+
+async def peek(conn, user_id: int, exp_id: int, now: datetime) -> dict:
+    """🔎 Разведать текущую развилку: последствия вариантов видны всему отряду. Тратит одну разведку."""
+    exp, k = await _open_fork(conn, user_id, exp_id, now)
+    state = await peek_state(conn, exp)
+    if k in state["peeked"]:
+        raise ExpError("exp.err_peeked")
+    if state["left"] <= 0:
+        raise ExpError("exp.err_no_peeks")
+    await conn.execute("INSERT INTO expedition_peeks (expedition_id, fork_no, user_id, created_at) VALUES ($1, $2, $3, $4)",
+                       exp_id, k, user_id, now)
+    await conn.execute("INSERT INTO expedition_members (expedition_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+                       exp_id, user_id)
+    return {"fork": k, "left": state["left"] - 1}
+
+
+async def vote(conn, user_id: int, exp_id: int, option: int, now: datetime) -> dict:
+    """🗳 Голос за вариант на текущей развилке. Соло — решение сразу; команда — когда проголосовали все."""
+    exp, k = await _open_fork(conn, user_id, exp_id, now)
     if not 0 <= option < len(event_for(exp_id, k)["options"]):
         raise ExpError("exp.err_no_fork")
     await conn.execute(

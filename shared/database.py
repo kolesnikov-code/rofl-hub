@@ -551,9 +551,10 @@ SCHEMA_STATEMENTS: list[str] = [
         last_paid_at TIMESTAMP WITH TIME ZONE
     );
     """,
-    # 40 рудников (economy.MINES_COUNT), ресурс по кругу: металл, водород, кристаллы, детали
-    "INSERT INTO mines (id, kind) SELECT g, (ARRAY['metal', 'hydrogen', 'crystal', 'parts'])[1 + (g - 1) % 4] "
-    "FROM generate_series(1, 40) g ON CONFLICT (id) DO NOTHING;",
+    # 100 рудников (economy.MINES_COUNT; 28.10 — было 40), ресурс по кругу из 7 видов (economy.mine_kind);
+    # уже существующие рудники не трогаются (ON CONFLICT)
+    "INSERT INTO mines (id, kind) SELECT g, (ARRAY['metal', 'hydrogen', 'crystal', 'parts', 'stone', 'wood', 'energy'])"
+    "[1 + (g - 1) % 7] FROM generate_series(1, 100) g ON CONFLICT (id) DO NOTHING;",
     "ALTER TABLE battles ADD COLUMN IF NOT EXISTS mine_id INT;",
     # --- 27.10: новые ресурсы, Лаборатория, лошади, сезоны ---
     """
@@ -789,6 +790,16 @@ SCHEMA_STATEMENTS: list[str] = [
         votes INT NOT NULL DEFAULT 0,
         cargo_delta INT NOT NULL DEFAULT 0,
         delay_min INT NOT NULL DEFAULT 0,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (expedition_id, fork_no)
+    );
+    """,
+    # 🔎 разведанные развилки: последствия видны отряду до решения (min шпионов и разведки лидера)
+    """
+    CREATE TABLE IF NOT EXISTS expedition_peeks (
+        expedition_id BIGINT NOT NULL,
+        fork_no INT NOT NULL,
+        user_id BIGINT NOT NULL,
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (expedition_id, fork_no)
     );
