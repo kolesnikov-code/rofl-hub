@@ -33,6 +33,8 @@ from shared.economy import (
     REFERRAL_QUALIFY_QUIZ_LEVEL,
     REFERRAL_TOP_LIMIT,
     RES_CAPACITY_BASE,
+    BATTLE_BATTERY_FEE_CLAN,
+    BATTLE_BATTERY_FEE_TEAM,
     season_bounds,
     season_key,
     next_storage_level,
@@ -148,7 +150,6 @@ from shared.mines import list_mines, mine_battles
 from shared.tech import (TechError, buy_horse, charge_shuttle, get_tech, next_tech_at, shuttle_active,
                          tech_levels, upgrade_tech, upgrade_tools)
 from shared.workshop import recipe_tool, team_cost_multiplier
-from shared.battles import battle_team_scores
 from shared.db_clans import (TeamError, create_team, join_team, leave_team, public_team, random_teams,
                              search_teams, team_members)
 from shared.resources import get_resources
@@ -586,19 +587,39 @@ async def _team_effects(conn, team_id, now) -> dict:
 _leaders_cache: dict[int, tuple[float, list]] = {}
 
 
-async def _battle_leaders(conn, battle: dict) -> list[dict]:
-    """ТОП-3 команд текущей битвы (кэш 60 с — карту открывают часто)."""
-    if battle["nomination_key"] == "manual":
+async def _battle_leaders(conn, battle: dict, limit: int = 3) -> list[dict]:
+    """ТОП текущей битвы по её правилам (зачёт, заявки на рудники); кэш 60 с — карту открывают часто."""
+    from shared.battles import battle_standings, is_manual
+    if is_manual(battle["nomination_key"]) or battle["starts_at"] > utcnow():
         return []
-    hit = _leaders_cache.get(battle["battle_id"])
+    key = (battle["battle_id"], limit)
+    hit = _leaders_cache.get(key)
     if hit and time.monotonic() - hit[0] < 60:
         return hit[1]
-    rows = await battle_team_scores(conn, battle["nomination_key"], battle["starts_at"],
-                                    min(battle["ends_at"], utcnow()), limit=3)
-    top = [{"team_id": r["team_id"], "name": html.unescape(r["team_name"]), "score": int(r["score"])}
+    live = {**battle, "ends_at": min(battle["ends_at"], utcnow())}
+    rows = await battle_standings(conn, _Row(live), limit=limit)
+    top = [{"id": r["id"], "name": html.unescape(str(r["name"])), "score": r["score"], "is_clan": r["is_clan"]}
            for r in rows]
-    _leaders_cache[battle["battle_id"]] = (time.monotonic(), top)
+    _leaders_cache[key] = (time.monotonic(), top)
     return top
+
+
+class _Row(dict):
+    """dict с .keys()/[] как у asyncpg.Record — для battle_standings на «живом» окне."""
+
+
+async def _entry_info(conn, battle: dict, team_id: int | None, is_clan: bool) -> dict | None:
+    """Заявка моей команды на битву за рудники: внесено/нужно батареек."""
+    from shared.battles import battery_fee, battle_mines
+    if team_id is None or not battle_mines(_Row(battle)) or (battle.get("scope") or "teams") == "solo":
+        return None
+    scope = battle.get("scope") or "teams"
+    if (scope == "team" and is_clan) or (scope == "clan" and not is_clan):
+        return {"allowed": False}
+    have = await conn.fetchval("SELECT batteries FROM battle_entries WHERE battle_id = $1 AND team_id = $2",
+                               battle["battle_id"], team_id) or 0
+    fee = battery_fee(is_clan)
+    return {"allowed": True, "batteries": int(have), "fee": fee, "registered": have >= fee}
 
 
 async def handle_mines(request: web.Request) -> web.Response:
@@ -609,11 +630,16 @@ async def handle_mines(request: web.Request) -> web.Response:
         return off
     now = utcnow()
     async with db.pool.acquire() as conn:
-        team_id = await conn.fetchval("SELECT team_id FROM users WHERE user_id = $1", ctx.user_id)
+        me = await conn.fetchrow("SELECT u.team_id, t.max_members FROM users u LEFT JOIN teams t "
+                                 "ON t.team_id = u.team_id WHERE u.user_id = $1", ctx.user_id)
+        team_id = me["team_id"] if me else None
+        is_clan = bool(me and (me["max_members"] or 0) >= 1000)
+        batteries = (await get_resources(conn, ctx.user_id, ("battery",)))["battery"]
         mines = await list_mines(conn)
         battles = await mine_battles(conn)
         for b in battles:
             b["leaders"] = await _battle_leaders(conn, b)
+            b["entry"] = await _entry_info(conn, b, team_id, is_clan)
         my_mines = []
         for m in mines:
             if team_id is not None and m["team_id"] == team_id and m["captured_until"] and m["captured_until"] > now:
@@ -622,7 +648,8 @@ async def handle_mines(request: web.Request) -> web.Response:
                     "AND created_at >= $3", f"mine:{m['id']}", m["kind"], m["captured_at"])
                 my_mines.append({"id": m["id"], "kind": m["kind"], "mined": int(mined),
                                  "captured_at": m["captured_at"].isoformat(), "until": m["captured_until"].isoformat()})
-    target = {b["mine_id"]: b["battle_id"] for b in battles}
+    target = {mid: b["battle_id"] for b in battles for mid in (b["mine_ids"] or [])}
+    place_of = {mid: i for b in battles for i, mid in enumerate(b["mine_ids"] or [], start=1)}
     out, my_income = [], 0
     for m in mines:
         held = m["team_id"] is not None and m["captured_until"] and m["captured_until"] > now
@@ -630,7 +657,7 @@ async def handle_mines(request: web.Request) -> web.Response:
         if mine:
             my_income += (m["members_count"] or 0) * MINE_YIELD_PER_MEMBER_HOUR
         out.append({
-            "id": m["id"], "kind": m["kind"], "target": target.get(m["id"]),
+            "id": m["id"], "kind": m["kind"], "target": target.get(m["id"]), "place": place_of.get(m["id"]),
             "team": ({"name": html.unescape(m["team_name"] or ""), "symbol": html.unescape(m["team_symbol"] or ""),
                       "members": m["members_count"] or 0} if held else None),
             "until": m["captured_until"].isoformat() if held else None, "mine": bool(mine),
@@ -638,13 +665,77 @@ async def handle_mines(request: web.Request) -> web.Response:
     return web.json_response({
         "mines": out, "in_team": team_id is not None, "my_income": my_income, "my_mines": my_mines,
         "hold_hours": MINE_HOLD_HOURS, "yield": MINE_YIELD_PER_MEMBER_HOUR,
-        "res_names": resource_labels(ctx.lang),
-        "battles": [{"id": b["battle_id"], "title": b["title"], "nomination": b["nomination_text"],
+        "res_names": resource_labels(ctx.lang), "batteries": batteries,
+        "fee": {"team": BATTLE_BATTERY_FEE_TEAM, "clan": BATTLE_BATTERY_FEE_CLAN},
+        "battles": [{"id": b["battle_id"], "title": b["title"], "nomination": _nom_text(ctx.lang, b),
                      "starts_at": b["starts_at"].isoformat(), "ends_at": b["ends_at"].isoformat(),
-                     "mine_id": b["mine_id"], "started": b["starts_at"] <= now,
-                     "leaders": [{"name": x["name"], "score": x["score"], "mine": x["team_id"] == team_id}
+                     "mine_ids": list(b["mine_ids"] or []), "mine_id": (b["mine_ids"] or [None])[0],
+                     "started": b["starts_at"] <= now, "entry": b["entry"],
+                     "leaders": [{"name": x["name"], "score": x["score"], "mine": x["id"] == team_id}
                                  for x in b["leaders"]]} for b in battles],
     })
+
+
+def _nom_text(lang: str, battle: dict) -> str:
+    """Название номинации на языке игрока (свои формулировки владельца — как есть)."""
+    from shared.battles import BATTLE_NOMINATIONS, MANUAL_NOMINATIONS
+    key = battle["nomination_key"]
+    if key in BATTLE_NOMINATIONS or key in MANUAL_NOMINATIONS:
+        return t(lang, f"nom.{key}")
+    return battle["nomination_text"]
+
+
+async def handle_events(request: web.Request) -> web.Response:
+    """🎯 Акции и битвы, идущие сейчас: зачёт, сроки, призы по местам, моё место, заявка на рудники."""
+    from shared.battles import battle_mines, is_manual, prizes_by_place
+    from shared.prizes import rewards_label
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    now = utcnow()
+    out = []
+    async with db.pool.acquire() as conn:
+        me = await conn.fetchrow("SELECT u.team_id, t.max_members FROM users u LEFT JOIN teams t "
+                                 "ON t.team_id = u.team_id WHERE u.user_id = $1", ctx.user_id)
+        team_id = me["team_id"] if me else None
+        is_clan = bool(me and (me["max_members"] or 0) >= 1000)
+        rows = await conn.fetch("SELECT * FROM battles WHERE status = 'active' ORDER BY ends_at LIMIT 30")
+        for r in rows:
+            b = dict(r)
+            scope = b["scope"] or "teams"
+            leaders = await _battle_leaders(conn, b, limit=max(10, int(b["places"] or 0)))
+            my_id = ctx.user_id if scope == "solo" else team_id
+            my_place = next((i for i, x in enumerate(leaders, start=1) if x["id"] == my_id), 0)
+            prizes = prizes_by_place(b["prizes"])
+            out.append({
+                "id": b["battle_id"], "title": b["title"], "scope": t(ctx.lang, f"post.scope_{scope}"),
+                "solo": scope == "solo", "nomination": _nom_text(ctx.lang, b), "manual": is_manual(b["nomination_key"]),
+                "starts_at": b["starts_at"].isoformat(), "ends_at": b["ends_at"].isoformat(),
+                "started": b["starts_at"] <= now, "places": int(b["places"] or 0),
+                "prizes": [{"place": p, "label": rewards_label(prizes[p])} for p in sorted(prizes)][:20],
+                "mines": battle_mines(_Row(b)), "my_place": my_place,
+                "leaders": [{"name": x["name"], "score": x["score"], "me": x["id"] == my_id} for x in leaders[:10]],
+                "entry": await _entry_info(conn, b, team_id, is_clan),
+            })
+    return web.json_response({"events": out})
+
+
+async def handle_battle_battery(request: web.Request) -> web.Response:
+    """🔋 Внести батарейку в заявку своей команды на битву за рудники."""
+    from shared.battles import BattleError, contribute_battery
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    data = await _json(request)
+    battle_id = _int(data.get("battle_id"))
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                res = await contribute_battery(conn, battle_id, ctx.user_id, utcnow())
+    except BattleError as e:
+        return fail(e.localized(ctx.lang))
+    _leaders_cache.clear()
+    return web.json_response(res)
 
 
 # ============================================================================
@@ -1317,6 +1408,8 @@ def register_game_routes(app: web.Application) -> None:
     app.router.add_post("/api/craft_weekly", handle_craft_weekly)
     app.router.add_get("/api/storage", handle_storage)
     app.router.add_get("/api/mines", handle_mines)
+    app.router.add_get("/api/events", handle_events)
+    app.router.add_post("/api/battle/battery", handle_battle_battery)
     app.router.add_get("/api/tech", handle_tech)
     app.router.add_post("/api/tech/up", handle_tech_up)
     app.router.add_post("/api/horse/buy", handle_horse_buy)

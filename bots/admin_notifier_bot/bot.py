@@ -83,15 +83,6 @@ class AuctionCreationStates(StatesGroup):
     waiting_for_step = State()
 
 
-class BattleCreationStates(StatesGroup):
-    waiting_title = State()
-    waiting_starts = State()
-    waiting_ends = State()
-    waiting_nom_manual = State()
-    waiting_prize_manual = State()
-    waiting_mine = State()
-
-
 class RewardStates(StatesGroup):
     waiting_target = State()
     waiting_gift_value = State()
@@ -289,333 +280,19 @@ async def admin_gift(message: types.Message):
 # ============================================================================
 # ⚔️ БИТВЫ КОМАНД И КЛАНОВ: событийный конструктор владельца
 # ============================================================================
-import json as _json  # noqa: E402
-
-from bots.main_bot.catalog import CATALOG, get_item  # noqa: E402
-from shared.battles import (  # noqa: E402
-    BATTLE_NOMINATIONS,
-    MAX_PRIZE_PLACES,
-    award_sku_to_team,
-    battle_team_scores,
-    build_announce_post,
-    build_results_post,
-    medals,
-    mine_prize_line,
-    parse_battle_moment,
-    prizes_from_row,
-    prizes_to_json,
-)
-
-
-def _prize_mode_kb(place: int) -> types.InlineKeyboardMarkup:
-    rows = [[
-        types.InlineKeyboardButton(text="📋 Товар из магазина", callback_data="battle_przmode:sku"),
-        types.InlineKeyboardButton(text="✍️ Указать вручную", callback_data="battle_przmode:manual"),
-    ]]
-    if place > 1:
-        rows.append([types.InlineKeyboardButton(text="⏹ Призов больше нет — завершить",
-                                                callback_data="battle_przmode:stop")])
-    return types.InlineKeyboardMarkup(inline_keyboard=rows)
-
-
-def _sku_list_kb() -> types.InlineKeyboardMarkup:
-    # По одной кнопке в ряд — цены не обрезаются на телефоне
-    rows = [[types.InlineKeyboardButton(text=item["button"], callback_data=f"battle_sku:{sku}")]
-            for sku, item in CATALOG.items()]
-    return types.InlineKeyboardMarkup(inline_keyboard=rows)
-
-
-async def _ask_prize_for_place(message: types.Message, state: FSMContext, place: int) -> None:
-    await state.update_data(b_place=place)
-    label = "🥇 ПРИЗ ЗА 1 МЕСТО (получит КАЖДЫЙ боец команды-победителя)" if place == 1 \
-        else f"🎁 Приз за {place} место (каждому бойцу команды)"
-    await message.answer(f"<b>{label}</b>\n\nКак определим приз?",
-                         reply_markup=_prize_mode_kb(place), parse_mode="HTML")
+from bots.main_bot.catalog import CATALOG  # noqa: E402
+from shared.battles import medals  # noqa: E402
 
 
 @dp.message(Command("new_battle"))
-async def admin_new_battle(message: types.Message, state: FSMContext):
+async def admin_new_battle(message: types.Message):
+    """Битвы и акции теперь создаются в пульте (Mini App): номинации, места, призы, рудники — кнопками."""
     if not is_admin(message.from_user.id):
         return
-    await state.set_state(BattleCreationStates.waiting_title)
     await message.answer(
-        "⚔️ <b>СОЗДАНИЕ БИТВЫ КОМАНД И КЛАНОВ</b>\n\n"
-        "ШАГ 1. Введи НАЗВАНИЕ битвы (до 100 символов), например:\n"
-        "<i>Осенний Кубок Ферм · Неделя Интеллекта · ROFL Champions League</i>",
-        parse_mode="HTML")
-
-
-@dp.message(BattleCreationStates.waiting_title)
-async def battle_title(message: types.Message, state: FSMContext):
-    if not is_admin(message.from_user.id):
-        return
-    title = (message.text or "").strip()[:100]
-    if not title:
-        await message.answer("❌ Название пустое. Введи ещё раз:")
-        return
-    await state.update_data(b_title=title)
-    await state.set_state(BattleCreationStates.waiting_starts)
-    await message.answer(
-        "ШАГ 2. МОМЕНТ СТАРТА зачёта (UTC):\n"
-        "• <code>0</code> — начать прямо сейчас\n"
-        "• число — через столько ЧАСОВ от текущего момента\n"
-        "• или дата: <code>ДД.ММ.ГГГГ ЧЧ:ММ</code>",
-        parse_mode="HTML")
-
-
-@dp.message(BattleCreationStates.waiting_starts)
-async def battle_starts(message: types.Message, state: FSMContext):
-    if not is_admin(message.from_user.id):
-        return
-    starts = parse_battle_moment(message.text or "", base=datetime.now(timezone.utc))
-    if starts is None:
-        await message.answer("❌ Не понял момент. Формат: <code>0</code>, часы или "
-                             "<code>ДД.ММ.ГГГГ ЧЧ:ММ</code>", parse_mode="HTML")
-        return
-    await state.update_data(b_starts=starts.isoformat())
-    await state.set_state(BattleCreationStates.waiting_ends)
-    await message.answer(
-        f"Старт: <b>{starts:%d.%m.%Y %H:%M} UTC</b>\n\n"
-        "ШАГ 3. ОКОНЧАНИЕ битвы (счётчики остановятся и итоги подведутся автоматически):\n"
-        "• число — длительность в ЧАСАХ от старта (например <code>168</code> = неделя)\n"
-        "• или дата: <code>ДД.ММ.ГГГГ ЧЧ:ММ</code> (UTC)",
-        parse_mode="HTML")
-
-
-@dp.message(BattleCreationStates.waiting_ends)
-async def battle_ends(message: types.Message, state: FSMContext):
-    if not is_admin(message.from_user.id):
-        return
-    data = await state.get_data()
-    starts = datetime.fromisoformat(data["b_starts"])
-    ends = parse_battle_moment(message.text or "", base=starts)
-    if ends is None or ends <= starts:
-        await message.answer("❌ Финиш должен быть ПОЗЖЕ старта. Часы от старта или дата:")
-        return
-    await state.update_data(b_ends=ends.isoformat())
-    await state.set_state(None)
-    kb = types.InlineKeyboardMarkup(inline_keyboard=[[
-        types.InlineKeyboardButton(text="📋 Выбрать из списка", callback_data="battle_nommode:list"),
-        types.InlineKeyboardButton(text="✍️ Указать вручную", callback_data="battle_nommode:manual"),
-    ]])
-    await message.answer(
-        f"Финиш: <b>{ends:%d.%m.%Y %H:%M} UTC</b>\n\n"
-        "ШАГ 4. НОМИНАЦИЯ битвы — что меряем?",
-        reply_markup=kb, parse_mode="HTML")
-
-
-@dp.callback_query(F.data.startswith("battle_nommode:"))
-async def battle_nom_mode(callback: types.CallbackQuery, state: FSMContext):
-    if not is_admin(callback.from_user.id):
-        return
-    await callback.answer()
-    mode = callback.data.split(":")[1]
-    if mode == "manual":
-        await state.set_state(BattleCreationStates.waiting_nom_manual)
-        await callback.message.answer(
-            "✍️ Введи текст номинации (итоги по ней ты подведёшь вручную, "
-            "бот их автоматически НЕ считает):")
-        return
-    rows = [[types.InlineKeyboardButton(text=nom["title"], callback_data=f"battle_nom:{key}")]
-            for key, nom in BATTLE_NOMINATIONS.items()]
-    await callback.message.answer("📋 Выбери номинацию:",
-                                  reply_markup=types.InlineKeyboardMarkup(inline_keyboard=rows))
-
-
-@dp.message(BattleCreationStates.waiting_nom_manual)
-async def battle_nom_manual(message: types.Message, state: FSMContext):
-    if not is_admin(message.from_user.id):
-        return
-    text = (message.text or "").strip()[:200]
-    if not text:
-        await message.answer("❌ Пустая номинация. Введи ещё раз:")
-        return
-    await state.update_data(b_nom_key="manual", b_nom_text=text, b_prizes={})
-    await state.set_state(None)
-    await _ask_mine(message, state)
-
-
-@dp.callback_query(F.data.startswith("battle_nom:"))
-async def battle_nom_pick(callback: types.CallbackQuery, state: FSMContext):
-    if not is_admin(callback.from_user.id):
-        return
-    await callback.answer()
-    key = callback.data.split(":", 1)[1]
-    if key not in BATTLE_NOMINATIONS:
-        return
-    await state.update_data(b_nom_key=key, b_nom_text=BATTLE_NOMINATIONS[key]["title"], b_prizes={})
-    await callback.message.answer(f"Номинация: <b>{BATTLE_NOMINATIONS[key]['title']}</b>",
-                                  parse_mode="HTML")
-    await _ask_mine(callback.message, state)
-
-
-# ---- Рудник-приз битвы (решение владельца 26.10: каждая битва — ровно за один рудник)
-async def _ask_mine(message: types.Message, state: FSMContext) -> None:
-    import random as _random
-    from shared.economy import MINES_COUNT, utcnow
-    from shared.mines import free_mine_ids
-    async with db.pool.acquire() as conn:
-        free = await free_mine_ids(conn, utcnow())
-    pick = _random.choice(free) if free else _random.randint(1, MINES_COUNT)
-    await state.update_data(b_mine_suggest=pick)
-    await state.set_state(BattleCreationStates.waiting_mine)
-    kb = types.InlineKeyboardMarkup(inline_keyboard=[[
-        types.InlineKeyboardButton(text=f"🎲 Рудник №{pick}", callback_data=f"battle_mine:{pick}")]])
-    await message.answer(
-        "ШАГ 5. ⛏ РУДНИК — главный приз битвы. Победитель держит его 72 ч, каждый боец команды "
-        "получает 1 ресурс в час.\n\n"
-        f"Свободных рудников: {len(free)} из {MINES_COUNT}. Жми кнопку со случайным свободным "
-        f"или пришли номер рудника (1–{MINES_COUNT}).", reply_markup=kb)
-
-
-async def _set_mine(message: types.Message, state: FSMContext, mine_id: int) -> None:
-    from shared.battles import MINE_RES_RU
-    from shared.economy import mine_kind
-    await state.update_data(b_mine=mine_id)
-    await state.set_state(None)
-    await message.answer(f"✅ Рудник №{mine_id} ({MINE_RES_RU[mine_kind(mine_id)]})")
-    await _ask_prize_for_place(message, state, 1)
-
-
-@dp.callback_query(F.data.startswith("battle_mine:"))
-async def battle_mine_pick(callback: types.CallbackQuery, state: FSMContext):
-    if not is_admin(callback.from_user.id):
-        return
-    await callback.answer()
-    await _set_mine(callback.message, state, int(callback.data.split(":")[1]))
-
-
-@dp.message(BattleCreationStates.waiting_mine)
-async def battle_mine_number(message: types.Message, state: FSMContext):
-    if not is_admin(message.from_user.id):
-        return
-    from shared.economy import MINES_COUNT
-    raw = (message.text or "").strip().lstrip("№#")
-    if not raw.isdigit() or not 1 <= int(raw) <= MINES_COUNT:
-        await message.answer(f"❌ Номер рудника — от 1 до {MINES_COUNT}. Ещё раз:")
-        return
-    await _set_mine(message, state, int(raw))
-
-
-@dp.callback_query(F.data.startswith("battle_przmode:"))
-async def battle_prize_mode(callback: types.CallbackQuery, state: FSMContext):
-    if not is_admin(callback.from_user.id):
-        return
-    await callback.answer()
-    mode = callback.data.split(":")[1]
-    data = await state.get_data()
-    place = data.get("b_place", 1)
-    if mode == "stop":
-        await _battle_confirm(callback.message, state)
-        return
-    if mode == "manual":
-        await state.set_state(BattleCreationStates.waiting_prize_manual)
-        await callback.message.answer(
-            f"✍️ Опиши приз за {place} место (вручишь его сам, бот только опубликует описание):")
-        return
-    await callback.message.answer(f"📋 Выбери товар-приз за {place} место "
-                                  f"(получит каждый боец команды):",
-                                  reply_markup=_sku_list_kb())
-
-
-@dp.message(BattleCreationStates.waiting_prize_manual)
-async def battle_prize_manual(message: types.Message, state: FSMContext):
-    if not is_admin(message.from_user.id):
-        return
-    text = (message.text or "").strip()[:200]
-    if not text:
-        await message.answer("❌ Пустое описание. Введи ещё раз:")
-        return
-    await state.set_state(None)
-    await _save_prize_and_next(message, state, {"mode": "manual", "value": text})
-
-
-@dp.callback_query(F.data.startswith("battle_sku:"))
-async def battle_prize_sku(callback: types.CallbackQuery, state: FSMContext):
-    if not is_admin(callback.from_user.id):
-        return
-    await callback.answer()
-    sku = callback.data.split(":", 1)[1]
-    if sku not in CATALOG:
-        return
-    await _save_prize_and_next(callback.message, state, {"mode": "sku", "value": sku})
-
-
-async def _save_prize_and_next(message: types.Message, state: FSMContext, prize: dict) -> None:
-    data = await state.get_data()
-    place = data.get("b_place", 1)
-    prizes = dict(data.get("b_prizes") or {})
-    prizes[place] = prize
-    await state.update_data(b_prizes=prizes)
-    label = CATALOG[prize["value"]]["title"] if prize["mode"] == "sku" else prize["value"]
-    await message.answer(f"✅ Приз за {place} место: <b>{label}</b>", parse_mode="HTML")
-    if place >= MAX_PRIZE_PLACES:
-        await _battle_confirm(message, state)
-        return
-    await _ask_prize_for_place(message, state, place + 1)
-
-
-async def _battle_confirm(message: types.Message, state: FSMContext) -> None:
-    data = await state.get_data()
-    starts = datetime.fromisoformat(data["b_starts"])
-    ends = datetime.fromisoformat(data["b_ends"])
-    prizes = {int(k): v for k, v in (data.get("b_prizes") or {}).items()}
-    prize_lines = []
-    for place in sorted(prizes):
-        p = prizes[place]
-        label = CATALOG[p["value"]]["title"] if p["mode"] == "sku" else p["value"]
-        prize_lines.append(f"{place} место: {label}")
-    kb = types.InlineKeyboardMarkup(inline_keyboard=[[
-        types.InlineKeyboardButton(text="🚀 ЗАПУСТИТЬ БИТВУ И АНОНСИРОВАТЬ", callback_data="battle_go:launch"),
-        types.InlineKeyboardButton(text="❌ Отмена", callback_data="battle_go:cancel"),
-    ]])
-    await message.answer(
-        "⚔️ <b>ПРОВЕРЬ БИТВУ ПЕРЕД ЗАПУСКОМ:</b>\n\n"
-        f"📌 Название: <b>{data['b_title']}</b>\n"
-        f"🏅 Номинация: {data['b_nom_text']}"
-        + (" <i>(итоги вручную)</i>" if data["b_nom_key"] == "manual" else "") + "\n"
-        f"🕐 Старт: <b>{starts:%d.%m.%Y %H:%M} UTC</b>\n"
-        f"🏁 Финиш: <b>{ends:%d.%m.%Y %H:%M} UTC</b>\n"
-        f"⛏ Рудник: <b>№{data.get('b_mine', '—')}</b> (на 72 ч победителю)\n\n"
-        "🎁 <b>Призы:</b>\n" + ("\n".join(prize_lines) or "— не заданы —"),
-        reply_markup=kb, parse_mode="HTML")
-
-
-@dp.callback_query(F.data.startswith("battle_go:"))
-async def battle_launch(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
-    if not is_admin(callback.from_user.id):
-        return
-    await callback.answer()
-    action = callback.data.split(":")[1]
-    data = await state.get_data()
-    await state.clear()
-    if action == "cancel" or not data.get("b_title"):
-        await callback.message.answer("❌ Создание битвы отменено.")
-        return
-
-    prizes = {int(k): v for k, v in (data.get("b_prizes") or {}).items()}
-    async with db.pool.acquire() as conn:
-        battle_id = await conn.fetchval(
-            """
-            INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, prizes, mine_id)
-            VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7) RETURNING battle_id
-            """,
-            data["b_title"], data["b_nom_key"], data["b_nom_text"],
-            datetime.fromisoformat(data["b_starts"]), datetime.fromisoformat(data["b_ends"]),
-            prizes_to_json(prizes), data.get("b_mine"))
-        battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", battle_id)
-
-    try:
-        await bot.send_message(USERS_CHANNEL_ID, build_announce_post(battle), parse_mode="HTML")
-        channel_note = "🟢 Анонс опубликован в канале игроков."
-    except Exception as e:
-        logger.error("[BATTLE_ANNOUNCE] не удалось опубликовать анонс: %s", e)
-        channel_note = f"❌ Анонс в канал не ушёл: {e}"
-
-    await callback.message.answer(
-        f"⚔️ <b>БИТВА №{battle_id} ЗАПУЩЕНА!</b>\n{channel_note}\n\n"
-        f"Итоги подведутся автоматически в {battle['ends_at']:%d.%m.%Y %H:%M} UTC.\n"
-        f"Принудительно: <code>/finish_battle {battle_id}</code> · Список: /battles",
+        "🎛 Битвы и акции создаются в <b>пульте</b>: открой главный бот и отправь /admin — "
+        "там зачёт (команды, кланы, личный), номинации, призовые места, награды и рудники.\n"
+        "Анонс и итоги я опубликую в канале сам — сразу на всех языках.",
         parse_mode="HTML")
 
 
@@ -656,65 +333,46 @@ async def admin_finish_battle(message: types.Message, bot: Bot):
 
 
 async def _finish_battle(bot: Bot, battle) -> None:
-    """Подводит итоги: считает топ, раздаёт авто-призы, публикует пост в канал."""
-    battle_id = battle["battle_id"]
+    """Подводит итоги (shared.battles.finish_battle) и публикует пост в канал на всех языках."""
+    from shared.battle_posts import build_results
+    from shared.battles import finish_battle
+    from shared.economy import utcnow
     async with db.pool.acquire() as conn:
-        await conn.execute("UPDATE battles SET status = 'finished' WHERE battle_id = $1", battle_id)
-
-        if battle["nomination_key"] == "manual":
-            await bot.send_message(
-                ADMIN_SECRET_CHANNEL_ID,
-                f"🖐 <b>Битва №{battle_id} «{battle['title']}» завершена.</b>\n"
-                f"Номинация ручная («{battle['nomination_text']}») — подведи итоги и "
-                f"опубликуй пост в канал сам."
-                + (f"\n⛏ Рудник №{battle['mine_id']} отдай победителю: "
-                   f"<code>/award_mine {battle_id} ID_команды</code>" if battle["mine_id"] else ""),
-                parse_mode="HTML")
+        results = await finish_battle(conn, battle, utcnow())
+        if results.get("skipped"):
             return
-
-        scores = await battle_team_scores(
-            conn, battle["nomination_key"], battle["starts_at"], battle["ends_at"])
-        prizes = prizes_from_row(battle["prizes"])
-
-        prize_notes: dict[int, str] = {}
-        for place, prize in sorted(prizes.items()):
-            if place > len(scores):
-                continue
-            team = scores[place - 1]
-            if prize["mode"] == "sku":
-                # Призы не считаются продажами: нулевая цена в star_payments
-                order = {**get_item(prize["value"]), "stars": 0}
-                delivered, skipped = await award_sku_to_team(
-                    conn, team["team_id"], prize["value"], order, battle_id, place)
-                note = f"каждому бойцу — {order['title']} (выдано: {delivered}"
-                note += f", пропущено: {skipped})" if skipped else ")"
-                prize_notes[place] = note
-            else:
-                prize_notes[place] = prize["value"]
-
-        mine_note = None
-        if battle["mine_id"] and scores:
-            from shared.economy import utcnow
-            from shared.mines import capture_mine
-            until = await capture_mine(conn, battle["mine_id"], scores[0]["team_id"], battle_id, utcnow())
-            mine_note = (f"⛏ <b>Рудник №{battle['mine_id']}</b> переходит команде «{scores[0]['team_name']}» "
-                         f"до {until:%d.%m %H:%M} UTC — каждый боец получает 1 ресурс в час!")
-        await conn.execute(
-            "UPDATE battles SET results = $2::jsonb WHERE battle_id = $1",
-            battle_id, _json.dumps({"scores": scores, "prize_notes":
-                                    {str(k): v for k, v in prize_notes.items()}}, ensure_ascii=False))
-
-    post = build_results_post(battle, scores, prize_notes, mine_note)
+        await conn.execute("UPDATE battles SET results_posted = TRUE WHERE battle_id = $1", battle["battle_id"])
+    post = build_results(battle, results)
     try:
         await bot.send_message(USERS_CHANNEL_ID, post, parse_mode="HTML")
     except Exception as e:
         logger.error("[BATTLE_RESULTS] пост в канал не ушёл: %s", e)
     try:
-        await bot.send_message(ADMIN_SECRET_CHANNEL_ID,
-                               f"🏁 Битва №{battle_id} закрыта автоматически.\n\n{post}",
+        await bot.send_message(ADMIN_SECRET_CHANNEL_ID, f"🏁 Битва №{battle['battle_id']} закрыта.\n\n{post}",
                                parse_mode="HTML")
     except Exception:
         pass
+
+
+async def announce_new_battles(bot: Bot) -> None:
+    """Анонсы битв, созданных в пульте: пост в канал на всех языках (один раз)."""
+    from shared.battle_posts import build_announce
+    from shared.battles import battle_mines, prizes_by_place
+    async with db.pool.acquire() as conn:
+        rows = await conn.fetch("SELECT * FROM battles WHERE status = 'active' AND NOT announced ORDER BY battle_id")
+        kinds = {r["id"]: r["kind"] for r in await conn.fetch("SELECT id, kind FROM mines")}
+    for battle in rows:
+        async with db.pool.acquire() as conn:
+            if not await conn.fetchval("UPDATE battles SET announced = TRUE WHERE battle_id = $1 AND NOT announced "
+                                       "RETURNING 1", battle["battle_id"]):
+                continue
+        post = build_announce(battle, prizes_by_place(battle["prizes"]), kinds)
+        try:
+            await bot.send_message(USERS_CHANNEL_ID, post, parse_mode="HTML")
+        except Exception as e:
+            logger.error("[BATTLE_ANNOUNCE] №%s: анонс не ушёл: %s", battle["battle_id"], e)
+        if battle_mines(battle):
+            logger.info("[BATTLE_ANNOUNCE] №%s за рудники %s", battle["battle_id"], list(battle["mine_ids"]))
 
 
 @dp.message(Command("award_mine"))
@@ -731,14 +389,16 @@ async def admin_award_mine(message: types.Message):
     async with db.pool.acquire() as conn:
         battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", int(parts[1]))
         team = await conn.fetchrow("SELECT team_id, team_name FROM teams WHERE team_id = $1", int(parts[2]))
-        if not battle or not battle["mine_id"]:
+        from shared.battles import battle_mines
+        mine_id = battle_mines(battle)[0] if battle and battle_mines(battle) else None
+        if not mine_id:
             await message.answer("❌ У этой битвы нет рудника.")
             return
         if not team:
             await message.answer("❌ Команда не найдена.")
             return
-        until = await capture_mine(conn, battle["mine_id"], team["team_id"], battle["battle_id"], utcnow())
-    await message.answer(f"⛏ Рудник №{battle['mine_id']} отдан команде «{html.unescape(team['team_name'])}» "
+        until = await capture_mine(conn, mine_id, team["team_id"], battle["battle_id"], utcnow())
+    await message.answer(f"⛏ Рудник №{mine_id} отдан команде «{html.unescape(team['team_name'])}» "
                          f"до {until:%d.%m %H:%M} UTC.")
 
 
@@ -976,12 +636,34 @@ async def reward_go(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(f"🎁 Выдано: {ok}" + (f", сбоев: {bad} (см. логи)" if bad else ""))
 
 
+_manual_pinged: set[int] = set()
+
+
 async def check_finished_battles(bot: Bot) -> None:
-    """Вызывается демоном: закрывает битвы, чьё время вышло."""
+    """Вызывается демоном: анонсирует новые битвы и закрывает те, чьё время вышло."""
+    from shared.battles import is_manual
+    try:
+        await announce_new_battles(bot)
+    except Exception:
+        logger.exception("[BATTLE_ANNOUNCE] сбой")
+    try:
+        await auction_daemon_step(bot)
+    except Exception:
+        logger.exception("[AUCTION_DAEMON] сбой")
     async with db.pool.acquire() as conn:
         due = await conn.fetch(
             "SELECT * FROM battles WHERE status = 'active' AND ends_at <= NOW()")
     for battle in due:
+        if is_manual(battle["nomination_key"]) and not battle["manual_results"]:
+            if battle["battle_id"] not in _manual_pinged:   # ручные итоги — владелец вписывает в пульте
+                _manual_pinged.add(battle["battle_id"])
+                try:
+                    await bot.send_message(ADMIN_SECRET_CHANNEL_ID,
+                                           f"🖐 Битва №{battle['battle_id']} «{battle['title']}» завершилась. "
+                                           "Номинация ручная — впиши победителей в пульте (/admin в главном боте).")
+                except Exception:
+                    pass
+            continue
         try:
             await _finish_battle(bot, battle)
         except Exception:
@@ -1188,46 +870,74 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
 async def admin_close_auction(message: types.Message, bot: Bot):
     if not is_admin(message.from_user.id): return
     parts = message.text.split()
-    if len(parts) < 2:
+    if len(parts) < 2 or not parts[1].isdigit():
         await message.answer("⚠️ Пример: <code>/close_auction 1</code>", parse_mode="HTML")
         return
-    if not parts[1].isdigit():
-        await message.answer("❌ ID лота должен быть числом.")
+    auction = await close_auction(bot, int(parts[1]))
+    if auction is None:
+        await message.answer("❌ Лот не существует или уже закрыт.")
         return
-    auction_id = int(parts[1])
+    await message.answer(
+        f"🏁 <b>АУКЦИОН №{auction['auction_id']} ЗАКРЫТ</b>\n\n🎁 Лот: <b>{html.escape(auction['item_title'])}</b>\n"
+        f"👑 Победитель: <code>{auction['highest_bidder_id'] or 'ставок нет'}</code>\n"
+        f"💵 Финальная цена: <b>{auction['current_price']} 🪙</b>", parse_mode="HTML")
 
+
+async def close_auction(bot: Bot, auction_id: int):
+    """
+    Закрывает лот: монеты победителя уже списаны ставкой (сгорают — дефляция), у VIP-лота ID сразу
+    переходит победителю. Пост в канал — на всех языках. None — лота нет или он уже закрыт.
+    """
+    from shared.battle_posts import build_auction_result
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             auction = await conn.fetchrow("SELECT * FROM auctions WHERE auction_id = $1 FOR UPDATE", auction_id)
             if not auction or auction["status"] != "open":
-                await message.answer("❌ Лот не существует или уже закрыт.")
-                return
+                return None
             await conn.execute("UPDATE auctions SET status = 'closed' WHERE auction_id = $1", auction_id)
-
-    winner_id = auction["highest_bidder_id"]
+            winner_id = auction["highest_bidder_id"]
+            winner_name = None
+            if winner_id:
+                w = await conn.fetchrow("SELECT username, display_name FROM users WHERE user_id = $1", winner_id)
+                winner_name = ("@" + w["username"]) if w and w["username"] else ((w and w["display_name"]) or f"ID {winner_id}")
+                if auction["vip_alias"]:
+                    await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ($1, $2) ON CONFLICT (alias) DO NOTHING",
+                                       auction["vip_alias"], winner_id)
     if winner_id:
-        # Игрок общается с ГЛАВНЫМ ботом: админ-бот не может писать ему первым (chat not found)
+        prize = (f"💎 VIP ID <b>{html.escape(auction['vip_alias'])}</b> уже твой — он в /profile."
+                 if auction["vip_alias"] else "Администрация свяжется с тобой для выдачи приза.")
         await notify_user_via_main_bot(
-                winner_id,
-                f"🏆 <b>Ты победил(а) в аукционе за лот «{auction['item_title']}»!</b>\n"
-                f"Финальная цена: <b>{auction['current_price']} монет</b>. Администрация свяжется с тобой для выдачи приза.",
-        )
-        try:
-            await bot.send_message(
-                USERS_CHANNEL_ID,
-                f"🏁 <b>Аукцион за лот «{auction['item_title']}» завершён!</b>\n"
-                f"👑 Победитель: ID <code>{winner_id}</code> · 💰 {auction['current_price']} монет",
-                parse_mode="HTML")
-        except Exception as e:
-            logger.warning("[AUCTION_CLOSE] не удалось опубликовать итог в канал: %s", e)
+            winner_id, f"🏆 <b>Ты победил(а) в аукционе «{html.escape(auction['item_title'])}»!</b>\n"
+                       f"Финальная цена: <b>{auction['current_price']} 🪙</b>. {prize}")
+    try:
+        await bot.send_message(USERS_CHANNEL_ID, build_auction_result(auction, winner_name), parse_mode="HTML")
+    except Exception as e:
+        logger.warning("[AUCTION_CLOSE] итог в канал не ушёл: %s", e)
+    return auction
 
-    await message.answer(
-        f"🏁 <b>АУКЦИОН №{auction_id} ЗАКРЫТ ИЗ ШТАБА!</b>\n\n"
-        f"🎁 Лот: <b>{auction['item_title']}</b>\n"
-        f"👑 Победитель: ID <code>{auction['highest_bidder_id'] if auction['highest_bidder_id'] else 'Ставок нет'}</code>\n"
-        f"💵 Финальная цена: <b>{auction['current_price']} монет</b>.",
-        parse_mode="HTML"
-    )
+
+async def auction_daemon_step(bot: Bot) -> None:
+    """Анонсы лотов из пульта (на всех языках) и автозакрытие по ends_at."""
+    from shared.battle_posts import build_auction_announce
+    async with db.pool.acquire() as conn:
+        fresh = await conn.fetch("SELECT * FROM auctions WHERE status = 'open' AND NOT announced ORDER BY auction_id")
+        due = await conn.fetch("SELECT auction_id FROM auctions WHERE status = 'open' AND ends_at IS NOT NULL "
+                               "AND ends_at <= NOW()")
+    for auction in fresh:
+        async with db.pool.acquire() as conn:
+            if not await conn.fetchval("UPDATE auctions SET announced = TRUE WHERE auction_id = $1 AND NOT announced "
+                                       "RETURNING 1", auction["auction_id"]):
+                continue
+        link = f"https://t.me/{MAIN_BOT_USERNAME}?start=auction_{auction['auction_id']}"
+        try:
+            await bot.send_message(USERS_CHANNEL_ID, build_auction_announce(auction, link), parse_mode="HTML")
+        except Exception as e:
+            logger.error("[AUCTION_ANNOUNCE] №%s не ушёл: %s", auction["auction_id"], e)
+    for row in due:
+        try:
+            await close_auction(bot, row["auction_id"])
+        except Exception:
+            logger.exception("[AUCTION_CLOSE] сбой закрытия №%s", row["auction_id"])
 
 
 # ============================================================================

@@ -382,6 +382,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app.router.add_get("/api/shop", handle_shop)
     app.router.add_post("/api/invoice", handle_invoice)
     app.router.add_get("/health", lambda r: web.json_response({"ok": True}))
+    from bots.main_bot.webapp_admin import register_admin_routes
+    register_admin_routes(app)   # 🎛 пульт владельца (/admin) — только ADMIN_ID
     # Игровые разделы приложения: мастерская, налёты, биржа, станция, цели, заправка
     from bots.main_bot.webapp_game import register_game_routes
     register_game_routes(app)

@@ -6,16 +6,13 @@
 - считается ТОЛЬКО общий результат всех игроков команды — мотивация звать актив;
 - зачёт по журналу ledger за окно [starts_at, ends_at] — задним числом не накрутишь;
 - команда игрока определяется на момент подведения итогов;
-- призы: за 1-е и места 2–10, каждый — либо товар из магазина (авто-выдача каждому
-  участнику команды), либо ручное описание (владелец вручает сам).
+- призы, места, зачёт и рудники задаёт владелец в пульте (см. «БИТВЫ И АКЦИИ v2» ниже).
 """
 from __future__ import annotations
 
 import json
 import logging
 from datetime import datetime
-
-from shared.delivery import DeliveryError, deliver_order
 
 logger = logging.getLogger(__name__)
 
@@ -116,120 +113,264 @@ async def battle_team_scores(conn, nomination_key: str, starts_at: datetime,
     return [dict(r) for r in rows]
 
 
-async def award_sku_to_team(conn, team_id: int, sku: str, order: dict,
-                            battle_id: int, place: int) -> tuple[int, int]:
-    """
-    Выдаёт товар КАЖДОМУ участнику команды. Возвращает (выдано, пропущено).
-    Идемпотентно: charge_id уникален на битву/место/игрока, повтор упрётся в UNIQUE.
-    """
-    members = await conn.fetch("SELECT user_id FROM users WHERE team_id = $1", team_id)
-    delivered = skipped = 0
-    for m in members:
-        charge_id = f"BATTLE{battle_id}_P{place}_U{m['user_id']}"
-        try:
-            async with conn.transaction():
-                await conn.execute("SELECT 1 FROM users WHERE user_id = $1 FOR UPDATE", m["user_id"])
-                await deliver_order(conn, m["user_id"], order, charge_id)
-            delivered += 1
-        except DeliveryError as e:
-            skipped += 1
-            logger.info("[BATTLE_PRIZE] пропуск user=%s sku=%s: %s", m["user_id"], sku, e)
-        except Exception:
-            skipped += 1
-            logger.exception("[BATTLE_PRIZE] сбой выдачи user=%s sku=%s", m["user_id"], sku)
-    return delivered, skipped
-
-
 def medals(place: int) -> str:
     return {1: "🥇", 2: "🥈", 3: "🥉"}.get(place, f"{place}.")
 
 
-MINE_RES_RU = {"metal": "⛏ металл", "hydrogen": "💧 водород", "crystal": "💎 кристаллы", "parts": "⚙️ детали"}
+# ==========================================================================
+# БИТВЫ И АКЦИИ v2 (решение владельца 27.10): всё создаётся в пульте владельца.
+# - зачёт: team (команды), clan (кланы), teams (команды и кланы вместе), solo (личный);
+# - номинации — из списка (подсчёт по журналам) или ручные (соцсети, своя формулировка):
+#   у ручных победителей по местам вписывает владелец;
+# - призовых мест — сколько угодно, награда на каждое место — любая комбинация (shared/prizes.py),
+#   командным — КАЖДОМУ бойцу команды-призёра;
+# - рудники: сколько рудников, столько призовых мест за них (mine_ids по порядку мест);
+#   в битве за рудники участвуют только команды, внёсшие заявку батарейками (5, клан — 25).
+# ==========================================================================
+BATTLE_SCOPES = ("team", "clan", "teams", "solo")
+MANUAL_NOMINATIONS = {
+    "insta_reels": "📸 Чей рилс в Instagram залетит лучше",
+    "youtube_shorts": "▶️ Чьё видео в YouTube Shorts залетит лучше",
+    "tiktok": "🎵 Чьё видео в TikTok залетит лучше",
+}
+MAX_BATTLE_PLACES = 100
 
 
-def mine_prize_line(mine_id: int) -> str:
-    from shared.economy import MINE_HOLD_HOURS, mine_kind
-    return (f"⛏ Главный приз — <b>рудник №{mine_id}</b> ({MINE_RES_RU[mine_kind(mine_id)]}) на {MINE_HOLD_HOURS} ч: "
-            "КАЖДЫЙ боец команды-победителя получает 1 ресурс в час. Больше бойцов — больше добычи!")
+class BattleError(Exception):
+    def __init__(self, key: str, **kwargs):
+        super().__init__(key)
+        self.key, self.kwargs = key, kwargs
+
+    def localized(self, lang: str) -> str:
+        from shared.locales import t
+        return t(lang, self.key, **self.kwargs)
 
 
-def build_results_post(battle, scores: list[dict], prize_notes: dict[int, str],
-                       mine_note: str | None = None) -> str:
+def nomination_title(key: str, custom: str | None = None) -> str:
+    if key in BATTLE_NOMINATIONS:
+        return BATTLE_NOMINATIONS[key]["title"]
+    if key in MANUAL_NOMINATIONS:
+        return MANUAL_NOMINATIONS[key]
+    return custom or "—"
+
+
+def is_manual(key: str) -> bool:
+    return key not in BATTLE_NOMINATIONS
+
+
+def battery_fee(is_clan: bool) -> int:
+    from shared.economy import BATTLE_BATTERY_FEE_CLAN, BATTLE_BATTERY_FEE_TEAM
+    return BATTLE_BATTERY_FEE_CLAN if is_clan else BATTLE_BATTERY_FEE_TEAM
+
+
+def battle_mines(battle) -> list[int]:
+    keys = battle.keys()
+    ids = list(battle["mine_ids"] or []) if "mine_ids" in keys else []
+    if not ids and "mine_id" in keys and battle["mine_id"]:
+        ids = [battle["mine_id"]]
+    return ids
+
+
+async def battle_solo_scores(conn, nomination_key: str, starts_at: datetime, ends_at: datetime,
+                             limit: int = MAX_BATTLE_PLACES) -> list[dict]:
+    """Личный зачёт по той же формуле, что и командный: [{user_id, name, score}]."""
+    nom = BATTLE_NOMINATIONS[nomination_key]
+    kind = nom["kind"]
+    name_sql = "COALESCE('@' || u.username, NULLIF(u.display_name, ''), 'ID ' || u.user_id::text)"
+    alive = "NOT u.is_blocked AND u.deleted_at IS NULL AND u.deletion_requested_at IS NULL"
+    if kind in ("ledger_sum", "ledger_count", "ledger_sum_positive", "ledger_count_like"):
+        metric = "SUM(l.delta)" if kind in ("ledger_sum", "ledger_sum_positive") else "COUNT(*)"
+        if kind == "ledger_sum_positive":
+            condition, args = "l.delta > 0", [starts_at, ends_at]
+        elif kind == "ledger_count_like":
+            condition, args = "l.reason LIKE $3", [starts_at, ends_at, nom["reason_like"]]
+        else:
+            condition, args = "l.reason = $3", [starts_at, ends_at, nom["reason"]]
+        rows = await conn.fetch(f"""
+            SELECT u.user_id, {name_sql} AS name, {metric}::bigint AS score
+            FROM ledger l JOIN users u ON u.user_id = l.user_id
+            WHERE l.created_at >= $1 AND l.created_at < $2 AND {condition} AND {alive}
+            GROUP BY u.user_id HAVING {metric} > 0
+            ORDER BY {metric} DESC, u.user_id ASC LIMIT {int(limit)}""", *args)
+    elif kind == "referrals":
+        rows = await conn.fetch(f"""
+            SELECT u.user_id, {name_sql} AS name, COUNT(*)::bigint AS score
+            FROM users n JOIN users u ON u.user_id = n.referred_by
+            WHERE n.qualified_at >= $1 AND n.qualified_at < $2 AND {alive}
+            GROUP BY u.user_id ORDER BY COUNT(*) DESC, u.user_id ASC LIMIT {int(limit)}""", starts_at, ends_at)
+    elif kind == "stars":
+        rows = await conn.fetch(f"""
+            SELECT u.user_id, {name_sql} AS name, SUM(p.stars_amount)::bigint AS score
+            FROM star_payments p JOIN users u ON u.user_id = p.user_id
+            WHERE p.created_at >= $1 AND p.created_at < $2 AND p.refunded_at IS NULL
+              AND p.telegram_charge_id NOT LIKE 'TEST%' AND p.stars_amount > 0 AND {alive}
+            GROUP BY u.user_id ORDER BY SUM(p.stars_amount) DESC, u.user_id ASC LIMIT {int(limit)}""",
+            starts_at, ends_at)
+    else:
+        raise ValueError(f"Неизвестный вид номинации: {kind}")
+    return [dict(r) for r in rows]
+
+
+async def registered_teams(conn, battle_id: int) -> set[int]:
+    """Команды, внёсшие полную заявку батарейками."""
+    rows = await conn.fetch(
+        """SELECT e.team_id FROM battle_entries e JOIN teams t ON t.team_id = e.team_id
+           WHERE e.battle_id = $1 AND e.batteries >= CASE WHEN t.max_members >= 1000 THEN $2::int ELSE $3::int END""",
+        battle_id, battery_fee(True), battery_fee(False))
+    return {r["team_id"] for r in rows}
+
+
+async def battle_standings(conn, battle, limit: int | None = None) -> list[dict]:
     """
-    Публикация итогов в канал: тройка лидеров — ярко, места 4–10 — скромнее.
-    prize_notes: {place: строка о призе} (авто-выданные или ручные описания).
+    Таблица битвы: [{id, name, score, is_clan}] (у личного зачёта id = user_id, is_clan = False).
+    Для командного зачёта учитывается scope; в битве за рудники — только команды с заявкой.
     """
-    lines = [
-        f"🏁 <b>БИТВА «{battle['title']}» ЗАВЕРШЕНА!</b>",
-        f"🏅 Номинация: <i>{battle['nomination_text']}</i>",
-        "..................................................", ""
-    ]
-    unit = BATTLE_NOMINATIONS.get(battle["nomination_key"], {}).get("unit", "очков")
-
-    if not scores:
-        lines.append("😶 Ни одна команда не набрала очков в этой битве. Такое бывает только раз!")
-        return "\n".join(lines)
-
-    for i, row in enumerate(scores[:3], start=1):
-        crown = "👑 КЛАН" if row["is_clan"] else "🏆 Команда"
-        lines.append(f"{medals(i)} <b>{row['team_name']}</b> ({crown}) — <b>{row['score']} {unit}</b>")
-        if i in prize_notes:
-            lines.append(f"      🎁 {prize_notes[i]}")
-        lines.append("")
-
-    rest = scores[3:]
-    if rest:
-        lines.append("<i>Остальные герои турнирной таблицы:</i>")
-        for i, row in enumerate(rest, start=4):
-            suffix = f" · 🎁 {prize_notes[i]}" if i in prize_notes else ""
-            lines.append(f"{medals(i)} {row['team_name']} — {row['score']} {unit}{suffix}")
-        lines.append("")
-
-    if mine_note:
-        lines.append(mine_note)
-        lines.append("")
-    lines.append("..................................................")
-    lines.append("<i>Собирай свою банду в /my_team — следующая битва не за горами!</i>")
-    return "\n".join(lines)
+    limit = limit or max(int(battle["places"] or MAX_PRIZE_PLACES), MAX_PRIZE_PLACES, len(battle_mines(battle)))
+    key, scope = battle["nomination_key"], battle["scope"] or "teams"
+    if is_manual(key):
+        return []
+    if scope == "solo":
+        rows = await battle_solo_scores(conn, key, battle["starts_at"], battle["ends_at"], limit)
+        return [{"id": r["user_id"], "name": r["name"], "score": int(r["score"]), "is_clan": False} for r in rows]
+    rows = await battle_team_scores(conn, key, battle["starts_at"], battle["ends_at"], limit=1000)
+    if scope == "team":
+        rows = [r for r in rows if not r["is_clan"]]
+    elif scope == "clan":
+        rows = [r for r in rows if r["is_clan"]]
+    if battle_mines(battle):
+        allowed = await registered_teams(conn, battle["battle_id"])
+        rows = [r for r in rows if r["team_id"] in allowed]
+    return [{"id": r["team_id"], "name": r["team_name"], "score": int(r["score"]), "is_clan": bool(r["is_clan"])}
+            for r in rows[:limit]]
 
 
-def build_announce_post(battle) -> str:
-    """Анонс новой битвы в канал игроков."""
-    return (
-        f"📣 <b>ОБЪЯВЛЕНА БИТВА КОМАНД И КЛАНОВ: «{battle['title']}»!</b>\n"
-        "..................................................\n\n"
-        f"🏅 Номинация: <b>{battle['nomination_text']}</b>\n"
-        f"🕐 Старт зачёта: <b>{battle['starts_at']:%d.%m.%Y %H:%M} UTC</b>\n"
-        f"🏁 Финиш: <b>{battle['ends_at']:%d.%m.%Y %H:%M} UTC</b>\n\n"
-        + (mine_prize_line(battle["mine_id"]) + "\n\n" if battle.get("mine_id") else "") +
-        "⚡ Считается ОБЩИЙ результат всех игроков команды — зови актив в банду, "
-        "каждый боец приближает победу!\n"
-        "🎁 Призы получит КАЖДЫЙ участник команд-призёров. Подробности — после финиша.\n\n"
-        "..................................................\n"
-        "<i>Вступай в команду через /my_team или /all_teams в боте — и в бой!</i>"
-    )
-
-
-def parse_battle_moment(raw: str, base: datetime | None = None) -> datetime | None:
-    """
-    Парсер моментов битвы: 'ДД.ММ.ГГГГ ЧЧ:ММ' (UTC) либо число часов от base.
-    Возвращает None, если распарсить не удалось.
-    """
-    raw = raw.strip()
-    if raw.isdigit() and base is not None:
-        from datetime import timedelta
-        return base + timedelta(hours=int(raw))
-    try:
-        from datetime import timezone
-        return datetime.strptime(raw, "%d.%m.%Y %H:%M").replace(tzinfo=timezone.utc)
-    except ValueError:
+async def resolve_manual_winner(conn, scope: str, value) -> dict | None:
+    """Ручной победитель: игрок (ID, @username, VIP ID) или команда (ID или название)."""
+    value = str(value or "").strip()
+    if not value:
         return None
+    if scope == "solo":
+        raw = value.lstrip("@")
+        row = None
+        if raw.isdigit():
+            row = await conn.fetchrow("SELECT user_id, username, display_name FROM users WHERE user_id = $1", int(raw))
+        if row is None:
+            row = await conn.fetchrow(
+                "SELECT user_id, username, display_name FROM users WHERE lower(username) = lower($1)", raw)
+        if row is None:
+            row = await conn.fetchrow(
+                "SELECT u.user_id, u.username, u.display_name FROM vip_aliases v JOIN users u ON u.user_id = v.user_id "
+                "WHERE lower(v.alias) = lower($1)", raw)
+        if row is None:
+            return None
+        name = "@" + row["username"] if row["username"] else (row["display_name"] or f"ID {row['user_id']}")
+        return {"id": row["user_id"], "name": name, "score": None, "is_clan": False}
+    row = (await conn.fetchrow("SELECT team_id, team_name, max_members FROM teams WHERE team_id = $1", int(value))
+           if value.isdigit() else
+           await conn.fetchrow("SELECT team_id, team_name, max_members FROM teams WHERE lower(team_name) = lower($1)", value))
+    if row is None:
+        return None
+    return {"id": row["team_id"], "name": row["team_name"], "score": None, "is_clan": row["max_members"] >= 1000}
 
 
-def prizes_to_json(prizes: dict[int, dict]) -> str:
-    return json.dumps({str(k): v for k, v in prizes.items()}, ensure_ascii=False)
-
-
-def prizes_from_row(value) -> dict[int, dict]:
+def prizes_by_place(value) -> dict[int, list[dict]]:
+    """Призы битвы по местам в формате v2 ({"1": [rewards]}); старый формат (sku/manual) переводится."""
+    from shared.prizes import normalize_rewards
     data = json.loads(value) if isinstance(value, str) else (value or {})
-    return {int(k): v for k, v in data.items()}
+    out: dict[int, list[dict]] = {}
+    for k, v in data.items():
+        if isinstance(v, list):
+            out[int(k)] = normalize_rewards(v)
+        elif isinstance(v, dict) and v.get("mode") == "manual":
+            out[int(k)] = normalize_rewards([{"kind": "text", "text": v.get("value")}])
+    return out
+
+
+async def finish_battle(conn, battle, now: datetime) -> dict:
+    """
+    Подводит итоги (один раз — по статусу): таблица (или ручные победители), призы каждому
+    победителю/бойцу, рудники командам по местам. Возвращает итоги для поста.
+    """
+    from shared.mines import capture_mine
+    from shared.prizes import grant_many
+    battle_id = battle["battle_id"]
+    if not await conn.fetchval("UPDATE battles SET status = 'finished' WHERE battle_id = $1 AND status = 'active' "
+                               "RETURNING 1", battle_id):
+        return {"skipped": True}
+    scope = battle["scope"] or "teams"
+    places = int(battle["places"] or 0)
+    mines = battle_mines(battle)
+    if is_manual(battle["nomination_key"]):
+        raw = battle["manual_results"]
+        manual = json.loads(raw) if isinstance(raw, str) else (raw or {})
+        standings = []
+        for place in sorted(int(p) for p in manual):
+            winner = await resolve_manual_winner(conn, scope, manual[str(place)])
+            if winner:
+                standings.append(winner)
+    else:
+        standings = await battle_standings(conn, battle)
+    prizes = prizes_by_place(battle["prizes"])
+    rows = []
+    for place, entry in enumerate(standings[:max(places, len(mines))], start=1):
+        rewards = prizes.get(place, [])
+        given = 0
+        if any(r["kind"] != "text" for r in rewards):
+            if scope == "solo":
+                members = [entry["id"]]
+            else:
+                members = [m["user_id"] for m in await conn.fetch(
+                    "SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked AND deleted_at IS NULL",
+                    entry["id"])]
+            given, _ = await grant_many(conn, members, rewards, f"B{battle_id}_P{place}", now)
+        mine_id = until = None
+        if scope != "solo" and place <= len(mines):
+            mine_id = mines[place - 1]
+            async with conn.transaction():
+                until = await capture_mine(conn, mine_id, entry["id"], battle_id, now)
+        rows.append({"place": place, **entry, "rewards": rewards, "given": given,
+                     "mine_id": mine_id, "until": until.isoformat() if until else None})
+    results = {"scope": scope, "places": rows}
+    await conn.execute("UPDATE battles SET results = $2::jsonb WHERE battle_id = $1",
+                       battle_id, json.dumps(results, ensure_ascii=False, default=str))
+    logger.info("[BATTLE] №%s итоги: %s мест, рудников %s", battle_id, len(rows), len(mines))
+    return results
+
+
+async def contribute_battery(conn, battle_id: int, user_id: int, now: datetime) -> dict:
+    """
+    🔋 Боец вносит батарейку в заявку своей команды на битву за рудники.
+    Возвращает {batteries, fee, registered}. Ошибки — BattleError(ключ локали).
+    """
+    from shared.resources import InsufficientResources, change_resource
+    battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", battle_id)
+    if battle is None or battle["status"] != "active" or battle["ends_at"] <= now:
+        raise BattleError("bt.err_closed")
+    if not battle_mines(battle) or (battle["scope"] or "teams") == "solo":
+        raise BattleError("bt.err_no_entry")
+    user = await conn.fetchrow(
+        "SELECT u.team_id, t.max_members FROM users u LEFT JOIN teams t ON t.team_id = u.team_id "
+        "WHERE u.user_id = $1 FOR UPDATE OF u", user_id)
+    if user is None or user["team_id"] is None:
+        raise BattleError("bt.err_no_team")
+    is_clan = (user["max_members"] or 0) >= 1000
+    scope = battle["scope"] or "teams"
+    if (scope == "team" and is_clan) or (scope == "clan" and not is_clan):
+        raise BattleError("bt.err_scope")
+    fee = battery_fee(is_clan)
+    have = await conn.fetchval(
+        "SELECT batteries FROM battle_entries WHERE battle_id = $1 AND team_id = $2 FOR UPDATE",
+        battle_id, user["team_id"]) or 0
+    if have >= fee:
+        raise BattleError("bt.err_full")
+    try:
+        await change_resource(conn, user_id, "battery", -1, "battle_entry", str(battle_id))
+    except InsufficientResources as e:
+        raise BattleError("bt.err_battery") from e
+    total = await conn.fetchval(
+        """INSERT INTO battle_entries (battle_id, team_id, batteries) VALUES ($1, $2, 1)
+           ON CONFLICT (battle_id, team_id) DO UPDATE SET batteries = battle_entries.batteries + 1
+           RETURNING batteries""", battle_id, user["team_id"])
+    await conn.execute("INSERT INTO battle_entry_log (battle_id, team_id, user_id) VALUES ($1, $2, $3)",
+                       battle_id, user["team_id"], user_id)
+    return {"batteries": total, "fee": fee, "registered": total >= fee}

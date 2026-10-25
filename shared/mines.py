@@ -30,10 +30,9 @@ async def list_mines(conn) -> list[dict]:
 
 
 async def mine_battles(conn) -> list[dict]:
-    """Активные битвы, у которых есть рудник-приз."""
+    """Активные битвы, у которых есть рудники-призы (mine_ids — по порядку призовых мест)."""
     rows = await conn.fetch(
-        "SELECT battle_id, title, nomination_key, nomination_text, starts_at, ends_at, mine_id "
-        "FROM battles WHERE status = 'active' AND mine_id IS NOT NULL ORDER BY ends_at")
+        "SELECT * FROM battles WHERE status = 'active' AND cardinality(mine_ids) > 0 ORDER BY ends_at")
     return [dict(r) for r in rows]
 
 
@@ -42,7 +41,7 @@ async def free_mine_ids(conn, now: datetime) -> list[int]:
     rows = await conn.fetch(
         """SELECT id FROM mines m
            WHERE (m.team_id IS NULL OR m.captured_until <= $1)
-             AND NOT EXISTS (SELECT 1 FROM battles b WHERE b.status = 'active' AND b.mine_id = m.id)
+             AND NOT EXISTS (SELECT 1 FROM battles b WHERE b.status = 'active' AND m.id = ANY(b.mine_ids))
            ORDER BY id""", now)
     return [r["id"] for r in rows]
 

@@ -389,7 +389,10 @@ def test_friends_rating_is_seasonal():
 def test_full_reset_migration_is_last_backed_up_and_keeps_payments():
     """Полный сброс 27.10: последний в схеме, с бэкапом, разовый, платежи и тумблеры не трогает."""
     from shared.database import RESET_ALL_STATEMENT, RESET_TABLES, SCHEMA_STATEMENTS
-    assert SCHEMA_STATEMENTS[-1] is RESET_ALL_STATEMENT
+    pos = SCHEMA_STATEMENTS.index(RESET_ALL_STATEMENT)
+    for t in RESET_TABLES:                                   # сброс — после создания всех своих таблиц
+        assert any(f"CREATE TABLE IF NOT EXISTS {t} " in x or f"CREATE TABLE IF NOT EXISTS {t}(" in x
+                   for x in SCHEMA_STATEMENTS[:pos]), t
     for keep in ("star_payments", "feature_flags", "promoters", "mines"):
         assert keep not in RESET_TABLES
     for t in ("users", "ledger", "miners", "game_stats", "user_resources", "teams", "user_tech", "vip_aliases"):

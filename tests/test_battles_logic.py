@@ -1,19 +1,18 @@
 """
-Битвы команд и кланов: чистая логика (номинации, парсер моментов, посты, призы).
+Битвы и акции v2: чистая логика (номинации, зачёт, рудники по местам, призы, посты на 14 языках).
 """
-from datetime import datetime, timedelta, timezone
-
-import pytest
+from datetime import datetime, timezone
 
 from shared.battles import (
     BATTLE_NOMINATIONS,
-    MAX_PRIZE_PLACES,
-    build_announce_post,
-    build_results_post,
+    BATTLE_SCOPES,
+    MANUAL_NOMINATIONS,
+    battery_fee,
+    battle_mines,
+    is_manual,
     medals,
-    parse_battle_moment,
-    prizes_from_row,
-    prizes_to_json,
+    nomination_title,
+    prizes_by_place,
 )
 
 NOW = datetime(2026, 11, 1, 12, 0, tzinfo=timezone.utc)
@@ -33,78 +32,137 @@ def test_nominations_catalog_is_rich_and_well_formed():
 
 
 def test_key_owner_nominations_present():
-    """Номинации из ТЗ владельца: нафармить, дуэли, КНБ, викторина."""
-    assert "farm_mined" in BATTLE_NOMINATIONS
-    assert "duel_wins" in BATTLE_NOMINATIONS and "duels_played" in BATTLE_NOMINATIONS
-    assert "rps_wins" in BATTLE_NOMINATIONS
-    assert "quiz_wins" in BATTLE_NOMINATIONS
+    """Номинации из ТЗ владельца: нафармить, дуэли, КНБ, викторина, рефералы, соцсети."""
+    for key in ("farm_mined", "duel_wins", "duels_played", "rps_wins", "quiz_wins", "referrals"):
+        assert key in BATTLE_NOMINATIONS, key
+    assert set(MANUAL_NOMINATIONS) == {"insta_reels", "youtube_shorts", "tiktok"}
+    assert not set(MANUAL_NOMINATIONS) & set(BATTLE_NOMINATIONS)
 
 
-# ---------------------------------------------------------------- парсер моментов
-def test_parse_moment_zero_hours_means_now():
-    assert parse_battle_moment("0", base=NOW) == NOW
+def test_manual_and_custom_nominations():
+    assert is_manual("insta_reels") and is_manual("custom") and not is_manual("farm_mined")
+    assert nomination_title("custom", "Самый смешной мем") == "Самый смешной мем"
+    assert nomination_title("tiktok").startswith("🎵")
+    assert nomination_title("farm_mined") == BATTLE_NOMINATIONS["farm_mined"]["title"]
 
 
-def test_parse_moment_hours_from_base():
-    assert parse_battle_moment("168", base=NOW) == NOW + timedelta(hours=168)
+def test_scopes_and_battery_fees():
+    assert BATTLE_SCOPES == ("team", "clan", "teams", "solo")
+    assert battery_fee(False) == 5 and battery_fee(True) == 25      # заявка команды / клана
 
 
-def test_parse_moment_absolute_date_utc():
-    parsed = parse_battle_moment("07.11.2026 18:00")
-    assert parsed == datetime(2026, 11, 7, 18, 0, tzinfo=timezone.utc)
+def test_battle_mines_by_place_and_legacy_single_mine():
+    class R(dict):
+        pass
+    assert battle_mines(R(mine_ids=[7, 3, 12], mine_id=None)) == [7, 3, 12]   # порядок = призовые места
+    assert battle_mines(R(mine_ids=[], mine_id=4)) == [4]
+    assert battle_mines(R(mine_ids=None, mine_id=None)) == []
 
 
-@pytest.mark.parametrize("raw", ["завтра", "7d", "2026-11-07", "", "18:00"])
-def test_parse_moment_rejects_garbage(raw):
-    assert parse_battle_moment(raw, base=NOW) is None
-
-
-# ---------------------------------------------------------------- призы
-def test_prizes_json_round_trip():
-    prizes = {1: {"mode": "sku", "value": "cutlet_50"},
-              2: {"mode": "manual", "value": "Telegram Premium на месяц"}}
-    restored = prizes_from_row(prizes_to_json(prizes))
-    assert restored == prizes
-    assert all(isinstance(k, int) for k in restored)
-
-
-def test_max_prize_places_is_ten():
-    assert MAX_PRIZE_PLACES == 10  # призы за 1–10 места по ТЗ владельца
-
-
-# ---------------------------------------------------------------- посты
-def _battle(nom_key="farm_mined"):
-    return {"title": "Осенний Кубок", "nomination_key": nom_key,
-            "nomination_text": "⛏️ Больше всех нафармить монет фермой",
-            "starts_at": NOW, "ends_at": NOW + timedelta(days=7)}
-
-
-def _scores(n):
-    return [{"team_id": i, "team_name": f"Банда {i}", "is_clan": i == 1, "score": 1000 - i * 50}
-            for i in range(1, n + 1)]
+def test_prizes_by_place_v2_and_legacy():
+    v2 = prizes_by_place({"1": [{"kind": "coins", "amount": 500}, {"kind": "resource", "res": "core", "qty": 2}],
+                          "2": [{"kind": "bogus"}]})
+    assert v2 == {1: [{"kind": "coins", "amount": 500}, {"kind": "resource", "res": "core", "qty": 2}], 2: []}
+    legacy = prizes_by_place('{"1": {"mode": "manual", "value": "iPhone"}, "2": {"mode": "sku", "value": "cutlet_10"}}')
+    assert legacy == {1: [{"kind": "text", "text": "iPhone"}]}
 
 
 def test_medals():
     assert [medals(i) for i in (1, 2, 3, 4, 10)] == ["🥇", "🥈", "🥉", "4.", "10."]
 
 
-def test_results_post_top3_bright_rest_modest():
-    post = build_results_post(_battle(), _scores(10),
-                              {1: "каждому бойцу — 🥩 Запас котлет (выдано: 12)"})
-    assert "🥇 <b>Банда 1</b>" in post and "👑 КЛАН" in post
-    assert "🥈 <b>Банда 2</b>" in post and "🥉 <b>Банда 3</b>" in post
-    assert "4. Банда 4" in post and "<b>Банда 4</b>" not in post  # 4-10 скромнее тройки
-    assert "10. Банда 10" in post
-    assert "🎁 каждому бойцу — 🥩 Запас котлет" in post
+# ---------------------------------------------------------------- призы
+def test_normalize_rewards_accepts_every_kind_and_rejects_garbage():
+    from shared.prizes import REWARD_KINDS, normalize_reward, normalize_rewards
+    good = [
+        {"kind": "coins", "amount": "1000"},
+        {"kind": "resource", "res": "battery", "qty": 5},
+        {"kind": "cutlets", "qty": 10},
+        {"kind": "item", "effect": "shield", "hours": 48},
+        {"kind": "item", "effect": "economizer", "hours": 99, "qty": 3},     # разовое — часы обнуляются
+        {"kind": "robot", "robot": "premium", "hours": 8760},
+        {"kind": "boost", "boost": "unlimit", "hours": 24},
+        {"kind": "text", "text": "Telegram Premium на 3 месяца"},
+    ]
+    out = normalize_rewards(good)
+    assert [r["kind"] for r in out] == ["coins", "resource", "cutlets", "item", "item", "robot", "boost", "text"]
+    assert out[0]["amount"] == 1000 and out[4] == {"kind": "item", "effect": "economizer", "hours": 0, "qty": 3}
+    assert {r["kind"] for r in out} == set(REWARD_KINDS)
+    for bad in ({"kind": "coins", "amount": 0}, {"kind": "coins", "amount": -5}, {"kind": "resource", "res": "gold", "qty": 1},
+                {"kind": "item", "effect": "shield", "hours": 0}, {"kind": "robot", "robot": "intern", "hours": 5},
+                {"kind": "boost", "boost": "nitrogen", "hours": 999999}, {"kind": "text", "text": "  "}, "x", None,
+                {"kind": "station_drone"}):
+        assert normalize_reward(bad) is None, bad
 
 
-def test_results_post_handles_empty_scores():
-    post = build_results_post(_battle(), [], {})
-    assert "Ни одна команда" in post
+def test_reward_labels_are_language_neutral():
+    from shared.prizes import rewards_label
+    label = rewards_label([{"kind": "coins", "amount": 5000}, {"kind": "resource", "res": "core", "qty": 2},
+                           {"kind": "robot", "robot": "premium", "hours": 720, "qty": 1},
+                           {"kind": "boost", "boost": "unlimit", "hours": 24}])
+    assert label == "5 000 🪙 + 2 ☢️ + ⚡🤖 30d + ♾ 1d"
+    assert rewards_label([]) == "—"
+    assert rewards_label([{"kind": "robot", "robot": "junior", "hours": 8760 * 2, "qty": 3}]) == "🤖 2y ×3"
 
 
-def test_announce_post_mentions_dates_and_team_motivation():
-    post = build_announce_post(_battle())
-    assert "Осенний Кубок" in post
-    assert "01.11.2026 12:00" in post and "08.11.2026 12:00" in post
-    assert "ОБЩИЙ результат" in post
+def test_needs_farm_close_only_for_farm_rewards():
+    from shared.prizes import needs_farm_close
+    assert needs_farm_close([{"kind": "robot", "robot": "junior", "hours": 5}])
+    assert needs_farm_close([{"kind": "boost", "boost": "nitrogen", "hours": 5}])
+    assert not needs_farm_close([{"kind": "boost", "boost": "shield", "hours": 5}, {"kind": "coins", "amount": 1}])
+
+
+# ---------------------------------------------------------------- посты на всех языках
+class _B(dict):
+    pass
+
+
+def _battle(**kw):
+    base = dict(battle_id=7, title="Осенний кубок <b>", nomination_key="farm_mined", nomination_text="x",
+                scope="teams", places=3, mine_ids=[4, 9], mine_id=None,
+                starts_at=NOW, ends_at=datetime(2026, 11, 3, 12, 0, tzinfo=timezone.utc))
+    base.update(kw)
+    return _B(base)
+
+
+def test_post_langs_match_start_menu():
+    from bots.main_bot.handlers.start import LANGUAGES
+    from shared.battle_posts import POST_LANGS
+    from shared.locales import SUPPORTED_LANGS
+    assert [c for c, _ in POST_LANGS] == [c for c, _ in LANGUAGES]
+    assert {c for c, _ in POST_LANGS} == set(SUPPORTED_LANGS)
+    for (code, flag), (code2, label) in zip(POST_LANGS, LANGUAGES):
+        assert label.startswith(flag), code
+
+
+def test_announce_post_all_languages_prizes_mines_and_limit():
+    from shared.battle_posts import POST_LANGS, build_announce
+    prizes = {1: [{"kind": "coins", "amount": 1000}], 2: [{"kind": "resource", "res": "core", "qty": 1}]}
+    post = build_announce(_battle(), prizes, {4: "crystal", 9: "stone"})
+    assert "Осенний кубок &lt;b&gt;" in post                               # ввод владельца экранирован
+    assert "🥇 1 000 🪙" in post and "🥈 1 ☢️" in post and "№4 💎" in post and "№9 🪨" in post
+    for code, flag in POST_LANGS:
+        assert f"\n{flag} " in post, code
+    assert post.count("🔋") >= len(POST_LANGS)                           # заявка батарейками на каждом языке
+    assert len(post) <= 4096
+    long_prizes = {p: [{"kind": "text", "text": "П" * 150}] for p in range(1, 40)}
+    assert len(build_announce(_battle(title="T" * 100), long_prizes, {})) <= 4096
+
+
+def test_announce_custom_nomination_as_is_and_solo_without_mines():
+    from shared.battle_posts import build_announce
+    post = build_announce(_battle(nomination_key="custom", nomination_text="Лучший мем · Best meme",
+                                  scope="solo", mine_ids=[]), {}, {})
+    assert post.count("Лучший мем · Best meme") == 14
+    assert "🔋" not in post and "⛏" not in post
+
+
+def test_results_post_lists_places_rewards_mines():
+    from shared.battle_posts import build_results
+    results = {"places": [
+        {"place": 1, "name": "Банда", "score": 120, "rewards": [{"kind": "coins", "amount": 500}], "mine_id": 4},
+        {"place": 2, "name": "@neo", "score": None, "rewards": [], "mine_id": None}]}
+    post = build_results(_battle(), results)
+    assert "🥇 <b>Банда</b> — 120 · 🎁 500 🪙 · ⛏ №4" in post and "🥈 <b>@neo</b>" in post
+    empty = build_results(_battle(), {"places": []})
+    assert "🥇" not in empty and len(empty) <= 4096

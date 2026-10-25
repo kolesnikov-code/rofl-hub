@@ -87,6 +87,7 @@ RESET_TABLES = (
     "resource_swaps", "team_help", "user_items", "team_banners", "user_tech", "user_badges",
     "season_results", "weekly_crafts",
 )
+# Таблицы, созданные позже сброса, в него не входят (сброс разовый и уже выполнен).
 RESET_ALL_STATEMENT = """
 DO $$
 DECLARE t TEXT;
@@ -674,6 +675,44 @@ SCHEMA_STATEMENTS: list[str] = [
     "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",
     "CREATE INDEX IF NOT EXISTS star_payments_created_idx ON star_payments (created_at);",
     RESET_ALL_STATEMENT,
+    # --- 27.10: битвы и акции v2 (пульт владельца): зачёт, места, рудники по местам, ручные итоги ---
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS scope VARCHAR(8) NOT NULL DEFAULT 'teams';",
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS places INT NOT NULL DEFAULT 10;",
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS mine_ids INT[] NOT NULL DEFAULT '{}';",
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS manual_results JSONB;",
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS announced BOOLEAN NOT NULL DEFAULT TRUE;",
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS results_posted BOOLEAN NOT NULL DEFAULT TRUE;",
+    "UPDATE battles SET mine_ids = ARRAY[mine_id] WHERE mine_id IS NOT NULL AND mine_ids = '{}';",
+    """
+    CREATE TABLE IF NOT EXISTS battle_entries (
+        battle_id BIGINT NOT NULL,
+        team_id BIGINT NOT NULL,
+        batteries INT NOT NULL DEFAULT 0 CHECK (batteries >= 0),
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (battle_id, team_id)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS battle_entry_log (
+        id BIGSERIAL PRIMARY KEY,
+        battle_id BIGINT NOT NULL,
+        team_id BIGINT NOT NULL,
+        user_id BIGINT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    # --- 27.10: VIP-аукционы из пульта: лот привязан к VIP ID, закрывается сам по ends_at ---
+    "ALTER TABLE auctions ADD COLUMN IF NOT EXISTS vip_alias VARCHAR(32);",
+    "ALTER TABLE auctions ADD COLUMN IF NOT EXISTS ends_at TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE auctions ADD COLUMN IF NOT EXISTS announced BOOLEAN NOT NULL DEFAULT TRUE;",
+    """
+    CREATE TABLE IF NOT EXISTS reward_grants (
+        ref VARCHAR(128) PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        payload JSONB NOT NULL DEFAULT '[]'::jsonb,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
 ]
 
 

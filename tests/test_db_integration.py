@@ -32,7 +32,7 @@ async def conn():
                         "daily_activity, promoters, metrics_snapshots, market_orders, "
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
                         "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items, team_banners, user_tech, user_badges, "
-                        "season_results RESTART IDENTITY")
+                        "season_results, battle_entries, battle_entry_log, reward_grants RESTART IDENTITY")
         await c.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
                         "captured_until = NULL, last_paid_at = NULL")
         await c.execute("DELETE FROM feature_flags WHERE key LIKE 'wsr:%'")
@@ -523,28 +523,6 @@ async def test_battle_team_scores_counts_only_window_and_teams(conn):
     assert [(s["team_name"], s["score"]) for s in scores] == [("Alpha", 500), ("Beta", 400)]
 
 
-async def test_battle_prize_delivery_to_every_member_is_idempotent(conn):
-    from shared.battles import award_sku_to_team
-    from bots.main_bot.catalog import get_item
-    await conn.execute("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Win', 110, 2)")
-    team_id = await conn.fetchval("SELECT team_id FROM teams WHERE team_name = 'Win'")
-    await _mk_user(conn, 110, 0, team_id=team_id)
-    await _mk_user(conn, 111, 0, team_id=team_id)
-
-    order = {**get_item("cutlet_10"), "stars": 0}  # призы не считаются продажами
-    delivered, skipped = await award_sku_to_team(conn, team_id, "cutlet_10", order, battle_id=1, place=1)
-    assert (delivered, skipped) == (2, 0)
-    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 110") == 10
-
-    # Повторная выдача (например, повторный вызов finish) не задвоит призы
-    delivered2, skipped2 = await award_sku_to_team(conn, team_id, "cutlet_10", order, battle_id=1, place=1)
-    assert delivered2 == 0 and skipped2 == 2
-    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 110") == 10
-    assert await conn.fetchval(
-        "SELECT COALESCE(SUM(stars_amount), 0) FROM star_payments") == 0
-
-
-# ---------------------------------------------------------------- VIP ID
 async def test_transfer_by_vip_alias(conn):
     from shared.transfers import transfer_coins
     await _mk_user(conn, 120, 500)
@@ -1292,11 +1270,13 @@ async def test_storage_cap_clips_mining_but_not_transfers(conn, global_db):
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 920") >= 100
 
     # Расширение склада: 500 → 1000, после него добыча снова идёт
-    await grant_bundle(conn, 920, {"metal": 150}, "test")
+    from shared.economy import STORAGE_LEVELS
+    cost = STORAGE_LEVELS[0][1]
+    await grant_bundle(conn, 920, {k: v for k, v in cost.items() if k != "parts"}, "test")
     res = await craft(conn, 920, "storage", utcnow())
     assert res.level == 1000
     assert await conn.fetchval("SELECT res_capacity FROM users WHERE user_id = 920") == 1000
-    assert await change_resource(conn, 920, "parts", 5, "test", cap=1000) == 350 + 5   # 500 - 150 потрачено + 5
+    assert await change_resource(conn, 920, "parts", 5, "test", cap=1000) == 500 - cost["parts"] + 5
 
 
 async def test_weekly_recipe_needs_toggle_and_respects_limit(conn):
@@ -2115,3 +2095,229 @@ async def test_resources_v3_migration_grants_veterans_basic_tech(conn):
     await _mk_user(conn, 1541, 0)
     await conn.execute(migr[0])                                                # разовая: повтор не трогает новых
     assert (await tech_levels(conn, 1541))["attack"] == 0
+
+
+# ---------------------------------------------------------------- 27.10: битвы v2, призы, пульт
+async def _team(conn, tid_name: str, captain: int, members: list[int], clan: bool = False) -> int:
+    tid = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count, max_members) VALUES ($1, $2, $3, $4) "
+                              "RETURNING team_id", tid_name, captain, len(members), 1000 if clan else 50)
+    for uid in members:
+        await _mk_user(conn, uid, 0, team_id=tid)
+    return tid
+
+
+async def test_prize_engine_grants_every_kind_once(conn):
+    from shared.economy import utcnow
+    from shared.prizes import grant, normalize_rewards
+    from shared.resources import get_resources
+    now = utcnow()
+    await _mk_user(conn, 1600, 0, created_at=now)
+    rewards = normalize_rewards([
+        {"kind": "coins", "amount": 700}, {"kind": "resource", "res": "core", "qty": 3},
+        {"kind": "cutlets", "qty": 4}, {"kind": "item", "effect": "shield", "hours": 48, "qty": 2},
+        {"kind": "robot", "robot": "premium", "hours": 24 * 365}, {"kind": "boost", "boost": "unlimit", "hours": 24},
+        {"kind": "text", "text": "Telegram Premium"}])
+    async with conn.transaction():
+        assert await grant(conn, 1600, rewards, "TEST_P1_U1600", now)
+    async with conn.transaction():
+        assert not await grant(conn, 1600, rewards, "TEST_P1_U1600", now)       # повтор по тому же ref — нет
+    user = await conn.fetchrow("SELECT balance, inv_cutlets, unlimit_until FROM users WHERE user_id = 1600")
+    assert user["balance"] == 700 and user["inv_cutlets"] == 4 and user["unlimit_until"] > now
+    assert (await get_resources(conn, 1600, ("core",)))["core"] == 3
+    assert await conn.fetchval("SELECT qty FROM user_items WHERE user_id = 1600 AND effect = 'shield' AND hours = 48") == 2
+    robot = await conn.fetchrow("SELECT kind, expires_at FROM miners WHERE user_id = 1600")
+    assert robot["kind"] == "premium" and robot["expires_at"] > now + __import__("datetime").timedelta(days=364)
+    assert await conn.fetchval("SELECT reason FROM ledger WHERE user_id = 1600") == "prize"
+    async with conn.transaction():
+        assert not await grant(conn, 999_001, rewards, "TEST_NOBODY", now)       # нет игрока — ничего
+
+
+async def test_battery_entry_rules(conn):
+    from datetime import timedelta
+    from shared.battles import BattleError, contribute_battery
+    from shared.economy import utcnow
+    from shared.resources import get_resources, grant_bundle
+    now = utcnow()
+    team = await _team(conn, "Alpha", 1610, [1610, 1611])
+    clan = await _team(conn, "Mega", 1612, [1612], clan=True)
+    await _mk_user(conn, 1613, 0)                                                  # без команды
+    for uid in (1610, 1611, 1612, 1613):
+        await grant_bundle(conn, uid, {"battery": 10}, "test")
+    bid = await conn.fetchval(
+        "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, scope, places, mine_ids) "
+        "VALUES ('B', 'farm_mined', 'x', $1, $2, 'team', 2, ARRAY[1, 2]) RETURNING battle_id", now, now + timedelta(hours=5))
+    for uid, key in ((1613, "bt.err_no_team"), (1612, "bt.err_scope")):
+        with pytest.raises(BattleError) as e:
+            await contribute_battery(conn, bid, uid, now)
+        assert e.value.key == key
+    for i in range(5):
+        res = await contribute_battery(conn, bid, 1610 if i % 2 else 1611, now)
+    assert res == {"batteries": 5, "fee": 5, "registered": True}
+    with pytest.raises(BattleError) as e:
+        await contribute_battery(conn, bid, 1610, now)
+    assert e.value.key == "bt.err_full"
+    assert (await get_resources(conn, 1610, ("battery",)))["battery"] + (await get_resources(conn, 1611, ("battery",)))["battery"] == 15
+    assert await conn.fetchval("SELECT COUNT(*) FROM battle_entry_log WHERE battle_id = $1", bid) == 5
+    with pytest.raises(BattleError) as e:                                          # после финиша — закрыто
+        await contribute_battery(conn, bid, 1610, now + timedelta(hours=6))
+    assert e.value.key == "bt.err_closed"
+    solo = await conn.fetchval("INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, scope) "
+                               "VALUES ('S', 'farm_mined', 'x', $1, $2, 'solo') RETURNING battle_id", now, now + timedelta(hours=5))
+    with pytest.raises(BattleError) as e:
+        await contribute_battery(conn, solo, 1610, now)
+    assert e.value.key == "bt.err_no_entry"
+    await conn.execute("UPDATE user_resources SET qty = 0 WHERE user_id = 1612 AND kind = 'battery'")
+    cbid = await conn.fetchval("INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, scope, mine_ids) "
+                               "VALUES ('C', 'farm_mined', 'x', $1, $2, 'clan', ARRAY[3]) RETURNING battle_id", now, now + timedelta(hours=5))
+    with pytest.raises(BattleError) as e:
+        await contribute_battery(conn, cbid, 1612, now)
+    assert e.value.key == "bt.err_battery"
+    assert clan and team
+
+
+async def test_mine_battle_only_registered_teams_win_mines_and_prizes(conn):
+    from datetime import timedelta
+    from shared.battles import contribute_battery, finish_battle
+    from shared.economy import utcnow
+    from shared.ledger import change_balance
+    from shared.resources import grant_bundle
+    now = utcnow()
+    start = now - timedelta(hours=2)
+    a = await _team(conn, "Alpha", 1620, [1620, 1621])
+    b = await _team(conn, "Bravo", 1622, [1622])
+    c = await _team(conn, "Charlie", 1623, [1623])
+    bid = await conn.fetchval(
+        "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, scope, places, mine_ids, prizes) "
+        "VALUES ('Mines', 'farm_mined', 'x', $1, $2, 'teams', 2, ARRAY[5, 6], $3::jsonb) RETURNING battle_id",
+        start, now + timedelta(minutes=30),
+        '{"1": [{"kind": "coins", "amount": 300}], "2": [{"kind": "resource", "res": "core", "qty": 1}]}')
+    for uid, amount in ((1620, 50), (1621, 50), (1622, 500), (1623, 20)):            # Bravo впереди, но без заявки
+        async with conn.transaction():
+            await change_balance(conn, uid, amount, "mining", "t")
+    for uid in (1620, 1623):
+        await grant_bundle(conn, uid, {"battery": 5}, "test")
+    for _ in range(5):
+        async with conn.transaction():
+            await contribute_battery(conn, bid, 1620, now)
+            await contribute_battery(conn, bid, 1623, now)
+    await conn.execute("UPDATE battles SET ends_at = NOW() + INTERVAL '1 second' WHERE battle_id = $1", bid)
+    battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", bid)
+    res = await finish_battle(conn, battle, now)
+    names = [(p["place"], p["name"], p["mine_id"]) for p in res["places"]]
+    assert names == [(1, "Alpha", 5), (2, "Charlie", 6)]                              # Bravo без 🔋-заявки не в зачёте
+    assert await conn.fetchval("SELECT team_id FROM mines WHERE id = 5") == a
+    assert await conn.fetchval("SELECT team_id FROM mines WHERE id = 6") == c
+    assert await conn.fetchval("SELECT COUNT(*) FROM ledger WHERE reason = 'prize'") == 2   # обоим бойцам Alpha
+    assert await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 1623 AND kind = 'core'") == 1
+    assert (await finish_battle(conn, battle, now)).get("skipped")                    # второй раз — ничего
+    assert await conn.fetchval("SELECT COUNT(*) FROM ledger WHERE reason = 'prize'") == 2
+    assert b
+
+
+async def test_solo_and_manual_battles(conn):
+    from datetime import timedelta
+    from shared.battles import finish_battle
+    from shared.economy import utcnow
+    from shared.ledger import change_balance
+    now = utcnow()
+    for uid, amount in ((1630, 30), (1631, 90), (1632, 60)):
+        await _mk_user(conn, uid, 0)
+        async with conn.transaction():
+            await change_balance(conn, uid, amount, "mining", "t")
+    await conn.execute("UPDATE users SET username = 'reelstar' WHERE user_id = 1630")
+    solo = await conn.fetchval(
+        "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, scope, places, prizes) "
+        "VALUES ('Solo', 'farm_mined', 'x', $1, $1, 'solo', 2, $2::jsonb) RETURNING battle_id",
+        now - timedelta(hours=1), '{"1": [{"kind": "cutlets", "qty": 7}], "2": [{"kind": "coins", "amount": 1}]}')
+    await conn.execute("UPDATE battles SET ends_at = NOW() + INTERVAL '1 second' WHERE battle_id = $1", solo)
+    res = await finish_battle(conn, await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", solo), now)
+    assert [p["id"] for p in res["places"]] == [1631, 1632]
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 1631") == 7
+    manual = await conn.fetchval(
+        "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, scope, places, prizes, manual_results) "
+        "VALUES ('Reels', 'insta_reels', 'x', $1, $1, 'solo', 1, $2::jsonb, $3::jsonb) RETURNING battle_id",
+        now, '{"1": [{"kind": "resource", "res": "battery", "qty": 2}, {"kind": "text", "text": "iPhone"}]}',
+        '{"1": "@ReelStar"}')
+    res = await finish_battle(conn, await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", manual), now)
+    assert res["places"][0]["name"] == "@reelstar" and res["places"][0]["given"] == 1
+    assert await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 1630 AND kind = 'battery'") == 2
+
+
+async def test_admin_panel_api_creates_battle_and_gives_rewards(conn, global_db, monkeypatch):
+    import json as _j
+    import time as _t
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    monkeypatch.setenv("ADMIN_ID", "1640")
+    await _mk_user(conn, 1640, 0)
+    await _mk_user(conn, 1641, 0)
+    await conn.execute("UPDATE users SET username = 'lucky' WHERE user_id = 1641")
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1640}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    try:
+        meta = await (await client.get("/api/admin/meta", headers=head)).json()
+        assert len(meta["mines"]) == 40 and meta["fee"] == {"team": 5, "clan": 25}
+        r = await client.post("/api/admin/battle", headers=head, json={
+            "title": "Пульт", "scope": "teams", "nomination": "farm_mined", "starts_at": "now", "hours": 24,
+            "places": 2, "mine_ids": [7, 8], "prizes": {"1": [{"kind": "coins", "amount": 100}]}})
+        body = await r.json()
+        assert r.status == 200 and body["ok"]
+        row = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", body["id"])
+        assert list(row["mine_ids"]) == [7, 8] and not row["announced"] and row["scope"] == "teams"
+        assert _j.loads(row["prizes"])["1"][0]["amount"] == 100
+        bad = await client.post("/api/admin/battle", headers=head, json={"title": "x", "scope": "teams",
+                                "nomination": "farm_mined", "hours": 5, "places": 1, "mine_ids": [7]})
+        assert bad.status == 400                                                   # рудник №7 уже в битве
+        r = await client.post("/api/admin/reward", headers=head, json={"target": "player", "value": "@lucky",
+                              "rewards": [{"kind": "resource", "res": "core", "qty": 2}]})
+        assert (await r.json())["given"] == 1
+        assert await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 1641 AND kind = 'core'") == 2
+        r = await client.post("/api/admin/battle/close", headers=head, json={"id": body["id"], "mode": "cancel"})
+        assert (await r.json())["ok"]
+        assert await conn.fetchval("SELECT status FROM battles WHERE battle_id = $1", body["id"]) == "cancelled"
+        vip = await (await client.get("/api/admin/vip", headers=head)).json()
+        alias = vip["free"][0]
+        r = await client.post("/api/admin/vip/auction", headers=head, json={"alias": alias, "price": 5000, "step": 500, "hours": 24})
+        assert (await r.json())["ok"]
+        r = await client.post("/api/admin/vip/auction", headers=head, json={"alias": alias, "price": 5000, "step": 500, "hours": 24})
+        assert r.status == 400                                                     # уже на аукционе
+        auc = await conn.fetchrow("SELECT * FROM auctions WHERE vip_alias = $1", alias)
+        assert auc["status"] == "open" and not auc["announced"] and auc["ends_at"] is not None
+    finally:
+        await client.close()
+
+
+async def test_events_api_for_players(conn, global_db):
+    import time as _t
+    from datetime import timedelta
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.economy import utcnow
+    from shared.resources import grant_bundle
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    now = utcnow()
+    tid = await _team(conn, "Echo", 1650, [1650])
+    await grant_bundle(conn, 1650, {"battery": 3}, "test")
+    bid = await conn.fetchval(
+        "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, scope, places, mine_ids, prizes) "
+        "VALUES ('Live', 'farm_mined', 'x', $1, $2, 'teams', 3, ARRAY[11], $3::jsonb) RETURNING battle_id",
+        now - timedelta(hours=1), now + timedelta(hours=5), '{"1": [{"kind": "coins", "amount": 50}]}')
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1650}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    try:
+        ev = (await (await client.get("/api/events", headers=head)).json())["events"]
+        assert ev[0]["id"] == bid and ev[0]["mines"] == [11] and ev[0]["prizes"][0]["label"] == "50 🪙"
+        assert ev[0]["entry"] == {"allowed": True, "batteries": 0, "fee": 5, "registered": False}
+        r = await client.post("/api/battle/battery", headers=head, json={"battle_id": bid})
+        assert (await r.json())["batteries"] == 1
+        mines = await (await client.get("/api/mines", headers=head)).json()
+        assert mines["battles"][0]["mine_ids"] == [11] and mines["batteries"] == 2
+        assert next(m for m in mines["mines"] if m["id"] == 11)["place"] == 1
+    finally:
+        await client.close()
+    assert tid

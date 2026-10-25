@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ROFL HUB · Пульт</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root { --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240; --neon: #00ffe1; --accent: #ffd93d; --text: #e8ecff;
+          --muted: #8a93b8; --ok: #37e85f; --bad: #ff5555; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+         padding: 12px 12px 40px; min-height: 100vh; font-size: 14px; }
+  .logo { text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px; color: var(--neon);
+          text-shadow: 0 0 18px rgba(0,255,225,.45); margin: 4px 0 12px; }
+  .tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
+  .tab { flex: 0 0 auto; padding: 9px 14px; border-radius: 999px; border: 1px solid rgba(0,255,225,.3);
+         background: #0d1326; color: var(--text); font-weight: 700; cursor: pointer; }
+  .tab.on { background: var(--neon); color: #001a17; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .card { background: linear-gradient(160deg, var(--card), var(--card2)); border: 1px solid rgba(0,255,225,.14);
+          border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; }
+  h2 { font-size: 13px; letter-spacing: 1.5px; color: var(--neon); margin-bottom: 10px; text-transform: uppercase; }
+  h3 { font-size: 13px; color: var(--accent); margin: 12px 0 6px; }
+  label { display: block; color: var(--muted); font-size: 12px; margin: 10px 0 4px; }
+  input, select, textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(0,255,225,.25);
+          background: #0d1326; color: var(--text); font-size: 14px; }
+  textarea { min-height: 60px; resize: vertical; }
+  .btn { display: block; width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: none; cursor: pointer;
+         background: linear-gradient(90deg, var(--neon), #3df0ff); color: #001a17; font-weight: 900; font-size: 15px; }
+  .btn.ghost { background: #0d1326; color: var(--text); border: 1px solid rgba(0,255,225,.3); font-weight: 700; }
+  .btn.warn { background: #3a1520; color: #ffb3b3; border: 1px solid rgba(255,85,85,.4); }
+  .btn:disabled { opacity: .45; cursor: wait; }
+  .mini { padding: 6px 10px; border-radius: 9px; border: 1px solid rgba(0,255,225,.3); background: #0d1326; color: var(--text);
+          font-weight: 700; cursor: pointer; font-size: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { padding: 7px 11px; border-radius: 999px; border: 1px solid rgba(0,255,225,.25); background: #0d1326; color: var(--text);
+          cursor: pointer; font-size: 13px; }
+  .chip.on { background: rgba(0,255,225,.18); border-color: var(--neon); color: #fff; }
+  .noms { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .nom { text-align: left; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(0,255,225,.2); background: #0d1326;
+         color: var(--text); cursor: pointer; font-size: 13px; }
+  .nom.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .nom small { display: block; color: var(--muted); margin-top: 3px; }
+  .mines { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
+  .mn { position: relative; padding: 8px 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); background: #0d1326;
+        color: var(--text); cursor: pointer; font-size: 13px; text-align: center; }
+  .mn.free { border-color: rgba(0,255,225,.45); }
+  .mn.busy { opacity: .35; cursor: not-allowed; }
+  .mn.pick { border-color: var(--accent); background: rgba(255,217,61,.15); }
+  .mn b { position: absolute; top: -7px; right: -5px; background: var(--accent); color: #1a1200; border-radius: 999px;
+          font-size: 11px; padding: 1px 6px; }
+  .row { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px dashed rgba(138,147,184,.15); }
+  .row:last-child { border-bottom: none; }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.4; }
+  .ok { color: var(--ok); } .bad { color: var(--bad); }
+  .place { border: 1px solid rgba(255,217,61,.25); border-radius: 12px; padding: 10px; margin-top: 8px; }
+  .rw { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px; margin-top: 6px;
+        border-radius: 9px; background: rgba(0,255,225,.07); }
+  .grid2 { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
+  .grid3 { display: grid; gap: 8px; grid-template-columns: 1fr 1fr 1fr; }
+  .status { font-size: 12px; font-weight: 700; }
+  @media (min-width: 900px) { .cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; align-items: start; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">🎛 ПУЛЬТ ROFL HUB</div>
+  <div class="tabs" id="tabs"></div>
+  <div id="app"><div class="card">Загрузка…</div></div>
+</div>
+<script>
+(function () {
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+  const initData = (tg && tg.initData) || "";
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const num = n => Number(n || 0).toLocaleString("ru-RU");
+  const dt = iso => iso ? new Date(iso).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "UTC" }) + " UTC" : "—";
+  async function api(path, opts) {
+    const res = await fetch(path, Object.assign({ headers: { "X-Telegram-Init-Data": initData, "Content-Type": "application/json" } }, opts || {}));
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw body;
+    return body;
+  }
+  const post = (path, data) => api(path, { method: "POST", body: JSON.stringify(data || {}) });
+  function say(text) { if (tg && tg.showAlert) tg.showAlert(text); else alert(text); }
+  async function act(btn, path, data, onOk) {
+    if (btn) btn.disabled = true;
+    try { const res = await post(path, data); await onOk(res); }
+    catch (e) { say("❌ " + (e.message || e.error || "ошибка")); }
+    finally { if (btn) btn.disabled = false; }
+  }
+
+  // ---------------- справочники для подписей
+  const RES_ICON = { metal: "⛏", hydrogen: "💧", crystal: "💎", parts: "⚙️", stone: "🪨", wood: "🪵", fire: "🔥", energy: "⚡",
+                     battery: "🔋", cow: "🐄", core: "☢️" };
+  const ITEM_NAME = { nitrogen: "❄️ Азот", nuclear: "☢️ Ядерный Разгон", drone: "🛸 Мастер-дрон", shield: "🛡 Щит", unlimit: "♾ Безлимит",
+    camo: "🎭 Маскировка", trap: "🪤 Приманка", drill: "🎯 Тренажёр стойки", thermos: "🧊 Термос", banner: "🏳️ Знамя", dome: "🛡 Купол",
+    meds: "💊 Аптечка", forsage: "🔥 Форсаж", economizer: "⛽ Экономайзер", cargo: "📦 Трюм", stamp: "📜 Штамп" };
+  const ONE_SHOT = ["forsage", "economizer", "cargo", "stamp"];
+  const ROBOT_NAME = { junior: "🤖 Младший Майнер", premium: "⚡ Кибер-Бурильщик" };
+  const BOOST_NAME = { nitrogen: "❄️ Азотное Охлаждение +40%", nuclear: "☢️ Ядерный Разгон x5", drone: "🛸 Мастер-дрон",
+                       unlimit: "♾ Безлимит игр", shield: "🛡 Щит от налётов" };
+  const SCOPES = { team: "🏆 Команды", clan: "👑 Кланы", teams: "🏆👑 Команды и кланы", solo: "👤 Личный" };
+  const STATUS = { active: "🟢 идёт", finished: "🏁 итоги", cancelled: "⛔ отменена" };
+  const UNIT = { h: 1, d: 24, y: 8760 };
+  let meta = null, tab = "battles";
+
+  function durLabel(h) { return !h ? "" : h % 8760 === 0 ? h / 8760 + " г." : h % 24 === 0 ? h / 24 + " дн." : h + " ч"; }
+  function rewardLabel(r) {
+    if (r.kind === "coins") return num(r.amount) + " 🪙";
+    if (r.kind === "resource") return r.qty + " " + (RES_ICON[r.res] || r.res);
+    if (r.kind === "cutlets") return r.qty + " 🥩";
+    if (r.kind === "item") return ITEM_NAME[r.effect] + (r.hours ? " " + durLabel(r.hours) : "") + (r.qty > 1 ? " ×" + r.qty : "");
+    if (r.kind === "robot") return ROBOT_NAME[r.robot] + " " + durLabel(r.hours) + (r.qty > 1 ? " ×" + r.qty : "");
+    if (r.kind === "boost") return BOOST_NAME[r.boost] + " " + durLabel(r.hours);
+    return "🎁 " + r.text;
+  }
+
+  // ---------------- конструктор наград: любые одиночные награды и комбинации
+  function rewardBuilder(host, list, onChange) {
+    function draw() {
+      const kind = host.querySelector(".rk") ? host.querySelector(".rk").value : "coins";
+      host.innerHTML =
+        list.map((r, i) => '<div class="rw"><span>' + esc(rewardLabel(r)) + '</span><button class="mini" data-del="' + i + '">✕</button></div>').join("") +
+        '<div class="grid2" style="margin-top:8px"><select class="rk">' +
+        [["coins", "🪙 Монеты"], ["resource", "📦 Ресурс"], ["cutlets", "🥩 Котлеты"], ["item", "🧪 Изделие на склад"],
+         ["robot", "🤖 Робот на срок"], ["boost", "⚡ Буст / Безлимит / Щит"], ["text", "🎁 Ручной приз (текст)"]]
+          .map(([k, t]) => '<option value="' + k + '"' + (k === kind ? " selected" : "") + '>' + t + '</option>').join("") +
+        '</select><div class="rp"></div></div><button class="mini" style="margin-top:8px" data-add="1">➕ Добавить в награду</button>';
+      params();
+      host.querySelector(".rk").onchange = params;
+      host.querySelectorAll("[data-del]").forEach(b => { b.onclick = () => { list.splice(Number(b.dataset.del), 1); draw(); onChange && onChange(); }; });
+      host.querySelector("[data-add]").onclick = () => {
+        const r = read();
+        if (!r) { say("Заполни параметры награды"); return; }
+        list.push(r); draw(); onChange && onChange();
+      };
+    }
+    const dur = () => '<div class="grid2"><input class="rh" type="number" min="1" value="1"><select class="ru"><option value="h">часов</option>' +
+                      '<option value="d" selected>дней</option><option value="y">лет</option></select></div>';
+    function params() {
+      const k = host.querySelector(".rk").value, p = host.querySelector(".rp");
+      const opts = (obj) => Object.entries(obj).map(([v, t]) => '<option value="' + v + '">' + t + '</option>').join("");
+      p.innerHTML = {
+        coins: '<input class="ra" type="number" min="1" placeholder="сколько монет">',
+        resource: '<select class="rs">' + meta.resources.map(x => '<option value="' + x.key + '">' + (RES_ICON[x.key] || "") + ' ' + esc(x.name) + '</option>').join("") +
+                  '</select><input class="ra" type="number" min="1" placeholder="количество" style="margin-top:6px">',
+        cutlets: '<input class="ra" type="number" min="1" placeholder="сколько котлет">',
+        item: '<select class="rs">' + opts(Object.fromEntries(meta.items.map(e => [e, ITEM_NAME[e] || e]))) + '</select>' + dur() +
+              '<input class="rq" type="number" min="1" value="1" placeholder="штук" style="margin-top:6px">',
+        robot: '<select class="rs">' + opts(ROBOT_NAME) + '</select>' + dur() + '<input class="rq" type="number" min="1" value="1" style="margin-top:6px">',
+        boost: '<select class="rs">' + opts(BOOST_NAME) + '</select>' + dur(),
+        text: '<input class="rt" placeholder="например: Telegram Premium на 3 месяца">',
+      }[k];
+    }
+    function read() {
+      const k = host.querySelector(".rk").value, q = c => host.querySelector(c);
+      const hours = q(".rh") ? Number(q(".rh").value) * UNIT[q(".ru").value] : 0;
+      if (k === "coins" || k === "cutlets") { const n = Number(q(".ra").value); return n > 0 ? (k === "coins" ? { kind: k, amount: n } : { kind: k, qty: n }) : null; }
+      if (k === "resource") { const n = Number(q(".ra").value); return n > 0 ? { kind: k, res: q(".rs").value, qty: n } : null; }
+      if (k === "item") { const e = q(".rs").value; const one = ONE_SHOT.includes(e); return (one || hours > 0) ? { kind: k, effect: e, hours: one ? 0 : hours, qty: Math.max(1, Number(q(".rq").value) || 1) } : null; }
+      if (k === "robot") return hours > 0 ? { kind: k, robot: q(".rs").value, hours: hours, qty: Math.max(1, Number(q(".rq").value) || 1) } : null;
+      if (k === "boost") return hours > 0 ? { kind: k, boost: q(".rs").value, hours: hours } : null;
+      const t = q(".rt").value.trim(); return t ? { kind: "text", text: t } : null;
+    }
+    draw();
+  }
+
+  // ---------------- ⚔️ Битвы и акции
+  const form = { title: "", scope: "teams", nomination: "", custom: "", start: "now", hours: 72, places: 3, mines: [], prizes: {} };
+  async function viewBattles(app) {
+    const d = await api("/api/admin/battles");
+    const list = d.battles.map(b => {
+      const manual = !["farm_mined", "coins_earned", "duel_wins", "duels_played", "quiz_wins", "rps_wins", "safe_wins", "game_wins_total", "referrals", "stars_spent"].includes(b.nomination_key);
+      const res = b.results.length ? b.results.map(x => '<div class="row"><span>' + x.place + '. ' + esc(x.name) + '</span><span>' + (x.score == null ? "" : num(x.score)) + '</span></div>').join("") : "";
+      return '<div class="card"><h2>№' + b.id + ' · ' + esc(b.title) + '</h2>' +
+        '<div class="row"><span>' + (SCOPES[b.scope] || b.scope) + ' · ' + esc(b.nomination) + '</span><span class="status">' + (STATUS[b.status] || b.status) + '</span></div>' +
+        '<div class="hint">' + dt(b.starts_at) + ' → ' + dt(b.ends_at) + ' · мест: ' + b.places + (b.mine_ids.length ? ' · ⛏ ' + b.mine_ids.map(m => "№" + m).join(", ") + ' · заявок: ' + b.entries : '') +
+        (b.announced ? '' : ' · анонс в очереди') + '</div>' + res +
+        (b.status === "active" ? (manual ? '<button class="btn ghost" data-manual="' + b.id + '" data-places="' + b.places + '" data-scope="' + b.scope + '">🖐 Вписать победителей</button>' : '') +
+          '<div class="grid2"><button class="btn ghost" data-close="finish" data-id="' + b.id + '">🏁 Итоги сейчас</button>' +
+          '<button class="btn warn" data-close="cancel" data-id="' + b.id + '">⛔ Отменить</button></div>' : '') + '</div>';
+    }).join("");
+    app.innerHTML = '<div class="cols"><div><div class="card"><h2>➕ Новая битва или акция</h2><div id="bform"></div></div></div>' +
+      '<div><div class="card"><h2>Последние битвы</h2><div class="hint">Анонс и итоги публикуются в канале сами — сразу на 14 языках.</div></div>' +
+      (list || '<div class="card hint">Пока пусто.</div>') + '</div></div>';
+    drawForm($("bform"));
+    app.querySelectorAll("[data-close]").forEach(b => {
+      b.onclick = () => {
+        const cancel = b.dataset.close === "cancel";
+        if (!confirm(cancel ? "Отменить битву без призов?" : "Подвести итоги сейчас?")) return;
+        act(b, "/api/admin/battle/close", { id: Number(b.dataset.id), mode: b.dataset.close }, () => { say(cancel ? "Отменено" : "Итоги будут через ~20 секунд"); go(); });
+      };
+    });
+    app.querySelectorAll("[data-manual]").forEach(b => { b.onclick = () => manualForm(b); });
+  }
+  function manualForm(btn) {
+    const host = document.createElement("div"), n = Math.max(1, Number(btn.dataset.places));
+    host.innerHTML = '<div class="hint">' + (btn.dataset.scope === "solo" ? "Игрок: ID, @username или VIP ID" : "Команда: ID или точное название") + '</div>' +
+      Array.from({ length: n }, (_, i) => '<label>' + (i + 1) + ' место</label><input data-w="' + (i + 1) + '">').join("") +
+      '<button class="btn">💾 Сохранить итоги</button><div class="hint">После сохранения нажми «Итоги сейчас» — призы и пост уйдут автоматически.</div>';
+    btn.replaceWith(host);
+    host.querySelector(".btn").onclick = e => {
+      const winners = {};
+      host.querySelectorAll("[data-w]").forEach(x => { if (x.value.trim()) winners[x.dataset.w] = x.value.trim(); });
+      act(e.target, "/api/admin/battle/manual", { id: Number(btn.dataset.manual), winners }, res =>
+        say("Сохранено: " + Object.entries(res.names).map(([p, n]) => p + ". " + n).join(", ")));
+    };
+  }
+  function drawForm(host) {
+    const noms = meta.nominations.filter(n => !(n.manual && form.scope !== "solo"));
+    const mines = meta.mines.map(m => {
+      const idx = form.mines.indexOf(m.id);
+      return '<button class="mn ' + (m.free ? 'free' : 'busy') + (idx >= 0 ? ' pick' : '') + '" data-mine="' + m.id + '"' + (m.free ? '' : ' disabled title="' + esc(m.team || 'в битве') + '"') + '>' +
+        (idx >= 0 ? '<b>' + (idx + 1) + '</b>' : '') + (RES_ICON[m.kind] || "") + ' №' + m.id + '</button>';
+    }).join("");
+    host.innerHTML =
+      '<label>Название</label><input id="fTitle" maxlength="100" value="' + esc(form.title) + '" placeholder="Осенний кубок">' +
+      '<label>Зачёт</label><div class="chips">' + Object.entries(SCOPES).map(([k, t]) => '<button class="chip' + (form.scope === k ? ' on' : '') + '" data-scope="' + k + '">' + t + '</button>').join("") + '</div>' +
+      '<label>Номинация</label><div class="noms">' + noms.map(n => '<button class="nom' + (form.nomination === n.key ? ' on' : '') + '" data-nom="' + n.key + '">' + esc(n.title) +
+        '<small>' + (n.manual ? "итоги вписываешь ты" : "считается автоматически" + (n.unit ? " · " + esc(n.unit) : "")) + '</small></button>').join("") +
+        '<button class="nom' + (form.nomination === "custom" ? ' on' : '') + '" data-nom="custom">✍️ Своя номинация<small>итоги вписываешь ты</small></button></div>' +
+      (form.nomination === "custom" ? '<label>Формулировка (можно сразу на нескольких языках)</label><textarea id="fCustom" maxlength="200">' + esc(form.custom) + '</textarea>' : '') +
+      '<div class="grid2"><div><label>Старт (UTC)</label><input id="fStart" type="datetime-local" value="' + (form.start === "now" ? "" : form.start) + '"><div class="hint">пусто — сразу</div></div>' +
+      '<div><label>Длительность, часов</label><input id="fHours" type="number" min="1" value="' + form.hours + '"><div class="chips" style="margin-top:6px">' +
+        [[24, "сутки"], [72, "3 дня"], [168, "неделя"], [720, "месяц"]].map(([h, t]) => '<button class="chip" data-h="' + h + '">' + t + '</button>').join("") + '</div></div></div>' +
+      '<label>Призовых мест</label><input id="fPlaces" type="number" min="0" max="100" value="' + form.places + '">' +
+      (form.scope !== "solo" ? '<label>Рудники — по порядку мест (1-й клик — 1 место). Заявка: команда ' + meta.fee.team + ' 🔋, клан ' + meta.fee.clan + ' 🔋</label>' +
+        '<div class="mines">' + mines + '</div>' + (form.mines.length ? '<button class="mini" style="margin-top:6px" id="fMinesClear">Сбросить рудники</button>' : '') : '') +
+      '<h3>🎁 Призы по местам</h3><div class="hint">Командным — каждому бойцу команды. Сроки роботов и бустов — любые.</div><div id="fPrizes"></div>' +
+      '<button class="btn" id="fGo">🚀 Запустить</button>';
+    const keep = () => {
+      form.title = $("fTitle").value; form.hours = Number($("fHours").value) || 1; form.places = Math.max(0, Math.min(100, Number($("fPlaces").value) || 0));
+      form.start = $("fStart").value || "now"; if ($("fCustom")) form.custom = $("fCustom").value;
+    };
+    host.querySelectorAll("[data-scope]").forEach(b => { b.onclick = () => { keep(); form.scope = b.dataset.scope; if (form.scope === "solo") form.mines = []; drawForm(host); }; });
+    host.querySelectorAll("[data-nom]").forEach(b => { b.onclick = () => { keep(); form.nomination = b.dataset.nom; drawForm(host); }; });
+    host.querySelectorAll("[data-h]").forEach(b => { b.onclick = () => { $("fHours").value = b.dataset.h; }; });
+    host.querySelectorAll("[data-mine]").forEach(b => {
+      b.onclick = () => { keep(); const id = Number(b.dataset.mine), i = form.mines.indexOf(id); if (i >= 0) form.mines.splice(i, 1); else form.mines.push(id);
+        form.places = Math.max(form.places, form.mines.length); drawForm(host); };
+    });
+    if ($("fMinesClear")) $("fMinesClear").onclick = () => { keep(); form.mines = []; drawForm(host); };
+    $("fPlaces").onchange = () => { keep(); drawForm(host); };
+    drawPrizes($("fPrizes"));
+    $("fGo").onclick = e => {
+      keep();
+      const prizes = {};
+      Object.entries(form.prizes).forEach(([p, l]) => { if (l.length && Number(p) <= form.places) prizes[p] = l; });
+      const body = { title: form.title, scope: form.scope, nomination: form.nomination, custom: form.custom,
+                     starts_at: form.start === "now" ? "now" : form.start + ":00+00:00", hours: form.hours, places: form.places,
+                     mine_ids: form.mines, prizes };
+      act(e.target, "/api/admin/battle", body, res => { say("✅ Битва №" + res.id + " создана. Анонс уйдёт в канал в течение минуты.");
+        Object.assign(form, { title: "", nomination: "", custom: "", mines: [], prizes: {} }); meta = null; go(); });
+    };
+  }
+  function drawPrizes(host) {
+    const n = form.places;
+    host.innerHTML = n ? Array.from({ length: n }, (_, i) => {
+      const p = i + 1;
+      return '<div class="place"><div class="row"><b>' + (["🥇", "🥈", "🥉"][i] || p + ".") + ' ' + p + ' место' + (form.mines[i] ? ' · ⛏ №' + form.mines[i] : '') + '</b>' +
+        (p > 1 ? '<button class="mini" data-copy="' + p + '">как у ' + (p - 1) + '-го</button>' : '') + '</div><div data-pb="' + p + '"></div></div>';
+    }).join("") : '<div class="hint">Без призовых мест — просто соревнование.</div>';
+    host.querySelectorAll("[data-pb]").forEach(el => {
+      const p = el.dataset.pb; form.prizes[p] = form.prizes[p] || [];
+      rewardBuilder(el, form.prizes[p]);
+    });
+    host.querySelectorAll("[data-copy]").forEach(b => {
+      b.onclick = () => { const p = Number(b.dataset.copy); form.prizes[p] = JSON.parse(JSON.stringify(form.prizes[p - 1] || [])); drawPrizes(host); };
+    });
+  }
+
+  // ---------------- 🎁 Подарок
+  const gift = { target: "player", value: "", rewards: [] };
+  function viewGift(app) {
+    const T = { player: "👤 Игрок", team: "🏆 Команда / клан", season: "📊 ТОП текущего сезона", season_prev: "🏁 ТОП прошлого сезона", battle: "⚔️ Призёры битвы" };
+    const P = { player: "ID, @username или VIP ID", team: "ID или точное название", season: "Сколько лучших (1–100)", season_prev: "Сколько лучших (1–100)", battle: "Номер битвы и место: 5 1" };
+    app.innerHTML = '<div class="card"><h2>🎁 Подарок</h2><label>Кому</label><div class="chips">' +
+      Object.entries(T).map(([k, t]) => '<button class="chip' + (gift.target === k ? ' on' : '') + '" data-t="' + k + '">' + t + '</button>').join("") + '</div>' +
+      '<label>' + P[gift.target] + '</label><input id="gVal" value="' + esc(gift.value) + '">' +
+      '<h3>Награда</h3><div id="gRw"></div><div class="grid2"><button class="btn ghost" id="gCheck">🔎 Проверить получателей</button>' +
+      '<button class="btn" id="gGo">🎁 Выдать</button></div></div>';
+    app.querySelectorAll("[data-t]").forEach(b => { b.onclick = () => { gift.value = $("gVal").value; gift.target = b.dataset.t; viewGift(app); }; });
+    rewardBuilder($("gRw"), gift.rewards);
+    const body = dry => ({ target: gift.target, value: $("gVal").value, rewards: gift.rewards, dry_run: dry });
+    $("gCheck").onclick = e => act(e.target, "/api/admin/reward", body(true), r => say("Получателей: " + r.count + " (" + r.label + ")"));
+    $("gGo").onclick = e => { if (!confirm("Выдать награду?")) return;
+      act(e.target, "/api/admin/reward", body(false), r => { say("✅ Выдано: " + r.given + (r.failed ? ", сбоев: " + r.failed : "") + " · " + r.label); gift.rewards.length = 0; viewGift(app); }); };
+  }
+
+  // ---------------- 💎 VIP ID и аукционы за монеты
+  let vipOffset = 0;
+  async function viewVip(app) {
+    const d = await api("/api/admin/vip?offset=" + vipOffset);
+    app.innerHTML = '<div class="cols"><div class="card"><h2>💎 Свободные VIP ID</h2><div class="chips">' +
+      d.free.map(a => '<button class="chip" data-a="' + esc(a) + '">' + esc(a) + '</button>').join("") + '</div>' +
+      '<button class="mini" style="margin-top:8px" id="vMore">🔄 Показать другие</button>' +
+      '<label>VIP ID (можно свой: ROFL-HUB-…)</label><input id="vAlias" placeholder="ROFL-HUB-777">' +
+      '<div class="grid3"><div><label>Старт, 🪙</label><input id="vPrice" type="number" value="10000"></div>' +
+      '<div><label>Шаг, 🪙</label><input id="vStep" type="number" value="1000"></div>' +
+      '<div><label>Часов</label><input id="vHours" type="number" value="48"></div></div>' +
+      '<button class="btn" id="vGo">🔨 Запустить аукцион</button><div class="hint">Ставки возвратные; монеты победителя сгорают (дефляция), VIP ID переходит ему сам по окончании. Анонс — в канал на 14 языках.</div></div>' +
+      '<div class="card"><h2>Аукционы</h2>' + (d.auctions.map(a => '<div class="row"><span>№' + a.id + ' ' + esc(a.alias || a.title) + '<br><small class="hint">' +
+        (a.status === "open" ? "🟢 до " + dt(a.ends_at) : "🏁 закрыт") + '</small></span><span>' + num(a.price) + ' 🪙' + (a.leader ? '<br><small class="hint">лидер ' + a.leader + '</small>' : '') + '</span></div>').join("") || '<div class="hint">Пока нет.</div>') + '</div></div>';
+    app.querySelectorAll("[data-a]").forEach(b => { b.onclick = () => { $("vAlias").value = b.dataset.a; }; });
+    $("vMore").onclick = () => { vipOffset += 10; go(); };
+    $("vGo").onclick = e => act(e.target, "/api/admin/vip/auction", { alias: $("vAlias").value, price: Number($("vPrice").value), step: Number($("vStep").value), hours: Number($("vHours").value) },
+      r => { say("✅ Аукцион №" + r.id + " создан, анонс уйдёт в канал в течение минуты."); go(); });
+  }
+
+  // ---------------- 🎛 Тумблеры
+  function viewFlags(app) {
+    app.innerHTML = '<div class="card"><h2>🎛 Разделы и рецепты</h2>' + Object.entries(meta.flags).map(([k, on]) =>
+      '<div class="row"><span>' + esc(k) + '</span><button class="mini" data-f="' + esc(k) + '" data-on="' + (on ? 1 : 0) + '">' + (on ? "🟢 вкл" : "🔴 выкл") + '</button></div>').join("") + '</div>';
+    app.querySelectorAll("[data-f]").forEach(b => {
+      b.onclick = () => act(b, "/api/admin/flag", { key: b.dataset.f, enabled: b.dataset.on !== "1" }, () => { meta.flags[b.dataset.f] = b.dataset.on !== "1"; viewFlags(app); });
+    });
+  }
+
+  const TABS = { battles: ["⚔️ Битвы и акции", viewBattles], gift: ["🎁 Подарки", viewGift], vip: ["💎 VIP-аукционы", viewVip], flags: ["🎛 Тумблеры", viewFlags] };
+  async function go() {
+    $("tabs").innerHTML = Object.entries(TABS).map(([k, [t]]) => '<button class="tab' + (tab === k ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>').join("");
+    $("tabs").querySelectorAll("[data-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.tab; go(); }; });
+    const app = $("app");
+    try { meta = meta || await api("/api/admin/meta"); await TABS[tab][1](app); }
+    catch (e) { app.innerHTML = '<div class="card bad">' + (e.error === "forbidden" ? "⛔ Пульт только для владельца." : "Ошибка: " + esc(e.message || e.error || e)) + '</div>'; }
+  }
+  go();
+})();
+</script>
+</body>
+</html>
