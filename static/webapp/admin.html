@@ -174,7 +174,7 @@
   }
 
   // ---------------- ⚔️ Битвы и акции
-  const form = { title: "", scope: "teams", nomination: "", custom: "", start: "now", hours: 72, places: 3, mines: [], prizes: {} };
+  const form = { title: "", scope: "teams", nomination: "", custom: "", start: "now", hours: 72, places: 3, mines: [], prizes: {}, all: [] };
   async function viewBattles(app) {
     const d = await api("/api/admin/battles");
     const list = d.battles.map(b => {
@@ -235,6 +235,8 @@
       (form.scope !== "solo" ? '<label>Рудники — по порядку мест (1-й клик — 1 место). Заявка: команда ' + meta.fee.team + ' 🔋, клан ' + meta.fee.clan + ' 🔋</label>' +
         '<div class="mines">' + mines + '</div>' + (form.mines.length ? '<button class="mini" style="margin-top:6px" id="fMinesClear">Сбросить рудники</button>' : '') : '') +
       '<h3>🎁 Призы по местам</h3><div class="hint">Командным — каждому бойцу команды. Сроки роботов и бустов — любые.</div><div id="fPrizes"></div>' +
+      '<h3>🎒 За участие (всем в зачёте без призового места)</h3><div class="hint">Необязательно. Командам — каждому бойцу. ' +
+      'Для ручных номинаций не выдаётся: участников знаешь только ты.</div><div id="fAll"></div>' +
       '<button class="btn" id="fGo">🚀 Запустить</button>';
     const keep = () => {
       form.title = $("fTitle").value; form.hours = Number($("fHours").value) || 1; form.places = Math.max(0, Math.min(100, Number($("fPlaces").value) || 0));
@@ -250,15 +252,16 @@
     if ($("fMinesClear")) $("fMinesClear").onclick = () => { keep(); form.mines = []; drawForm(host); };
     $("fPlaces").onchange = () => { keep(); drawForm(host); };
     drawPrizes($("fPrizes"));
+    rewardBuilder($("fAll"), form.all);
     $("fGo").onclick = e => {
       keep();
       const prizes = {};
       Object.entries(form.prizes).forEach(([p, l]) => { if (l.length && Number(p) <= form.places) prizes[p] = l; });
       const body = { title: form.title, scope: form.scope, nomination: form.nomination, custom: form.custom,
                      starts_at: form.start === "now" ? "now" : form.start + ":00+00:00", hours: form.hours, places: form.places,
-                     mine_ids: form.mines, prizes };
+                     mine_ids: form.mines, prizes, reward_all: form.all };
       act(e.target, "/api/admin/battle", body, res => { say("✅ Битва №" + res.id + " создана. Анонс уйдёт в канал в течение минуты.");
-        Object.assign(form, { title: "", nomination: "", custom: "", mines: [], prizes: {} }); meta = null; go(); });
+        Object.assign(form, { title: "", nomination: "", custom: "", mines: [], prizes: {}, all: [] }); meta = null; go(); });
     };
   }
   function drawPrizes(host) {
@@ -316,9 +319,9 @@
   }
 
   // ---------------- 🗺 Экспедиции: цели на карте мира
-  const EXP_SCOPES = { solo: "👤 Соло", team: "🏆 Команды", clan: "👑 Кланы", teams: "🏆👑 Команды и кланы" };
+  const EXP_SCOPES = { solo: "👤 Соло" };   // 28.10: карта целей — только соло-походы, команды бьются за рудники
   const TSTATUS = { open: "🟢 открыта", finished: "🏁 итоги", cancelled: "⛔ отменена" };
-  const tform = { title: "", descr: "", icon: "🎯", scope: "teams", x: null, y: null, forks: 3, hours: 24, places: 3, prizes: {}, all: [] };
+  const tform = { title: "", descr: "", icon: "🎯", scope: "solo", x: null, y: null, forks: 3, hours: 24, places: 3, prizes: {}, all: [] };
   async function viewExp(app) {
     const d = await api("/api/admin/targets");
     const open = d.targets.filter(t => t.status === "open");
@@ -342,27 +345,26 @@
   }
   function drawTargetForm(host, d, open) {
     const W = d.map.w, H = d.map.h;
-    let svg = '<div style="overflow:auto;max-height:60vh;border-radius:12px"><svg id="tMap" viewBox="0 0 ' + W + ' ' + H +
-      '" style="width:max(100%,1000px);aspect-ratio:16/10;display:block;background:#0d1a2e;cursor:crosshair">';
-    for (let x = 20; x < W; x += 20) svg += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
-    for (let y = 20; y < H; y += 20) svg += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
+    let svg = '<svg id="tMap" viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;aspect-ratio:16/10;border-radius:12px;background:#0d1a2e;cursor:crosshair">';
+    for (let x = 10; x < W; x += 10) svg += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
+    for (let y = 10; y < H; y += 10) svg += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" stroke="rgba(0,255,225,.08)" stroke-width=".3"/>';
     open.forEach(t => { svg += '<text x="' + t.x + '" y="' + t.y + '" font-size="5" text-anchor="middle" dominant-baseline="middle" opacity=".55">' + esc(t.icon) + '</text>'; });
     if (tform.x != null) svg += '<circle cx="' + tform.x + '" cy="' + tform.y + '" r="5" fill="rgba(255,217,61,.3)" stroke="#ffd93d" stroke-width=".6"/>' +
       '<text x="' + tform.x + '" y="' + tform.y + '" font-size="5" text-anchor="middle" dominant-baseline="middle">' + esc(tform.icon) + '</text>';
-    svg += '</svg></div>';
+    svg += '</svg>';
     host.innerHTML =
       '<label>Название</label><input id="tTitle" maxlength="100" value="' + esc(tform.title) + '" placeholder="Ледяная цитадель">' +
       '<label>Описание (сюжет, можно на нескольких языках)</label><textarea id="tDescr" maxlength="500">' + esc(tform.descr) + '</textarea>' +
       '<label>Значок</label><div class="chips">' + d.icons.map(i => '<button class="chip' + (tform.icon === i ? ' on' : '') + '" data-icon="' + i + '">' + i + '</button>').join("") + '</div>' +
-      '<label>Зачёт</label><div class="chips">' + Object.entries(EXP_SCOPES).map(([k, t]) => '<button class="chip' + (tform.scope === k ? ' on' : '') + '" data-tscope="' + k + '">' + t + '</button>').join("") + '</div>' +
-      '<label>Место на карте — нажми (карта листается; полупрозрачные — уже открытые цели)</label>' + svg +
+      '<div class="hint">👤 Соло-поход: каждый игрок идёт сам (в команде тоже можно). Снаряжение — 💧 водород.</div>' +
+      '<label>Место на карте — нажми (полупрозрачные — уже открытые цели)</label>' + svg +
       '<div class="grid3"><div><label>Развилок (1–5)</label><input id="tForks" type="number" min="1" max="5" value="' + tform.forks + '"></div>' +
       '<div><label>Итоги через, часов</label><input id="tHours" type="number" min="1" value="' + tform.hours + '"></div>' +
       '<div><label>Призовых мест</label><input id="tPlaces" type="number" min="0" max="100" value="' + tform.places + '"></div></div>' +
       '<div class="chips" style="margin-top:6px">' + [[6, "6 ч"], [12, "12 ч"], [24, "сутки"], [72, "3 дня"], [168, "неделя"]].map(([h, t]) => '<button class="chip" data-th="' + h + '">' + t + '</button>').join("") + '</div>' +
-      '<div class="hint">Скорость: соло быстрее, команда медленнее, клан ещё медленнее. Снаряжение: соло — водород, команда — батарейки, клан — батарейки и котлеты.</div>' +
+
       '<h3>🎁 Призы по местам (по грузу)</h3><div id="tPrizes"></div>' +
-      '<h3>🎒 Каждому дошедшему (необязательно)</h3><div id="tAll"></div>' +
+      '<h3>🎒 За участие (всем дошедшим без призового места, необязательно)</h3><div id="tAll"></div>' +
       '<button class="btn" id="tGo">🚀 Поставить цель</button>';
     const keep = () => {
       tform.title = $("tTitle").value; tform.descr = $("tDescr").value;

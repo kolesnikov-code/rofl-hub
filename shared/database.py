@@ -551,10 +551,9 @@ SCHEMA_STATEMENTS: list[str] = [
         last_paid_at TIMESTAMP WITH TIME ZONE
     );
     """,
-    # 100 рудников (economy.MINES_COUNT; 28.10 — было 40), ресурс по кругу из 7 видов (economy.mine_kind);
-    # уже существующие рудники не трогаются (ON CONFLICT)
-    "INSERT INTO mines (id, kind) SELECT g, (ARRAY['metal', 'hydrogen', 'crystal', 'parts', 'stone', 'wood', 'energy'])"
-    "[1 + (g - 1) % 7] FROM generate_series(1, 100) g ON CONFLICT (id) DO NOTHING;",
+    # 30 рудников (economy.MINES_COUNT), 6 ресурсов поровну по кругу (economy.MINE_KINDS); существующие не трогаются
+    "INSERT INTO mines (id, kind) SELECT g, (ARRAY['metal', 'hydrogen', 'crystal', 'parts', 'stone', 'wood'])"
+    "[1 + (g - 1) % 6] FROM generate_series(1, 30) g ON CONFLICT (id) DO NOTHING;",
     "ALTER TABLE battles ADD COLUMN IF NOT EXISTS mine_id INT;",
     # --- 27.10: новые ресурсы, Лаборатория, лошади, сезоны ---
     """
@@ -803,6 +802,23 @@ SCHEMA_STATEMENTS: list[str] = [
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (expedition_id, fork_no)
     );
+    """,
+    # 28.10 ночью: рудников 30, по 5 каждого из 6 ресурсов, без Ядра; у битв — награда «за участие»
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS reward_all JSONB NOT NULL DEFAULT '[]'::jsonb;",
+    """
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM feature_flags WHERE key = 'migr:mines_30') THEN
+        PERFORM pg_advisory_xact_lock(20261028);
+        IF NOT EXISTS (SELECT 1 FROM feature_flags WHERE key = 'migr:mines_30') THEN
+          UPDATE battles SET mine_ids = ARRAY(SELECT x FROM unnest(mine_ids) x WHERE x <= 30)
+            WHERE status = 'active' AND EXISTS (SELECT 1 FROM unnest(mine_ids) x WHERE x > 30);
+          DELETE FROM mines WHERE id > 30;
+          UPDATE mines SET kind = (ARRAY['metal', 'hydrogen', 'crystal', 'parts', 'stone', 'wood'])[1 + (id - 1) % 6]
+            WHERE team_id IS NULL;
+          INSERT INTO feature_flags (key, enabled) VALUES ('migr:mines_30', TRUE) ON CONFLICT (key) DO NOTHING;
+        END IF;
+      END IF;
+    END $$;
     """,
 ]
 

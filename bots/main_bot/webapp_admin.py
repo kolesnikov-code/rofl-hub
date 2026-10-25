@@ -128,7 +128,8 @@ def validate_battle_form(data: dict, free_mines: set[int], now: datetime) -> tup
     if len(mines) > max(places, 0) and places:
         return None, "Рудников не больше, чем призовых мест"
     places = max(places, len(mines))
-    return {"title": title, "scope": scope, "nomination_key": key, "nomination_text": nom_text,
+    reward_all = normalize_rewards(data.get("reward_all"))
+    return {"title": title, "scope": scope, "nomination_key": key, "reward_all": reward_all, "nomination_text": nom_text,
             "starts_at": starts, "ends_at": starts + timedelta(hours=hours), "places": places,
             "prizes": prizes, "mine_ids": mines}, None
 
@@ -217,10 +218,11 @@ async def handle_admin_battle_create(request: web.Request) -> web.Response:
             return _fail(err)
         battle_id = await conn.fetchval(
             """INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, prizes, scope, places,
-                                    mine_ids, announced, results_posted)
-               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, FALSE, FALSE) RETURNING battle_id""",
+                                    mine_ids, announced, results_posted, reward_all)
+               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, FALSE, FALSE, $10::jsonb) RETURNING battle_id""",
             form["title"], form["nomination_key"], form["nomination_text"], form["starts_at"], form["ends_at"],
-            json.dumps(form["prizes"], ensure_ascii=False), form["scope"], form["places"], form["mine_ids"])
+            json.dumps(form["prizes"], ensure_ascii=False), form["scope"], form["places"], form["mine_ids"],
+            json.dumps(form["reward_all"], ensure_ascii=False))
     return web.json_response({"ok": True, "id": battle_id})
 
 

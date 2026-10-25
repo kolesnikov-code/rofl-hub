@@ -126,13 +126,14 @@ def test_event_sequence_has_no_repeats_within_squad():
 # ---------------------------------------------------------------- пульт, маршруты, тексты
 def test_admin_target_form_validation():
     from bots.main_bot.webapp_admin import validate_target_form
-    base = {"title": "Цитадель", "scope": "teams", "x": 80, "y": 50, "forks": 3, "hours": 24, "places": 2,
+    base = {"title": "Цитадель", "scope": "solo", "x": 80, "y": 50, "forks": 3, "hours": 24, "places": 2,
             "prizes": {"1": [{"kind": "coins", "amount": 500}], "5": [{"kind": "coins", "amount": 5}]},
             "reward_all": [{"kind": "resource", "res": "core", "qty": 1}]}
     form, err = validate_target_form(base, NOW, 0)
     assert err is None and form["resolve_at"] == NOW + timedelta(hours=24)
     assert form["prizes"] == {"1": [{"kind": "coins", "amount": 500}]} and form["reward_all"][0]["res"] == "core"
-    for patch, needle in (({"title": ""}, "Название"), ({"scope": "x"}, "зачёт"), ({"x": None}, "карте"),
+    for patch, needle in (({"title": ""}, "Название"), ({"scope": "x"}, "зачёт"), ({"scope": "teams"}, "зачёт"),
+                          ({"x": None}, "карте"),
                           ({"x": 1}, "края"), ({"forks": 9}, "Развилок"), ({"hours": 0}, "Итоги"), ({"places": 101}, "мест")):
         form, err = validate_target_form({**base, **patch}, NOW, 0)
         assert form is None and needle in err, (patch, err)
@@ -203,15 +204,17 @@ def test_peek_budget_is_min_of_spies_and_scouting():
     assert f(5, 5, 5, True) == 0 and f(0, 5, 5, False) == 0   # первая экспедиция сезона — вслепую
 
 
-def test_big_world_and_hundred_mines():
-    assert economy.EXP_MAX_TARGETS == 100 and economy.MINES_COUNT == 100
-    assert economy.EXP_MAP_W >= 320 and economy.EXP_MAP_H >= 200
+def test_compact_maps_ten_targets_thirty_mines_solo_only():
+    """28.10 ночью: карты целиком на экране, до 10 соло-целей, 30 рудников (6 ресурсов по 5) — только командам."""
+    assert economy.EXP_MAX_TARGETS == 10 and economy.MINES_COUNT == 30 and economy.EXP_SCOPES == ("solo",)
+    assert (economy.EXP_MAP_W, economy.EXP_MAP_H) == (160, 100)
     from shared.database import SCHEMA_STATEMENTS
     seed = next(x for x in SCHEMA_STATEMENTS if "INSERT INTO mines" in x)
-    assert "generate_series(1, 100)" in seed and "'energy'" in seed   # новые рудники — все 7 ресурсов
+    assert "generate_series(1, 30)" in seed and "'energy'" not in seed and "'core'" not in seed
+    assert any("migr:mines_30" in x and "DELETE FROM mines WHERE id > 30" in x for x in SCHEMA_STATEMENTS)
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    assert "function dragScroll" in html and "minemap-scroll" in html and "centerOn(wrap" in html
-    assert "/api/exp/peek" in html and "L.map_peekBlind" in html and "setPointerCapture" in html
+    assert "dragScroll" not in html and "minemap-scroll" not in html            # без перетаскивания
+    assert "/api/exp/peek" in html and "L.map_peekBlind" in html
 
 
 def test_row_labels_never_wrap_values_do():

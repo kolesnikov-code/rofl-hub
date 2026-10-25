@@ -723,7 +723,7 @@ def _nom_text(lang: str, battle: dict) -> str:
 
 async def handle_events(request: web.Request) -> web.Response:
     """🎯 Акции и битвы, идущие сейчас: зачёт, сроки, призы по местам, моё место, заявка на рудники."""
-    from shared.battles import battle_mines, is_manual, prizes_by_place
+    from shared.battles import battle_mines, battle_reward_all, is_manual, prizes_by_place
     from shared.prizes import rewards_label
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
@@ -749,6 +749,7 @@ async def handle_events(request: web.Request) -> web.Response:
                 "starts_at": b["starts_at"].isoformat(), "ends_at": b["ends_at"].isoformat(),
                 "started": b["starts_at"] <= now, "places": int(b["places"] or 0),
                 "prizes": [{"place": p, "label": rewards_label(prizes[p])} for p in sorted(prizes)][:20],
+                "reward_all": rewards_label(battle_reward_all(_Row(b))) if battle_reward_all(_Row(b)) else "",
                 "mines": battle_mines(_Row(b)), "my_place": my_place,
                 "leaders": [{"name": x["name"], "score": x["score"], "me": x["id"] == my_id} for x in leaders[:10]],
                 "entry": await _entry_info(conn, b, team_id, is_clan),

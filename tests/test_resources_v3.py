@@ -46,7 +46,9 @@ def test_sources_of_new_resources():
     assert 0 < economy.ENERGY_WIN_CHANCE_PERCENT < 100
     assert {k for k, _ in economy.CHEST_SPECIALS} == {"wood", "stone", "energy"}
     assert economy.CHEST_STREAK_COW >= 1
-    assert set(economy.MINE_KINDS) == set(RESOURCE_KINDS) | {"stone", "wood", "energy"}
+    # 28.10 ночью: 30 рудников — 6 ресурсов поровну (по 5), ⚡ — из игр и сундука, Ядра на рудниках нет
+    assert set(economy.MINE_KINDS) == set(RESOURCE_KINDS) | {"stone", "wood"}
+    assert economy.MINES_COUNT % len(economy.MINE_KINDS) == 0
 
 
 def test_core_only_from_team_activities_and_small():
@@ -257,15 +259,11 @@ def test_mine_sick_hours():
     assert sum(sick_hours(h, 1) for h in range(72)) == sick_hours(0, 72)      # по частям — столько же
 
 
-def test_mine_core_marks_capped():
+def test_mines_give_no_core_and_hold_one_day():
+    """28.10 ночью: рудник у команды сутки, 1 ресурс в час на бойца, Ядро — только призы владельца."""
     from shared.mines import core_marks
-    day = economy.MINE_CORE_EVERY_HOURS
-    assert core_marks(0, day - 1, 0) == 0
-    assert core_marks(0, day, 0) == 1
-    assert core_marks(0, 72, 0) == min(3, economy.MINE_CORE_MAX)
-    assert core_marks(0, 10 * day, 0) == economy.MINE_CORE_MAX
-    assert core_marks(0, 72, economy.MINE_CORE_MAX) == 0
-    assert sum(core_marks(h, 1, 0) for h in range(72)) == 3
+    assert economy.MINE_CORE_MAX == 0 and core_marks(0, 240, 0) == 0
+    assert economy.MINE_HOLD_HOURS == 24 and economy.MINE_YIELD_PER_MEMBER_HOUR == 1
 
 
 # ---------------------------------------------------------------- сезоны

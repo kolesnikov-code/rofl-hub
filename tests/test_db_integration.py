@@ -2260,7 +2260,7 @@ async def test_admin_panel_api_creates_battle_and_gives_rewards(conn, global_db,
     await client.start_server()
     try:
         meta = await (await client.get("/api/admin/meta", headers=head)).json()
-        assert len(meta["mines"]) == 100 and meta["fee"] == {"team": 5, "clan": 25}
+        assert len(meta["mines"]) == 30 and meta["fee"] == {"team": 5, "clan": 25}
         r = await client.post("/api/admin/battle", headers=head, json={
             "title": "Пульт", "scope": "teams", "nomination": "farm_mined", "starts_at": "now", "hours": 24,
             "places": 2, "mine_ids": [7, 8], "prizes": {"1": [{"kind": "coins", "amount": 100}]}})
@@ -2326,12 +2326,12 @@ async def test_events_api_for_players(conn, global_db):
 
 # ======================================================================== 🗺 экспедиции и 🤖 дроны (28.10)
 async def _exp_target(conn, scope: str, now, hours: float = 48, forks: int = 2, x: float = 80, y: float = 50,
-                      prizes: str = '{}', reward_all: str = '[]') -> int:
+                      prizes: str = '{}', reward_all: str = '[]', places: int = 3) -> int:
     from datetime import timedelta
     return await conn.fetchval(
         "INSERT INTO expedition_targets (title, x, y, scope, forks, resolve_at, places, prizes, reward_all) "
-        "VALUES ('Цель', $1, $2, $3, $4, $5, 3, $6::jsonb, $7::jsonb) RETURNING id",
-        x, y, scope, forks, now + timedelta(hours=hours), prizes, reward_all)
+        "VALUES ('Цель', $1, $2, $3, $4, $5, $8, $6::jsonb, $7::jsonb) RETURNING id",
+        x, y, scope, forks, now + timedelta(hours=hours), prizes, reward_all, places)
 
 
 async def test_expedition_solo_forks_and_results(conn):
@@ -2341,7 +2341,7 @@ async def test_expedition_solo_forks_and_results(conn):
     from shared.resources import get_resources, grant_bundle
     now = utcnow()
     tid = await _exp_target(conn, "solo", now, prizes='{"1": [{"kind": "coins", "amount": 500}]}',
-                            reward_all='[{"kind": "resource", "res": "stone", "qty": 3}]')
+                            reward_all='[{"kind": "resource", "res": "stone", "qty": 3}]', places=1)
     for uid in (1700, 1701):
         await _mk_user(conn, uid, 0)
         await grant_bundle(conn, uid, {"hydrogen": 20}, "test")
@@ -2384,8 +2384,9 @@ async def test_expedition_solo_forks_and_results(conn):
                                  "ORDER BY cargo DESC, arrive_at, id LIMIT 1", tid)
     assert results["places"][0]["cargo"] == await conn.fetchval("SELECT cargo FROM expeditions WHERE user_id = $1", winner)
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", winner) == 500
-    for uid in (1700, 1701):                                           # награда каждому дошедшему
-        assert (await get_resources(conn, uid, ("stone",)))["stone"] == 3
+    loser = 1701 if winner == 1700 else 1700                           # «за участие» — без призового места
+    assert (await get_resources(conn, loser, ("stone",)))["stone"] == 3
+    assert (await get_resources(conn, winner, ("stone",)))["stone"] == 0
     assert (await finalize_target(conn, target, target["resolve_at"]))["skipped"]   # итоги — один раз
     assert set(r["status"] for r in await conn.fetch("SELECT status FROM expeditions WHERE target_id = $1", tid)) == {"done"}
 
@@ -2596,4 +2597,30 @@ async def test_expedition_peek_first_blind_then_min_of_spies_and_scout(conn):
     with pytest.raises(ExpError) as e:                                 # вторая развилка — разведки кончились
         await peek(conn, 1790, e2["id"], sched[1][0] + timedelta(minutes=1))
     assert e.value.key == "exp.err_no_peeks"
-    assert await conn.fetchval("SELECT COUNT(*) FROM mines") == 100
+    assert await conn.fetchval("SELECT COUNT(*) FROM mines") == 30
+
+
+async def test_battle_reward_for_taking_part_goes_to_everyone_without_a_prize_place(conn):
+    """28.10 ночью: места 1…N — призы владельца, остальным в зачёте — награда «за участие» (командам — каждому бойцу)."""
+    from datetime import timedelta
+    from shared.battles import finish_battle
+    from shared.economy import utcnow
+    from shared.ledger import change_balance
+    now = utcnow()
+    await _team(conn, "Gold", 1810, [1810])
+    await _team(conn, "Silver", 1811, [1811, 1812])
+    await _team(conn, "Bronze", 1813, [1813])
+    bid = await conn.fetchval(
+        "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, scope, places, prizes, reward_all) "
+        "VALUES ('Cup', 'farm_mined', 'x', $1, $2, 'teams', 1, $3::jsonb, $4::jsonb) RETURNING battle_id",
+        now - timedelta(hours=2), now + timedelta(minutes=5),
+        '{"1": [{"kind": "coins", "amount": 1000}]}', '[{"kind": "resource", "res": "stone", "qty": 7}]')
+    for uid, amount in ((1810, 90), (1811, 40), (1812, 10), (1813, 5)):
+        async with conn.transaction():
+            await change_balance(conn, uid, amount, "mining", "t")
+    battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", bid)
+    res = await finish_battle(conn, battle, now + timedelta(minutes=6))
+    assert [p["name"] for p in res["places"]] == ["Gold"] and res["participants_rewarded"] == 3
+    stone = {r["user_id"]: r["qty"] for r in await conn.fetch("SELECT user_id, qty FROM user_resources WHERE kind = 'stone'")}
+    assert stone == {1811: 7, 1812: 7, 1813: 7}                           # призёр получил приз, а не «за участие»
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1810") == 90 + 1000

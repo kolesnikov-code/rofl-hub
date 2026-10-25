@@ -56,6 +56,10 @@ def build_announce(battle, prizes: dict[int, list[dict]], mine_kinds: dict[int, 
         lines.append(f"{_medal(place)} {html.escape(rewards_label(prizes[place]))}")
     if len(prizes) > MAX_PRIZE_LINES:
         lines.append(f"… +{len(prizes) - MAX_PRIZE_LINES}")
+    from shared.battles import battle_reward_all
+    reward_all = battle_reward_all(battle)
+    if reward_all:
+        lines.append(f"🎒 {html.escape(rewards_label(reward_all))}")
     if mines:
         lines.append(_mines_line(mines, mine_kinds))
     lines += ["", DOTS]

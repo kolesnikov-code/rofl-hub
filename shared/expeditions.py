@@ -470,8 +470,8 @@ async def finalize_target(conn, target, now: datetime) -> dict:
         rewards = prizes.get(place, [])
         if rewards and any(r["kind"] != "text" for r in rewards):
             given, _ = await grant_many(conn, members, rewards, f"E{tid}_P{place}", now)
-        if reward_all and any(r["kind"] != "text" for r in reward_all):
-            await grant_many(conn, members, reward_all, f"E{tid}_ALL", now)
+        if place > (target["places"] or 0) and reward_all and any(r["kind"] != "text" for r in reward_all):
+            await grant_many(conn, members, reward_all, f"E{tid}_ALL", now)   # 🎒 за участие — без призового места
         rows.append({"place": place, "name": await squad_name(conn, exp), "mode": exp["mode"], "cargo": exp["cargo"],
                      "members": len(members), "rewards": rewards, "given": given})
     results = {"places": rows, "arrived": len(arrived), "late": late}

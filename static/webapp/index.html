@@ -165,29 +165,32 @@
   .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
   .chips.big .chip { font-size: 14px; padding: 6px 10px; }
   /* 🗺 Карта мира (28.10) */
-  .world-wrap { margin: 8px 0; border-radius: 14px; overflow: auto; border: 1px solid rgba(0,229,255,.25);
-    max-height: 70vh; cursor: grab; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-  .world-wrap.dragging { cursor: grabbing; }
-  .world { display: block; width: max(100%, 1100px); aspect-ratio: 16 / 10; }
-  .world .wgrid { stroke: rgba(0,229,255,.06); stroke-width: .3; }
+  .world-wrap { margin: 8px 0; border-radius: 14px; overflow: hidden; border: 1px solid rgba(0,229,255,.25); }
+  .world { display: block; width: 100%; aspect-ratio: 16 / 10; }
+  .world .wgrid { stroke: rgba(0,229,255,.06); stroke-width: .25; }
   .world .wland { fill: rgba(60,120,140,.18); stroke: rgba(0,229,255,.15); stroke-width: .3; }
   .world .wpath { stroke: rgba(255,255,255,.18); stroke-width: .35; stroke-dasharray: 1.2 1.2; }
   .world .wpath.mine { stroke: var(--accent); stroke-width: .5; }
-  .world .whome { font-size: 6px; text-anchor: middle; dominant-baseline: middle; }
+  .world .whome { font-size: 4px; text-anchor: middle; dominant-baseline: middle; }
   .world .wtgt { cursor: pointer; }
   .world .wglow { fill: rgba(0,229,255,.18); animation: wpulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
   .world .wtgt.on .wglow { fill: rgba(255,217,61,.35); }
   .world .wcore { fill: #0b1a2e; stroke: var(--neon); stroke-width: .5; }
-  .world .wicon { font-size: 4.4px; text-anchor: middle; dominant-baseline: middle; }
-  .world .wlabel { font-size: 4px; fill: #e8ecff; text-anchor: middle; font-weight: 700; paint-order: stroke; stroke: #070b16; stroke-width: .6px; }
-  .world .wtime { font-size: 3.4px; fill: var(--accent); text-anchor: middle; paint-order: stroke; stroke: #070b16; stroke-width: .5px; }
+  .world .wicon { font-size: 3.6px; text-anchor: middle; dominant-baseline: middle; }
+  .world .wlabel { font-size: 2.6px; fill: #e8ecff; text-anchor: middle; font-weight: 700; paint-order: stroke; stroke: #070b16; stroke-width: .6px; }
+  .world .wtime { font-size: 2.3px; fill: var(--accent); text-anchor: middle; paint-order: stroke; stroke: #070b16; stroke-width: .5px; }
   .world .wsq circle { fill: #9fb3d9; stroke: #070b16; stroke-width: .3; }
   .world .wsq.team circle { fill: #00e5ff; } .world .wsq.clan circle { fill: #b48cff; }
   .world .wsq.mine circle { fill: var(--accent); stroke: #fff; stroke-width: .4; }
   .world .wsq.wait circle { fill: none; stroke: #9fb3d9; stroke-dasharray: .6 .6; }
-  .world .wsq text { font-size: 3.2px; fill: #e8ecff; text-anchor: middle; paint-order: stroke; stroke: #070b16; stroke-width: .5px; }
+  .world .wsq text { font-size: 2.2px; fill: #e8ecff; text-anchor: middle; paint-order: stroke; stroke: #070b16; stroke-width: .5px; }
   @keyframes wpulse { 0%, 100% { transform: scale(.85); opacity: .7; } 50% { transform: scale(1.15); opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .world .wglow { animation: none; } }
+  .world { max-height: 72vh; }
+  @media (max-width: 600px) {   /* на телефоне карта узкая — подписи крупнее */
+    .world .wlabel { font-size: 4.2px; } .world .wtime { font-size: 3.6px; } .world .wsq text { font-size: 3.4px; }
+    .world .wicon { font-size: 4.6px; } .world .whome { font-size: 5.5px; }
+  }
   .exp-target.picked { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
   .fork { margin-top: 10px; padding: 10px; border-radius: 12px; background: rgba(0,229,255,.06); border: 1px solid rgba(0,229,255,.2); }
   .fork-text { font-weight: 700; margin: 6px 0; }
@@ -363,11 +366,7 @@
   .doc-switch { display: flex; gap: 8px; margin-bottom: 10px; }
   .doc-switch .idx { flex: 1; }
   /* ----- ⛏ Карта рудников ----- */
-  .minemap-box { position: relative; }
-  .minemap-scroll { overflow: auto; max-height: 70vh; border-radius: 14px; cursor: grab; -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain; }
-  .minemap-scroll.dragging { cursor: grabbing; }
-  .minemap { position: relative; width: max(100%, 900px); border-radius: 14px; overflow: hidden;
+  .minemap { position: relative; width: 100%; border-radius: 14px; overflow: hidden;
     background: radial-gradient(ellipse at 30% 20%, #1c2a4a 0%, transparent 55%),
                 radial-gradient(ellipse at 75% 80%, #2a1d3f 0%, transparent 55%), #0d1426;
     border: 1px solid rgba(0, 255, 225, .12); }
@@ -410,7 +409,7 @@
   .res-cols { display: grid; gap: 4px 22px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
   .res-cols .resbar .k { white-space: nowrap; }
   .res-actions { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 6px; }
-  .map-lock { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86%, 460px); pointer-events: none;
+  .map-lock { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86%, 460px);
     background: rgba(10, 14, 28, .88); border: 1px solid rgba(255, 255, 255, .16); border-radius: 14px;
     padding: 14px 16px; text-align: center; font-weight: 700; font-size: 14px; z-index: 2; }
   .lead-row { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; }
@@ -439,7 +438,7 @@
   const I18N = {
     ru: {
       map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
-      tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "Отряды идут к целям с разных сторон карты. К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "Каждому дошедшему: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Решаешь ты — выбор применится сразу.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Голос принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
+      tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "Соло-походы: каждый идёт к цели со своей стороны карты. К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "🎒 За участие: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Решаешь ты — выбор применится сразу.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Голос принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
       subtitle: "твоя игровая империя в одном экране",
       tab_passport: "📋 Паспорт", tab_farm: "🚜 Ферма", tab_goals: "🎯 Цели", tab_workshop: "🔧 Мастерская",
       tab_raids: "🏴‍☠️ Налёты", tab_market: "📈 Биржа", tab_team: "🏆 Команда", tab_shop: "🏪 Магазин", tab_top: "👑 ТОП",
@@ -505,7 +504,7 @@
       lab_tools: "🧰 ИНСТРУМЕНТЫ", lab_toolsHint: "Наборы не тратятся — они открывают сложные сборки и уровни технологий.",
       lab_nextTool: "Следующий набор: {t}", lab_craftTool: "Собрать набор", lab_toolsMax: "🧬 Все наборы собраны!",
       lab_level: "Уровень {l} из {m}", lab_max: "🏆 Максимальный уровень", lab_wait: "⏳ Следующий уровень через {t}",
-      lab_up: "Изучить уровень {l}", res_stone_src: "дуэли, рудники, сундук", res_wood_src: "квесты, рудники, сундук", res_fire_src: "Костёр в мастерской", res_energy_src: "шанс за победу, рудники, сундук", res_battery_src: "мастерская", res_cow_src: "квесты, сундук 7-го дня, биржа", res_core_src: "рудники и призы организатора", sk_items: "🧪 Изделий на складе: {n} / {m} (10% вместимости)", sk_cutletsName: "Кибер-котлеты", it_total: "На складе: {n} шт.", bt_entry: "🔋 Заявка команды: {n} / {m}", bt_entered: "✅ Команда в битве за рудники", bt_give: "Внести 🔋 (у тебя {n})", bt_info: "За рудники бьются только команды с заявкой: {f} 🔋, клан — {fc} 🔋. Скидывайтесь всей командой!", bt_notAllowed: "Эта битва не для твоего типа команды", mn_place: "🏆 приз за {p} место", mn_soonShort: "Старт: {d}", top_events: "🎯 Акции", ev_empty: "Сейчас акций нет — следи за каналом!", ev_my: "Твоё место: {p}", ev_noPlace: "Ты пока вне таблицы — вперёд!", ev_manual: "Победителей определит организатор", ev_places: "Призовых мест: {n}", ev_prizes: "🎁 Призы", ev_leaders: "Лидеры", lab_sciGate: "📚 Уровень {l} откроется, когда все технологии будут изучены до уровня {l}", lab_cooldown: "После изучения следующий уровень — через {d} дн.", lab_done: "🔬 Готово! Уровень {l}",
+      lab_up: "Изучить уровень {l}", res_stone_src: "дуэли, рудники, сундук", res_wood_src: "квесты, рудники, сундук", res_fire_src: "Костёр в мастерской", res_energy_src: "шанс за победу, сундук", res_battery_src: "мастерская", res_cow_src: "квесты, сундук 7-го дня, биржа", res_core_src: "призы организатора", sk_items: "🧪 Изделий на складе: {n} / {m} (10% вместимости)", sk_cutletsName: "Кибер-котлеты", it_total: "На складе: {n} шт.", bt_entry: "🔋 Заявка команды: {n} / {m}", bt_entered: "✅ Команда в битве за рудники", bt_give: "Внести 🔋 (у тебя {n})", bt_info: "За рудники бьются только команды с заявкой: {f} 🔋, клан — {fc} 🔋. Скидывайтесь всей командой!", bt_notAllowed: "Эта битва не для твоего типа команды", mn_place: "🏆 приз за {p} место", mn_soonShort: "Старт: {d}", top_events: "🎯 Акции", ev_empty: "Сейчас акций нет — следи за каналом!", ev_my: "Твоё место: {p}", ev_noPlace: "Ты пока вне таблицы — вперёд!", ev_manual: "Победителей определит организатор", ev_places: "Призовых мест: {n}", ev_prizes: "🎁 Призы", ev_leaders: "Лидеры", lab_sciGate: "📚 Уровень {l} откроется, когда все технологии будут изучены до уровня {l}", lab_cooldown: "После изучения следующий уровень — через {d} дн.", lab_done: "🔬 Готово! Уровень {l}",
       lab_eff_comm: "1 уровень — налёты и доход с рудников; каждый следующий −{c} мин перезарядки налёта",
       lab_eff_scout: "Без неё налётов нет; целей в разведке: 2 + уровень",
       lab_eff_attack: "Без него налётов нет; каждый уровень после первого +{a}% к трофеям",
@@ -662,7 +661,7 @@
     },
     en: {
       map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
-      tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "Everyone who arrives: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your call — it applies at once.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Vote counted", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
+      tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "🎒 For taking part: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your call — it applies at once.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Vote counted", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
       subtitle: "your game empire on one screen",
       tab_passport: "📋 Passport", tab_farm: "🚜 Farm", tab_goals: "🎯 Goals", tab_workshop: "🔧 Workshop",
       tab_raids: "🏴‍☠️ Raids", tab_market: "📈 Market", tab_team: "🏆 Team", tab_shop: "🏪 Shop", tab_top: "👑 TOP",
@@ -728,7 +727,7 @@
       lab_tools: "🧰 TOOLS", lab_toolsHint: "Tool kits are never used up — they unlock advanced recipes and tech levels.",
       lab_nextTool: "Next kit: {t}", lab_craftTool: "Build the kit", lab_toolsMax: "🧬 All kits built!",
       lab_level: "Level {l} of {m}", lab_max: "🏆 Max level", lab_wait: "⏳ Next level in {t}",
-      lab_up: "Research level {l}", res_stone_src: "duels, mines, chest", res_wood_src: "quests, mines, chest", res_fire_src: "Bonfire in the workshop", res_energy_src: "a chance per win, mines, chest", res_battery_src: "workshop", res_cow_src: "quests, 7th-day chest, market", res_core_src: "mines and organizer prizes", sk_items: "🧪 Items in storage: {n} / {m} (10% of capacity)", sk_cutletsName: "Cyber-cutlets", it_total: "In storage: {n} pcs", bt_entry: "🔋 Team entry: {n} / {m}", bt_entered: "✅ Your team is in the battle for mines", bt_give: "Add 🔋 (you have {n})", bt_info: "Only teams with an entry fight for mines: {f} 🔋, clan — {fc} 🔋. Chip in as a team!", bt_notAllowed: "This battle isn't for your team type", mn_place: "🏆 prize for place {p}", mn_soonShort: "Starts: {d}", top_events: "🎯 Events", ev_empty: "No events right now — watch the channel!", ev_my: "Your place: {p}", ev_noPlace: "You're not in the table yet — go!", ev_manual: "The organizer picks the winners", ev_places: "Prize places: {n}", ev_prizes: "🎁 Prizes", ev_leaders: "Leaders", lab_sciGate: "📚 Level {l} opens once every tech is researched to level {l}", lab_cooldown: "After researching, the next level opens in {d} d.", lab_done: "🔬 Done! Level {l}",
+      lab_up: "Research level {l}", res_stone_src: "duels, mines, chest", res_wood_src: "quests, mines, chest", res_fire_src: "Bonfire in the workshop", res_energy_src: "a chance per win, chest", res_battery_src: "workshop", res_cow_src: "quests, 7th-day chest, market", res_core_src: "organizer prizes", sk_items: "🧪 Items in storage: {n} / {m} (10% of capacity)", sk_cutletsName: "Cyber-cutlets", it_total: "In storage: {n} pcs", bt_entry: "🔋 Team entry: {n} / {m}", bt_entered: "✅ Your team is in the battle for mines", bt_give: "Add 🔋 (you have {n})", bt_info: "Only teams with an entry fight for mines: {f} 🔋, clan — {fc} 🔋. Chip in as a team!", bt_notAllowed: "This battle isn't for your team type", mn_place: "🏆 prize for place {p}", mn_soonShort: "Starts: {d}", top_events: "🎯 Events", ev_empty: "No events right now — watch the channel!", ev_my: "Your place: {p}", ev_noPlace: "You're not in the table yet — go!", ev_manual: "The organizer picks the winners", ev_places: "Prize places: {n}", ev_prizes: "🎁 Prizes", ev_leaders: "Leaders", lab_sciGate: "📚 Level {l} opens once every tech is researched to level {l}", lab_cooldown: "After researching, the next level opens in {d} d.", lab_done: "🔬 Done! Level {l}",
       lab_eff_comm: "Level 1 — raids and mine income; each next level −{c} min raid recharge",
       lab_eff_scout: "No raids without it; targets in scouting: 2 + level",
       lab_eff_attack: "No raids without it; each level after the first +{a}% loot",
@@ -893,7 +892,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -904,7 +903,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -1442,7 +1441,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -1453,7 +1452,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -1991,7 +1990,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -2002,7 +2001,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -2540,7 +2539,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -2551,7 +2550,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -3089,7 +3088,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -3100,7 +3099,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -3638,7 +3637,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -3649,7 +3648,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -4187,7 +4186,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -4198,7 +4197,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -4736,7 +4735,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -4747,7 +4746,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -5285,7 +5284,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -5296,7 +5295,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -5834,7 +5833,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -5845,7 +5844,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -6383,7 +6382,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -6394,7 +6393,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -6932,7 +6931,7 @@
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Squads march to targets from every side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -6943,7 +6942,7 @@
     "map_ok": "in time",
     "map_no": "too late",
     "map_prizes": "Prizes by place",
-    "map_rewardAll": "Everyone who arrives: {r}",
+    "map_rewardAll": "🎒 For taking part: {r}",
     "map_goSolo": "👤 Go solo · 💧 {n}",
     "map_gearBattery": "🔋 Add a battery · {a}/{b}",
     "map_gearCutlet": "🥩 Add a cutlet · {a}/{b}",
@@ -7971,7 +7970,7 @@
   }
   async function viewMines(box) {
     const d = await api("/api/mines");
-    const cols = 10, rows = Math.ceil(d.mines.length / cols);   // 100 рудников — карта листается и двигается
+    const narrow = box.clientWidth < 560, cols = narrow ? 5 : 6, rows = Math.ceil(d.mines.length / cols);
     const battleBy = {}; d.battles.forEach(b => { (b.mine_ids || [b.mine_id]).forEach(id => { battleBy[id] = b; }); });
     const tiles = d.mines.map(m => {
       const p = minePos(m.id, cols, rows), held = !!m.team;
@@ -7987,8 +7986,7 @@
       '<path d="M0 52 Q25 46 50 52 T100 50" fill="none" stroke="#24405a" stroke-width=".4"/></svg>';
     const lock = d.battles.length ? '' : '<div class="map-lock">' + L.mn_closed + '</div>';
     const mapCard = '<div class="card span-all"><h2>' + L.mn_title + '</h2>' +
-      '<div class="minemap-box"><div class="minemap-scroll"><div class="minemap" style="aspect-ratio:10 / ' + (rows * 0.94).toFixed(2) + '">' +
-      terrain + tiles + '</div></div>' + lock + '</div>' +
+      '<div class="minemap" style="aspect-ratio:' + cols + ' / ' + (rows * (narrow ? 1.25 : 0.88)).toFixed(2) + '">' + terrain + tiles + lock + '</div>' +
       '<div class="hint" style="margin-top:8px">' + L.mn_pick + '</div></div>';
     const battleCards = d.battles.map(b => {
       const leaders = b.leaders.length ? b.leaders.map((x, i) => '<div class="lead-row' + (x.mine ? ' me' : '') + '"><b>' +
@@ -8032,10 +8030,6 @@
         : '<div class="hint">' + L.mn_closedOne + '</div>';
       document.getElementById("mineInfo").innerHTML = '<h2>' + fmt(L.mn_name, { n: id }) + '</h2>' + body;
     };
-    const mscroll = box.querySelector(".minemap-scroll");
-    dragScroll(mscroll);
-    const focusMine = d.mines.find(m => m.mine) || d.mines.find(m => m.target) || d.mines.find(m => m.id === mineSel);
-    if (focusMine) { const fp = minePos(focusMine.id, cols, rows); centerOn(mscroll, fp.x / 100, fp.y / 100); }
     box.querySelectorAll(".mine").forEach(el => {
       el.onclick = () => {
         mineSel = Number(el.dataset.id);
@@ -8532,6 +8526,7 @@
       const ends = ev.started ? fmt(L.mn_ends, { d: dateShort(ev.ends_at) }) : fmt(L.mn_soonShort, { d: dateShort(ev.starts_at) });
       const prizes = ev.prizes.length ? '<div class="sub2">' + L.ev_prizes + '</div>' + ev.prizes.map(p =>
         '<div class="row"><span class="k">' + (["🥇", "🥈", "🥉"][p.place - 1] || p.place + ".") + '</span><span class="v">' + esc(p.label) + '</span></div>').join("") : '';
+      const forAll = ev.reward_all ? '<div class="hint">' + fmt(L.map_rewardAll, { r: esc(ev.reward_all) }) + '</div>' : '';
       const mines = ev.mines.length ? '<div class="hint">⛏ ' + ev.mines.map((m, i) => (["🥇", "🥈", "🥉"][i] || (i + 1) + ".") + ' №' + m).join(" · ") + '</div>' : '';
       const leaders = ev.manual ? '<div class="hint">' + L.ev_manual + '</div>'
         : ev.leaders.length ? '<div class="sub2">' + L.ev_leaders + '</div>' + ev.leaders.map((x, i) => '<div class="lead-row' + (x.me ? ' me' : '') + '"><b>' +
@@ -8539,7 +8534,7 @@
       const mine = ev.manual ? '' : '<div class="hint ' + (ev.my_place ? 'status-ok' : '') + '">' + (ev.my_place ? fmt(L.ev_my, { p: ev.my_place }) : L.ev_noPlace) + '</div>';
       return '<div class="card ' + (ev.my_place ? 'lava' : '') + '"><h2>⚔️ ' + esc(ev.title) + '</h2>' +
         '<div class="hint">' + esc(ev.scope) + ' · ' + esc(ev.nomination) + '</div><div class="hint">' + ends + '</div>' +
-        '<div class="hint">' + fmt(L.ev_places, { n: ev.places }) + '</div>' + mine + prizes + mines + leaders +
+        '<div class="hint">' + fmt(L.ev_places, { n: ev.places }) + '</div>' + mine + prizes + forAll + mines + leaders +
         (ev.entry && ev.entry.allowed && !ev.entry.registered ? '<button class="btn ghost" data-go="mines">' + fmt(L.bt_entry, { n: ev.entry.batteries, m: ev.entry.fee }) + '</button>' : '') + '</div>';
     }).join("");
     box.innerHTML = sw + (cards || card(L.top_events, '<div class="hint">' + L.ev_empty + '</div>'));
@@ -8625,31 +8620,6 @@
     viewDoc("/" + infoDoc)(document.getElementById("docBox"));
     box.querySelectorAll("[data-doc]").forEach(b => { b.onclick = () => { infoDoc = b.dataset.doc; go("info"); }; });
   }
-  // Большие карты (мир, рудники) листаются: пальцем — как обычно, мышью — перетаскиванием
-  function dragScroll(el) {
-    let down = null, moved = false;
-    el.addEventListener("pointerdown", e => {
-      if (e.pointerType !== "mouse" || e.button !== 0) return;
-      down = { x: e.clientX, y: e.clientY, l: el.scrollLeft, t: el.scrollTop, id: e.pointerId }; moved = false;
-    });
-    el.addEventListener("pointermove", e => {
-      if (!down) return;
-      const dx = e.clientX - down.x, dy = e.clientY - down.y;
-      if (!moved && Math.abs(dx) + Math.abs(dy) > 5) {   // начали тащить — ведём карту, даже если мышь ушла за край
-        moved = true; el.classList.add("dragging");
-        try { el.setPointerCapture(down.id); } catch (err) {}
-      }
-      if (moved) { el.scrollLeft = down.l - dx; el.scrollTop = down.t - dy; }
-    });
-    const up = () => { down = null; el.classList.remove("dragging"); };
-    el.addEventListener("pointerup", up);
-    el.addEventListener("pointercancel", up);
-    el.addEventListener("click", e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
-  }
-  function centerOn(el, fx, fy) {   // fx, fy — доли ширины/высоты содержимого
-    el.scrollLeft = Math.max(0, fx * el.scrollWidth - el.clientWidth / 2);
-    el.scrollTop = Math.max(0, fy * el.scrollHeight - el.clientHeight / 2);
-  }
   // ================= 🗺 Карта мира: цели экспедиций, отряды в пути, развилки =================
   // Маркеры отрядов ползут к цели пропорционально пройденному времени (очень медленно — как в жизни);
   // цели ставит владелец в пульте, у каждой свой час итогов.
@@ -8667,11 +8637,10 @@
     let g = '<svg class="world" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
       '<defs><radialGradient id="wg" cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#14304a"/><stop offset="1" stop-color="#070b16"/></radialGradient></defs>' +
       '<rect width="' + W + '" height="' + H + '" rx="4" fill="url(#wg)"/>';
-    for (let x = 20; x < W; x += 20) g += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" class="wgrid"/>';
-    for (let y = 20; y < H; y += 20) g += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" class="wgrid"/>';
+    for (let x = 10; x < W; x += 10) g += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" class="wgrid"/>';
+    for (let y = 10; y < H; y += 10) g += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '" class="wgrid"/>';
     // Материки — декорация (одинаковые у всех игроков)
-    [[60, 50, 40, 24], [170, 40, 48, 20], [270, 60, 34, 26], [120, 130, 52, 28], [240, 150, 40, 24], [40, 150, 26, 18],
-     [200, 100, 18, 12], [300, 180, 14, 10]].forEach(([cx, cy, rx, ry]) => {
+    [[38, 30, 22, 13], [112, 26, 26, 12], [70, 68, 30, 14], [132, 74, 16, 11], [22, 76, 13, 9]].forEach(([cx, cy, rx, ry]) => {
       g += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" class="wland"/>';
     });
     d.squads.forEach(s => {
@@ -8685,16 +8654,16 @@
     });
     d.targets.forEach(t => {
       g += '<g class="wtgt' + (mapPick === t.id ? ' on' : '') + '" data-t="' + t.id + '"><circle cx="' + t.x + '" cy="' + t.y + '" r="6" class="wglow"/>' +
-        '<circle cx="' + t.x + '" cy="' + t.y + '" r="3.8" class="wcore"/><text x="' + t.x + '" y="' + (t.y + 1.6) + '" class="wicon">' + esc(t.icon) + '</text>' +
-        '<text x="' + t.x + '" y="' + (t.y - 7.5) + '" class="wlabel">' + esc(t.title.length > 22 ? t.title.slice(0, 21) + "…" : t.title) + '</text>' +
-        '<text x="' + t.x + '" y="' + (t.y + 10.5) + '" class="wtime" data-resolve="' + t.resolve_at + '"></text></g>';
+        '<circle cx="' + t.x + '" cy="' + t.y + '" r="3.6" class="wcore"/><text x="' + t.x + '" y="' + (t.y + 1.4) + '" class="wicon">' + esc(t.icon) + '</text>' +
+        '<text x="' + t.x + '" y="' + (t.y - 6.5) + '" class="wlabel">' + esc(t.title.length > 22 ? t.title.slice(0, 21) + "…" : t.title) + '</text>' +
+        '<text x="' + t.x + '" y="' + (t.y + 9) + '" class="wtime" data-resolve="' + t.resolve_at + '"></text></g>';
     });
     d.squads.forEach(s => {
       if (!T[s.target_id]) return;
       const label = s.mine ? L.map_you : (s.symbol || "") + (s.name ? " " + s.name.slice(0, 10) : "");
       g += '<g class="wsq ' + s.mode + (s.mine ? ' mine' : '') + (s.status === "gathering" ? ' wait' : '') + '" data-sq="' + s.id + '">' +
         '<circle r="' + (s.mode === "solo" ? 1.3 : s.mode === "clan" ? 2.3 : 1.8) + '"/>' +
-        (label.trim() ? '<text y="-3.2">' + esc(label.trim()) + '</text>' : '') + '</g>';
+        (label.trim() ? '<text y="-2.6">' + esc(label.trim()) + '</text>' : '') + '</g>';
     });
     return g + '</svg>';
   }
@@ -8805,11 +8774,6 @@
       '<div class="hint">' + (d.targets.length ? L.map_pick : L.map_empty) + '</div></div>' + my +
       d.targets.map(t => targetCard(t, d)).join("");
     placeSquads(d);
-    const wrap = box.querySelector(".world-wrap");
-    dragScroll(wrap);
-    const mine = d.squads.find(s => s.mine), T0 = d.targets.find(t => mine && t.id === mine.target_id);
-    const focus = mine && T0 ? mapPos(mine, T0, Date.now()) : (d.me.home.team || d.me.home.solo);
-    centerOn(wrap, focus[0] / d.map.w, focus[1] / d.map.h);
     mapTimer = setInterval(() => {
       if (!document.querySelector(".world")) return clearInterval(mapTimer);
       placeSquads(d);

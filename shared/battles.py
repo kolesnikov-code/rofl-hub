@@ -134,6 +134,14 @@ MANUAL_NOMINATIONS = {
     "tiktok": "🎵 Чьё видео в TikTok залетит лучше",
 }
 MAX_BATTLE_PLACES = 100
+MAX_PARTICIPANTS = 100_000      # награда «за участие» — всем в зачёте (командам — каждому бойцу)
+
+
+def battle_reward_all(battle) -> list[dict]:
+    """Награда «за участие» битвы (всем без призового места) — список наград или []."""
+    from shared.prizes import normalize_rewards
+    raw = battle["reward_all"] if "reward_all" in battle.keys() else None
+    return normalize_rewards(json.loads(raw) if isinstance(raw, str) else (raw or []))
 
 
 class BattleError(Exception):
@@ -312,7 +320,8 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
         standings = await battle_standings(conn, battle)
     prizes = prizes_by_place(battle["prizes"])
     rows = []
-    for place, entry in enumerate(standings[:max(places, len(mines))], start=1):
+    prize_rows = max(places, len(mines))
+    for place, entry in enumerate(standings[:prize_rows], start=1):
         rewards = prizes.get(place, [])
         given = 0
         if any(r["kind"] != "text" for r in rewards):
@@ -330,7 +339,21 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
                 until = await capture_mine(conn, mine_id, entry["id"], battle_id, now)
         rows.append({"place": place, **entry, "rewards": rewards, "given": given,
                      "mine_id": mine_id, "until": until.isoformat() if until else None})
-    results = {"scope": scope, "places": rows}
+    # 🎒 «За участие» (28.10): всем, кто в зачёте, но без призового места, — награда владельца
+    participants = 0
+    reward_all = battle_reward_all(battle)
+    if reward_all and any(r["kind"] != "text" for r in reward_all) and not is_manual(battle["nomination_key"]):
+        everyone = await battle_standings(conn, battle, limit=MAX_PARTICIPANTS)
+        for entry in everyone[prize_rows:]:
+            if scope == "solo":
+                members = [entry["id"]]
+            else:
+                members = [m["user_id"] for m in await conn.fetch(
+                    "SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked AND deleted_at IS NULL",
+                    entry["id"])]
+            given, _ = await grant_many(conn, members, reward_all, f"B{battle_id}_ALL", now)
+            participants += given
+    results = {"scope": scope, "places": rows, "participants_rewarded": participants}
     await conn.execute("UPDATE battles SET results = $2::jsonb WHERE battle_id = $1",
                        battle_id, json.dumps(results, ensure_ascii=False, default=str))
     logger.info("[BATTLE] №%s итоги: %s мест, рудников %s", battle_id, len(rows), len(mines))
