@@ -485,6 +485,13 @@ def test_cart_gives_one_lot_in_every_text():
 
 def test_farm_fridge_card_and_lab_spacing():
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    assert "function fridgeSvg" in html and "data-fridge" in html and "f.fridge_levels" in html
+    assert "fridgeImg" in html and "/img/fridges/fridge_" in html and "startFridgeFlip" in html and "data-fridge" in html and "f.fridge_levels" in html
     assert "L.fr_title" in html and "L.fr_max" in html
     assert ".chips + .hint { margin-top: 10px; }" in html
+
+
+def test_fridge_art_exists_for_every_catalog_fridge():
+    from bots.main_bot.catalog import CATALOG
+    caps = {1} | {it["capacity"] for it in CATALOG.values() if it["type"] == "fridge_upgrade"}
+    for cap in caps:
+        assert (ROOT / "static" / "webapp" / "img" / "fridges" / f"fridge_{cap}.jpg").stat().st_size > 10_000, cap
