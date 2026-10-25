@@ -7,7 +7,7 @@
 - рейтинг команд: очки за места в битвах сезона (SEASON_BATTLE_POINTS);
 - рейтинг друзей: друзья, ставшие активными в этом месяце.
 Итоги прошлого месяца подводит демон админ-бота (finalize_season, идемпотентно через season_results):
-значки ТОП-10, призы из магазина (временные — дразнят продолжить), ☢️ Ядро бойцам команд-призёров.
+значки ТОП-10 в паспорт. Призы владелец назначает сам — /reward «ТОП прошлого сезона».
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 
-from shared.economy import (SEASON_BATTLE_POINTS, SEASON_FIRST, SEASON_EARN_REASONS, SEASON_PRIZES, SEASON_TEAM_CORES,
+from shared.economy import (SEASON_BADGE_PLACES, SEASON_BATTLE_POINTS, SEASON_FIRST, SEASON_EARN_REASONS,
                             SEASON_TOP_SIZE, season_bounds, season_key)
 
 logger = logging.getLogger(__name__)
@@ -75,37 +75,25 @@ def previous_season_moment(now: datetime) -> datetime:
     return start - timedelta(seconds=1)
 
 
-async def finalize_season(conn, moment: datetime, deliver) -> dict | None:
+async def finalize_season(conn, moment: datetime) -> dict | None:
     """
     Итоги сезона, в который попадает moment (вызывать после его конца). Идемпотентно.
-    deliver(conn, user_id, sku, charge_id) — выдача товара-приза (у админ-бота — deliver_order).
-    Возвращает итоги или None, если сезон уже подведён.
+    Выдаёт только значки ТОП-10 (призы — вручную владельцем). None — сезон уже подведён или до первого.
     """
-    from shared.resources import change_resource, resource_capacity
     key = season_key(moment)
     if key < SEASON_FIRST:
         return None
     if not await conn.fetchval(
             "INSERT INTO season_results (season) VALUES ($1) ON CONFLICT DO NOTHING RETURNING 1", key):
         return None
-    top = await season_top(conn, moment, limit=max(SEASON_PRIZES))
+    top = await season_top(conn, moment, limit=SEASON_BADGE_PLACES)
     winners = []
     for place, row in enumerate(top, start=1):
         await conn.execute("INSERT INTO user_badges (user_id, season, place) VALUES ($1, $2, $3) "
                            "ON CONFLICT DO NOTHING", row["user_id"], key, place)
-        for sku in SEASON_PRIZES.get(place, ()):
-            try:
-                await deliver(conn, row["user_id"], sku, f"SEASON{key}_P{place}_U{row['user_id']}_{sku}")
-            except Exception:
-                logger.exception("[SEASON] приз %s игроку %s не выдан", sku, row["user_id"])
         winners.append({"place": place, "user_id": row["user_id"], "earned": int(row["earned"]),
                         "name": ("@" + row["username"]) if row["username"] else (row["display_name"] or "")})
-    teams = await season_teams(conn, moment, limit=len(SEASON_TEAM_CORES))
-    for place, team in enumerate(teams, start=1):
-        for m in await conn.fetch("SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked", team["team_id"]):
-            async with conn.transaction():
-                await change_resource(conn, m["user_id"], "core", SEASON_TEAM_CORES[place], f"season:{key}",
-                                      cap=await resource_capacity(conn, m["user_id"]))
+    teams = await season_teams(conn, moment, limit=3)
     payload = {"players": winners, "teams": teams}
     await conn.execute("UPDATE season_results SET payload = $2::jsonb WHERE season = $1", key, json.dumps(payload))
     logger.info("[SEASON] %s подведён: %s игроков, %s команд", key, len(winners), len(teams))

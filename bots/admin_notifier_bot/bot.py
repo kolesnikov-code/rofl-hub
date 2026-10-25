@@ -819,15 +819,8 @@ async def check_season_end(bot: Bot) -> None:
     if _season_checked == season_key(now):
         return
     prev = previous_season_moment(now)
-
-    async def deliver(conn, user_id, sku, charge_id):
-        from shared.delivery import deliver_order
-        async with conn.transaction():
-            await conn.fetchval("SELECT 1 FROM users WHERE user_id = $1 FOR UPDATE", user_id)
-            await deliver_order(conn, user_id, {**get_item(sku), "stars": 0}, charge_id)
-
     async with db.pool.acquire() as conn:
-        result = await finalize_season(conn, prev, deliver)
+        result = await finalize_season(conn, prev)
     _season_checked = season_key(now)
     if not result or not (result["players"] or result["teams"]):
         return   # до первого сезона или пустой сезон — в канал не пишем
@@ -837,7 +830,8 @@ async def check_season_end(bot: Bot) -> None:
     if result["teams"]:
         lines += ["", "<b>Команды сезона:</b>"]
         lines += [f"{medals(i)} {html.escape(x['name'])} — {x['points']} очк." for i, x in enumerate(result['teams'], 1)]
-    lines += ["", "🎁 Призы ТОП-10 уже выданы, бойцам команд-призёров — ☢️ Ядро. Новый сезон стартовал — удачи!"]
+    lines += ["", "🏅 ТОП-10 получает значок сезона в паспорт. Призы победителям объявим отдельно. "
+                  "Новый сезон стартовал — удачи!"]
     try:
         await bot.send_message(USERS_CHANNEL_ID, "\n".join(lines), parse_mode="HTML")
     except Exception as e:
@@ -865,9 +859,11 @@ async def admin_season(message: types.Message):
 
 
 _REWARD_TARGETS = {"player": "👤 Игрок", "team": "🏆 Команда / клан (все бойцы)",
-                   "season": "📊 ТОП сезона", "battle": "⚔️ Призёры битвы"}
+                   "season_prev": "🏁 ТОП прошлого сезона", "season": "📊 ТОП текущего сезона",
+                   "battle": "⚔️ Призёры битвы"}
 _REWARD_PROMPTS = {"player": "ID, @username или VIP ID игрока:", "team": "ID или точное название команды:",
-                   "season": "Сколько лучших игроков сезона наградить (1–100)?",
+                   "season": "Сколько лучших игроков текущего сезона наградить (1–100)?",
+                   "season_prev": "Сколько лучших игроков прошлого сезона наградить (1–100)?",
                    "battle": "Номер битвы и место через пробел, например: <code>5 1</code>"}
 _REWARD_GIFTS = {"coins": "🪙 Монеты", "resource": "📦 Ресурс", "sku": "🛒 Товар магазина", "item": "🧪 Изделие на склад"}
 

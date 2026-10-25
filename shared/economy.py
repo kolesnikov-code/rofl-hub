@@ -328,8 +328,10 @@ RAID_SICK_LOSS_PERCENT = 15       # 💊 без Аптечки часть тро
 
 # --------------------------------------------------------------------------
 # ЛАБОРАТОРИЯ: инструменты (как в S.T.A.L.K.E.R. — набор открывает уровень сложных сборок, не
-# тратится) и технологии. Темп роста ограничен ПЕРЕЗАРЯДКОЙ между уровнями: за 2–3 месяца
-# новичок догоняет старожила, науку качают ~полгода (+5%). Стоимости растут с уровнем.
+# тратится) и технологии. 1-й уровень любой технологии (кроме науки) — с первого дня, если есть
+# набор и ресурсы; каждый следующий уровень ТОЙ ЖЕ технологии — ровно через TECH_COOLDOWN_DAYS
+# после предыдущего (решение владельца 27.10: «чтобы улучшения были желанными и ценными»).
+# Наука N-го уровня открывается, когда ВСЕ остальные технологии изучены до N-го. Ничего не сбрасывается.
 # --------------------------------------------------------------------------
 TOOL_ICONS = {1: "⚒️", 2: "🛠", 3: "🔬", 4: "🧬"}
 TOOL_COSTS = {
@@ -340,17 +342,19 @@ TOOL_COSTS = {
 }
 TECHS: dict[str, dict] = {
     # 📡 связь: 1 — налёты и командные активности (доход с рудника); дальше −20 мин перезарядки налёта
-    "comm": {"icon": "📡", "max": 3, "base": {"metal": 30, "energy": 10, "battery": 0}, "cooldown_days": 5},
+    "comm": {"icon": "📡", "max": 5, "base": {"metal": 30, "energy": 10}},
     # 🔭 разведка: без неё налётов нет; цели в разведке = 2 + уровень
-    "scout": {"icon": "🔭", "max": 5, "base": {"crystal": 20, "energy": 10}, "cooldown_days": 4},
+    "scout": {"icon": "🔭", "max": 5, "base": {"crystal": 20, "energy": 10}},
     # ⚔️ нападение: без него налётов нет; каждый уровень после первого +8% к добыче
-    "attack": {"icon": "⚔️", "max": 5, "base": {"metal": 40, "parts": 20, "energy": 10}, "cooldown_days": 7},
+    "attack": {"icon": "⚔️", "max": 5, "base": {"metal": 40, "parts": 20, "energy": 10}},
     # 🛡 оборона: каждый уровень −8% к тому, что налётчик унесёт у тебя
-    "defense": {"icon": "🛡", "max": 5, "base": {"hydrogen": 40, "parts": 20, "energy": 10}, "cooldown_days": 7},
-    # 📚 наука: +1% к добыче фермы и трофеям за уровень; ~36 дней на уровень, нужно Ядро
+    "defense": {"icon": "🛡", "max": 5, "base": {"hydrogen": 40, "parts": 20, "energy": 10}},
+    # 📚 наука: +1% к добыче фермы и трофеям за уровень; нужно Ядро и остальные технологии того же уровня
     "science": {"icon": "📚", "max": 5, "base": {"crystal": 100, "parts": 100, "energy": 50, "core": 3},
-                "cooldown_days": 36, "linear": True},
+                "linear": True},
 }
+TECH_COOLDOWN_DAYS = 30           # следующий уровень той же технологии — через 30 дней после предыдущего
+COMM_BATTERIES = {2: 2, 3: 4, 4: 6, 5: 8}   # 🔋 связь со 2-го уровня требует батарейки
 TECH_ORDER = ("comm", "scout", "attack", "defense", "science")
 RAID_ATTACK_BONUS_PER_LEVEL = 8
 RAID_DEFENSE_PER_LEVEL = 8
@@ -362,9 +366,7 @@ def tech_tool_required(tech: str, level: int) -> int:
     """Какой набор инструментов нужен для уровня level технологии."""
     if tech == "science":
         return 2 if level <= 2 else (3 if level == 3 else 4)
-    if tech == "comm":
-        return level            # 1 → ⚒️, 2 → 🛠, 3 → 🔬
-    return 1 if level <= 2 else level - 1   # 3 → 🛠, 4 → 🔬, 5 → 🧬
+    return 1 if level <= 2 else level - 1   # 1–2 → ⚒️, 3 → 🛠, 4 → 🔬, 5 → 🧬 (у всех одинаково)
 
 
 def tech_cost(tech: str, level: int) -> dict[str, int]:
@@ -372,15 +374,19 @@ def tech_cost(tech: str, level: int) -> dict[str, int]:
     info = TECHS[tech]
     mult = level if info.get("linear") else level * level
     cost = {k: v * mult for k, v in info["base"].items() if v}
-    if tech == "comm" and level >= 2:
-        cost["battery"] = 2 if level == 2 else 5
+    if tech == "comm" and level in COMM_BATTERIES:
+        cost["battery"] = COMM_BATTERIES[level]
     return cost
 
 
 def tech_cooldown_days(tech: str, level: int) -> int:
-    """Сколько дней ждать после получения уровня level, чтобы взять следующий."""
-    info = TECHS[tech]
-    return info["cooldown_days"] if info.get("linear") else info["cooldown_days"] * level
+    """Сколько дней ждать после получения уровня level, чтобы взять следующий (у всех одинаково)."""
+    return TECH_COOLDOWN_DAYS
+
+
+def science_gate_ok(levels: dict[str, int], next_level: int) -> bool:
+    """Наука next_level-го уровня — когда все остальные технологии изучены хотя бы до него."""
+    return all(levels.get(k, 0) >= next_level for k in TECHS if k != "science")
 
 
 def raid_loot_percent(attack: int, defense: int, science: int) -> int:
@@ -401,11 +407,11 @@ def raid_cooldown_hours(comm_level: int) -> float:
 # --------------------------------------------------------------------------
 # 🐎 ЛОШАДИ И ТЕЛЕГИ: логистика биржи. Лошадей продаёт сама игра за монеты (монеты сгорают —
 # дефляция), телега собирается в мастерской и ездит только с лошадью.
-# Лотов = база + лошади + 2 × телеги (телег не больше, чем лошадей); заряженный Шаттл — свой лимит.
+# Лотов = база + лошади + телеги (по +1 за каждую; телег не больше, чем лошадей); заряженный Шаттл — свой лимит.
 # --------------------------------------------------------------------------
-HORSE_PRICES = (1500, 3000, 6000)
+HORSE_PRICES = (1500, 3000, 6000, 10000, 15000)
 MAX_HORSES = len(HORSE_PRICES)
-MAX_CARTS = 3
+MAX_CARTS = 5
 MARKET_BASE_LOTS = 2
 SHUTTLE_CHARGE_DAYS = 30          # 🔋 Шаттл летает на батарейке: 1 батарейка = 30 дней льгот
 
@@ -413,7 +419,7 @@ SHUTTLE_CHARGE_DAYS = 30          # 🔋 Шаттл летает на батар
 def market_lots(horses: int, carts: int, shuttle_active: bool) -> int:
     if shuttle_active:
         return SHUTTLE_MARKET_MAX_OPEN_ORDERS
-    return MARKET_BASE_LOTS + horses + 2 * min(carts, horses)
+    return MARKET_BASE_LOTS + horses + min(carts, horses)
 
 
 # --------------------------------------------------------------------------
@@ -426,14 +432,9 @@ SEASON_EARN_REASONS = ("mining", "quiz_level_up", "duel_win", "quest_reward", "d
 SEASON_BATTLE_POINTS = {1: 10, 2: 7, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1, 9: 1, 10: 1}
 SEASON_TOP_SIZE = 100
 SEASON_FIRST = "2026-10"          # первый сезон (раньше сезонов не было — итоги не подводятся)
-# Призы ТОП-10 — временные премиум-вещи из магазина (дразнят: после сезона хочется продолжить за ★)
-SEASON_PRIZES: dict[int, tuple[str, ...]] = {
-    1: ("miner_premium", "cutlet_50", "boost_nitrogen_30"),
-    2: ("miner_premium", "cutlet_10"),
-    3: ("miner_premium", "cutlet_10"),
-    **{p: ("cutlet_10", "unlimit_24h") for p in range(4, 11)},
-}
-SEASON_TEAM_CORES = {1: 3, 2: 2, 3: 1}   # ☢️ каждому бойцу команд-призёров сезона
+# Призы сезона назначает владелец сам (/reward → «ТОП прошлого сезона»): автоматом — только значок
+# в паспорт ТОП-10 (решение владельца 27.10: «халявных монет должно быть поменьше»).
+SEASON_BADGE_PLACES = 10
 
 
 def season_key(moment: datetime) -> str:

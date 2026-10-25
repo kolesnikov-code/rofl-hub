@@ -74,6 +74,38 @@ class Database:
         logger.info("Схема PostgreSQL синхронизирована.")
 
 
+# --- 27.10: ПОЛНЫЙ СБРОС ЭКОСИСТЕМЫ (решение владельца: в базе только тестовые аккаунты и фейки).
+# Все стартуют «как будто зарегистрировались сегодня»: монеты, интеллект, роботы, ресурсы, команды,
+# рецепты по одному в сутки — с нуля (вход через /start). Перед удалением всё копируется в схему
+# reset_backup_20261027 (откат возможен вручную). Остаются: платежи Stars (история и возвраты),
+# тумблеры владельца, промоутеры. Разово (флаг migr:full_reset_20261027), под advisory-локом —
+# два бота, стартующие одновременно, не выполнят сброс дважды.
+RESET_TABLES = (
+    "users", "teams", "game_stats", "auctions", "ledger", "miners", "duels", "battles", "quest_progress",
+    "vip_aliases", "events", "daily_activity", "metrics_snapshots", "market_orders", "user_resources",
+    "resource_ledger", "raids", "daily_goal_claims", "team_stations", "team_donations", "market_trades",
+    "resource_swaps", "team_help", "user_items", "team_banners", "user_tech", "user_badges",
+    "season_results", "weekly_crafts",
+)
+RESET_ALL_STATEMENT = """
+DO $$
+DECLARE t TEXT;
+BEGIN
+  PERFORM pg_advisory_xact_lock(20261027);
+  IF NOT EXISTS (SELECT 1 FROM feature_flags WHERE key = 'migr:full_reset_20261027') THEN
+    CREATE SCHEMA IF NOT EXISTS reset_backup_20261027;
+    FOREACH t IN ARRAY ARRAY[%s] LOOP
+      EXECUTE format('CREATE TABLE IF NOT EXISTS reset_backup_20261027.%%I AS TABLE public.%%I', t, t);
+      EXECUTE format('TRUNCATE public.%%I RESTART IDENTITY', t);
+    END LOOP;
+    UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, captured_until = NULL,
+                     last_paid_at = NULL, cores_paid = 0;
+    INSERT INTO feature_flags (key, enabled) VALUES ('migr:full_reset_20261027', TRUE);
+  END IF;
+END $$;
+""" % ", ".join(f"'{t}'" for t in RESET_TABLES)
+
+
 SCHEMA_STATEMENTS: list[str] = [
     """
     CREATE TABLE IF NOT EXISTS users (
@@ -641,6 +673,7 @@ SCHEMA_STATEMENTS: list[str] = [
     "UPDATE users SET armor_until = NOW() + INTERVAL '30 days' WHERE farm_armor_level > 0 AND armor_until IS NULL;",
     "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",
     "CREATE INDEX IF NOT EXISTS star_payments_created_idx ON star_payments (created_at);",
+    RESET_ALL_STATEMENT,
 ]
 
 

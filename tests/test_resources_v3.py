@@ -52,7 +52,6 @@ def test_sources_of_new_resources():
 def test_core_only_from_team_activities_and_small():
     """Ядро — только битвы/рудники/командный ТОП сезона; немного на бойца."""
     assert max(economy.BATTLE_CORE_REWARD.values()) <= 3
-    assert max(economy.SEASON_TEAM_CORES.values()) <= 3
     assert economy.MINE_CORE_MAX <= 3
     for rid, r in WORKSHOP_RECIPES.items():                   # ни один рецепт не производит Ядро
         assert "core" not in (r.get("make") or {}), rid
@@ -130,8 +129,10 @@ def test_tool_kits_four_tiers_need_progressively_rarer_inputs():
 
 
 def test_tech_tool_requirements():
-    assert [tech_tool_required("comm", lvl) for lvl in (1, 2, 3)] == [1, 2, 3]
-    assert [tech_tool_required("attack", lvl) for lvl in (1, 2, 3, 4, 5)] == [1, 1, 2, 3, 4]
+    """Все технологии, включая связь, — одинаковые 5 уровней и одинаковые наборы инструментов."""
+    for key in ("comm", "scout", "attack", "defense"):
+        assert TECHS[key]["max"] == 5, key
+        assert [tech_tool_required(key, lvl) for lvl in (1, 2, 3, 4, 5)] == [1, 1, 2, 3, 4], key
     assert [tech_tool_required("science", lvl) for lvl in (1, 2, 3, 4, 5)] == [2, 2, 3, 4, 4]
     for key in TECH_ORDER:
         for lvl in range(1, TECHS[key]["max"] + 1):
@@ -143,21 +144,25 @@ def test_tech_cost_grows_and_science_is_linear_with_core():
     assert tech_cost("science", 3) == {k: v * 3 for k, v in TECHS["science"]["base"].items()}
     assert tech_cost("science", 1)["core"] == TECHS["science"]["base"]["core"]
     assert "battery" not in tech_cost("comm", 1)
-    assert tech_cost("comm", 2)["battery"] == 2 and tech_cost("comm", 3)["battery"] == 5
+    assert [tech_cost("comm", lvl)["battery"] for lvl in (2, 3, 4, 5)] == [2, 4, 6, 8]
     for key in TECH_ORDER:
         sums = [sum(tech_cost(key, lvl).values()) for lvl in range(1, TECHS[key]["max"] + 1)]
-        assert sums == sorted(sums) and all(v > 0 for c in [tech_cost(key, 1)] for v in c.values()), key
+        assert sums == sorted(sums) and all(v > 0 for v in tech_cost(key, 1).values()), key
 
 
-def test_tech_cooldowns_balance_veterans_and_newcomers():
-    """Старожил не убегает от новичка дальше, чем на 2–3 месяца; наука +5% — около полугода."""
-    assert tech_cooldown_days("attack", 2) == 2 * TECHS["attack"]["cooldown_days"]
-    assert tech_cooldown_days("science", 4) == TECHS["science"]["cooldown_days"]
-    for key in ("comm", "scout", "attack", "defense"):
-        full = sum(tech_cooldown_days(key, lvl) for lvl in range(1, TECHS[key]["max"]))
-        assert full <= 75, (key, full)                       # максимум за ~2,5 месяца
-    science = sum(tech_cooldown_days("science", lvl) for lvl in range(1, TECHS["science"]["max"]))
-    assert 120 <= science <= 200                             # +5% — примерно полгода
+def test_tech_cooldown_is_30_days_and_science_follows_the_rest():
+    """Решение владельца 27.10: следующий уровень той же технологии — ровно через 30 дней;
+    наука N — когда все остальные технологии изучены до N."""
+    from shared.economy import TECH_COOLDOWN_DAYS, science_gate_ok
+    assert TECH_COOLDOWN_DAYS == 30
+    for key in TECH_ORDER:
+        for lvl in range(1, TECHS[key]["max"]):
+            assert tech_cooldown_days(key, lvl) == 30, (key, lvl)
+    assert not science_gate_ok({}, 1)
+    assert not science_gate_ok({"comm": 1, "scout": 1, "attack": 1}, 1)            # оборона ещё 0
+    assert science_gate_ok({"comm": 1, "scout": 1, "attack": 1, "defense": 1}, 1)
+    assert not science_gate_ok({"comm": 2, "scout": 2, "attack": 2, "defense": 1}, 2)
+    assert science_gate_ok({"comm": 3, "scout": 2, "attack": 5, "defense": 2, "science": 0}, 2)
 
 
 def test_raid_tech_formulas():
@@ -199,11 +204,14 @@ def test_build_tech_payload():
     assert p["tools"]["level"] == 1 and p["tools"]["next"] == 2 and p["tools"]["affordable"]
     by = {x["key"]: x for x in p["techs"]}
     assert [x["key"] for x in p["techs"]] == list(TECH_ORDER)
-    assert by["comm"]["next"] == 2 and not by["comm"]["tool_ok"] and not by["comm"]["affordable"]   # нужен 🛠
-    assert by["scout"]["wait"] > 0 and not by["scout"]["affordable"]          # перезарядка 4 дня
-    assert by["defense"]["level"] == 0 and by["defense"]["affordable"]
-    assert by["science"]["tool"] == 2 and not by["science"]["affordable"]
-    maxed = build_tech_payload(_state(tools=4, comm=3), {}, NOW)
+    assert by["comm"]["next"] == 2 and by["comm"]["wait"] > 0 and not by["comm"]["affordable"]   # 30 дней
+    assert by["comm"]["cooldown_days"] == 30
+    assert by["defense"]["level"] == 0 and by["defense"]["affordable"]        # 1 уровень — сразу
+    assert not by["science"]["gate_ok"] and not by["science"]["affordable"]   # оборона ещё 0
+    ready = build_tech_payload(_state(tools=2, comm=1, scout=1, attack=1, defense=1), rich, NOW)
+    sci = {x["key"]: x for x in ready["techs"]}["science"]
+    assert sci["gate_ok"] and sci["affordable"] and sci["tool"] == 2
+    maxed = build_tech_payload(_state(tools=4, comm=5), {}, NOW)
     assert maxed["tools"]["next"] is None and not maxed["tools"]["affordable"]
     m = {x["key"]: x for x in maxed["techs"]}
     assert m["comm"]["next"] is None and m["comm"]["cost"] == {} and not m["comm"]["affordable"]
@@ -211,13 +219,13 @@ def test_build_tech_payload():
     assert not any(x["affordable"] for x in poor["techs"])
 
 
-# ---------------------------------------------------------------- лошади, телеги, Шаттл
-
 def test_market_lots_from_horses_and_carts():
+    """1 лошадь = +1 лот, 1 телега = +1 лот (телег не больше, чем лошадей); по 5 максимум."""
+    assert economy.MAX_HORSES == 5 and economy.MAX_CARTS == 5
     assert market_lots(0, 0, False) == economy.MARKET_BASE_LOTS
     assert market_lots(2, 0, False) == economy.MARKET_BASE_LOTS + 2
-    assert market_lots(1, 3, False) == economy.MARKET_BASE_LOTS + 1 + 2   # телег не больше, чем лошадей
-    assert market_lots(3, 3, False) == economy.MARKET_BASE_LOTS + 3 + 6
+    assert market_lots(1, 3, False) == economy.MARKET_BASE_LOTS + 1 + 1
+    assert market_lots(5, 5, False) == economy.MARKET_BASE_LOTS + 10
     assert market_lots(0, 0, True) == economy.SHUTTLE_MARKET_MAX_OPEN_ORDERS
     assert market_lots(economy.MAX_HORSES, economy.MAX_CARTS, False) <= economy.SHUTTLE_MARKET_MAX_OPEN_ORDERS
 
@@ -281,22 +289,19 @@ def test_previous_season_moment():
     assert season_key(prev) == "2026-12"
 
 
-def test_season_prizes_are_catalog_items_and_temporary():
-    """Призы ТОП-10 — временные товары каталога (с авто-выдачей), не вечные."""
-    from bots.main_bot.catalog import CATALOG
-    from shared.delivery import DELIVERY_HANDLERS as HANDLERS
-    assert sorted(economy.SEASON_PRIZES) == list(range(1, 11))
-    for place, skus in economy.SEASON_PRIZES.items():
-        assert skus, place
-        for sku in skus:
-            assert sku in CATALOG, sku
-            assert CATALOG[sku]["type"] in HANDLERS, sku
-            assert "forever" not in sku and "eternal" not in sku
+def test_season_has_no_automatic_prizes_only_badges():
+    """Решение владельца 27.10: призы сезона назначает он сам; автоматически — только значок ТОП-10."""
+    assert not hasattr(economy, "SEASON_PRIZES") and not hasattr(economy, "SEASON_TEAM_CORES")
+    assert economy.SEASON_BADGE_PLACES == 10
+    import inspect
+    from shared import seasons
+    src = inspect.getsource(seasons.finalize_season)
+    assert "deliver" not in src and "change_resource" not in src and "change_balance" not in src
     assert set(economy.SEASON_BATTLE_POINTS) == set(range(1, 11))
     assert list(economy.SEASON_BATTLE_POINTS.values()) == sorted(economy.SEASON_BATTLE_POINTS.values(), reverse=True)
+    from shared.rewards import TARGETS
+    assert "season_prev" in TARGETS
 
-
-# ---------------------------------------------------------------- подарки из админ-бота
 
 def test_parse_gift():
     from shared.rewards import parse_gift
@@ -339,9 +344,12 @@ def test_tech_errors_localize():
 def test_frontend_has_lab_season_top_stable():
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     for needle in ("viewLab", "/api/tech", "/api/tech/up", "/api/horse/buy", "/api/shuttle/charge",
-                   "topMode", "mode=rich", "my_mines", "raid_needTech", "lab_rule1", "prize_miner_premium"):
+                   "topMode", "mode=rich", "my_mines", "raid_needTech", "lab_rule1", "lab_sciGate", "gate_ok"):
         assert needle in html, needle
-    assert "station_drone" not in html
+    assert "station_drone" not in html and "prize_" not in html
+    # сцена фермы и узлы карты рудников — разные классы (иначе сцена «уезжает» влево-вверх)
+    assert 'class="mine-scene"' in html and html.count(".mine-scene {") == 1
+    assert html.count("  .mine { ") == 1
     assert "/quiz" not in html.split("I18N_EXTRA")[0].split("<script")[0]   # без слэш-команд в разметке
 
 
@@ -375,3 +383,19 @@ def test_friends_rating_is_seasonal():
     assert "season_bounds(now)" in src and "qualified_at >= $2" in src and '"season"' in src
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     assert "fmt(L.top_seasonTitle, { s: d.season })" in html
+
+
+def test_full_reset_migration_is_last_backed_up_and_keeps_payments():
+    """Полный сброс 27.10: последний в схеме, с бэкапом, разовый, платежи и тумблеры не трогает."""
+    from shared.database import RESET_ALL_STATEMENT, RESET_TABLES, SCHEMA_STATEMENTS
+    assert SCHEMA_STATEMENTS[-1] is RESET_ALL_STATEMENT
+    for keep in ("star_payments", "feature_flags", "promoters", "mines"):
+        assert keep not in RESET_TABLES
+    for t in ("users", "ledger", "miners", "game_stats", "user_resources", "teams", "user_tech", "vip_aliases"):
+        assert t in RESET_TABLES
+    assert "reset_backup_20261027" in RESET_ALL_STATEMENT and "migr:full_reset_20261027" in RESET_ALL_STATEMENT
+    assert "pg_advisory_xact_lock" in RESET_ALL_STATEMENT
+    assert RESET_ALL_STATEMENT.index("CREATE TABLE IF NOT EXISTS reset_backup") < RESET_ALL_STATEMENT.index("TRUNCATE")
+    import re
+    created = set(re.findall(r"CREATE TABLE IF NOT EXISTS (\w+)", "\n".join(SCHEMA_STATEMENTS)))
+    assert set(RESET_TABLES) <= created

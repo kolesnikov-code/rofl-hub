@@ -32,7 +32,7 @@ from shared.farm_logic import apply_lazy_farm, farm_counts
 from shared.locales import resolve_lang, t
 from shared.ranks import rank_label
 from shared.resources import get_resources
-from shared.economy import ALL_KINDS, SEASON_PRIZES, season_bounds, season_key
+from shared.economy import ALL_KINDS, season_bounds, season_key
 from shared.seasons import season_place, season_teams, season_top, user_badges
 from shared.webapp_auth import validate_init_data
 
@@ -340,7 +340,7 @@ async def handle_top(request: web.Request) -> web.Response:
             start, end = season_bounds(now)
             return web.json_response({
                 "mode": "season", "season": season_key(now), "ends_at": end.isoformat(),
-                "me": me_place, "prizes": {str(k): list(v) for k, v in SEASON_PRIZES.items()},
+                "me": me_place,
                 "top": [{"name": (f"@{r['username']}" if r["username"] else (r["display_name"] or f"ID {r['user_id']}")),
                          "earned": int(r["earned"]), "quiz_level": r["quiz_level"],
                          "rank": rank_label(viewer_lang, r["created_at"], now),

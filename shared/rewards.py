@@ -8,11 +8,11 @@ from __future__ import annotations
 import json
 import logging
 
-from shared.economy import ALL_KINDS, ITEM_EFFECTS, utcnow
+from shared.economy import ALL_KINDS, ITEM_EFFECTS, season_key, utcnow
 
 logger = logging.getLogger(__name__)
 
-TARGETS = ("player", "team", "season", "battle")
+TARGETS = ("player", "team", "season", "season_prev", "battle")
 GIFTS = ("coins", "resource", "sku", "item")
 
 
@@ -38,10 +38,12 @@ async def resolve_recipients(conn, target: str, value: str) -> tuple[list[int], 
         rows = await conn.fetch("SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked "
                                 "AND deleted_at IS NULL", team["team_id"])
         return [r["user_id"] for r in rows], f"команда «{team['team_name']}»"
-    if target == "season":
+    if target in ("season", "season_prev"):
+        from shared.seasons import previous_season_moment
         n = max(1, min(int(value) if value.isdigit() else 10, 100))
-        rows = await season_top(conn, utcnow(), limit=n)
-        return [r["user_id"] for r in rows], f"ТОП-{n} сезона"
+        moment = utcnow() if target == "season" else previous_season_moment(utcnow())
+        rows = await season_top(conn, moment, limit=n)
+        return [r["user_id"] for r in rows], f"ТОП-{n} сезона {season_key(moment)}"
     if target == "battle":
         parts = value.split()
         if len(parts) != 2 or not all(p.isdigit() for p in parts):

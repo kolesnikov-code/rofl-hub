@@ -5,7 +5,7 @@
   как в S.T.A.L.K.E.R.: набор не тратится, а открывает сложные сборки. Хранится в user_tech('tools').
 - ТЕХНОЛОГИИ — 📡 связь, 🔭 разведка, ⚔️ нападение, 🛡 оборона, 📚 наука (shared/economy.TECHS).
   Уровень покупается за ресурсы при нужном наборе инструментов; следующий — не раньше, чем через
-  перезарядку (tech_cooldown_days): так старожил не убегает от новичка дальше, чем на пару месяцев.
+  TECH_COOLDOWN_DAYS (30 дней) — каждое улучшение желанное; наука N — когда все остальные на уровне N.
 - 🐎 ЛОШАДИ продаёт игра за монеты (монеты сгорают: ledger 'horse_buy') — лоты на бирже.
 - 🔋 ШАТТЛ летает на батарейке: заряд продлевает льготы на SHUTTLE_CHARGE_DAYS.
 Всё — внутри транзакции вызывающего кода.
@@ -15,7 +15,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 from shared.economy import (HORSE_PRICES, MAX_HORSES, SHUTTLE_CHARGE_DAYS, TECH_ORDER, TECHS, TOOL_COSTS,
-                            extend_expiry, tech_cooldown_days, tech_cost, tech_tool_required)
+                            extend_expiry, science_gate_ok, tech_cooldown_days, tech_cost, tech_tool_required)
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
 from shared.resources import RESOURCE_ICONS, InsufficientResources, spend_bundle
@@ -84,6 +84,8 @@ async def upgrade_tech(conn, user_id: int, tech: str, now: datetime) -> int:
     level = state[tech]["level"]
     if level >= TECHS[tech]["max"]:
         raise TechError("tech.err_max")
+    if tech == "science" and not science_gate_ok({k: v["level"] for k, v in state.items()}, level + 1):
+        raise TechError("tech.err_science", level=level + 1)
     need_tool = tech_tool_required(tech, level + 1)
     if state["tools"]["level"] < need_tool:
         raise TechError("tech.err_tool", tool=need_tool)

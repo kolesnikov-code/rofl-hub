@@ -975,9 +975,11 @@ async def test_purge_old_events_removes_only_stale_rows():
 
 
 # ---------------------------------------------------------------- волна 22.10 (вечер): ресурсы и механики
-async def test_game_win_mines_resource_and_ledger_blocks_negative(conn, global_db):
+async def test_game_win_mines_resource_and_ledger_blocks_negative(conn, global_db, monkeypatch):
     pytest.importorskip("aiogram")
+    from bots.main_bot.handlers import games
     from bots.main_bot.handlers.games import execute_solo_game_payout
+    monkeypatch.setattr(games.random, "randrange", lambda n: n - 1)      # ⚡ не выпало (шанс 25%)
     from shared.resources import InsufficientResources, change_resource, get_resources
     await _mk_user(conn, 500, 100)
 
@@ -993,6 +995,10 @@ async def test_game_win_mines_resource_and_ledger_blocks_negative(conn, global_d
     assert (await get_resources(conn, 500))["parts"] == 3
     rows = await conn.fetch("SELECT kind, delta, reason FROM resource_ledger WHERE user_id = 500")
     assert [(r["kind"], r["delta"], r["reason"]) for r in rows] == [("parts", 3, "game_win:safe")]
+    monkeypatch.setattr(games.random, "randrange", lambda n: 0)          # ⚡ выпало
+    ok, text, _ = await execute_solo_game_payout(500, True, "safe")
+    assert ok and "⚡" in text
+    assert (await get_resources(conn, 500, ("energy",)))["energy"] == 1
 
 
 async def test_workshop_crafts_spend_all_or_nothing(conn):
@@ -1799,10 +1805,17 @@ async def test_lab_tools_tech_tool_gate_and_cooldown(conn):
     assert await upgrade_tech(conn, 1400, "attack", later) == 2
     assert (await get_resources(conn, 1400))["metal"] == metal - tech_cost("attack", 2)["metal"]
 
-    assert await upgrade_tech(conn, 1400, "comm", now) == 1
-    with pytest.raises(TechError) as e:                      # 📡 2 требует набор 🛠
-        await upgrade_tech(conn, 1400, "comm", now + timedelta(days=60))
+    with pytest.raises(TechError) as e:                      # ⚔️ 3 требует набор 🛠
+        await upgrade_tech(conn, 1400, "attack", later + timedelta(days=31))
     assert (e.value.key, e.value.kwargs) == ("tech.err_tool", {"tool": 2})
+    with pytest.raises(TechError) as e:                      # 📚 — только когда все технологии на 1 уровне
+        await upgrade_tech(conn, 1400, "science", now)
+    assert (e.value.key, e.value.kwargs) == ("tech.err_science", {"level": 1})
+    for tech in ("comm", "scout", "defense"):                # 1 уровень — с первого дня
+        assert await upgrade_tech(conn, 1400, tech, now) == 1
+    with pytest.raises(TechError) as e:                      # ворота открыты, но нужен набор 🛠
+        await upgrade_tech(conn, 1400, "science", now)
+    assert e.value.key == "tech.err_tool"
     with pytest.raises(TechError) as e:
         await upgrade_tech(conn, 1400, "magic", now)
     assert e.value.key == "tech.err_unknown"
@@ -1835,15 +1848,15 @@ async def test_horses_carts_and_market_lots(conn):
     assert ledger == -HORSE_PRICES[0]                          # монеты сгорели
     await craft(conn, 1410, "cart", now)
     assert await conn.fetchval("SELECT carts FROM users WHERE user_id = 1410") == 1
-    for _ in range(3):                                         # +1 лошадь +2 телега
+    for _ in range(2):                                         # +1 лошадь +1 телега
         await place_order(conn, 1410, "metal", "sell", 10, 5)
     with pytest.raises(MarketError):
         await place_order(conn, 1410, "metal", "sell", 10, 5)
-    await buy_horse(conn, 1410)
-    await buy_horse(conn, 1410)
+    for _ in range(MAX_HORSES - 1):
+        await buy_horse(conn, 1410)
     with pytest.raises(TechError) as e:
         await buy_horse(conn, 1410)
-    assert e.value.key == "horse.err_max" and MAX_HORSES == 3
+    assert e.value.key == "horse.err_max" and MAX_HORSES == 5
     await _mk_user(conn, 1411, 10)
     with pytest.raises(TechError) as e:
         await buy_horse(conn, 1411)
@@ -2001,11 +2014,9 @@ async def test_battle_cores_go_to_every_member_of_top3(conn):
             assert got == BATTLE_CORE_REWARD.get(i + 1, 0), (i, j)
 
 
-async def test_finalize_season_is_idempotent_with_badges_prizes_and_team_cores(conn):
+async def test_finalize_season_is_idempotent_and_gives_only_badges(conn):
     from datetime import datetime, timezone
-    from shared.economy import SEASON_PRIZES, SEASON_TEAM_CORES
     from shared.ledger import change_balance
-    from shared.resources import get_resources
     from shared.seasons import finalize_season, season_place, season_top, user_badges
     moment = datetime(2026, 10, 15, tzinfo=timezone.utc)
     for i in range(12):
@@ -2025,22 +2036,40 @@ async def test_finalize_season_is_idempotent_with_badges_prizes_and_team_cores(c
         "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, status, results) "
         "VALUES ('B', 'farm', 'farm', $1, $1, 'finished', $2::jsonb)",
         moment, '{"scores": [{"team_id": %d, "team_name": "S", "score": 5}]}' % tid)
+    ledger_before = await conn.fetchval("SELECT COUNT(*) FROM ledger")
 
-    delivered = []
-
-    async def deliver(c, uid, sku, charge):
-        delivered.append((uid, sku, charge))
-
-    res = await finalize_season(conn, moment, deliver)
-    assert res is not None and len(res["players"]) == 10
-    assert sum(len(v) for v in SEASON_PRIZES.values()) == len(delivered)
-    assert ("SEASON2026-10_P1_U1500_" + SEASON_PRIZES[1][0]) in {c for _, _, c in delivered}
+    res = await finalize_season(conn, moment)
+    assert res is not None and len(res["players"]) == 10 and res["teams"][0]["team_id"] == tid
     assert [b["place"] for b in await user_badges(conn, 1500)] == [1]
     assert await user_badges(conn, 1511) == []                                 # 12-й — без значка
-    assert (await get_resources(conn, 1520, ("core",)))["core"] == SEASON_TEAM_CORES[1]
-    assert await finalize_season(conn, moment, deliver) is None                # второй раз — ничего
-    assert sum(len(v) for v in SEASON_PRIZES.values()) == len(delivered)
-    assert await finalize_season(conn, datetime(2026, 9, 15, tzinfo=timezone.utc), deliver) is None   # до сезонов
+    assert await conn.fetchval("SELECT COUNT(*) FROM ledger") == ledger_before  # никаких автопризов
+    assert await conn.fetchval("SELECT COUNT(*) FROM resource_ledger") == 0
+    assert await finalize_season(conn, moment) is None                         # второй раз — ничего
+    assert await finalize_season(conn, datetime(2026, 9, 15, tzinfo=timezone.utc)) is None   # до сезонов
+
+
+async def test_full_reset_wipes_game_keeps_payments_and_backs_up(conn):
+    from shared.database import RESET_ALL_STATEMENT
+    await _mk_user(conn, 1550, 777)
+    await conn.execute("INSERT INTO ledger (user_id, delta, reason) VALUES (1550, 777, 'test')")
+    await conn.execute("INSERT INTO user_tech (user_id, tech, level) VALUES (1550, 'attack', 3)")
+    await conn.execute("UPDATE mines SET team_id = 1, captured_at = NOW(), captured_until = NOW(), "
+                       "last_paid_at = NOW() WHERE id = 1")
+    await conn.execute("INSERT INTO star_payments (telegram_charge_id, user_id, item_payload, stars_amount) "
+                       "VALUES ('KEEP_ME', 1550, 'x', 5) ON CONFLICT DO NOTHING")
+    await conn.execute("DELETE FROM feature_flags WHERE key = 'migr:full_reset_20261027'")
+    await conn.execute("DROP SCHEMA IF EXISTS reset_backup_20261027 CASCADE")
+    await conn.execute(RESET_ALL_STATEMENT)
+    for t in ("users", "ledger", "user_tech"):
+        assert await conn.fetchval(f"SELECT COUNT(*) FROM {t}") == 0, t
+    assert await conn.fetchval("SELECT balance FROM reset_backup_20261027.users WHERE user_id = 1550") == 777
+    assert await conn.fetchval("SELECT COUNT(*) FROM star_payments WHERE telegram_charge_id = 'KEEP_ME'") == 1
+    assert await conn.fetchval("SELECT team_id FROM mines WHERE id = 1") is None
+    assert await conn.fetchval("SELECT enabled FROM feature_flags WHERE key = 'migr:full_reset_20261027'")
+    await _mk_user(conn, 1551, 5)                                              # разовый: повтор не трогает
+    await conn.execute(RESET_ALL_STATEMENT)
+    assert await conn.fetchval("SELECT COUNT(*) FROM users") == 1
+    await conn.execute("DELETE FROM star_payments WHERE telegram_charge_id = 'KEEP_ME'")
 
 
 async def test_admin_rewards_resolve_and_give_all(conn):

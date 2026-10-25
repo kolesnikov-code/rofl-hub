@@ -82,6 +82,7 @@ from shared.economy import (
     tech_cost,
     tech_tool_required,
     tech_cooldown_days,
+    science_gate_ok,
     RAID_ATTACK_BONUS_PER_LEVEL,
     RAID_DEFENSE_PER_LEVEL,
     SCIENCE_PERCENT_PER_LEVEL,
@@ -496,6 +497,7 @@ def _raid_err(e: RaidError, lang: str) -> str:
 def build_tech_payload(state: dict, stock: dict, now) -> dict:
     """Чистый сборщик витрины Лаборатории (юнит-тесты без aiohttp)."""
     tools = state["tools"]["level"]
+    levels = {k: v["level"] for k, v in state.items()}
     techs = []
     for key in TECH_ORDER:
         level = state[key]["level"]
@@ -504,10 +506,11 @@ def build_tech_payload(state: dict, stock: dict, now) -> dict:
         cost = tech_cost(key, nxt) if nxt else {}
         tool = tech_tool_required(key, nxt) if nxt else 0
         wait = int((ready - now).total_seconds()) if ready and ready > now else 0
+        gate = not (key == "science" and nxt) or science_gate_ok(levels, nxt)
         techs.append({"key": key, "icon": TECHS[key]["icon"], "level": level, "max": TECHS[key]["max"],
                       "next": nxt, "cost": cost, "tool": tool, "tool_ok": tools >= tool, "wait": wait,
-                      "cooldown_days": tech_cooldown_days(key, nxt) if nxt else 0,
-                      "affordable": bool(nxt) and tools >= tool and not wait and can_afford(stock, cost)})
+                      "gate_ok": gate, "cooldown_days": tech_cooldown_days(key, nxt) if nxt else 0,
+                      "affordable": bool(nxt) and gate and tools >= tool and not wait and can_afford(stock, cost)})
     nxt_tool = tools + 1 if tools < len(TOOL_COSTS) else None
     return {
         "tools": {"level": tools, "next": nxt_tool, "cost": TOOL_COSTS.get(nxt_tool, {}),
