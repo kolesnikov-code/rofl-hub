@@ -74,8 +74,6 @@ def generate_profile_image(user_id: int, username: str, data: dict, lang: str = 
 # ============================================================================
 # 👤 ТЕКУЩИЙ ЛИЧНЫЙ КАБИНЕТ: /profile ИЛИ НАЖАТИЕ НИЖНЕЙ КНОПКИ
 # ============================================================================
-@router.message(Command("profile"))
-@router.message(F.text.in_(btn_variants("profile")))
 def profile_keyboard_for(lang: str) -> types.InlineKeyboardMarkup:
     """Решение владельца 28.10: под профилем одна кнопка — «Открыть приложение» (удаление аккаунта —
     командой /delete_account в меню). Без приложения — прежние кнопки фермы, магазина и меню."""
@@ -90,6 +88,8 @@ def profile_keyboard_for(lang: str) -> types.InlineKeyboardMarkup:
     ])
 
 
+@router.message(Command("profile"))
+@router.message(F.text.in_(btn_variants("profile")))
 async def cmd_profile_stats(message: types.Message, user_lang: str = "ru"):
     user_id = message.from_user.id
     username = html.escape(message.from_user.username or f"user_{user_id}")

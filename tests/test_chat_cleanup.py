@@ -85,3 +85,23 @@ def test_no_blank_lines_around_decorative_dots_in_any_language():
             if re.search(r"\n\s*\n" + DOTS.pattern, value) or re.search(DOTS.pattern + r"\n\s*\n", value):
                 bad.append(f"{lang}:{key}")
     assert not bad, bad[:10]
+
+
+def test_every_chat_handler_is_a_coroutine_and_profile_is_wired():
+    """Регрессия 28.10: функция, вставленная между декораторами и обработчиком, «украла» кнопку «Мой профиль»."""
+    pytest.importorskip("aiogram")
+    import importlib
+    import inspect
+    import pkgutil
+    import bots.main_bot.handlers as pkg
+    seen = {}
+    for mod in pkgutil.iter_modules(pkg.__path__):
+        module = importlib.import_module(f"bots.main_bot.handlers.{mod.name}")
+        router = getattr(module, "router", None)
+        if router is None:
+            continue
+        for observer in (router.message, router.callback_query):
+            for h in observer.handlers:
+                assert inspect.iscoroutinefunction(h.callback), f"{mod.name}.{h.callback.__name__} — не обработчик"
+                seen.setdefault(mod.name, set()).add(h.callback.__name__)
+    assert "cmd_profile_stats" in seen["profile"]
