@@ -2,6 +2,7 @@
 Битвы и акции v2: чистая логика (номинации, зачёт, рудники по местам, призы, посты на 14 языках).
 """
 from datetime import datetime, timezone
+from pathlib import Path
 
 from shared.battles import (
     BATTLE_NOMINATIONS,
@@ -126,44 +127,27 @@ def _battle(**kw):
     return _B(base)
 
 
-def test_post_langs_match_start_menu():
-    from bots.main_bot.handlers.start import LANGUAGES
-    from shared.battle_posts import POST_LANGS
-    from shared.locales import SUPPORTED_LANGS
-    assert [c for c, _ in POST_LANGS] == [c for c, _ in LANGUAGES]
-    assert {c for c, _ in POST_LANGS} == set(SUPPORTED_LANGS)
-    for (code, flag), (code2, label) in zip(POST_LANGS, LANGUAGES):
-        assert label.startswith(flag), code
+ROOT = Path(__file__).resolve().parent.parent
 
 
-def test_announce_post_all_languages_prizes_mines_and_limit():
-    from shared.battle_posts import POST_LANGS, build_announce
-    prizes = {1: [{"kind": "coins", "amount": 1000}], 2: [{"kind": "resource", "res": "core", "qty": 1}]}
-    post = build_announce(_battle(), prizes, {4: "crystal", 9: "stone"})
-    assert "Осенний кубок &lt;b&gt;" in post                               # ввод владельца экранирован
-    assert "🥇 1 000 🪙" in post and "🥈 1 ☢️" in post and "№4 💎" in post and "№9 🪨" in post
-    for code, flag in POST_LANGS:
-        assert f"\n{flag} " in post, code
-    assert post.count("🔋") >= len(POST_LANGS)                           # заявка батарейками на каждом языке
-    assert len(post) <= 4096
-    long_prizes = {p: [{"kind": "text", "text": "П" * 150}] for p in range(1, 40)}
-    assert len(build_announce(_battle(title="T" * 100), long_prizes, {})) <= 4096
+def test_no_channel_posts_anywhere():
+    """26.10: канала нет — ни модуля постов, ни отправки в USERS_CHANNEL_ID."""
+    assert not (ROOT / "shared" / "battle_posts.py").exists()
+    admin_bot = (ROOT / "bots" / "admin_notifier_bot" / "bot.py").read_text(encoding="utf-8")
+    assert "USERS_CHANNEL_ID" not in admin_bot and "battle_posts" not in admin_bot
+    assert "send_reward_notices" in admin_bot
 
 
-def test_announce_custom_nomination_as_is_and_solo_without_mines():
-    from shared.battle_posts import build_announce
-    post = build_announce(_battle(nomination_key="custom", nomination_text="Лучший мем · Best meme",
-                                  scope="solo", mine_ids=[]), {}, {})
-    assert post.count("Лучший мем · Best meme") == 14
-    assert "🔋" not in post and "⛏" not in post
-
-
-def test_results_post_lists_places_rewards_mines():
-    from shared.battle_posts import build_results
-    results = {"places": [
-        {"place": 1, "name": "Банда", "score": 120, "rewards": [{"kind": "coins", "amount": 500}], "mine_id": 4},
-        {"place": 2, "name": "@neo", "score": None, "rewards": [], "mine_id": None}]}
-    post = build_results(_battle(), results)
-    assert "🥇 <b>Банда</b> — 120 · 🎁 500 🪙 · ⛏ №4" in post and "🥈 <b>@neo</b>" in post
-    empty = build_results(_battle(), {"places": []})
-    assert "🥇" not in empty and len(empty) <= 4096
+def test_reward_notice_text_place_all_manual_and_mine():
+    from shared.reward_notify import notice_text
+    place = notice_text("ru", {"title": "Кубок <b>", "place": 1, "all": False, "mine_id": 7,
+                               "rewards": [{"kind": "resource", "res": "battery", "qty": 10},
+                                           {"kind": "text", "text": "Telegram Premium"}]})
+    assert "Кубок &lt;b&gt;" in place and "1 месте" in place and "10 🔋" in place
+    assert "Telegram Premium" in place and "Рудник №7" in place
+    part = notice_text("en", {"title": "Run", "place": 5, "all": True, "rewards": [{"kind": "coins", "amount": 50}]})
+    assert "thanks for taking part" in part and "50 🪙" in part
+    from shared.locales import PACK_CODES, t
+    for lang in ("ru", "en") + tuple(PACK_CODES):
+        for key in ("rn.place", "rn.all", "rn.got", "rn.manual", "rn.mine", "rn.where", "auc.outbid", "auc.bid_ok"):
+            assert t(lang, key, title="T", place=1, r="x", mine=1, hours=24, refund=1, price=2) != key, (lang, key)

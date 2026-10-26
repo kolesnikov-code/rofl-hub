@@ -319,44 +319,48 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
     else:
         standings = await battle_standings(conn, battle)
     prizes = prizes_by_place(battle["prizes"])
-    rows = []
+    rows, notices = [], []
+
+    async def members_of(entry) -> list[int]:
+        if scope == "solo":
+            return [entry["id"]]
+        return [m["user_id"] for m in await conn.fetch(
+            "SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked AND deleted_at IS NULL", entry["id"])]
+
     prize_rows = max(places, len(mines))
     for place, entry in enumerate(standings[:prize_rows], start=1):
         rewards = prizes.get(place, [])
         given = 0
-        if any(r["kind"] != "text" for r in rewards):
-            if scope == "solo":
-                members = [entry["id"]]
-            else:
-                members = [m["user_id"] for m in await conn.fetch(
-                    "SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked AND deleted_at IS NULL",
-                    entry["id"])]
-            given, _ = await grant_many(conn, members, rewards, f"B{battle_id}_P{place}", now)
         mine_id = until = None
         if scope != "solo" and place <= len(mines):
             mine_id = mines[place - 1]
             async with conn.transaction():
                 until = await capture_mine(conn, mine_id, entry["id"], battle_id, now)
+        got: list[int] = []
+        if rewards:
+            given, _ = await grant_many(conn, await members_of(entry), rewards, f"B{battle_id}_P{place}", now, got)
+        if mine_id and not rewards:
+            got = await members_of(entry)
+        notices += [{"user_id": u, "title": battle["title"], "place": place, "rewards": rewards, "all": False,
+                     "mine_id": mine_id} for u in got]
         rows.append({"place": place, **entry, "rewards": rewards, "given": given,
                      "mine_id": mine_id, "until": until.isoformat() if until else None})
     # 🎒 «За участие» (28.10): всем, кто в зачёте, но без призового места, — награда владельца
     participants = 0
     reward_all = battle_reward_all(battle)
-    if reward_all and any(r["kind"] != "text" for r in reward_all) and not is_manual(battle["nomination_key"]):
+    if reward_all and not is_manual(battle["nomination_key"]):
         everyone = await battle_standings(conn, battle, limit=MAX_PARTICIPANTS)
-        for entry in everyone[prize_rows:]:
-            if scope == "solo":
-                members = [entry["id"]]
-            else:
-                members = [m["user_id"] for m in await conn.fetch(
-                    "SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked AND deleted_at IS NULL",
-                    entry["id"])]
-            given, _ = await grant_many(conn, members, reward_all, f"B{battle_id}_ALL", now)
+        for place, entry in enumerate(everyone[prize_rows:], start=prize_rows + 1):
+            got = []
+            given, _ = await grant_many(conn, await members_of(entry), reward_all, f"B{battle_id}_ALL", now, got)
             participants += given
+            notices += [{"user_id": u, "title": battle["title"], "place": place, "rewards": reward_all, "all": True,
+                         "mine_id": None} for u in got]
     results = {"scope": scope, "places": rows, "participants_rewarded": participants}
     await conn.execute("UPDATE battles SET results = $2::jsonb WHERE battle_id = $1",
                        battle_id, json.dumps(results, ensure_ascii=False, default=str))
-    logger.info("[BATTLE] №%s итоги: %s мест, рудников %s", battle_id, len(rows), len(mines))
+    logger.info("[BATTLE] №%s итоги: %s мест, рудников %s, наград %s", battle_id, len(rows), len(mines), len(notices))
+    results["notices"] = notices
     return results
 
 

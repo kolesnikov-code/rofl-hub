@@ -15,11 +15,9 @@ from aiogram.fsm.context import FSMContext
 from bots.main_bot.handlers.menu import get_reply_main_keyboard
 from shared import analytics
 from shared.analytics import track
-from shared.auction_logic import compute_bid
 from shared.account_deletion import restore_account
 from shared.database import db
 from shared.economy import START_BALANCE, START_CUTLETS_INVENTORY
-from shared.ledger import change_balance
 from shared.locales import resolve_lang, t
 
 router = Router()
@@ -284,7 +282,7 @@ async def trigger_inline_auction_window(message: types.Message, auction_id: int)
 
 
 @router.callback_query(F.data.startswith("auc_bid:"))
-async def process_auction_bid_click(callback: types.CallbackQuery):
+async def process_auction_bid_click(callback: types.CallbackQuery, user_lang: str = "ru"):
     user_id = callback.from_user.id
     parts = callback.data.split(":")
     if len(parts) != 3 or not (parts[1].isdigit() and parts[2].isdigit()):
@@ -292,51 +290,19 @@ async def process_auction_bid_click(callback: types.CallbackQuery):
         return
     auction_id, bid_step = int(parts[1]), int(parts[2])
 
-    async with db.pool.acquire() as conn:
-        async with conn.transaction():
-            auction = await conn.fetchrow("SELECT * FROM auctions WHERE auction_id = $1 FOR UPDATE", auction_id)
-            if not auction:
-                await callback.answer("🚨 Лот не существует!", show_alert=True)
-                return
-            user = await conn.fetchrow("SELECT balance FROM users WHERE user_id = $1 FOR UPDATE", user_id)
-            if not user:
-                await callback.answer("Нажми /start для регистрации.", show_alert=True)
-                return
+    from shared.auctions import AuctionError, notify_outbid, place_bid
+    lang = user_lang
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                result = await place_bid(conn, user_id, auction_id, bid_step)
+    except AuctionError as e:
+        await callback.answer(html.unescape(e.localized(lang)), show_alert=True)
+        return
 
-            result = compute_bid(
-                current_price=auction["current_price"], min_step=auction["min_step"], bid_step=bid_step,
-                bidder_id=user_id, bidder_balance=user["balance"],
-                highest_bidder_id=auction["highest_bidder_id"], status=auction["status"],
-            )
-            if not result.ok:
-                messages = {
-                    "closed": "🚨 Лот уже закрыт!",
-                    "insufficient_funds": f"❌ Нужно {result.bidder_charge} монет, у тебя {user['balance']}.",
-                }
-                await callback.answer(messages.get(result.reason, "❌ Ставка отклонена."), show_alert=True)
-                return
-
-            await change_balance(conn, user_id, -result.bidder_charge, "auction_bid", str(auction_id))
-            if result.refund_to_previous and result.previous_bidder_id:
-                await change_balance(conn, result.previous_bidder_id, result.refund_to_previous,
-                                     "auction_refund", str(auction_id))
-            await conn.execute(
-                "UPDATE auctions SET current_price = $1, highest_bidder_id = $2, previous_bidder_id = $3 "
-                "WHERE auction_id = $4",
-                result.new_price, user_id, result.previous_bidder_id, auction_id)
-
-    await track(user_id, "auction_bid", auction_id=auction_id, amount=result.bidder_charge)
-
-    if result.previous_bidder_id:
-        try:
-            await callback.bot.send_message(
-                result.previous_bidder_id,
-                f"⚠️ Твою ставку на лот «{html.escape(auction['item_title'])}» перебили!\n"
-                f"💰 {result.refund_to_previous} монет возвращены на баланс.", parse_mode="HTML")
-        except Exception:
-            pass
-
-    await callback.answer(f"💥 Ставка принята! Цена лота: {result.new_price} монет.", show_alert=True)
+    await track(user_id, "auction_bid", auction_id=auction_id, amount=result["charge"])
+    await notify_outbid(callback.bot, result)
+    await callback.answer(t(lang, "auc.bid_ok", price=result["price"]), show_alert=True)
     await update_auction_view_text(callback, auction_id)
 
 

@@ -201,6 +201,21 @@
   .fridge-now { display: flex; align-items: center; gap: 12px; }
   .fridge-now .fmini { width: 84px; flex: 0 0 auto; }
   .fridge-now .finfo { flex: 1; min-width: 0; }
+  .fr-hint { margin-top: 14px; }
+  /* 📣 События в паспорте и 🔨 аукционы */
+  .news-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; margin-top: 8px;
+               border-radius: 12px; border: 1px solid rgba(0,255,225,.18); background: rgba(0,255,225,.05);
+               color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .news-item.done { opacity: .62; border-style: dashed; }
+  .news-item .ni-ic { font-size: 22px; flex: 0 0 auto; }
+  .news-item .ni-tx { flex: 1; min-width: 0; }
+  .news-item .ni-tt { font-weight: 700; overflow-wrap: anywhere; }
+  .news-item .ni-sb { font-size: 12px; opacity: .75; }
+  .news-item .ni-rt { flex: 0 0 auto; text-align: right; font-size: 12px; white-space: nowrap; }
+  .news-item .nw { white-space: nowrap; }
+  .lot.closed { opacity: .6; }
+  .lot .lot-price { font-size: 26px; font-weight: 800; }
+  .fork-timer { font-weight: 700; color: #ffd93d; margin: 6px 0; }
   .fridge-now .fname { font-weight: 800; font-size: 15px; }
   .fridge-up { display: flex; gap: 8px; margin-top: 12px; }
   .fridge-up button { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px;
@@ -437,8 +452,9 @@
 
   const I18N = {
     ru: {
+      map_cargoHint: "📦 Груз — очки похода: старт 100, развилки прибавляют или отнимают. Места в итогах — по грузу.", map_forkAhead: "До развилки {t} — выбери вариант заранее", map_forkNow: "Отряд у развилки! Решение ещё {t} — иначе осторожный вариант.", map_voteTeam: "Голосов: {a} из {b}. Проголосуют все — сработает на развилке сразу, иначе решит большинство.", map_myChoice: "твой выбор", news_title: "📣 СОБЫТИЯ", news_hint: "Все анонсы — здесь: битвы, походы на карте мира и аукционы. Нажми, чтобы открыть.", news_empty: "Пока тихо. Как только администрация запустит битву, поход или аукцион — анонс появится здесь.", news_left: "⏳ {t}", news_won: "🏁 {w}", news_done: "🏁 итоги подведены", tab_auctions: "🔨 Аукционы", auc_title: "🔨 АУКЦИОНЫ", auc_empty: "Лотов пока нет. Администрация выставляет VIP ID и другие призы время от времени — загляни позже.", auc_price: "Текущая цена", auc_leader: "Лидер", auc_noBids: "ставок пока нет", auc_you: "👑 ты лидер", auc_ends: "До конца", auc_noEnd: "до решения администрации", auc_bid: "💥 +{s} · спишется {c} 🪙", auc_balance: "У тебя: {b} 🪙", auc_rules: "Ставки возвратные: перебили — монеты сразу вернутся на баланс. Платит только победитель — его монеты сгорают. VIP ID переходит победителю сам, остальные призы вручает администрация.", auc_sold: "🏁 Продано за {p} 🪙", auc_unsold: "🏁 Закрыт без ставок", auc_closed: "Завершённые лоты", auc_done: "💥 Ставка принята! Цена лота: {p} 🪙",
       map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
-      tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "Соло-походы: каждый идёт к цели со своей стороны карты. К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "🎒 За участие: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Решаешь ты — выбор применится сразу.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Голос принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
+      tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "На карте — соло-походы и походы отрядов команд (формат у каждой цели свой). К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "🎒 За участие: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Твой выбор сработает, как только дойдёшь до развилки. Передумать можно до этого момента.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Выбор принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
       subtitle: "твоя игровая империя в одном экране",
       tab_passport: "📋 Паспорт", tab_farm: "🚜 Ферма", tab_goals: "🎯 Цели", tab_workshop: "🔧 Мастерская",
       tab_raids: "🏴‍☠️ Налёты", tab_market: "📈 Биржа", tab_team: "🏆 Команда", tab_shop: "🏪 Магазин", tab_top: "👑 ТОП",
@@ -504,7 +520,7 @@
       lab_tools: "🧰 ИНСТРУМЕНТЫ", lab_toolsHint: "Наборы не тратятся — они открывают сложные сборки и уровни технологий.",
       lab_nextTool: "Следующий набор: {t}", lab_craftTool: "Собрать набор", lab_toolsMax: "🧬 Все наборы собраны!",
       lab_level: "Уровень {l} из {m}", lab_max: "🏆 Максимальный уровень", lab_wait: "⏳ Следующий уровень через {t}",
-      lab_up: "Изучить уровень {l}", res_stone_src: "дуэли, рудники, сундук", res_wood_src: "квесты, рудники, сундук", res_fire_src: "Костёр в мастерской", res_energy_src: "шанс за победу, сундук", res_battery_src: "мастерская", res_cow_src: "квесты, сундук 7-го дня, биржа", res_core_src: "призы организатора", sk_items: "🧪 Изделий на складе: {n} / {m} (10% вместимости)", sk_cutletsName: "Кибер-котлеты", it_total: "На складе: {n} шт.", bt_entry: "🔋 Заявка команды: {n} / {m}", bt_entered: "✅ Команда в битве за рудники", bt_give: "Внести 🔋 (у тебя {n})", bt_info: "За рудники бьются только команды с заявкой: {f} 🔋, клан — {fc} 🔋. Скидывайтесь всей командой!", bt_notAllowed: "Эта битва не для твоего типа команды", mn_place: "🏆 приз за {p} место", mn_soonShort: "Старт: {d}", top_events: "🎯 Акции", ev_empty: "Сейчас акций нет — следи за каналом!", ev_my: "Твоё место: {p}", ev_noPlace: "Ты пока вне таблицы — вперёд!", ev_manual: "Победителей определит организатор", ev_places: "Призовых мест: {n}", ev_prizes: "🎁 Призы", ev_leaders: "Лидеры", lab_sciGate: "📚 Уровень {l} откроется, когда все технологии будут изучены до уровня {l}", lab_cooldown: "После изучения следующий уровень — через {d} дн.", lab_done: "🔬 Готово! Уровень {l}",
+      lab_up: "Изучить уровень {l}", res_stone_src: "дуэли, рудники, сундук", res_wood_src: "квесты, рудники, сундук", res_fire_src: "Костёр в мастерской", res_energy_src: "шанс за победу, сундук", res_battery_src: "мастерская", res_cow_src: "квесты, сундук 7-го дня, биржа", res_core_src: "призы организатора", sk_items: "🧪 Изделий на складе: {n} / {m} (10% вместимости)", sk_cutletsName: "Кибер-котлеты", it_total: "На складе: {n} шт.", bt_entry: "🔋 Заявка команды: {n} / {m}", bt_entered: "✅ Команда в битве за рудники", bt_give: "Внести 🔋 (у тебя {n})", bt_info: "За рудники бьются только команды с заявкой: {f} 🔋, клан — {fc} 🔋. Скидывайтесь всей командой!", bt_notAllowed: "Эта битва не для твоего типа команды", mn_place: "🏆 приз за {p} место", mn_soonShort: "Старт: {d}", top_events: "🎯 Акции", ev_empty: "Сейчас акций нет — загляни позже!", ev_my: "Твоё место: {p}", ev_noPlace: "Ты пока вне таблицы — вперёд!", ev_manual: "Победителей определит организатор", ev_places: "Призовых мест: {n}", ev_prizes: "🎁 Призы", ev_leaders: "Лидеры", lab_sciGate: "📚 Уровень {l} откроется, когда все технологии будут изучены до уровня {l}", lab_cooldown: "После изучения следующий уровень — через {d} дн.", lab_done: "🔬 Готово! Уровень {l}",
       lab_eff_comm: "1 уровень — налёты и доход с рудников; каждый следующий −{c} мин перезарядки налёта",
       lab_eff_scout: "Без неё налётов нет; целей в разведке: 2 + уровень",
       lab_eff_attack: "Без него налётов нет; каждый уровень после первого +{a}% к трофеям",
@@ -660,8 +676,9 @@
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
+      map_cargoHint: "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.", map_forkAhead: "Fork in {t} — choose ahead", map_forkNow: "The squad is at the fork! {t} left to decide — otherwise the careful option.", map_voteTeam: "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.", map_myChoice: "your choice", news_title: "📣 EVENTS", news_hint: "All announcements live here: battles, world map runs and auctions. Tap to open.", news_empty: "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.", news_left: "⏳ {t}", news_won: "🏁 {w}", news_done: "🏁 results are in", tab_auctions: "🔨 Auctions", auc_title: "🔨 AUCTIONS", auc_empty: "No lots yet. VIP IDs and other prizes go up from time to time — check back later.", auc_price: "Current price", auc_leader: "Leader", auc_noBids: "no bids yet", auc_you: "👑 you lead", auc_ends: "Ends in", auc_noEnd: "until the team closes it", auc_bid: "💥 +{s} · costs {c} 🪙", auc_balance: "You have: {b} 🪙", auc_rules: "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.", auc_sold: "🏁 Sold for {p} 🪙", auc_unsold: "🏁 Closed with no bids", auc_closed: "Finished lots", auc_done: "💥 Bid accepted! Lot price: {p} 🪙",
       map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
-      tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "🎒 For taking part: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your call — it applies at once.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Vote counted", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
+      tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "🎒 For taking part: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your choice applies as soon as you reach the fork. You can change it until then.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Choice saved", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
       subtitle: "your game empire on one screen",
       tab_passport: "📋 Passport", tab_farm: "🚜 Farm", tab_goals: "🎯 Goals", tab_workshop: "🔧 Workshop",
       tab_raids: "🏴‍☠️ Raids", tab_market: "📈 Market", tab_team: "🏆 Team", tab_shop: "🏪 Shop", tab_top: "👑 TOP",
@@ -727,7 +744,7 @@
       lab_tools: "🧰 TOOLS", lab_toolsHint: "Tool kits are never used up — they unlock advanced recipes and tech levels.",
       lab_nextTool: "Next kit: {t}", lab_craftTool: "Build the kit", lab_toolsMax: "🧬 All kits built!",
       lab_level: "Level {l} of {m}", lab_max: "🏆 Max level", lab_wait: "⏳ Next level in {t}",
-      lab_up: "Research level {l}", res_stone_src: "duels, mines, chest", res_wood_src: "quests, mines, chest", res_fire_src: "Bonfire in the workshop", res_energy_src: "a chance per win, chest", res_battery_src: "workshop", res_cow_src: "quests, 7th-day chest, market", res_core_src: "organizer prizes", sk_items: "🧪 Items in storage: {n} / {m} (10% of capacity)", sk_cutletsName: "Cyber-cutlets", it_total: "In storage: {n} pcs", bt_entry: "🔋 Team entry: {n} / {m}", bt_entered: "✅ Your team is in the battle for mines", bt_give: "Add 🔋 (you have {n})", bt_info: "Only teams with an entry fight for mines: {f} 🔋, clan — {fc} 🔋. Chip in as a team!", bt_notAllowed: "This battle isn't for your team type", mn_place: "🏆 prize for place {p}", mn_soonShort: "Starts: {d}", top_events: "🎯 Events", ev_empty: "No events right now — watch the channel!", ev_my: "Your place: {p}", ev_noPlace: "You're not in the table yet — go!", ev_manual: "The organizer picks the winners", ev_places: "Prize places: {n}", ev_prizes: "🎁 Prizes", ev_leaders: "Leaders", lab_sciGate: "📚 Level {l} opens once every tech is researched to level {l}", lab_cooldown: "After researching, the next level opens in {d} d.", lab_done: "🔬 Done! Level {l}",
+      lab_up: "Research level {l}", res_stone_src: "duels, mines, chest", res_wood_src: "quests, mines, chest", res_fire_src: "Bonfire in the workshop", res_energy_src: "a chance per win, chest", res_battery_src: "workshop", res_cow_src: "quests, 7th-day chest, market", res_core_src: "organizer prizes", sk_items: "🧪 Items in storage: {n} / {m} (10% of capacity)", sk_cutletsName: "Cyber-cutlets", it_total: "In storage: {n} pcs", bt_entry: "🔋 Team entry: {n} / {m}", bt_entered: "✅ Your team is in the battle for mines", bt_give: "Add 🔋 (you have {n})", bt_info: "Only teams with an entry fight for mines: {f} 🔋, clan — {fc} 🔋. Chip in as a team!", bt_notAllowed: "This battle isn't for your team type", mn_place: "🏆 prize for place {p}", mn_soonShort: "Starts: {d}", top_events: "🎯 Events", ev_empty: "No events right now — check back later!", ev_my: "Your place: {p}", ev_noPlace: "You're not in the table yet — go!", ev_manual: "The organizer picks the winners", ev_places: "Prize places: {n}", ev_prizes: "🎁 Prizes", ev_leaders: "Leaders", lab_sciGate: "📚 Level {l} opens once every tech is researched to level {l}", lab_cooldown: "After researching, the next level opens in {d} d.", lab_done: "🔬 Done! Level {l}",
       lab_eff_comm: "Level 1 — raids and mine income; each next level −{c} min raid recharge",
       lab_eff_scout: "No raids without it; targets in scouting: 2 + level",
       lab_eff_attack: "No raids without it; each level after the first +{a}% loot",
@@ -886,13 +903,40 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -918,7 +962,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -928,7 +972,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -1133,7 +1177,7 @@
     "mn_place": "🏆 جائزة المركز {p}",
     "mn_soonShort": "البداية: {d}",
     "top_events": "🎯 العروض",
-    "ev_empty": "لا توجد عروض الآن — تابع القناة!",
+    "ev_empty": "لا توجد عروض الآن — عد لاحقًا!",
     "ev_my": "مركزك: {p}",
     "ev_noPlace": "لست في الجدول بعد — هيا!",
     "ev_manual": "سيحدّد المنظّم الفائزين",
@@ -1435,13 +1479,40 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -1467,7 +1538,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -1477,7 +1548,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -1683,7 +1754,7 @@
     "mn_place": "🏆 {p} নম্বর স্থানের পুরস্কার",
     "mn_soonShort": "শুরু: {d}",
     "top_events": "🎯 ইভেন্ট",
-    "ev_empty": "এখন কোনো ইভেন্ট নেই — চ্যানেলের দিকে নজর রাখো!",
+    "ev_empty": "এখন কোনো ইভেন্ট নেই — পরে আবার দেখো!",
     "ev_my": "তোমার স্থান: {p}",
     "ev_noPlace": "তুমি এখনো তালিকায় নেই — এগিয়ে যাও!",
     "ev_manual": "বিজয়ী ঠিক করবেন আয়োজক",
@@ -1984,13 +2055,40 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -2016,7 +2114,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -2026,7 +2124,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -2231,7 +2329,7 @@
     "mn_place": "🏆 Preis für Platz {p}",
     "mn_soonShort": "Start: {d}",
     "top_events": "🎯 Aktionen",
-    "ev_empty": "Gerade laufen keine Aktionen — behalte den Kanal im Blick!",
+    "ev_empty": "Gerade laufen keine Aktionen — schau später wieder vorbei!",
     "ev_my": "Dein Platz: {p}",
     "ev_noPlace": "Du bist noch nicht in der Tabelle — los geht's!",
     "ev_manual": "Die Gewinner bestimmt der Veranstalter",
@@ -2533,13 +2631,40 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -2565,7 +2690,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -2575,7 +2700,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -2781,7 +2906,7 @@
     "mn_place": "🏆 premio por el puesto {p}",
     "mn_soonShort": "Empieza: {d}",
     "top_events": "🎯 Eventos",
-    "ev_empty": "Ahora no hay eventos: ¡sigue el canal!",
+    "ev_empty": "Ahora no hay eventos: ¡vuelve más tarde!",
     "ev_my": "Tu puesto: {p}",
     "ev_noPlace": "Aún no estás en la tabla: ¡a por ello!",
     "ev_manual": "El organizador elegirá a los ganadores",
@@ -3082,13 +3207,40 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -3114,7 +3266,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -3124,7 +3276,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -3329,7 +3481,7 @@
     "mn_place": "🏆 prix pour la {p}e place",
     "mn_soonShort": "Début : {d}",
     "top_events": "🎯 Événements",
-    "ev_empty": "Aucun événement pour l'instant : surveille le canal !",
+    "ev_empty": "Aucun événement pour l'instant : reviens plus tard !",
     "ev_my": "Ta place : {p}",
     "ev_noPlace": "Tu n'es pas encore dans le classement : à toi de jouer !",
     "ev_manual": "L'organisateur désignera les gagnants",
@@ -3631,13 +3783,40 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -3663,7 +3842,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -3673,7 +3852,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -3878,7 +4057,7 @@
     "mn_place": "🏆 {p} स्थान का इनाम",
     "mn_soonShort": "शुरू: {d}",
     "top_events": "🎯 इवेंट",
-    "ev_empty": "अभी कोई इवेंट नहीं — चैनल देखते रहो!",
+    "ev_empty": "अभी कोई इवेंट नहीं — बाद में फिर देखो!",
     "ev_my": "तुम्हारा स्थान: {p}",
     "ev_noPlace": "तुम अभी तालिका में नहीं हो — आगे बढ़ो!",
     "ev_manual": "विजेता आयोजक तय करेगा",
@@ -4180,13 +4359,40 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -4212,7 +4418,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -4222,7 +4428,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -4427,7 +4633,7 @@
     "mn_place": "🏆 hadiah untuk peringkat {p}",
     "mn_soonShort": "Mulai: {d}",
     "top_events": "🎯 Event",
-    "ev_empty": "Belum ada event sekarang — pantau channel!",
+    "ev_empty": "Belum ada event sekarang — cek lagi nanti!",
     "ev_my": "Peringkatmu: {p}",
     "ev_noPlace": "Kamu belum masuk tabel — ayo!",
     "ev_manual": "Pemenang ditentukan oleh penyelenggara",
@@ -4729,13 +4935,40 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -4761,7 +4994,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -4771,7 +5004,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -4976,7 +5209,7 @@
     "mn_place": "🏆 premio per il {p}º posto",
     "mn_soonShort": "Inizio: {d}",
     "top_events": "🎯 Eventi",
-    "ev_empty": "Al momento non ci sono eventi: segui il canale!",
+    "ev_empty": "Al momento non ci sono eventi: torna più tardi!",
     "ev_my": "Il tuo posto: {p}",
     "ev_noPlace": "Per ora sei fuori dalla classifica: forza!",
     "ev_manual": "I vincitori li sceglie l'organizzatore",
@@ -5278,13 +5511,40 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -5310,7 +5570,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -5320,7 +5580,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -5542,7 +5802,7 @@
     "mn_place": "🏆 nagroda za {p}. miejsce",
     "mn_soonShort": "Start: {d}",
     "top_events": "🎯 Akcje",
-    "ev_empty": "Teraz nie ma akcji — śledź kanał!",
+    "ev_empty": "Teraz nie ma akcji — zajrzyj później!",
     "ev_my": "Twoje miejsce: {p}",
     "ev_noPlace": "Nie ma cię jeszcze w tabeli — do dzieła!",
     "ev_manual": "Zwycięzców wybierze organizator",
@@ -5827,13 +6087,40 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -5859,7 +6146,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -5869,7 +6156,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -6074,7 +6361,7 @@
     "mn_place": "🏆 prêmio pelo {p}º lugar",
     "mn_soonShort": "Início: {d}",
     "top_events": "🎯 Ações",
-    "ev_empty": "Nenhuma ação no momento — fique de olho no canal!",
+    "ev_empty": "Nenhuma ação no momento — volte mais tarde!",
     "ev_my": "Sua posição: {p}",
     "ev_noPlace": "Você ainda está fora da tabela — vamos lá!",
     "ev_manual": "Os vencedores serão definidos pelo organizador",
@@ -6376,13 +6663,40 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -6408,7 +6722,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -6418,7 +6732,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -6623,7 +6937,7 @@
     "mn_place": "🏆 {p}-o'rin uchun sovrin",
     "mn_soonShort": "Boshlanishi: {d}",
     "top_events": "🎯 Aksiyalar",
-    "ev_empty": "Hozir aksiyalar yo'q — kanalni kuzat!",
+    "ev_empty": "Hozir aksiyalar yo'q — keyinroq qaytib kel!",
     "ev_my": "Sening o'ming: {p}",
     "ev_noPlace": "Sen hali jadvalda yo'qsan — olg'a!",
     "ev_manual": "G'oliblarni tashkilotchi aniqlaydi",
@@ -6925,13 +7239,40 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -6957,7 +7298,7 @@
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -6967,7 +7308,7 @@
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -7173,7 +7514,7 @@
     "mn_place": "🏆 第 {p} 名奖励",
     "mn_soonShort": "开始：{d}",
     "top_events": "🎯 活动",
-    "ev_empty": "目前没有活动——请关注频道！",
+    "ev_empty": "目前没有活动——稍后再来看看！",
     "ev_my": "你的名次：{p}",
     "ev_noPlace": "你还没上榜——加油！",
     "ev_manual": "获奖者由主办方决定",
@@ -7491,10 +7832,11 @@
                      energy: "⚡", battery: "🔋", cow: "🐄", core: "☢️" };
   const TOOL_ICON = { 1: "⚒️", 2: "🛠", 3: "🔬", 4: "🧬" };
   const KINDS = ["intern", "junior", "premium"];   // от самого слабого к самому мощному
-  const TABS = ["passport", "farm", "storage", "workshop", "lab", "raids", "market", "team", "mines", "map", "friends", "shop", "top", "info"];
+  const TABS = ["passport", "farm", "storage", "workshop", "lab", "raids", "market", "auctions", "team", "mines", "map", "friends", "shop", "top", "info"];
   // Старые ссылки (?tab=goals и т.п.) ведут туда, куда переехали разделы
   const TAB_ALIAS = { goals: "passport", faq: "info", rules: "info" };
-  const TAB_FLAG = { lab: "workshop", workshop: "workshop", raids: "raids", market: "market", shop: "shop", mines: "mines", map: "expeditions" };
+  const TAB_FLAG = { lab: "workshop", workshop: "workshop", raids: "raids", market: "market", shop: "shop", mines: "mines", map: "expeditions",
+                     auctions: "auctions" };
 
   async function api(path, opts) {
     const res = await fetch(path, Object.assign({
@@ -7571,7 +7913,7 @@
   }
   const bindPagers = root => (root || document).querySelectorAll(".pager").forEach(bindPager);
   // Сколько колонок плашек у вкладки на широком экране (см. CSS #app[data-cols])
-  const VIEW_COLS = { lab: 3, mines: 2, map: 2, info: 1, passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
+  const VIEW_COLS = { lab: 3, mines: 2, map: 2, auctions: 2, info: 1, passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
                       team: 3, friends: 3, shop: 3, top: 1, faq: 1, rules: 1 };
   const resLine = stock => RES.map(k => '<span class="chip">' + RES_ICON[k] + ' ' + num(stock[k]) + '</span>').join("");
   const bundle = b => RES_ALL.filter(k => b && b[k]).map(k => RES_ICON[k] + ' ' + b[k]).join(" · ") || "—";
@@ -7642,11 +7984,29 @@
         (me.bonus_percent ? row(L.bonusPct, "+" + me.bonus_percent + "%", "status-ok") : '') +
         (me.has_shuttle ? '<div class="hint">' + L.shuttle + '</div>' : ''));
     // 🎯 Ежедневные цели живут в паспорте (решение владельца 26.10); раздел выключен — карточки нет
-    if ((me.features || {}).goals === false) return;
-    let g;
-    try { g = await api("/api/goals"); } catch (e) { return; }
-    box.insertAdjacentHTML("beforeend", goalsCard(g));
-    bindGoals(box);
+    if ((me.features || {}).goals !== false) {
+      try { const g = await api("/api/goals"); box.insertAdjacentHTML("beforeend", goalsCard(g)); bindGoals(box); } catch (e) {}
+    }
+    // 📣 События — все анонсы внутри игры (каналов нет, решение владельца 26.10)
+    try { box.insertAdjacentHTML("beforeend", newsCard(await api("/api/news"))); bindNews(box); } catch (e) {}
+  }
+  function newsCard(d) {
+    const now = Date.now();
+    const items = d.items.map(x => {
+      const left = x.at ? (Date.parse(x.at) - now) / 1000 : 0;
+      const right = x.live ? (x.at && left > 0 ? fmt(L.news_left, { t: dur(left) }) : "")
+        : (x.winner ? fmt(L.news_won, { w: esc(x.winner) }) : L.news_done);
+      return '<button class="news-item' + (x.live ? '' : ' done') + '" data-news="' + x.tab + '"><span class="ni-ic">' + esc(x.icon) + '</span>' +
+        '<span class="ni-tx"><span class="ni-tt">' + esc(x.title) + '</span><br><span class="ni-sb">' + esc(x.sub) +
+        (x.prize ? (x.sub ? ' · ' : '') + '<span class="nw">' + (x.kind === "auction" ? '💰 ' : '🎁 ') + esc(x.prize) + '</span>' : '') +
+        '</span></span><span class="ni-rt">' + right + '</span></button>';
+    }).join("");
+    return card(L.news_title, (items || '<div class="hint">' + L.news_empty + '</div>') + (items ? '<div class="hint">' + L.news_hint + '</div>' : ''));
+  }
+  function bindNews(root) {
+    root.querySelectorAll("[data-news]").forEach(b => {
+      b.onclick = () => { const tab = b.dataset.news; if (tab === "top") topMode = "events"; go(visibleTabs().includes(tab) ? tab : "passport"); };
+    });
   }
 
   // ================= 🚜 Ферма =================
@@ -7709,7 +8069,7 @@
       '<div class="fname">' + fmt(L.fr_cap, { n: f.fridge_capacity }) + '</div>' +
       row("🥩", f.fridge + " / " + f.fridge_capacity) +
       '<div class="bar fridge"><i style="width:' + fridgePct + '%"></i></div></div></div>' +
-      '<div class="hint">' + L.fr_hint + '</div>' +
+      '<div class="hint fr-hint">' + L.fr_hint + '</div>' +
       (ups.length
         ? '<div class="hint">' + L.fr_up + '</div><div class="fridge-up">' + ups.map(u =>
             '<button data-fridge="' + u.sku + '">' + fridgeMini(u.capacity) + '<span>' + u.stars + ' ★</span></button>').join("") + '</div>'
@@ -8743,16 +9103,18 @@
         : '<div class="sub2" data-key="map_marching" data-countdown="' + e.arrive_at + '"></div>') +
         '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
         (e.late ? '<div class="hint status-bad">' + L.map_late + '</div>' : '') +
-        row(L.map_cargo, '<b>' + e.cargo + '</b>') +
+        row(L.map_cargo, '<b>' + e.cargo + '</b>') + '<div class="hint">' + L.map_cargoHint + '</div>' +
         (e.effects.cargo || e.effects.guard || e.effects.speed ? '<div class="hint">' + fmt(L.map_effects, { a: e.effects.cargo, g: e.effects.guard, s: e.effects.speed }) + '</div>' : '');
       if (e.fork) {
-        const f = e.fork;
+        // Ближайшая развилка видна сразу: до неё — таймер и выбор заранее; у развилки — время на решение
+        const f = e.fork, voted = f.options.reduce((a, o) => a + o.votes, 0);
         body += '<div class="fork"><div class="sub2">' + fmt(L.map_fork, { k: f.no, n: f.of }) + '</div>' +
+          '<div class="fork-timer" data-key="' + (f.reached ? 'map_forkNow' : 'map_forkAhead') + '" data-countdown="' + (f.reached ? f.closes_at : f.opens_at) + '"></div>' +
           '<div class="fork-text">' + f.icon + ' ' + esc(f.text) + '</div>' +
           f.options.map(o => '<button class="btn ghost expVote' + (o.mine ? ' voted' : '') + '" data-e="' + e.id + '" data-o="' + o.i + '">' +
-            esc(o.text) + (e.mode === "solo" ? '' : ' · ' + fmt(L.map_votes, { n: o.votes })) + (o.mine ? ' · ✓ ' + L.map_myVote : '') +
-            hintChips(o.hint) + '</button>').join("") +
-          '<div class="hint">' + (e.mode === "solo" ? L.map_voteSolo : '<span data-key="map_vote" data-countdown="' + f.closes_at + '"></span>') + '</div>' +
+            esc(o.text) + (e.mode === "solo" ? '' : ' · ' + fmt(L.map_votes, { n: o.votes })) +
+            (o.mine ? ' · ✓ ' + (e.mode === "solo" ? L.map_myChoice : L.map_myVote) : '') + hintChips(o.hint) + '</button>').join("") +
+          '<div class="hint">' + (e.mode === "solo" ? L.map_voteSolo : fmt(L.map_voteTeam, { a: voted, b: e.members || 1 })) + '</div>' +
           peekBlock(e, f) + '</div>';
       } else if (!e.arrived && e.forks_done < e.forks) {
         body += '<div class="hint">' + L.map_waitFork + '</div>';
@@ -8805,8 +9167,37 @@
     });
   }
 
+  // ================= 🔨 Аукционы владельца: VIP ID и свои лоты (ставки возвратные) =================
+  async function viewAuctions(box) {
+    const d = await api("/api/auctions");
+    const now = Date.now();
+    const open = d.lots.filter(l => l.status === "open"), closed = d.lots.filter(l => l.status !== "open");
+    const lotCard = l => {
+      const left = l.ends_at ? (Date.parse(l.ends_at) - now) / 1000 : null;
+      const bids = l.bids.map(step => {
+        const charge = l.mine ? step : l.price + step;   // лидер доплачивает только шаг
+        return '<button class="btn' + (step === l.bids[0] ? '' : ' ghost') + ' aucBid" data-a="' + l.id + '" data-s="' + step + '"' +
+          (d.balance >= charge ? '' : ' disabled') + '>' + fmt(L.auc_bid, { s: num(step), c: num(charge) }) + '</button>';
+      }).join("");
+      return '<div class="card lot' + (l.mine ? ' hot' : '') + '"><h2>' + esc(l.title) + '</h2>' +
+        (l.descr ? '<div class="hint">' + esc(l.descr) + '</div>' : '') +
+        '<div class="lot-price">' + num(l.price) + ' <small>🪙</small></div>' +
+        row(L.auc_leader, l.mine ? '<span class="status-ok">' + L.auc_you + '</span>' : esc(l.leader || L.auc_noBids)) +
+        row(L.auc_ends, left == null ? L.auc_noEnd : dur(Math.max(60, left))) + bids + '</div>';
+    };
+    const closedCard = closed.length ? card(L.auc_closed, closed.map(l => row(esc(l.title),
+      l.leader ? fmt(L.auc_sold, { p: num(l.price) }) : L.auc_unsold)).join("")) : "";
+    box.innerHTML = card(L.auc_title, '<div class="hint">' + fmt(L.auc_balance, { b: num(d.balance) }) + '</div><div class="hint">' + L.auc_rules + '</div>') +
+      (open.map(lotCard).join("") || card("🔨", '<div class="hint">' + L.auc_empty + '</div>')) + closedCard;
+    box.querySelectorAll(".aucBid").forEach(b => {
+      b.onclick = () => act(b, "/api/auction/bid", { id: Number(b.dataset.a), step: Number(b.dataset.s) }, async res => {
+        notify(fmt(L.auc_done, { p: num(res.price) })); await refreshMe(); go("auctions");
+      });
+    });
+  }
+
   const VIEWS = { passport: viewPassport, farm: viewFarm, storage: viewStorage, workshop: viewWorkshop,
-                  lab: viewLab, raids: viewRaids, market: viewMarket, team: viewTeam, mines: viewMines, map: viewMap, friends: viewFriends, shop: viewShop,
+                  lab: viewLab, raids: viewRaids, market: viewMarket, auctions: viewAuctions, team: viewTeam, mines: viewMines, map: viewMap, friends: viewFriends, shop: viewShop,
                   top: viewTop, info: viewInfo };
 
   // ================= Шахта: визуальная сцена фермы =================

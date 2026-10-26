@@ -398,6 +398,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     register_game_routes(app)
     from bots.main_bot.webapp_map import register_map_routes
     register_map_routes(app)     # 🗺 карта мира и экспедиции
+    from bots.main_bot.webapp_events import register_events_routes
+    register_events_routes(app)  # 📣 события в паспорте и 🔨 аукционы
     # Арты роботов для сцены фермы: img/robots/<kind>.png (арты владельца) или .svg (заглушки)
     app.router.add_static("/img", WEBAPP_DIR / "img")
     return app

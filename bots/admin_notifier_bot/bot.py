@@ -30,16 +30,16 @@ if raw_admin_ids:
     except Exception:
         ADMIN_IDS = []
 
+# Канала для игроков нет (решение владельца 26.10): анонсы — в приложении (Паспорт → События, вкладка
+# «Аукционы»), итоги — личным сообщением каждому получившему награду. Секретный канал — только для владельца.
 try:
-    USERS_CHANNEL_ID = int(os.getenv("USERS_CHANNEL_ID", "0"))
     ADMIN_SECRET_CHANNEL_ID = int(os.getenv("ADMIN_SECRET_CHANNEL_ID", "0"))
 except (ValueError, TypeError):
-    USERS_CHANNEL_ID = 0
     ADMIN_SECRET_CHANNEL_ID = 0
 
 if not ADMIN_BOT_TOKEN:
     raise RuntimeError("🚨 КРИТИЧЕСКИЙ КРАШ: Переменная ADMIN_BOT_TOKEN отсутствует в .env!")
-if not ADMIN_IDS or USERS_CHANNEL_ID == 0 or ADMIN_SECRET_CHANNEL_ID == 0:
+if not ADMIN_IDS or ADMIN_SECRET_CHANNEL_ID == 0:
     raise RuntimeError("🚨 ОШИБКА БЕЗОПАСНОСТИ: Ключи лимитов или список ADMIN_IDS не заданы в .env!")
 
 from bots.main_bot.utils.quest_loader import all_quests, load_quests
@@ -74,6 +74,29 @@ async def notify_user_via_main_bot(user_id: int, text: str) -> bool:
         return False
     finally:
         await main_bot.session.close()
+
+
+async def send_reward_notices(notices: list[dict]) -> int:
+    """📬 Итоги битв и экспедиций — личным сообщением каждому получившему награду (от имени главного бота)."""
+    from shared.reward_notify import send_notices
+    if not notices or not MAIN_BOT_TOKEN:
+        return 0
+    main_bot = Bot(token=MAIN_BOT_TOKEN)
+    try:
+        return await send_notices(main_bot, db.pool, notices)
+    except Exception:
+        logger.exception("[NOTIFY] рассылка наград сорвалась")
+        return 0
+    finally:
+        await main_bot.session.close()
+
+
+async def _admin_note(bot: Bot, text: str) -> None:
+    """Короткая сводка владельцу в секретный канал (сбой не важен)."""
+    try:
+        await bot.send_message(ADMIN_SECRET_CHANNEL_ID, text, parse_mode="HTML")
+    except Exception:
+        pass
 
 
 class AuctionCreationStates(StatesGroup):
@@ -329,12 +352,11 @@ async def admin_finish_battle(message: types.Message, bot: Bot):
         await message.answer("❌ Активная битва с таким номером не найдена.")
         return
     await _finish_battle(bot, battle)
-    await message.answer(f"🏁 Битва №{battle['battle_id']} закрыта, итоги опубликованы.")
+    await message.answer(f"🏁 Битва №{battle['battle_id']} закрыта, награды выданы, победителям ушли личные сообщения.")
 
 
 async def _finish_battle(bot: Bot, battle) -> None:
-    """Подводит итоги (shared.battles.finish_battle) и публикует пост в канал на всех языках."""
-    from shared.battle_posts import build_results
+    """Подводит итоги (shared.battles.finish_battle) и пишет каждому получившему награду в личку."""
     from shared.battles import finish_battle
     from shared.economy import utcnow
     async with db.pool.acquire() as conn:
@@ -342,70 +364,26 @@ async def _finish_battle(bot: Bot, battle) -> None:
         if results.get("skipped"):
             return
         await conn.execute("UPDATE battles SET results_posted = TRUE WHERE battle_id = $1", battle["battle_id"])
-    post = build_results(battle, results)
-    try:
-        await bot.send_message(USERS_CHANNEL_ID, post, parse_mode="HTML")
-    except Exception as e:
-        logger.error("[BATTLE_RESULTS] пост в канал не ушёл: %s", e)
-    try:
-        await bot.send_message(ADMIN_SECRET_CHANNEL_ID, f"🏁 Битва №{battle['battle_id']} закрыта.\n\n{post}",
-                               parse_mode="HTML")
-    except Exception:
-        pass
-
-
-async def announce_new_battles(bot: Bot) -> None:
-    """Анонсы битв, созданных в пульте: пост в канал на всех языках (один раз)."""
-    from shared.battle_posts import build_announce
-    from shared.battles import battle_mines, prizes_by_place
-    async with db.pool.acquire() as conn:
-        rows = await conn.fetch("SELECT * FROM battles WHERE status = 'active' AND NOT announced ORDER BY battle_id")
-        kinds = {r["id"]: r["kind"] for r in await conn.fetch("SELECT id, kind FROM mines")}
-    for battle in rows:
-        async with db.pool.acquire() as conn:
-            if not await conn.fetchval("UPDATE battles SET announced = TRUE WHERE battle_id = $1 AND NOT announced "
-                                       "RETURNING 1", battle["battle_id"]):
-                continue
-        post = build_announce(battle, prizes_by_place(battle["prizes"]), kinds)
-        try:
-            await bot.send_message(USERS_CHANNEL_ID, post, parse_mode="HTML")
-        except Exception as e:
-            logger.error("[BATTLE_ANNOUNCE] №%s: анонс не ушёл: %s", battle["battle_id"], e)
-        if battle_mines(battle):
-            logger.info("[BATTLE_ANNOUNCE] №%s за рудники %s", battle["battle_id"], list(battle["mine_ids"]))
+    sent = await send_reward_notices(results.get("notices") or [])
+    top = "\n".join(f"{medals(r['place'])} {html.escape(str(r.get('name') or '—'))}" for r in results["places"][:10])
+    await _admin_note(bot, f"🏁 Битва №{battle['battle_id']} «{html.escape(battle['title'])}» закрыта. "
+                           f"Сообщений о наградах: {sent}.\n{top}")
 
 
 async def expedition_daemon_step(bot: Bot) -> None:
-    """🗺 Экспедиции: анонс новых целей с пульта и итоги в назначенный час — посты в канал на 14 языках."""
-    from shared.battle_posts import build_expedition_announce, build_expedition_results
-    from shared.battles import prizes_by_place
+    """🗺 Экспедиции: итоги в назначенный час (или по «Итоги сейчас») + личные сообщения получившим награды."""
     from shared.economy import utcnow
     from shared.expeditions import finalize_target
-    from shared.prizes import normalize_rewards
     async with db.pool.acquire() as conn:
-        fresh = await conn.fetch("SELECT * FROM expedition_targets WHERE status = 'open' AND NOT announced ORDER BY id")
         due = await conn.fetch("SELECT * FROM expedition_targets WHERE status = 'open' AND resolve_at <= NOW() ORDER BY id")
-    for target in fresh:
-        async with db.pool.acquire() as conn:
-            if not await conn.fetchval("UPDATE expedition_targets SET announced = TRUE WHERE id = $1 AND NOT announced "
-                                       "RETURNING 1", target["id"]):
-                continue
-        raw = target["reward_all"]
-        reward_all = normalize_rewards(json.loads(raw) if isinstance(raw, str) else (raw or []))
-        try:
-            await bot.send_message(USERS_CHANNEL_ID, build_expedition_announce(
-                target, prizes_by_place(target["prizes"]), reward_all), parse_mode="HTML")
-        except Exception as e:
-            logger.error("[EXP_ANNOUNCE] цель %s: анонс не ушёл: %s", target["id"], e)
     for target in due:
         async with db.pool.acquire() as conn:
             results = await finalize_target(conn, target, utcnow())
         if results.get("skipped"):
             continue
-        try:
-            await bot.send_message(USERS_CHANNEL_ID, build_expedition_results(target, results), parse_mode="HTML")
-        except Exception as e:
-            logger.error("[EXP_RESULTS] цель %s: итоги не ушли: %s", target["id"], e)
+        sent = await send_reward_notices(results.get("notices") or [])
+        await _admin_note(bot, f"🗺 Цель №{target['id']} «{html.escape(target['title'])}»: дошли {results['arrived']}, "
+                               f"опоздали {results['late']}, сообщений о наградах: {sent}.")
 
 
 @dp.message(Command("award_mine"))
@@ -514,19 +492,15 @@ async def check_season_end(bot: Bot) -> None:
         result = await finalize_season(conn, prev)
     _season_checked = season_key(now)
     if not result or not (result["players"] or result["teams"]):
-        return   # до первого сезона или пустой сезон — в канал не пишем
+        return   # до первого сезона или пустой сезон
     lines = [f"🏆 <b>СЕЗОН {season_key(prev)} ЗАВЕРШЁН!</b>", "..................................................", ""]
     for w in result["players"]:
         lines.append(f"{medals(w['place'])} {html.escape(w['name'] or '—')} — {w['earned']} 🪙")
     if result["teams"]:
         lines += ["", "<b>Команды сезона:</b>"]
         lines += [f"{medals(i)} {html.escape(x['name'])} — {x['points']} очк." for i, x in enumerate(result['teams'], 1)]
-    lines += ["", "🏅 ТОП-10 получает значок сезона в паспорт. Призы победителям объявим отдельно. "
-                  "Новый сезон стартовал — удачи!"]
-    try:
-        await bot.send_message(USERS_CHANNEL_ID, "\n".join(lines), parse_mode="HTML")
-    except Exception as e:
-        logger.error("[SEASON] пост в канал не ушёл: %s", e)
+    lines += ["", "🏅 Значки ТОП-10 уже в паспортах. Призы сезона — в пульте: «Подарки» → «ТОП прошлого сезона»."]
+    await _admin_note(bot, "\n".join(lines))
 
 
 @dp.message(Command("season"))
@@ -673,12 +647,8 @@ _manual_pinged: set[int] = set()
 
 
 async def check_finished_battles(bot: Bot) -> None:
-    """Вызывается демоном: анонсирует новые битвы и закрывает те, чьё время вышло."""
+    """Вызывается демоном: закрывает битвы, аукционы и экспедиции, чьё время вышло."""
     from shared.battles import is_manual
-    try:
-        await announce_new_battles(bot)
-    except Exception:
-        logger.exception("[BATTLE_ANNOUNCE] сбой")
     try:
         await auction_daemon_step(bot)
     except Exception:
@@ -867,41 +837,11 @@ async def process_auc_finalize(message: types.Message, state: FSMContext, bot: B
             data.get("auc_title"), data.get("auc_desc"), data.get("auc_price"), step
         )
 
-    # 🔥 БЕЗУПРЕЧНЫЙ ФИКС СЛЭШЕЙ: Ссылка собирается строго с разделителем /
-    deep_link = f"https://t.me/{MAIN_BOT_USERNAME}?start=auction_{auction_id}"
-
-    channel_post_text = (
-        f"🔥 <b>БИТВА ВОЖАКОВ ЗА ВЕЧНЫЙ ПОНТ И VIP-ПРИЗЫ!</b>\n"
-        f"..................................................\n"
-        f"Объявляются официальные торги холдинга экосистемы!\n\n"
-        f"🎁 Лот раунда: <b>{data.get('auc_title')}</b>\n"
-        f"📝 Детали: <i>{data.get('auc_desc')}</i>\n\n"
-        f"💰 Стартовая цена: <b>{data.get('auc_price')} монет</b>\n"
-        f"🚀 Шаг повышения: <b>+{step} монет</b>\n"
-        f"..................................................\n"
-        f"⚠️ <i>Ставки возвратные: если тебя перебили, монеты вернутся на баланс. Платит только победитель!</i>\n\n"
-        f"👇 <b>КЛИКАЙ ПО ССЫЛКЕ НИЖЕ ДЛЯ ВХОДА И СТАВКИ:</b>\n"
-        f"{deep_link}"
-    )
-
-    try:
-        await bot.send_message(chat_id=USERS_CHANNEL_ID, text=channel_post_text, parse_mode="HTML")
-        channel_status = "🟢 <b>Анонс лота успешно опубликован в USERS_CHANNEL_ID!</b>"
-    except Exception as e:
-        logger.error(f"[CHANNEL_POST_ERROR] Не удалось отправить пост в канал юзеров: {e}")
-        channel_status = f"❌ <b>Ошибка публикации в USERS_CHANNEL_ID:</b> {e}"
-
-    success_text = (
-        f"👑 <b>ЛОТ АУКЦИОНА УСПЕШНО СФОРМИРОВАН!</b>\n"
-        f"..................................................\n"
-        f"🆔 ID Лота в базе Railway: <code>{auction_id}</code>\n"
-        f"🎁 Название: <b>{data.get('auc_title')}</b>\n"
-        f"💰 Стартовая цена: <b>{data.get('auc_price')} монет</b>\n"
-        f"..................................................\n"
-        f"{channel_status}\n\n"
-        f"🔗 Ссылка: <code>{deep_link}</code>"
-    )
-    await message.answer(success_text, parse_mode="HTML")
+    await message.answer(
+        f"👑 <b>ЛОТ №{auction_id} ВЫСТАВЛЕН</b>\n"
+        f"🎁 {html.escape(data.get('auc_title') or '')} · старт {data.get('auc_price')} 🪙 · шаг {step} 🪙\n"
+        "Игроки видят его во вкладке «Аукционы» игрового приложения. Срок без окончания — закрой /close_auction "
+        "или создавай лоты в пульте (/admin → «Аукционы») — там есть срок.", parse_mode="HTML")
 
 @dp.message(Command("close_auction"))
 async def admin_close_auction(message: types.Message, bot: Bot):
@@ -923,9 +863,8 @@ async def admin_close_auction(message: types.Message, bot: Bot):
 async def close_auction(bot: Bot, auction_id: int):
     """
     Закрывает лот: монеты победителя уже списаны ставкой (сгорают — дефляция), у VIP-лота ID сразу
-    переходит победителю. Пост в канал — на всех языках. None — лота нет или он уже закрыт.
+    переходит победителю. Победителю — личное сообщение. None — лота нет или он уже закрыт.
     """
-    from shared.battle_posts import build_auction_result
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             auction = await conn.fetchrow("SELECT * FROM auctions WHERE auction_id = $1 FOR UPDATE", auction_id)
@@ -933,10 +872,7 @@ async def close_auction(bot: Bot, auction_id: int):
                 return None
             await conn.execute("UPDATE auctions SET status = 'closed' WHERE auction_id = $1", auction_id)
             winner_id = auction["highest_bidder_id"]
-            winner_name = None
             if winner_id:
-                w = await conn.fetchrow("SELECT username, display_name FROM users WHERE user_id = $1", winner_id)
-                winner_name = ("@" + w["username"]) if w and w["username"] else ((w and w["display_name"]) or f"ID {winner_id}")
                 if auction["vip_alias"]:
                     await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ($1, $2) ON CONFLICT (alias) DO NOTHING",
                                        auction["vip_alias"], winner_id)
@@ -946,30 +882,16 @@ async def close_auction(bot: Bot, auction_id: int):
         await notify_user_via_main_bot(
             winner_id, f"🏆 <b>Ты победил(а) в аукционе «{html.escape(auction['item_title'])}»!</b>\n"
                        f"Финальная цена: <b>{auction['current_price']} 🪙</b>. {prize}")
-    try:
-        await bot.send_message(USERS_CHANNEL_ID, build_auction_result(auction, winner_name), parse_mode="HTML")
-    except Exception as e:
-        logger.warning("[AUCTION_CLOSE] итог в канал не ушёл: %s", e)
+    await _admin_note(bot, f"🔨 Аукцион №{auction_id} «{html.escape(auction['item_title'])}» закрыт: "
+                           f"{auction['current_price']} 🪙, победитель {winner_id or '—'}.")
     return auction
 
 
 async def auction_daemon_step(bot: Bot) -> None:
-    """Анонсы лотов из пульта (на всех языках) и автозакрытие по ends_at."""
-    from shared.battle_posts import build_auction_announce
+    """Автозакрытие лотов по ends_at (анонсы — во вкладке «Аукционы» приложения)."""
     async with db.pool.acquire() as conn:
-        fresh = await conn.fetch("SELECT * FROM auctions WHERE status = 'open' AND NOT announced ORDER BY auction_id")
         due = await conn.fetch("SELECT auction_id FROM auctions WHERE status = 'open' AND ends_at IS NOT NULL "
                                "AND ends_at <= NOW()")
-    for auction in fresh:
-        async with db.pool.acquire() as conn:
-            if not await conn.fetchval("UPDATE auctions SET announced = TRUE WHERE auction_id = $1 AND NOT announced "
-                                       "RETURNING 1", auction["auction_id"]):
-                continue
-        link = f"https://t.me/{MAIN_BOT_USERNAME}?start=auction_{auction['auction_id']}"
-        try:
-            await bot.send_message(USERS_CHANNEL_ID, build_auction_announce(auction, link), parse_mode="HTML")
-        except Exception as e:
-            logger.error("[AUCTION_ANNOUNCE] №%s не ушёл: %s", auction["auction_id"], e)
     for row in due:
         try:
             await close_auction(bot, row["auction_id"])

@@ -122,23 +122,33 @@
   }
 
   // ---------------- конструктор наград: любые одиночные награды и комбинации
+  // Введённая, но не добавленная кнопкой «➕» награда раньше терялась (26.10: цель «Батарейки 10» ушла без приза).
+  // Теперь каждый конструктор помнит «черновик», и при запуске flushRewards() дописывает его в награду.
+  const BUILDERS = [];
+  function flushRewards() {
+    let added = 0;
+    BUILDERS.forEach(b => { if (document.body.contains(b.host) && b.host._dirty) { const r = b.read(); if (r) { b.list.push(r); added++; } b.host._dirty = false; } });
+    return added;
+  }
   function rewardBuilder(host, list, onChange) {
-    function draw() {
-      const kind = host.querySelector(".rk") ? host.querySelector(".rk").value : "coins";
+    function draw(resetKind) {
+      const kind = !resetKind && host.querySelector(".rk") ? host.querySelector(".rk").value : "coins";
       host.innerHTML =
         list.map((r, i) => '<div class="rw"><span>' + esc(rewardLabel(r)) + '</span><button class="mini" data-del="' + i + '">✕</button></div>').join("") +
         '<div class="grid2" style="margin-top:8px"><select class="rk">' +
         [["coins", "🪙 Монеты"], ["resource", "📦 Ресурс"], ["cutlets", "🥩 Котлеты"], ["item", "🧪 Изделие на склад"],
          ["robot", "🤖 Робот на срок"], ["boost", "⚡ Буст / Безлимит / Щит"], ["bdrone", "🤖 Боевой дрон (навсегда)"], ["text", "🎁 Ручной приз (текст)"]]
           .map(([k, t]) => '<option value="' + k + '"' + (k === kind ? " selected" : "") + '>' + t + '</option>').join("") +
-        '</select><div class="rp"></div></div><button class="mini" style="margin-top:8px" data-add="1">➕ Добавить в награду</button>';
+        '</select><div class="rp"></div></div><button class="mini" style="margin-top:8px" data-add="1">➕ Добавить и выбрать ещё</button>';
       params();
-      host.querySelector(".rk").onchange = params;
+      host._dirty = false;
+      host.querySelector(".rk").onchange = () => { params(); host._dirty = true; };
+      host.oninput = () => { host._dirty = true; };
       host.querySelectorAll("[data-del]").forEach(b => { b.onclick = () => { list.splice(Number(b.dataset.del), 1); draw(); onChange && onChange(); }; });
       host.querySelector("[data-add]").onclick = () => {
         const r = read();
         if (!r) { say("Заполни параметры награды"); return; }
-        list.push(r); draw(); onChange && onChange();
+        list.push(r); draw(true); onChange && onChange();
       };
     }
     const dur = () => '<div class="grid2"><input class="rh" type="number" min="1" value="1"><select class="ru"><option value="h">часов</option>' +
@@ -170,8 +180,17 @@
       if (k === "bdrone") return { kind: k, drone: q(".rs").value, qty: Math.max(1, Number(q(".rq").value) || 1) };
       const t = q(".rt").value.trim(); return t ? { kind: "text", text: t } : null;
     }
+    BUILDERS.push({ host, list, read });
     draw();
   }
+  // Итоговое подтверждение при запуске: весь список наград по местам (+ «за участие»), пустые места — с ⚠️
+  function confirmPrizes(prizes, places, all) {
+    const lines = Array.from({ length: places }, (_, i) => i + 1).map(p =>
+      p + " место — " + (prizes[p] && prizes[p].length ? prizes[p].map(rewardLabel).join(" + ") : "⚠️ НЕТ НАГРАДЫ"));
+    if (all && all.length) lines.push("🎒 за участие — " + all.map(rewardLabel).join(" + "));
+    return confirm("Проверь награды:\n" + (lines.join("\n") || "без наград") + "\n\nЗапускаем?");
+  }
+  const prizeSummary = prizes => Object.entries(prizes).map(([p, l]) => p + " место — " + l.map(rewardLabel).join(" + ")).join("; ");
 
   // ---------------- ⚔️ Битвы и акции
   const form = { title: "", scope: "teams", nomination: "", custom: "", start: "now", hours: 72, places: 3, mines: [], prizes: {}, all: [] };
@@ -183,13 +202,13 @@
       return '<div class="card"><h2>№' + b.id + ' · ' + esc(b.title) + '</h2>' +
         '<div class="row"><span>' + (SCOPES[b.scope] || b.scope) + ' · ' + esc(b.nomination) + '</span><span class="status">' + (STATUS[b.status] || b.status) + '</span></div>' +
         '<div class="hint">' + dt(b.starts_at) + ' → ' + dt(b.ends_at) + ' · мест: ' + b.places + (b.mine_ids.length ? ' · ⛏ ' + b.mine_ids.map(m => "№" + m).join(", ") + ' · заявок: ' + b.entries : '') +
-        (b.announced ? '' : ' · анонс в очереди') + '</div>' + res +
+        '</div>' + res +
         (b.status === "active" ? (manual ? '<button class="btn ghost" data-manual="' + b.id + '" data-places="' + b.places + '" data-scope="' + b.scope + '">🖐 Вписать победителей</button>' : '') +
           '<div class="grid2"><button class="btn ghost" data-close="finish" data-id="' + b.id + '">🏁 Итоги сейчас</button>' +
           '<button class="btn warn" data-close="cancel" data-id="' + b.id + '">⛔ Отменить</button></div>' : '') + '</div>';
     }).join("");
     app.innerHTML = '<div class="cols"><div><div class="card"><h2>➕ Новая битва или акция</h2><div id="bform"></div></div></div>' +
-      '<div><div class="card"><h2>Последние битвы</h2><div class="hint">Анонс и итоги публикуются в канале сами — сразу на 14 языках.</div></div>' +
+      '<div><div class="card"><h2>Последние битвы</h2><div class="hint">Анонс — в приложении (Паспорт → События, ТОП → Акции). Итоги подводятся сами; каждому получившему награду бот пишет в личку.</div></div>' +
       (list || '<div class="card hint">Пока пусто.</div>') + '</div></div>';
     drawForm($("bform"));
     app.querySelectorAll("[data-close]").forEach(b => {
@@ -205,7 +224,7 @@
     const host = document.createElement("div"), n = Math.max(1, Number(btn.dataset.places));
     host.innerHTML = '<div class="hint">' + (btn.dataset.scope === "solo" ? "Игрок: ID, @username или VIP ID" : "Команда: ID или точное название") + '</div>' +
       Array.from({ length: n }, (_, i) => '<label>' + (i + 1) + ' место</label><input data-w="' + (i + 1) + '">').join("") +
-      '<button class="btn">💾 Сохранить итоги</button><div class="hint">После сохранения нажми «Итоги сейчас» — призы и пост уйдут автоматически.</div>';
+      '<button class="btn">💾 Сохранить итоги</button><div class="hint">После сохранения нажми «Итоги сейчас» — призы выдадутся, победителям придут личные сообщения.</div>';
     btn.replaceWith(host);
     host.querySelector(".btn").onclick = e => {
       const winners = {};
@@ -255,12 +274,15 @@
     rewardBuilder($("fAll"), form.all);
     $("fGo").onclick = e => {
       keep();
+      flushRewards();
       const prizes = {};
       Object.entries(form.prizes).forEach(([p, l]) => { if (l.length && Number(p) <= form.places) prizes[p] = l; });
       const body = { title: form.title, scope: form.scope, nomination: form.nomination, custom: form.custom,
                      starts_at: form.start === "now" ? "now" : form.start + ":00+00:00", hours: form.hours, places: form.places,
                      mine_ids: form.mines, prizes, reward_all: form.all };
-      act(e.target, "/api/admin/battle", body, res => { say("✅ Битва №" + res.id + " создана. Анонс уйдёт в канал в течение минуты.");
+      if (!confirmPrizes(prizes, form.places, form.all)) return;
+      act(e.target, "/api/admin/battle", body, res => { say("✅ Битва №" + res.id + " создана — игроки видят её в приложении (Паспорт → События, ТОП → Акции)." +
+        (Object.keys(prizes).length ? " Призы: " + prizeSummary(prizes) : ""));
         Object.assign(form, { title: "", nomination: "", custom: "", mines: [], prizes: {}, all: [] }); meta = null; go(); });
     };
   }
@@ -292,9 +314,9 @@
       '<button class="btn" id="gGo">🎁 Выдать</button></div></div>';
     app.querySelectorAll("[data-t]").forEach(b => { b.onclick = () => { gift.value = $("gVal").value; gift.target = b.dataset.t; viewGift(app); }; });
     rewardBuilder($("gRw"), gift.rewards);
-    const body = dry => ({ target: gift.target, value: $("gVal").value, rewards: gift.rewards, dry_run: dry });
+    const body = dry => { flushRewards(); return { target: gift.target, value: $("gVal").value, rewards: gift.rewards, dry_run: dry }; };
     $("gCheck").onclick = e => act(e.target, "/api/admin/reward", body(true), r => say("Получателей: " + r.count + " (" + r.label + ")"));
-    $("gGo").onclick = e => { if (!confirm("Выдать награду?")) return;
+    $("gGo").onclick = e => { flushRewards(); if (!confirm("Выдать: " + (gift.rewards.map(rewardLabel).join(" + ") || "ничего") + "?")) return;
       act(e.target, "/api/admin/reward", body(false), r => { say("✅ Выдано: " + r.given + (r.failed ? ", сбоев: " + r.failed : "") + " · " + r.label); gift.rewards.length = 0; viewGift(app); }); };
   }
 
@@ -309,17 +331,28 @@
       '<div class="grid3"><div><label>Старт, 🪙</label><input id="vPrice" type="number" value="10000"></div>' +
       '<div><label>Шаг, 🪙</label><input id="vStep" type="number" value="1000"></div>' +
       '<div><label>Часов</label><input id="vHours" type="number" value="48"></div></div>' +
-      '<button class="btn" id="vGo">🔨 Запустить аукцион</button><div class="hint">Ставки возвратные; монеты победителя сгорают (дефляция), VIP ID переходит ему сам по окончании. Анонс — в канал на 14 языках.</div></div>' +
+      '<button class="btn" id="vGo">🔨 Запустить аукцион</button><div class="hint">Ставки возвратные; монеты победителя сгорают (дефляция), VIP ID переходит ему сам по окончании. Лот сразу появляется во вкладке «Аукционы» приложения.</div></div>' +
+      '<div class="card"><h2>📦 Свой лот</h2><div class="hint">Что угодно: VIP-публикация в Instagram, приз, услуга. Выдачу приза победителю делаешь сам (бот напишет ему, что ты свяжешься).</div>' +
+      '<label>Название</label><input id="lTitle" maxlength="100" placeholder="VIP-пост в Instagram ROFL HUB">' +
+      '<label>Описание</label><textarea id="lDescr" maxlength="500" placeholder="Что получит победитель"></textarea>' +
+      '<div class="grid3"><div><label>Старт, 🪙</label><input id="lPrice" type="number" value="5000"></div>' +
+      '<div><label>Шаг, 🪙</label><input id="lStep" type="number" value="500"></div>' +
+      '<div><label>Часов</label><input id="lHours" type="number" value="48"></div></div>' +
+      '<button class="btn" id="lGo">🔨 Выставить лот</button></div>' +
       '<div class="card"><h2>Аукционы</h2>' + (d.auctions.map(a => '<div class="row"><span>№' + a.id + ' ' + esc(a.alias || a.title) + '<br><small class="hint">' +
         (a.status === "open" ? "🟢 до " + dt(a.ends_at) : "🏁 закрыт") + '</small></span><span>' + num(a.price) + ' 🪙' + (a.leader ? '<br><small class="hint">лидер ' + a.leader + '</small>' : '') + '</span></div>').join("") || '<div class="hint">Пока нет.</div>') + '</div></div>';
     app.querySelectorAll("[data-a]").forEach(b => { b.onclick = () => { $("vAlias").value = b.dataset.a; }; });
     $("vMore").onclick = () => { vipOffset += 10; go(); };
     $("vGo").onclick = e => act(e.target, "/api/admin/vip/auction", { alias: $("vAlias").value, price: Number($("vPrice").value), step: Number($("vStep").value), hours: Number($("vHours").value) },
-      r => { say("✅ Аукцион №" + r.id + " создан, анонс уйдёт в канал в течение минуты."); go(); });
+      r => { say("✅ Аукцион №" + r.id + " создан — он уже во вкладке «Аукционы» приложения."); go(); });
+    $("lGo").onclick = e => act(e.target, "/api/admin/vip/auction", { kind: "lot", title: $("lTitle").value, descr: $("lDescr").value,
+      price: Number($("lPrice").value), step: Number($("lStep").value), hours: Number($("lHours").value) },
+      r => { say("✅ Лот №" + r.id + " выставлен — он уже во вкладке «Аукционы» приложения."); go(); });
   }
 
   // ---------------- 🗺 Экспедиции: цели на карте мира
-  const EXP_SCOPES = { solo: "👤 Соло" };   // 28.10: карта целей — только соло-походы, команды бьются за рудники
+  // 26.10: на карте мира — и соло-походы, и командные (формат задаётся при создании); рудники — только командам
+  const EXP_SCOPES = { solo: "👤 Соло", team: "🏆 Команды", clan: "👑 Кланы", teams: "🏆👑 Команды и кланы" };
   const TSTATUS = { open: "🟢 открыта", finished: "🏁 итоги", cancelled: "⛔ отменена" };
   const tform = { title: "", descr: "", icon: "🎯", scope: "solo", x: null, y: null, forks: 3, hours: 24, places: 3, prizes: {}, all: [] };
   async function viewExp(app) {
@@ -327,13 +360,16 @@
     const open = d.targets.filter(t => t.status === "open");
     const list = d.targets.map(t => '<div class="card"><h2>' + esc(t.icon) + ' №' + t.id + ' · ' + esc(t.title) + '</h2>' +
       '<div class="row"><span>' + (EXP_SCOPES[t.scope] || t.scope) + ' · развилок ' + t.forks + ' · мест ' + t.places + '</span><span class="status">' + (TSTATUS[t.status] || t.status) + '</span></div>' +
-      '<div class="hint">итоги ' + dt(t.resolve_at) + ' · отрядов ' + t.squads + ' (в пути ' + t.marching + ')' + (t.announced ? '' : ' · анонс в очереди') + '</div>' +
+      '<div class="hint">итоги ' + dt(t.resolve_at) + ' · отрядов ' + t.squads + ' (в пути ' + t.marching + ')</div>' +
+      (t.prizes.length ? t.prizes.map(x => '<div class="row"><span>' + (["🥇", "🥈", "🥉"][x.place - 1] || x.place + ".") + ' приз</span><span>' + esc(x.label) + '</span></div>').join("")
+        : (t.places ? '<div class="hint bad">⚠️ Призы не заданы — выдать нечего (можно наградить через «Подарки»).</div>' : '')) +
+      (t.reward_all ? '<div class="row"><span>🎒 за участие</span><span>' + esc(t.reward_all) + '</span></div>' : '') +
       t.results.map(x => '<div class="row"><span>' + x.place + '. ' + esc(x.name) + '</span><span>📦 ' + x.cargo + '</span></div>').join("") +
       (t.status === "open" ? '<div class="grid2"><button class="btn ghost" data-tclose="finish" data-id="' + t.id + '">🏁 Итоги сейчас</button>' +
         '<button class="btn warn" data-tclose="cancel" data-id="' + t.id + '">⛔ Отменить</button></div>' : '') + '</div>').join("");
     app.innerHTML = '<div class="cols"><div><div class="card"><h2>➕ Новая цель на карте (' + open.length + '/' + d.max + ')</h2><div id="tform"></div></div></div>' +
-      '<div><div class="card"><h2>Цели</h2><div class="hint">Анонс и итоги уходят в канал сами — на 14 языках. Итоги подводятся в назначенный час: ' +
-      'кто не успел дойти — не участвует.</div></div>' + (list || '<div class="card hint">Пока пусто.</div>') + '</div></div>';
+      '<div><div class="card"><h2>Цели</h2><div class="hint">Цели видны игрокам на карте и в «Событиях» паспорта. Итоги подводятся в назначенный час ' +
+      '(или кнопкой «Итоги сейчас»): кто не успел дойти — не участвует; каждому получившему награду бот пишет в личку.</div></div>' + (list || '<div class="card hint">Пока пусто.</div>') + '</div></div>';
     drawTargetForm($("tform"), d, open);
     app.querySelectorAll("[data-tclose]").forEach(b => {
       b.onclick = () => {
@@ -356,7 +392,9 @@
       '<label>Название</label><input id="tTitle" maxlength="100" value="' + esc(tform.title) + '" placeholder="Ледяная цитадель">' +
       '<label>Описание (сюжет, можно на нескольких языках)</label><textarea id="tDescr" maxlength="500">' + esc(tform.descr) + '</textarea>' +
       '<label>Значок</label><div class="chips">' + d.icons.map(i => '<button class="chip' + (tform.icon === i ? ' on' : '') + '" data-icon="' + i + '">' + i + '</button>').join("") + '</div>' +
-      '<div class="hint">👤 Соло-поход: каждый игрок идёт сам (в команде тоже можно). Снаряжение — 💧 водород.</div>' +
+      '<label>Формат</label><div class="chips">' + Object.entries(EXP_SCOPES).map(([k, t]) => '<button class="chip' + (tform.scope === k ? ' on' : '') + '" data-tscope="' + k + '">' + t + '</button>').join("") + '</div>' +
+      '<div class="hint">' + (tform.scope === "solo" ? '👤 Соло-поход: каждый игрок идёт сам (в команде тоже можно). Снаряжение — 💧 водород.'
+        : 'Отряд команды: бойцы вносят 🔋 батарейки (клан — ещё и 🥩 котлеты), развилки решает голосование. Скорость: соло быстрее, команда медленнее, клан ещё медленнее.') + '</div>' +
       '<label>Место на карте — нажми (полупрозрачные — уже открытые цели)</label>' + svg +
       '<div class="grid3"><div><label>Развилок (1–5)</label><input id="tForks" type="number" min="1" max="5" value="' + tform.forks + '"></div>' +
       '<div><label>Итоги через, часов</label><input id="tHours" type="number" min="1" value="' + tform.hours + '"></div>' +
@@ -391,11 +429,14 @@
     rewardBuilder($("tAll"), tform.all);
     $("tGo").onclick = e => {
       keep();
+      flushRewards();
       const prizes = {};
       Object.entries(tform.prizes).forEach(([p, l]) => { if (l.length && Number(p) <= tform.places) prizes[p] = l; });
+      if (!confirmPrizes(prizes, tform.places, tform.all)) return;
       act(e.target, "/api/admin/target", { title: tform.title, descr: tform.descr, icon: tform.icon, scope: tform.scope, x: tform.x, y: tform.y,
         forks: tform.forks, hours: tform.hours, places: tform.places, prizes: prizes, reward_all: tform.all }, res => {
-        say("✅ Цель №" + res.id + " на карте. Анонс уйдёт в канал в течение минуты.");
+        say("✅ Цель №" + res.id + " на карте." + (Object.keys(prizes).length ? " Призы: " + prizeSummary(prizes) : "") +
+          (tform.all.length ? " · 🎒 за участие: " + tform.all.map(rewardLabel).join(" + ") : ""));
         Object.assign(tform, { title: "", descr: "", x: null, y: null, prizes: {}, all: [] }); go();
       });
     };
@@ -411,7 +452,7 @@
   }
 
   const TABS = { battles: ["⚔️ Битвы и акции", viewBattles], exp: ["🗺 Экспедиции", viewExp], gift: ["🎁 Подарки", viewGift],
-                 vip: ["💎 VIP-аукционы", viewVip], flags: ["🎛 Тумблеры", viewFlags] };
+                 vip: ["🔨 Аукционы", viewVip], flags: ["🎛 Тумблеры", viewFlags] };
   async function go() {
     $("tabs").innerHTML = Object.entries(TABS).map(([k, [t]]) => '<button class="tab' + (tab === k ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>').join("");
     $("tabs").querySelectorAll("[data-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.tab; go(); }; });

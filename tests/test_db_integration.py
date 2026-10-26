@@ -2267,7 +2267,7 @@ async def test_admin_panel_api_creates_battle_and_gives_rewards(conn, global_db,
         body = await r.json()
         assert r.status == 200 and body["ok"]
         row = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", body["id"])
-        assert list(row["mine_ids"]) == [7, 8] and not row["announced"] and row["scope"] == "teams"
+        assert list(row["mine_ids"]) == [7, 8] and row["announced"] and row["scope"] == "teams"   # анонс — сразу в приложении
         assert _j.loads(row["prizes"])["1"][0]["amount"] == 100
         bad = await client.post("/api/admin/battle", headers=head, json={"title": "x", "scope": "teams",
                                 "nomination": "farm_mined", "hours": 5, "places": 1, "mine_ids": [7]})
@@ -2286,7 +2286,11 @@ async def test_admin_panel_api_creates_battle_and_gives_rewards(conn, global_db,
         r = await client.post("/api/admin/vip/auction", headers=head, json={"alias": alias, "price": 5000, "step": 500, "hours": 24})
         assert r.status == 400                                                     # уже на аукционе
         auc = await conn.fetchrow("SELECT * FROM auctions WHERE vip_alias = $1", alias)
-        assert auc["status"] == "open" and not auc["announced"] and auc["ends_at"] is not None
+        assert auc["status"] == "open" and auc["ends_at"] is not None
+        r = await client.post("/api/admin/vip/auction", headers=head, json={"kind": "lot", "title": "VIP-пост",
+                              "descr": "Пост в Instagram", "price": 1000, "step": 100, "hours": 12})
+        lot = await conn.fetchrow("SELECT * FROM auctions WHERE auction_id = $1", (await r.json())["id"])
+        assert lot["item_title"] == "VIP-пост" and lot["vip_alias"] is None and lot["min_step"] == 100
     finally:
         await client.close()
 
@@ -2359,14 +2363,14 @@ async def test_expedition_solo_forks_and_results(conn):
         await start_solo(conn, 1701, tid, now)
     e1 = await conn.fetchrow("SELECT * FROM expeditions WHERE user_id = 1700")
     sched = fork_schedule(e1["departed_at"], e1["planned_minutes"], 2)
-    with pytest.raises(ExpError) as e:                                # развилка ещё не открылась
-        await vote(conn, 1700, e1["id"], 1, now)
-    assert e.value.key == "exp.err_no_fork"
-    async with conn.transaction():
-        v = await vote(conn, 1700, e1["id"], 1, sched[0][0] + timedelta(minutes=1))
-    assert v["resolved"] and v["fork"] == 1                            # соло — решение сразу
+    async with conn.transaction():                                    # 26.10: выбор заранее, ещё в пути к развилке
+        v = await vote(conn, 1700, e1["id"], 1, now + timedelta(seconds=5))
+    assert v["fork"] == 1 and not v["resolved"]
+    async with conn.transaction():                                    # дошли до развилки — выбор сработал сам
+        fresh = await resolve_due_forks(conn, e1["id"], sched[0][0] + timedelta(minutes=1))
+    assert fresh["forks_done"] == 1
     log = await conn.fetchrow("SELECT * FROM expedition_log WHERE expedition_id = $1 AND fork_no = 1", e1["id"])
-    assert log["option"] == 1 and log["votes"] == 1
+    assert log["option"] == 1 and log["votes"] == 1 and log["created_at"] == sched[0][0]
     with pytest.raises(ExpError) as e:                                # чужой отряд
         await vote(conn, 1701, e1["id"], 0, sched[1][0] + timedelta(minutes=1))
     assert e.value.key == "exp.err_not_member"
@@ -2387,6 +2391,28 @@ async def test_expedition_solo_forks_and_results(conn):
     loser = 1701 if winner == 1700 else 1700                           # «за участие» — без призового места
     assert (await get_resources(conn, loser, ("stone",)))["stone"] == 3
     assert (await get_resources(conn, winner, ("stone",)))["stone"] == 0
+    notes = {n["user_id"]: n for n in results["notices"]}                # 📬 каждому получившему — личное сообщение
+    assert notes[winner]["place"] == 1 and not notes[winner]["all"] and notes[winner]["rewards"][0]["amount"] == 500
+    assert notes[loser]["all"] and notes[loser]["rewards"][0]["res"] == "stone"
+    sent = []
+
+    class _Bot:
+        async def send_message(self, uid, text, parse_mode=None):
+            sent.append((uid, text))
+
+    class _Pool:
+        def acquire(self):
+            class _A:
+                async def __aenter__(self_inner):
+                    return conn
+
+                async def __aexit__(self_inner, *a):
+                    return False
+            return _A()
+
+    from shared.reward_notify import send_notices
+    assert await send_notices(_Bot(), _Pool(), results["notices"]) == 2
+    assert any(uid == winner and "500 🪙" in text for uid, text in sent)
     assert (await finalize_target(conn, target, target["resolve_at"]))["skipped"]   # итоги — один раз
     assert set(r["status"] for r in await conn.fetch("SELECT status FROM expeditions WHERE target_id = $1", tid)) == {"done"}
 
@@ -2623,4 +2649,35 @@ async def test_battle_reward_for_taking_part_goes_to_everyone_without_a_prize_pl
     assert [p["name"] for p in res["places"]] == ["Gold"] and res["participants_rewarded"] == 3
     stone = {r["user_id"]: r["qty"] for r in await conn.fetch("SELECT user_id, qty FROM user_resources WHERE kind = 'stone'")}
     assert stone == {1811: 7, 1812: 7, 1813: 7}                           # призёр получил приз, а не «за участие»
+    assert sorted((n["user_id"], n["all"]) for n in res["notices"]) == [(1810, False), (1811, True), (1812, True), (1813, True)]
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1810") == 90 + 1000
+
+
+async def test_auction_bids_refund_outbid_and_list(conn):
+    """🔨 26.10: ставки из приложения и чата — одна функция; перебитому взнос возвращается целиком."""
+    from shared.auctions import AuctionError, list_auctions, place_bid
+    await _mk_user(conn, 1900, 10_000)
+    await _mk_user(conn, 1901, 10_000)
+    aid = await conn.fetchval("INSERT INTO auctions (item_title, item_desc, current_price, min_step, status, ends_at) "
+                              "VALUES ('Лот', 'x', 1000, 100, 'open', NOW() + INTERVAL '1 day') RETURNING auction_id")
+    async with conn.transaction():
+        r1 = await place_bid(conn, 1900, aid, 100)
+    assert r1["price"] == 1100 and r1["charge"] == 1100 and r1["previous_bidder_id"] is None
+    async with conn.transaction():
+        r2 = await place_bid(conn, 1901, aid, 500)
+    assert r2["price"] == 1600 and r2["previous_bidder_id"] == 1900 and r2["refund"] == 1100
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1900") == 10_000   # взнос вернулся
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1901") == 10_000 - 1600
+    async with conn.transaction():
+        r3 = await place_bid(conn, 1901, aid, 100)                        # лидер доплачивает только шаг
+    assert r3["charge"] == 100 and await conn.fetchval("SELECT balance FROM users WHERE user_id = 1901") == 10_000 - 1700
+    for step, key in ((150, "auc.err_step"), (100_000, "auc.err_funds")):
+        with pytest.raises(AuctionError) as e:
+            await place_bid(conn, 1900, aid, step)
+        assert e.value.key == key
+    lots = await list_auctions(conn, 1901)
+    assert lots[0]["id"] == aid and lots[0]["mine"] and lots[0]["price"] == 1700 and lots[0]["bids"] == [100, 500]
+    await conn.execute("UPDATE auctions SET status = 'closed' WHERE auction_id = $1", aid)
+    with pytest.raises(AuctionError) as e:
+        await place_bid(conn, 1900, aid, 100)
+    assert e.value.key == "auc.err_closed"

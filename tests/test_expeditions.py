@@ -132,8 +132,7 @@ def test_admin_target_form_validation():
     form, err = validate_target_form(base, NOW, 0)
     assert err is None and form["resolve_at"] == NOW + timedelta(hours=24)
     assert form["prizes"] == {"1": [{"kind": "coins", "amount": 500}]} and form["reward_all"][0]["res"] == "core"
-    for patch, needle in (({"title": ""}, "Название"), ({"scope": "x"}, "зачёт"), ({"scope": "teams"}, "зачёт"),
-                          ({"x": None}, "карте"),
+    for patch, needle in (({"title": ""}, "Название"), ({"scope": "x"}, "зачёт"), ({"x": None}, "карте"),
                           ({"x": 1}, "края"), ({"forks": 9}, "Развилок"), ({"hours": 0}, "Итоги"), ({"places": 101}, "мест")):
         form, err = validate_target_form({**base, **patch}, NOW, 0)
         assert form is None and needle in err, (patch, err)
@@ -166,26 +165,48 @@ def test_feature_flag_and_tab():
 def test_expedition_texts_in_every_language():
     from shared.locales import MINIAPP_PACKS, PACK_CODES, t
     for lang in ("ru", "en") + tuple(PACK_CODES):
-        for key in ("post.exp_line", "post.exp_results_line", "exp.err_late", "ws.recipe_drone_spy"):
-            assert t(lang, key, scope="X", need=1, have=0) != key, (lang, key)
+        for key in ("post.scope_teams", "rn.place", "exp.err_late", "ws.recipe_drone_spy"):
+            assert t(lang, key, scope="X", need=1, have=0, title="T", place=1) != key, (lang, key)
     for code in PACK_CODES:
         assert "tab_map" in MINIAPP_PACKS[code] and "dr_eff_spy" in MINIAPP_PACKS[code]
-    ru = t("ru", "post.exp_line", scope="Команды")
+    ru = t("ru", "rn.where")
     assert "Railway" not in ru and "рофл" not in ru.lower() and "/" not in ru     # без слэш-команд в приложении
 
 
-def test_expedition_posts_one_message_all_languages():
-    from shared.battle_posts import POST_LANGS, TG_LIMIT, build_expedition_announce, build_expedition_results
-    target = {"title": "Ледяная <цитадель>", "icon": "🧊", "descr": "Сюжет", "scope": "teams",
-              "resolve_at": NOW + timedelta(hours=24)}
-    post = build_expedition_announce(target, {1: [{"kind": "coins", "amount": 1000}]}, [{"kind": "resource", "res": "core", "qty": 1}])
-    assert "&lt;цитадель&gt;" in post and "1 000 🪙" in post and "🎒" in post and len(post) <= TG_LIMIT
-    assert all(flag in post for _, flag in POST_LANGS)
-    res = build_expedition_results(target, {"places": [{"place": 1, "name": "Альфа", "cargo": 180, "rewards": []}],
-                                            "arrived": 3, "late": 1})
-    assert "Альфа" in res and "📦 180" in res and "⌛ 1" in res
-    empty = build_expedition_results(target, {"places": [], "arrived": 0, "late": 0})
-    assert all(flag in empty for _, flag in POST_LANGS)
+def test_fork_can_be_chosen_ahead_and_fires_at_the_fork():
+    """26.10: ближайшую развилку видно сразу (выбор заранее), срабатывает выбор, когда отряд до неё дошёл."""
+    from shared.expeditions import current_fork, decided_early, fork_window
+    exp = {"status": "marching", "forks_done": 0, "departed_at": NOW, "planned_minutes": 90,
+           "arrive_at": NOW + timedelta(minutes=90)}
+    assert current_fork(exp, 2, NOW + timedelta(minutes=1)) == 1           # ещё в пути — уже можно выбрать
+    open_at, close_at = fork_window(exp, 2, 1)
+    assert open_at == NOW + timedelta(minutes=30) and close_at == NOW + timedelta(minutes=60)
+    assert current_fork(exp, 2, NOW + timedelta(minutes=91)) is None        # пришли — развилок больше нет
+    assert decided_early("solo", 1, 1) and not decided_early("solo", 0, 1)
+    assert decided_early("team", 3, 3) and not decided_early("team", 2, 3) and not decided_early("team", 0, 0)
+
+
+def test_events_and_auctions_in_the_app():
+    from bots.main_bot.webapp import create_webapp
+    app = create_webapp("123456:TEST")
+    paths = {r.resource.canonical for r in app.router.routes() if r.resource is not None}
+    assert {"/api/news", "/api/auctions", "/api/auction/bid"} <= paths
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert '"market", "auctions", "team"' in html and "function viewAuctions" in html and 'auctions: "auctions"' in html
+    assert "function newsCard" in html and '"/api/news"' in html and "map_forkAhead" in html and "L.map_cargoHint" in html
+    assert 'class="hint fr-hint"' in html                                    # отступ под холодильником
+    from shared.feature_flags import FLAG_DEFAULTS
+    assert FLAG_DEFAULTS["auctions"] is True
+    admin = (ROOT / "static" / "webapp" / "admin.html").read_text(encoding="utf-8")
+    assert "function flushRewards" in admin and admin.count("flushRewards()") >= 3 and "confirmPrizes(" in admin
+    assert 'kind: "lot"' in admin and "канал" not in admin
+
+
+def test_admin_lot_form():
+    from bots.main_bot.webapp_admin import validate_lot_form
+    form, err = validate_lot_form({"title": " VIP-пост ", "descr": "x" * 900})
+    assert err is None and form["title"] == "VIP-пост" and len(form["descr"]) == 500
+    assert validate_lot_form({"title": ""})[0] is None
 
 
 @pytest.mark.parametrize("kind", ["guard", "attack", "spy"])
@@ -204,9 +225,10 @@ def test_peek_budget_is_min_of_spies_and_scouting():
     assert f(5, 5, 5, True) == 0 and f(0, 5, 5, False) == 0   # первая экспедиция сезона — вслепую
 
 
-def test_compact_maps_ten_targets_thirty_mines_solo_only():
-    """28.10 ночью: карты целиком на экране, до 10 соло-целей, 30 рудников (6 ресурсов по 5) — только командам."""
-    assert economy.EXP_MAX_TARGETS == 10 and economy.MINES_COUNT == 30 and economy.EXP_SCOPES == ("solo",)
+def test_compact_maps_ten_targets_thirty_mines():
+    """Карты целиком на экране, до 10 целей (26.10: соло И командные), 30 рудников (6 ресурсов по 5) — только командам."""
+    assert economy.EXP_MAX_TARGETS == 10 and economy.MINES_COUNT == 30
+    assert economy.EXP_SCOPES == ("solo", "team", "clan", "teams")
     assert (economy.EXP_MAP_W, economy.EXP_MAP_H) == (160, 100)
     from shared.database import SCHEMA_STATEMENTS
     seed = next(x for x in SCHEMA_STATEMENTS if "INSERT INTO mines" in x)

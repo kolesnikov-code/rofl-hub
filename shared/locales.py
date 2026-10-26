@@ -58,6 +58,19 @@ def btn_variants(key: str) -> set[str]:
 # Тексты. Эталон — ru. Плейсхолдеры {name} должны совпадать в обоих языках.
 # ==========================================================================
 RU: dict[str, str] = {
+    # 📬 награды в личку и 🔨 аукционы (26.10)
+    "rn.place": "🏁 <b>Итоги «{title}»</b>: ты на {place} месте!",
+    "rn.all": "🏁 <b>Итоги «{title}»</b>: спасибо за участие!",
+    "rn.got": "🎁 Начислено: <b>{r}</b>",
+    "rn.manual": "🎁 Приз: <b>{r}</b> — администрация свяжется с тобой для вручения.",
+    "rn.mine": "⛏ Рудник №{mine} теперь у вашей команды на {hours} ч — ресурс капает каждому бойцу каждый час.",
+    "rn.where": "Всё уже на складе и балансе — загляни в игровое приложение.",
+    "auc.err_none": "🚨 Лот не найден.",
+    "auc.err_closed": "🚨 Лот уже закрыт.",
+    "auc.err_funds": "❌ Нужно {need} 🪙, у тебя {have} 🪙.",
+    "auc.err_step": "❌ Ставка должна быть кратна шагу {step} 🪙.",
+    "auc.outbid": "⚠️ Твою ставку на лот «{title}» перебили (цена теперь {price} 🪙). {refund} 🪙 вернулись на баланс.",
+    "auc.bid_ok": "💥 Ставка принята! Цена лота: {price} 🪙.",
     # ---------------- общее ----------------
     "common.no_profile": "⚠️ Профиль не найден. Нажми /start для регистрации.",
     "common.btn_menu": "💿 Главное меню",
@@ -129,7 +142,6 @@ RU: dict[str, str] = {
         "- Возможность создать команду (до 50 человек)\n"
         "- Возможность прокачать её до клана (до 1000 человек)\n"
         "- Командные и клановые битвы за призы\n"
-        "- Познавательно-развлекательный канал ROFL HUB CHANNEL\n"
         "- Страница в Instagram — rofl_hub_global\n"
         "- Сайт rofl-hub.com для общения и продвижения без регистрации\n"
         "- Тысячи игроков по всему миру, среди которых могут быть твои новые друзья!\n"
@@ -834,21 +846,11 @@ RU: dict[str, str] = {
     "tech.err_cooldown": "⏳ Следующий уровень можно изучить через {hours} ч.",
     "tech.err_science": "📚 Науку {level}-го уровня можно изучить, когда все остальные технологии изучены до {level}-го уровня.",
     "ws.err_items_full": "📦 Склад изделий полон: не больше {max} изделий. Включи что-нибудь или расширь склад.",
-    "post.battle_line": "{scope} · {nom}. Играй в боте — каждое очко на счету!",
-    "post.fee_part": "Рудники — призёрам; заявка команды {fee} 🔋, клана {fee_clan} 🔋.",
-    "post.results_line": "Итоги «{nom}» подведены — поздравляем победителей!",
-    "post.results_empty": "В номинации «{nom}» никто не набрал очков — в следующий раз победа может быть твоей!",
-    "post.auction_line": "Аукцион за VIP ID {alias}: ставки в боте по ссылке ниже. Ставки возвратные — платит только победитель!",
-    "post.auction_won": "Аукцион за {alias} завершён — поздравляем победителя!",
-    "post.auction_none": "Аукцион за {alias} завершён без ставок.",
     "post.scope_team": "Командный зачёт",
     "post.scope_clan": "Зачёт кланов",
     "post.scope_teams": "Команды и кланы",
     "post.scope_solo": "Личный зачёт",
     # 28.10: экспедиции и боевые дроны
-    "post.exp_line": "{scope}: новая цель экспедиции на карте мира! Собирай отряд и успей дойти к часу итогов — в приложении, вкладка «Карта».",
-    "post.exp_results_line": "Итоги экспедиции: места по грузу, награды уже у участников отрядов.",
-    "post.exp_results_empty": "Итоги экспедиции: никто не дошёл вовремя. Следующая цель — скоро!",
     "exp.err_closed": "Эта цель уже закрыта.",
     "exp.err_scope": "Эта цель не для такого отряда — посмотри зачёт.",
     "exp.err_already": "Ты уже идёшь к этой цели.",
@@ -1056,6 +1058,19 @@ RU: dict[str, str] = {
 }
 
 EN: dict[str, str] = {
+    # 📬 rewards by DM and 🔨 auctions (26.10)
+    "rn.place": "🏁 <b>Results of “{title}”</b>: you took place {place}!",
+    "rn.all": "🏁 <b>Results of “{title}”</b>: thanks for taking part!",
+    "rn.got": "🎁 Credited: <b>{r}</b>",
+    "rn.manual": "🎁 Prize: <b>{r}</b> — the team will contact you to hand it over.",
+    "rn.mine": "⛏ Mine #{mine} belongs to your team for {hours} h — every member gets its resource each hour.",
+    "rn.where": "Everything is already in your storage and balance — check the game app.",
+    "auc.err_none": "🚨 Lot not found.",
+    "auc.err_closed": "🚨 This lot is already closed.",
+    "auc.err_funds": "❌ You need {need} 🪙, you have {have} 🪙.",
+    "auc.err_step": "❌ The bid must be a multiple of the {step} 🪙 step.",
+    "auc.outbid": "⚠️ You were outbid on “{title}” (price is now {price} 🪙). {refund} 🪙 are back on your balance.",
+    "auc.bid_ok": "💥 Bid accepted! Lot price: {price} 🪙.",
     # ---------------- common ----------------
     "common.no_profile": "⚠️ Profile not found. Press /start to register.",
     "common.btn_menu": "💿 Main Menu",
@@ -1127,7 +1142,6 @@ EN: dict[str, str] = {
         "- Create your own team (up to 50 players)\n"
         "- Upgrade it into a clan (up to 1000 players)\n"
         "- Team and clan battles for prizes\n"
-        "- The ROFL HUB CHANNEL with fun and knowledge\n"
         "- Instagram page — rofl_hub_global\n"
         "- Website rofl-hub.com for chatting and promotion without sign-up\n"
         "- Thousands of players worldwide — your new friends may be among them!\n"
@@ -1834,21 +1848,11 @@ EN: dict[str, str] = {
     "tech.err_cooldown": "⏳ The next level can be researched in {hours} h.",
     "tech.err_science": "📚 Science level {level} opens once all other techs are at level {level}.",
     "ws.err_items_full": "📦 Item storage is full: no more than {max} items. Use something or expand storage.",
-    "post.battle_line": "{scope} · {nom}. Play in the bot — every point counts!",
-    "post.fee_part": "Mines go to the winners; team entry {fee} 🔋, clan {fee_clan} 🔋.",
-    "post.results_line": "Results for “{nom}” are in — congratulations to the winners!",
-    "post.results_empty": "Nobody scored in “{nom}” — next time the win could be yours!",
-    "post.auction_line": "Auction for VIP ID {alias}: bid in the bot via the link below. Outbid coins come back — only the winner pays!",
-    "post.auction_won": "The auction for {alias} is over — congratulations to the winner!",
-    "post.auction_none": "The auction for {alias} ended with no bids.",
     "post.scope_team": "Team ranking",
     "post.scope_clan": "Clan ranking",
     "post.scope_teams": "Teams and clans",
     "post.scope_solo": "Solo ranking",
     # 28.10: экспедиции и боевые дроны
-    "post.exp_line": "{scope}: a new expedition target on the world map! Gather your squad and arrive before the results — in the app, “Map” tab.",
-    "post.exp_results_line": "Expedition results: places by cargo, rewards already delivered to squad members.",
-    "post.exp_results_empty": "Expedition results: nobody arrived in time. The next target is coming soon!",
     "exp.err_closed": "This target is already closed.",
     "exp.err_scope": "This target isn't for this kind of squad — check the ranking.",
     "exp.err_already": "You're already heading to this target.",

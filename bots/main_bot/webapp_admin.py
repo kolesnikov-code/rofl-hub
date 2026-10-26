@@ -2,8 +2,9 @@
 🎛 Пульт владельца — Mini App (решение 27.10): битвы и акции, призы, подарки, VIP-аукционы, тумблеры.
 
 Открывается из ГЛАВНОГО бота командой /admin (initData подписан его токеном), доступ — только ID из
-переменной ADMIN_ID. Пульт лишь пишет в базу: анонсы и итоги в канал публикует демон админ-бота
-(битвы с announced = FALSE, аукционы с announced = FALSE, закрытие по ends_at). Тексты — по-русски.
+переменной ADMIN_ID. Пульт лишь пишет в базу: игроки видят битвы, цели и лоты в приложении (Паспорт → События,
+вкладка «Аукционы»), итоги по времени подводит демон админ-бота и пишет получившим награды в личку
+(каналов нет — решение владельца 26.10). Тексты — по-русски.
 """
 from __future__ import annotations
 
@@ -219,7 +220,7 @@ async def handle_admin_battle_create(request: web.Request) -> web.Response:
         battle_id = await conn.fetchval(
             """INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, prizes, scope, places,
                                     mine_ids, announced, results_posted, reward_all)
-               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, FALSE, FALSE, $10::jsonb) RETURNING battle_id""",
+               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, TRUE, FALSE, $10::jsonb) RETURNING battle_id""",
             form["title"], form["nomination_key"], form["nomination_text"], form["starts_at"], form["ends_at"],
             json.dumps(form["prizes"], ensure_ascii=False), form["scope"], form["places"], form["mine_ids"],
             json.dumps(form["reward_all"], ensure_ascii=False))
@@ -227,7 +228,7 @@ async def handle_admin_battle_create(request: web.Request) -> web.Response:
 
 
 async def handle_admin_battle_close(request: web.Request) -> web.Response:
-    """finish — подвести итоги сейчас (демон админ-бота опубликует их в канал); cancel — отменить без призов."""
+    """finish — подвести итоги сейчас (демон админ-бота выдаст призы и напишет победителям); cancel — отменить без призов."""
     uid = _admin(request)
     if isinstance(uid, web.Response):
         return uid
@@ -323,16 +324,34 @@ async def handle_admin_vip(request: web.Request) -> web.Response:
     })
 
 
+def validate_lot_form(data: dict) -> tuple[dict | None, str | None]:
+    """Свой лот аукциона (kind = lot): название, описание. Выдачу приза владелец делает сам."""
+    title = str(data.get("title") or "").strip()
+    if not 1 <= len(title) <= 100:
+        return None, "Название лота — от 1 до 100 символов"
+    return {"title": title, "descr": str(data.get("descr") or "").strip()[:500]}, None
+
+
 async def handle_admin_vip_auction(request: web.Request) -> web.Response:
-    """Аукцион за VIP ID: монеты победителя сгорают (дефляция), ID переходит ему автоматически по окончании."""
+    """
+    Аукцион: VIP ID (переходит победителю сам) или свой лот (kind = lot — приз вручает владелец).
+    Монеты победителя сгорают (дефляция). Лот сразу виден во вкладке «Аукционы» приложения.
+    """
     uid = _admin(request)
     if isinstance(uid, web.Response):
         return uid
     data = await _body(request)
-    alias = str(data.get("alias") or "").strip().upper()[:32]
     price, step, hours = _int(data.get("price")), _int(data.get("step")), _int(data.get("hours"))
-    if not alias.startswith(VIP_PREFIX) or alias.isdigit():
-        return _fail("VIP ID должен начинаться с ROFL-HUB-")
+    lot = None
+    alias = None
+    if data.get("kind") == "lot":
+        lot, err = validate_lot_form(data)
+        if err:
+            return _fail(err)
+    else:
+        alias = str(data.get("alias") or "").strip().upper()[:32]
+        if not alias.startswith(VIP_PREFIX) or alias.isdigit():
+            return _fail("VIP ID должен начинаться с ROFL-HUB-")
     if not 1 <= price <= 100_000_000 or not 1 <= step <= 10_000_000:
         return _fail("Цена и шаг — положительные числа")
     if not 1 <= hours <= AUCTION_MAX_HOURS:
@@ -340,13 +359,14 @@ async def handle_admin_vip_auction(request: web.Request) -> web.Response:
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             await conn.execute("SELECT pg_advisory_xact_lock(271027)")
-            if alias in await _taken_aliases(conn):
+            if alias and alias in await _taken_aliases(conn):
                 return _fail("Этот VIP ID уже занят или на аукционе")
+            title = lot["title"] if lot else f"💎 VIP ID {alias}"
+            descr = lot["descr"] if lot else "VIP ID — равноправный айдишник в экосистеме: переводы монет и строка в профиле."
             auction_id = await conn.fetchval(
                 """INSERT INTO auctions (item_title, item_desc, current_price, min_step, status, vip_alias, ends_at, announced)
-                   VALUES ($1, $2, $3, $4, 'open', $5, NOW() + make_interval(hours => $6), FALSE) RETURNING auction_id""",
-                f"💎 VIP ID {alias}", "VIP ID — равноправный айдишник в экосистеме: переводы монет и строка в профиле.",
-                price, step, alias, hours)
+                   VALUES ($1, $2, $3, $4, 'open', $5, NOW() + make_interval(hours => $6), TRUE) RETURNING auction_id""",
+                title, descr, price, step, alias, hours)
     return web.json_response({"ok": True, "id": auction_id})
 
 
@@ -399,7 +419,9 @@ async def handle_admin_targets(request: web.Request) -> web.Response:
     uid = _admin(request)
     if isinstance(uid, web.Response):
         return uid
+    from shared.battles import prizes_by_place
     from shared.economy import EXP_MAP_H, EXP_MAP_W, EXP_MAX_TARGETS
+    from shared.prizes import normalize_rewards, rewards_label
     async with db.pool.acquire() as conn:
         rows = await conn.fetch("SELECT * FROM expedition_targets ORDER BY (status = 'open') DESC, id DESC LIMIT 30")
         counts = {r["target_id"]: (r["n"], r["marching"]) for r in await conn.fetch(
@@ -410,9 +432,14 @@ async def handle_admin_targets(request: web.Request) -> web.Response:
         results = r["results"]
         results = json.loads(results) if isinstance(results, str) else (results or {})
         n, marching = counts.get(r["id"], (0, 0))
+        prizes = prizes_by_place(r["prizes"])
+        raw_all = r["reward_all"]
+        reward_all = normalize_rewards(json.loads(raw_all) if isinstance(raw_all, str) else (raw_all or []))
         out.append({"id": r["id"], "title": r["title"], "icon": r["icon"], "x": r["x"], "y": r["y"], "scope": r["scope"],
                     "forks": r["forks"], "resolve_at": _iso(r["resolve_at"]), "places": r["places"],
-                    "status": r["status"], "announced": r["announced"], "squads": n, "marching": marching,
+                    "status": r["status"], "squads": n, "marching": marching,
+                    "prizes": [{"place": pl, "label": rewards_label(prizes[pl])} for pl in sorted(prizes)][:20],
+                    "reward_all": rewards_label(reward_all) if reward_all else "",
                     "results": [{"place": x.get("place"), "name": x.get("name"), "cargo": x.get("cargo")}
                                 for x in (results.get("places") or [])][:20]})
     return web.json_response({"targets": out, "map": {"w": EXP_MAP_W, "h": EXP_MAP_H}, "max": EXP_MAX_TARGETS,
@@ -435,7 +462,7 @@ async def handle_admin_target_create(request: web.Request) -> web.Response:
             target_id = await conn.fetchval(
                 """INSERT INTO expedition_targets (title, descr, icon, x, y, scope, forks, resolve_at, places, prizes,
                                                    reward_all, announced)
-                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, FALSE) RETURNING id""",
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, TRUE) RETURNING id""",
                 form["title"], form["descr"], form["icon"], form["x"], form["y"], form["scope"], form["forks"],
                 form["resolve_at"], form["places"], json.dumps(form["prizes"], ensure_ascii=False),
                 json.dumps(form["reward_all"], ensure_ascii=False))
@@ -443,7 +470,7 @@ async def handle_admin_target_create(request: web.Request) -> web.Response:
 
 
 async def handle_admin_target_close(request: web.Request) -> web.Response:
-    """finish — итоги сейчас (демон админ-бота подведёт и опубликует); cancel — отменить, снаряжение вернуть."""
+    """finish — итоги сейчас (демон админ-бота подведёт и напишет получившим награды); cancel — отменить, снаряжение вернуть."""
     uid = _admin(request)
     if isinstance(uid, web.Response):
         return uid

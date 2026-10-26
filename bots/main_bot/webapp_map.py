@@ -33,12 +33,14 @@ from shared.expeditions import (
     current_fork,
     distance,
     fork_schedule,
+    fork_window,
     gear_needed,
     origin_for,
     peek,
     peek_state,
     resolve_due_forks,
     squad_effects,
+    squad_members,
     squad_mode,
     start_solo,
     vote,
@@ -59,15 +61,15 @@ def _rewards(raw) -> list:
 
 
 async def _resolve_overdue(conn, now) -> None:
-    """Ленивая развязка развилок у отрядов, чьё голосование уже закрылось (маркеры встают на честное место)."""
+    """Ленивая развязка развилок, до которых отряды уже дошли (выбор заранее или закрытое голосование)."""
     rows = await conn.fetch(
         """SELECT e.id, e.departed_at, e.planned_minutes, e.arrive_at, e.forks_done, t.forks
            FROM expeditions e JOIN expedition_targets t ON t.id = e.target_id
            WHERE e.status = 'marching' AND t.status = 'open' AND e.forks_done < t.forks
            ORDER BY e.id LIMIT 500""")
     for r in rows:
-        open_at, close_at = fork_schedule(r["departed_at"], r["planned_minutes"], r["forks"])[r["forks_done"]]
-        if min(close_at, r["arrive_at"]) <= now or open_at >= r["arrive_at"]:
+        open_at, _ = fork_schedule(r["departed_at"], r["planned_minutes"], r["forks"])[r["forks_done"]]
+        if open_at <= now or open_at >= r["arrive_at"]:
             async with conn.transaction():
                 await resolve_due_forks(conn, r["id"], now)
 
@@ -78,7 +80,7 @@ def _fork_payload(exp: dict, forks: int, now, lang: str, votes: list, my_id: int
         return None
     hint = k in peeked          # 🔎 последствия видны только у разведанной развилки
     event = event_for(exp["id"], k)
-    _, close_at = fork_schedule(exp["departed_at"], exp["planned_minutes"], forks)[k - 1]
+    open_at, close_at = fork_window(exp, forks, k)
     counts: dict[int, int] = {}
     mine = None
     for v in votes:
@@ -88,7 +90,7 @@ def _fork_payload(exp: dict, forks: int, now, lang: str, votes: list, my_id: int
                 mine = v["option"]
     return {
         "no": k, "of": forks, "icon": event["icon"], "text": event_text(event["text"], lang), "peeked": hint,
-        "closes_at": _iso(min(close_at, exp["arrive_at"])),
+        "opens_at": _iso(open_at), "closes_at": _iso(close_at), "reached": now >= open_at,
         "options": [{"i": i, "text": event_text(o["text"], lang), "votes": counts.get(i, 0), "mine": mine == i,
                      "hint": ({"cargo": o.get("cargo", 0), "loss": o.get("loss", 0), "delay": o.get("delay", 0),
                                "fight": bool(o.get("fight"))} if hint else None)}
@@ -143,6 +145,7 @@ async def handle_map(request: web.Request) -> web.Response:
         logs = await conn.fetch("SELECT * FROM expedition_log WHERE expedition_id = ANY($1::bigint[]) ORDER BY fork_no",
                                 my_ids)
         peeks = {s["id"]: await peek_state(conn, s) for s in my_rows if s["status"] == "marching"}
+        sizes = {s["id"]: len(await squad_members(conn, s)) for s in my_rows if s["mode"] != "solo"}
     by_target = {}
     for s in squads:
         by_target[s["target_id"]] = by_target.get(s["target_id"], 0) + 1
@@ -189,6 +192,7 @@ async def handle_map(request: web.Request) -> web.Response:
             "fork": (_fork_payload(exp, target["forks"], now, ctx.lang, exp_votes, ctx.user_id, peeks[s["id"]]["peeked"])
                      if s["status"] == "marching" else None),
             "peeks": peeks.get(s["id"]),
+            "members": sizes.get(s["id"], 1),
             "log": _log_payload([l for l in logs if l["expedition_id"] == s["id"]], ctx.lang),
             "effects": {k: eff[k] for k in ("cargo", "guard", "speed")},
         })

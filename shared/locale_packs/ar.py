@@ -37,13 +37,23 @@ BUTTONS = {
 }
 
 STRINGS = {
+    # TODO(перевод 26.10): награды в личку и аукционы — пока по-английски
+    "rn.place": "🏁 <b>Results of “{title}”</b>: you took place {place}!",
+    "rn.all": "🏁 <b>Results of “{title}”</b>: thanks for taking part!",
+    "rn.got": "🎁 Credited: <b>{r}</b>",
+    "rn.manual": "🎁 Prize: <b>{r}</b> — the team will contact you to hand it over.",
+    "rn.mine": "⛏ Mine #{mine} belongs to your team for {hours} h — every member gets its resource each hour.",
+    "rn.where": "Everything is already in your storage and balance — check the game app.",
+    "auc.err_none": "🚨 Lot not found.",
+    "auc.err_closed": "🚨 This lot is already closed.",
+    "auc.err_funds": "❌ You need {need} 🪙, you have {have} 🪙.",
+    "auc.err_step": "❌ The bid must be a multiple of the {step} 🪙 step.",
+    "auc.outbid": "⚠️ You were outbid on “{title}” (price is now {price} 🪙). {refund} 🪙 are back on your balance.",
+    "auc.bid_ok": "💥 Bid accepted! Lot price: {price} 🪙.",
     "profile.btn_app": "📱 OPEN THE APP",
     "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
     "exp.err_peeked": "This fork is already scouted.",
     # TODO(перевод 28.10): экспедиции и дроны — пока английский
-    "post.exp_line": "{scope}: a new expedition target on the world map! Gather your squad and arrive before the results — in the app, “Map” tab.",
-    "post.exp_results_line": "Expedition results: places by cargo, rewards already delivered to squad members.",
-    "post.exp_results_empty": "Expedition results: nobody arrived in time. The next target is coming soon!",
     "exp.err_closed": "This target is already closed.",
     "exp.err_scope": "This target isn't for this kind of squad — check the ranking.",
     "exp.err_already": "You're already heading to this target.",
@@ -134,7 +144,6 @@ STRINGS = {
         "- إمكانية إنشاء فريق (حتى 50 لاعبًا)\n"
         "- إمكانية ترقيته إلى كلان (حتى 1000 لاعب)\n"
         "- معارك فرق وكلانات على جوائز\n"
-        "- قناة ROFL HUB CHANNEL للترفيه والمعرفة\n"
         "- صفحة إنستغرام — rofl_hub_global\n"
         "- موقع rofl-hub.com للتواصل والترويج دون تسجيل\n"
         "- آلاف اللاعبين حول العالم، وقد يكون أصدقاؤك الجدد بينهم!\n"
@@ -832,13 +841,6 @@ STRINGS = {
     "tech.err_cooldown": "⏳ يمكنك دراسة المستوى التالي بعد {hours} س.",
     "tech.err_science": "📚 يمكن دراسة العلم من المستوى {level} عندما تصل كل التقنيات الأخرى إلى المستوى {level}.",
     "ws.err_items_full": "📦 مخزن العناصر ممتلئ: {max} عنصرًا كحد أقصى. فعّل شيئًا أو وسّع المخزن.",
-    "post.battle_line": "{scope} · {nom}. العب في البوت — كل نقطة لها وزنها!",
-    "post.fee_part": "المناجم للفائزين؛ طلب الفريق {fee} 🔋، والعشيرة {fee_clan} 🔋.",
-    "post.results_line": "أُعلنت نتائج «{nom}» — مبروك للفائزين!",
-    "post.results_empty": "لم يسجّل أحد نقاطًا في «{nom}» — ربما يكون الفوز لك في المرة القادمة!",
-    "post.auction_line": "مزاد على VIP ID {alias}: زايد في البوت عبر الرابط أدناه. العملات المُزايَد عليها تعود — يدفع الفائز فقط!",
-    "post.auction_won": "انتهى المزاد على {alias} — تهانينا للفائز!",
-    "post.auction_none": "انتهى المزاد على {alias} دون مزايدات.",
     "post.scope_team": "ترتيب الفرق",
     "post.scope_clan": "ترتيب العشائر",
     "post.scope_teams": "الفرق والعشائر",
@@ -1029,6 +1031,34 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): события, аукционы, развилки — пока по-английски
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
@@ -1036,7 +1066,7 @@ MINIAPP = {
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -1062,7 +1092,7 @@ MINIAPP = {
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -1072,7 +1102,7 @@ MINIAPP = {
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -1276,7 +1306,7 @@ MINIAPP = {
     "mn_place": "🏆 جائزة المركز {p}",
     "mn_soonShort": "البداية: {d}",
     "top_events": "🎯 العروض",
-    "ev_empty": "لا توجد عروض الآن — تابع القناة!",
+    "ev_empty": "لا توجد عروض الآن — عد لاحقًا!",
     "ev_my": "مركزك: {p}",
     "ev_noPlace": "لست في الجدول بعد — هيا!",
     "ev_manual": "سيحدّد المنظّم الفائزين",

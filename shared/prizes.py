@@ -173,14 +173,20 @@ async def grant(conn, user_id: int, rewards: list[dict], ref: str, now: datetime
     return True
 
 
-async def grant_many(pool_conn, user_ids: list[int], rewards: list[dict], ref_prefix: str, now: datetime) -> tuple[int, int]:
-    """Каждому игроку — своя транзакция (сбой одного не отменяет остальных). (выдано, сбоев)."""
+async def grant_many(pool_conn, user_ids: list[int], rewards: list[dict], ref_prefix: str, now: datetime,
+                     granted: list[int] | None = None) -> tuple[int, int]:
+    """
+    Каждому игроку — своя транзакция (сбой одного не отменяет остальных). (выдано, сбоев).
+    granted — сюда дописываются ID получивших (для личных сообщений о наградах).
+    """
     ok = bad = 0
     for uid in user_ids:
         try:
             async with pool_conn.transaction():
                 if await grant(pool_conn, uid, rewards, f"{ref_prefix}_U{uid}", now):
                     ok += 1
+                    if granted is not None:
+                        granted.append(uid)
         except Exception:
             bad += 1
             logger.exception("[PRIZE] %s игроку %s не выдан", ref_prefix, uid)

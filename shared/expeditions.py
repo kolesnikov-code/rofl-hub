@@ -9,13 +9,16 @@
 - Снаряжение: соло — EXP_SOLO_HYDROGEN водорода сразу; команда — EXP_BATTERIES["team"] батареек, клан —
   EXP_BATTERIES["clan"] батареек + EXP_CLAN_CUTLETS котлет. Вносят бойцы по одной; полный комплект — отряд
   выходит сам. Не собрали к итогам — всё вносившим возвращается.
-- Развилки: на равных долях планового пути (open_i = выход + путь·i/(forks+1)), голосование открыто до
-  следующей развилки. Решает большинство голосов команды (ничья — вариант, за который проголосовали раньше;
-  никто не голосовал — первый, самый осторожный); в соло — сам игрок, сразу. Срезав дорогу, отряд может
+- Развилки: на равных долях планового пути (open_i = выход + путь·i/(forks+1)). Ближайшую развилку видно
+  сразу (с таймером), выбрать вариант можно ЗАРАНЕЕ (26.10): соло-выбор и голоса всех бойцов срабатывают,
+  когда отряд дойдёт до развилки. Не выбрали — голосование идёт до следующей развилки (или прибытия), решает
+  большинство (ничья — кто раньше; никто — первый, самый осторожный вариант). Срезав дорогу, отряд может
   прийти раньше — тогда оставшиеся развилки он просто не встречает (меньше шансов добыть груз).
+- 📦 Груз — очки похода: старт EXP_BASE_CARGO, развилки прибавляют или отнимают; по нему места в итогах.
 - Места в итогах — по грузу (cargo), при равенстве раньше пришедший выше. Награды получают участники отряда:
   вносившие снаряжение и голосовавшие (expedition_members), — пассажиры ничего не получают.
 Развилки разрешаются «лениво» (при открытии карты, голосе или итогах) — без отдельного демона.
+Итоги — личным сообщением каждому получившему награду (notices в результате finalize_target); каналов нет.
 """
 from __future__ import annotations
 
@@ -169,10 +172,17 @@ async def peek_state(conn, exp) -> dict:
 
 
 # ============================================================================ развилки
-async def resolve_due_forks(conn, exp_id: int, now: datetime, force_fork: int | None = None) -> dict | None:
+def decided_early(mode: str, votes: int, members: int) -> bool:
+    """Выбор сделан заранее: соло — игрок выбрал; отряд — проголосовали все бойцы."""
+    return votes >= 1 if mode == "solo" else members > 0 and votes >= members
+
+
+async def resolve_due_forks(conn, exp_id: int, now: datetime) -> dict | None:
     """
-    Разрешает развилки, чьё голосование закрылось к моменту now (в транзакции вызывающего; строка
-    отряда блокируется). force_fork — разрешить эту развилку сразу (соло-выбор или проголосовали все).
+    Разрешает развилки к моменту now (в транзакции вызывающего; строка отряда блокируется).
+    Развилка срабатывает, когда отряд до неё ДОШЁЛ (open_at): если выбор сделан заранее (соло — выбран вариант,
+    отряд — проголосовали все) — сразу, в момент max(дошли, последний голос); иначе голосование идёт до
+    закрытия (следующая развилка или прибытие), молчание — первый, самый осторожный вариант.
     Возвращает свежую строку отряда.
     """
     exp = await conn.fetchrow("SELECT * FROM expeditions WHERE id = $1 FOR UPDATE", exp_id)
@@ -181,25 +191,30 @@ async def resolve_due_forks(conn, exp_id: int, now: datetime, force_fork: int | 
     target = await conn.fetchrow("SELECT forks, resolve_at FROM expedition_targets WHERE id = $1", exp["target_id"])
     exp = dict(exp)
     schedule = fork_schedule(exp["departed_at"], exp["planned_minutes"], target["forks"])
-    effects = None
+    effects, members = None, None
     while exp["forks_done"] < target["forks"]:
         k = exp["forks_done"] + 1
         open_at, close_at = schedule[k - 1]
         if open_at >= exp["arrive_at"]:          # срезали дорогу — оставшихся развилок отряд не встретит
             exp["forks_done"] = target["forks"]
             break
-        close_at = min(close_at, exp["arrive_at"])
-        forced = force_fork == k and now >= open_at
-        if not forced and now < close_at:
+        if now < open_at:                        # до развилки ещё не дошли (выбор можно сделать заранее)
             break
-        event = event_for(exp_id, k)
+        close_at = min(close_at, exp["arrive_at"])
         votes = await conn.fetch("SELECT option, created_at FROM expedition_votes WHERE expedition_id = $1 "
                                  "AND fork_no = $2", exp_id, k)
+        if members is None:
+            members = 1 if exp["mode"] == "solo" else len(await squad_members(conn, exp))
+        early = decided_early(exp["mode"], len(votes), members)
+        if not early and now < close_at:
+            break
+        event = event_for(exp_id, k)
         option, count = decide([(v["option"], v["created_at"]) for v in votes], len(event["options"]))
         if effects is None:
             effects = await squad_effects(conn, exp["mode"], exp["user_id"], exp["team_id"])
         cargo, delay = apply_option(exp["cargo"], event["options"][option], effects)
-        moment = now if forced else close_at
+        moment = max([open_at] + [v["created_at"] for v in votes]) if early else close_at
+        moment = min(moment, now)
         arrive = max(exp["arrive_at"] + timedelta(minutes=delay), moment + timedelta(minutes=1))
         await conn.execute(
             """INSERT INTO expedition_log (expedition_id, fork_no, event_id, option, votes, cargo_delta, delay_min, created_at)
@@ -212,12 +227,21 @@ async def resolve_due_forks(conn, exp_id: int, now: datetime, force_fork: int | 
 
 
 def current_fork(exp, forks: int, now: datetime) -> int | None:
-    """Номер развилки, за которую сейчас можно голосовать (None — ждём следующую или путь окончен)."""
-    if exp["status"] != "marching" or exp["forks_done"] >= forks:
+    """
+    Ближайшая неразрешённая развилка, за которую можно голосовать — В ТОМ ЧИСЛЕ ЗАРАНЕЕ, ещё в пути к ней
+    (решение владельца 26.10: «пусть игрок знает, когда вернуться»). None — путь окончен.
+    """
+    if exp["status"] != "marching" or exp["forks_done"] >= forks or now >= exp["arrive_at"]:
         return None
     k = exp["forks_done"] + 1
     open_at, _ = fork_schedule(exp["departed_at"], exp["planned_minutes"], forks)[k - 1]
-    return k if open_at <= now < exp["arrive_at"] else None
+    return k if open_at < exp["arrive_at"] else None
+
+
+def fork_window(exp, forks: int, k: int) -> tuple[datetime, datetime]:
+    """(отряд дойдёт до развилки, голосование закроется) для развилки k."""
+    open_at, close_at = fork_schedule(exp["departed_at"], exp["planned_minutes"], forks)[k - 1]
+    return open_at, min(close_at, exp["arrive_at"])
 
 
 # ============================================================================ выход отряда
@@ -384,26 +408,22 @@ async def peek(conn, user_id: int, exp_id: int, now: datetime) -> dict:
 
 
 async def vote(conn, user_id: int, exp_id: int, option: int, now: datetime) -> dict:
-    """🗳 Голос за вариант на текущей развилке. Соло — решение сразу; команда — когда проголосовали все."""
+    """
+    🗳 Голос за вариант ближайшей развилки — можно заранее, пока отряд в пути к ней. Соло-выбор и голоса всех
+    бойцов срабатывают, как только отряд дойдёт до развилки (дошли уже — сразу). Передумать можно до срабатывания.
+    """
     exp, k = await _open_fork(conn, user_id, exp_id, now)
     if not 0 <= option < len(event_for(exp_id, k)["options"]):
         raise ExpError("exp.err_no_fork")
     await conn.execute(
         """INSERT INTO expedition_votes (expedition_id, fork_no, user_id, option, created_at) VALUES ($1, $2, $3, $4, $5)
-           ON CONFLICT (expedition_id, fork_no, user_id) DO UPDATE SET option = EXCLUDED.option""",
+           ON CONFLICT (expedition_id, fork_no, user_id) DO UPDATE SET option = EXCLUDED.option,
+                                                                     created_at = EXCLUDED.created_at""",
         exp_id, k, user_id, option, now)
     await conn.execute("INSERT INTO expedition_members (expedition_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
                        exp_id, user_id)
-    resolved = False
-    if exp["mode"] == "solo":
-        resolved = True
-    else:
-        voted = await conn.fetchval("SELECT COUNT(*) FROM expedition_votes WHERE expedition_id = $1 AND fork_no = $2",
-                                    exp_id, k)
-        resolved = voted >= len(await squad_members(conn, exp))
-    if resolved:
-        exp = await resolve_due_forks(conn, exp_id, now, force_fork=k)
-    return {"fork": k, "resolved": resolved, "cargo": exp["cargo"], "arrive_at": exp["arrive_at"].isoformat()}
+    exp = await resolve_due_forks(conn, exp_id, now)
+    return {"fork": k, "resolved": exp["forks_done"] >= k, "cargo": exp["cargo"], "arrive_at": exp["arrive_at"].isoformat()}
 
 
 # ============================================================================ итоги
@@ -461,23 +481,31 @@ async def finalize_target(conn, target, now: datetime) -> dict:
     prizes = prizes_by_place(target["prizes"])
     raw_all = target["reward_all"]
     reward_all = normalize_rewards(json.loads(raw_all) if isinstance(raw_all, str) else (raw_all or []))
-    rows = []
+    rows, notices = [], []
     for place, exp in enumerate(arrived, start=1):
         members = [r["user_id"] for r in await conn.fetch(
             f"SELECT m.user_id FROM expedition_members m JOIN users u ON u.user_id = m.user_id "
             f"WHERE m.expedition_id = $1 AND NOT u.is_blocked AND u.deleted_at IS NULL", exp["id"])]
         given = 0
-        rewards = prizes.get(place, [])
-        if rewards and any(r["kind"] != "text" for r in rewards):
-            given, _ = await grant_many(conn, members, rewards, f"E{tid}_P{place}", now)
-        if place > (target["places"] or 0) and reward_all and any(r["kind"] != "text" for r in reward_all):
-            await grant_many(conn, members, reward_all, f"E{tid}_ALL", now)   # 🎒 за участие — без призового места
+        is_prize_place = place <= (target["places"] or 0)
+        rewards = prizes.get(place, []) if is_prize_place else []
+        if rewards:
+            got: list[int] = []
+            given, _ = await grant_many(conn, members, rewards, f"E{tid}_P{place}", now, got)
+            notices += [{"user_id": u, "title": target["title"], "place": place, "rewards": rewards, "all": False}
+                        for u in got]
+        elif not is_prize_place and reward_all:                     # 🎒 за участие — без призового места
+            got = []
+            await grant_many(conn, members, reward_all, f"E{tid}_ALL", now, got)
+            notices += [{"user_id": u, "title": target["title"], "place": place, "rewards": reward_all, "all": True}
+                        for u in got]
         rows.append({"place": place, "name": await squad_name(conn, exp), "mode": exp["mode"], "cargo": exp["cargo"],
                      "members": len(members), "rewards": rewards, "given": given})
     results = {"places": rows, "arrived": len(arrived), "late": late}
     await conn.execute("UPDATE expedition_targets SET results = $2::jsonb WHERE id = $1",
                        tid, json.dumps(results, ensure_ascii=False, default=str))
-    logger.info("[EXP] цель %s: итоги — дошли %s, опоздали %s", tid, len(arrived), late)
+    logger.info("[EXP] цель %s: итоги — дошли %s, опоздали %s, наград %s", tid, len(arrived), late, len(notices))
+    results["notices"] = notices
     return results
 
 

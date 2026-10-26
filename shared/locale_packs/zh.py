@@ -37,13 +37,23 @@ BUTTONS = {
 }
 
 STRINGS = {
+    # TODO(перевод 26.10): награды в личку и аукционы — пока по-английски
+    "rn.place": "🏁 <b>Results of “{title}”</b>: you took place {place}!",
+    "rn.all": "🏁 <b>Results of “{title}”</b>: thanks for taking part!",
+    "rn.got": "🎁 Credited: <b>{r}</b>",
+    "rn.manual": "🎁 Prize: <b>{r}</b> — the team will contact you to hand it over.",
+    "rn.mine": "⛏ Mine #{mine} belongs to your team for {hours} h — every member gets its resource each hour.",
+    "rn.where": "Everything is already in your storage and balance — check the game app.",
+    "auc.err_none": "🚨 Lot not found.",
+    "auc.err_closed": "🚨 This lot is already closed.",
+    "auc.err_funds": "❌ You need {need} 🪙, you have {have} 🪙.",
+    "auc.err_step": "❌ The bid must be a multiple of the {step} 🪙 step.",
+    "auc.outbid": "⚠️ You were outbid on “{title}” (price is now {price} 🪙). {refund} 🪙 are back on your balance.",
+    "auc.bid_ok": "💥 Bid accepted! Lot price: {price} 🪙.",
     "profile.btn_app": "📱 OPEN THE APP",
     "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
     "exp.err_peeked": "This fork is already scouted.",
     # TODO(перевод 28.10): экспедиции и дроны — пока английский
-    "post.exp_line": "{scope}: a new expedition target on the world map! Gather your squad and arrive before the results — in the app, “Map” tab.",
-    "post.exp_results_line": "Expedition results: places by cargo, rewards already delivered to squad members.",
-    "post.exp_results_empty": "Expedition results: nobody arrived in time. The next target is coming soon!",
     "exp.err_closed": "This target is already closed.",
     "exp.err_scope": "This target isn't for this kind of squad — check the ranking.",
     "exp.err_already": "You're already heading to this target.",
@@ -134,7 +144,6 @@ STRINGS = {
         "- 创建自己的战队（最多 50 人）\n"
         "- 把它升级成公会（最多 1000 人）\n"
         "- 有奖的战队与公会大作战\n"
-        "- 益智娱乐频道 ROFL HUB CHANNEL\n"
         "- Instagram 主页 — rofl_hub_global\n"
         "- 无需注册即可交流和推广的网站 rofl-hub.com\n"
         "- 全球成千上万的玩家，说不定就有你的新朋友！\n"
@@ -829,13 +838,6 @@ STRINGS = {
     "tech.err_cooldown": "⏳ {hours} 小时后可研究下一级。",
     "tech.err_science": "📚 当其他所有技术都达到 {level} 级时，才能研究 {level} 级科学。",
     "ws.err_items_full": "📦 物品仓库已满：最多 {max} 件物品。请启用一些或扩建仓库。",
-    "post.battle_line": "{scope} · {nom}。来机器人里玩吧——每一分都算数！",
-    "post.fee_part": "矿区归获奖者；战队报名 {fee} 🔋，公会 {fee_clan} 🔋。",
-    "post.results_line": "「{nom}」结果揭晓——恭喜获奖者！",
-    "post.results_empty": "「{nom}」中无人得分——下次胜利可能属于你！",
-    "post.auction_line": "VIP ID {alias} 拍卖：通过下方链接在机器人中出价。被超过的金币会退回——只有赢家付款！",
-    "post.auction_won": "{alias} 的拍卖已结束——恭喜获胜者！",
-    "post.auction_none": "{alias} 的拍卖结束，无人出价。",
     "post.scope_team": "战队榜",
     "post.scope_clan": "公会榜",
     "post.scope_teams": "战队与公会",
@@ -1026,6 +1028,34 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): события, аукционы, развилки — пока по-английски
+    "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
+    "map_forkAhead": "Fork in {t} — choose ahead",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
+    "map_myChoice": "your choice",
+    "news_title": "📣 EVENTS",
+    "news_hint": "All announcements live here: battles, world map runs and auctions. Tap to open.",
+    "news_empty": "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.",
+    "news_left": "⏳ {t}",
+    "news_won": "🏁 {w}",
+    "news_done": "🏁 results are in",
+    "tab_auctions": "🔨 Auctions",
+    "auc_title": "🔨 AUCTIONS",
+    "auc_empty": "No lots yet. VIP IDs and other prizes go up from time to time — check back later.",
+    "auc_price": "Current price",
+    "auc_leader": "Leader",
+    "auc_noBids": "no bids yet",
+    "auc_you": "👑 you lead",
+    "auc_ends": "Ends in",
+    "auc_noEnd": "until the team closes it",
+    "auc_bid": "💥 +{s} · costs {c} 🪙",
+    "auc_balance": "You have: {b} 🪙",
+    "auc_rules": "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.",
+    "auc_sold": "🏁 Sold for {p} 🪙",
+    "auc_unsold": "🏁 Closed with no bids",
+    "auc_closed": "Finished lots",
+    "auc_done": "💥 Bid accepted! Lot price: {p} 🪙",
     "map_peek": "🔎 Scout this fork · {n} left",
     "map_peeked": "🔎 Fork scouted — outcomes visible to the whole squad",
     "map_peekBlind": "🙈 The first expedition of the season is blind.",
@@ -1033,7 +1063,7 @@ MINIAPP = {
     "tab_map": "🗺 Map",
     "map_title": "🗺 WORLD MAP",
     "map_empty": "No targets yet. They appear on the map from time to time — check back later.",
-    "map_hint": "Solo runs: everyone heads to a target from their own side of the map. Arrive before the results — latecomers are out.",
+    "map_hint": "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.",
     "map_resolve": "Results in {t}",
     "map_squads": "Squads: {n}",
     "map_forks": "Forks on the way: {n}",
@@ -1059,7 +1089,7 @@ MINIAPP = {
     "map_cargo": "📦 Cargo",
     "map_fork": "Fork {k} of {n}",
     "map_vote": "Voting for {t} more. The team majority decides.",
-    "map_voteSolo": "Your call — it applies at once.",
+    "map_voteSolo": "Your choice applies as soon as you reach the fork. You can change it until then.",
     "map_votes": "votes: {n}",
     "map_myVote": "your vote",
     "map_noHint": "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.",
@@ -1069,7 +1099,7 @@ MINIAPP = {
     "map_you": "You",
     "map_done": "✅ The squad has set out!",
     "map_added": "✅ Added",
-    "map_voted": "🗳 Vote counted",
+    "map_voted": "🗳 Choice saved",
     "map_fight": "force",
     "map_pick": "Tap a target on the map — or pick one in the list below.",
     "dr_title": "🤖 COMBAT DRONES",
@@ -1274,7 +1304,7 @@ MINIAPP = {
     "mn_place": "🏆 第 {p} 名奖励",
     "mn_soonShort": "开始：{d}",
     "top_events": "🎯 活动",
-    "ev_empty": "目前没有活动——请关注频道！",
+    "ev_empty": "目前没有活动——稍后再来看看！",
     "ev_my": "你的名次：{p}",
     "ev_noPlace": "你还没上榜——加油！",
     "ev_manual": "获奖者由主办方决定",
