@@ -1092,6 +1092,10 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): игры и аукцион (27.10)
+    "g_sometimes": "Sometimes: +1 ⚡",
+    "auc_short": "You need {n} more 🪙 for this bid",
+    "auc_confirm": "Bid on “{t}”? {c} 🪙 will be held (returned if you are outbid).",
     # TODO(перевод 26.10): новые игры приложения (27.10)
     "g_streak": "Streak: {i} {a}/{b}",
     "g_every": "{i} for every {n} wins",
@@ -1145,7 +1149,7 @@ MINIAPP = {
     "hl_down": "▼ Lower",
     "hl_was": "It was: {n}",
     "hl_next": "Next number",
-    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_q": "Guess the safe code: one of {n}.",
     "safe_code": "The code was: {n}",
     "quiz_of": "Question {a}/{b}",
     "quiz_hint": "💡 50/50 · {c} 🪙",
