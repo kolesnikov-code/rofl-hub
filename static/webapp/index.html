@@ -202,6 +202,7 @@
   .fridge-now .fmini { width: 84px; flex: 0 0 auto; }
   .fridge-now .finfo { flex: 1; min-width: 0; }
   .fr-hint { margin-top: 14px; }
+  .row .k.hk { white-space: normal; min-width: 0; }   /* история: длинные подписи переносятся */
   /* 📣 События в паспорте и 🔨 аукционы */
   .news-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; margin-top: 8px;
                border-radius: 12px; border: 1px solid rgba(0,255,225,.18); background: rgba(0,255,225,.05);
@@ -453,6 +454,7 @@
 
   const I18N = {
     ru: {
+      tab_history: "📜 История", hist_title: "📜 ИСТОРИЯ ЗА {d} ДНЕЙ", hist_coins: "🪙 Монеты", hist_res: "📦 Ресурсы", hist_market: "📈 Биржа", hist_gifts: "🎁 Награды", hist_in: "Пришло", hist_out: "Ушло", hist_topIn: "Откуда пришли", hist_topOut: "Куда ушли", hist_empty: "За это время здесь пусто.", hist_bought: "Куплено", hist_sold: "Продано", hist_hint: "Хранится 30 дней: монеты, ресурсы, сделки на бирже, награды и подарки.",
       mk_floorAny: "Не дешевле {p} 🪙 за 1 {x} — и в продаже, и в заявке",
       mk_sellTitleAny: "💰 ПРОДАТЬ: {x}", mk_bidTitleAny: "🙋 КУПИТЬ: {x}", mk_qtyAny: "Количество, {x}", mk_limitsAny: "До {q} {x} в ордере, до {o} открытых ордеров", mk_boughtAny: "Куплено {q} {x} за {t} 🪙", mk_cancelledAny: "Ордер снят — товар или замороженные монеты вернулись",
       map_cargoHint: "📦 Груз — очки похода: старт 100, развилки прибавляют или отнимают. Места в итогах — по грузу.", map_forkAhead: "До развилки {t} — выбери вариант заранее", map_forkNow: "Отряд у развилки! Решение ещё {t} — иначе осторожный вариант.", map_voteTeam: "Голосов: {a} из {b}. Проголосуют все — сработает на развилке сразу, иначе решит большинство.", map_myChoice: "твой выбор", news_title: "📣 СОБЫТИЯ", news_hint: "Все анонсы — здесь: битвы, походы на карте мира и аукционы. Нажми, чтобы открыть.", news_empty: "Пока тихо. Как только администрация запустит битву, поход или аукцион — анонс появится здесь.", news_left: "⏳ {t}", news_won: "🏁 {w}", news_done: "🏁 итоги подведены", tab_auctions: "🔨 Аукционы", auc_title: "🔨 АУКЦИОНЫ", auc_empty: "Лотов пока нет. Администрация выставляет VIP ID и другие призы время от времени — загляни позже.", auc_price: "Текущая цена", auc_leader: "Лидер", auc_noBids: "ставок пока нет", auc_you: "👑 ты лидер", auc_ends: "До конца", auc_noEnd: "до решения администрации", auc_bid: "💥 +{s} · спишется {c} 🪙", auc_balance: "У тебя: {b} 🪙", auc_rules: "Ставки возвратные: перебили — монеты сразу вернутся на баланс. Платит только победитель — его монеты сгорают. VIP ID переходит победителю сам, остальные призы вручает администрация.", auc_sold: "🏁 Продано за {p} 🪙", auc_unsold: "🏁 Закрыт без ставок", auc_closed: "Завершённые лоты", auc_done: "💥 Ставка принята! Цена лота: {p} 🪙",
@@ -679,6 +681,7 @@
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
+      tab_history: "📜 History", hist_title: "📜 HISTORY FOR {d} DAYS", hist_coins: "🪙 Coins", hist_res: "📦 Resources", hist_market: "📈 Market", hist_gifts: "🎁 Rewards", hist_in: "In", hist_out: "Out", hist_topIn: "Where they came from", hist_topOut: "Where they went", hist_empty: "Nothing here for this period.", hist_bought: "Bought", hist_sold: "Sold", hist_hint: "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
       mk_floorAny: "At least {p} 🪙 per 1 {x} — for sales and buy orders",
       mk_sellTitleAny: "💰 SELL: {x}", mk_bidTitleAny: "🙋 BUY: {x}", mk_qtyAny: "Amount, {x}", mk_limitsAny: "Up to {q} {x} per order, up to {o} open orders", mk_boughtAny: "Bought {q} {x} for {t} 🪙", mk_cancelledAny: "Order cancelled — your goods or frozen coins are back",
       map_cargoHint: "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.", map_forkAhead: "Fork in {t} — choose ahead", map_forkNow: "The squad is at the fork! {t} left to decide — otherwise the careful option.", map_voteTeam: "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.", map_myChoice: "your choice", news_title: "📣 EVENTS", news_hint: "All announcements live here: battles, world map runs and auctions. Tap to open.", news_empty: "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.", news_left: "⏳ {t}", news_won: "🏁 {w}", news_done: "🏁 results are in", tab_auctions: "🔨 Auctions", auc_title: "🔨 AUCTIONS", auc_empty: "No lots yet. VIP IDs and other prizes go up from time to time — check back later.", auc_price: "Current price", auc_leader: "Leader", auc_noBids: "no bids yet", auc_you: "👑 you lead", auc_ends: "Ends in", auc_noEnd: "until the team closes it", auc_bid: "💥 +{s} · costs {c} 🪙", auc_balance: "You have: {b} 🪙", auc_rules: "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.", auc_sold: "🏁 Sold for {p} 🪙", auc_unsold: "🏁 Closed with no bids", auc_closed: "Finished lots", auc_done: "💥 Bid accepted! Lot price: {p} 🪙",
@@ -908,6 +911,20 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -1491,6 +1508,20 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -2074,6 +2105,20 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -2657,6 +2702,20 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -3240,6 +3299,20 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -3823,6 +3896,20 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -4406,6 +4493,20 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -4989,6 +5090,20 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -5572,6 +5687,20 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -6155,6 +6284,20 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -6738,6 +6881,20 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -7321,6 +7478,20 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "tab_history": "📜 History",
+    "hist_title": "📜 HISTORY FOR {d} DAYS",
+    "hist_coins": "🪙 Coins",
+    "hist_res": "📦 Resources",
+    "hist_market": "📈 Market",
+    "hist_gifts": "🎁 Rewards",
+    "hist_in": "In",
+    "hist_out": "Out",
+    "hist_topIn": "Where they came from",
+    "hist_topOut": "Where they went",
+    "hist_empty": "Nothing here for this period.",
+    "hist_bought": "Bought",
+    "hist_sold": "Sold",
+    "hist_hint": "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
     "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
@@ -7921,7 +8092,7 @@
                      energy: "⚡", battery: "🔋", cow: "🐄", core: "☢️" };
   const TOOL_ICON = { 1: "⚒️", 2: "🛠", 3: "🔬", 4: "🧬" };
   const KINDS = ["intern", "junior", "premium"];   // от самого слабого к самому мощному
-  const TABS = ["passport", "farm", "storage", "workshop", "lab", "raids", "market", "auctions", "team", "mines", "map", "friends", "shop", "top", "info"];
+  const TABS = ["passport", "farm", "storage", "workshop", "lab", "raids", "market", "auctions", "team", "mines", "map", "friends", "shop", "top", "history", "info"];
   // Старые ссылки (?tab=goals и т.п.) ведут туда, куда переехали разделы
   const TAB_ALIAS = { goals: "passport", faq: "info", rules: "info" };
   const TAB_FLAG = { lab: "workshop", workshop: "workshop", raids: "raids", market: "market", shop: "shop", mines: "mines", map: "expeditions",
@@ -8002,7 +8173,7 @@
   }
   const bindPagers = root => (root || document).querySelectorAll(".pager").forEach(bindPager);
   // Сколько колонок плашек у вкладки на широком экране (см. CSS #app[data-cols])
-  const VIEW_COLS = { lab: 3, mines: 2, map: 2, auctions: 2, info: 1, passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
+  const VIEW_COLS = { lab: 3, mines: 2, map: 2, auctions: 2, history: 1, info: 1, passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
                       team: 3, friends: 3, shop: 3, top: 1, faq: 1, rules: 1 };
   const resLine = stock => RES.map(k => '<span class="chip">' + RES_ICON[k] + ' ' + num(stock[k]) + '</span>').join("");
   const bundle = b => RES_ALL.filter(k => b && b[k]).map(k => RES_ICON[k] + ' ' + b[k]).join(" · ") || "—";
@@ -9285,9 +9456,38 @@
     });
   }
 
+  // ================= 📜 История за 30 дней: монеты, ресурсы, биржа, награды =================
+  let histTab = "coins";
+  async function viewHistory(box) {
+    const d = await api("/api/history?tab=" + histTab);
+    const when = iso => new Date(iso).toLocaleString(me.lang === "ru" ? "ru-RU" : "en-GB",
+      { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+    const hrow = (k, v) => '<div class="row"><span class="k hk">' + k + '</span><span class="v">' + v + '</span></div>';
+    const sign = n => (n > 0 ? '<span class="status-ok">+' + num(n) : '<span class="status-bad">−' + num(-n)) + '</span>';
+    const sw = '<div class="doc-switch">' + ["coins", "res", "market", "gifts"].map(k =>
+      '<button class="idx' + (histTab === k ? ' on' : '') + '" data-hist="' + k + '">' + L["hist_" + k] + '</button>').join("") + '</div>';
+    let rows;
+    if (histTab === "coins") rows = d.items.map(x => hrow('<small class="hint">' + when(x.at) + '</small><br>' + esc(x.label), sign(x.delta) + ' 🪙'));
+    else if (histTab === "res") rows = d.items.map(x => hrow('<small class="hint">' + when(x.at) + '</small><br>' + esc(x.label), sign(x.delta) + ' ' + (RES_ICON[x.kind] || "")));
+    else if (histTab === "market") rows = d.items.map(x => hrow('<small class="hint">' + when(x.at) + '</small><br>' +
+      (x.side === "buy" ? L.hist_bought : L.hist_sold) + ': ' + num(x.qty) + ' ' + (A_ICON[x.asset] || "") + ' × ' + num(x.price) + ' 🪙',
+      x.side === "buy" ? sign(-x.total) + ' 🪙' : sign(x.total) + ' 🪙'));
+    else rows = d.items.map(x => hrow('<small class="hint">' + when(x.at) + '</small><br>' + esc(x.label), esc(x.what)));
+    let summary = "";
+    if (d.summary) {
+      const S = d.summary, list = arr => arr.map(x => row(esc(x.label), sign(x.sum) + ' 🪙')).join("");
+      summary = row(L.hist_in, sign(S.income) + ' 🪙') + row(L.hist_out, sign(-S.spent) + ' 🪙') +
+        (S.top_in.length ? '<div class="sub2">' + L.hist_topIn + '</div>' + list(S.top_in) : '') +
+        (S.top_out.length ? '<div class="sub2">' + L.hist_topOut + '</div>' + list(S.top_out) : '');
+    }
+    box.innerHTML = card(fmt(L.hist_title, { d: d.days }), sw + '<div class="hint">' + L.hist_hint + '</div>' + summary) +
+      card(L["hist_" + histTab], pager("hist-" + histTab, rows, 20, '<div class="hint">' + L.hist_empty + '</div>'));
+    box.querySelectorAll("[data-hist]").forEach(b => { b.onclick = () => { histTab = b.dataset.hist; go("history"); }; });
+  }
+
   const VIEWS = { passport: viewPassport, farm: viewFarm, storage: viewStorage, workshop: viewWorkshop,
                   lab: viewLab, raids: viewRaids, market: viewMarket, auctions: viewAuctions, team: viewTeam, mines: viewMines, map: viewMap, friends: viewFriends, shop: viewShop,
-                  top: viewTop, info: viewInfo };
+                  top: viewTop, history: viewHistory, info: viewInfo };
 
   // ================= Шахта: визуальная сцена фермы =================
   let sceneTimer = null, coinTimer = null, minedVisit = 0;

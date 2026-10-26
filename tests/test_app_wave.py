@@ -191,7 +191,7 @@ def test_team_text_filter_and_app_team_hub():
         assert e.value.key == key
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     for needle in ('"/api/teams"', '"/api/team/join"', '"/api/team/leave"', '"/api/team/create"',
-                   '"top", "info"]', 'viewDoc("/" + infoDoc)', 'TAB_ALIAS'):
+                   '"top", "history", "info"]', 'viewDoc("/" + infoDoc)', 'TAB_ALIAS'):
         assert needle in html
 
 

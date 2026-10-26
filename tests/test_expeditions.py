@@ -301,3 +301,20 @@ def test_admin_title_form():
     assert form_title({"title": " Своё "}) == ("Своё", None)
     admin = (ROOT / "static" / "webapp" / "admin.html").read_text(encoding="utf-8")
     assert "function titleBlock" in admin and "title_tpl: titleTpl(form)" in admin and "title_tpl: titleTpl(tform)" in admin
+
+
+def test_history_reasons_labels_and_tab():
+    """26.10: история за 30 дней — каждая причина журнала подписана на всех языках, вкладка перед «Инфо»."""
+    from bots.main_bot.webapp import create_webapp
+    from bots.main_bot.webapp_history import HISTORY_REASONS, reason_key, reason_label
+    from shared.locales import PACK_CODES, t
+    assert reason_key("game_win:quiz") == "game_win" and reason_key("craft:nitro_6h") == "craft"
+    assert reason_key("tech:scout:2") == "tech" and reason_key("что-то новое") == "other"
+    for lang in ("ru", "en") + tuple(PACK_CODES):
+        for key in HISTORY_REASONS + ("other", "src_gift", "src_battle", "src_exp"):
+            assert t(lang, f"hist.{key}") != f"hist.{key}", (lang, key)
+    assert reason_label("ru", "mining") == "⛏ Добыча фермы"
+    app = create_webapp("123456:TEST")
+    assert "/api/history" in {r.resource.canonical for r in app.router.routes() if r.resource is not None}
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert '"top", "history", "info"]' in html and "function viewHistory" in html and "history: viewHistory" in html

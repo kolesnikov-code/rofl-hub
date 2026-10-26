@@ -2684,3 +2684,45 @@ async def test_auction_bids_refund_outbid_and_list(conn):
     with pytest.raises(AuctionError) as e:
         await place_bid(conn, 1900, aid, 100)
     assert e.value.key == "auc.err_closed"
+
+
+async def test_history_api_shows_coins_resources_market_and_gifts(conn, global_db):
+    """📜 26.10: история за 30 дней — монеты со сводкой, ресурсы, сделки биржи, награды; чужое не видно."""
+    import time as _t
+    from datetime import timedelta
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.economy import utcnow
+    from shared.ledger import change_balance
+    from shared.prizes import grant
+    from shared.resources import change_resource
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    await _mk_user(conn, 1950, 0)
+    await _mk_user(conn, 1951, 0)
+    async with conn.transaction():
+        await change_balance(conn, 1950, 300, "mining")
+        await change_balance(conn, 1950, 2, "game_win:quiz")
+        await change_balance(conn, 1950, -100, "horse_buy", "1")
+        await change_balance(conn, 1951, 999, "mining")                              # чужое
+        await change_resource(conn, 1950, "metal", 5, "raid_loot", "1")
+        await conn.execute("INSERT INTO market_trades (asset, qty, price, buyer_id, seller_id) VALUES ('metal', 3, 20, 1951, 1950)")
+        await grant(conn, 1950, [{"kind": "resource", "res": "battery", "qty": 10}], "E7_P1_U1950", utcnow())
+        await conn.execute("INSERT INTO ledger (user_id, delta, reason, created_at) VALUES (1950, 50, 'mining', $1)",
+                           utcnow() - timedelta(days=40))                             # старше 30 дней — не видно
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1950}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    try:
+        coins = await (await client.get("/api/history?tab=coins", headers=head)).json()
+        assert sorted(x["delta"] for x in coins["items"]) == [-100, 2, 300]
+        assert coins["summary"]["income"] == 302 and coins["summary"]["spent"] == 100
+        assert coins["summary"]["top_in"][0]["sum"] == 300
+        res = await (await client.get("/api/history?tab=res", headers=head)).json()
+        assert {(x["kind"], x["delta"]) for x in res["items"]} >= {("metal", 5), ("battery", 10)}
+        market = await (await client.get("/api/history?tab=market", headers=head)).json()
+        assert market["items"][0]["side"] == "sell" and market["items"][0]["total"] == 60
+        gifts = await (await client.get("/api/history?tab=gifts", headers=head)).json()
+        assert gifts["items"][0]["what"] == "10 🔋"
+    finally:
+        await client.close()

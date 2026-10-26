@@ -823,6 +823,9 @@ SCHEMA_STATEMENTS: list[str] = [
     # 🏷 26.10: название-заготовка {"a", "n", "num"} — игрок видит его на своём языке (shared/titles.py)
     "ALTER TABLE battles ADD COLUMN IF NOT EXISTS title_tpl JSONB;",
     "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS title_tpl JSONB;",
+    # 📜 26.10: история игрока — выборки по игроку за 30 дней
+    "CREATE INDEX IF NOT EXISTS reward_grants_user_idx ON reward_grants (user_id, created_at);",
+    "CREATE INDEX IF NOT EXISTS market_trades_seller_idx ON market_trades (seller_id, created_at);",
 ]
 
 
