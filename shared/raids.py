@@ -163,7 +163,7 @@ async def revenge_options(conn, user_id: int, now: datetime) -> list[dict]:
         SELECT x.id AS raid_id, x.attacker_id, x.loot, x.created_at,
                u.display_name, u.user_id
         FROM raids x JOIN users u ON u.user_id = x.attacker_id
-        WHERE x.defender_id = $1 AND x.result = 'win' AND NOT x.revenged
+        WHERE x.defender_id = $1 AND x.result = 'win' AND NOT x.revenged AND NOT x.is_revenge   -- реванш на реванш не даётся
           AND x.created_at > $2::timestamptz - make_interval(hours => $3::int)
         ORDER BY x.created_at DESC
         """, user_id, now, RAID_REVENGE_HOURS)
@@ -191,7 +191,8 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
     attacker, defender = by_id.get(attacker_id), by_id.get(defender_id)
     if attacker is None:
         raise RaidError("common.no_profile")
-    if defender is None or defender["is_blocked"]:
+    if (defender is None or defender["is_blocked"] or defender["deleted_at"] is not None
+            or defender["deletion_requested_at"] is not None):
         raise RaidError("raid.err_gone")
     from shared.tech import tech_levels
     a_tech = await tech_levels(conn, attacker_id)
@@ -211,13 +212,19 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
             "SELECT * FROM raids WHERE id = $1 FOR UPDATE", revenge_of)
         if (not original or original["defender_id"] != attacker_id
                 or original["attacker_id"] != defender_id or original["result"] != "win"
-                or original["revenged"]
+                or original["revenged"] or original["is_revenge"]
                 or original["created_at"] <= now - timedelta(hours=RAID_REVENGE_HOURS)):
             raise RaidError("raid.err_revenge_gone")
         is_revenge = True
     else:
         if a_tech["attack"] < 1:   # реванш — право обороны, без технологий
             raise RaidError("raid.err_need_tech", tech="attack")
+        # Цель перепроверяется в самом налёте (аудит 2.9): старая кнопка разведки или подделанный запрос не бьют
+        # по игроку под Маскировкой, неактивному или новичку — те же условия, что в разведке
+        if ((defender["raid_camo_until"] and defender["raid_camo_until"] > now)
+                or defender["last_seen_at"] <= now - timedelta(days=RAID_TARGET_ACTIVE_DAYS)
+                or defender["created_at"] >= now - timedelta(days=RAID_NEWBIE_SHIELD_DAYS)):
+            raise RaidError("raid.err_gone")
         left = attack_cooldown_left(attacker["last_raid_at"], now, a_tech["comm"])
         if left > 0:
             raise RaidError("raid.err_cooldown", minutes=-(-left // 60))

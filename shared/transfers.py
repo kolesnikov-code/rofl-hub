@@ -30,6 +30,13 @@ class TransferError(Exception):
         return t(lang, self.key, **self.kwargs)
 
 
+async def is_active_account(conn, user_id: int) -> bool:
+    """Активный аккаунт = порог переводов (3 уровень интеллекта + 3 ежедневные котлеты)."""
+    claims = await conn.fetchval("SELECT bonus_claims FROM users WHERE user_id = $1", user_id) or 0
+    level = await conn.fetchval("SELECT quiz_level FROM game_stats WHERE user_id = $1", user_id) or 0
+    return level >= TRANSFER_SENDER_MIN_QUIZ_LEVEL and claims >= TRANSFER_SENDER_MIN_BONUS_CLAIMS
+
+
 async def ensure_sender_active(conn, sender_id: int, bonus_claims: int | None = None) -> None:
     """Отправлять монеты могут только активные аккаунты (3 уровень интеллекта + 3 котлеты)."""
     if bonus_claims is None:

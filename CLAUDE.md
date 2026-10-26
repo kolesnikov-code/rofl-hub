@@ -304,6 +304,13 @@
   пропускает successful_payment всегда; CatalogError после оплаты → авто-возврат; result_entries читает итоги v2;
   purge_account обнуляет ALL_KINDS, лошадей, дронов, user_tech; SEASON_EARN_REASONS без market_sell, номинация
   «заработок» = EARN_CONDITION; place_bid отклоняет ставку после ends_at.
+- 🛠 АУДИТ, неделя 2 (анти-фейк, 26.10): новый аккаунт покупает на бирже не дороже MARKET_NEWBIE_PRICE_MULT=3×
+  минимальной цены (market._newbie_price_guard, mk.err_newbie_price; порог = активный аккаунт transfers.is_active_account);
+  обмен — стороны по полам не дальше SWAP_MAX_VALUE_RATIO=3 (sw.err_ratio); снять лот с ресурсом — только если
+  влезет на склад (mk.err_cancel_room; system=True для выхода из команды и удаления); комиссия ≥1 🪙 при ставке >0;
+  командные награды/очки/доход рудника — тем, кто в команде ≥ TEAM_REWARD_MIN_HOURS=24 к концу битвы
+  (economy.team_veteran_sql), в командном походе — ещё и всё ещё в этой команде; реванш на реванш не даётся;
+  налёт перепроверяет цель (Маскировка, активность 7 дней, новичок, удаление) и в самом execute_raid.
 - 📜 ИСТОРИЯ ИГРОКА (вкладка «📜 История» между ТОПом и «Инфо», bots/main_bot/webapp_history.py, /api/history):
   30 дней — 🪙 монеты (ledger, сводка «пришло/ушло» и главные источники/траты), 📦 ресурсы (resource_ledger),
   📈 биржа (market_trades — купил/продал, в т.ч. котлеты), 🎁 награды (reward_grants: битвы, походы, подарки пульта).

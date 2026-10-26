@@ -18,7 +18,7 @@ from shared.market import MarketError, validate_order
 def test_fee_is_burned_percent():
     assert MARKET_FEE_PERCENT == 10
     assert market_fee(100) == 10
-    assert market_fee(9) == 0          # мелкие сделки без комиссии (целочисленно)
+    assert market_fee(9) == 1          # аудит 2.6: мелкая сделка не становится бесплатным переводом
     assert market_fee(0) == 0
 
 
@@ -143,3 +143,14 @@ def test_swap_qty_error_is_about_swaps_not_cutlets():
         text = e.value.localized(lang)
         assert "котлет" not in text and "cutlet" not in text
     assert "котлет" not in t("ru", "mk.err_qty", max=1000)
+
+
+def test_swap_value_ratio_and_team_veteran_rule():
+    """Аудит 2.4/2.7: неравный обмен (перелив ресурсов твинку) запрещён; командные награды — после суток в команде."""
+    from shared.economy import SWAP_MAX_VALUE_RATIO, TEAM_REWARD_MIN_HOURS, swap_value_ok, team_veteran_sql
+    assert SWAP_MAX_VALUE_RATIO == 3 and TEAM_REWARD_MIN_HOURS == 24
+    assert swap_value_ok("metal", 10, "parts", 20)         # 200 против 200
+    assert swap_value_ok("metal", 30, "parts", 20)         # 600 против 200 — ровно 3×
+    assert not swap_value_ok("metal", 500, "parts", 1)     # 10 000 против 10
+    sql = team_veteran_sql("u", "$2::timestamptz")
+    assert "u.team_joined_at" in sql and "hours => 24" in sql and "-infinity" in sql

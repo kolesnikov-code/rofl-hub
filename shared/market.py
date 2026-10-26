@@ -35,7 +35,10 @@ from shared.economy import (
     RESOURCE_KINDS,
     SWAP_MAX_OPEN,
     SWAP_MAX_QTY,
+    MARKET_NEWBIE_PRICE_MULT,
+    SWAP_MAX_VALUE_RATIO,
     market_fee,
+    swap_value_ok,
     market_limits,
     market_lots,
     TRADEABLE_KINDS,
@@ -133,6 +136,18 @@ async def _ensure_room(conn, user_id: int, asset: str, qty: int, key: str = "mk.
         raise MarketError(key, free=room)
 
 
+async def _newbie_price_guard(conn, buyer_id: int, asset: str, price: int) -> None:
+    """Новый аккаунт платит не дороже N× минимальной цены (аудит 2.3: перелив монет фейк → основной)."""
+    cap = market_min_price(asset) * MARKET_NEWBIE_PRICE_MULT
+    if price <= cap:
+        return
+    from shared.economy import TRANSFER_SENDER_MIN_BONUS_CLAIMS, TRANSFER_SENDER_MIN_QUIZ_LEVEL
+    from shared.transfers import is_active_account
+    if not await is_active_account(conn, buyer_id):
+        raise MarketError("mk.err_newbie_price", max=cap, level=TRANSFER_SENDER_MIN_QUIZ_LEVEL,
+                          claims=TRANSFER_SENDER_MIN_BONUS_CLAIMS)
+
+
 async def _give_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref: str) -> None:
     if asset == "cutlet":
         await conn.execute("UPDATE users SET inv_cutlets = inv_cutlets + $2 WHERE user_id = $1", user_id, qty)
@@ -169,6 +184,7 @@ async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price
         if have < qty:
             raise MarketError("mk.err_no_cutlets" if asset == "cutlet" else "mk.err_no_resource", have=have)
     else:
+        await _newbie_price_guard(conn, user_id, asset, price)
         balance = await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", user_id)
         if balance < qty * price:
             raise MarketError("mk.err_insufficient", total=qty * price)
@@ -194,12 +210,18 @@ async def place_sell_order(conn, seller_id: int, qty: int, price: int) -> int:
     return await place_order(conn, seller_id, "cutlet", "sell", qty, price)
 
 
-async def cancel_order(conn, user_id: int, order_id: int) -> int:
-    """Снимает свой открытый ордер, эскроу возвращается. Возвращает qty."""
+async def cancel_order(conn, user_id: int, order_id: int, system: bool = False) -> int:
+    """
+    Снимает свой открытый ордер, эскроу возвращается. Возвращает qty.
+    Игрок снимает ордер с ресурсом, только если тот влезет на склад (аудит 2.5: эскроу — не бесплатный склад);
+    system=True (выход из команды, удаление аккаунта) возвращает без лимита.
+    """
     order = await conn.fetchrow(
         "SELECT seller_id, qty, price, status, asset, side FROM market_orders WHERE id = $1 FOR UPDATE", order_id)
     if not order or order["seller_id"] != user_id or order["status"] != "open":
         raise MarketError("mk.err_not_found")
+    if order["side"] == "sell" and not system:
+        await _ensure_room(conn, user_id, order["asset"], order["qty"], "mk.err_cancel_room")
     await conn.execute("UPDATE market_orders SET status = 'cancelled' WHERE id = $1", order_id)
     if order["side"] == "sell":
         await _give_asset(conn, user_id, order["asset"], order["qty"], "market_refund", str(order_id))
@@ -235,6 +257,7 @@ async def fill_order(conn, taker_id: int, order_id: int, qty: int) -> dict:
                        "mk.err_storage_full" if order["side"] == "sell" else "mk.err_buyer_full")
     if order["side"] == "sell":
         buyer_id, seller_id = taker_id, maker_id
+        await _newbie_price_guard(conn, buyer_id, asset, price)
         try:
             await change_balance(conn, buyer_id, -total, "market_buy", str(order_id))
         except InsufficientFunds:
@@ -355,6 +378,8 @@ def validate_swap(give_kind: str, give_qty: int, want_kind: str, want_qty: int) 
         raise MarketError("sw.err_same")
     if not (0 < give_qty <= SWAP_MAX_QTY and 0 < want_qty <= SWAP_MAX_QTY):
         raise MarketError("sw.err_qty", max=SWAP_MAX_QTY)
+    if not swap_value_ok(give_kind, give_qty, want_kind, want_qty):   # аудит 2.4: «500 металла за 1 деталь»
+        raise MarketError("sw.err_ratio", x=SWAP_MAX_VALUE_RATIO)
 
 
 async def create_swap(conn, maker_id: int, give_kind: str, give_qty: int, want_kind: str, want_qty: int,
@@ -393,10 +418,12 @@ async def accept_swap(conn, taker_id: int, swap_id: int) -> dict:
     return dict(swap)
 
 
-async def cancel_swap(conn, user_id: int, swap_id: int) -> None:
+async def cancel_swap(conn, user_id: int, swap_id: int, system: bool = False) -> None:
     swap = await conn.fetchrow("SELECT * FROM resource_swaps WHERE id = $1 FOR UPDATE", swap_id)
     if not swap or swap["maker_id"] != user_id or swap["status"] != "open":
         raise MarketError("mk.err_not_found")
+    if not system:
+        await _ensure_room(conn, user_id, swap["give_kind"], swap["give_qty"], "mk.err_cancel_room")
     await conn.execute("UPDATE resource_swaps SET status = 'cancelled' WHERE id = $1", swap_id)
     await _give_asset(conn, user_id, swap["give_kind"], swap["give_qty"], "swap_refund", str(swap_id))
 
@@ -422,7 +449,7 @@ async def close_team_lots(conn, user_id: int) -> None:
     """Игрок ушёл из команды — его командные ордера и обмены снимаются, эскроу возвращается."""
     for r in await conn.fetch(
             "SELECT id FROM market_orders WHERE seller_id = $1 AND status = 'open' AND team_id IS NOT NULL", user_id):
-        await cancel_order(conn, user_id, r["id"])
+        await cancel_order(conn, user_id, r["id"], system=True)
     for r in await conn.fetch(
             "SELECT id FROM resource_swaps WHERE maker_id = $1 AND status = 'open' AND team_id IS NOT NULL", user_id):
-        await cancel_swap(conn, user_id, r["id"])
+        await cancel_swap(conn, user_id, r["id"], system=True)

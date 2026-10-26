@@ -14,7 +14,7 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 
-from shared.economy import (MINE_CORE_EVERY_HOURS, MINE_CORE_MAX, MINE_HOLD_HOURS, MINE_PAYOUT_INTERVAL_SECONDS,
+from shared.economy import (team_veteran_sql, MINE_CORE_EVERY_HOURS, MINE_CORE_MAX, MINE_HOLD_HOURS, MINE_PAYOUT_INTERVAL_SECONDS,
                             MINE_SICK_EVERY_HOURS, MINE_YIELD_PER_MEMBER_HOUR, utcnow)
 from shared.resources import change_resource, resource_capacity
 
@@ -52,7 +52,8 @@ async def _members(conn, team_id: int) -> list[dict]:
         """SELECT u.user_id, u.meds_until FROM users u
            JOIN user_tech tc ON tc.user_id = u.user_id AND tc.tech = 'comm' AND tc.level >= 1
            WHERE u.team_id = $1 AND NOT u.is_blocked AND u.deletion_requested_at IS NULL
-             AND u.deleted_at IS NULL ORDER BY u.user_id""", team_id)
+             AND u.deleted_at IS NULL AND """ + team_veteran_sql("u", "NOW()") + """
+           ORDER BY u.user_id""", team_id)
     return [dict(r) for r in rows]
 
 

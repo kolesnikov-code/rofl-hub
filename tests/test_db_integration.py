@@ -1097,6 +1097,8 @@ async def test_raid_moves_only_resources_and_respects_rules(conn):
         "SELECT COUNT(*) FROM resource_ledger WHERE user_id = 601 AND reason = 'raid_fuel'")
     assert fuel_rows == 0                                                       # топливо не списано
     assert await revenge_options(conn, 601, now + timedelta(hours=2)) == []     # один реванш на налёт
+    await conn.execute("UPDATE raids SET result = 'win' WHERE id = $1", revenge.raid_id)
+    assert await revenge_options(conn, 600, now + timedelta(hours=2)) == []     # аудит 2.8: реванш на реванш не даётся
     with pytest.raises(RaidError):
         await execute_raid(conn, 601, 600, "paper", now + timedelta(hours=1), revenge_of=result.raid_id)
 
@@ -1232,7 +1234,10 @@ async def test_resource_swaps_escrow_accept_cancel(conn):
     with pytest.raises(MarketError):
         await accept_swap(conn, 911, swap_id)                         # уже закрыт
 
-    swap2 = await create_swap(conn, 910, "metal", 40, "parts", 1)
+    with pytest.raises(MarketError) as e:                             # аудит 2.4: неравный обмен (800 против 10)
+        await create_swap(conn, 910, "metal", 40, "parts", 1)
+    assert e.value.key == "sw.err_ratio"
+    swap2 = await create_swap(conn, 910, "metal", 40, "parts", 80)
     await cancel_swap(conn, 910, swap2)
     assert (await get_resources(conn, 910))["metal"] == 40
 
@@ -1660,7 +1665,7 @@ async def test_new_items_unlock_limits_and_effects_in_raids_market_station(conn,
     from shared.economy import raid_fail_loss, utcnow
     from shared.items import ItemError, activate_item
     from shared.market import fill_order, place_order
-    from shared.raids import execute_raid, find_targets
+    from shared.raids import RaidError, execute_raid, find_targets
     from shared.resources import get_resources, grant_bundle
     from shared.team_station import donate
     from shared.workshop import WorkshopError, craft
@@ -1703,6 +1708,10 @@ async def test_new_items_unlock_limits_and_effects_in_raids_market_station(conn,
     await craft(conn, 1332, "drill_24h", now, to_storage=True)
     await activate_item(conn, 1332, "drill", 24, now)
     hydro = (await get_resources(conn, 1331))["hydrogen"]
+    with pytest.raises(RaidError) as e:                                    # аудит 2.9: под Маскировкой не бьют и напрямую
+        await execute_raid(conn, 1331, 1332, "rock", now)
+    assert e.value.key == "raid.err_gone"
+    await conn.execute("UPDATE users SET raid_camo_until = NULL WHERE user_id = 1332")   # Маскировка кончилась
     res = await execute_raid(conn, 1331, 1332, "rock", now)                # rock vs rock = ничья
     assert res.result == "lose" and "drill" in res.notes and "economizer" in res.notes
     # водород ушёл только штрафом за провал (15), а не на вылет (ещё 5)
@@ -2834,3 +2843,59 @@ async def test_battle_entries_refund_on_cancel_and_incomplete(conn):
     assert (await get_resources(conn, 1720, ("battery",)))["battery"] == 0    # полная — сгорела как взнос
     assert await refund_entries(conn, bid, only_incomplete=True) == 0         # повтор — ничего
     assert await conn.fetchval("SELECT status FROM battles WHERE battle_id = $1", bid) == "finished"
+
+
+
+async def test_market_newbie_price_cap_and_cancel_needs_room(conn):
+    """Аудит 2.3/2.5: новый аккаунт не переплачивает основному; эскроу — не бесплатный склад."""
+    from shared.economy import MARKET_NEWBIE_PRICE_MULT, market_min_price
+    from shared.market import MarketError, cancel_order, fill_order, place_order
+    from shared.resources import grant_bundle
+    await _mk_user(conn, 1800, 0)                       # «основной» аккаунт
+    await _mk_user(conn, 1801, 100_000)                 # фейк: новый, с монетами
+    await grant_bundle(conn, 1800, {"parts": 10}, "test")
+    cap = market_min_price("parts") * MARKET_NEWBIE_PRICE_MULT
+    pricey = await place_order(conn, 1800, "parts", "sell", 1, 500)
+    with pytest.raises(MarketError) as e:
+        await fill_order(conn, 1801, pricey, 1)
+    assert e.value.key == "mk.err_newbie_price"
+    with pytest.raises(MarketError) as e:               # и заявка на покупку тоже
+        await place_order(conn, 1801, "parts", "buy", 1, 500)
+    assert e.value.key == "mk.err_newbie_price"
+    fair = await place_order(conn, 1800, "parts", "sell", 1, cap)
+    assert (await fill_order(conn, 1801, fair, 1))["total"] == cap       # по честной цене — можно
+    await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (1801, 3)")
+    await conn.execute("UPDATE users SET bonus_claims = 3 WHERE user_id = 1801")
+    assert (await fill_order(conn, 1801, pricey, 1))["total"] == 500     # активный — по любой цене
+    # Снять ордер можно, только если товар влезет на склад
+    await grant_bundle(conn, 1800, {"metal": 400}, "test")
+    order = await place_order(conn, 1800, "metal", "sell", 400, 100)
+    await grant_bundle(conn, 1800, {"metal": 400}, "test")
+    with pytest.raises(MarketError) as e:
+        await cancel_order(conn, 1800, order)
+    assert e.value.key == "mk.err_cancel_room"
+    assert await cancel_order(conn, 1800, order, system=True) == 400     # выход из команды / удаление — без лимита
+
+
+async def test_team_newcomer_gets_no_battle_prize_for_24h(conn):
+    """Аудит 2.7: перешёл в команду перед итогами — ни очков команде, ни приза."""
+    from datetime import timedelta
+    from shared.battles import finish_battle
+    from shared.economy import utcnow
+    from shared.ledger import change_balance
+    now = utcnow()
+    tid = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Vet', 1810, 2) "
+                              "RETURNING team_id")
+    await _mk_user(conn, 1810, 0, team_id=tid, team_joined_at=now - timedelta(days=3))     # старожил
+    await _mk_user(conn, 1811, 0, team_id=tid, team_joined_at=now - timedelta(hours=1))    # перебежчик
+    bid = await conn.fetchval(
+        "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, status, scope, places, prizes) "
+        "VALUES ('Заработок', 'coins_earned', 'x', $1, $2, 'active', 'teams', 1, $3::jsonb) RETURNING battle_id",
+        now - timedelta(hours=2), now + timedelta(minutes=5), '{"1": [{"kind": "coins", "amount": 100}]}')
+    await change_balance(conn, 1810, 10, "game_win:rps")
+    await change_balance(conn, 1811, 5000, "game_win:rps")          # очки перебежчика команде не идут
+    battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", bid)
+    res = await finish_battle(conn, battle, now + timedelta(minutes=6))
+    assert res["places"][0]["score"] == 10
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1810") == 110
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1811") == 5000

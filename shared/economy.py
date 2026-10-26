@@ -196,6 +196,27 @@ def market_min_price(asset: str) -> int:
     return MARKET_MIN_PRICES.get(asset, MARKET_MIN_PRICE)
 
 
+# Анти-фейк биржи (аудит 26.10, 2.3–2.6):
+# новый (неактивный) аккаунт покупает не дороже N× минимальной цены — иначе фейк со стартовыми монетами
+# «покупает» 1 деталь у основного аккаунта за 500 и обходит порог переводов;
+MARKET_NEWBIE_PRICE_MULT = 3
+# обмен ресурс ↔ ресурс: ценности сторон (по минимальным ценам) различаются не больше чем во столько раз
+SWAP_MAX_VALUE_RATIO = 3
+# командные награды (битвы, походы, рудники) — только тем, кто в команде не меньше суток (аудит 2.7)
+TEAM_REWARD_MIN_HOURS = 24
+
+
+def team_veteran_sql(alias: str, moment_sql: str) -> str:
+    """SQL: игрок alias в команде не меньше TEAM_REWARD_MIN_HOURS к моменту moment_sql (NULL — старожил)."""
+    return (f"COALESCE({alias}.team_joined_at, '-infinity'::timestamptz) <= "
+            f"({moment_sql}) - make_interval(hours => {int(TEAM_REWARD_MIN_HOURS)})")
+
+
+def swap_value_ok(give_kind: str, give_qty: int, want_kind: str, want_qty: int) -> bool:
+    give, want = give_qty * market_min_price(give_kind), want_qty * market_min_price(want_kind)
+    return max(give, want) <= SWAP_MAX_VALUE_RATIO * min(give, want)
+
+
 # Обмен ресурс ↔ ресурс без монет (предложения «отдам X за Y»)
 SWAP_MAX_OPEN = 5
 SWAP_MAX_QTY = 10_000
@@ -221,7 +242,8 @@ def market_fee(total: int, shuttle: bool = False, team_percent: int | None = Non
     percent = SHUTTLE_MARKET_FEE_PERCENT if shuttle else MARKET_FEE_PERCENT
     if team_percent is not None:
         percent = min(percent, team_percent)
-    return total * percent // 100
+    fee = total * percent // 100
+    return max(fee, 1) if total > 0 and percent > 0 else fee   # мелкая сделка не становится бесплатным переводом
 
 
 # Взаимопомощь в команде: тиммейт просит ресурс — остальные дарят. Только ресурсы (котлеты —

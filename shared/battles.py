@@ -14,7 +14,7 @@ import json
 import logging
 from datetime import datetime
 
-from shared.economy import SEASON_EARN_REASONS
+from shared.economy import SEASON_EARN_REASONS, team_veteran_sql
 
 logger = logging.getLogger(__name__)
 # «Заработано в игре» — та же формула, что у ТОПа сезона (аргумент $3 — список причин журнала)
@@ -76,6 +76,7 @@ async def battle_team_scores(conn, nomination_key: str, starts_at: datetime,
             JOIN users u ON u.user_id = l.user_id
             JOIN teams t ON t.team_id = u.team_id
             WHERE l.created_at >= $1 AND l.created_at < $2 AND {condition}
+              AND {team_veteran_sql("u", "$2::timestamptz")}
             GROUP BY u.team_id, t.team_name, t.max_members
             HAVING {metric} > 0
             ORDER BY {metric} DESC, u.team_id ASC
@@ -91,10 +92,11 @@ async def battle_team_scores(conn, nomination_key: str, starts_at: datetime,
             JOIN users ref ON ref.user_id = newbie.referred_by
             JOIN teams t ON t.team_id = ref.team_id
             WHERE newbie.qualified_at >= $1 AND newbie.qualified_at < $2   -- фейки не в счёт
+              AND {veteran}
             GROUP BY ref.team_id, t.team_name, t.max_members
             ORDER BY COUNT(*) DESC, ref.team_id ASC
             LIMIT {limit}
-            """.replace("{limit}", str(int(limit))),
+            """.replace("{limit}", str(int(limit))).replace("{veteran}", team_veteran_sql("ref", "$2::timestamptz")),
             starts_at, ends_at)
     elif kind == "stars":
         rows = await conn.fetch(
@@ -104,12 +106,12 @@ async def battle_team_scores(conn, nomination_key: str, starts_at: datetime,
             FROM star_payments p
             JOIN users u ON u.user_id = p.user_id
             JOIN teams t ON t.team_id = u.team_id
-            WHERE p.created_at >= $1 AND p.created_at < $2
+            WHERE p.created_at >= $1 AND p.created_at < $2 AND {veteran}
             GROUP BY u.team_id, t.team_name, t.max_members
             HAVING SUM(p.stars_amount) > 0
             ORDER BY SUM(p.stars_amount) DESC, u.team_id ASC
             LIMIT {limit}
-            """.replace("{limit}", str(int(limit))),
+            """.replace("{limit}", str(int(limit))).replace("{veteran}", team_veteran_sql("u", "$2::timestamptz")),
             starts_at, ends_at)
     else:
         raise ValueError(f"Неизвестный вид номинации: {kind}")
@@ -348,8 +350,10 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
     async def members_of(entry) -> list[int]:
         if scope == "solo":
             return [entry["id"]]
+        # приз команды — бойцам, которые в ней не меньше суток к концу битвы (аудит 2.7: «перебежчики» без приза)
         return [m["user_id"] for m in await conn.fetch(
-            "SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked AND deleted_at IS NULL", entry["id"])]
+            "SELECT user_id FROM users u WHERE team_id = $1 AND NOT is_blocked AND deleted_at IS NULL AND "
+            + team_veteran_sql("u", "$2::timestamptz"), entry["id"], battle["ends_at"])]
 
     prize_rows = max(places, len(mines))
     for place, entry in enumerate(standings[:prize_rows], start=1):

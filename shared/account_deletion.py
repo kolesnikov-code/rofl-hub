@@ -63,10 +63,10 @@ async def _close_market(conn, user_id: int) -> None:
     from shared.market import cancel_order, cancel_swap
     for r in await conn.fetch(
             "SELECT id FROM market_orders WHERE seller_id = $1 AND status = 'open'", user_id):
-        await cancel_order(conn, user_id, r["id"])
+        await cancel_order(conn, user_id, r["id"], system=True)
     for r in await conn.fetch(
             "SELECT id FROM resource_swaps WHERE maker_id = $1 AND status = 'open'", user_id):
-        await cancel_swap(conn, user_id, r["id"])
+        await cancel_swap(conn, user_id, r["id"], system=True)
 
 
 async def purge_blocker(conn, user_id: int) -> str | None:

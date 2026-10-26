@@ -38,6 +38,7 @@ from shared.economy import (
     FINISH_RETRY_MINUTES,
     MEGA_CLAN_MAX_MEMBERS,
     drone_exp_effects,
+    team_veteran_sql,
     exp_peek_budget,
     exp_mode_allowed,
     exp_travel_minutes,
@@ -495,9 +496,14 @@ async def finalize_target(conn, target, now: datetime) -> dict:
     reward_all = normalize_rewards(json.loads(raw_all) if isinstance(raw_all, str) else (raw_all or []))
     rows, notices = [], []
     for place, exp in enumerate(arrived, start=1):
+        # командный отряд: награда — тем, кто ВСЁ ЕЩЁ в этой команде и в ней не меньше суток (аудит 2.7:
+        # проголосовал в двух командах — забрал призы обеих)
+        team_rule = "" if exp["mode"] == "solo" else (
+            " AND u.team_id = $2 AND " + team_veteran_sql("u", "$3::timestamptz"))
         members = [r["user_id"] for r in await conn.fetch(
-            f"SELECT m.user_id FROM expedition_members m JOIN users u ON u.user_id = m.user_id "
-            f"WHERE m.expedition_id = $1 AND NOT u.is_blocked AND u.deleted_at IS NULL", exp["id"])]
+            "SELECT m.user_id FROM expedition_members m JOIN users u ON u.user_id = m.user_id "
+            "WHERE m.expedition_id = $1 AND NOT u.is_blocked AND u.deleted_at IS NULL" + team_rule,
+            *([exp["id"]] if exp["mode"] == "solo" else [exp["id"], exp["team_id"], deadline]))]
         given = 0
         is_prize_place = place <= (target["places"] or 0)
         rewards = prizes.get(place, []) if is_prize_place else []
