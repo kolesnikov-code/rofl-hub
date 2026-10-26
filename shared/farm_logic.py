@@ -9,8 +9,10 @@
 - каждый робот — строка в таблице miners со своей датой сгорания (30 дней);
 - Мастер-дрон «замораживает» жизнь роботов: пока дрон активен, срок сгорания
   не тикает (expires_at сдвигается ровно на защищённое время);
-- Кибер-Бурильщик ест топливо ЦЕЛЫМИ циклами: при старте цикла списывается
-  целая котлета (при Ядерном разгоне — 3) и робот заправлен ровно на 24 часа.
+- Кибер-Бурильщик ест топливо ЦЕЛЫМИ котлетами: одна котлета — 24 часа работы.
+  Под Ядерным разгоном котлета горит втрое быстрее — 8 часов (решение владельца 26.10: разгон работает
+  при любом числе котлет, раньше на новый цикл требовалось сразу 3 и с 1–2 котлетами робот стоял).
+  miners.fuel_until хранит «конец топлива без разгона»; реальный конец считает fuel_real_end().
   Никаких дробных списаний «int() в ноль» — вечный бурильщик больше невозможен;
 - бусты действуют по времени своего сегмента: Азот +40% к базе, Ядерный ×5,
   эффекты складываются (5→7→35, 10→14→70);
@@ -26,6 +28,7 @@ from datetime import datetime, timedelta
 from shared.economy import (
     CUTLET_ENERGY_SECONDS,
     MINING_ACC_PER_ROFL,
+    NUCLEAR_FUEL_MULTIPLIER,
     cutlets_per_cycle,
     farm_bonus_percent,
     BANNER_BONUS_PERCENT,
@@ -103,6 +106,34 @@ def integrate_rate_micros(start: datetime, end: datetime, kind: str,
     return total
 
 
+def _nuclear_left(cursor: datetime, nuclear_until: datetime | None) -> timedelta:
+    """Сколько ещё длится Ядерный разгон, начиная с cursor (он всегда активен с начала интервала: включение
+    разгона сначала закрывает прошлое время фермы)."""
+    if nuclear_until is None or nuclear_until <= cursor:
+        return timedelta(0)
+    return nuclear_until - cursor
+
+
+def fuel_real_end(cursor: datetime, energy_end: datetime, nuclear_until: datetime | None) -> datetime:
+    """
+    Когда реально кончится топливо (решение владельца 26.10 — «по котлете на 8 часов»). energy_end — момент, когда
+    оно кончилось бы без разгона; под Ядерным разгоном котлета горит в NUCLEAR_FUEL_MULTIPLIER раз быстрее,
+    после разгона остаток догорает в обычном темпе — ни минуты не пропадает.
+    """
+    energy = energy_end - cursor
+    if energy <= timedelta(0):
+        return cursor
+    boosted = min(energy / NUCLEAR_FUEL_MULTIPLIER, _nuclear_left(cursor, nuclear_until))
+    return cursor + boosted + (energy - boosted * NUCLEAR_FUEL_MULTIPLIER)
+
+
+def fuel_energy_end(cursor: datetime, energy_end: datetime, nuclear_until: datetime | None, at: datetime) -> datetime:
+    """Остаток топлива в момент at (cursor ≤ at < реального конца) — снова как «конец без разгона»."""
+    nuclear = min(_nuclear_left(cursor, nuclear_until), at - cursor)
+    used = nuclear * NUCLEAR_FUEL_MULTIPLIER + (at - cursor - nuclear)
+    return at + (energy_end - cursor - used)
+
+
 def simulate_farm(*, last_update: datetime, now: datetime, fridge_cutlets: int,
                   acc: int, miners: list[MinerState],
                   nuclear_until: datetime | None = None,
@@ -143,39 +174,39 @@ def simulate_farm(*, last_update: datetime, now: datetime, fridge_cutlets: int,
                                              bonus_percent, armor_percent, armor_until, bonus_windows)
                 continue
 
-            # premium: сначала дорабатываем уже оплаченное топливо
+            # premium: сначала дорабатываем уже оплаченное топливо (fuel_until — «конец без разгона»)
             cursor = start
             if m.fuel_until is not None and m.fuel_until > cursor:
-                seg_end = min(m.fuel_until, work_end)
+                real_end = fuel_real_end(cursor, m.fuel_until, nuclear_until)
+                seg_end = min(real_end, work_end)
                 acc += integrate_rate_micros(cursor, seg_end, "premium", nuclear_until, nitrogen_until,
                                              bonus_percent, armor_percent, armor_until, bonus_windows)
-                cursor = min(m.fuel_until, work_end)
+                m.fuel_until = fuel_energy_end(cursor, m.fuel_until, nuclear_until, work_end) if real_end > work_end else real_end
+                cursor = seg_end
             if cursor < work_end:
                 heapq.heappush(refuel_queue, (cursor, m.miner_id, m))
 
-        # Заправки всех бурильщиков — строго по времени наступления
+        # Заправки всех бурильщиков — строго по времени наступления. Котлета всегда одна (26.10): под Ядерным
+        # разгоном она просто горит втрое быстрее (8 ч вместо 24) — разгон работает при любом числе котлет.
         while refuel_queue:
             moment, _, m = heapq.heappop(refuel_queue)
-            cost = cutlets_per_cycle(is_active(nuclear_until, moment))
+            cost = cutlets_per_cycle(False)
             if fridge_cutlets < cost:
-                # Не хватает на дорогой «ядерный» цикл, но хватит на обычный —
-                # робот повторит попытку, когда разгон закончится и цикл подешевеет.
-                if (cost > cutlets_per_cycle(False)
-                        and fridge_cutlets >= cutlets_per_cycle(False)
-                        and nuclear_until is not None
-                        and moment < nuclear_until < min(now, m.expires_at)):
-                    heapq.heappush(refuel_queue, (nuclear_until, m.miner_id, m))
                 continue  # котлет нет — робот простаивает до конца интервала
             fridge_cutlets -= cost
             consumed += cost
             thermos = thermos_from is not None and thermos_until is not None and thermos_from <= moment < thermos_until
-            m.fuel_until = moment + (THERMOS_CYCLE if thermos else FUEL_CYCLE)
+            energy_end = moment + (THERMOS_CYCLE if thermos else FUEL_CYCLE)
+            real_end = fuel_real_end(moment, energy_end, nuclear_until)
             work_end = min(now, m.expires_at)
-            seg_end = min(m.fuel_until, work_end)
+            seg_end = min(real_end, work_end)
             acc += integrate_rate_micros(moment, seg_end, "premium", nuclear_until, nitrogen_until,
                                          bonus_percent, armor_percent, armor_until, bonus_windows)
-            if m.fuel_until < work_end:
-                heapq.heappush(refuel_queue, (m.fuel_until, m.miner_id, m))
+            if real_end < work_end:
+                m.fuel_until = real_end
+                heapq.heappush(refuel_queue, (real_end, m.miner_id, m))
+            else:
+                m.fuel_until = fuel_energy_end(moment, energy_end, nuclear_until, work_end) if real_end > work_end else real_end
 
     earned = acc // MINING_ACC_PER_ROFL
     acc -= earned * MINING_ACC_PER_ROFL

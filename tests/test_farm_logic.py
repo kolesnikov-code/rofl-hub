@@ -314,39 +314,48 @@ def test_nuclear_cycle_costs_three_cutlets():
     assert r.fridge_cutlets == 0
 
 
-def test_nuclear_not_enough_for_expensive_cycle_and_no_retry_window():
-    # Разгон на весь интервал: 2 котлет мало для цикла ×3, перезапуска не будет
+def test_nuclear_works_with_fewer_than_three_cutlets():
+    # 26.10: под разгоном котлета горит за 8 ч — 2 котлеты = 16 ч работы ×5, потом простой без топлива
     r = tick([premium()], hours=24, fridge=2, nuclear=h(30))
-    assert (r.earned, r.cutlets_consumed) == (0, 0)
-    assert r.fridge_cutlets == 2
+    assert (r.earned, r.cutlets_consumed, r.fridge_cutlets) == (16 * 50, 2, 0)
 
 
-def test_nuclear_retry_after_boost_ends_with_cheap_cycle():
-    # На ×3 не хватает, но после конца разгона в h1 робот берёт обычный цикл
+def test_nuclear_one_cutlet_lasts_eight_hours():
+    r = tick([premium()], hours=10, fridge=1, nuclear=h(30))
+    assert (r.earned, r.cutlets_consumed) == (8 * 50, 1)
+    assert r.miners[0].fuel_until == h(8)
+
+
+def test_nuclear_ends_mid_cutlet_rest_burns_at_normal_rate():
+    # Разгон 1 ч съел 3 ч «энергии» котлеты, остальные 21 ч она горит как обычно → конец в h22
     r = tick([premium()], hours=24, fridge=2, nuclear=h(1))
-    assert r.earned == 230  # работал [1, 24] по 10/ч
-    assert r.cutlets_consumed == 1
-    assert r.fridge_cutlets == 1
-    assert r.miners[0].fuel_until == h(25)
+    assert r.earned == 50 + 21 * 10 + 2 * 10     # 1 ч ×5, 21 ч обычно, вторая котлета с h22
+    assert r.cutlets_consumed == 2 and r.fridge_cutlets == 0
+    assert r.miners[0].fuel_until == h(46)        # вторая котлета: энергия до h46 без разгона
 
 
-def test_nuclear_speed_drops_mid_cycle_but_cost_fixed_at_start():
-    r = tick([premium()], hours=24, fridge=3, nuclear=h(1))
-    assert r.earned == 50 + 230  # 1ч по 50, 23ч по 10
-    assert r.cutlets_consumed == 3
-
-
-def test_second_cycle_after_nuclear_is_cheap():
+def test_two_days_after_short_nuclear():
     r = tick([premium()], hours=48, fridge=4, nuclear=h(1))
-    assert r.cutlets_consumed == 4  # 3 + 1
-    assert r.earned == 50 + 230 + 240
-    assert r.fridge_cutlets == 0
+    assert r.cutlets_consumed == 3                  # h0→h22, h22→h46, h46→…
+    assert r.earned == 50 + 210 + 240 + 20
+    assert r.fridge_cutlets == 1
 
 
-def test_nuclear_affects_prefueled_drill_speed_without_extra_cost():
+def test_nuclear_burns_prefueled_cutlet_three_times_faster():
+    # Заправлен на сутки, разгон на сутки: оставшиеся 24 ч «энергии» сгорают за 8 ч на ×5
     r = tick([premium(fuel_until=h(24))], hours=24, nuclear=h(24))
-    assert r.earned == 24 * 50
-    assert r.cutlets_consumed == 0
+    assert (r.earned, r.cutlets_consumed) == (8 * 50, 0)
+
+
+def test_nuclear_split_ticks_equal_one_tick():
+    """Ленивый пересчёт кусками даёт то же, что одним интервалом (fuel_until — «энергия без разгона»)."""
+    whole = tick([premium()], hours=30, fridge=3, nuclear=h(5))
+    acc, fridge, miners, earned = 0, 3, [premium()], 0
+    for i in range(30):
+        r = simulate_farm(last_update=h(i), now=h(i + 1), fridge_cutlets=fridge, acc=acc, miners=miners,
+                          nuclear_until=h(5))
+        acc, fridge, miners, earned = r.acc, r.fridge_cutlets, r.miners, earned + r.earned
+    assert (earned, fridge) == (whole.earned, whole.fridge_cutlets)
 
 
 # ==========================================================================
