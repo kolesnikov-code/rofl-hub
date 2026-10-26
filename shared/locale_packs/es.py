@@ -61,6 +61,7 @@ STRINGS: dict[str, str] = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -223,7 +224,7 @@ STRINGS: dict[str, str] = {
         "• /shop — Mercado: compra de mineros, chuletas y mejoras del hub\n\n"
         "🕹️ <b>SALA DE JUEGOS:</b>\n"
         "• /games — Hub con todos los juegos contra el bot\n"
-        "• /quiz — Trivia de velocidad: 15 segundos por respuesta, niveles y bonos\n"
+        "• /quiz — Trivia de velocidad: 30 segundos por respuesta, niveles y bonos\n"
         "• /duel — DUELOS 1 contra 1 con jugadores reales: mesas de 10/100/1000\n"
         "• /quests — MISIONES: historias de detectives, comedias y acertijos con recompensas\n"
         "• /rps, /high_low, /safe — Juegos rápidos por monedas\n\n"
@@ -247,7 +248,7 @@ STRINGS: dict[str, str] = {
         "para llevarte el premio gordo... ¡o perderlo todo!\n\n"
         "💸 Una victoria paga: <b>+2 🪙</b> (Ciber-Caja Fuerte: <b>+5</b>)\n"
         "💀 Una derrota o un empate cuesta: <b>-1 🪙</b>\n"
-        "🧠 La Trivia tiene cronómetro de 15 segundos y niveles de inteligencia: el nivel 1 son 10 respuestas correctas y <b>+100 🪙</b>; "
+        "🧠 La Trivia tiene cronómetro de 30 segundos y niveles de inteligencia: el nivel 1 son 10 respuestas correctas y <b>+100 🪙</b>; "
         "cada nivel siguiente es 10 respuestas más largo, ¡pero la recompensa crece en 100!\n"
         "..................................................\n"
         "👇 <b>TOCA UN BOTÓN ABAJO PARA EMPEZAR UNA RONDA AHORA MISMO:</b>"
@@ -272,7 +273,7 @@ STRINGS: dict[str, str] = {
         "🚜 Los robots extraen monedas las 24 horas: el Robot Minero — 5/h sin combustible, "
         "el Ciber-Perforador — 10/h, y CADA Perforador come su propia ciber-chuleta al día. "
         "Todos los robots viven 30 días (el Dron Maestro pausa el desgaste).\n"
-        "🧠 Trivia: 15 segundos por respuesta, niveles de inteligencia con recompensas crecientes.\n"
+        "🧠 Trivia: 30 segundos por respuesta, niveles de inteligencia con recompensas crecientes.\n"
         "⚔️ Duelos con jugadores reales en mesas de 10/100/1000 🪙.\n"
         "🏆 Equipos de hasta 50 combatientes (Mega-Clan: hasta 1000) y Batallas especiales con premios para todos.\n"
         "..................................................\n"
@@ -1091,6 +1092,54 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод 26.10): игры в приложении
+    "tab_games": "🕹 Games",
+    "g_title": "🕹 GAMES",
+    "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
+    "g_unlimited": "⚡ Unlimited is on — win as much as you like",
+    "g_limit": "limit for today",
+    "g_soon": "soon",
+    "g_back": "‹ All games",
+    "g_again": "Again",
+    "g_balance": "Balance: {b} 🪙",
+    "g_name_rps": "✊ Rock-paper-scissors",
+    "g_name_hl": "🔼 Higher-Lower",
+    "g_name_safe": "🔐 Cyber Safe",
+    "g_name_quiz": "🧠 Quiz",
+    "g_name_words": "🔤 Words from a word",
+    "g_name_math": "➗ Math",
+    "g_name_flags": "🏳️ Flags and capitals",
+    "g_name_code": "💻 Code breaker",
+    "g_name_memory": "🃏 Memory",
+    "g_prize": "Win: +{r} 🪙 and {i}",
+    "g_win": "🎉 Victory!",
+    "g_lose": "Not this time",
+    "g_draw": "🤝 Draw",
+    "g_timeout": "⏱ Time's up",
+    "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
+    "g_intern": "🤖 A new Robot Intern is waiting on the farm",
+    "g_full": "storage full",
+    "rps_pick": "Pick a gesture — the bot picks at the same time.",
+    "rps_rock": "✊ Rock",
+    "rps_scissors": "✌️ Scissors",
+    "rps_paper": "✋ Paper",
+    "rps_vs": "You: {a} · Bot: {b}",
+    "hl_q": "Will the next number from 1 to 100 be higher or lower?",
+    "hl_up": "▲ Higher",
+    "hl_down": "▼ Lower",
+    "hl_was": "It was: {n}",
+    "hl_next": "Next number",
+    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_code": "The code was: {n}",
+    "quiz_of": "Question {a}/{b}",
+    "quiz_hint": "💡 50/50 · {c} 🪙",
+    "quiz_next": "Next ›",
+    "quiz_correct": "Correct answer: {a}",
+    "quiz_sum_title": "🏁 ROUND OVER",
+    "quiz_sum": "Correct answers",
+    "quiz_coins": "Coins this round",
+    "quiz_again": "Another round",
+    "quiz_level": "🧠 Level {l} · {a}/{b} correct to the next",
     # TODO(перевод 26.10): история — пока по-английски
     "tab_history": "📜 History",
     "hist_title": "📜 HISTORY FOR {d} DAYS",
@@ -1408,7 +1457,7 @@ MINIAPP: dict[str, str] = {
     "ctaHungry": "🚨 ¡Los Perforadores tienen hambre ({n} sin combustible) y la extracción está parada!",
     "ctaLowFuel": "⚠️ Quedan menos chuletas que para un día de trabajo de los Perforadores.",
     "ctaShopBtn": "🛒 A la tienda",
-    "footer": "Los juegos y la trivia están en el chat del bot",
+    "footer": "Duels and quests are in the bot chat for now",
     "noProfile": "Perfil no encontrado. ¡Abre el bot y pulsa /start!",
     "blocked": "Cuenta bloqueada por la administración.",
     "deleting": "Tu cuenta está en cola de eliminación. ¿Cambiaste de idea? Cancélala en el chat del bot.",

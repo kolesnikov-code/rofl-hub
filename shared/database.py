@@ -831,6 +831,18 @@ SCHEMA_STATEMENTS: list[str] = [
     "ALTER TABLE battles ADD COLUMN IF NOT EXISTS finishing_at TIMESTAMP WITH TIME ZONE;",
     "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS finishing_at TIMESTAMP WITH TIME ZONE;",
     "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS planned_resolve_at TIMESTAMP WITH TIME ZONE;",
+    # --- 26.10: игры в приложении — загаданное (число, правильный ответ) хранится только на сервере ---
+    """
+    CREATE TABLE IF NOT EXISTS game_rounds (
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        game VARCHAR(16) NOT NULL,
+        state JSONB NOT NULL,
+        done BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS game_rounds_user_idx ON game_rounds (user_id, created_at);",
     # --- 26.10: викторина без повторов — какие вопросы игрок уже видел (ключ = хэш текста вопроса) ---
     """
     CREATE TABLE IF NOT EXISTS quiz_seen (

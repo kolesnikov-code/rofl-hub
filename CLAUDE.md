@@ -311,6 +311,14 @@
   командные награды/очки/доход рудника — тем, кто в команде ≥ TEAM_REWARD_MIN_HOURS=24 к концу битвы
   (economy.team_veteran_sql), в командном походе — ещё и всё ещё в этой команде; реванш на реванш не даётся;
   налёт перепроверяет цель (Маскировка, активность 7 дней, новичок, удаление) и в самом execute_raid.
+- 🕹 ИГРЫ В ПРИЛОЖЕНИИ (26.10, план владельца: «больше Mini App, меньше чат-бота»): вкладка «🕹 Игры» сразу после
+  Паспорта (bots/main_bot/webapp_games.py; /api/games, /api/games/rps|safe|hl/new|hl/play, /api/quiz/next|hint|answer).
+  Те же движки (execute_solo_game_payout с info — структурированный итог), загаданное только на сервере (game_rounds),
+  раунд закрывается один раз. Викторина: QUIZ_ANSWER_SECONDS=30 (и в чате), раунды по QUIZ_ROUND_SIZE=10 с итогом,
+  подсказка 50/50 за QUIZ_HINT_COST=10 🪙 (ledger quiz_hint), таймер считает сервер (+GAME_ANSWER_GRACE_SECONDS).
+  Плитки 2×5: 4 живые + 5 «скоро» (слова, математика, флаги, взлом кода, мемори). Лимит исчерпан — игра не начинается.
+- ⚠️ aiohttp-ответ в if «ложный» (пустой MutableMapping): только `if (x := await _feature_off(...)) is not None:` —
+  до 26.10 тумблеры /features в API приложения НЕ работали (тест test_app_api_never_tests_aiohttp_responses_for_truth).
 - 📜 ИСТОРИЯ ИГРОКА (вкладка «📜 История» между ТОПом и «Инфо», bots/main_bot/webapp_history.py, /api/history):
   30 дней — 🪙 монеты (ledger, сводка «пришло/ушло» и главные источники/траты), 📦 ресурсы (resource_ledger),
   📈 биржа (market_trades — купил/продал, в т.ч. котлеты), 🎁 награды (reward_grants: битвы, походы, подарки пульта).

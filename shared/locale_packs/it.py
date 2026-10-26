@@ -62,6 +62,7 @@ STRINGS = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -224,7 +225,7 @@ STRINGS = {
         "• /shop — Marketplace: acquisto di minatori, cotolette e potenziamenti dell'hub\n\n"
         "🕹️ <b>SALA GIOCHI:</b>\n"
         "• /games — Hub inline di tutti i giochi contro il bot\n"
-        "• /quiz — Quiz a tempo: 15 secondi per rispondere, livelli e bonus\n"
+        "• /quiz — Quiz a tempo: 30 secondi per rispondere, livelli e bonus\n"
         "• /duel — DUELLI 1 contro 1 con giocatori veri: tavoli 10/100/1000\n"
         "• /quests — QUEST: gialli, commedie e rompicapi con ricompense\n"
         "• /rps, /high_low, /safe — Giochi rapidi a monete\n\n"
@@ -248,7 +249,7 @@ STRINGS = {
         "d'intelligenza per fare il colpo grosso... o bruciare il saldo!\n\n"
         "💸 Una vittoria paga: <b>+2 🪙</b> (Cyber-Cassaforte: <b>+5</b>)\n"
         "💀 Una sconfitta o un pareggio costa: <b>-1 🪙</b>\n"
-        "🧠 Il Quiz ha un timer di 15 secondi e livelli di intelligenza: il 1º livello si chiude con 10 risposte esatte e vale <b>+100 🪙</b>, "
+        "🧠 Il Quiz ha un timer di 30 secondi e livelli di intelligenza: il 1º livello si chiude con 10 risposte esatte e vale <b>+100 🪙</b>, "
         "ogni livello successivo è più lungo di 10 risposte, ma la ricompensa cresce di 100!\n"
         "..................................................\n"
         "👇 <b>TOCCA UN PULSANTE QUI SOTTO PER INIZIARE SUBITO UN ROUND:</b>"
@@ -273,7 +274,7 @@ STRINGS = {
         "🚜 I robot estraggono monete 24 ore su 24: il Robo-Minatore — 5/h senza carburante, "
         "la Cyber-Trivella — 10/h, e OGNI Trivella mangia la sua cyber-cotoletta al giorno. "
         "Tutti i robot vivono 30 giorni (il Master Drone mette in pausa l'usura).\n"
-        "🧠 Quiz: 15 secondi per rispondere, livelli di intelligenza con ricompense crescenti.\n"
+        "🧠 Quiz: 30 secondi per rispondere, livelli di intelligenza con ricompense crescenti.\n"
         "⚔️ Duelli con giocatori veri ai tavoli da 10/100/1000 🪙.\n"
         "🏆 Squadre fino a 50 combattenti (Mega-Clan — fino a 1000) e Battaglie-evento con premi per tutti.\n"
         "..................................................\n"
@@ -1090,6 +1091,54 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): игры в приложении
+    "tab_games": "🕹 Games",
+    "g_title": "🕹 GAMES",
+    "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
+    "g_unlimited": "⚡ Unlimited is on — win as much as you like",
+    "g_limit": "limit for today",
+    "g_soon": "soon",
+    "g_back": "‹ All games",
+    "g_again": "Again",
+    "g_balance": "Balance: {b} 🪙",
+    "g_name_rps": "✊ Rock-paper-scissors",
+    "g_name_hl": "🔼 Higher-Lower",
+    "g_name_safe": "🔐 Cyber Safe",
+    "g_name_quiz": "🧠 Quiz",
+    "g_name_words": "🔤 Words from a word",
+    "g_name_math": "➗ Math",
+    "g_name_flags": "🏳️ Flags and capitals",
+    "g_name_code": "💻 Code breaker",
+    "g_name_memory": "🃏 Memory",
+    "g_prize": "Win: +{r} 🪙 and {i}",
+    "g_win": "🎉 Victory!",
+    "g_lose": "Not this time",
+    "g_draw": "🤝 Draw",
+    "g_timeout": "⏱ Time's up",
+    "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
+    "g_intern": "🤖 A new Robot Intern is waiting on the farm",
+    "g_full": "storage full",
+    "rps_pick": "Pick a gesture — the bot picks at the same time.",
+    "rps_rock": "✊ Rock",
+    "rps_scissors": "✌️ Scissors",
+    "rps_paper": "✋ Paper",
+    "rps_vs": "You: {a} · Bot: {b}",
+    "hl_q": "Will the next number from 1 to 100 be higher or lower?",
+    "hl_up": "▲ Higher",
+    "hl_down": "▼ Lower",
+    "hl_was": "It was: {n}",
+    "hl_next": "Next number",
+    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_code": "The code was: {n}",
+    "quiz_of": "Question {a}/{b}",
+    "quiz_hint": "💡 50/50 · {c} 🪙",
+    "quiz_next": "Next ›",
+    "quiz_correct": "Correct answer: {a}",
+    "quiz_sum_title": "🏁 ROUND OVER",
+    "quiz_sum": "Correct answers",
+    "quiz_coins": "Coins this round",
+    "quiz_again": "Another round",
+    "quiz_level": "🧠 Level {l} · {a}/{b} correct to the next",
     # TODO(перевод 26.10): история — пока по-английски
     "tab_history": "📜 History",
     "hist_title": "📜 HISTORY FOR {d} DAYS",
@@ -1407,7 +1456,7 @@ MINIAPP = {
     "ctaHungry": "🚨 Le Trivelle hanno fame ({n} senza carburante) — l'estrazione è ferma!",
     "ctaLowFuel": "⚠️ Le cotolette non bastano per un giorno di lavoro delle Trivelle.",
     "ctaShopBtn": "🛒 Al negozio",
-    "footer": "Giochi e quiz sono nella chat del bot",
+    "footer": "Duels and quests are in the bot chat for now",
     "noProfile": "Profilo non trovato. Apri il bot e premi /start!",
     "blocked": "Account bloccato dall'amministrazione.",
     "deleting": "Il tuo account è in coda per l'eliminazione. Hai cambiato idea? Annulla l'eliminazione nella chat del bot.",

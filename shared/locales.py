@@ -83,6 +83,7 @@ RU: dict[str, str] = {
     "hist.daily_chest": "🎁 Сундук ежедневных целей",
     "hist.quest_reward": "🗺 Награда за квест",
     "hist.quest_hint": "🗺 Подсказка в квесте",
+    "hist.quiz_hint": "🧠 Подсказка в викторине",
     "hist.shop_coins": "🏪 Пак монет за ★",
     "hist.auction_bid": "🔨 Ставка на аукционе",
     "hist.auction_refund": "🔨 Возврат ставки аукциона",
@@ -222,7 +223,7 @@ RU: dict[str, str] = {
         "• /shop — Маркетплейс: закупка майнеров, котлет и улучшений хаба\n\n"
         "🕹️ <b>ИГРОВАЯ КОМНАТА:</b>\n"
         "• /games — Инлайн-хаб всех игр против бота\n"
-        "• /quiz — Викторина на скорость: 15 секунд на ответ, уровни и бонусы\n"
+        "• /quiz — Викторина на скорость: 30 секунд на ответ, уровни и бонусы\n"
         "• /duel — ДУЭЛИ 1-на-1 с живыми игроками: столы 10/100/1000\n"
         "• /quests — КВЕСТЫ: детективы, комедии и головоломки с наградами\n"
         "• /rps, /high_low, /safe — Быстрые игры на монеты\n\n"
@@ -247,7 +248,7 @@ RU: dict[str, str] = {
         "интеллектуальный спринт-тест, чтобы сорвать куш или слить баланс!\n\n"
         "💸 Победа приносит: <b>+2 🪙</b> (Кибер-Сейф: <b>+5</b>)\n"
         "💀 Проигрыш или ничья списывает: <b>-1 🪙</b>\n"
-        "🧠 В Викторине — таймер 15 секунд и уровни интеллекта: 1-й уровень — 10 верных ответов и <b>+100 🪙</b>, "
+        "🧠 В Викторине — таймер 30 секунд и уровни интеллекта: 1-й уровень — 10 верных ответов и <b>+100 🪙</b>, "
         "дальше каждый уровень на 10 ответов длиннее, но и награда растёт на 100!\n"
         "..................................................\n"
         "👇 <b>КЛИКАЙ ПО КНОПКЕ НИЖЕ ДЛЯ НЕМЕДЛЕННОГО СТАРТА РАУНДА:</b>"
@@ -272,7 +273,7 @@ RU: dict[str, str] = {
         "🚜 Роботы добывают монеты круглосуточно: Младший Майнер — 5/ч без топлива, "
         "Кибер-Бурильщик — 10/ч, и КАЖДЫЙ Бурильщик ест свою 1 кибер-котлету в сутки. "
         "Все роботы живут 30 дней (Мастер-дрон замораживает износ).\n"
-        "🧠 Викторина: 15 секунд на ответ, уровни интеллекта с растущими наградами.\n"
+        "🧠 Викторина: 30 секунд на ответ, уровни интеллекта с растущими наградами.\n"
         "⚔️ Дуэли с живыми игроками на столах 10/100/1000 🪙.\n"
         "🏆 Команды до 50 бойцов (Мега-Клан — до 1000) и событийные битвы с призами каждому.\n"
         "..................................................\n"
@@ -1142,6 +1143,7 @@ EN: dict[str, str] = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -1281,7 +1283,7 @@ EN: dict[str, str] = {
         "• /shop — Marketplace: miners, cutlets and hub upgrades\n\n"
         "🕹️ <b>GAME ROOM:</b>\n"
         "• /games — Inline hub of all games against the bot\n"
-        "• /quiz — Speed quiz: 15 seconds per answer, levels and bonuses\n"
+        "• /quiz — Speed quiz: 30 seconds per answer, levels and bonuses\n"
         "• /duel — 1-on-1 DUELS with real players: tables 10/100/1000\n"
         "• /quests — QUESTS: detectives, comedies and puzzles with rewards\n"
         "• /rps, /high_low, /safe — Quick games for coins\n\n"
@@ -1306,7 +1308,7 @@ EN: dict[str, str] = {
         "to win big — or lose it all!\n\n"
         "💸 A win pays: <b>+2 🪙</b> (Cyber-Safe: <b>+5</b>)\n"
         "💀 A loss or draw costs: <b>-1 🪙</b>\n"
-        "🧠 The Quiz has a 15-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 🪙</b>, "
+        "🧠 The Quiz has a 30-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 🪙</b>, "
         "each next level is 10 answers longer — but the reward grows by 100!\n"
         "..................................................\n"
         "👇 <b>TAP A BUTTON BELOW TO START A ROUND RIGHT NOW:</b>"
@@ -1331,7 +1333,7 @@ EN: dict[str, str] = {
         "🚜 Robots mine coins around the clock: Miner Bot — 5/h fuel-free, "
         "Cyber-Driller — 10/h, and EVERY Driller eats its own cyber-cutlet per day. "
         "All robots live 30 days (the Master Drone pauses wear).\n"
-        "🧠 Quiz: 15 seconds per answer, intellect levels with growing rewards.\n"
+        "🧠 Quiz: 30 seconds per answer, intellect levels with growing rewards.\n"
         "⚔️ Duels against real players at 10/100/1000 🪙 tables.\n"
         "🏆 Teams up to 50 fighters (Mega-Clan — up to 1000) and Battle events with prizes for everyone.\n"
         "..................................................\n"

@@ -68,6 +68,7 @@ STRINGS: dict[str, str] = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -230,7 +231,7 @@ STRINGS: dict[str, str] = {
         "• /shop — मार्केटप्लेस: माइनर, कटलेट और हब अपग्रेड की खरीदारी\n\n"
         "🕹️ <b>गेम रूम:</b>\n"
         "• /games — बॉट के खिलाफ़ सभी गेम का इनलाइन हब\n"
-        "• /quiz — स्पीड क्विज़: जवाब के लिए 15 सेकंड, लेवल और बोनस\n"
+        "• /quiz — स्पीड क्विज़: जवाब के लिए 30 सेकंड, लेवल और बोनस\n"
         "• /duel — असली खिलाड़ियों से 1-बनाम-1 डुएल: टेबल 10/100/1000\n"
         "• /quests — क्वेस्ट: इनामों वाले डिटेक्टिव, कॉमेडी और पहेलियाँ\n"
         "• /rps, /high_low, /safe — सिक्कों के लिए फटाफट गेम\n\n"
@@ -254,7 +255,7 @@ STRINGS: dict[str, str] = {
         "स्प्रिंट-टेस्ट देकर जैकपॉट जीत सकते हो — या पूरा बैलेंस उड़ा सकते हो!\n\n"
         "💸 जीत पर मिलते हैं: <b>+2 🪙</b> (साइबर-तिजोरी: <b>+5</b>)\n"
         "💀 हार या ड्रॉ पर कटता है: <b>-1 🪙</b>\n"
-        "🧠 क्विज़ में 15 सेकंड का टाइमर और बुद्धि लेवल हैं: लेवल 1 = 10 सही जवाब और <b>+100 🪙</b>, "
+        "🧠 क्विज़ में 30 सेकंड का टाइमर और बुद्धि लेवल हैं: लेवल 1 = 10 सही जवाब और <b>+100 🪙</b>, "
         "आगे हर लेवल 10 जवाब लंबा होता है — पर इनाम भी हर बार 100 बढ़ जाता है!\n"
         "..................................................\n"
         "👇 <b>राउंड तुरंत शुरू करने के लिए नीचे वाले बटन पर क्लिक करो:</b>"
@@ -279,7 +280,7 @@ STRINGS: dict[str, str] = {
         "🚜 रोबोट चौबीसों घंटे सिक्के माइन करते हैं: जूनियर माइनर — 5/घंटा बिना ईंधन, "
         "साइबर-ड्रिलर — 10/घंटा, और हर ड्रिलर रोज़ अपनी 1 साइबर-कटलेट खाता है। "
         "सभी रोबोट 30 दिन जीते हैं (मास्टर ड्रोन घिसाव रोक देता है)।\n"
-        "🧠 क्विज़: जवाब के लिए 15 सेकंड, बढ़ते इनामों वाले बुद्धि लेवल।\n"
+        "🧠 क्विज़: जवाब के लिए 30 सेकंड, बढ़ते इनामों वाले बुद्धि लेवल।\n"
         "⚔️ 10/100/1000 🪙 की टेबलों पर असली खिलाड़ियों से डुएल।\n"
         "🏆 50 लड़ाकों तक की टीमें (मेगा-क्लैन — 1000 तक) और सबके लिए इनामों वाली इवेंट बैटल।\n"
         "..................................................\n"
@@ -1096,6 +1097,54 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод 26.10): игры в приложении
+    "tab_games": "🕹 Games",
+    "g_title": "🕹 GAMES",
+    "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
+    "g_unlimited": "⚡ Unlimited is on — win as much as you like",
+    "g_limit": "limit for today",
+    "g_soon": "soon",
+    "g_back": "‹ All games",
+    "g_again": "Again",
+    "g_balance": "Balance: {b} 🪙",
+    "g_name_rps": "✊ Rock-paper-scissors",
+    "g_name_hl": "🔼 Higher-Lower",
+    "g_name_safe": "🔐 Cyber Safe",
+    "g_name_quiz": "🧠 Quiz",
+    "g_name_words": "🔤 Words from a word",
+    "g_name_math": "➗ Math",
+    "g_name_flags": "🏳️ Flags and capitals",
+    "g_name_code": "💻 Code breaker",
+    "g_name_memory": "🃏 Memory",
+    "g_prize": "Win: +{r} 🪙 and {i}",
+    "g_win": "🎉 Victory!",
+    "g_lose": "Not this time",
+    "g_draw": "🤝 Draw",
+    "g_timeout": "⏱ Time's up",
+    "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
+    "g_intern": "🤖 A new Robot Intern is waiting on the farm",
+    "g_full": "storage full",
+    "rps_pick": "Pick a gesture — the bot picks at the same time.",
+    "rps_rock": "✊ Rock",
+    "rps_scissors": "✌️ Scissors",
+    "rps_paper": "✋ Paper",
+    "rps_vs": "You: {a} · Bot: {b}",
+    "hl_q": "Will the next number from 1 to 100 be higher or lower?",
+    "hl_up": "▲ Higher",
+    "hl_down": "▼ Lower",
+    "hl_was": "It was: {n}",
+    "hl_next": "Next number",
+    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_code": "The code was: {n}",
+    "quiz_of": "Question {a}/{b}",
+    "quiz_hint": "💡 50/50 · {c} 🪙",
+    "quiz_next": "Next ›",
+    "quiz_correct": "Correct answer: {a}",
+    "quiz_sum_title": "🏁 ROUND OVER",
+    "quiz_sum": "Correct answers",
+    "quiz_coins": "Coins this round",
+    "quiz_again": "Another round",
+    "quiz_level": "🧠 Level {l} · {a}/{b} correct to the next",
     # TODO(перевод 26.10): история — пока по-английски
     "tab_history": "📜 History",
     "hist_title": "📜 HISTORY FOR {d} DAYS",
@@ -1523,7 +1572,7 @@ MINIAPP: dict[str, str] = {
     "ctaHungry": "🚨 ड्रिलर भूखे हैं ({n} बिना ईंधन) — माइनिंग रुकी है!",
     "ctaLowFuel": "⚠️ कटलेट ड्रिलरों के एक दिन के काम से भी कम हैं।",
     "ctaShopBtn": "🛒 दुकान पर",
-    "footer": "गेम और क्विज़ — बॉट के चैट में",
+    "footer": "Duels and quests are in the bot chat for now",
     "noProfile": "प्रोफ़ाइल नहीं मिली। बॉट खोलकर /start दबाओ!",
     "blocked": "एडमिन ने अकाउंट ब्लॉक कर दिया है।",
     "deleting": "अकाउंट डिलीट होने की कतार में है। इरादा बदल गया? बॉट के चैट में डिलीट रद्द कर दो।",

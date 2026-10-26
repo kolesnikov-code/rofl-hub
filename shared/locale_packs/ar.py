@@ -62,6 +62,7 @@ STRINGS = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -224,7 +225,7 @@ STRINGS = {
         "• /shop — المتجر: شراء الروبوتات والكفتات وترقيات المركز\n\n"
         "🕹️ <b>غرفة الألعاب:</b>\n"
         "• /games — مركز كل الألعاب ضد البوت\n"
-        "• /quiz — كويز السرعة: 15 ثانية للإجابة، مستويات ومكافآت\n"
+        "• /quiz — كويز السرعة: 30 ثانية للإجابة، مستويات ومكافآت\n"
         "• /duel — مبارزات 1 ضد 1 مع لاعبين حقيقيين: طاولات 10/100/1000\n"
         "• /quests — المهام: قصص بوليسية وكوميدية وألغاز مع جوائز\n"
         "• /rps, /high_low, /safe — ألعاب سريعة على العملات\n\n"
@@ -248,7 +249,7 @@ STRINGS = {
         "لتربح الجائزة الكبرى — أو تخسر رصيدك!\n\n"
         "💸 الفوز يمنحك: <b>+2 🪙</b> (الخزنة السيبرانية: <b>+5</b>)\n"
         "💀 الخسارة أو التعادل تخصم: <b>-1 🪙</b>\n"
-        "🧠 في الكويز مؤقّت 15 ثانية ومستويات ذكاء: المستوى الأول — 10 إجابات صحيحة و<b>+100 🪙</b>، "
+        "🧠 في الكويز مؤقّت 30 ثانية ومستويات ذكاء: المستوى الأول — 10 إجابات صحيحة و<b>+100 🪙</b>، "
         "وكل مستوى تالٍ أطول بعشر إجابات، لكن المكافأة تزيد بمقدار 100 أيضًا!\n"
         "..................................................\n"
         "👇 <b>اضغط على زر بالأسفل لبدء جولة فورًا:</b>"
@@ -273,7 +274,7 @@ STRINGS = {
         "🚜 الروبوتات تعدّن العملات على مدار الساعة: روبوت التعدين — 5/ساعة بلا وقود، "
         "الحفّار السيبراني — 10/ساعة، وكل حفّار يأكل كفتته السيبرانية الواحدة الخاصة به كل يوم. "
         "كل الروبوتات تعيش 30 يومًا (الدرون المايسترو يجمّد الاستهلاك).\n"
-        "🧠 الكويز: 15 ثانية للإجابة، ومستويات ذكاء بمكافآت متزايدة.\n"
+        "🧠 الكويز: 30 ثانية للإجابة، ومستويات ذكاء بمكافآت متزايدة.\n"
         "⚔️ مبارزات مع لاعبين حقيقيين على طاولات 10/100/1000 🪙.\n"
         "🏆 فرق حتى 50 مقاتلًا (ميغا-كلان — حتى 1000) ومعارك موسمية بجوائز للجميع.\n"
         "..................................................\n"
@@ -1090,6 +1091,54 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): игры в приложении
+    "tab_games": "🕹 Games",
+    "g_title": "🕹 GAMES",
+    "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
+    "g_unlimited": "⚡ Unlimited is on — win as much as you like",
+    "g_limit": "limit for today",
+    "g_soon": "soon",
+    "g_back": "‹ All games",
+    "g_again": "Again",
+    "g_balance": "Balance: {b} 🪙",
+    "g_name_rps": "✊ Rock-paper-scissors",
+    "g_name_hl": "🔼 Higher-Lower",
+    "g_name_safe": "🔐 Cyber Safe",
+    "g_name_quiz": "🧠 Quiz",
+    "g_name_words": "🔤 Words from a word",
+    "g_name_math": "➗ Math",
+    "g_name_flags": "🏳️ Flags and capitals",
+    "g_name_code": "💻 Code breaker",
+    "g_name_memory": "🃏 Memory",
+    "g_prize": "Win: +{r} 🪙 and {i}",
+    "g_win": "🎉 Victory!",
+    "g_lose": "Not this time",
+    "g_draw": "🤝 Draw",
+    "g_timeout": "⏱ Time's up",
+    "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
+    "g_intern": "🤖 A new Robot Intern is waiting on the farm",
+    "g_full": "storage full",
+    "rps_pick": "Pick a gesture — the bot picks at the same time.",
+    "rps_rock": "✊ Rock",
+    "rps_scissors": "✌️ Scissors",
+    "rps_paper": "✋ Paper",
+    "rps_vs": "You: {a} · Bot: {b}",
+    "hl_q": "Will the next number from 1 to 100 be higher or lower?",
+    "hl_up": "▲ Higher",
+    "hl_down": "▼ Lower",
+    "hl_was": "It was: {n}",
+    "hl_next": "Next number",
+    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_code": "The code was: {n}",
+    "quiz_of": "Question {a}/{b}",
+    "quiz_hint": "💡 50/50 · {c} 🪙",
+    "quiz_next": "Next ›",
+    "quiz_correct": "Correct answer: {a}",
+    "quiz_sum_title": "🏁 ROUND OVER",
+    "quiz_sum": "Correct answers",
+    "quiz_coins": "Coins this round",
+    "quiz_again": "Another round",
+    "quiz_level": "🧠 Level {l} · {a}/{b} correct to the next",
     # TODO(перевод 26.10): история — пока по-английски
     "tab_history": "📜 History",
     "hist_title": "📜 HISTORY FOR {d} DAYS",
@@ -1517,7 +1566,7 @@ MINIAPP = {
     "ctaHungry": "🚨 الحفّارات جائعة ({n} بلا وقود) — التعدين متوقف!",
     "ctaLowFuel": "⚠️ الكفتات أقل مما يكفي ليوم واحد من عمل الحفّارات.",
     "ctaShopBtn": "🛒 إلى المتجر",
-    "footer": "الألعاب والكويز — في دردشة البوت",
+    "footer": "Duels and quests are in the bot chat for now",
     "noProfile": "لم يتم العثور على الملف. افتح البوت واضغط /start!",
     "blocked": "الحساب محظور من قِبل الإدارة.",
     "deleting": "حسابك في قائمة الحذف. غيّرت رأيك؟ ألغِ الحذف في دردشة البوت.",

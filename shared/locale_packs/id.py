@@ -62,6 +62,7 @@ STRINGS = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -224,7 +225,7 @@ STRINGS = {
         "• /shop — Marketplace: beli penambang, kotlet, dan upgrade hub\n\n"
         "🕹️ <b>RUANG GAME:</b>\n"
         "• /games — Hub inline semua game melawan bot\n"
-        "• /quiz — Kuis kecepatan: 15 detik per jawaban, level dan bonus\n"
+        "• /quiz — Kuis kecepatan: 30 detik per jawaban, level dan bonus\n"
         "• /duel — DUEL 1-lawan-1 dengan pemain sungguhan: meja 10/100/1000\n"
         "• /quests — MISI: cerita detektif, komedi, dan teka-teki berhadiah\n"
         "• /rps, /high_low, /safe — Game cepat berhadiah koin\n\n"
@@ -248,7 +249,7 @@ STRINGS = {
         "untuk menang besar — atau kehilangan semuanya!\n\n"
         "💸 Tiap kemenangan: <b>+2 🪙</b> (Brankas Siber: <b>+5</b>)\n"
         "💀 Kalah atau seri: dipotong <b>-1 🪙</b>\n"
-        "🧠 Di Kuis ada timer 15 detik dan level kecerdasan: level 1 = 10 jawaban benar dan <b>+100 🪙</b>, "
+        "🧠 Di Kuis ada timer 30 detik dan level kecerdasan: level 1 = 10 jawaban benar dan <b>+100 🪙</b>, "
         "setiap level berikutnya 10 jawaban lebih panjang — tapi hadiahnya naik 100!\n"
         "..................................................\n"
         "👇 <b>KETUK TOMBOL DI BAWAH UNTUK LANGSUNG MULAI RONDE:</b>"
@@ -273,7 +274,7 @@ STRINGS = {
         "🚜 Robot menambang koin nonstop: Robot Penambang — 5/jam tanpa bahan bakar, "
         "Pengebor Siber — 10/jam, dan SETIAP Pengebor memakan 1 kotlet sibernya sendiri per hari. "
         "Semua robot bertahan 30 hari (Drone Master menghentikan sementara keausan).\n"
-        "🧠 Kuis: 15 detik per jawaban, level kecerdasan dengan hadiah yang terus naik.\n"
+        "🧠 Kuis: 30 detik per jawaban, level kecerdasan dengan hadiah yang terus naik.\n"
         "⚔️ Duel melawan pemain sungguhan di meja 10/100/1000 🪙.\n"
         "🏆 Tim hingga 50 petarung (Mega-Klan — hingga 1000) dan event Pertempuran berhadiah untuk semua.\n"
         "..................................................\n"
@@ -1092,6 +1093,54 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): игры в приложении
+    "tab_games": "🕹 Games",
+    "g_title": "🕹 GAMES",
+    "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
+    "g_unlimited": "⚡ Unlimited is on — win as much as you like",
+    "g_limit": "limit for today",
+    "g_soon": "soon",
+    "g_back": "‹ All games",
+    "g_again": "Again",
+    "g_balance": "Balance: {b} 🪙",
+    "g_name_rps": "✊ Rock-paper-scissors",
+    "g_name_hl": "🔼 Higher-Lower",
+    "g_name_safe": "🔐 Cyber Safe",
+    "g_name_quiz": "🧠 Quiz",
+    "g_name_words": "🔤 Words from a word",
+    "g_name_math": "➗ Math",
+    "g_name_flags": "🏳️ Flags and capitals",
+    "g_name_code": "💻 Code breaker",
+    "g_name_memory": "🃏 Memory",
+    "g_prize": "Win: +{r} 🪙 and {i}",
+    "g_win": "🎉 Victory!",
+    "g_lose": "Not this time",
+    "g_draw": "🤝 Draw",
+    "g_timeout": "⏱ Time's up",
+    "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
+    "g_intern": "🤖 A new Robot Intern is waiting on the farm",
+    "g_full": "storage full",
+    "rps_pick": "Pick a gesture — the bot picks at the same time.",
+    "rps_rock": "✊ Rock",
+    "rps_scissors": "✌️ Scissors",
+    "rps_paper": "✋ Paper",
+    "rps_vs": "You: {a} · Bot: {b}",
+    "hl_q": "Will the next number from 1 to 100 be higher or lower?",
+    "hl_up": "▲ Higher",
+    "hl_down": "▼ Lower",
+    "hl_was": "It was: {n}",
+    "hl_next": "Next number",
+    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_code": "The code was: {n}",
+    "quiz_of": "Question {a}/{b}",
+    "quiz_hint": "💡 50/50 · {c} 🪙",
+    "quiz_next": "Next ›",
+    "quiz_correct": "Correct answer: {a}",
+    "quiz_sum_title": "🏁 ROUND OVER",
+    "quiz_sum": "Correct answers",
+    "quiz_coins": "Coins this round",
+    "quiz_again": "Another round",
+    "quiz_level": "🧠 Level {l} · {a}/{b} correct to the next",
     # TODO(перевод 26.10): история — пока по-английски
     "tab_history": "📜 History",
     "hist_title": "📜 HISTORY FOR {d} DAYS",
@@ -1406,7 +1455,7 @@ MINIAPP = {
     "ctaHungry": "🚨 Para Pengebor kelaparan ({n} tanpa bahan bakar) — penambangan berhenti!",
     "ctaLowFuel": "⚠️ Kotlet tidak cukup untuk sehari kerja para Pengebor.",
     "ctaShopBtn": "🛒 Ke toko",
-    "footer": "Game dan kuis ada di chat bot",
+    "footer": "Duels and quests are in the bot chat for now",
     "noProfile": "Profil tidak ditemukan. Buka bot dan tekan /start!",
     "blocked": "Akun diblokir oleh admin.",
     "deleting": "Akunmu dijadwalkan untuk dihapus. Berubah pikiran? Batalkan di chat bot.",

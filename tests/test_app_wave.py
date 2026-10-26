@@ -295,7 +295,7 @@ def test_banner_window_and_thermos_cycle_in_farm_engine():
 def test_tab_order_follows_the_owner_player_journey():
     """Порядок вкладок владельца 26.10: путь игрока от сводки к ресурсам, активностям, а магазин — ненавязчиво в конце."""
     html = Path("static/webapp/index.html").read_text(encoding="utf-8")
-    assert ('const TABS = ["passport", "farm", "storage", "workshop", "lab", "market", "map", "mines", "raids", '
+    assert ('const TABS = ["passport", "games", "farm", "storage", "workshop", "lab", "market", "map", "mines", "raids", '
             '"team", "auctions", "friends", "shop", "top", "history", "info"];') in html
 
 
@@ -322,3 +322,24 @@ async def test_webapp_pages_are_gzipped_and_timed():
         assert unauth.status == 401                                # middleware не ломает ответы API
     finally:
         await client.close()
+
+
+
+def test_games_tab_is_in_the_app_with_server_side_secrets():
+    """🕹 26.10: игры в приложении; загаданное не уходит в браузер, таймер викторины 30 с."""
+    from shared.economy import QUIZ_ANSWER_SECONDS, QUIZ_ROUND_SIZE
+    html = Path("static/webapp/index.html").read_text(encoding="utf-8")
+    assert "function viewGames" in html and "games: viewGames" in html and 'games: "games"' in html
+    assert "stopGameTimer();" in html and '"/api/quiz/answer"' in html
+    assert QUIZ_ANSWER_SECONDS == 30 and QUIZ_ROUND_SIZE == 10
+    for lang in PACK_CODES:
+        assert MINIAPP_PACKS[lang].get("tab_games")
+
+
+def test_app_api_never_tests_aiohttp_responses_for_truth():
+    """aiohttp-ответ — пустой словарь, в if он «ложный»: `if off := await _feature_off(...)` никогда не срабатывал."""
+    import re
+    for f in Path("bots/main_bot").glob("webapp*.py"):
+        for line in f.read_text(encoding="utf-8").splitlines():
+            if re.search(r"\bif \w+ := await ", line):
+                raise AssertionError(f"{f.name}: {line.strip()} — пиши `if (x := await ...) is not None:`")

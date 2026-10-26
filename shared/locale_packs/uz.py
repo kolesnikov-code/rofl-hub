@@ -62,6 +62,7 @@ STRINGS: dict[str, str] = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -224,7 +225,7 @@ STRINGS: dict[str, str] = {
         "• /shop — Marketpleys: maynerlar, kotletlar va hub yaxshilanishlarini xarid qilish\n\n"
         "🕹️ <b>O'YIN XONASI:</b>\n"
         "• /games — Botga qarshi barcha o'yinlarning inlayn-hubi\n"
-        "• /quiz — Tezkor viktorina: javobga 15 soniya, darajalar va bonuslar\n"
+        "• /quiz — Tezkor viktorina: javobga 30 soniya, darajalar va bonuslar\n"
         "• /duel — Jonli o'yinchilar bilan YAKKAMA-YAKKA DUELLAR: 10/100/1000 stollari\n"
         "• /quests — KVESTLAR: mukofotli detektivlar, komediyalar va boshqotirmalar\n"
         "• /rps, /high_low, /safe — Tanga uchun tezkor o'yinlar\n\n"
@@ -248,7 +249,7 @@ STRINGS: dict[str, str] = {
         "o'tishing mumkin — jekpotni urasan yoki balansni yutqazib qo'yasan!\n\n"
         "💸 G'alaba keltiradi: <b>+2 🪙</b> (Kiber-Seyf: <b>+5</b>)\n"
         "💀 Mag'lubiyat yoki durang olib ketadi: <b>-1 🪙</b>\n"
-        "🧠 Viktorinada — 15 soniyalik taymer va intellekt darajalari: 1-daraja — 10 to'g'ri javob va <b>+100 🪙</b>, "
+        "🧠 Viktorinada — 30 soniyalik taymer va intellekt darajalari: 1-daraja — 10 to'g'ri javob va <b>+100 🪙</b>, "
         "keyin har bir daraja 10 javobga uzunroq, lekin mukofot ham 100 ga o'sadi!\n"
         "..................................................\n"
         "👇 <b>RAUNDNI HOZIROQ BOSHLASH UCHUN PASTDAGI TUGMANI BOS:</b>"
@@ -273,7 +274,7 @@ STRINGS: dict[str, str] = {
         "🚜 Robotlar tangani kecha-yu kunduz qazib beradi: Kichik Mayner — yoqilg'isiz 5/soat, "
         "Kiber-Burg'ulovchi — 10/soat, va HAR BIR Burg'ulovchi kuniga o'zining 1 kiber-kotletini yeydi. "
         "Barcha robotlar 30 kun yashaydi (Master-Dron eskirishni to'xtatib turadi).\n"
-        "🧠 Viktorina: javobga 15 soniya, o'sib boruvchi mukofotli intellekt darajalari.\n"
+        "🧠 Viktorina: javobga 30 soniya, o'sib boruvchi mukofotli intellekt darajalari.\n"
         "⚔️ Jonli o'yinchilar bilan 10/100/1000 🪙 stollarida duellar.\n"
         "🏆 50 jangchigacha jamoalar (Mega-Klan — 1000 tagacha) va har kimga sovrinli Jang tadbirlari.\n"
         "..................................................\n"
@@ -1092,6 +1093,54 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод 26.10): игры в приложении
+    "tab_games": "🕹 Games",
+    "g_title": "🕹 GAMES",
+    "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
+    "g_unlimited": "⚡ Unlimited is on — win as much as you like",
+    "g_limit": "limit for today",
+    "g_soon": "soon",
+    "g_back": "‹ All games",
+    "g_again": "Again",
+    "g_balance": "Balance: {b} 🪙",
+    "g_name_rps": "✊ Rock-paper-scissors",
+    "g_name_hl": "🔼 Higher-Lower",
+    "g_name_safe": "🔐 Cyber Safe",
+    "g_name_quiz": "🧠 Quiz",
+    "g_name_words": "🔤 Words from a word",
+    "g_name_math": "➗ Math",
+    "g_name_flags": "🏳️ Flags and capitals",
+    "g_name_code": "💻 Code breaker",
+    "g_name_memory": "🃏 Memory",
+    "g_prize": "Win: +{r} 🪙 and {i}",
+    "g_win": "🎉 Victory!",
+    "g_lose": "Not this time",
+    "g_draw": "🤝 Draw",
+    "g_timeout": "⏱ Time's up",
+    "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
+    "g_intern": "🤖 A new Robot Intern is waiting on the farm",
+    "g_full": "storage full",
+    "rps_pick": "Pick a gesture — the bot picks at the same time.",
+    "rps_rock": "✊ Rock",
+    "rps_scissors": "✌️ Scissors",
+    "rps_paper": "✋ Paper",
+    "rps_vs": "You: {a} · Bot: {b}",
+    "hl_q": "Will the next number from 1 to 100 be higher or lower?",
+    "hl_up": "▲ Higher",
+    "hl_down": "▼ Lower",
+    "hl_was": "It was: {n}",
+    "hl_next": "Next number",
+    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_code": "The code was: {n}",
+    "quiz_of": "Question {a}/{b}",
+    "quiz_hint": "💡 50/50 · {c} 🪙",
+    "quiz_next": "Next ›",
+    "quiz_correct": "Correct answer: {a}",
+    "quiz_sum_title": "🏁 ROUND OVER",
+    "quiz_sum": "Correct answers",
+    "quiz_coins": "Coins this round",
+    "quiz_again": "Another round",
+    "quiz_level": "🧠 Level {l} · {a}/{b} correct to the next",
     # TODO(перевод 26.10): история — пока по-английски
     "tab_history": "📜 History",
     "hist_title": "📜 HISTORY FOR {d} DAYS",
@@ -1369,7 +1418,7 @@ MINIAPP: dict[str, str] = {
     "ctaHungry": "🚨 Burg'ulovchilar och qoldi ({n} tasi yoqilg'isiz) — qazib olish to'xtab turibdi!",
     "ctaLowFuel": "⚠️ Kotletlar Burg'ulovchilarning bir kunlik ishiga ham yetmaydi.",
     "ctaShopBtn": "🛒 Do'konga",
-    "footer": "O'yinlar va viktorina — bot chatida",
+    "footer": "Duels and quests are in the bot chat for now",
     "noProfile": "Profil topilmadi. Botni ochib, /start ni bos!",
     "blocked": "Akkaunt ma'muriyat tomonidan bloklangan.",
     "deleting": "Akkaunting o'chirish navbatida. Fikringdan qaytdingmi? O'chirishni bot chatida bekor qil.",

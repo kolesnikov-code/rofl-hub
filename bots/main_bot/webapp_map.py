@@ -118,7 +118,7 @@ async def handle_map(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("expeditions", ctx.lang):
+    if (off := await _feature_off("expeditions", ctx.lang)) is not None:
         return off
     now = utcnow()
     async with db.pool.acquire() as conn:
@@ -214,7 +214,7 @@ async def _exp_call(request: web.Request, action) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("expeditions", ctx.lang):
+    if (off := await _feature_off("expeditions", ctx.lang)) is not None:
         return off
     data = await _json(request)
     try:

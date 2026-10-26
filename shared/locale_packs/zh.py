@@ -62,6 +62,7 @@ STRINGS = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -224,7 +225,7 @@ STRINGS = {
         "• /shop — 交易市场：购买矿工、肉排和中心升级\n\n"
         "🕹️ <b>游戏室：</b>\n"
         "• /games — 所有对战机器人游戏的快捷中心\n"
-        "• /quiz — 限时竞答：15 秒作答，等级与奖励\n"
+        "• /quiz — 限时竞答：30 秒作答，等级与奖励\n"
         "• /duel — 与真人玩家 1对1 对决：10/100/1000 🪙 桌\n"
         "• /quests — 冒险任务：侦探、喜剧和谜题，通关有奖\n"
         "• /rps, /high_low, /safe — 赚金币的快速小游戏\n\n"
@@ -248,7 +249,7 @@ STRINGS = {
         "赢个盆满钵满——或者输个精光！\n\n"
         "💸 获胜奖励：<b>+2 🪙</b>（赛博保险箱：<b>+5</b>）\n"
         "💀 失败或平局扣除：<b>-1 🪙</b>\n"
-        "🧠 竞答有 15 秒倒计时和智力等级：1 级需要答对 10 题，奖励 <b>+100 🪙</b>，"
+        "🧠 竞答有 30 秒倒计时和智力等级：1 级需要答对 10 题，奖励 <b>+100 🪙</b>，"
         "之后每级多 10 题，但奖励也每级多 100！\n"
         "..................................................\n"
         "👇 <b>点按下方按钮，立刻开始一局：</b>"
@@ -273,7 +274,7 @@ STRINGS = {
         "🚜 机器人全天候挖金币：初级矿工——每小时 5 枚、免燃料；"
         "赛博钻机——每小时 10 枚，而且每台钻机每天要吃掉自己的 1 份赛博肉排。"
         "所有机器人寿命 30 天（大师无人机可暂停损耗）。\n"
-        "🧠 竞答：15 秒作答，智力等级越高奖励越高。\n"
+        "🧠 竞答：30 秒作答，智力等级越高奖励越高。\n"
         "⚔️ 在 10/100/1000 🪙 的桌上与真人玩家对决。\n"
         "🏆 战队最多 50 名成员（超级公会——最多 1000），还有人人有奖的大作战活动。\n"
         "..................................................\n"
@@ -1087,6 +1088,54 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): игры в приложении
+    "tab_games": "🕹 Games",
+    "g_title": "🕹 GAMES",
+    "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
+    "g_unlimited": "⚡ Unlimited is on — win as much as you like",
+    "g_limit": "limit for today",
+    "g_soon": "soon",
+    "g_back": "‹ All games",
+    "g_again": "Again",
+    "g_balance": "Balance: {b} 🪙",
+    "g_name_rps": "✊ Rock-paper-scissors",
+    "g_name_hl": "🔼 Higher-Lower",
+    "g_name_safe": "🔐 Cyber Safe",
+    "g_name_quiz": "🧠 Quiz",
+    "g_name_words": "🔤 Words from a word",
+    "g_name_math": "➗ Math",
+    "g_name_flags": "🏳️ Flags and capitals",
+    "g_name_code": "💻 Code breaker",
+    "g_name_memory": "🃏 Memory",
+    "g_prize": "Win: +{r} 🪙 and {i}",
+    "g_win": "🎉 Victory!",
+    "g_lose": "Not this time",
+    "g_draw": "🤝 Draw",
+    "g_timeout": "⏱ Time's up",
+    "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
+    "g_intern": "🤖 A new Robot Intern is waiting on the farm",
+    "g_full": "storage full",
+    "rps_pick": "Pick a gesture — the bot picks at the same time.",
+    "rps_rock": "✊ Rock",
+    "rps_scissors": "✌️ Scissors",
+    "rps_paper": "✋ Paper",
+    "rps_vs": "You: {a} · Bot: {b}",
+    "hl_q": "Will the next number from 1 to 100 be higher or lower?",
+    "hl_up": "▲ Higher",
+    "hl_down": "▼ Lower",
+    "hl_was": "It was: {n}",
+    "hl_next": "Next number",
+    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_code": "The code was: {n}",
+    "quiz_of": "Question {a}/{b}",
+    "quiz_hint": "💡 50/50 · {c} 🪙",
+    "quiz_next": "Next ›",
+    "quiz_correct": "Correct answer: {a}",
+    "quiz_sum_title": "🏁 ROUND OVER",
+    "quiz_sum": "Correct answers",
+    "quiz_coins": "Coins this round",
+    "quiz_again": "Another round",
+    "quiz_level": "🧠 Level {l} · {a}/{b} correct to the next",
     # TODO(перевод 26.10): история — пока по-английски
     "tab_history": "📜 History",
     "hist_title": "📜 HISTORY FOR {d} DAYS",
@@ -1515,7 +1564,7 @@ MINIAPP = {
     "ctaHungry": "🚨 钻机在挨饿（{n} 台没燃料）——挖矿停了！",
     "ctaLowFuel": "⚠️ 肉排不够钻机工作一天了。",
     "ctaShopBtn": "🛒 去商店",
-    "footer": "游戏和竞答在机器人聊天里",
+    "footer": "Duels and quests are in the bot chat for now",
     "noProfile": "未找到个人资料。打开机器人并点按 /start！",
     "blocked": "账号已被管理员封禁。",
     "deleting": "账号正在排队删除。改变主意了？请在机器人聊天中取消删除。",

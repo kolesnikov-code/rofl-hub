@@ -26,7 +26,7 @@ HISTORY_REASONS = (
     "mining", "game_win", "game_loss", "quiz_level_up", "duel_stake", "duel_win", "duel_refund",
     "market_buy", "market_sell", "market_bid", "market_bid_refund", "market_escrow", "market_refund",
     "swap_escrow", "swap_give", "swap_get", "swap_refund", "transfer_in", "transfer_out", "admin_gift", "prize",
-    "daily_chest", "quest_reward", "quest_hint", "shop_coins", "auction_bid", "auction_refund", "craft", "weekly",
+    "daily_chest", "quest_reward", "quest_hint", "quiz_hint", "shop_coins", "auction_bid", "auction_refund", "craft", "weekly",
     "horse_buy", "drone_buy", "team_create", "referral_qualified", "signup_bonus", "account_deleted",
     "raid_loot", "raid_loss", "raid_fail", "raid_defense", "raid_fuel", "exp_fuel", "exp_gear", "exp_refund",
     "station_donate", "battle_entry", "mine", "tools", "tech", "shuttle_charge", "team_help_give", "team_help_get",

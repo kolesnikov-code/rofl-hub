@@ -315,7 +315,7 @@ async def handle_workshop(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("workshop", ctx.lang):
+    if (off := await _feature_off("workshop", ctx.lang)) is not None:
         return off
     async with db.pool.acquire() as conn:
         stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
@@ -353,7 +353,7 @@ async def handle_drone_buy(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("workshop", ctx.lang):
+    if (off := await _feature_off("workshop", ctx.lang)) is not None:
         return off
     data = await _json(request)
     try:
@@ -369,7 +369,7 @@ async def handle_craft_weekly(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("workshop", ctx.lang):
+    if (off := await _feature_off("workshop", ctx.lang)) is not None:
         return off
     rid = str((await _json(request)).get("recipe", ""))[:32]
     try:
@@ -449,7 +449,7 @@ async def handle_craft(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("workshop", ctx.lang):
+    if (off := await _feature_off("workshop", ctx.lang)) is not None:
         return off
     rid = str((await _json(request)).get("recipe", ""))[:32]
     if rid not in WORKSHOP_RECIPES:
@@ -663,7 +663,7 @@ async def handle_mines(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("mines", ctx.lang):
+    if (off := await _feature_off("mines", ctx.lang)) is not None:
         return off
     now = utcnow()
     async with db.pool.acquire() as conn:
@@ -819,7 +819,7 @@ async def handle_raids(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("raids", ctx.lang):
+    if (off := await _feature_off("raids", ctx.lang)) is not None:
         return off
     now = utcnow()
     async with db.pool.acquire() as conn:
@@ -866,7 +866,7 @@ async def handle_raid_stance(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("raids", ctx.lang):
+    if (off := await _feature_off("raids", ctx.lang)) is not None:
         return off
     stance = str((await _json(request)).get("stance", ""))
     if stance not in STANCES:
@@ -880,7 +880,7 @@ async def handle_raid_scout(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("raids", ctx.lang):
+    if (off := await _feature_off("raids", ctx.lang)) is not None:
         return off
     now = utcnow()
     try:
@@ -902,7 +902,7 @@ async def handle_raid_go(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("raids", ctx.lang):
+    if (off := await _feature_off("raids", ctx.lang)) is not None:
         return off
     data = await _json(request)
     move = str(data.get("move", ""))
@@ -957,7 +957,7 @@ async def handle_market(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("market", ctx.lang):
+    if (off := await _feature_off("market", ctx.lang)) is not None:
         return off
     asset = request.query.get("asset", "cutlet")
     if asset not in MARKET_ASSETS:
@@ -1022,7 +1022,7 @@ async def handle_market_order(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("market", ctx.lang):
+    if (off := await _feature_off("market", ctx.lang)) is not None:
         return off
     data = await _json(request)
     asset, side = str(data.get("asset", "cutlet")), str(data.get("side", "sell"))
@@ -1043,7 +1043,7 @@ async def handle_market_fill(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("market", ctx.lang):
+    if (off := await _feature_off("market", ctx.lang)) is not None:
         return off
     data = await _json(request)
     order_id, qty = _int(data.get("order_id")), _int(data.get("qty"))
@@ -1088,7 +1088,7 @@ async def handle_market_sell(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("market", ctx.lang):
+    if (off := await _feature_off("market", ctx.lang)) is not None:
         return off
     data = await _json(request)
     try:
@@ -1105,7 +1105,7 @@ async def handle_market_cancel(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("market", ctx.lang):
+    if (off := await _feature_off("market", ctx.lang)) is not None:
         return off
     order_id = _int((await _json(request)).get("order_id"))
     try:
@@ -1129,7 +1129,7 @@ async def handle_swap_create(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("market", ctx.lang):
+    if (off := await _feature_off("market", ctx.lang)) is not None:
         return off
     data = await _json(request)
     try:
@@ -1148,7 +1148,7 @@ async def handle_swap_accept(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("market", ctx.lang):
+    if (off := await _feature_off("market", ctx.lang)) is not None:
         return off
     swap_id = _int((await _json(request)).get("swap_id"))
     try:
@@ -1350,7 +1350,7 @@ async def handle_station_donate(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("station", ctx.lang):
+    if (off := await _feature_off("station", ctx.lang)) is not None:
         return off
     data = await _json(request)
     kind, qty = str(data.get("kind", "")), _int(data.get("qty"))
@@ -1381,7 +1381,7 @@ async def handle_goals(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("goals", ctx.lang):
+    if (off := await _feature_off("goals", ctx.lang)) is not None:
         return off
     today = utcnow().date()
     goals = goals_for(ctx.user_id, today, await _enabled_features())
@@ -1402,7 +1402,7 @@ async def handle_goals_claim(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("goals", ctx.lang):
+    if (off := await _feature_off("goals", ctx.lang)) is not None:
         return off
     today = utcnow().date()
     goals = goals_for(ctx.user_id, today, await _enabled_features())

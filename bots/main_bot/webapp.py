@@ -436,6 +436,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     register_events_routes(app)  # 📣 события в паспорте и 🔨 аукционы
     from bots.main_bot.webapp_history import register_history_routes
     register_history_routes(app)  # 📜 история игрока за 30 дней
+    from bots.main_bot.webapp_games import register_games_routes
+    register_games_routes(app)    # 🕹 игры в приложении (КНБ, Больше-Меньше, Сейф, Викторина)
     # Арты роботов для сцены фермы: img/robots/<kind>.png (арты владельца) или .svg (заглушки)
     app.router.add_static("/img", WEBAPP_DIR / "img")
     return app

@@ -98,18 +98,20 @@ def safe_outcome(guess: int, code: int) -> bool:
 # ============================================================================
 async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
                                    is_draw: bool = False, lang: str = "ru",
-                                   bot: Bot | None = None) -> tuple[bool, str, int]:
+                                   bot: Bot | None = None, info: dict | None = None) -> tuple[bool, str, int]:
     """
     Возвращает (успех, текст, новый баланс). Успех=False означает: раунд не засчитан
     (лимит, нет монет, нет профиля) — текст объясняет почему.
 
+    info — сюда пишутся данные итога для приложения (награда, ресурс, уровень, лимит).
     Аналитика (events) пишется ПОСЛЕ транзакции — сбой записи события не может
     откатить монеты. Квалификация реферала (новый уровень интеллекта мог сделать друга
     «активным» → +500 рефереру) — ВНУТРИ транзакции: бонус начисляется строго один раз.
     """
     events: list[tuple[str, dict]] = []
+    info = info if info is not None else {}
     ok, text, balance, qualified_referrer = await _payout_in_tx(
-        user_id, is_win, game_type, is_draw, lang, events)
+        user_id, is_win, game_type, is_draw, lang, events, info)
     for name, props in events:
         await track(user_id, name, **props)
     await notify_referrer_qualified(bot, qualified_referrer)
@@ -117,7 +119,7 @@ async def execute_solo_game_payout(user_id: int, is_win: bool, game_type: str,
 
 
 async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: bool, lang: str,
-                        events: list[tuple[str, dict]]) -> tuple[bool, str, int, int | None]:
+                        events: list[tuple[str, dict]], info: dict) -> tuple[bool, str, int, int | None]:
     now = utcnow()
     today = now.date()
     column = WIN_COLUMNS.get(game_type, "daily_wins_rps")
@@ -138,7 +140,9 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
             wins_today = stats[column] if same_day else 0
             unlimited = is_active(user["unlimit_until"], now)
 
+            info.update(wins=wins_today, limit=max_limit, unlimited=unlimited)
             if is_win and not unlimited and wins_today >= max_limit:
+                info["limit_hit"] = True
                 events.append(("daily_limit_hit", {"game": game_type}))
                 return False, t(lang, "games.limit",
                                 game=t(lang, GAME_TITLES.get(game_type, "games.name.rps")),
@@ -147,6 +151,7 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
             if is_win:
                 new_balance = await change_balance(conn, user_id, reward, f"game_win:{game_type}")
                 status = t(lang, "games.win", reward=reward)
+                info.update(reward=reward, wins=wins_today + 1)
                 # Ресурс игры за победу (волна 22.10): КНБ → металл, Б/М → водород,
                 # викторина → кристаллы, сейф → детали
                 gain = game_resource_gain(game_type)
@@ -154,6 +159,7 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                     kind, qty = gain
                     cap = await resource_capacity(conn, user_id)
                     stock = await change_resource(conn, user_id, kind, qty, f"game_win:{game_type}", cap=cap)
+                    info["res"] = {"kind": kind, "qty": qty, "total": stock, "full": stock >= cap}
                     status += "\n" + t(lang, "games.resource_gain", icon=RESOURCE_ICONS[kind],
                                         qty=qty, name=t(lang, f"res.{kind}"), total=stock)
                     if stock >= cap:
@@ -163,12 +169,15 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                     await change_resource(conn, user_id, "energy", 1, f"game_win:{game_type}",
                                           cap=await resource_capacity(conn, user_id))
                     status += "\n" + t(lang, "games.energy_gain")
+                    info["energy"] = 1
             else:
                 try:
                     new_balance = await change_balance(conn, user_id, -LOSE_PENALTY, f"game_loss:{game_type}")
                 except InsufficientFunds:
+                    info["no_coins"] = True
                     return False, t(lang, "games.no_coins"), user["balance"], None
                 status = t(lang, "games.draw" if is_draw else "games.lose", penalty=LOSE_PENALTY)
+                info["penalty"] = LOSE_PENALTY
 
             # Счётчики: при смене дня все суточные колонки обнуляются
             if same_day:
@@ -221,6 +230,7 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                         "WHERE user_id = $1", user_id, next_level)
                     new_balance = await change_balance(conn, user_id, bonus,
                                                        "quiz_level_up", str(next_level))
+                    info["level_up"] = {"level": next_level, "bonus": bonus}
                     status += "\n\n" + t(lang, "games.level_up", level=next_level, bonus=bonus,
                                          next_required=quiz_answers_required(next_level + 1),
                                          next_reward=quiz_level_reward(next_level + 1))
@@ -229,10 +239,12 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                         # игрок забирает его кнопкой (видит награду, а не получает молча)
                         await conn.execute(
                             "UPDATE users SET interns_pending = interns_pending + 1 WHERE user_id = $1", user_id)
+                        info["intern"] = True
                         status += "\n" + t(lang, "games.intern_ready")
                     # Новый уровень мог сделать игрока «активным другом» → +500 рефереру (один раз)
                     qualified_referrer = await qualify_referral_if_due(conn, user_id)
 
+            info["balance"] = new_balance
             return True, status, new_balance, qualified_referrer
 
 

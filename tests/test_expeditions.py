@@ -318,3 +318,23 @@ def test_history_reasons_labels_and_tab():
     assert "/api/history" in {r.resource.canonical for r in app.router.routes() if r.resource is not None}
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     assert '"top", "history", "info"]' in html and "function viewHistory" in html and "history: viewHistory" in html
+
+
+def test_app_games_rounds_keep_secrets_and_hint_removes_two_wrong():
+    """🕹 Игры в приложении: правильный ответ — только на сервере; 50/50 убирает два НЕВЕРНЫХ; таймер с запасом."""
+    import random as _r
+    from datetime import datetime, timedelta, timezone
+    from bots.main_bot.webapp_games import answered_in_time, hint_removal, hl_new_round, quiz_round_state
+    from shared.economy import GAME_ANSWER_GRACE_SECONDS, QUIZ_ANSWER_SECONDS
+    q = {"key": "k1", "q": "Столица &lt;Франции&gt;?", "category": "Гео", "correct": "Париж",
+         "options": ["Париж", "Рим", "Берлин", "Мадрид"]}
+    for seed in range(20):
+        st = quiz_round_state(q, _r.Random(seed))
+        assert st["options"][st["correct"]] == "Париж" and st["q"] == "Столица <Франции>?"
+        removed = hint_removal(st, _r.Random(seed))
+        assert len(removed) == 2 and st["correct"] not in removed
+        base, secret = hl_new_round(_r.Random(seed))
+        assert 10 <= base <= 90 and 1 <= secret <= 101 and secret != base
+    t0 = datetime(2026, 10, 26, tzinfo=timezone.utc)
+    assert answered_in_time(t0, t0 + timedelta(seconds=QUIZ_ANSWER_SECONDS + GAME_ANSWER_GRACE_SECONDS))
+    assert not answered_in_time(t0, t0 + timedelta(seconds=QUIZ_ANSWER_SECONDS + GAME_ANSWER_GRACE_SECONDS + 1))

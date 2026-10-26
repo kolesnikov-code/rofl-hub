@@ -96,7 +96,7 @@ async def handle_auctions(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("auctions", ctx.lang):
+    if (off := await _feature_off("auctions", ctx.lang)) is not None:
         return off
     async with db.pool.acquire() as conn:
         lots = await list_auctions(conn, ctx.user_id)
@@ -109,7 +109,7 @@ async def handle_auction_bid(request: web.Request) -> web.Response:
     ctx = await _ctx(request)
     if isinstance(ctx, web.Response):
         return ctx
-    if off := await _feature_off("auctions", ctx.lang):
+    if (off := await _feature_off("auctions", ctx.lang)) is not None:
         return off
     data = await _json(request)
     auction_id, step = _int(data.get("id")), _int(data.get("step"))

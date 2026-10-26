@@ -2899,3 +2899,68 @@ async def test_team_newcomer_gets_no_battle_prize_for_24h(conn):
     assert res["places"][0]["score"] == 10
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1810") == 110
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1811") == 5000
+
+
+async def test_app_games_api_rounds_limits_hint_and_timer(conn, global_db):
+    """🕹 26.10: игры в приложении — те же движки и лимиты; секреты на сервере; раунд закрывается один раз."""
+    import time as _t
+    from datetime import timedelta
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.economy import QUIZ_ANSWER_SECONDS, QUIZ_HINT_COST
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    await _mk_user(conn, 1830, 1000)
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1830}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    try:
+        hub = await (await client.get("/api/games", headers=head)).json()
+        assert {g["id"] for g in hub["games"]} == {"rps", "hl", "quiz", "safe"} and hub["quiz"]["seconds"] == 30
+        r = await (await client.post("/api/games/rps", headers=head, json={"move": "rock"})).json()
+        assert r["ok"] and r["bot"] in ("rock", "paper", "scissors") and r["result"] in ("win", "lose", "draw")
+        s = await (await client.post("/api/games/safe", headers=head, json={"guess": 2})).json()
+        assert s["ok"] and 1 <= s["code"] <= 4 and (s["result"] == "win") == (s["code"] == 2)
+        h = await (await client.post("/api/games/hl/new", headers=head, json={})).json()
+        assert "secret" not in h                                            # загаданное не уходит в браузер
+        p = await (await client.post("/api/games/hl/play", headers=head, json={"round_id": h["round_id"], "dir": "up"})).json()
+        assert p["base"] == h["base"] and (p["result"] == "win") == (p["secret"] > h["base"])
+        again = await (await client.post("/api/games/hl/play", headers=head, json={"round_id": h["round_id"], "dir": "up"})).json()
+        assert again["ok"] is False                                         # раунд закрывается один раз
+        q = await (await client.post("/api/quiz/next", headers=head, json={})).json()
+        assert q["ok"] and len(q["options"]) == 4 and "correct" not in q
+        bal = await conn.fetchval("SELECT balance FROM users WHERE user_id = 1830")
+        hint = await (await client.post("/api/quiz/hint", headers=head, json={"round_id": q["round_id"]})).json()
+        assert len(hint["removed"]) == 2 and hint["balance"] == bal - QUIZ_HINT_COST
+        state = await conn.fetchval("SELECT state FROM game_rounds WHERE id = $1", q["round_id"])
+        import json as _j
+        correct = (_j.loads(state) if isinstance(state, str) else state)["correct"]
+        assert correct not in hint["removed"]
+        a = await (await client.post("/api/quiz/answer", headers=head, json={"round_id": q["round_id"], "option": correct})).json()
+        assert a["result"] == "win" and a["info"]["reward"] == 2 and a["info"]["res"]["kind"] == "crystal"
+        # Опоздал — ответ не засчитан, даже верный
+        q2 = await (await client.post("/api/quiz/next", headers=head, json={})).json()
+        await conn.execute("UPDATE game_rounds SET created_at = created_at - $2::interval WHERE id = $1",
+                           q2["round_id"], timedelta(seconds=QUIZ_ANSWER_SECONDS + 10))
+        st2 = await conn.fetchval("SELECT state FROM game_rounds WHERE id = $1", q2["round_id"])
+        right2 = (_j.loads(st2) if isinstance(st2, str) else st2)["correct"]
+        late = await (await client.post("/api/quiz/answer", headers=head, json={"round_id": q2["round_id"], "option": right2})).json()
+        assert late["result"] == "timeout"
+        # Лимит побед: игра не начинается
+        from shared.economy import utcnow
+        await conn.execute("UPDATE game_stats SET daily_wins_safe = 15, last_game_date = $1 WHERE user_id = 1830",
+                           utcnow().date())
+        lim = await (await client.post("/api/games/safe", headers=head, json={"guess": 1})).json()
+        assert lim["ok"] is False and lim["limit"]
+        # Тумблер «игры» выключен в пульте — API приложения закрыто (раньше проверка не срабатывала:
+        # пустой aiohttp-ответ «ложный» в if, и тумблеры в приложении не действовали)
+        from shared.feature_flags import invalidate_cache, set_flag
+        await set_flag("games", False)
+        try:
+            off = await client.get("/api/games", headers=head)
+            assert off.status == 503
+        finally:
+            await set_flag("games", True)
+            invalidate_cache()
+    finally:
+        await client.close()

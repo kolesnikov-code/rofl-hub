@@ -61,6 +61,7 @@ STRINGS: dict[str, str] = {
     "hist.daily_chest": "🎁 Daily goals chest",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
+    "hist.quiz_hint": "🧠 Quiz hint",
     "hist.shop_coins": "🏪 Coin pack for ★",
     "hist.auction_bid": "🔨 Auction bid",
     "hist.auction_refund": "🔨 Auction bid refund",
@@ -223,7 +224,7 @@ STRINGS: dict[str, str] = {
         "• /shop — Marketplace: zakup górników, kotletów i ulepszeń huba\n\n"
         "🕹️ <b>POKÓJ GIER:</b>\n"
         "• /games — Inline-hub wszystkich gier przeciwko botowi\n"
-        "• /quiz — Quiz na czas: 15 sekund na odpowiedź, poziomy i bonusy\n"
+        "• /quiz — Quiz na czas: 30 sekund na odpowiedź, poziomy i bonusy\n"
         "• /duel — POJEDYNKI 1 na 1 z żywymi graczami: stoły 10/100/1000\n"
         "• /quests — QUESTY: kryminały, komedie i łamigłówki z nagrodami\n"
         "• /rps, /high_low, /safe — Szybkie gry o monety\n\n"
@@ -247,7 +248,7 @@ STRINGS: dict[str, str] = {
         "intelektualny sprint — i zgarnąć pulę albo spłukać się do zera!\n\n"
         "💸 Zwycięstwo daje: <b>+2 🪙</b> (Cyber-Sejf: <b>+5</b>)\n"
         "💀 Porażka lub remis kosztuje: <b>-1 🪙</b>\n"
-        "🧠 W Quizie — licznik 15 sekund i poziomy intelektu: 1. poziom to 10 poprawnych odpowiedzi i <b>+100 🪙</b>, "
+        "🧠 W Quizie — licznik 30 sekund i poziomy intelektu: 1. poziom to 10 poprawnych odpowiedzi i <b>+100 🪙</b>, "
         "każdy kolejny poziom jest o 10 odpowiedzi dłuższy, ale nagroda rośnie o 100!\n"
         "..................................................\n"
         "👇 <b>KLIKNIJ PRZYCISK PONIŻEJ, ABY NATYCHMIAST ROZPOCZĄĆ RUNDĘ:</b>"
@@ -272,7 +273,7 @@ STRINGS: dict[str, str] = {
         "🚜 Roboty wydobywają monety całą dobę: Młodszy Górnik — 5/h bez paliwa, "
         "Cyber-Wiertacz — 10/h, a KAŻDY Wiertacz zjada swój własny cyber-kotlet raz na dobę. "
         "Wszystkie roboty żyją 30 dni (Mistrzowski Dron wstrzymuje zużycie).\n"
-        "🧠 Quiz: 15 sekund na odpowiedź, poziomy intelektu z rosnącymi nagrodami.\n"
+        "🧠 Quiz: 30 sekund na odpowiedź, poziomy intelektu z rosnącymi nagrodami.\n"
         "⚔️ Pojedynki z żywymi graczami przy stołach 10/100/1000 🪙.\n"
         "🏆 Drużyny do 50 wojowników (Mega-Klan — do 1000) i okazjonalne Bitwy z nagrodami dla każdego.\n"
         "..................................................\n"
@@ -1089,6 +1090,54 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод 26.10): игры в приложении
+    "tab_games": "🕹 Games",
+    "g_title": "🕹 GAMES",
+    "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
+    "g_unlimited": "⚡ Unlimited is on — win as much as you like",
+    "g_limit": "limit for today",
+    "g_soon": "soon",
+    "g_back": "‹ All games",
+    "g_again": "Again",
+    "g_balance": "Balance: {b} 🪙",
+    "g_name_rps": "✊ Rock-paper-scissors",
+    "g_name_hl": "🔼 Higher-Lower",
+    "g_name_safe": "🔐 Cyber Safe",
+    "g_name_quiz": "🧠 Quiz",
+    "g_name_words": "🔤 Words from a word",
+    "g_name_math": "➗ Math",
+    "g_name_flags": "🏳️ Flags and capitals",
+    "g_name_code": "💻 Code breaker",
+    "g_name_memory": "🃏 Memory",
+    "g_prize": "Win: +{r} 🪙 and {i}",
+    "g_win": "🎉 Victory!",
+    "g_lose": "Not this time",
+    "g_draw": "🤝 Draw",
+    "g_timeout": "⏱ Time's up",
+    "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
+    "g_intern": "🤖 A new Robot Intern is waiting on the farm",
+    "g_full": "storage full",
+    "rps_pick": "Pick a gesture — the bot picks at the same time.",
+    "rps_rock": "✊ Rock",
+    "rps_scissors": "✌️ Scissors",
+    "rps_paper": "✋ Paper",
+    "rps_vs": "You: {a} · Bot: {b}",
+    "hl_q": "Will the next number from 1 to 100 be higher or lower?",
+    "hl_up": "▲ Higher",
+    "hl_down": "▼ Lower",
+    "hl_was": "It was: {n}",
+    "hl_next": "Next number",
+    "safe_q": "Guess the safe code: one of {n}. Guess it — +{r} 🪙.",
+    "safe_code": "The code was: {n}",
+    "quiz_of": "Question {a}/{b}",
+    "quiz_hint": "💡 50/50 · {c} 🪙",
+    "quiz_next": "Next ›",
+    "quiz_correct": "Correct answer: {a}",
+    "quiz_sum_title": "🏁 ROUND OVER",
+    "quiz_sum": "Correct answers",
+    "quiz_coins": "Coins this round",
+    "quiz_again": "Another round",
+    "quiz_level": "🧠 Level {l} · {a}/{b} correct to the next",
     # TODO(перевод 26.10): история — пока по-английски
     "tab_history": "📜 History",
     "hist_title": "📜 HISTORY FOR {d} DAYS",
@@ -1533,7 +1582,7 @@ MINIAPP: dict[str, str] = {
     "ctaHungry": "🚨 Wiertacze głodują ({n} bez paliwa) — wydobycie stoi!",
     "ctaLowFuel": "⚠️ Kotletów starczy na mniej niż dobę pracy Wiertaczy.",
     "ctaShopBtn": "🛒 Do sklepu",
-    "footer": "Gry i quiz — w czacie bota",
+    "footer": "Duels and quests are in the bot chat for now",
     "noProfile": "Nie znaleziono profilu. Otwórz bota i naciśnij /start!",
     "blocked": "Konto zablokowane przez administrację.",
     "deleting": "Twoje konto czeka na usunięcie. Rozmyśliłeś(-aś) się? Anuluj usunięcie w czacie bota.",
