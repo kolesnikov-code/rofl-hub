@@ -290,3 +290,10 @@ def test_banner_window_and_thermos_cycle_in_farm_engine():
                             thermos_from=t0, thermos_until=t0 + timedelta(hours=24))
     assert plain.cutlets_consumed == 2 and thermos.cutlets_consumed == 2
     assert thermos.miners[0].fuel_until == t0 + timedelta(hours=32 + 24)
+
+
+def test_tab_order_follows_the_owner_player_journey():
+    """Порядок вкладок владельца 26.10: путь игрока от сводки к ресурсам, активностям, а магазин — ненавязчиво в конце."""
+    html = Path("static/webapp/index.html").read_text(encoding="utf-8")
+    assert ('const TABS = ["passport", "farm", "storage", "workshop", "lab", "market", "map", "mines", "raids", '
+            '"team", "auctions", "friends", "shop", "top", "history", "info"];') in html

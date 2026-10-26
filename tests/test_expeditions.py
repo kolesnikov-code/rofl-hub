@@ -153,7 +153,7 @@ def test_feature_flag_and_tab():
     from shared.feature_flags import FLAG_DEFAULTS, FLAG_TITLES
     assert FLAG_DEFAULTS["expeditions"] is True and "expeditions" in FLAG_TITLES
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    assert '"mines", "map", "friends"' in html and 'map: "expeditions"' in html and "function viewMap" in html
+    assert '"market", "map", "mines"' in html and 'map: "expeditions"' in html and "function viewMap" in html
     for needle in ("/api/map", "/api/exp/solo", "/api/exp/gear", "/api/exp/vote", "/api/drone/buy", "L.dr_title",
                    "data-countdown", "mapPos("):
         assert needle in html, needle
@@ -192,7 +192,7 @@ def test_events_and_auctions_in_the_app():
     paths = {r.resource.canonical for r in app.router.routes() if r.resource is not None}
     assert {"/api/news", "/api/auctions", "/api/auction/bid"} <= paths
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    assert '"market", "auctions", "team"' in html and "function viewAuctions" in html and 'auctions: "auctions"' in html
+    assert '"team", "auctions", "friends"' in html and "function viewAuctions" in html and 'auctions: "auctions"' in html
     assert "function newsCard" in html and '"/api/news"' in html and "map_forkAhead" in html and "L.map_cargoHint" in html
     assert 'class="hint fr-hint"' in html                                    # отступ под холодильником
     from shared.feature_flags import FLAG_DEFAULTS
