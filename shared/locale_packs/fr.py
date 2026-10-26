@@ -1094,6 +1094,8 @@ STRINGS = {
 MINIAPP = {
     # TODO(перевод 26.10): игры в приложении
     "tab_games": "🕹 Games",
+    "g_credited": "Credited: {x}",
+    "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
