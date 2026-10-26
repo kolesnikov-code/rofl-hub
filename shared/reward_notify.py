@@ -21,7 +21,8 @@ SEND_PAUSE_SEC = 0.05          # ~20 сообщений в секунду — в
 def notice_text(lang: str, notice: dict) -> str:
     """Текст личного сообщения: место/участие, что начислено, рудник, ручной приз."""
     from shared.prizes import rewards_label
-    title = html.escape(str(notice.get("title") or ""))
+    from shared.titles import localized_title
+    title = html.escape(localized_title(str(notice.get("title") or ""), notice.get("tpl"), lang))
     rewards = notice.get("rewards") or []
     lines = [t(lang, "rn.all" if notice.get("all") else "rn.place", title=title, place=notice.get("place", 0))]
     real = [r for r in rewards if r.get("kind") != "text"]

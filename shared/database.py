@@ -820,6 +820,9 @@ SCHEMA_STATEMENTS: list[str] = [
       END IF;
     END $$;
     """,
+    # 🏷 26.10: название-заготовка {"a", "n", "num"} — игрок видит его на своём языке (shared/titles.py)
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS title_tpl JSONB;",
+    "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS title_tpl JSONB;",
 ]
 
 

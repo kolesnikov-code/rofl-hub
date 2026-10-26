@@ -192,6 +192,33 @@
   }
   const prizeSummary = prizes => Object.entries(prizes).map(([p, l]) => p + " место — " + l.map(rewardLabel).join(" + ")).join("; ");
 
+  // ---------------- 🏷 Название: заготовка «слово + слово + число» (переводится на 14 языков) или свой текст
+  function titleBlock(id, st) {
+    const T = meta.titles, noun = T.nouns.find(n => n.key === st.n), g = noun ? noun.g : "m";
+    return '<label>Название-заготовка — игроки увидят его на своём языке</label><div class="grid3">' +
+      '<select id="' + id + 'A"><option value="">— слово 1 —</option>' + T.adjs.map(a => '<option value="' + a.key + '"' +
+        (st.a === a.key ? ' selected' : '') + '>' + esc(a.forms[g]) + '</option>').join("") + '</select>' +
+      '<select id="' + id + 'N"><option value="">— слово 2 —</option>' + T.nouns.map(n => '<option value="' + n.key + '"' +
+        (st.n === n.key ? ' selected' : '') + '>' + esc(n.word) + '</option>').join("") + '</select>' +
+      '<input id="' + id + 'Num" type="number" min="0" max="' + T.num_max + '" placeholder="число" value="' + (st.num || "") + '"></div>' +
+      '<div class="hint" id="' + id + 'Pv"></div>' +
+      '<label>…или своё название (тогда оно у всех как написано)</label><input id="' + id + 'Title" maxlength="100" value="' + esc(st.title) + '">';
+  }
+  function titlePreview(id, st) {
+    const T = meta.titles, a = T.adjs.find(x => x.key === st.a), n = T.nouns.find(x => x.key === st.n);
+    $(id + "Pv").textContent = a && n ? "🏷 " + a.forms[n.g] + " " + n.word + (st.num ? " " + st.num : "") + " — переведётся на все языки"
+      : (st.a || st.n ? "Выбери оба слова" : "");
+  }
+  function bindTitle(id, st, redraw) {
+    const read = () => { st.a = $(id + "A").value; st.n = $(id + "N").value; st.num = Number($(id + "Num").value) || 0; st.title = $(id + "Title").value; };
+    $(id + "A").onchange = () => { read(); titlePreview(id, st); };
+    $(id + "N").onchange = () => { read(); redraw(); };            // род слова 2 меняет форму слова 1
+    $(id + "Num").oninput = () => { read(); titlePreview(id, st); };
+    $(id + "Title").oninput = read;
+    titlePreview(id, st);
+  }
+  const titleTpl = st => (st.a && st.n ? { a: st.a, n: st.n, num: st.num || 0 } : null);
+
   // ---------------- ⚔️ Битвы и акции
   const form = { title: "", scope: "teams", nomination: "", custom: "", start: "now", hours: 72, places: 3, mines: [], prizes: {}, all: [] };
   async function viewBattles(app) {
@@ -241,7 +268,7 @@
         (idx >= 0 ? '<b>' + (idx + 1) + '</b>' : '') + (RES_ICON[m.kind] || "") + ' №' + m.id + '</button>';
     }).join("");
     host.innerHTML =
-      '<label>Название</label><input id="fTitle" maxlength="100" value="' + esc(form.title) + '" placeholder="Осенний кубок">' +
+      titleBlock("f", form) +
       '<label>Зачёт</label><div class="chips">' + Object.entries(SCOPES).map(([k, t]) => '<button class="chip' + (form.scope === k ? ' on' : '') + '" data-scope="' + k + '">' + t + '</button>').join("") + '</div>' +
       '<label>Номинация</label><div class="noms">' + noms.map(n => '<button class="nom' + (form.nomination === n.key ? ' on' : '') + '" data-nom="' + n.key + '">' + esc(n.title) +
         '<small>' + (n.manual ? "итоги вписываешь ты" : "считается автоматически" + (n.unit ? " · " + esc(n.unit) : "")) + '</small></button>').join("") +
@@ -258,7 +285,7 @@
       'Для ручных номинаций не выдаётся: участников знаешь только ты.</div><div id="fAll"></div>' +
       '<button class="btn" id="fGo">🚀 Запустить</button>';
     const keep = () => {
-      form.title = $("fTitle").value; form.hours = Number($("fHours").value) || 1; form.places = Math.max(0, Math.min(100, Number($("fPlaces").value) || 0));
+      form.title = $("fTitle").value; form.a = $("fA").value; form.n = $("fN").value; form.num = Number($("fNum").value) || 0; form.hours = Number($("fHours").value) || 1; form.places = Math.max(0, Math.min(100, Number($("fPlaces").value) || 0));
       form.start = $("fStart").value || "now"; if ($("fCustom")) form.custom = $("fCustom").value;
     };
     host.querySelectorAll("[data-scope]").forEach(b => { b.onclick = () => { keep(); form.scope = b.dataset.scope; if (form.scope === "solo") form.mines = []; drawForm(host); }; });
@@ -272,18 +299,19 @@
     $("fPlaces").onchange = () => { keep(); drawForm(host); };
     drawPrizes($("fPrizes"));
     rewardBuilder($("fAll"), form.all);
+    bindTitle("f", form, () => { keep(); drawForm(host); });
     $("fGo").onclick = e => {
       keep();
       flushRewards();
       const prizes = {};
       Object.entries(form.prizes).forEach(([p, l]) => { if (l.length && Number(p) <= form.places) prizes[p] = l; });
-      const body = { title: form.title, scope: form.scope, nomination: form.nomination, custom: form.custom,
+      const body = { title: form.title, title_tpl: titleTpl(form), scope: form.scope, nomination: form.nomination, custom: form.custom,
                      starts_at: form.start === "now" ? "now" : form.start + ":00+00:00", hours: form.hours, places: form.places,
                      mine_ids: form.mines, prizes, reward_all: form.all };
       if (!confirmPrizes(prizes, form.places, form.all)) return;
       act(e.target, "/api/admin/battle", body, res => { say("✅ Битва №" + res.id + " создана — игроки видят её в приложении (Паспорт → События, ТОП → Акции)." +
         (Object.keys(prizes).length ? " Призы: " + prizeSummary(prizes) : ""));
-        Object.assign(form, { title: "", nomination: "", custom: "", mines: [], prizes: {}, all: [] }); meta = null; go(); });
+        Object.assign(form, { title: "", a: "", n: "", num: 0, nomination: "", custom: "", mines: [], prizes: {}, all: [] }); meta = null; go(); });
     };
   }
   function drawPrizes(host) {
@@ -389,7 +417,7 @@
       '<text x="' + tform.x + '" y="' + tform.y + '" font-size="5" text-anchor="middle" dominant-baseline="middle">' + esc(tform.icon) + '</text>';
     svg += '</svg>';
     host.innerHTML =
-      '<label>Название</label><input id="tTitle" maxlength="100" value="' + esc(tform.title) + '" placeholder="Ледяная цитадель">' +
+      titleBlock("t", tform) +
       '<label>Описание (сюжет, можно на нескольких языках)</label><textarea id="tDescr" maxlength="500">' + esc(tform.descr) + '</textarea>' +
       '<label>Значок</label><div class="chips">' + d.icons.map(i => '<button class="chip' + (tform.icon === i ? ' on' : '') + '" data-icon="' + i + '">' + i + '</button>').join("") + '</div>' +
       '<label>Формат</label><div class="chips">' + Object.entries(EXP_SCOPES).map(([k, t]) => '<button class="chip' + (tform.scope === k ? ' on' : '') + '" data-tscope="' + k + '">' + t + '</button>').join("") + '</div>' +
@@ -405,7 +433,8 @@
       '<h3>🎒 За участие (всем дошедшим без призового места, необязательно)</h3><div id="tAll"></div>' +
       '<button class="btn" id="tGo">🚀 Поставить цель</button>';
     const keep = () => {
-      tform.title = $("tTitle").value; tform.descr = $("tDescr").value;
+      tform.title = $("tTitle").value; tform.a = $("tA").value; tform.n = $("tN").value; tform.num = Number($("tNum").value) || 0;
+      tform.descr = $("tDescr").value;
       tform.forks = Math.max(1, Math.min(5, Number($("tForks").value) || 3)); tform.hours = Math.max(1, Number($("tHours").value) || 24);
       tform.places = Math.max(0, Math.min(100, Number($("tPlaces").value) || 0));
     };
@@ -427,17 +456,18 @@
     ph.querySelectorAll("[data-tpb]").forEach(el => { const p = el.dataset.tpb; tform.prizes[p] = tform.prizes[p] || []; rewardBuilder(el, tform.prizes[p]); });
     ph.querySelectorAll("[data-tcopy]").forEach(b => { b.onclick = () => { keep(); const p = Number(b.dataset.tcopy); tform.prizes[p] = JSON.parse(JSON.stringify(tform.prizes[p - 1] || [])); drawTargetForm(host, d, open); }; });
     rewardBuilder($("tAll"), tform.all);
+    bindTitle("t", tform, () => { keep(); drawTargetForm(host, d, open); });
     $("tGo").onclick = e => {
       keep();
       flushRewards();
       const prizes = {};
       Object.entries(tform.prizes).forEach(([p, l]) => { if (l.length && Number(p) <= tform.places) prizes[p] = l; });
       if (!confirmPrizes(prizes, tform.places, tform.all)) return;
-      act(e.target, "/api/admin/target", { title: tform.title, descr: tform.descr, icon: tform.icon, scope: tform.scope, x: tform.x, y: tform.y,
+      act(e.target, "/api/admin/target", { title: tform.title, title_tpl: titleTpl(tform), descr: tform.descr, icon: tform.icon, scope: tform.scope, x: tform.x, y: tform.y,
         forks: tform.forks, hours: tform.hours, places: tform.places, prizes: prizes, reward_all: tform.all }, res => {
         say("✅ Цель №" + res.id + " на карте." + (Object.keys(prizes).length ? " Призы: " + prizeSummary(prizes) : "") +
           (tform.all.length ? " · 🎒 за участие: " + tform.all.map(rewardLabel).join(" + ") : ""));
-        Object.assign(tform, { title: "", descr: "", x: null, y: null, prizes: {}, all: [] }); go();
+        Object.assign(tform, { title: "", a: "", n: "", num: 0, descr: "", x: null, y: null, prizes: {}, all: [] }); go();
       });
     };
   }

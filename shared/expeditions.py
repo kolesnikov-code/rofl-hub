@@ -492,12 +492,12 @@ async def finalize_target(conn, target, now: datetime) -> dict:
         if rewards:
             got: list[int] = []
             given, _ = await grant_many(conn, members, rewards, f"E{tid}_P{place}", now, got)
-            notices += [{"user_id": u, "title": target["title"], "place": place, "rewards": rewards, "all": False}
+            notices += [{"user_id": u, "title": target["title"], "tpl": dict(target).get("title_tpl"), "place": place, "rewards": rewards, "all": False}
                         for u in got]
         elif not is_prize_place and reward_all:                     # 🎒 за участие — без призового места
             got = []
             await grant_many(conn, members, reward_all, f"E{tid}_ALL", now, got)
-            notices += [{"user_id": u, "title": target["title"], "place": place, "rewards": reward_all, "all": True}
+            notices += [{"user_id": u, "title": target["title"], "tpl": dict(target).get("title_tpl"), "place": place, "rewards": reward_all, "all": True}
                         for u in got]
         rows.append({"place": place, "name": await squad_name(conn, exp), "mode": exp["mode"], "cargo": exp["cargo"],
                      "members": len(members), "rewards": rewards, "given": given})

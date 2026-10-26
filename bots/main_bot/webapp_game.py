@@ -119,6 +119,7 @@ from shared.economy import (
 )
 from shared.farm_logic import apply_lazy_farm
 from shared.feature_flags import FLAG_DEFAULTS, get_flag
+from shared.titles import localized_title
 from shared.locales import resolve_lang, t
 from shared.market import (
     MarketError,
@@ -703,7 +704,8 @@ async def handle_mines(request: web.Request) -> web.Response:
         "hold_hours": MINE_HOLD_HOURS, "yield": MINE_YIELD_PER_MEMBER_HOUR,
         "res_names": resource_labels(ctx.lang), "batteries": batteries,
         "fee": {"team": BATTLE_BATTERY_FEE_TEAM, "clan": BATTLE_BATTERY_FEE_CLAN},
-        "battles": [{"id": b["battle_id"], "title": b["title"], "nomination": _nom_text(ctx.lang, b),
+        "battles": [{"id": b["battle_id"], "title": localized_title(b["title"], b.get("title_tpl"), ctx.lang),
+                     "nomination": _nom_text(ctx.lang, b),
                      "starts_at": b["starts_at"].isoformat(), "ends_at": b["ends_at"].isoformat(),
                      "mine_ids": list(b["mine_ids"] or []), "mine_id": (b["mine_ids"] or [None])[0],
                      "started": b["starts_at"] <= now, "entry": b["entry"],
@@ -744,7 +746,8 @@ async def handle_events(request: web.Request) -> web.Response:
             my_place = next((i for i, x in enumerate(leaders, start=1) if x["id"] == my_id), 0)
             prizes = prizes_by_place(b["prizes"])
             out.append({
-                "id": b["battle_id"], "title": b["title"], "scope": t(ctx.lang, f"post.scope_{scope}"),
+                "id": b["battle_id"], "title": localized_title(b["title"], b.get("title_tpl"), ctx.lang),
+                "scope": t(ctx.lang, f"post.scope_{scope}"),
                 "solo": scope == "solo", "nomination": _nom_text(ctx.lang, b), "manual": is_manual(b["nomination_key"]),
                 "starts_at": b["starts_at"].isoformat(), "ends_at": b["ends_at"].isoformat(),
                 "started": b["starts_at"] <= now, "places": int(b["places"] or 0),

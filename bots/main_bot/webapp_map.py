@@ -46,6 +46,7 @@ from shared.expeditions import (
     vote,
 )
 from shared.locales import t
+from shared.titles import localized_title
 
 logger = logging.getLogger(__name__)
 MAX_SQUADS_ON_MAP = 300
@@ -162,7 +163,7 @@ async def handle_map(request: web.Request) -> web.Response:
         prizes = prizes_by_place(r["prizes"])
         reward_all = _rewards(r["reward_all"])
         out_targets.append({
-            "id": r["id"], "title": r["title"], "descr": r["descr"], "icon": r["icon"], "x": r["x"], "y": r["y"],
+            "id": r["id"], "title": localized_title(r["title"], r["title_tpl"], ctx.lang), "descr": r["descr"], "icon": r["icon"], "x": r["x"], "y": r["y"],
             "scope": r["scope"], "scope_label": t(ctx.lang, f"post.scope_{r['scope']}"), "forks": r["forks"],
             "resolve_at": _iso(r["resolve_at"]), "places": r["places"], "squads": by_target.get(r["id"], 0),
             "prizes": [{"place": p, "label": rewards_label(prizes[p])} for p in sorted(prizes)][:20],

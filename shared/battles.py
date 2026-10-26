@@ -341,7 +341,7 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
             given, _ = await grant_many(conn, await members_of(entry), rewards, f"B{battle_id}_P{place}", now, got)
         if mine_id and not rewards:
             got = await members_of(entry)
-        notices += [{"user_id": u, "title": battle["title"], "place": place, "rewards": rewards, "all": False,
+        notices += [{"user_id": u, "title": battle["title"], "tpl": dict(battle).get("title_tpl"), "place": place, "rewards": rewards, "all": False,
                      "mine_id": mine_id} for u in got]
         rows.append({"place": place, **entry, "rewards": rewards, "given": given,
                      "mine_id": mine_id, "until": until.isoformat() if until else None})
@@ -354,7 +354,7 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
             got = []
             given, _ = await grant_many(conn, await members_of(entry), reward_all, f"B{battle_id}_ALL", now, got)
             participants += given
-            notices += [{"user_id": u, "title": battle["title"], "place": place, "rewards": reward_all, "all": True,
+            notices += [{"user_id": u, "title": battle["title"], "tpl": dict(battle).get("title_tpl"), "place": place, "rewards": reward_all, "all": True,
                          "mine_id": None} for u in got]
     results = {"scope": scope, "places": rows, "participants_rewarded": participants}
     await conn.execute("UPDATE battles SET results = $2::jsonb WHERE battle_id = $1",

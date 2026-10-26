@@ -18,6 +18,7 @@ from shared.analytics import track
 from shared.database import db
 from shared.economy import utcnow
 from shared.locales import t
+from shared.titles import localized_title
 
 EVENTS_RECENT_DAYS = 3        # итоги битв и походов держатся в ленте трое суток
 EVENTS_LIMIT = 30
@@ -59,21 +60,23 @@ async def handle_news(request: web.Request) -> web.Response:
     items = []
     async with db.pool.acquire() as conn:
         for b in await conn.fetch(
-                "SELECT battle_id, title, scope, prizes, starts_at, ends_at, status, results, mine_ids FROM battles "
+                "SELECT battle_id, title, title_tpl, scope, prizes, starts_at, ends_at, status, results, mine_ids FROM battles "
                 "WHERE status = 'active' OR (status = 'finished' AND ends_at >= $1) ORDER BY ends_at DESC LIMIT 20", since):
             live = b["status"] == "active"
-            items.append({"kind": "battle", "icon": "⛏" if list(b["mine_ids"] or []) else "⚔️", "title": b["title"],
+            items.append({"kind": "battle", "icon": "⛏" if list(b["mine_ids"] or []) else "⚔️",
+                          "title": localized_title(b["title"], b["title_tpl"], ctx.lang),
                           "sub": t(ctx.lang, f"post.scope_{b['scope'] or 'teams'}"), "live": live,
                           "soon": live and b["starts_at"] > now, "at": _iso(b["ends_at"] if live else b["ends_at"]),
                           "prize": _rewards_label(b["prizes"]), "winner": "" if live else _winner(b["results"]),
                           "tab": "mines" if list(b["mine_ids"] or []) else "top"})
         if await get_flag("expeditions"):
             for r in await conn.fetch(
-                    "SELECT id, title, icon, scope, prizes, resolve_at, status, results FROM expedition_targets "
+                    "SELECT id, title, title_tpl, icon, scope, prizes, resolve_at, status, results FROM expedition_targets "
                     "WHERE status = 'open' OR (status = 'finished' AND resolve_at >= $1) ORDER BY resolve_at DESC LIMIT 20",
                     since):
                 live = r["status"] == "open"
-                items.append({"kind": "exp", "icon": r["icon"] or "🗺", "title": r["title"],
+                items.append({"kind": "exp", "icon": r["icon"] or "🗺",
+                              "title": localized_title(r["title"], r["title_tpl"], ctx.lang),
                               "sub": t(ctx.lang, f"post.scope_{r['scope']}"), "live": live, "soon": False,
                               "at": _iso(r["resolve_at"]), "prize": _rewards_label(r["prizes"]),
                               "winner": "" if live else _winner(r["results"]), "tab": "map"})

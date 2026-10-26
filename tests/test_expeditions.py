@@ -270,3 +270,34 @@ def test_market_forms_name_the_chosen_asset_not_cutlets():
         assert needle in html, needle
     for old in ("L.mk_qty +", "form(\"sell\", L.mk_sellTitle", "fmt(L.mk_bought,"):
         assert old not in html, old
+
+
+def test_title_presets_in_every_language():
+    """26.10: названия-заготовки «слово + слово + число» — 120 сочетаний, на всех 14 языках, с родом и порядком слов."""
+    from shared.locales import SUPPORTED_LANGS
+    from shared.titles import ADJS, LANGS, NOUNS, build_title, localized_title, normalize_tpl
+    assert set(LANGS) == set(SUPPORTED_LANGS) and len(ADJS) * len(NOUNS) >= 100
+    for a in ADJS:
+        for n in NOUNS:
+            for lang in LANGS:
+                title = build_title(lang, a, n, 7)
+                assert title.endswith(" 7") and "None" not in title and "  " not in title, (a, n, lang)
+    assert build_title("ru", "legendary", "plain", 7) == "Легендарная равнина 7"
+    assert build_title("ru", "legendary", "volcano", 0) == "Легендарный вулкан"
+    assert build_title("ru", "secret", "sea", 3) == "Тайное море 3"
+    assert build_title("es", "legendary", "plain", 7) == "Llanura legendaria 7"          # прилагательное после
+    assert build_title("fr", "great", "plain", 1) == "Grande plaine 1"                    # «grand» — перед
+    assert build_title("de", "golden", "valley", 2) == "Goldenes Tal 2"                   # средний род
+    assert build_title("ar", "legendary", "citadel", 5) == "قلعة أسطورية 5"
+    assert normalize_tpl({"a": "x", "n": "plain"}) is None and normalize_tpl({"a": "ice", "n": "sea", "num": "x"})["num"] == 0
+    assert localized_title("Своё", None, "en") == "Своё"
+    assert localized_title("Ледяное море 2", '{"a": "ice", "n": "sea", "num": 2}', "en") == "Ice Sea 2"
+
+
+def test_admin_title_form():
+    from bots.main_bot.webapp_admin import form_title
+    assert form_title({"title_tpl": {"a": "golden", "n": "cup", "num": 7}, "title": "x"}) == (
+        "Золотой кубок 7", {"a": "golden", "n": "cup", "num": 7})
+    assert form_title({"title": " Своё "}) == ("Своё", None)
+    admin = (ROOT / "static" / "webapp" / "admin.html").read_text(encoding="utf-8")
+    assert "function titleBlock" in admin and "title_tpl: titleTpl(form)" in admin and "title_tpl: titleTpl(tform)" in admin

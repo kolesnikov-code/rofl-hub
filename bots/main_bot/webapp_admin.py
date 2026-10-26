@@ -64,11 +64,20 @@ def _iso(v):
 
 
 # ---------------------------------------------------------------- проверка формы битвы (чистая)
+def form_title(data: dict) -> tuple[str, dict | None]:
+    """Название из формы: заготовка (слово + слово + число → русская версия и шаблон) или свой текст."""
+    from shared.titles import build_title, normalize_tpl
+    tpl = normalize_tpl(data.get("title_tpl"))
+    if tpl:
+        return build_title("ru", tpl["a"], tpl["n"], tpl["num"]), tpl
+    return str(data.get("title") or "").strip(), None
+
+
 def validate_battle_form(data: dict, free_mines: set[int], now: datetime) -> tuple[dict | None, str | None]:
     """Проверяет форму пульта. Возвращает (поля для INSERT, None) или (None, текст ошибки)."""
     from shared.battles import BATTLE_NOMINATIONS, BATTLE_SCOPES, MANUAL_NOMINATIONS, MAX_BATTLE_PLACES
     from shared.prizes import normalize_rewards
-    title = str(data.get("title") or "").strip()
+    title, tpl = form_title(data)
     if not 1 <= len(title) <= 100:
         return None, "Название — от 1 до 100 символов"
     scope = data.get("scope")
@@ -130,7 +139,8 @@ def validate_battle_form(data: dict, free_mines: set[int], now: datetime) -> tup
         return None, "Рудников не больше, чем призовых мест"
     places = max(places, len(mines))
     reward_all = normalize_rewards(data.get("reward_all"))
-    return {"title": title, "scope": scope, "nomination_key": key, "reward_all": reward_all, "nomination_text": nom_text,
+    return {"title": title, "title_tpl": tpl, "scope": scope, "nomination_key": key, "reward_all": reward_all,
+            "nomination_text": nom_text,
             "starts_at": starts, "ends_at": starts + timedelta(hours=hours), "places": places,
             "prizes": prizes, "mine_ids": mines}, None
 
@@ -159,6 +169,7 @@ async def handle_admin_meta(request: web.Request) -> web.Response:
     from shared.feature_flags import all_feature_flags
     from shared.mines import free_mine_ids, list_mines
     from shared.prizes import BOOST_COLUMNS, ROBOT_KINDS
+    from shared.titles import admin_options
     now = utcnow()
     async with db.pool.acquire() as conn:
         mines = await list_mines(conn)
@@ -174,7 +185,7 @@ async def handle_admin_meta(request: web.Request) -> web.Response:
                    "until": _iso(m["captured_until"]) if m["captured_until"] and m["captured_until"] > now else None}
                   for m in mines],
         "fee": {"team": battery_fee(False), "clan": battery_fee(True)}, "hold_hours": MINE_HOLD_HOURS,
-        "flags": flags,
+        "flags": flags, "titles": admin_options(),
     })
 
 
@@ -219,11 +230,12 @@ async def handle_admin_battle_create(request: web.Request) -> web.Response:
             return _fail(err)
         battle_id = await conn.fetchval(
             """INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, prizes, scope, places,
-                                    mine_ids, announced, results_posted, reward_all)
-               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, TRUE, FALSE, $10::jsonb) RETURNING battle_id""",
+                                    mine_ids, announced, results_posted, reward_all, title_tpl)
+               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, TRUE, FALSE, $10::jsonb, $11::jsonb) RETURNING battle_id""",
             form["title"], form["nomination_key"], form["nomination_text"], form["starts_at"], form["ends_at"],
             json.dumps(form["prizes"], ensure_ascii=False), form["scope"], form["places"], form["mine_ids"],
-            json.dumps(form["reward_all"], ensure_ascii=False))
+            json.dumps(form["reward_all"], ensure_ascii=False),
+            json.dumps(form["title_tpl"]) if form["title_tpl"] else None)
     return web.json_response({"ok": True, "id": battle_id})
 
 
@@ -380,7 +392,7 @@ def validate_target_form(data: dict, now: datetime, open_count: int) -> tuple[di
     from shared.prizes import normalize_rewards
     if open_count >= EXP_MAX_TARGETS:
         return None, f"На карте уже {EXP_MAX_TARGETS} целей — закрой одну"
-    title = str(data.get("title") or "").strip()
+    title, tpl = form_title(data)
     if not 1 <= len(title) <= 100:
         return None, "Название — от 1 до 100 символов"
     descr = str(data.get("descr") or "").strip()[:500]
@@ -410,7 +422,7 @@ def validate_target_form(data: dict, now: datetime, open_count: int) -> tuple[di
         if 1 <= p <= max(places, 1) and clean:
             prizes[str(p)] = clean
     reward_all = normalize_rewards(data.get("reward_all"))
-    return {"title": title, "descr": descr, "icon": icon, "scope": scope, "x": round(x, 1), "y": round(y, 1),
+    return {"title": title, "title_tpl": tpl, "descr": descr, "icon": icon, "scope": scope, "x": round(x, 1), "y": round(y, 1),
             "forks": forks, "resolve_at": now + timedelta(hours=hours), "places": places, "prizes": prizes,
             "reward_all": reward_all}, None
 
@@ -461,11 +473,12 @@ async def handle_admin_target_create(request: web.Request) -> web.Response:
                 return _fail(err)
             target_id = await conn.fetchval(
                 """INSERT INTO expedition_targets (title, descr, icon, x, y, scope, forks, resolve_at, places, prizes,
-                                                   reward_all, announced)
-                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, TRUE) RETURNING id""",
+                                                   reward_all, announced, title_tpl)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, TRUE, $12::jsonb) RETURNING id""",
                 form["title"], form["descr"], form["icon"], form["x"], form["y"], form["scope"], form["forks"],
                 form["resolve_at"], form["places"], json.dumps(form["prizes"], ensure_ascii=False),
-                json.dumps(form["reward_all"], ensure_ascii=False))
+                json.dumps(form["reward_all"], ensure_ascii=False),
+                json.dumps(form["title_tpl"]) if form["title_tpl"] else None)
     return web.json_response({"ok": True, "id": target_id})
 
 

@@ -2263,13 +2263,15 @@ async def test_admin_panel_api_creates_battle_and_gives_rewards(conn, global_db,
         meta = await (await client.get("/api/admin/meta", headers=head)).json()
         assert len(meta["mines"]) == 30 and meta["fee"] == {"team": 5, "clan": 25}
         r = await client.post("/api/admin/battle", headers=head, json={
-            "title": "Пульт", "scope": "teams", "nomination": "farm_mined", "starts_at": "now", "hours": 24,
+            "title": "Пульт", "title_tpl": {"a": "golden", "n": "cup", "num": 3}, "scope": "teams",
+            "nomination": "farm_mined", "starts_at": "now", "hours": 24,
             "places": 2, "mine_ids": [7, 8], "prizes": {"1": [{"kind": "coins", "amount": 100}]}})
         body = await r.json()
         assert r.status == 200 and body["ok"]
         row = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", body["id"])
         assert list(row["mine_ids"]) == [7, 8] and row["announced"] and row["scope"] == "teams"   # анонс — сразу в приложении
         assert _j.loads(row["prizes"])["1"][0]["amount"] == 100
+        assert row["title"] == "Золотой кубок 3" and _j.loads(row["title_tpl"])["n"] == "cup"   # 🏷 заготовка
         bad = await client.post("/api/admin/battle", headers=head, json={"title": "x", "scope": "teams",
                                 "nomination": "farm_mined", "hours": 5, "places": 1, "mine_ids": [7]})
         assert bad.status == 400                                                   # рудник №7 уже в битве
