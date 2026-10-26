@@ -27,11 +27,20 @@ def _iso(v):
     return v.isoformat() if v else None
 
 
+EVENTS_PRIZE_ITEMS = 3        # в ленте — первые 3 награды 1-го места, остальное «… +N» (полный список — во вкладке)
+
+
+def short_rewards_label(rewards: list[dict], limit: int = EVENTS_PRIZE_ITEMS) -> str:
+    """Короткая подпись приза для ленты: длинный список наград не распирает карточку."""
+    from shared.prizes import reward_label
+    head = " + ".join(reward_label(r) for r in rewards[:limit])
+    return head + (f" … +{len(rewards) - limit}" if len(rewards) > limit else "")
+
+
 def _rewards_label(raw) -> str:
     from shared.battles import prizes_by_place
-    from shared.prizes import rewards_label
     prizes = prizes_by_place(raw)
-    return rewards_label(prizes[min(prizes)]) if prizes else ""
+    return short_rewards_label(prizes[min(prizes)]) if prizes else ""
 
 
 def _winner(results) -> str:

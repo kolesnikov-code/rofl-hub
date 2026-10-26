@@ -249,3 +249,14 @@ def test_rules_mention_only_the_safe_as_random():
     rules = (ROOT / "static" / "webapp" / "rules.html").read_text(encoding="utf-8")
     assert "кубики" not in rules.lower() and "подбрасывание монеты" not in rules.lower()
     assert "Кибер-Сейф" in rules and "28.10.2026" in rules
+
+
+def test_long_prize_is_shortened_in_events_and_never_widens_the_page():
+    """26.10: приз из 20+ наград растягивал паспорт вбок — в ленте только первые 3 и «… +N»."""
+    from bots.main_bot.webapp_events import short_rewards_label
+    rewards = [{"kind": "resource", "res": r, "qty": 10} for r in ("metal", "hydrogen", "crystal", "parts", "stone")]
+    label = short_rewards_label(rewards)
+    assert label.count("+ ") == 2 and label.endswith("… +2")
+    assert short_rewards_label(rewards[:2]) == "10 ⛏ + 10 💧"
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "#app { overflow-x: clip; }" in html and 'class="nw"' not in html

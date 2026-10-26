@@ -44,7 +44,7 @@
   .row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 14px; }
   .row { gap: 10px; }
   .row .k { color: var(--muted); white-space: nowrap; flex: 0 0 auto; }   /* подпись с эмодзи — всегда одной строкой */
-  .row .v { font-weight: 700; min-width: 0; text-align: right; }          /* переносится значение, а не подпись */
+  .row .v { font-weight: 700; min-width: 0; text-align: right; overflow-wrap: anywhere; }          /* переносится значение, а не подпись */
   .row .k:only-child { white-space: normal; flex: 1 1 auto; }              /* строка без значения — текст переносится */
   .vip {
     display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 999px;
@@ -212,7 +212,8 @@
   .news-item .ni-tt { font-weight: 700; overflow-wrap: anywhere; }
   .news-item .ni-sb { font-size: 12px; opacity: .75; }
   .news-item .ni-rt { flex: 0 0 auto; text-align: right; font-size: 12px; white-space: nowrap; }
-  .news-item .nw { white-space: nowrap; }
+  .news-item .ni-sb { overflow-wrap: anywhere; }
+  #app { overflow-x: clip; }   /* длинный текст никогда не распирает страницу вбок */
   .lot.closed { opacity: .6; }
   .lot .lot-price { font-size: 26px; font-weight: 800; }
   .fork-timer { font-weight: 700; color: #ffd93d; margin: 6px 0; }
@@ -7998,7 +7999,7 @@
         : (x.winner ? fmt(L.news_won, { w: esc(x.winner) }) : L.news_done);
       return '<button class="news-item' + (x.live ? '' : ' done') + '" data-news="' + x.tab + '"><span class="ni-ic">' + esc(x.icon) + '</span>' +
         '<span class="ni-tx"><span class="ni-tt">' + esc(x.title) + '</span><br><span class="ni-sb">' + esc(x.sub) +
-        (x.prize ? (x.sub ? ' · ' : '') + '<span class="nw">' + (x.kind === "auction" ? '💰 ' : '🎁 ') + esc(x.prize) + '</span>' : '') +
+        (x.prize ? (x.sub ? ' · ' : '') + '<span>' + (x.kind === "auction" ? '💰 ' : '🎁 ') + esc(x.prize) + '</span>' : '') +
         '</span></span><span class="ni-rt">' + right + '</span></button>';
     }).join("");
     return card(L.news_title, (items || '<div class="hint">' + L.news_empty + '</div>') + (items ? '<div class="hint">' + L.news_hint + '</div>' : ''));
