@@ -43,19 +43,23 @@ from shared.economy import (
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import resolve_lang, t
-from shared.economy import ENERGY_WIN_CHANCE_PERCENT
+from shared.economy import ENERGY_WIN_CHANCE_PERCENT, GAME_MILESTONES
 from shared.resources import RESOURCE_ICONS, change_resource, game_resource_gain, resource_capacity
 
 router = Router()
 logger = logging.getLogger(__name__)
 
-GAME_TYPES = ("rps", "hl", "quiz", "safe")
+GAME_TYPES = ("rps", "hl", "quiz", "safe", "math", "flags", "code", "memory")   # 4 последние — только в приложении
 GAME_TITLES = {g: f"games.name.{g}" for g in GAME_TYPES}  # ключи локалей
 WIN_COLUMNS = {
     "rps": "daily_wins_rps",
     "hl": "daily_wins_hl",
     "quiz": "daily_wins_quiz",
     "safe": "daily_wins_safe",
+    "math": "daily_wins_math",
+    "flags": "daily_wins_flags",
+    "code": "daily_wins_code",
+    "memory": "daily_wins_memory",
 }
 _ALL_WIN_COLUMNS = tuple(WIN_COLUMNS.values())
 
@@ -164,6 +168,21 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                                         qty=qty, name=t(lang, f"res.{kind}"), total=stock)
                     if stock >= cap:
                         status += "\n" + t(lang, "games.resource_full", icon=RESOURCE_ICONS[kind], cap=cap)
+                # «Каждые N побед — ресурс» (27.10): 🪨 за 10 верных в викторине, ⚡ за 10 в математике
+                milestone = GAME_MILESTONES.get(game_type)
+                if milestone is not None:
+                    kind_m, every = milestone
+                    total = await conn.fetchval(
+                        "INSERT INTO game_counters (user_id, game, wins_total) VALUES ($1, $2, 1) "
+                        "ON CONFLICT (user_id, game) DO UPDATE SET wins_total = game_counters.wins_total + 1 "
+                        "RETURNING wins_total", user_id, game_type)
+                    info["streak"] = {"kind": kind_m, "every": every, "have": total % every}
+                    if total % every == 0:
+                        stock_m = await change_resource(conn, user_id, kind_m, 1, f"game_win:{game_type}",
+                                                        cap=await resource_capacity(conn, user_id))
+                        info["milestone"] = {"kind": kind_m, "qty": 1, "total": stock_m}
+                        status += "\n" + t(lang, "games.resource_gain", icon=RESOURCE_ICONS[kind_m], qty=1,
+                                            name=t(lang, f"res.{kind_m}"), total=stock_m)
                 # ⚡ Электричество иногда «выпадает» в любой победе (27.10)
                 if random.randrange(100) < ENERGY_WIN_CHANCE_PERCENT:
                     await change_resource(conn, user_id, "energy", 1, f"game_win:{game_type}",

@@ -34,8 +34,10 @@ NOW = datetime(2026, 11, 1, 12, 0, tzinfo=timezone.utc)
 
 # ---------------------------------------------------------------- ресурсы
 def test_every_game_mines_its_own_resource():
-    assert set(GAME_RESOURCE) == {"rps", "hl", "quiz", "safe"}
-    assert set(GAME_RESOURCE.values()) == set(RESOURCE_KINDS)   # четыре игры — четыре ресурса, без повторов
+    classic = {g: GAME_RESOURCE[g] for g in ("rps", "hl", "quiz", "safe")}
+    assert set(classic.values()) == set(RESOURCE_KINDS)          # четыре старые игры — четыре ресурса, без повторов
+    assert set(GAME_RESOURCE.values()) <= set(RESOURCE_KINDS)    # 27.10: игры за раунд дают только базовые ресурсы
+    assert "math" not in GAME_RESOURCE                           # ➗ — только ⚡ за каждые 10 побед
     assert game_resource_gain("safe") == ("parts", 3)           # сейф реже выигрывается — даёт больше
     assert game_resource_gain("rps") == ("metal", 1)
     assert game_resource_gain("unknown") is None

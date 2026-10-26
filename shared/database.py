@@ -843,6 +843,19 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS game_rounds_user_idx ON game_rounds (user_id, created_at);",
+    # --- 27.10: новые игры приложения — суточные победы и общие счётчики побед (ресурс за каждые N) ---
+    "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS daily_wins_math INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS daily_wins_flags INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS daily_wins_code INT NOT NULL DEFAULT 0;",
+    "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS daily_wins_memory INT NOT NULL DEFAULT 0;",
+    """
+    CREATE TABLE IF NOT EXISTS game_counters (
+        user_id BIGINT NOT NULL,
+        game VARCHAR(16) NOT NULL,
+        wins_total INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (user_id, game)
+    );
+    """,
     # --- 26.10: викторина без повторов — какие вопросы игрок уже видел (ключ = хэш текста вопроса) ---
     """
     CREATE TABLE IF NOT EXISTS quiz_seen (

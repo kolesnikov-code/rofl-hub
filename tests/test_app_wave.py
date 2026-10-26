@@ -330,7 +330,7 @@ def test_games_tab_is_in_the_app_with_server_side_secrets():
     from shared.economy import QUIZ_ANSWER_SECONDS, QUIZ_ROUND_SIZE
     html = Path("static/webapp/index.html").read_text(encoding="utf-8")
     assert "function viewGames" in html and "games: viewGames" in html and 'games: "games"' in html
-    assert "stopGameTimer();" in html and '"/api/quiz/answer"' in html
+    assert "stopGameTimer();" in html and 'quiz: "/api/quiz"' in html and 'base + "/answer"' in html
     assert QUIZ_ANSWER_SECONDS == 30 and QUIZ_ROUND_SIZE == 10
     for lang in PACK_CODES:
         assert MINIAPP_PACKS[lang].get("tab_games")

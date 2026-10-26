@@ -435,6 +435,10 @@ STRINGS: dict[str, str] = {
     "games.name.hl": "Wyżej/Niżej",
     "games.name.quiz": "Quiz",
     "games.name.safe": "Sejf",
+    "games.name.math": "Math",  # TODO(перевод 26.10)
+    "games.name.flags": "Flags and capitals",  # TODO(перевод 26.10)
+    "games.name.code": "Code breaker",  # TODO(перевод 26.10)
+    "games.name.memory": "Memory",  # TODO(перевод 26.10)
 
     # ---------------- КНБ ----------------
     "rps.intro": (
@@ -1090,6 +1094,17 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод 26.10): новые игры приложения (27.10)
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     # TODO(перевод 26.10): игры в приложении
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",

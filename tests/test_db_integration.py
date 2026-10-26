@@ -2916,7 +2916,8 @@ async def test_app_games_api_rounds_limits_hint_and_timer(conn, global_db):
     await client.start_server()
     try:
         hub = await (await client.get("/api/games", headers=head)).json()
-        assert {g["id"] for g in hub["games"]} == {"rps", "hl", "quiz", "safe"} and hub["quiz"]["seconds"] == 30
+        assert {"rps", "hl", "quiz", "safe", "math", "flags", "code", "memory"} == {g["id"] for g in hub["games"]}
+        assert hub["quiz"]["seconds"] == 30
         r = await (await client.post("/api/games/rps", headers=head, json={"move": "rock"})).json()
         assert r["ok"] and r["bot"] in ("rock", "paper", "scissors") and r["result"] in ("win", "lose", "draw")
         s = await (await client.post("/api/games/safe", headers=head, json={"guess": 2})).json()
@@ -2962,5 +2963,101 @@ async def test_app_games_api_rounds_limits_hint_and_timer(conn, global_db):
         finally:
             await set_flag("games", True)
             invalidate_cache()
+    finally:
+        await client.close()
+
+
+async def test_app_new_games_math_flags_code_memory_and_milestones(conn, global_db):
+    """🕹 27.10: математика, флаги, взлом кода, мемори; 🪨 за каждые 10 верных в викторине, ⚡ — в математике."""
+    import json as _j
+    import time as _t
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.economy import CODE_MAX_ATTEMPTS, MEMORY_MAX_MOVES
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    await _mk_user(conn, 1840, 1000)
+    await conn.execute("DELETE FROM game_counters WHERE user_id = 1840")   # счётчик серий живёт вне users
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1840}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+
+    async def state(rid):
+        st = await conn.fetchval("SELECT state FROM game_rounds WHERE id = $1", rid)
+        return _j.loads(st) if isinstance(st, str) else st
+
+    async def stock(kind):
+        return await conn.fetchval("SELECT COALESCE(SUM(qty), 0) FROM user_resources WHERE user_id = 1840 AND kind = $1",
+                                   kind) or 0
+    try:
+        # ➗ 10 верных подряд — ровно один ⚡ за серию (и ни одного ресурса за раунд)
+        energy0, lucky = await stock("energy"), 0
+        for n in range(1, 11):
+            q = await (await client.post("/api/math/next", headers=head, json={})).json()
+            assert q["ok"] and "correct" not in q and q["seconds"] == 20
+            right = (await state(q["round_id"]))["correct"]
+            a = await (await client.post("/api/math/answer", headers=head,
+                                         json={"round_id": q["round_id"], "option": right})).json()
+            assert a["result"] == "win" and a["info"]["streak"] == {"kind": "energy", "every": 10, "have": n % 10}
+            assert ("milestone" in a["info"]) == (n == 10)
+            lucky += a["info"].get("energy", 0)              # шанс-⚡ за любую победу — отдельно от серии
+        assert await stock("energy") - energy0 == lucky + 1
+        assert await conn.fetchval("SELECT wins_total FROM game_counters WHERE user_id = 1840 AND game = 'math'") == 10
+        # 🏳️ флаги: верный ответ и ISO на сервере; неверный — проигрыш
+        f = await (await client.post("/api/flags/next", headers=head, json={})).json()
+        assert f["ok"] and "correct" not in f and "iso" not in f and len(f["options"]) == 4
+        st = await state(f["round_id"])
+        wrong = (st["correct"] + 1) % 4
+        fa = await (await client.post("/api/flags/answer", headers=head, json={"round_id": f["round_id"], "option": wrong})).json()
+        assert fa["result"] == "lose" and fa["correct"] == st["correct"]
+        # 💻 взлом кода: неверный ввод отклоняется, верный — победа с монетами и ⚙️×2
+        c = await (await client.post("/api/code/new", headers=head, json={})).json()
+        assert c["ok"] and "secret" not in c
+        bad = await client.post("/api/code/guess", headers=head, json={"round_id": c["round_id"], "guess": "1123"})
+        assert bad.status == 400
+        secret = (await state(c["round_id"]))["secret"]
+        miss = "".join(d for d in "0123456789" if d not in secret)[:4]
+        g1 = await (await client.post("/api/code/guess", headers=head, json={"round_id": c["round_id"], "guess": miss})).json()
+        assert (g1["bulls"], g1["cows"], g1["left"], g1["result"]) == (0, 0, CODE_MAX_ATTEMPTS - 1, None)
+        g2 = await (await client.post("/api/code/guess", headers=head, json={"round_id": c["round_id"], "guess": secret})).json()
+        assert g2["result"] == "win" and g2["info"]["reward"] == 5
+        assert (g2["info"]["res"]["kind"], g2["info"]["res"]["qty"]) == ("parts", 2)
+        closed = await (await client.post("/api/code/guess", headers=head, json={"round_id": c["round_id"], "guess": secret})).json()
+        assert closed["ok"] is False
+        # 💻 10 промахов — проигрыш, код раскрыт
+        c2 = await (await client.post("/api/code/new", headers=head, json={})).json()
+        sec2 = (await state(c2["round_id"]))["secret"]
+        miss2 = "".join(d for d in "0123456789" if d not in sec2)[:4]
+        for _ in range(CODE_MAX_ATTEMPTS):
+            last = await (await client.post("/api/code/guess", headers=head, json={"round_id": c2["round_id"], "guess": miss2})).json()
+        assert last["result"] == "lose" and last["secret"] == sec2
+        # 🃏 мемори: колода скрыта; идеальная партия — победа
+        m = await (await client.post("/api/memory/new", headers=head, json={})).json()
+        assert m["ok"] and "deck" not in m
+        deck = (await state(m["round_id"]))["deck"]
+        pairs = {}
+        for i, ic in enumerate(deck):
+            pairs.setdefault(ic, []).append(i)
+        resp = None
+        for a_idx, b_idx in pairs.values():
+            await client.post("/api/memory/flip", headers=head, json={"round_id": m["round_id"], "idx": a_idx})
+            resp = await (await client.post("/api/memory/flip", headers=head, json={"round_id": m["round_id"], "idx": b_idx})).json()
+        assert resp["result"] == "win" and resp["deck"] == deck and resp["info"]["reward"] == 3
+        # 🃏 только промахи — после MEMORY_MAX_MOVES ходов проигрыш
+        m2 = await (await client.post("/api/memory/new", headers=head, json={})).json()
+        d2 = (await state(m2["round_id"]))["deck"]
+        a0 = 0
+        b0 = next(i for i in range(1, len(d2)) if d2[i] != d2[0])
+        for _ in range(MEMORY_MAX_MOVES):
+            await client.post("/api/memory/flip", headers=head, json={"round_id": m2["round_id"], "idx": a0})
+            lm = await (await client.post("/api/memory/flip", headers=head, json={"round_id": m2["round_id"], "idx": b0})).json()
+        assert lm["result"] == "lose" and lm["moves"] == MEMORY_MAX_MOVES
+        # 🧠 викторина: 🪨 камень на 10-м верном ответе
+        await conn.execute("INSERT INTO game_counters (user_id, game, wins_total) VALUES (1840, 'quiz', 9)")
+        q = await (await client.post("/api/quiz/next", headers=head, json={})).json()
+        right = (await state(q["round_id"]))["correct"]
+        stone0 = await stock("stone")
+        qa = await (await client.post("/api/quiz/answer", headers=head, json={"round_id": q["round_id"], "option": right})).json()
+        assert qa["info"]["milestone"]["kind"] == "stone" and await stock("stone") == stone0 + 1
     finally:
         await client.close()

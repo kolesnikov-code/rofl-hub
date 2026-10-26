@@ -86,7 +86,23 @@ DAILY_WIN_LIMITS = {
     "rps": 15,
     "hl": 15,
     "safe": 15,
+    # 27.10 — новые игры приложения (шаг 2 плана владельца)
+    "math": 30,      # ➗ быстрый счёт — как викторина
+    "flags": 30,     # 🏳️ флаги и столицы
+    "code": 10,      # 💻 взлом кода (быки и коровы) — партия длинная
+    "memory": 15,    # 🃏 мемори
 }
+# Монеты за победу по играм (по умолчанию WIN_REWARD); сложнее игра — щедрее
+GAME_WIN_REWARDS = {"safe": 5, "code": 5, "memory": 3}
+# «Каждые N побед — ресурс» (решение владельца 27.10): ценный ресурс — за серию, а не за раунд.
+# Викторина: 🪨 камень за каждые 10 верных ответов (30 в день → 3 камня), математика — ⚡ за каждые 10.
+GAME_MILESTONES = {"quiz": ("stone", 10), "math": ("energy", 10)}
+MATH_ANSWER_SECONDS = 20       # ➗ пример решается быстрее вопроса викторины
+FLAGS_ANSWER_SECONDS = 20
+CODE_DIGITS = 4                # 💻 4 разные цифры
+CODE_MAX_ATTEMPTS = 10         # не взломал за 10 попыток — проигрыш
+MEMORY_PAIRS = 6               # 🃏 12 карточек
+MEMORY_MAX_MOVES = 12          # нашёл все пары за ≤ 12 ходов (ход = открыть две карточки) — победа
 DEFAULT_DAILY_WIN_LIMIT = 15
 QUIZ_ANSWER_SECONDS = 30   # 26.10: владелец — «за 15 секунд только переварить вопрос успеваю» (было 15, до того 10)
 # Игры в приложении (26.10): викторина раундами по 10 вопросов, подсказка 50/50 за монеты (сгорают),
@@ -102,8 +118,10 @@ QUIZ_LEVEL_REWARD_PER_LEVEL = 100
 
 
 def win_reward_for(game_type: str) -> int:
-    """Выигрыш за раунд: у Сейфа повышенный (ниже шанс), у остальных базовый."""
-    return SAFE_WIN_REWARD if game_type == "safe" else WIN_REWARD
+    """Выигрыш за раунд: у сложных игр и Сейфа (ниже шанс) повышенный, у остальных базовый."""
+    if game_type == "safe":
+        return SAFE_WIN_REWARD
+    return GAME_WIN_REWARDS.get(game_type, WIN_REWARD)
 
 
 def quiz_answers_required(level: int) -> int:
@@ -331,10 +349,14 @@ RESOURCE_KINDS = ("metal", "hydrogen", "crystal", "parts")
 GAME_RESOURCE = {          # игра → ресурс за победу
     "rps": "metal",        # ⛏ Металл — КНБ (и дуэли)
     "hl": "hydrogen",      # 💧 Водород — Больше/Меньше
-    "quiz": "crystal",     # 💎 Кристаллы — Викторина
+    "quiz": "crystal",     # 💎 Кристаллы — Викторина (+ 🪨 за каждые 10 верных — GAME_MILESTONES)
     "safe": "parts",       # ⚙️ Детали — Кибер-Сейф (шанс 1 из 4 — даём больше)
+    "flags": "crystal",    # 💎 Флаги и столицы
+    "code": "parts",       # ⚙️ Взлом кода — логика, детали ×2
+    "memory": "hydrogen",  # 💧 Мемори
+    # ➗ математика — без ресурса за раунд: ⚡ за каждые 10 верных (GAME_MILESTONES)
 }
-RESOURCE_PER_WIN = {"rps": 1, "hl": 1, "quiz": 1, "safe": 3}
+RESOURCE_PER_WIN = {"rps": 1, "hl": 1, "quiz": 1, "safe": 3, "flags": 1, "code": 2, "memory": 1}
 DUEL_RESOURCE_REWARD = {10: 2, 100: 4, 1000: 8}   # 🪨 Камень победителю дуэли по столу (27.10: был металл)
 DUEL_RESOURCE_KIND = "stone"
 QUEST_RESOURCE_BUNDLE = 5     # каждого ресурса за ПЕРВОЕ прохождение квеста

@@ -30,7 +30,7 @@ from shared.economy import (  # noqa: E402
 
 # ---------------------------------------------------------------- каталог игр
 def test_every_game_has_title_column_and_limit():
-    assert set(GAME_TITLES) == set(WIN_COLUMNS) == {"rps", "hl", "quiz", "safe"}
+    assert set(GAME_TITLES) == set(WIN_COLUMNS) == {"rps", "hl", "quiz", "safe", "math", "flags", "code", "memory"}
     assert limit_for("quiz") == 30
     for game in ("rps", "hl", "safe"):
         assert limit_for(game) == 15

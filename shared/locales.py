@@ -434,6 +434,10 @@ RU: dict[str, str] = {
     "games.name.hl": "Больше/Меньше",
     "games.name.quiz": "Викторина",
     "games.name.safe": "Сейф",
+    "games.name.math": "Математика",
+    "games.name.flags": "Флаги и столицы",
+    "games.name.code": "Взлом кода",
+    "games.name.memory": "Мемори",
 
     # ---------------- КНБ ----------------
     "rps.intro": (
@@ -1495,6 +1499,10 @@ EN: dict[str, str] = {
     "games.name.hl": "High/Low",
     "games.name.quiz": "Quiz",
     "games.name.safe": "Safe",
+    "games.name.math": "Math",
+    "games.name.flags": "Flags and capitals",
+    "games.name.code": "Code breaker",
+    "games.name.memory": "Memory",
 
     # ---------------- RPS ----------------
     "rps.intro": (

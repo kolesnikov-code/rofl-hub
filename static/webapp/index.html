@@ -100,6 +100,27 @@
   @media (prefers-reduced-motion: reduce) { .spark { display: none; } .quiz-opt, .btn { animation: none !important; } }
   .game-tile.limit .gt-meta { color: var(--accent); }
   .quiz-opt.gone { opacity: .25; }
+  .g-flag { display: block; margin: 12px auto 4px; height: 96px; max-width: 100%; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255,255,255,.15); }
+  .g-flag-emoji { font-size: 72px; text-align: center; line-height: 1.1; margin: 8px 0 0; }
+  .math-q { font-size: 34px; font-weight: 900; text-align: center; color: var(--accent); margin: 14px 0 6px; letter-spacing: 1px; }
+  .code-slots { display: flex; justify-content: center; gap: 8px; margin: 12px 0 4px; }
+  .code-slots span { width: 46px; height: 54px; border-radius: 12px; border: 1px solid rgba(0,255,225,.35); display: flex;
+    align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: var(--accent); background: #0d1326; }
+  .code-slots.win span { border-color: var(--ok); color: var(--ok); }
+  .code-slots.sad span { border-style: dashed; color: #9fbfa8; }
+  .code-pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 8px; }
+  .code-pad .btn { margin-top: 0; padding: 12px 0; font-size: 17px; }
+  .code-log { margin-top: 10px; font-size: 14px; }
+  .code-log div { display: flex; justify-content: space-between; padding: 5px 2px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .code-log b { letter-spacing: 4px; }
+  .mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .mem-card { aspect-ratio: 1 / 1; border-radius: 12px; border: 1px solid rgba(0,255,225,.3); background: linear-gradient(135deg, #10203a, #0b1124);
+    font-size: 30px; display: flex; align-items: center; justify-content: center; color: transparent; transition: transform .25s, background .25s; }
+  .mem-card::before { content: "?"; color: rgba(0,255,225,.35); font-size: 22px; font-weight: 900; }
+  .mem-card.open { background: #13284a; color: inherit; transform: rotateY(180deg) scaleX(-1); }
+  .mem-card.open::before, .mem-card.done::before { content: none; }
+  .mem-card.done { background: rgba(55,232,95,.16); border-color: var(--ok); color: inherit; }
+  .mem-card.miss { border-color: var(--bad); }
   .quiz-opt:disabled { cursor: default; }
   .tbar { height: 6px; background: #0d1326; border-radius: 99px; overflow: hidden; margin-top: 8px; }
   .tbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--ok), var(--accent), var(--bad)); transition: width 1s linear; }
@@ -506,7 +527,7 @@
       map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
       tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "На карте — соло-походы и походы отрядов команд (формат у каждой цели свой). К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "🎒 За участие: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Твой выбор сработает, как только дойдёшь до развилки. Передумать можно до этого момента.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Выбор принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
       subtitle: "твоя игровая империя в одном экране",
-      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}. Угадал — +{r} 🪙.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит",
+      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}. Угадал — +{r} 🪙.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит", g_streak: "Серия: {i} {a}/{b}", g_every: "{i} за каждые {n} побед", g_win_coins: "Победа: +{r} 🪙", flags_q_flag: "Чей это флаг?", flags_q_cap: "Какая столица у страны {c}?", code_rules: "Взломай код из {d} разных цифр за {m} попыток. 🐂 — цифра на своём месте, 🐄 — цифра есть, но в другом месте.", code_left: "Попыток осталось: {n}", code_try: "Проверить", mem_rules: "Найди все {p} пар за {m} ходов. Ход — открыть две карточки.", mem_moves: "Ходов: {a}/{b}",
       tab_passport: "📋 Паспорт", tab_farm: "🚜 Ферма", tab_goals: "🎯 Цели", tab_workshop: "🔧 Мастерская",
       tab_raids: "🏴‍☠️ Налёты", tab_market: "📈 Биржа", tab_team: "🏆 Команда", tab_shop: "🏪 Магазин", tab_top: "👑 ТОП",
       passport: "📋 ПАСПОРТ ИГРОКА", coins: "🪙",
@@ -734,7 +755,7 @@
       map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
       tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "🎒 For taking part: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your choice applies as soon as you reach the fork. You can change it until then.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Choice saved", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
       subtitle: "your game empire on one screen",
-      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}. Guess it — +{r} 🪙.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit",
+      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}. Guess it — +{r} 🪙.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit", g_streak: "Streak: {i} {a}/{b}", g_every: "{i} for every {n} wins", g_win_coins: "Win: +{r} 🪙", flags_q_flag: "Whose flag is this?", flags_q_cap: "What is the capital of {c}?", code_rules: "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.", code_left: "Tries left: {n}", code_try: "Check", mem_rules: "Find all {p} pairs in {m} moves. A move is turning over two cards.", mem_moves: "Moves: {a}/{b}",
       tab_passport: "📋 Passport", tab_farm: "🚜 Farm", tab_goals: "🎯 Goals", tab_workshop: "🔧 Workshop",
       tab_raids: "🏴‍☠️ Raids", tab_market: "📈 Market", tab_team: "🏆 Team", tab_shop: "🏪 Shop", tab_top: "👑 TOP",
       passport: "📋 PLAYER PASSPORT", coins: "🪙",
@@ -958,6 +979,16 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -1607,6 +1638,16 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -2256,6 +2297,16 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -2905,6 +2956,16 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -3554,6 +3615,16 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -4203,6 +4274,16 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -4852,6 +4933,16 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -5501,6 +5592,16 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -6150,6 +6251,16 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -6799,6 +6910,16 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -7448,6 +7569,16 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -8097,6 +8228,16 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "g_streak": "Streak: {i} {a}/{b}",
+    "g_every": "{i} for every {n} wins",
+    "g_win_coins": "Win: +{r} 🪙",
+    "flags_q_flag": "Whose flag is this?",
+    "flags_q_cap": "What is the capital of {c}?",
+    "code_rules": "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.",
+    "code_left": "Tries left: {n}",
+    "code_try": "Check",
+    "mem_rules": "Find all {p} pairs in {m} moves. A move is turning over two cards.",
+    "mem_moves": "Moves: {a}/{b}",
     "tab_games": "🕹 Games",
     "g_limit_btn": "⚡ Lift the limit",
     "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
@@ -10163,7 +10304,8 @@
 
   // ================= 🕹 Игры (26.10: «больше Mini App, меньше чат-бота») =================
   // Загаданное хранит сервер; таймер викторины считает сервер, здесь — только отображение.
-  const GAMES_LIVE = ["quiz", "rps", "hl", "safe"], GAMES_SOON = ["words", "math", "flags", "code", "memory"];
+  const GAMES_LIVE = ["quiz", "math", "flags", "code", "memory", "rps", "hl", "safe"], GAMES_SOON = ["words"];
+  const TIMED = { quiz: "/api/quiz", math: "/api/math", flags: "/api/flags" };   // «вопрос — 4 варианта — таймер»
   let gameScreen = null, gameTimer = null, quizRun = null, gamesData = null;
   const stopGameTimer = () => { if (gameTimer) { clearInterval(gameTimer); gameTimer = null; } };
   // Итог одной строкой: «🎉 Победа! Начислено: +2 🪙 · +1 💎», ниже — баланс (просьба владельца 26.10)
@@ -10173,11 +10315,13 @@
     if (i.reward) gain.push("+" + i.reward + " 🪙");
     if (i.res) gain.push("+" + i.res.qty + " " + RES_ICON[i.res.kind] + (i.res.full ? " (" + L.g_full + ")" : ""));
     if (i.energy) gain.push("+1 ⚡");
+    if (i.milestone) gain.push("+" + i.milestone.qty + " " + RES_ICON[i.milestone.kind]);
     const money = gain.length ? fmt(L.g_credited, { x: gain.join(" · ") })
       : (i.penalty ? fmt(L.g_charged, { x: "−" + i.penalty + " 🪙" }) : "");
     let html = (head ? head + " " : "") + money;
     if (i.level_up) html += "<br><b>" + fmt(L.g_level, { l: i.level_up.level, b: num(i.level_up.bonus) }) + "</b>";
     if (i.intern) html += "<br>" + L.g_intern;
+    if (i.streak) html += '<br><span class="hint">' + streakLine(i.streak) + '</span>';
     return html + '<br><span class="hint">' + fmt(L.g_balance, { b: num(r.balance) }) + '</span>';
   }
   function gameHead(id) {
@@ -10205,9 +10349,16 @@
     if (!win && right && right !== chosen) right.classList.add("fx-sad");
   }
   function vibrate(ok) { if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred(ok ? "success" : "error"); }
+  const streakLine = st => fmt(L.g_streak, { i: RES_ICON[st.kind], a: st.have, b: st.every });
+  function gameResLine(g) {
+    const parts = [];
+    if (g.res) parts.push((g.res_qty > 1 ? g.res_qty + " " : "") + RES_ICON[g.res]);
+    if (g.every) parts.push(fmt(L.g_every, { i: RES_ICON[g.every[0]], n: g.every[1] }));
+    return parts.join(" + ");
+  }
   function prizeLine(id) {
-    const g = gamesData.games.find(x => x.id === id);
-    return fmt(L.g_prize, { r: g.reward, i: (g.res_qty > 1 ? g.res_qty + " " : "") + RES_ICON[g.res] });
+    const g = gamesData.games.find(x => x.id === id), r = gameResLine(g);
+    return r ? fmt(L.g_prize, { r: g.reward, i: r }) : fmt(L.g_win_coins, { r: g.reward });
   }
 
   async function viewGames(box) {
@@ -10216,13 +10367,16 @@
     if (gameScreen === "rps") return gameRps(box);
     if (gameScreen === "hl") return gameHl(box);
     if (gameScreen === "safe") return gameSafe(box);
-    if (gameScreen === "quiz") return gameQuiz(box);
+    if (TIMED[gameScreen]) return gameTimed(box, gameScreen);
+    if (gameScreen === "code") return gameCode(box);
+    if (gameScreen === "memory") return gameMemory(box);
     const d = gamesData;
     const tile = g => {
       const lim = !d.unlimited && g.wins >= g.limit;
       return '<button class="game-tile' + (lim ? ' limit' : '') + '" data-game="' + g.id + '"><span class="gt-name">' +
         L["g_name_" + g.id] + '</span><span class="gt-meta">🏆 ' + g.wins + '/' + (d.unlimited ? "∞" : g.limit) +
-        ' · +' + g.reward + ' 🪙 · ' + RES_ICON[g.res] + (lim ? ' · ' + L.g_limit : '') + '</span></button>';
+        ' · +' + g.reward + ' 🪙' + (g.res ? ' · ' + RES_ICON[g.res] : '') + (g.every ? ' · ' + RES_ICON[g.every[0]] + '/' + g.every[1] : '') +
+        (lim ? ' · ' + L.g_limit : '') + '</span></button>';
     };
     const soon = id => '<div class="game-tile soon"><span class="gt-name">' + L["g_name_" + id] + '</span><span class="gt-meta">🔜 ' + L.g_soon + '</span></div>';
     const q = d.quiz;
@@ -10304,28 +10458,56 @@
     }; });
   }
 
-  async function gameQuiz(box) {
-    const d = gamesData.quiz;
-    if (!quizRun) quizRun = { n: 0, right: 0, coins: 0, res: {} };
-    if (quizRun.n >= d.round) {               // 🏁 итог раунда из 10 вопросов
+  // Флаг картинкой (на Windows эмодзи-флаги рисуются буквами), не загрузилась — эмодзи
+  const isoOf = flag => Array.from(flag).map(c => String.fromCharCode(c.codePointAt(0) - 0x1F1E6 + 65)).join("");
+  function flagHtml(flag) {
+    return '<img class="g-flag" alt="" src="https://flagcdn.com/w320/' + isoOf(flag).toLowerCase() + '.png" ' +
+      'onerror="this.outerHTML=\'<div class=&quot;g-flag-emoji&quot;>' + flag + '</div>\'">';
+  }
+  let regionNames = null;
+  function countryName(iso, fallback) {
+    try {
+      if (regionNames === null) regionNames = Intl.DisplayNames ? new Intl.DisplayNames([me.lang || "en"], { type: "region" }) : false;
+      return (regionNames && regionNames.of(iso)) || fallback;
+    } catch (e) { regionNames = false; return fallback; }
+  }
+
+  // 🧠 Викторина, ➗ Математика, 🏳️ Флаги: раунд из 10 вопросов, верный ответ знает только сервер
+  async function gameTimed(box, kind) {
+    const d = gamesData.quiz, round = d.round, base = TIMED[kind];
+    if (!quizRun || quizRun.kind !== kind) quizRun = { kind: kind, n: 0, right: 0, coins: 0, res: {}, streak: null };
+    if (quizRun.n >= round) {               // 🏁 итог раунда из 10 вопросов
       const res = Object.keys(quizRun.res).map(k => "+" + quizRun.res[k] + " " + RES_ICON[k]).join(" · ") || "—";
       box.innerHTML = card(L.quiz_sum_title, gameHead() +
-        row(L.quiz_sum, quizRun.right + " / " + d.round) + row(L.quiz_coins, (quizRun.coins >= 0 ? "+" : "−") + num(Math.abs(quizRun.coins)) + " 🪙") +
-        row(L.resources, res) + '<div class="hint">' + fmt(L.quiz_level, { l: d.level, a: d.progress, b: d.required }) + '</div>' +
+        row(L.quiz_sum, quizRun.right + " / " + round) + row(L.quiz_coins, (quizRun.coins >= 0 ? "+" : "−") + num(Math.abs(quizRun.coins)) + " 🪙") +
+        row(L.resources, res) +
+        (kind === "quiz" ? '<div class="hint">' + fmt(L.quiz_level, { l: d.level, a: d.progress, b: d.required }) + '</div>' : '') +
+        (quizRun.streak ? '<div class="hint">' + streakLine(quizRun.streak) + '</div>' : '') +
         '<button class="btn" id="qAgain">' + L.quiz_again + '</button>');
       bindBack(box);
       box.querySelector("#qAgain").onclick = () => { quizRun = null; go("games"); };
       return;
     }
-    const q = await post("/api/quiz/next", {});
-    if (!q.ok) { box.innerHTML = card(L.g_name_quiz, gameHead() + '<div class="g-result">' + esc(q.message) + '</div>'); bindBack(box); return; }
+    const q = await post(base + "/next", {});
+    if (!q.ok) { box.innerHTML = card(L["g_name_" + kind], gameHead() + '<div class="g-result">' + esc(q.message) + '</div>'); bindBack(box); return; }
     quizRun.n += 1;
-    box.innerHTML = card(L.g_name_quiz, gameHead() +
-      '<div class="quiz-top" style="margin-top:10px"><span>' + esc(q.category.toUpperCase()) + ' · ' + fmt(L.quiz_of, { a: quizRun.n, b: d.round }) +
-      '</span><span id="qSec">⏱ ' + q.seconds + '</span></div><div class="tbar"><i id="qBar" style="width:100%"></i></div>' +
-      '<div class="quiz-q">🤔 ' + esc(q.q) + '</div>' +
-      q.options.map((o, i) => '<button class="quiz-opt" data-opt="' + i + '">' + esc(o) + '</button>').join("") +
-      '<div id="qRes"></div><button class="btn ghost" id="qHint">' + fmt(L.quiz_hint, { c: q.hint_cost }) + '</button>');
+    let top = fmt(L.quiz_of, { a: quizRun.n, b: round }), body, opts = q.options;
+    if (kind === "quiz") {
+      top = esc(q.category.toUpperCase()) + ' · ' + top;
+      body = '<div class="quiz-q">🤔 ' + esc(q.q) + '</div>';
+    } else if (kind === "math") {
+      body = '<div class="math-q">' + esc(q.q) + ' = ?</div>';
+    } else if (q.mode === "flag") {
+      body = flagHtml(q.flag) + '<div class="quiz-q" style="text-align:center">' + L.flags_q_flag + '</div>';
+      opts = q.options.map((iso, i) => countryName(iso, q.names[i]));
+    } else {
+      body = '<div class="quiz-q">🏛 ' + fmt(L.flags_q_cap, { c: esc(q.country) }) + '</div>';
+    }
+    box.innerHTML = card(L["g_name_" + kind], gameHead() +
+      '<div class="quiz-top" style="margin-top:10px"><span>' + top + '</span><span id="qSec">⏱ ' + q.seconds + '</span></div>' +
+      '<div class="tbar"><i id="qBar" style="width:100%"></i></div>' + body +
+      opts.map((o, i) => '<button class="quiz-opt" data-opt="' + i + '">' + esc(o) + '</button>').join("") +
+      '<div id="qRes"></div>' + (kind === "quiz" ? '<button class="btn ghost" id="qHint">' + fmt(L.quiz_hint, { c: q.hint_cost }) + '</button>' : ''));
     bindBack(box);
     let left = q.seconds, answered = false;
     const answer = async opt => {
@@ -10333,46 +10515,138 @@
       answered = true; stopGameTimer();
       box.querySelectorAll(".quiz-opt, #qHint").forEach(x => x.disabled = true);
       try {
-        const r = await post("/api/quiz/answer", { round_id: q.round_id, option: opt });
-        const opts = box.querySelectorAll(".quiz-opt");
+        const r = await post(base + "/answer", { round_id: q.round_id, option: opt });
+        const els = box.querySelectorAll(".quiz-opt");
         if (r.correct !== undefined) {
           const won = r.result === "win";
-          opts[r.correct].classList.add(won ? "right" : "sad");
-          if (won) sparks(opts[r.correct], true);
-          if (opt >= 0 && opt !== r.correct) { opts[opt].classList.add("wrong"); sparks(opts[opt], false); }
+          els[r.correct].classList.add(won ? "right" : "sad");
+          if (won) sparks(els[r.correct], true);
+          if (opt >= 0 && opt !== r.correct) { els[opt].classList.add("wrong"); sparks(els[opt], false); }
         }
         if (r.result === "win") quizRun.right += 1;
         const i = r.info || {};
         quizRun.coins += (i.reward || 0) - (i.penalty || 0) + (i.level_up ? i.level_up.bonus : 0);
         if (i.res) quizRun.res[i.res.kind] = (quizRun.res[i.res.kind] || 0) + i.res.qty;
         if (i.energy) quizRun.res.energy = (quizRun.res.energy || 0) + 1;
+        if (i.milestone) quizRun.res[i.milestone.kind] = (quizRun.res[i.milestone.kind] || 0) + i.milestone.qty;
+        if (i.streak) quizRun.streak = i.streak;
         vibrate(r.result === "win");
         // верный вариант уже подсвечен зелёным — текстом его не повторяем (короче, без прокрутки)
         box.querySelector("#qRes").innerHTML = '<div class="g-result ' + (r.result === "win" ? "win" : "lose") + '">' +
           payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') + '</div><button class="btn" id="qNext">' + L.quiz_next + '</button>';
-        if (!r.ok && r.message) quizRun.n = d.round;   // лимит / нет монет — сразу к итогу
+        if (!r.ok && r.message) quizRun.n = round;   // лимит / нет монет — сразу к итогу
         const next = box.querySelector("#qNext");
         next.onclick = () => go("games");
         if (next.scrollIntoView) next.scrollIntoView({ block: "nearest" });   // «Дальше» всегда на экране
       } catch (e) { apiError(e); go("games"); }
     };
     box.querySelectorAll(".quiz-opt").forEach(b => { b.onclick = () => answer(Number(b.dataset.opt)); });
-    box.querySelector("#qHint").onclick = async () => {
+    const hint = box.querySelector("#qHint");
+    if (hint) hint.onclick = async () => {
       try {
         const h = await post("/api/quiz/hint", { round_id: q.round_id });
         if (!h.ok) return notify(h.message, false);
         quizRun.coins -= h.balance === null ? 0 : q.hint_cost;
         h.removed.forEach(i => { const o = box.querySelectorAll(".quiz-opt")[i]; o.classList.add("gone"); o.disabled = true; });
-        box.querySelector("#qHint").disabled = true;
+        hint.disabled = true;
       } catch (e) { apiError(e); }
     };
     gameTimer = setInterval(() => {
       left -= 1;
-      const s = box.querySelector("#qSec"), bar = box.querySelector("#qBar");
-      if (s) s.textContent = "⏱ " + Math.max(0, left);
+      const sEl = box.querySelector("#qSec"), bar = box.querySelector("#qBar");
+      if (sEl) sEl.textContent = "⏱ " + Math.max(0, left);
       if (bar) bar.style.width = Math.max(0, left / q.seconds * 100) + "%";
       if (left <= 0) answer(-1);
     }, 1000);
+  }
+
+  // 💻 Взлом кода: «быки и коровы» — 4 разные цифры, 🐂 на своём месте, 🐄 есть, но не там
+  async function gameCode(box) {
+    const r0 = await post("/api/code/new", {});
+    if (!r0.ok) { box.innerHTML = card(L.g_name_code, gameHead() + '<div class="g-result">' + esc(r0.message) + '</div>'); bindBack(box); return; }
+    let guess = "", busy = false, over = false;
+    box.innerHTML = card(L.g_name_code, gameHead() + '<div class="hint" style="margin-top:10px">' + fmt(L.code_rules, { d: r0.digits, m: r0.max }) +
+      ' ' + prizeLine("code") + '</div><div class="code-slots" id="cSlots"></div><div class="hint" id="cLeft" style="text-align:center">' +
+      fmt(L.code_left, { n: r0.max }) + '</div><div class="code-pad">' +
+      "1234567890".split("").map(c => '<button class="btn ghost" data-dg="' + c + '">' + c + '</button>').join("") +
+      '</div><div class="two"><button class="btn ghost" id="cDel">⌫</button><button class="btn" id="cGo" disabled>' + L.code_try + '</button></div>' +
+      '<div id="cRes"></div><div class="code-log" id="cLog"></div>');
+    bindBack(box);
+    const paint = () => {
+      box.querySelector("#cSlots").innerHTML = Array.from({ length: r0.digits }, (_, i) => '<span>' + (guess[i] || "") + '</span>').join("");
+      box.querySelectorAll("[data-dg]").forEach(b => { b.disabled = over || guess.includes(b.dataset.dg) || guess.length >= r0.digits; });
+      box.querySelector("#cGo").disabled = over || busy || guess.length < r0.digits;
+      box.querySelector("#cDel").disabled = over || !guess.length;
+    };
+    box.querySelectorAll("[data-dg]").forEach(b => { b.onclick = () => { guess += b.dataset.dg; paint(); }; });
+    box.querySelector("#cDel").onclick = () => { guess = guess.slice(0, -1); paint(); };
+    box.querySelector("#cGo").onclick = async () => {
+      busy = true; paint();
+      try {
+        const r = await post("/api/code/guess", { round_id: r0.round_id, guess: guess });
+        if (!r.ok) { busy = false; paint(); return notify(r.message || L.error, false); }
+        box.querySelector("#cLog").insertAdjacentHTML("afterbegin", '<div><b>' + guess + '</b><span>🐂 ' + r.bulls + ' · 🐄 ' + r.cows + '</span></div>');
+        box.querySelector("#cLeft").textContent = fmt(L.code_left, { n: r.left });
+        busy = false;
+        if (r.result) {
+          over = true; vibrate(r.result === "win");
+          guess = r.secret; paint();      // разгаданный (или так и не разгаданный) код — в самих ячейках
+          const slots = box.querySelector("#cSlots");
+          slots.classList.add(r.result === "win" ? "win" : "sad");
+          sparks(slots, r.result === "win");
+          box.querySelector("#cRes").innerHTML = '<div class="g-result ' + r.result + '">' + payoutHtml(r, '<b>' + L["g_" + r.result] + '</b>') +
+            '</div><button class="btn" id="cAgain">' + L.g_again + '</button>';
+          box.querySelector("#cAgain").onclick = () => gameCode(box);
+          const again = box.querySelector("#cAgain");
+          if (again.scrollIntoView) again.scrollIntoView({ block: "nearest" });
+        } else { guess = ""; paint(); }
+      } catch (e) { apiError(e); go("games"); }
+    };
+    paint();
+  }
+
+  // 🃏 Мемори: карточки открывает сервер — колоду в приложение не отдаём до конца партии
+  async function gameMemory(box) {
+    const r0 = await post("/api/memory/new", {});
+    if (!r0.ok) { box.innerHTML = card(L.g_name_memory, gameHead() + '<div class="g-result">' + esc(r0.message) + '</div>'); bindBack(box); return; }
+    let busy = false, over = false;
+    box.innerHTML = card(L.g_name_memory, gameHead() + '<div class="hint" style="margin-top:10px">' + fmt(L.mem_rules, { p: r0.cards / 2, m: r0.max }) +
+      ' ' + prizeLine("memory") + '</div><div class="quiz-top" style="margin-top:8px"><span id="mMoves">' + fmt(L.mem_moves, { a: 0, b: r0.max }) +
+      '</span></div><div class="mem-grid">' + Array.from({ length: r0.cards }, (_, i) => '<button class="mem-card" data-card="' + i + '"></button>').join("") +
+      '</div><div id="mRes"></div>');
+    bindBack(box);
+    const cardEl = i => box.querySelector('[data-card="' + i + '"]');
+    box.querySelectorAll("[data-card]").forEach(b => { b.onclick = async () => {
+      if (busy || over || b.classList.contains("open") || b.classList.contains("done")) return;
+      busy = true;
+      try {
+        const idx = Number(b.dataset.card), r = await post("/api/memory/flip", { round_id: r0.round_id, idx: idx });
+        if (!r.ok) { busy = false; return notify(r.message || L.error, false); }
+        b.textContent = r.icon; b.classList.add("open");
+        box.querySelector("#mMoves").textContent = fmt(L.mem_moves, { a: r.moves, b: r.max });
+        if (r.pair !== null && r.pair !== undefined) {
+          const other = cardEl(r.pair);
+          if (r.match) { [b, other].forEach(x => { x.classList.remove("open"); x.classList.add("done"); }); }
+          else {
+            [b, other].forEach(x => x.classList.add("miss"));
+            await new Promise(res => setTimeout(res, 700));
+            if (!r.result) [b, other].forEach(x => { x.classList.remove("open", "miss"); x.textContent = ""; });
+          }
+        }
+        if (r.result) {
+          over = true; vibrate(r.result === "win");
+          if (r.deck) r.deck.forEach((ic, i) => { const c = cardEl(i); if (!c.classList.contains("done")) { c.textContent = ic; c.classList.add("open"); } });
+          const grid = box.querySelector(".mem-grid");
+          sparks(grid, r.result === "win");
+          box.querySelector("#mRes").innerHTML = '<div class="g-result ' + r.result + '">' + payoutHtml(r, '<b>' + L["g_" + r.result] + '</b>') +
+            '</div><button class="btn" id="mAgain">' + L.g_again + '</button>';
+          const again = box.querySelector("#mAgain");
+          again.onclick = () => gameMemory(box);
+          if (again.scrollIntoView) again.scrollIntoView({ block: "nearest" });
+        }
+      } catch (e) { apiError(e); go("games"); }
+      busy = false;
+    }; });
   }
 
   const VIEWS = { passport: viewPassport, games: viewGames, farm: viewFarm, storage: viewStorage, workshop: viewWorkshop,
