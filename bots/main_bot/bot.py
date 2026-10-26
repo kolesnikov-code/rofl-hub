@@ -35,6 +35,7 @@ from bots.main_bot.handlers.rules import router as rules_router
 from bots.main_bot.handlers.shop import router as shop_router
 from bots.main_bot.handlers.start import router as start_router
 from bots.main_bot.handlers.admin_panel import router as admin_panel_router
+from bots.main_bot.handlers.app_first import router as app_first_router
 from bots.main_bot.handlers.transfer import router as transfer_router
 from bots.main_bot.middleware import ActivityMiddleware
 from bots.main_bot.utils.quest_loader import load_quests
@@ -51,8 +52,9 @@ logger = logging.getLogger(__name__)
 dp = Dispatcher(storage=MemoryStorage())
 # Блокировка игроков + учёт активности (DAU) — на каждый апдейт
 dp.update.outer_middleware(ActivityMiddleware())
-# Порядок важен: start (регистрация) и payments (деньги) — первыми
-for r in (start_router, admin_panel_router, payments_router, shop_router, games_router, duels_router, quests_router,
+# Порядок важен: start (регистрация) и payments (деньги) — первыми; app_first (27.10) перехватывает команды
+# разделов и старую нижнюю клавиатуру — «раздел в приложении» (только при WEBAPP_URL)
+for r in (start_router, admin_panel_router, payments_router, app_first_router, shop_router, games_router, duels_router, quests_router,
           market_router, workshop_router, raids_router, goals_router, station_router,
           farm_router, profile_router, clans_router, transfer_router, referral_router, menu_router,
           faq_router, rules_router, account_router, rofl_hub_all_router):
@@ -85,6 +87,14 @@ BOT_COMMANDS: dict[str, tuple[str, str]] = {
 }
 
 
+# 27.10 «чат — дверь и почтальон»: при подключённом приложении в синем меню только то, что живёт в чате
+APP_MODE_COMMANDS = ("app", "menu", "invite", "transfer", "faq", "rules", "paysupport")
+
+
+def menu_commands() -> list[str]:
+    return [c for c in BOT_COMMANDS if c in APP_MODE_COMMANDS] if WEBAPP_URL else list(BOT_COMMANDS)
+
+
 async def register_bot_commands(bot: Bot) -> None:
     """
     Синее меню команд на всех языках: en — дефолт, ru — из BOT_COMMANDS,
@@ -92,17 +102,18 @@ async def register_bot_commands(bot: Bot) -> None:
     """
     from shared.locales import COMMAND_PACKS
 
-    ru = [BotCommand(command=c, description=d[0]) for c, d in BOT_COMMANDS.items()]
-    en = [BotCommand(command=c, description=d[1]) for c, d in BOT_COMMANDS.items()]
+    shown = menu_commands()
+    ru = [BotCommand(command=c, description=BOT_COMMANDS[c][0]) for c in shown]
+    en = [BotCommand(command=c, description=BOT_COMMANDS[c][1]) for c in shown]
     await bot.set_my_commands(en)  # дефолт для всех языков клиента
     await bot.set_my_commands(ru, language_code="ru")
 
     for code, pack in COMMAND_PACKS.items():
         commands = [BotCommand(command=c, description=str(pack[c])[:256])
-                    for c in BOT_COMMANDS if pack.get(c)]
-        if len(commands) != len(BOT_COMMANDS):
+                    for c in shown if pack.get(c)]
+        if len(commands) != len(shown):
             logger.warning("Меню команд %s неполное (%s/%s) — пропущено",
-                           code, len(commands), len(BOT_COMMANDS))
+                           code, len(commands), len(shown))
             continue
         try:
             await bot.set_my_commands(commands, language_code=code)

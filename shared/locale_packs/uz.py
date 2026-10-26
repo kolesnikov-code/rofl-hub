@@ -37,6 +37,12 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    # 27.10: «чат — дверь и почтальон», вся игра в приложении
+    "app.moved": "🎮 Bu bo'lim endi o'yin ilovasida — u yerda qulayroq va chiroyliroq. Tugmani bos 👇",
+    "app.keyboard_gone": "🧹 Pastdagi eski tugmalar olib tashlandi: endi butun o'yin ilovada. Uni kiritish maydoni yonidagi «🎮 ROFL HUB» tugmasi bilan ham ochishing mumkin.",
+    "start.console_app": "🚀 <b>Tayyor!</b> Butun o'yin ilovada: pastdagi tugmani bos. Keyin uni har doim kiritish maydoni yonidagi «🎮 ROFL HUB» tugmasi bilan ochishing mumkin.",
+    "start.welcome_back_app": "👋 <b>Qaytganing bilan, @{username}!</b> Natijalaring joyida — o'yinni och 👇",
+    "menu.app": "📱 <b>ROFL HUB</b>\nButun o'yin ilovada 👇\n\n<b>Chatda:</b>\n• /invite — do'stni taklif qilish\n• /transfer — tanga o'tkazish\n• /faq — ko'p so'raladigan savollar\n• /rules — foydalanuvchi shartnomasi\n• /paysupport — to'lovlar bo'yicha yordam\n• /delete_account — akkauntni o'chirish",
     # TODO(перевод 26.10): история — пока по-английски
     "hist.mining": "⛏ Farm mining",
     "hist.game_win": "🎮 Game win",

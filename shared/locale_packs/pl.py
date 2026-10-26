@@ -36,6 +36,12 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    # 27.10: «чат — дверь и почтальон», вся игра в приложении
+    "app.moved": "🎮 Ta sekcja jest teraz w aplikacji gry — tam jest wygodniej i ładniej. Naciśnij przycisk 👇",
+    "app.keyboard_gone": "🧹 Stare przyciski na dole zniknęły: cała gra jest teraz w aplikacji. Możesz ją też otworzyć przyciskiem «🎮 ROFL HUB» obok pola wpisywania.",
+    "start.console_app": "🚀 <b>Gotowe!</b> Cała gra jest w aplikacji: naciśnij przycisk poniżej. Później zawsze otworzysz ją przyciskiem «🎮 ROFL HUB» obok pola wpisywania.",
+    "start.welcome_back_app": "👋 <b>Witaj ponownie, @{username}!</b> Twoje postępy są zapisane — otwórz grę 👇",
+    "menu.app": "📱 <b>ROFL HUB</b>\nCała gra jest w aplikacji 👇\n\n<b>W czacie:</b>\n• /invite — zaproś znajomego\n• /transfer — przelej monety\n• /faq — częste pytania\n• /rules — regulamin\n• /paysupport — pomoc z płatnościami\n• /delete_account — usuń konto",
     # TODO(перевод 26.10): история — пока по-английски
     "hist.mining": "⛏ Farm mining",
     "hist.game_win": "🎮 Game win",

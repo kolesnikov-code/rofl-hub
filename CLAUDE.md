@@ -342,6 +342,15 @@
   duel_presence.in_app() бот НЕ шлёт ЛС тем, кто смотрит дуэль в приложении (handlers/duels.py notify_matched,
   _broadcast_round_result) — закрыл приложение или играет из чата → ЛС как раньше. Соперник анонимен. Подвал
   приложения теперь «Вся игра — в одном приложении». Тест на дубли имён разбирает и «const A = 1, B = 2».
+- 📱 ЧАТ — «ДВЕРЬ И ПОЧТАЛЬОН» (шаг 3, 27.10; владелец: «оставь в чат-боте необходимый минимум»): в чате — /start
+  (онбординг заканчивается кнопкой «открыть», start.console_app), /app, /menu (menu.app: кнопка + список ниже), /invite,
+  /transfer (в приложении переводов нет), /faq, /rules, /paysupport, /delete_account и все ЛС. Роутер
+  handlers/app_first.py стоит ПЕРЕД игровыми: команды разделов (SECTION_TABS: /farm, /games, /quiz, /duel, /quests,
+  /shop, /profile, /market, /my_team…) отвечают app.moved с кнопкой в нужную вкладку; кнопка старой нижней клавиатуры —
+  клавиатура убирается (app.keyboard_gone) + кнопка во вкладку. Синее меню — APP_MODE_COMMANDS (bot.menu_commands()).
+  Всё — только при WEBAPP_URL (фильтр app_ready); без него работают прежние чатовые обработчики. Старые обработчики и
+  callback'и НЕ удалены: ими доигрываются старые сообщения и ЛС (жесты дуэли и т.п.). Тексты — 14 языков. Тест
+  tests/test_app_first.py (в т.ч. реальная маршрутизация aiogram).
   Аукцион: кнопки ставок одного вида; не хватает монет — сообщение auc_short, хватает — подтверждение auc_confirm.
   ⚠️ Повторное имя const/function на верхнем уровне index.html роняет ВСЁ приложение — тест
   test_app_script_has_no_duplicate_top_level_names.

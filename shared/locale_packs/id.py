@@ -37,6 +37,12 @@ BUTTONS = {
 }
 
 STRINGS = {
+    # 27.10: «чат — дверь и почтальон», вся игра в приложении
+    "app.moved": "🎮 Bagian ini sekarang ada di aplikasi game — di sana lebih nyaman dan lebih keren. Ketuk tombolnya 👇",
+    "app.keyboard_gone": "🧹 Tombol lama di bawah sudah dihapus: sekarang seluruh game ada di aplikasi. Kamu juga bisa membukanya dengan tombol «🎮 ROFL HUB» di samping kolom ketik.",
+    "start.console_app": "🚀 <b>Siap!</b> Seluruh game ada di aplikasi: ketuk tombol di bawah. Nanti kamu selalu bisa membukanya dengan tombol «🎮 ROFL HUB» di samping kolom ketik.",
+    "start.welcome_back_app": "👋 <b>Selamat datang kembali, @{username}!</b> Progresmu aman — buka game-nya 👇",
+    "menu.app": "📱 <b>ROFL HUB</b>\nSeluruh game ada di aplikasi 👇\n\n<b>Di chat:</b>\n• /invite — undang teman\n• /transfer — kirim koin\n• /faq — pertanyaan umum\n• /rules — perjanjian pengguna\n• /paysupport — bantuan pembayaran\n• /delete_account — hapus akun",
     # TODO(перевод 26.10): история — пока по-английски
     "hist.mining": "⛏ Farm mining",
     "hist.game_win": "🎮 Game win",

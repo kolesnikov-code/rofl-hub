@@ -13,7 +13,7 @@ from aiogram import types
 from bots.main_bot.config import WEBAPP_URL
 from shared.locales import t
 
-APP_TABS = ("passport", "farm", "storage", "workshop", "raids", "market", "team", "mines", "goals", "shop", "top",
+APP_TABS = ("passport", "games", "farm", "storage", "workshop", "raids", "market", "team", "mines", "goals", "shop", "top",
             "info")   # goals → паспорт (старые ссылки), info — FAQ и соглашение
 
 

@@ -13,6 +13,7 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
 from bots.main_bot.guards import feature_enabled
+from bots.main_bot.handlers.app_first import app_markup, app_ready
 from bots.main_bot.handlers.menu import get_reply_main_keyboard
 from shared import analytics
 from shared.analytics import track
@@ -156,14 +157,19 @@ async def cmd_start(message: types.Message, state: FSMContext):
     await state.clear()
     if returned:
         await message.answer(t(lang, "acct.welcome_back"),
-                             reply_markup=get_reply_main_keyboard(lang), parse_mode="HTML")
+                             reply_markup=_main_markup(lang), parse_mode="HTML")
         return
     if auction_id:
         await trigger_inline_auction_window(message, auction_id)
         return
     await message.answer(
-        t(lang, "start.welcome_back", username=username),
-        reply_markup=get_reply_main_keyboard(lang), parse_mode="HTML")
+        t(lang, "start.welcome_back_app" if app_ready() else "start.welcome_back", username=username),
+        reply_markup=_main_markup(lang), parse_mode="HTML")
+
+
+def _main_markup(lang: str):
+    """Вся игра в приложении (27.10) — одна кнопка «открыть»; без WEBAPP_URL — прежняя нижняя клавиатура."""
+    return app_markup(lang) if app_ready() else get_reply_main_keyboard(lang)
 
 
 # ============================================================================
@@ -229,8 +235,8 @@ async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext, use
 
     await callback.message.edit_text(t(user_lang, "start.intro4"), parse_mode="HTML")
     await callback.message.answer(
-        t(user_lang, "start.console"),
-        reply_markup=get_reply_main_keyboard(user_lang), parse_mode="HTML")
+        t(user_lang, "start.console_app" if app_ready() else "start.console"),
+        reply_markup=_main_markup(user_lang), parse_mode="HTML")
     await track(callback.from_user.id, "onboarding_done")
 
     if auction_id:
