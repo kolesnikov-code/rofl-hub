@@ -22,7 +22,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from bots.main_bot.guards import feature_enabled
-from bots.main_bot.utils.questions_loader import get_question_by_id, get_random_question
+from bots.main_bot.utils.questions_loader import get_question_by_id, get_random_question, pick_unseen
 from shared.analytics import notify_referrer_qualified, qualify_referral_if_due, track
 from shared.database import db
 from shared.economy import (
@@ -401,9 +401,27 @@ async def _quiz_timeout_watchdog(message: types.Message, state: FSMContext, toke
         logger.exception("[QUIZ_TIMER] сбой вотчдога user=%s", user_id)
 
 
+async def _next_question(user_id: int) -> dict | None:
+    """Сначала вопросы, которых игрок ещё не видел; прошёл всю базу — новый круг. Сбой БД — просто случайный."""
+    try:
+        async with db.pool.acquire() as conn:
+            seen = {r["qkey"] for r in await conn.fetch("SELECT qkey FROM quiz_seen WHERE user_id = $1", user_id)}
+            question, lap_done = pick_unseen(seen)
+            if question is None:
+                return None
+            if lap_done:
+                await conn.execute("DELETE FROM quiz_seen WHERE user_id = $1", user_id)
+            await conn.execute("INSERT INTO quiz_seen (user_id, qkey) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+                               user_id, question["key"])
+            return question
+    except Exception:
+        logger.exception("[QUIZ] не удалось учесть просмотренные вопросы user=%s", user_id)
+        return get_random_question()
+
+
 async def _start_quiz(target: types.Message, state: FSMContext, user_id: int, edit: bool,
                       lang: str = "ru") -> None:
-    question = get_random_question()
+    question = await _next_question(user_id)
     if question is None:
         await target.answer(t(lang, "quiz.empty"))
         return

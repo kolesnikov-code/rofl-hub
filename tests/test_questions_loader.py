@@ -75,3 +75,22 @@ def test_shipped_csv_covers_rofl_hub_category():
     categories = {q["category"] for q in ql._questions}
     assert "ROFL HUB" in categories
     assert len(categories) >= 10
+
+
+def test_pick_unseen_gives_every_question_once_per_lap():
+    """Викторина без повторов: пока игрок не прошёл всю базу, вопрос не повторяется; потом — новый круг."""
+    from bots.main_bot.utils import questions_loader as ql
+    total = ql.load_questions_from_csv()
+    seen: set[str] = set()
+    for _ in range(total):
+        q, lap_done = ql.pick_unseen(seen)
+        assert not lap_done and q["key"] not in seen
+        seen.add(q["key"])
+    q, lap_done = ql.pick_unseen(seen)
+    assert lap_done and q is not None
+    assert len({q["key"] for q in ql._questions}) == total     # ключи уникальны — дублей текста нет
+
+
+def test_question_key_ignores_case_and_spaces():
+    from bots.main_bot.utils.questions_loader import question_key
+    assert question_key("  Какой Город? ") == question_key("какой город?") and len(question_key("x")) == 16

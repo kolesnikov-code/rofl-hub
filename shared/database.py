@@ -826,6 +826,15 @@ SCHEMA_STATEMENTS: list[str] = [
     # 📜 26.10: история игрока — выборки по игроку за 30 дней
     "CREATE INDEX IF NOT EXISTS reward_grants_user_idx ON reward_grants (user_id, created_at);",
     "CREATE INDEX IF NOT EXISTS market_trades_seller_idx ON market_trades (seller_id, created_at);",
+    # --- 26.10: викторина без повторов — какие вопросы игрок уже видел (ключ = хэш текста вопроса) ---
+    """
+    CREATE TABLE IF NOT EXISTS quiz_seen (
+        user_id BIGINT NOT NULL,
+        qkey VARCHAR(16) NOT NULL,
+        seen_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, qkey)
+    );
+    """,
 ]
 
 

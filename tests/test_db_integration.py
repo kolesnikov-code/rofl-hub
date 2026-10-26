@@ -2726,3 +2726,19 @@ async def test_history_api_shows_coins_resources_market_and_gifts(conn, global_d
         assert gifts["items"][0]["what"] == "10 🔋"
     finally:
         await client.close()
+
+
+async def test_quiz_next_question_skips_seen_and_starts_new_lap(conn, global_db, monkeypatch):
+    """Викторина без повторов: просмотренные вопросы пишутся в quiz_seen, пройденная база — новый круг."""
+    from bots.main_bot.handlers import games
+    from bots.main_bot.utils import questions_loader as ql
+    await _mk_user(conn, 1995, 0)
+    await conn.execute("DELETE FROM quiz_seen WHERE user_id = 1995")
+    pack = [{"id": i, "key": f"k{i}", "category": "x", "q": f"q{i}", "correct": "a", "options": ["a", "b", "c", "d"]}
+            for i in (1, 2, 3)]
+    monkeypatch.setattr(ql, "_questions", pack)
+    got = [(await games._next_question(1995))["key"] for _ in range(3)]
+    assert sorted(got) == ["k1", "k2", "k3"]                     # три вопроса — три разных
+    assert await conn.fetchval("SELECT COUNT(*) FROM quiz_seen WHERE user_id = 1995") == 3
+    await games._next_question(1995)                              # база пройдена — круг заново
+    assert await conn.fetchval("SELECT COUNT(*) FROM quiz_seen WHERE user_id = 1995") == 1

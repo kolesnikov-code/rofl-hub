@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import html
 import logging
 import random
@@ -26,6 +27,11 @@ FALLBACK_QUESTIONS = [
 ]
 
 
+def question_key(text: str) -> str:
+    """Стабильный ключ вопроса для «уже видел»: не зависит от порядка строк в CSV."""
+    return hashlib.sha1(text.strip().lower().encode("utf-8")).hexdigest()[:16]
+
+
 def parse_questions(rows, *, source: str = "csv") -> list[dict]:
     """Чистый парсер: список словарей из DictReader → список вопросов. Битые строки пропускаются."""
     result: list[dict] = []
@@ -42,6 +48,7 @@ def parse_questions(rows, *, source: str = "csv") -> list[dict]:
             continue
         result.append({
             "id": idx,
+            "key": question_key(q),
             "category": html.escape((row.get("category") or "Общая").strip()),
             "q": html.escape(q),
             "correct": options[0],
@@ -78,6 +85,18 @@ def get_random_question() -> dict | None:
     if not _questions:
         load_questions_from_csv()
     return random.choice(_questions) if _questions else None
+
+
+def pick_unseen(seen: set[str]) -> tuple[dict | None, bool]:
+    """Случайный вопрос, которого игрок ещё не видел. (вопрос, база_пройдена): если видел все — круг заново."""
+    if not _questions:
+        load_questions_from_csv()
+    if not _questions:
+        return None, False
+    fresh = [q for q in _questions if q["key"] not in seen]
+    if fresh:
+        return random.choice(fresh), False
+    return random.choice(_questions), True
 
 
 def get_question_by_id(qid: int) -> dict | None:
