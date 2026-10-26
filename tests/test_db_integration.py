@@ -3081,3 +3081,57 @@ async def test_app_new_games_math_flags_code_memory_and_milestones(conn, global_
         assert qa["info"]["milestone"]["kind"] == "stone" and await stock("stone") == stone0 + 1
     finally:
         await client.close()
+
+
+async def test_app_quests_play_to_win_reward_once_and_stale_scene(conn, global_db):
+    """🗺 27.10: квесты в приложении — тот же движок, что в чате: награда только за первую победу."""
+    import time as _t
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.utils.quest_loader import get_quest
+    from bots.main_bot.webapp import create_webapp
+    from shared.feature_flags import invalidate_cache, set_flag
+    from shared.webapp_auth import sign_init_data
+    from tests.test_minigames import _win_path
+    token = "123456:TEST"
+    await _mk_user(conn, 1850, 1000)
+    await conn.execute("DELETE FROM quest_progress WHERE user_id = 1850")
+    await set_flag("quest:golden_cutlet", True)
+    invalidate_cache()
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1850}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    quest = get_quest("golden_cutlet")
+    path = _win_path(quest)
+
+    async def play():
+        sc = await (await client.post("/api/quest/open", headers=head, json={"id": "golden_cutlet", "restart": True})).json()
+        assert sc["ok"] and sc["scene"] == quest["start"]
+        for scene_key, i in path:
+            assert sc["scene"] == scene_key
+            sc = await (await client.post("/api/quest/choose", headers=head,
+                                          json={"id": "golden_cutlet", "scene": scene_key, "i": i})).json()
+            assert sc["ok"], sc
+        return sc
+    try:
+        lst = await (await client.get("/api/quests", headers=head)).json()
+        assert any(q["id"] == "golden_cutlet" and q["status"] == "new" for q in lst["quests"])
+        bal0 = await conn.fetchval("SELECT balance FROM users WHERE user_id = 1850")
+        first = await play()
+        assert first["end"] == "win" and first["outcome"] == "win_first" and first["reward"]["coins"] == quest["reward_coins"]
+        bal1 = await conn.fetchval("SELECT balance FROM users WHERE user_id = 1850")
+        assert bal1 - bal0 == quest["reward_coins"] - sum(
+            (quest["scenes"][k]["choices"][i].get("cost") or 0) for k, i in path)
+        second = await play()
+        assert second["outcome"] == "win_repeat" and "reward" not in second
+        assert await conn.fetchval("SELECT COUNT(*) FROM ledger WHERE user_id = 1850 AND reason = 'quest_reward'") == 1
+        # старая сцена (вторая вкладка) — сервер возвращает актуальную, ничего не списывая
+        await client.post("/api/quest/open", headers=head, json={"id": "golden_cutlet", "restart": True})
+        k0, i0 = path[0]
+        await client.post("/api/quest/choose", headers=head, json={"id": "golden_cutlet", "scene": k0, "i": i0})
+        stale = await (await client.post("/api/quest/choose", headers=head,
+                                         json={"id": "golden_cutlet", "scene": k0, "i": i0})).json()
+        assert stale["stale"] and stale["scene"] != k0
+        lst2 = await (await client.get("/api/quests", headers=head)).json()
+        assert any(q["id"] == "golden_cutlet" and q["status"] == "done" for q in lst2["quests"])
+    finally:
+        await client.close()

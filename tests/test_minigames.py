@@ -154,3 +154,43 @@ def test_timer_starts_on_display_but_prefetch_gives_at_most_the_slack():
     assert not answered_in_time(t0, t0 + sec(slack + full + 1), economy.QUIZ_ANSWER_SECONDS, t0 + sec(60))
     # без показа — от выдачи, как раньше
     assert not answered_in_time(t0, t0 + sec(full + 1), economy.QUIZ_ANSWER_SECONDS)
+
+
+def _win_path(quest):
+    """Кратчайший путь к победе: [(сцена, индекс выбора)] — BFS по (сцена, флаги)."""
+    from collections import deque
+    from bots.main_bot.utils.quest_loader import visible_choices
+    start = (quest["start"], frozenset())
+    prev, todo = {start: None}, deque([start])
+    while todo:
+        node = todo.popleft()
+        scene = quest["scenes"][node[0]]
+        if scene.get("end") == "win":
+            path = []
+            while prev[node]:
+                node, step = prev[node]
+                path.append(step)
+            return path[::-1]
+        for i, ch in visible_choices(scene, set(node[1])):
+            nxt = (ch["goto"], node[1] | frozenset(ch.get("set", [])))
+            if nxt not in prev:
+                prev[nxt] = (node, (node[0], i))
+                todo.append(nxt)
+    return None
+
+
+def test_quest_scene_payload_shows_only_visible_choices_with_original_indexes():
+    from bots.main_bot.utils.quest_loader import all_quests
+    from bots.main_bot.webapp_quests import scene_payload
+    for q in all_quests():
+        assert _win_path(q), q["id"]
+        p = scene_payload(q, q["start"], set())
+        assert p["choices"] and all(q["scenes"][q["start"]]["choices"][c["i"]]["label"] == c["label"] for c in p["choices"])
+        win_key = next(k for k, sc in q["scenes"].items() if sc.get("end") == "win")
+        assert scene_payload(q, win_key, set())["choices"] == []
+
+
+def test_quests_live_in_the_app():
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "function viewQuests" in html and "function questScene" in html and '"/api/quest/choose"' in html
+    assert "Дуэли и квесты" not in html and "Duels and quests" not in html

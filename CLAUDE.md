@@ -331,6 +331,11 @@
   Таймер вопроса — с показа: приложение шлёт /api/<игра>/start, сервер ставит game_rounds.started_at, но отсчёт
   не позже created_at + PREFETCH_SLACK_SECONDS=10 (больше форы заранее загруженный вопрос не даёт); вопрос старше
   окна приложение не использует — грузит свежий.
+- 🗺 КВЕСТЫ В ПРИЛОЖЕНИИ (27.10, шаг 3 — сначала переносим, потом урезаем чат): плитка во всю ширину под играми →
+  список (статус, жанр, награда) → сцены с выбором → концовка с искрами. Механика ОДНА — shared/quest_engine.py
+  (choose/start/progress, QuestStale/QuestNoCoins), чат /quests вызывает её же; API bots/main_bot/webapp_quests.py
+  (/api/quests, /api/quest/open, /api/quest/choose). Тексты сцен — ru; не-ru видят плашку qs_ruOnly. В чате пока
+  остаются только дуэли (подвал «Дуэли — пока в чате бота»).
   Аукцион: кнопки ставок одного вида; не хватает монет — сообщение auc_short, хватает — подтверждение auc_confirm.
   ⚠️ Повторное имя const/function на верхнем уровне index.html роняет ВСЁ приложение — тест
   test_app_script_has_no_duplicate_top_level_names.

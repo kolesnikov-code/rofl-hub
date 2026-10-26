@@ -1,45 +1,25 @@
 """
 Квесты: интерактивные истории с выборами (сценарии — JSON в data/quests).
 
-Поток: /quests → список → карточка квеста → сцены с кнопками-выборами.
-Прогресс в quest_progress (сцена + флаги), переживает рестарты бота.
-Награда — только за ПЕРВУЮ победу (ledger reason='quest_reward');
-платные подсказки — reason='quest_hint'. Кнопки — по одной в ряд.
+Поток: /quests → список → карточка квеста → сцены с кнопками-выборами. Кнопки — по одной в ряд.
+Механика (прогресс, награда за первую победу, платные подсказки) — общая с приложением: shared/quest_engine.py.
 """
 from __future__ import annotations
 
-import json
 import logging
 
 from aiogram import F, Router, types
 from aiogram.filters import Command
 
 from bots.main_bot.guards import feature_enabled
-from bots.main_bot.utils.quest_loader import all_quests, get_quest, visible_choices
+from bots.main_bot.utils.quest_loader import get_quest, visible_choices
+from shared import quest_engine as qe
 from shared.database import db
-from shared.feature_flags import get_flag
-from shared.economy import QUEST_EXTRA_BUNDLE, QUEST_RESOURCE_BUNDLE, RESOURCE_KINDS
-from shared.ledger import InsufficientFunds, change_balance
+from shared.economy import QUEST_RESOURCE_BUNDLE
 from shared.locales import t
-from shared.resources import grant_bundle, resource_capacity
 
 router = Router()
 logger = logging.getLogger(__name__)
-
-
-def _flags_of(row) -> set[str]:
-    raw = row["flags"] if row else "[]"
-    return set(json.loads(raw) if isinstance(raw, str) else raw)
-
-
-def _is_finished(quest: dict, scene_key: str) -> bool:
-    scene = quest["scenes"].get(scene_key)
-    return bool(scene and scene.get("end"))
-
-
-async def _visible_quests() -> list[dict]:
-    """Квесты, включённые владельцем с пульта (тумблеры quest:<id> в админ-боте)."""
-    return [q for q in all_quests() if await get_flag(f"quest:{q['id']}")]
 
 
 def _list_kb(completed: set[str], lang: str, quests: list[dict]) -> types.InlineKeyboardMarkup:
@@ -53,14 +33,8 @@ def _list_kb(completed: set[str], lang: str, quests: list[dict]) -> types.Inline
 
 
 async def _quest_accessible(quest_id: str, user_id: int) -> bool:
-    """Скрытый квест доступен лишь тем, кто его уже начал (доигрывание в ротации)."""
-    if await get_flag(f"quest:{quest_id}"):
-        return True
     async with db.pool.acquire() as conn:
-        started = await conn.fetchval(
-            "SELECT 1 FROM quest_progress WHERE user_id = $1 AND quest_id = $2",
-            user_id, quest_id)
-    return bool(started)
+        return await qe.quest_accessible(conn, quest_id, user_id)
 
 
 def _scene_kb(quest: dict, scene_key: str, flags: set[str], lang: str) -> types.InlineKeyboardMarkup:
@@ -89,10 +63,7 @@ async def _safe_edit(message: types.Message, text: str, kb: types.InlineKeyboard
 # ============================================================================
 async def _completed_ids(user_id: int) -> set[str]:
     async with db.pool.acquire() as conn:
-        rows = await conn.fetch(
-            "SELECT quest_id FROM quest_progress WHERE user_id = $1 AND completed_at IS NOT NULL",
-            user_id)
-    return {r["quest_id"] for r in rows}
+        return await qe.completed_ids(conn, user_id)
 
 
 @router.message(Command("quests"))
@@ -101,7 +72,7 @@ async def cmd_quests(message: types.Message, user_lang: str = "ru"):
         return
     completed = await _completed_ids(message.from_user.id)
     await message.answer(t(user_lang, "quest.list_header"),
-                         reply_markup=_list_kb(completed, user_lang, await _visible_quests()),
+                         reply_markup=_list_kb(completed, user_lang, await qe.visible_quests()),
                          parse_mode="HTML")
 
 
@@ -112,7 +83,7 @@ async def quest_list_callback(callback: types.CallbackQuery, user_lang: str = "r
     await callback.answer()
     completed = await _completed_ids(callback.from_user.id)
     await _safe_edit(callback.message, t(user_lang, "quest.list_header"),
-                     _list_kb(completed, user_lang, await _visible_quests()))
+                     _list_kb(completed, user_lang, await qe.visible_quests()))
 
 
 @router.callback_query(F.data.startswith("quest_info:"))
@@ -124,17 +95,10 @@ async def quest_info(callback: types.CallbackQuery, user_lang: str = "ru"):
         return
 
     async with db.pool.acquire() as conn:
-        prog = await conn.fetchrow(
-            "SELECT scene, completed_at FROM quest_progress WHERE user_id = $1 AND quest_id = $2",
-            callback.from_user.id, quest["id"])
-
-    in_progress = bool(prog and not _is_finished(quest, prog["scene"]))
-    if prog and prog["completed_at"]:
-        status = t(user_lang, "quest.card_done")
-    elif in_progress:
-        status = t(user_lang, "quest.card_progress")
-    else:
-        status = t(user_lang, "quest.card_new")
+        prog = await qe.progress(conn, callback.from_user.id, quest["id"])
+    st = qe.status_of(quest, prog)
+    in_progress = bool(prog and not qe.is_finished(quest, prog["scene"]))
+    status = t(user_lang, {"done": "quest.card_done", "progress": "quest.card_progress", "new": "quest.card_new"}[st])
 
     rows = []
     if in_progress:
@@ -164,14 +128,7 @@ async def quest_start(callback: types.CallbackQuery, user_lang: str = "ru"):
     if not quest or not await _quest_accessible(quest["id"], callback.from_user.id):
         return
     async with db.pool.acquire() as conn:
-        await conn.execute(
-            """
-            INSERT INTO quest_progress (user_id, quest_id, scene, flags, updated_at)
-            VALUES ($1, $2, $3, '[]'::jsonb, NOW())
-            ON CONFLICT (user_id, quest_id)
-            DO UPDATE SET scene = $3, flags = '[]'::jsonb, updated_at = NOW()
-            """,
-            callback.from_user.id, quest["id"], quest["start"])
+        await qe.start(conn, callback.from_user.id, quest)
     scene = quest["scenes"][quest["start"]]
     await _safe_edit(callback.message, scene["text"],
                      _scene_kb(quest, quest["start"], set(), user_lang))
@@ -184,11 +141,8 @@ async def quest_resume(callback: types.CallbackQuery, user_lang: str = "ru"):
     if not quest:
         return
     async with db.pool.acquire() as conn:
-        prog = await conn.fetchrow(
-            "SELECT scene, flags FROM quest_progress WHERE user_id = $1 AND quest_id = $2",
-            callback.from_user.id, quest["id"])
-    scene_key = prog["scene"] if prog and prog["scene"] in quest["scenes"] else quest["start"]
-    flags = _flags_of(prog)
+        prog = await qe.progress(conn, callback.from_user.id, quest["id"])
+    scene_key, flags = qe.resume_point(quest, prog)
     await _safe_edit(callback.message, quest["scenes"][scene_key]["text"],
                      _scene_kb(quest, scene_key, flags, user_lang))
 
@@ -208,72 +162,29 @@ async def quest_choice(callback: types.CallbackQuery, user_lang: str = "ru"):
         await callback.answer(t(user_lang, "quest.not_found"), show_alert=True)
         return
     user_id = callback.from_user.id
-
-    async with db.pool.acquire() as conn:
-        async with conn.transaction():
-            prog = await conn.fetchrow(
-                "SELECT * FROM quest_progress WHERE user_id = $1 AND quest_id = $2 FOR UPDATE",
-                user_id, qid)
-            if not prog:
-                await callback.answer()
-                return
-
-            flags = _flags_of(prog)
-            # Клик по устаревшей сцене (старое сообщение) — мягко возвращаем в актуальную
-            if prog["scene"] != scene_key:
-                await callback.answer(t(user_lang, "quest.stale"))
-                current = prog["scene"] if prog["scene"] in quest["scenes"] else quest["start"]
-                await _safe_edit(callback.message, quest["scenes"][current]["text"],
-                                 _scene_kb(quest, current, flags, user_lang))
-                return
-
-            scene = quest["scenes"][scene_key]
-            choices = scene.get("choices") or []
-            if idx >= len(choices):
-                await callback.answer()
-                return
-            choice = choices[idx]
-            # Перепроверяем доступность выбора по текущим флагам
-            if (idx, choice) not in visible_choices(scene, flags):
-                await callback.answer(t(user_lang, "quest.stale"))
-                return
-
-            cost = choice.get("cost") or 0
-            if cost:
-                try:
-                    await change_balance(conn, user_id, -cost, "quest_hint", f"{qid}:{scene_key}")
-                except InsufficientFunds:
-                    await callback.answer(t(user_lang, "quest.no_coins", cost=cost), show_alert=True)
-                    return
-
-            new_flags = sorted(flags | set(choice.get("set", [])))
-            target_key = choice["goto"]
-            target = quest["scenes"][target_key]
-
-            footer = ""
-            completed_at = prog["completed_at"]
-            if target.get("end") == "win":
-                if completed_at is None:
-                    await conn.execute("SELECT 1 FROM users WHERE user_id = $1 FOR UPDATE", user_id)
-                    await change_balance(conn, user_id, quest["reward_coins"], "quest_reward", qid)
-                    await grant_bundle(conn, user_id, {**{k: QUEST_RESOURCE_BUNDLE for k in RESOURCE_KINDS},
-                                                       **QUEST_EXTRA_BUNDLE},
-                                       "quest_reward", qid, cap=await resource_capacity(conn, user_id))
-                    footer = (t(user_lang, "quest.win_first", coins=quest["reward_coins"])
-                              + t(user_lang, "quest.win_resources", qty=QUEST_RESOURCE_BUNDLE))
-                    await conn.execute(
-                        "UPDATE quest_progress SET completed_at = NOW() "
-                        "WHERE user_id = $1 AND quest_id = $2", user_id, qid)
-                else:
-                    footer = t(user_lang, "quest.win_repeat")
-            elif target.get("end") == "fail":
-                footer = t(user_lang, "quest.fail_footer")
-
-            await conn.execute(
-                "UPDATE quest_progress SET scene = $3, flags = $4::jsonb, updated_at = NOW() "
-                "WHERE user_id = $1 AND quest_id = $2",
-                user_id, qid, target_key, json.dumps(new_flags))
-
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                res = await qe.choose(conn, user_id, quest, scene_key, idx)
+    except qe.QuestStale as stale:
+        # Клик по устаревшей сцене (старое сообщение) — мягко возвращаем в актуальную
+        await callback.answer(t(user_lang, "quest.stale"))
+        if stale.current != scene_key:
+            await _safe_edit(callback.message, quest["scenes"][stale.current]["text"],
+                             _scene_kb(quest, stale.current, stale.flags, user_lang))
+        return
+    except qe.QuestNoCoins as e:
+        await callback.answer(t(user_lang, "quest.no_coins", cost=e.cost), show_alert=True)
+        return
+    if res is None:
+        await callback.answer()
+        return
+    footer = {
+        "win_first": t(user_lang, "quest.win_first", coins=quest["reward_coins"])
+        + t(user_lang, "quest.win_resources", qty=QUEST_RESOURCE_BUNDLE),
+        "win_repeat": t(user_lang, "quest.win_repeat"),
+        "fail": t(user_lang, "quest.fail_footer"),
+    }.get(res["outcome"], "")
     await callback.answer()
-    await _safe_edit(callback.message, target["text"] + footer,
-                     _scene_kb(quest, target_key, set(new_flags), user_lang))
+    await _safe_edit(callback.message, quest["scenes"][res["scene"]]["text"] + footer,
+                     _scene_kb(quest, res["scene"], res["flags"], user_lang))

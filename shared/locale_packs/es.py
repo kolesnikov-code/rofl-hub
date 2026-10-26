@@ -1096,6 +1096,24 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод 26.10): квесты в приложении (27.10)
+    "g_name_quests": "🗺 Quests",
+    "qs_tile": "Stories with choices · reward for the first win",
+    "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
+    "qs_done": "✅ completed",
+    "qs_progress": "⏯ in progress",
+    "qs_new": "🆕 new",
+    "qs_info": "{g} · {m} min · +{r} 🪙 for the first win",
+    "qs_start": "▶️ Start",
+    "qs_resume": "⏯ Continue",
+    "qs_restart": "🔄 Start over",
+    "qs_list": "‹ All quests",
+    "qs_again": "🔄 Play again",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
+    "qs_fail": "💀 Not the best ending… You can always replay the story!",
+    "qs_stale": "That scene is behind you — continuing from where you are",
+    "qs_empty": "No quests yet — check back later.",
     # TODO(перевод 26.10): игры и аукцион (27.10)
     "g_sometimes": "Sometimes: +1 ⚡",
     "auc_short": "You need {n} more 🪙 for this bid",
@@ -1481,7 +1499,7 @@ MINIAPP: dict[str, str] = {
     "ctaHungry": "🚨 ¡Los Perforadores tienen hambre ({n} sin combustible) y la extracción está parada!",
     "ctaLowFuel": "⚠️ Quedan menos chuletas que para un día de trabajo de los Perforadores.",
     "ctaShopBtn": "🛒 A la tienda",
-    "footer": "Duels and quests are in the bot chat for now",
+    "footer": "Duels are in the bot chat for now",
     "noProfile": "Perfil no encontrado. ¡Abre el bot y pulsa /start!",
     "blocked": "Cuenta bloqueada por la administración.",
     "deleting": "Tu cuenta está en cola de eliminación. ¿Cambiaste de idea? Cancélala en el chat del bot.",

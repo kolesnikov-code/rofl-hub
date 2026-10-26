@@ -1097,6 +1097,24 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): квесты в приложении (27.10)
+    "g_name_quests": "🗺 Quests",
+    "qs_tile": "Stories with choices · reward for the first win",
+    "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
+    "qs_done": "✅ completed",
+    "qs_progress": "⏯ in progress",
+    "qs_new": "🆕 new",
+    "qs_info": "{g} · {m} min · +{r} 🪙 for the first win",
+    "qs_start": "▶️ Start",
+    "qs_resume": "⏯ Continue",
+    "qs_restart": "🔄 Start over",
+    "qs_list": "‹ All quests",
+    "qs_again": "🔄 Play again",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
+    "qs_fail": "💀 Not the best ending… You can always replay the story!",
+    "qs_stale": "That scene is behind you — continuing from where you are",
+    "qs_empty": "No quests yet — check back later.",
     # TODO(перевод 26.10): игры и аукцион (27.10)
     "g_sometimes": "Sometimes: +1 ⚡",
     "auc_short": "You need {n} more 🪙 for this bid",
@@ -1555,7 +1573,7 @@ MINIAPP = {
     "ctaHungry": "🚨 ড্রিলাররা না খেয়ে আছে ({n}টা জ্বালানি ছাড়া) — মাইনিং বন্ধ!",
     "ctaLowFuel": "⚠️ ড্রিলারদের এক দিনের কাজের চেয়েও কম কাটলেট আছে।",
     "ctaShopBtn": "🛒 দোকানে চলো",
-    "footer": "Duels and quests are in the bot chat for now",
+    "footer": "Duels are in the bot chat for now",
     "noProfile": "প্রোফাইল পাওয়া যায়নি। বট খুলে /start চাপো!",
     "blocked": "অ্যাডমিনরা অ্যাকাউন্ট ব্লক করেছে।",
     "deleting": "অ্যাকাউন্ট মুছে ফেলার অপেক্ষায় আছে। মত বদলেছে? বটের চ্যাটে মুছে ফেলা বাতিল করো।",
