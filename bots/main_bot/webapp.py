@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -39,6 +40,39 @@ from shared.webapp_auth import validate_init_data
 logger = logging.getLogger(__name__)
 
 WEBAPP_DIR = Path(__file__).resolve().parents[2] / "static" / "webapp"
+SLOW_REQUEST_MS = 700        # запросы API дольше — в лог (видно, какая вкладка тормозит на сервере)
+COMPRESS_MIN_BYTES = 1024    # меньше — сжимать нет смысла
+_PAGE_CACHE: dict[str, tuple[float, bytes]] = {}
+
+
+def _page(name: str) -> web.Response:
+    """Страница из static/webapp из памяти (перечитывается при смене файла) — так её можно сжать gzip."""
+    path = WEBAPP_DIR / name
+    mtime = path.stat().st_mtime
+    cached = _PAGE_CACHE.get(name)
+    if not cached or cached[0] != mtime:
+        cached = (mtime, path.read_bytes())
+        _PAGE_CACHE[name] = cached
+    return web.Response(body=cached[1], content_type="text/html", charset="utf-8")
+
+
+@web.middleware
+async def speed_middleware(request: web.Request, handler):
+    """Сжатие ответов (index.html ~650 КБ → в разы меньше) и замер времени: Server-Timing + лог медленных API."""
+    started = time.perf_counter()
+    response = await handler(request)
+    ms = (time.perf_counter() - started) * 1000
+    try:
+        response.headers["Server-Timing"] = f"app;dur={ms:.0f}"
+        if (isinstance(response, web.Response) and not isinstance(response, web.FileResponse)
+                and len(response.body or b"") >= COMPRESS_MIN_BYTES
+                and "gzip" in request.headers.get("Accept-Encoding", "")):
+            response.enable_compression()
+    except Exception:   # замер и сжатие никогда не ломают ответ
+        pass
+    if ms >= SLOW_REQUEST_MS and request.path.startswith("/api/"):
+        logger.warning("slow webapp request %s %s: %.0f ms", request.method, request.path, ms)
+    return response
 
 
 def fridge_levels(current: int) -> list[dict]:
@@ -144,17 +178,17 @@ def _unauthorized() -> web.Response:
 
 
 async def handle_index(request: web.Request) -> web.Response:
-    return web.FileResponse(WEBAPP_DIR / "index.html")
+    return _page("index.html")
 
 
 async def handle_faq(request: web.Request) -> web.Response:
     """Полный справочник экосистемы — публичная страница без авторизации."""
-    return web.FileResponse(WEBAPP_DIR / "faq.html")
+    return _page("faq.html")
 
 
 async def handle_rules(request: web.Request) -> web.Response:
     """Пользовательское соглашение — публичная страница без авторизации."""
-    return web.FileResponse(WEBAPP_DIR / "rules.html")
+    return _page("rules.html")
 
 
 async def handle_me(request: web.Request) -> web.Response:
@@ -378,7 +412,7 @@ async def handle_top(request: web.Request) -> web.Response:
 
 
 def create_webapp(bot_token: str, bot=None) -> web.Application:
-    app = web.Application()
+    app = web.Application(middlewares=[speed_middleware])
     app["bot_token"] = bot_token
     app["bot"] = bot  # aiogram Bot для createInvoiceLink (None — покупки из Mini App выключены)
     app.router.add_get("/", handle_index)

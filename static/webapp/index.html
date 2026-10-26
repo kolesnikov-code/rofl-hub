@@ -8207,7 +8207,10 @@
     try { localStorage.setItem("rofl_tab", tab); } catch (e) {}
     renderTabs();
     window.scrollTo(0, 0);
-    const box = document.getElementById("app");
+    // Каждое нажатие рисует в СВЕЖИЙ контейнер: медленный ответ прошлой вкладки допишет в старый, уже снятый
+    // со страницы, и не перекроет новую (баг «нажал Склад — открылась Биржа»)
+    const old = document.getElementById("app"), box = old.cloneNode(false);
+    old.replaceWith(box);
     box.innerHTML = '<div class="loading">' + L.loading + '</div>';
     box.dataset.cols = VIEW_COLS[tab] || 2;
     try {
@@ -8244,11 +8247,11 @@
         (me.bonus_percent ? row(L.bonusPct, "+" + me.bonus_percent + "%", "status-ok") : '') +
         (me.has_shuttle ? '<div class="hint">' + L.shuttle + '</div>' : ''));
     // 🎯 Ежедневные цели живут в паспорте (решение владельца 26.10); раздел выключен — карточки нет
-    if ((me.features || {}).goals !== false) {
-      try { const g = await api("/api/goals"); box.insertAdjacentHTML("beforeend", goalsCard(g)); bindGoals(box); } catch (e) {}
-    }
-    // 📣 События — все анонсы внутри игры (каналов нет, решение владельца 26.10)
-    try { box.insertAdjacentHTML("beforeend", newsCard(await api("/api/news"))); bindNews(box); } catch (e) {}
+    // 📣 События — все анонсы внутри игры (каналов нет, решение владельца 26.10); оба запроса летят одновременно
+    const goalsReq = (me.features || {}).goals !== false ? api("/api/goals").catch(() => null) : Promise.resolve(null);
+    const newsReq = api("/api/news").catch(() => null);
+    try { const g = await goalsReq; if (g) { box.insertAdjacentHTML("beforeend", goalsCard(g)); bindGoals(box); } } catch (e) {}
+    try { const n = await newsReq; if (n) { box.insertAdjacentHTML("beforeend", newsCard(n)); bindNews(box); } } catch (e) {}
   }
   function newsCard(d) {
     const now = Date.now();

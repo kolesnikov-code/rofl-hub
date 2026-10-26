@@ -297,3 +297,28 @@ def test_tab_order_follows_the_owner_player_journey():
     html = Path("static/webapp/index.html").read_text(encoding="utf-8")
     assert ('const TABS = ["passport", "farm", "storage", "workshop", "lab", "market", "map", "mines", "raids", '
             '"team", "auctions", "friends", "shop", "top", "history", "info"];') in html
+
+
+def test_tab_switch_renders_into_a_fresh_container():
+    """Баг «нажал Склад — показалась Биржа»: медленный ответ прошлой вкладки не должен перекрывать новую."""
+    html = Path("static/webapp/index.html").read_text(encoding="utf-8")
+    assert 'box = old.cloneNode(false);' in html and "old.replaceWith(box);" in html
+    assert 'api("/api/goals").catch(() => null)' in html   # паспорт: цели и события запрашиваются одновременно
+
+
+async def test_webapp_pages_are_gzipped_and_timed():
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    client = TestClient(TestServer(create_webapp("123456:TEST")))
+    await client.start_server()
+    try:
+        r = await client.get("/", headers={"Accept-Encoding": "gzip"})
+        assert r.status == 200 and r.headers.get("Content-Encoding") == "gzip"
+        assert "app;dur=" in r.headers.get("Server-Timing", "")
+        assert "function viewHistory" in await r.text()          # клиент распаковал — страница цела
+        small = await client.get("/health", headers={"Accept-Encoding": "gzip"})
+        assert small.headers.get("Content-Encoding") is None      # мелочь не сжимаем
+        unauth = await client.get("/api/me")
+        assert unauth.status == 401                                # middleware не ломает ответы API
+    finally:
+        await client.close()
