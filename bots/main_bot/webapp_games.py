@@ -24,7 +24,7 @@ from bots.main_bot.webapp_game import _ctx, _feature_off, _int, _json, fail, pla
 from shared.database import db
 from shared.economy import (CODE_DIGITS, CODE_MAX_ATTEMPTS, FLAGS_ANSWER_SECONDS, GAME_ANSWER_GRACE_SECONDS,
                             GAME_MILESTONES, GAME_RESOURCE, LOSE_PENALTY, MATH_ANSWER_SECONDS, MEMORY_MAX_MOVES,
-                            MEMORY_PAIRS, QUIZ_ANSWER_SECONDS, QUIZ_HINT_COST, QUIZ_ROUND_SIZE, RESOURCE_PER_WIN,
+                            MEMORY_PAIRS, PREFETCH_SLACK_SECONDS, QUIZ_ANSWER_SECONDS, QUIZ_HINT_COST, QUIZ_ROUND_SIZE, RESOURCE_PER_WIN,
                             SAFE_CODES_COUNT, is_active, quiz_answers_required, quiz_level_reward, utcnow,
                             win_reward_for)
 from shared.minigames import (bulls_cows, code_secret, flags_round_state, math_round_state, memory_deck, memory_flip,
@@ -68,8 +68,12 @@ def hint_removal(state: dict, rng: random.Random | None = None) -> list[int]:
 TIMED_SECONDS = {"quiz": QUIZ_ANSWER_SECONDS, "math": MATH_ANSWER_SECONDS, "flags": FLAGS_ANSWER_SECONDS}
 
 
-def answered_in_time(created_at, now, seconds: int = QUIZ_ANSWER_SECONDS) -> bool:
-    return now <= created_at + timedelta(seconds=seconds + GAME_ANSWER_GRACE_SECONDS)
+def answered_in_time(created_at, now, seconds: int = QUIZ_ANSWER_SECONDS, started_at=None) -> bool:
+    """Отсчёт — с показа вопроса (started_at), но показ не позже created_at + PREFETCH_SLACK_SECONDS."""
+    begin = created_at
+    if started_at is not None:
+        begin = min(max(started_at, created_at), created_at + timedelta(seconds=PREFETCH_SLACK_SECONDS))
+    return now <= begin + timedelta(seconds=seconds + GAME_ANSWER_GRACE_SECONDS)
 
 
 async def _wins_today(conn, user_id: int) -> tuple[dict, bool]:
@@ -132,7 +136,7 @@ async def handle_games(request: web.Request) -> web.Response:
         "games": [{"id": g, "wins": wins[g], "limit": limit_for(g), "reward": win_reward_for(g),
                    "res": GAME_RESOURCE.get(g), "res_qty": RESOURCE_PER_WIN.get(g, 1),
                    "every": list(GAME_MILESTONES[g]) if g in GAME_MILESTONES else None} for g in GAME_TYPES],
-        "seconds": TIMED_SECONDS, "code": {"digits": CODE_DIGITS, "max": CODE_MAX_ATTEMPTS},
+        "seconds": TIMED_SECONDS, "prefetch": PREFETCH_SLACK_SECONDS, "code": {"digits": CODE_DIGITS, "max": CODE_MAX_ATTEMPTS},
         "memory": {"pairs": MEMORY_PAIRS, "max": MEMORY_MAX_MOVES},
         "unlimited": unlimited, "penalty": LOSE_PENALTY, "balance": balance,
         "quiz": {"level": level, "progress": progress, "required": quiz_answers_required(level + 1),
@@ -188,11 +192,11 @@ async def _close_round(ctx, round_id: int, game: str):
     """Раунд закрывается ровно один раз (повторный ответ — «устарел»). (state, created_at) или None."""
     async with db.pool.acquire() as conn:
         row = await conn.fetchrow("UPDATE game_rounds SET done = TRUE WHERE id = $1 AND user_id = $2 AND game = $3 "
-                                  "AND NOT done RETURNING state, created_at", round_id, ctx.user_id, game)
+                                  "AND NOT done RETURNING state, created_at, started_at", round_id, ctx.user_id, game)
     if row is None:
         return None
     state = json.loads(row["state"]) if isinstance(row["state"], str) else row["state"]
-    return state, row["created_at"]
+    return state, row["created_at"], row["started_at"]
 
 
 async def handle_hl_play(request: web.Request) -> web.Response:
@@ -206,7 +210,7 @@ async def handle_hl_play(request: web.Request) -> web.Response:
     closed = await _close_round(ctx, _int(data.get("round_id")), "hl")
     if closed is None:
         return fail(t(ctx.lang, "quiz.stale"))
-    state, _ = closed
+    state = closed[0]
     is_win = hl_outcome(direction, state["base"], state["secret"])
     out = await _payout(request, ctx, is_win, "hl")
     out.update(secret=state["secret"], base=state["base"], result="win" if is_win else "lose")
@@ -265,13 +269,28 @@ async def _timed_answer(request: web.Request, game: str) -> web.Response:
     closed = await _close_round(ctx, _int(data.get("round_id")), game)
     if closed is None:
         return fail(t(ctx.lang, "quiz.stale"))
-    state, created_at = closed
-    in_time = answered_in_time(created_at, utcnow(), TIMED_SECONDS[game])
+    state, created_at, started_at = closed
+    in_time = answered_in_time(created_at, utcnow(), TIMED_SECONDS[game], started_at)
     is_win = in_time and option == state["correct"]
     out = await _payout(request, ctx, is_win, game)
     out.update(correct=state["correct"], correct_text=state["options"][state["correct"]],
                result="win" if is_win else ("timeout" if not in_time or option < 0 else "lose"))
     return web.json_response(out)
+
+
+async def handle_round_start(request: web.Request) -> web.Response:
+    """Вопрос показан на экране — с этого момента идёт таймер (один раз; позже окна предзагрузки — без эффекта)."""
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    data = await _json(request)
+    game = request.match_info["game"]
+    if game not in TIMED_SECONDS:
+        return _bad()
+    async with db.pool.acquire() as conn:
+        await conn.execute("UPDATE game_rounds SET started_at = now() WHERE id = $1 AND user_id = $2 AND game = $3 "
+                           "AND NOT done AND started_at IS NULL", _int(data.get("round_id")), ctx.user_id, game)
+    return web.json_response({"ok": True})
 
 
 async def handle_quiz_answer(request: web.Request) -> web.Response:
@@ -408,6 +427,7 @@ def register_games_routes(app: web.Application) -> None:
     app.router.add_post("/api/quiz/next", handle_quiz_next)
     app.router.add_post("/api/quiz/hint", handle_quiz_hint)
     app.router.add_post("/api/quiz/answer", handle_quiz_answer)
+    app.router.add_post("/api/{game:quiz|math|flags}/start", handle_round_start)
     app.router.add_post("/api/math/next", handle_math_next)
     app.router.add_post("/api/math/answer", handle_math_answer)
     app.router.add_post("/api/flags/next", handle_flags_next)

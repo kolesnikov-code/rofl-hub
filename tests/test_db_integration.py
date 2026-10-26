@@ -3052,6 +3052,26 @@ async def test_app_new_games_math_flags_code_memory_and_milestones(conn, global_
             await client.post("/api/memory/flip", headers=head, json={"round_id": m2["round_id"], "idx": a0})
             lm = await (await client.post("/api/memory/flip", headers=head, json={"round_id": m2["round_id"], "idx": b0})).json()
         assert lm["result"] == "lose" and lm["moves"] == MEMORY_MAX_MOVES
+        # ⏱ предзагрузка: таймер с показа (/start), но форы не больше PREFETCH_SLACK_SECONDS
+        from datetime import timedelta
+        from shared.economy import GAME_ANSWER_GRACE_SECONDS, PREFETCH_SLACK_SECONDS
+        f2 = await (await client.post("/api/flags/next", headers=head, json={})).json()
+        await conn.execute("UPDATE game_rounds SET created_at = now() - $2::interval WHERE id = $1",
+                           f2["round_id"], timedelta(seconds=20 + GAME_ANSWER_GRACE_SECONDS + 4))   # выдан 27 с назад
+        st_ = await (await client.post("/api/flags/start", headers=head, json={"round_id": f2["round_id"]})).json()
+        assert st_["ok"]
+        right_f = (await state(f2["round_id"]))["correct"]
+        ok_late = await (await client.post("/api/flags/answer", headers=head,
+                                           json={"round_id": f2["round_id"], "option": right_f})).json()
+        assert ok_late["result"] == "win"          # показан только что — засчитано (4 с < форы)
+        f3 = await (await client.post("/api/flags/next", headers=head, json={})).json()
+        await conn.execute("UPDATE game_rounds SET created_at = now() - $2::interval WHERE id = $1",
+                           f3["round_id"], timedelta(seconds=20 + GAME_ANSWER_GRACE_SECONDS + PREFETCH_SLACK_SECONDS + 2))
+        await client.post("/api/flags/start", headers=head, json={"round_id": f3["round_id"]})
+        right_f3 = (await state(f3["round_id"]))["correct"]
+        too_late = await (await client.post("/api/flags/answer", headers=head,
+                                            json={"round_id": f3["round_id"], "option": right_f3})).json()
+        assert too_late["result"] == "timeout"     # «показал» поздно — фора не больше окна предзагрузки
         # 🧠 викторина: 🪨 камень на 10-м верном ответе
         await conn.execute("INSERT INTO game_counters (user_id, game, wins_total) VALUES (1840, 'quiz', 9)")
         q = await (await client.post("/api/quiz/next", headers=head, json={})).json()

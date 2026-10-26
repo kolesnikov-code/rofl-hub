@@ -843,6 +843,8 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS game_rounds_user_idx ON game_rounds (user_id, created_at);",
+    # 27.10: предзагрузка — таймер вопроса стартует при показе (не позже created_at + PREFETCH_SLACK_SECONDS)
+    "ALTER TABLE game_rounds ADD COLUMN IF NOT EXISTS started_at TIMESTAMPTZ;",
     # --- 27.10: новые игры приложения — суточные победы и общие счётчики побед (ресурс за каждые N) ---
     "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS daily_wins_math INT NOT NULL DEFAULT 0;",
     "ALTER TABLE game_stats ADD COLUMN IF NOT EXISTS daily_wins_flags INT NOT NULL DEFAULT 0;",

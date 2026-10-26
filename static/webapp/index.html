@@ -10475,12 +10475,12 @@
     }; });
   }
 
-  async function gameHl(box) {
-    const r0 = await post("/api/games/hl/new", {});
+  async function gameHl(box, pre, last) {
+    const r0 = await (pre || post("/api/games/hl/new", {}));
     if (!r0.ok) { box.innerHTML = card(L.g_name_hl, gameHead() + '<div class="g-result">' + esc(r0.message) + '</div>'); bindBack(box); return; }
     box.innerHTML = card(L.g_name_hl, gameHead() + '<div class="hint" style="margin-top:10px">' + L.hl_q + ' ' + prizeLine("hl") + '</div>' +
       '<div class="g-big" id="hlBig">' + r0.base + '</div><div class="two"><button class="btn" data-dir="up">' + L.hl_up + '</button>' +
-      '<button class="btn" data-dir="down">' + L.hl_down + '</button></div><div id="hlRes"></div>');
+      '<button class="btn" data-dir="down">' + L.hl_down + '</button></div><div id="hlRes">' + (last || "") + '</div>');
     bindBack(box);
     box.querySelectorAll("[data-dir]").forEach(b => { b.onclick = async () => {
       box.querySelectorAll("[data-dir]").forEach(x => x.disabled = true);
@@ -10491,11 +10491,12 @@
           box.querySelector("#hlBig").textContent = r.base + " → " + r.secret;
           markResult(b, box.querySelector('[data-dir="' + (b.dataset.dir === "up" ? "down" : "up") + '"]'), r.result === "win");
         }
-        box.querySelector("#hlRes").innerHTML = '<div class="g-result ' + (r.result || "") + '">' +
-          payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') + '</div><button class="btn" id="hlNext">' + L.hl_next + '</button>';
-        const next = box.querySelector("#hlNext");
-        next.onclick = () => gameHl(box);
-        if (next.scrollIntoView) next.scrollIntoView({ block: "nearest" });
+        const res = '<div class="g-result ' + (r.result || "") + '">' + payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '');
+        box.querySelector("#hlRes").innerHTML = res + RESET_BAR + '</div>';
+        // пока игрок смотрит на итог, следующее число уже грузится — новый раунд без паузы (идея владельца 27.10)
+        const pre = post("/api/games/hl/new", {});
+        pre.catch(() => {});
+        resetLater(box, "hl", () => gameHl(box, pre, res + '</div>'));
       } catch (e) { apiError(e); go("games"); }
     }; });
   }
@@ -10542,6 +10543,8 @@
     const d = gamesData.quiz, round = d.round, base = TIMED[kind];
     if (!quizRun || quizRun.kind !== kind) quizRun = { kind: kind, n: 0, right: 0, coins: 0, res: {}, streak: null };
     if (quizRun.n >= round) {               // 🏁 итог раунда из 10 вопросов
+      gamesData = await api("/api/games");   // свежий уровень интеллекта
+      const d = gamesData.quiz;
       const res = Object.keys(quizRun.res).map(k => "+" + quizRun.res[k] + " " + RES_ICON[k]).join(" · ") || "—";
       box.innerHTML = card(L.quiz_sum_title, gameHead() +
         row(L.quiz_sum, quizRun.right + " / " + round) + row(L.quiz_coins, (quizRun.coins >= 0 ? "+" : "−") + num(Math.abs(quizRun.coins)) + " 🪙") +
@@ -10553,7 +10556,11 @@
       box.querySelector("#qAgain").onclick = () => { quizRun = null; go("games"); };
       return;
     }
-    const q = await post(base + "/next", {});
+    const pre = quizRun.pre;
+    quizRun.pre = null;
+    // заранее загруженный вопрос годится, пока сервер ещё засчитает показ (окно предзагрузки)
+    const fresh = pre && Date.now() - pre.at < (gamesData.prefetch - 1) * 1000;
+    const q = await (fresh ? pre.p : post(base + "/next", {}));
     if (!q.ok) { box.innerHTML = card(L["g_name_" + kind], gameHead() + '<div class="g-result">' + esc(q.message) + '</div>'); bindBack(box); return; }
     quizRun.n += 1;
     let top = fmt(L.quiz_of, { a: quizRun.n, b: round }), body, opts = q.options;
@@ -10574,6 +10581,7 @@
       opts.map((o, i) => '<button class="quiz-opt" data-opt="' + i + '">' + esc(o) + '</button>').join("") +
       '<div id="qRes"></div>' + (kind === "quiz" ? '<button class="btn ghost" id="qHint">' + fmt(L.quiz_hint, { c: q.hint_cost }) + '</button>' : ''));
     bindBack(box);
+    post(base + "/start", { round_id: q.round_id }).catch(() => {});   // таймер сервера — с показа вопроса
     let left = q.seconds, answered = false;
     const answer = async opt => {
       if (answered) return;
@@ -10600,8 +10608,12 @@
         box.querySelector("#qRes").innerHTML = '<div class="g-result ' + (r.result === "win" ? "win" : "lose") + '">' +
           payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') + '</div><button class="btn" id="qNext">' + L.quiz_next + '</button>';
         if (!r.ok && r.message) quizRun.n = round;   // лимит / нет монет — сразу к итогу
+        if (quizRun.n < round) {   // следующий вопрос грузится, пока игрок смотрит на подсветку
+          quizRun.pre = { at: Date.now(), p: post(base + "/next", {}) };
+          quizRun.pre.p.catch(() => {});
+        }
         const next = box.querySelector("#qNext");
-        next.onclick = () => go("games");
+        next.onclick = () => { stopGameTimer(); gameTimed(box, kind); };
         if (next.scrollIntoView) next.scrollIntoView({ block: "nearest" });   // «Дальше» всегда на экране
       } catch (e) { apiError(e); go("games"); }
     };

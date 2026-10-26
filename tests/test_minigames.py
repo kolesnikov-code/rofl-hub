@@ -137,3 +137,20 @@ def test_app_script_has_no_duplicate_top_level_names():
     names = re.findall(r"^  (?:async function|function|const|let) ([A-Za-z_$][\w$]*)", html, re.M)
     dups = sorted({n for n in names if names.count(n) > 1})
     assert not dups, dups
+
+
+def test_timer_starts_on_display_but_prefetch_gives_at_most_the_slack():
+    """Предзагрузка вопроса: таймер — с показа, но не позже created_at + PREFETCH_SLACK_SECONDS."""
+    from datetime import datetime, timedelta, timezone
+    from bots.main_bot.webapp_games import answered_in_time
+    t0 = datetime(2026, 10, 27, tzinfo=timezone.utc)
+    full = economy.QUIZ_ANSWER_SECONDS + economy.GAME_ANSWER_GRACE_SECONDS
+    slack = economy.PREFETCH_SLACK_SECONDS
+    sec = lambda n: timedelta(seconds=n)
+    # показан через 3 с после выдачи — у игрока все 30 с от показа
+    assert answered_in_time(t0, t0 + sec(3 + full), economy.QUIZ_ANSWER_SECONDS, t0 + sec(3))
+    assert not answered_in_time(t0, t0 + sec(3 + full + 1), economy.QUIZ_ANSWER_SECONDS, t0 + sec(3))
+    # «показан» через минуту (вопрос читали заранее) — форы не больше slack
+    assert not answered_in_time(t0, t0 + sec(slack + full + 1), economy.QUIZ_ANSWER_SECONDS, t0 + sec(60))
+    # без показа — от выдачи, как раньше
+    assert not answered_in_time(t0, t0 + sec(full + 1), economy.QUIZ_ANSWER_SECONDS)
