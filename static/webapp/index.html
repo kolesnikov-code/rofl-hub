@@ -78,8 +78,27 @@
   .quiz-q { font-size: 17px; font-weight: 800; line-height: 1.35; margin: 12px 0 4px; }
   .quiz-opt { display: block; width: 100%; text-align: left; margin-top: 8px; padding: 12px 14px; border-radius: 12px;
     border: 1px solid rgba(0,255,225,.3); background: #0d1326; color: var(--text); font: inherit; font-size: 15px; cursor: pointer; }
-  .quiz-opt.right { border-color: var(--ok); background: rgba(55,232,95,.15); }
-  .quiz-opt.wrong { border-color: var(--bad); background: rgba(255,85,85,.15); }
+  .quiz-opt.right, .btn.fx-win { border-color: var(--ok); background: rgba(55,232,95,.22); color: #eafff0;
+    box-shadow: 0 0 0 1px var(--ok) inset, 0 0 22px rgba(55,232,95,.55); animation: fxGlow 1.2s ease-in-out infinite alternate; }
+  .quiz-opt.wrong, .btn.fx-lose { border-color: var(--bad); background: rgba(255,85,85,.2); color: #ffd9d9;
+    box-shadow: 0 0 0 1px var(--bad) inset; animation: fxShake .45s ease-in-out 1; }
+  /* верный ответ, когда ты ошибся: «депрессивная» подсветка — приглушённый зелёный, пунктир, медленное угасание */
+  .quiz-opt.sad, .btn.fx-sad { border: 1px dashed rgba(55,232,95,.65); background: rgba(55,232,95,.08); color: #9fbfa8;
+    filter: saturate(.55); animation: fxSad 2.4s ease-in-out infinite; }
+  .quiz-opt, .btn { position: relative; overflow: visible; }
+  .spark { position: absolute; width: 5px; height: 5px; border-radius: 1px; pointer-events: none; z-index: 5; }
+  .spark.up { background: #ffd93d; box-shadow: 0 0 6px #ff9a3d, 0 0 12px #ffd93d; animation: fxUp 1.1s ease-out forwards; }
+  .spark.down { background: #ff5555; box-shadow: 0 0 6px #ff2a2a; animation: fxDown 1.9s ease-in forwards; }
+  @keyframes fxUp { 0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx), -70px) scale(.3); } }
+  @keyframes fxDown { 0% { opacity: .95; transform: translate(0, 0); }
+    100% { opacity: 0; transform: translate(var(--dx), 60px) rotate(120deg); } }
+  @keyframes fxGlow { from { box-shadow: 0 0 0 1px var(--ok) inset, 0 0 10px rgba(55,232,95,.35); }
+    to { box-shadow: 0 0 0 1px var(--ok) inset, 0 0 26px rgba(55,232,95,.75); } }
+  @keyframes fxShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  @keyframes fxSad { 0%, 100% { opacity: .9; } 50% { opacity: .55; } }
+  @media (prefers-reduced-motion: reduce) { .spark { display: none; } .quiz-opt, .btn { animation: none !important; } }
+  .game-tile.limit .gt-meta { color: var(--accent); }
   .quiz-opt.gone { opacity: .25; }
   .quiz-opt:disabled { cursor: default; }
   .tbar { height: 6px; background: #0d1326; border-radius: 99px; overflow: hidden; margin-top: 8px; }
@@ -487,7 +506,7 @@
       map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
       tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "На карте — соло-походы и походы отрядов команд (формат у каждой цели свой). К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "🎒 За участие: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Твой выбор сработает, как только дойдёшь до развилки. Передумать можно до этого момента.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Выбор принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
       subtitle: "твоя игровая империя в одном экране",
-      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит на сегодня", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Не в этот раз", g_draw: "🤝 Ничья", g_timeout: "⏱ Время вышло", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}. Угадал — +{r} 🪙.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных",
+      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}. Угадал — +{r} 🪙.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит",
       tab_passport: "📋 Паспорт", tab_farm: "🚜 Ферма", tab_goals: "🎯 Цели", tab_workshop: "🔧 Мастерская",
       tab_raids: "🏴‍☠️ Налёты", tab_market: "📈 Биржа", tab_team: "🏆 Команда", tab_shop: "🏪 Магазин", tab_top: "👑 ТОП",
       passport: "📋 ПАСПОРТ ИГРОКА", coins: "🪙",
@@ -715,7 +734,7 @@
       map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
       tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "🎒 For taking part: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your choice applies as soon as you reach the fork. You can change it until then.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Choice saved", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
       subtitle: "your game empire on one screen",
-      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit for today", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Not this time", g_draw: "🤝 Draw", g_timeout: "⏱ Time's up", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}. Guess it — +{r} 🪙.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next",
+      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}. Guess it — +{r} 🪙.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit",
       tab_passport: "📋 Passport", tab_farm: "🚜 Farm", tab_goals: "🎯 Goals", tab_workshop: "🔧 Workshop",
       tab_raids: "🏴‍☠️ Raids", tab_market: "📈 Market", tab_team: "🏆 Team", tab_shop: "🏪 Shop", tab_top: "👑 TOP",
       passport: "📋 PLAYER PASSPORT", coins: "🪙",
@@ -940,12 +959,15 @@
   const I18N_EXTRA = {
   "ar": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -961,9 +983,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -1586,12 +1608,15 @@
   },
   "bn": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -1607,9 +1632,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -2232,12 +2257,15 @@
   },
   "de": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -2253,9 +2281,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -2878,12 +2906,15 @@
   },
   "es": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -2899,9 +2930,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -3524,12 +3555,15 @@
   },
   "fr": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -3545,9 +3579,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -4170,12 +4204,15 @@
   },
   "hi": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -4191,9 +4228,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -4816,12 +4853,15 @@
   },
   "id": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -4837,9 +4877,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -5462,12 +5502,15 @@
   },
   "it": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -5483,9 +5526,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -6108,12 +6151,15 @@
   },
   "pl": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -6129,9 +6175,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -6754,12 +6800,15 @@
   },
   "pt": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -6775,9 +6824,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -7400,12 +7449,15 @@
   },
   "uz": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -7421,9 +7473,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -8046,12 +8098,15 @@
   },
   "zh": {
     "tab_games": "🕹 Games",
+    "g_limit_btn": "⚡ Lift the limit",
+    "g_limit_text": "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.",
+    "g_limit_title": "⏳ LIMIT FOR TODAY",
     "g_credited": "Credited: {x}",
     "g_charged": "Charged: {x}",
     "g_title": "🕹 GAMES",
     "g_hint": "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).",
     "g_unlimited": "⚡ Unlimited is on — win as much as you like",
-    "g_limit": "limit for today",
+    "g_limit": "limit reached · 🔓 can be lifted",
     "g_soon": "soon",
     "g_back": "‹ All games",
     "g_again": "Again",
@@ -8067,9 +8122,9 @@
     "g_name_memory": "🃏 Memory",
     "g_prize": "Win: +{r} 🪙 and {i}",
     "g_win": "🎉 Victory!",
-    "g_lose": "Not this time",
-    "g_draw": "🤝 Draw",
-    "g_timeout": "⏱ Time's up",
+    "g_lose": "Defeat!",
+    "g_draw": "🤝 Draw!",
+    "g_timeout": "⏱ Time's up!",
     "g_level": "🎉 New intelligence level: {l}! +{b} 🪙",
     "g_intern": "🤖 A new Robot Intern is waiting on the farm",
     "g_full": "storage full",
@@ -10129,6 +10184,26 @@
     return '<button class="btn ghost" id="gBack" style="margin-top:0;padding:8px;font-size:13px">' + L.g_back + '</button>';
   }
   function bindBack(box) { const b = box.querySelector("#gBack"); if (b) b.onclick = () => { stopGameTimer(); gameScreen = null; go("games"); }; }
+  // ✨ Искры: победа — золотые вверх (как от костра), поражение — красные медленно падают
+  function sparks(el, win) {
+    if (!el) return;
+    const n = win ? 18 : 12;
+    for (let i = 0; i < n; i++) {
+      const p = document.createElement("i");
+      p.className = "spark " + (win ? "up" : "down");
+      p.style.left = (5 + Math.random() * 90) + "%";
+      p.style.top = win ? (20 + Math.random() * 60) + "%" : (10 + Math.random() * 50) + "%";
+      p.style.setProperty("--dx", ((Math.random() - .5) * 40).toFixed(0) + "px");
+      p.style.animationDelay = (Math.random() * (win ? .35 : .6)).toFixed(2) + "s";
+      el.appendChild(p);
+      setTimeout(() => p.remove(), 2600);
+    }
+  }
+  // Подсветка итога: выбранное — победа/поражение с искрами; верное при ошибке — «грустно»
+  function markResult(chosen, right, win) {
+    if (chosen) { chosen.classList.add(win ? "fx-win" : "fx-lose"); sparks(chosen, win); }
+    if (!win && right && right !== chosen) right.classList.add("fx-sad");
+  }
   function vibrate(ok) { if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred(ok ? "success" : "error"); }
   function prizeLine(id) {
     const g = gamesData.games.find(x => x.id === id);
@@ -10155,23 +10230,33 @@
       '<div class="game-grid">' + GAMES_LIVE.map(id => tile(d.games.find(g => g.id === id))).join("") + GAMES_SOON.map(soon).join("") + '</div>' +
       '<div class="hint" style="margin-top:10px">' + (d.unlimited ? L.g_unlimited : L.g_hint) + '</div>' +
       '<div class="hint">' + fmt(L.quiz_level, { l: q.level, a: q.progress, b: q.required }) + '</div>');
-    box.querySelectorAll("[data-game]").forEach(b => { b.onclick = () => { gameScreen = b.dataset.game; quizRun = null; go("games"); }; });
+    box.querySelectorAll("[data-game]").forEach(b => { b.onclick = () => {
+      if (b.classList.contains("limit")) return limitScreen(box, b.dataset.game);
+      gameScreen = b.dataset.game; quizRun = null; go("games");
+    }; });
+  }
+  function limitScreen(box, id) {
+    box.innerHTML = card(L.g_limit_title, gameHead() + '<div class="g-result" style="margin-top:10px"><b>' + L["g_name_" + id] +
+      '</b><br>' + L.g_limit_text + '</div><button class="btn" id="gUnlim">' + L.g_limit_btn + '</button>');
+    bindBack(box);
+    box.querySelector("#gUnlim").onclick = () => go("shop");
   }
 
-  function gameRps(box, last) {
+  function gameRps(box, last, mark) {
     const M = ["rock", "scissors", "paper"];
     box.innerHTML = card(L.g_name_rps, gameHead() + '<div class="hint" style="margin-top:10px">' + L.rps_pick + ' ' + prizeLine("rps") + '</div>' +
-      '<div class="g-moves">' + M.map(m => '<button class="btn" data-mv="' + m + '">' + L["rps_" + m] + '</button>').join("") + '</div>' +
-      (last || ""));
+      '<div class="g-moves">' + M.map(m => '<button class="btn' + (mark && mark.bot === m && mark.mv !== m ? ' ghost' : '') + '" data-mv="' + m + '">' +
+        (mark && mark.bot === m ? '🤖 ' : '') + L["rps_" + m] + '</button>').join("") + '</div>' + (last || ""));
     bindBack(box);
+    if (mark && mark.result !== "draw") markResult(box.querySelector('[data-mv="' + mark.mv + '"]'), null, mark.result === "win");
     box.querySelectorAll("[data-mv]").forEach(b => { b.onclick = async () => {
       box.querySelectorAll("[data-mv]").forEach(x => x.disabled = true);
       try {
         const r = await post("/api/games/rps", { move: b.dataset.mv });
-        const vs = r.result ? fmt(L.rps_vs, { a: L["rps_" + b.dataset.mv], b: L["rps_" + r.bot] }) + '<br>' : '';
         vibrate(r.result === "win");
-        gameRps(box, '<div class="g-result ' + (r.result === "win" ? "win" : r.result === "lose" ? "lose" : "") + '">' + vs +
-          payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') + '</div>');
+        gameRps(box, '<div class="g-result ' + (r.result === "win" ? "win" : r.result === "lose" ? "lose" : "") + '">' +
+          payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') + '</div>',
+          r.result ? { mv: b.dataset.mv, bot: r.bot, result: r.result } : null);
       } catch (e) { apiError(e); go("games"); }
     }; });
   }
@@ -10180,7 +10265,7 @@
     const r0 = await post("/api/games/hl/new", {});
     if (!r0.ok) { box.innerHTML = card(L.g_name_hl, gameHead() + '<div class="g-result">' + esc(r0.message) + '</div>'); bindBack(box); return; }
     box.innerHTML = card(L.g_name_hl, gameHead() + '<div class="hint" style="margin-top:10px">' + L.hl_q + ' ' + prizeLine("hl") + '</div>' +
-      '<div class="g-big">' + r0.base + '</div><div class="two"><button class="btn" data-dir="up">' + L.hl_up + '</button>' +
+      '<div class="g-big" id="hlBig">' + r0.base + '</div><div class="two"><button class="btn" data-dir="up">' + L.hl_up + '</button>' +
       '<button class="btn" data-dir="down">' + L.hl_down + '</button></div><div id="hlRes"></div>');
     bindBack(box);
     box.querySelectorAll("[data-dir]").forEach(b => { b.onclick = async () => {
@@ -10188,27 +10273,33 @@
       try {
         const r = await post("/api/games/hl/play", { round_id: r0.round_id, dir: b.dataset.dir });
         vibrate(r.result === "win");
+        if (r.result) {   // выпавшее число — в самом табло «47 → 63», без лишней строки текста
+          box.querySelector("#hlBig").textContent = r.base + " → " + r.secret;
+          markResult(b, box.querySelector('[data-dir="' + (b.dataset.dir === "up" ? "down" : "up") + '"]'), r.result === "win");
+        }
         box.querySelector("#hlRes").innerHTML = '<div class="g-result ' + (r.result || "") + '">' +
-          (r.result ? fmt(L.hl_was, { n: r.secret }) + '<br>' : '') + payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') +
-          '</div><button class="btn" id="hlNext">' + L.hl_next + '</button>';
-        box.querySelector("#hlNext").onclick = () => gameHl(box);
+          payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') + '</div><button class="btn" id="hlNext">' + L.hl_next + '</button>';
+        const next = box.querySelector("#hlNext");
+        next.onclick = () => gameHl(box);
+        if (next.scrollIntoView) next.scrollIntoView({ block: "nearest" });
       } catch (e) { apiError(e); go("games"); }
     }; });
   }
 
-  function gameSafe(box, last) {
-    const n = gamesData.safe_codes, g = gamesData.games.find(x => x.id === "safe");
-    box.innerHTML = card(L.g_name_safe, gameHead() + '<div class="hint" style="margin-top:10px">' + fmt(L.safe_q, { n: n, r: g.reward }) + ' ' + prizeLine("safe") + '</div>' +
-      '<div class="g-moves four">' + Array.from({ length: n }, (_, i) => '<button class="btn" data-code="' + (i + 1) + '">🔢 ' + (i + 1) + '</button>').join("") + '</div>' +
-      (last || ""));
+  function gameSafe(box, last, mark) {
+    const n = gamesData.safe_codes;
+    box.innerHTML = card(L.g_name_safe, gameHead() + '<div class="hint" style="margin-top:10px">' + fmt(L.safe_q, { n: n, r: gamesData.games.find(x => x.id === "safe").reward }) +
+      ' ' + prizeLine("safe") + '</div><div class="g-moves four">' + Array.from({ length: n }, (_, i) =>
+        '<button class="btn" data-code="' + (i + 1) + '">🔢 ' + (i + 1) + '</button>').join("") + '</div>' + (last || ""));
     bindBack(box);
+    if (mark) markResult(box.querySelector('[data-code="' + mark.guess + '"]'), box.querySelector('[data-code="' + mark.code + '"]'), mark.win);
     box.querySelectorAll("[data-code]").forEach(b => { b.onclick = async () => {
       box.querySelectorAll("[data-code]").forEach(x => x.disabled = true);
       try {
         const r = await post("/api/games/safe", { guess: Number(b.dataset.code) });
         vibrate(r.result === "win");
-        gameSafe(box, '<div class="g-result ' + (r.result || "") + '">' + (r.result ? fmt(L.safe_code, { n: r.code }) + '<br>' : '') +
-          payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') + '</div>');
+        gameSafe(box, '<div class="g-result ' + (r.result || "") + '">' + payoutHtml(r, r.result ? '<b>' + L["g_" + r.result] + '</b>' : '') + '</div>',
+          r.result ? { guess: Number(b.dataset.code), code: r.code, win: r.result === "win" } : null);
       } catch (e) { apiError(e); go("games"); }
     }; });
   }
@@ -10244,8 +10335,12 @@
       try {
         const r = await post("/api/quiz/answer", { round_id: q.round_id, option: opt });
         const opts = box.querySelectorAll(".quiz-opt");
-        if (r.correct !== undefined) opts[r.correct].classList.add("right");
-        if (opt >= 0 && r.correct !== undefined && opt !== r.correct) opts[opt].classList.add("wrong");
+        if (r.correct !== undefined) {
+          const won = r.result === "win";
+          opts[r.correct].classList.add(won ? "right" : "sad");
+          if (won) sparks(opts[r.correct], true);
+          if (opt >= 0 && opt !== r.correct) { opts[opt].classList.add("wrong"); sparks(opts[opt], false); }
+        }
         if (r.result === "win") quizRun.right += 1;
         const i = r.info || {};
         quizRun.coins += (i.reward || 0) - (i.penalty || 0) + (i.level_up ? i.level_up.bonus : 0);
