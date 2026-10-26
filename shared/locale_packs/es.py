@@ -1032,6 +1032,12 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "mk_sellTitleAny": "💰 SELL: {x}",
+    "mk_bidTitleAny": "🙋 BUY: {x}",
+    "mk_qtyAny": "Amount, {x}",
+    "mk_limitsAny": "Up to {q} {x} per order, up to {o} open orders",
+    "mk_boughtAny": "Bought {q} {x} for {t} 🪙",
+    "mk_cancelledAny": "Order cancelled — your goods or frozen coins are back",
     # TODO(перевод 26.10): события, аукционы, развилки — пока по-английски
     "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
     "map_forkAhead": "Fork in {t} — choose ahead",

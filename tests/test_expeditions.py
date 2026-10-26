@@ -260,3 +260,13 @@ def test_long_prize_is_shortened_in_events_and_never_widens_the_page():
     assert short_rewards_label(rewards[:2]) == "10 ⛏ + 10 💧"
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     assert "#app { overflow-x: clip; }" in html and 'class="nw"' not in html
+
+
+def test_market_forms_name_the_chosen_asset_not_cutlets():
+    """26.10: при выбранном ресурсе форма продажи писала «котлет» — теперь подписи от выбранного товара."""
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    for needle in ("fmt(L.mk_sellTitleAny", "fmt(L.mk_bidTitleAny", "fmt(L.mk_qtyAny", "fmt(L.mk_limitsAny",
+                   "fmt(L.mk_boughtAny", "L.mk_cancelledAny"):
+        assert needle in html, needle
+    for old in ("L.mk_qty +", "form(\"sell\", L.mk_sellTitle", "fmt(L.mk_bought,"):
+        assert old not in html, old
