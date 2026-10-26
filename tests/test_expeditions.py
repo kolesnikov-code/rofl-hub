@@ -84,7 +84,7 @@ def test_fork_schedule_equal_parts():
 
 def test_decide_majority_tie_earliest_and_default():
     t = lambda m: NOW + timedelta(minutes=m)    # noqa: E731
-    assert decide([], 3) == (0, 0)                                    # молчание — самый осторожный вариант
+    assert decide([], 3) == (-1, 0)                                   # молчание — отряд проходит мимо (аудит 1.2)
     assert decide([(2, t(5)), (2, t(6)), (1, t(1))], 3) == (2, 2)     # большинство
     assert decide([(1, t(3)), (2, t(1))], 3) == (2, 1)                # ничья — кто раньше
     assert decide([(9, t(1)), (1, t(2))], 3) == (1, 1)                # мусорный вариант не считается

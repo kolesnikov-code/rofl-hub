@@ -1114,7 +1114,7 @@ MINIAPP: dict[str, str] = {
     # TODO(перевод 26.10): события, аукционы, развилки — пока по-английски
     "map_cargoHint": "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.",
     "map_forkAhead": "Fork in {t} — choose ahead",
-    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the careful option.",
+    "map_forkNow": "The squad is at the fork! {t} left to decide — otherwise the squad walks past (no loot, no losses, no delay).",
     "map_voteTeam": "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.",
     "map_myChoice": "your choice",
     "news_title": "📣 EVENTS",

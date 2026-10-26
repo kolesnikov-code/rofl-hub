@@ -248,8 +248,11 @@ async def handle_admin_battle_close(request: web.Request) -> web.Response:
     battle_id, mode = _int(data.get("id")), data.get("mode")
     async with db.pool.acquire() as conn:
         if mode == "cancel":
+            from shared.battles import refund_entries
             done = await conn.fetchval("UPDATE battles SET status = 'cancelled' WHERE battle_id = $1 AND status = 'active' "
                                        "RETURNING 1", battle_id)
+            if done:
+                await refund_entries(conn, battle_id, only_incomplete=False)   # заявки батарейками — назад (аудит 1.7)
         elif mode == "finish":
             done = await conn.fetchval("UPDATE battles SET ends_at = LEAST(ends_at, NOW()) WHERE battle_id = $1 "
                                        "AND status = 'active' RETURNING 1", battle_id)
@@ -491,7 +494,9 @@ async def handle_admin_target_close(request: web.Request) -> web.Response:
     target_id, mode = _int(data.get("id")), data.get("mode")
     async with db.pool.acquire() as conn:
         if mode == "finish":
-            done = await conn.fetchval("UPDATE expedition_targets SET resolve_at = LEAST(resolve_at, NOW()) "
+            # плановый час итогов запоминается: отряды в пути, успевавшие к нему, считаются дошедшими (аудит 1.1)
+            done = await conn.fetchval("UPDATE expedition_targets SET planned_resolve_at = COALESCE(planned_resolve_at, "
+                                       "resolve_at), resolve_at = LEAST(resolve_at, NOW()) "
                                        "WHERE id = $1 AND status = 'open' RETURNING 1", target_id)
         elif mode == "cancel":
             from shared.expeditions import cancel_target

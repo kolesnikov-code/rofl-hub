@@ -296,6 +296,14 @@
 - 🧠 ВИКТОРИНА БЕЗ ПОВТОРОВ (26.10): таблица quiz_seen (user_id, qkey = sha1 текста вопроса, 16 зн.) — вопрос выбирается
   из невиданных (questions_loader.pick_unseen, games._next_question); прошёл всю базу — круг заново; сбой БД — случайный.
   Ключ по тексту, поэтому порядок строк в CSV можно менять. Удаление аккаунта чистит quiz_seen.
+- 🛠 АУДИТ 26.10 (docs/PROJECT_AUDIT_2026-10-26.md), неделя 1 сделана: итоги битв/экспедиций — статус 'finishing'
+  + finishing_at (зависшие > FINISH_RETRY_MINUTES доделывает демон; призы идемпотентны по reward_grants, рудник не
+  перезахватывается), сезон — одной транзакцией; «Итоги сейчас» пишет planned_resolve_at — отряды судятся по
+  плановому часу; молчание на развилке = PASS_OPTION (−1: без добычи/потерь/задержки); battles.refund_entries —
+  батарейки назад при отмене и неполной заявке; apply_lazy_farm: now = max(now, last_update_time); middleware
+  пропускает successful_payment всегда; CatalogError после оплаты → авто-возврат; result_entries читает итоги v2;
+  purge_account обнуляет ALL_KINDS, лошадей, дронов, user_tech; SEASON_EARN_REASONS без market_sell, номинация
+  «заработок» = EARN_CONDITION; place_bid отклоняет ставку после ends_at.
 - 📜 ИСТОРИЯ ИГРОКА (вкладка «📜 История» между ТОПом и «Инфо», bots/main_bot/webapp_history.py, /api/history):
   30 дней — 🪙 монеты (ledger, сводка «пришло/ушло» и главные источники/траты), 📦 ресурсы (resource_ledger),
   📈 биржа (market_trades — купил/продал, в т.ч. котлеты), 🎁 награды (reward_grants: битвы, походы, подарки пульта).

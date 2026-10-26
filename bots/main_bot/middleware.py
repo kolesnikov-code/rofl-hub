@@ -38,6 +38,13 @@ def _is_start(event: TelegramObject) -> bool:
     return isinstance(message, Message) and (message.text or "").startswith("/start")
 
 
+def _is_paid(event: TelegramObject) -> bool:
+    """Оплата уже прошла (Stars списаны) — такой апдейт нельзя глушить ни техработами, ни блокировкой:
+    доставка или авто-возврат обязаны сработать. pre_checkout по-прежнему глушится — там деньги ещё не взяты."""
+    message = getattr(event, "message", None)
+    return isinstance(message, Message) and message.successful_payment is not None
+
+
 class ActivityMiddleware(BaseMiddleware):
     def __init__(self) -> None:
         self._last_seen_written: dict[int, float] = {}
@@ -59,6 +66,15 @@ class ActivityMiddleware(BaseMiddleware):
         now = time.monotonic()
         # Язык по умолчанию — из клиента Telegram (до регистрации), после — из профиля
         data["user_lang"] = resolve_lang(getattr(user, "language_code", None))
+
+        if _is_paid(event):
+            try:
+                row = await db.pool.fetchrow("SELECT lang FROM users WHERE user_id = $1", user.id)
+                if row:
+                    data["user_lang"] = resolve_lang(row["lang"])
+            except Exception:
+                logger.exception("[ACTIVITY_MW] язык для оплаты не прочитан — доставка всё равно идёт")
+            return await handler(event, data)
 
         # 🛠 Режим техработ (тумблер владельца в админ-боте): бот отвечает заглушкой
         try:

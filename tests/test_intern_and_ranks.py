@@ -155,3 +155,40 @@ def test_deletion_middleware_lets_through_only_undo_and_start():
     assert not _is_callback(SimpleNamespace(callback_query=cb), "games_hub")
     assert _is_start(SimpleNamespace(message=msg))
     assert not _is_start(SimpleNamespace(message=Message.model_construct(text="/farm")))
+
+
+async def test_paid_update_passes_maintenance_and_block(monkeypatch):
+    """Аудит 1.5: Stars уже списаны — техработы и блокировка не должны глушить доставку."""
+    import os
+    os.environ.setdefault("MAIN_BOT_TOKEN", "123456:TEST")
+    import pytest
+    pytest.importorskip("aiogram")
+    from types import SimpleNamespace
+    from aiogram.types import Message, SuccessfulPayment
+    from bots.main_bot import middleware as mw
+
+    class Pool:
+        async def fetchrow(self, *a):
+            return {"lang": "ru", "is_blocked": True, "deletion_requested_at": None, "deleted_at": None}
+
+    async def flag_on(key):
+        return True
+
+    async def silent(*a, **k):
+        return None
+
+    monkeypatch.setattr(mw, "db", SimpleNamespace(is_connected=True, pool=Pool()))
+    monkeypatch.setattr(mw, "get_flag", flag_on)
+    m = mw.ActivityMiddleware()
+    monkeypatch.setattr(m, "_reply_to_event", silent)
+    calls = []
+
+    async def handler(event, data):
+        calls.append(event)
+
+    user = SimpleNamespace(id=5, language_code="ru")
+    paid = SimpleNamespace(message=Message.model_construct(successful_payment=SuccessfulPayment.model_construct()))
+    plain = SimpleNamespace(message=Message.model_construct(text="/farm", successful_payment=None))
+    await m(handler, paid, {"event_from_user": user})
+    await m(handler, plain, {"event_from_user": user})
+    assert calls == [paid]                      # оплата прошла, обычное сообщение — заглушено техработами

@@ -20,7 +20,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta
 
-from shared.economy import ACCOUNT_DELETE_GRACE_DAYS, RESOURCE_KINDS
+from shared.economy import ACCOUNT_DELETE_GRACE_DAYS, ALL_KINDS
 from shared.ledger import change_balance
 
 logger = logging.getLogger(__name__)
@@ -114,8 +114,8 @@ async def purge_account(conn, user_id: int, now: datetime) -> bool:
     await leave_team(conn, user_id)           # капитанство — старейшему участнику
     if row["balance"]:
         await change_balance(conn, user_id, -row["balance"], "account_deleted")
-    for kind, qty in (await get_resources(conn, user_id)).items():
-        if qty > 0 and kind in RESOURCE_KINDS:
+    for kind, qty in (await get_resources(conn, user_id, ALL_KINDS)).items():   # всё сырьё, не только 4 базовых
+        if qty > 0:
             await change_resource(conn, user_id, kind, -qty, "account_deleted")
     await conn.execute("DELETE FROM miners WHERE user_id = $1", user_id)
     await conn.execute("DELETE FROM user_items WHERE user_id = $1", user_id)
@@ -123,6 +123,8 @@ async def purge_account(conn, user_id: int, now: datetime) -> bool:
     await conn.execute("DELETE FROM game_stats WHERE user_id = $1", user_id)
     await conn.execute("DELETE FROM quest_progress WHERE user_id = $1", user_id)
     await conn.execute("DELETE FROM quiz_seen WHERE user_id = $1", user_id)
+    await conn.execute("DELETE FROM user_tech WHERE user_id = $1", user_id)      # Лаборатория — тоже с нуля
+    await conn.execute("DELETE FROM user_badges WHERE user_id = $1", user_id)
     await conn.execute(
         """
         UPDATE users SET
@@ -136,6 +138,11 @@ async def purge_account(conn, user_id: int, now: datetime) -> bool:
             intern_claimed = FALSE, interns_pending = 0,
             interns_backfilled = TRUE, interns_rebalanced = TRUE,
             team_id = NULL, team_joined_at = NULL,
+            raid_camo_until = NULL, raid_trap_until = NULL, raid_drill_until = NULL,
+            thermos_from = NULL, thermos_until = NULL, forsage_used_at = NULL,
+            raid_free_fuel = 0, raid_cargo = 0, market_free_sales = 0, station_boost = 0,
+            horses = 0, carts = 0, meds_until = NULL, shuttle_until = NULL,
+            drones_guard = 0, drones_attack = 0, drones_spy = 0,
             deletion_requested_at = NULL, deleted_at = $2
         WHERE user_id = $1
         """, user_id, now)

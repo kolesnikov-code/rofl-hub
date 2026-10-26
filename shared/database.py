@@ -826,6 +826,11 @@ SCHEMA_STATEMENTS: list[str] = [
     # 📜 26.10: история игрока — выборки по игроку за 30 дней
     "CREATE INDEX IF NOT EXISTS reward_grants_user_idx ON reward_grants (user_id, created_at);",
     "CREATE INDEX IF NOT EXISTS market_trades_seller_idx ON market_trades (seller_id, created_at);",
+    # --- 26.10 (аудит 1.1/1.3): итоги переживают рестарт — статус 'finishing' с отметкой времени, повтор безопасен;
+    # «Итоги сейчас» в экспедиции помнит плановый час итогов (отряды в пути не становятся опоздавшими) ---
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS finishing_at TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS finishing_at TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS planned_resolve_at TIMESTAMP WITH TIME ZONE;",
     # --- 26.10: викторина без повторов — какие вопросы игрок уже видел (ключ = хэш текста вопроса) ---
     """
     CREATE TABLE IF NOT EXISTS quiz_seen (

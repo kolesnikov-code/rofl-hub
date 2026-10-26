@@ -14,7 +14,11 @@ import json
 import logging
 from datetime import datetime
 
+from shared.economy import SEASON_EARN_REASONS
+
 logger = logging.getLogger(__name__)
+# «Заработано в игре» — та же формула, что у ТОПа сезона (аргумент $3 — список причин журнала)
+EARN_CONDITION = "l.delta > 0 AND (l.reason = ANY($3::text[]) OR l.reason LIKE 'game_win:%')"
 
 MAX_PRIZE_PLACES = 10
 
@@ -22,7 +26,7 @@ MAX_PRIZE_PLACES = 10
 BATTLE_NOMINATIONS: dict[str, dict] = {
     "farm_mined": {"title": "⛏️ Больше всех нафармить монет фермой",
                    "kind": "ledger_sum", "reason": "mining", "unit": "монет"},
-    "coins_earned": {"title": "💰 Больше всех заработать монет (все источники)",
+    "coins_earned": {"title": "💰 Больше всех заработать монет в игре",
                      "kind": "ledger_sum_positive", "unit": "монет"},
     "duel_wins": {"title": "⚔️ Больше всех побед в дуэлях",
                   "kind": "ledger_count", "reason": "duel_win", "unit": "побед"},
@@ -62,9 +66,9 @@ async def battle_team_scores(conn, nomination_key: str, starts_at: datetime,
         elif kind == "ledger_count_like":
             metric, condition = "COUNT(*)", "l.reason LIKE $3"
             args = [starts_at, ends_at, nom["reason_like"]]
-        else:  # ledger_sum_positive
-            metric, condition = "SUM(l.delta)", "l.delta > 0"
-            args = [starts_at, ends_at]
+        else:  # ledger_sum_positive — заработок в игре, как в сезоне (без биржи, переводов и подарков)
+            metric, condition = "SUM(l.delta)", EARN_CONDITION
+            args = [starts_at, ends_at, list(SEASON_EARN_REASONS)]
         query = f"""
             SELECT u.team_id, t.team_name, t.max_members >= 1000 AS is_clan,
                    {metric}::bigint AS score
@@ -189,7 +193,7 @@ async def battle_solo_scores(conn, nomination_key: str, starts_at: datetime, end
     if kind in ("ledger_sum", "ledger_count", "ledger_sum_positive", "ledger_count_like"):
         metric = "SUM(l.delta)" if kind in ("ledger_sum", "ledger_sum_positive") else "COUNT(*)"
         if kind == "ledger_sum_positive":
-            condition, args = "l.delta > 0", [starts_at, ends_at]
+            condition, args = EARN_CONDITION, [starts_at, ends_at, list(SEASON_EARN_REASONS)]
         elif kind == "ledger_count_like":
             condition, args = "l.reason LIKE $3", [starts_at, ends_at, nom["reason_like"]]
         else:
@@ -217,6 +221,19 @@ async def battle_solo_scores(conn, nomination_key: str, starts_at: datetime, end
     else:
         raise ValueError(f"Неизвестный вид номинации: {kind}")
     return [dict(r) for r in rows]
+
+
+def result_entries(results) -> tuple[str, list[dict]]:
+    """
+    Места из сохранённых итогов битвы: (зачёт, [{id, name}] по порядку мест). Понимает формат v2
+    ({"scope", "places": [{id, name, …}]}) и старый ({"scores": [{team_id, team_name}]}) — аудит 1.8:
+    сезон и подарки читали только старый, и командный рейтинг сезона был всегда пустым.
+    """
+    data = json.loads(results) if isinstance(results, str) else (results or {})
+    if "places" in data:
+        return data.get("scope") or "teams", [{"id": p["id"], "name": p.get("name") or "—"} for p in data["places"]
+                                               if p.get("id") is not None]
+    return "teams", [{"id": s["team_id"], "name": s.get("team_name") or "—"} for s in data.get("scores", [])]
 
 
 async def registered_teams(conn, battle_id: int) -> set[int]:
@@ -299,12 +316,19 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
     Подводит итоги (один раз — по статусу): таблица (или ручные победители), призы каждому
     победителю/бойцу, рудники командам по местам. Возвращает итоги для поста.
     """
+    from shared.economy import FINISH_RETRY_MINUTES
     from shared.mines import capture_mine
     from shared.prizes import grant_many
     battle_id = battle["battle_id"]
-    if not await conn.fetchval("UPDATE battles SET status = 'finished' WHERE battle_id = $1 AND status = 'active' "
-                               "RETURNING 1", battle_id):
+    # 'active' → 'finishing' → 'finished'. Зависший 'finishing' (рестарт посреди выдачи) повторяется безопасно:
+    # призы — по ключам reward_grants, рудник не захватывается второй раз, батарейки возвращаются по журналу (аудит 1.3)
+    if not await conn.fetchval(
+            "UPDATE battles SET status = 'finishing', finishing_at = $2::timestamptz WHERE battle_id = $1 AND (status = 'active' "
+            "OR (status = 'finishing' AND finishing_at < $2::timestamptz - make_interval(mins => $3::int))) RETURNING 1",
+            battle_id, now, FINISH_RETRY_MINUTES):
         return {"skipped": True}
+    if battle_mines(battle):
+        await refund_entries(conn, battle_id, only_incomplete=True)   # неполные заявки — батарейки назад (аудит 1.7)
     scope = battle["scope"] or "teams"
     places = int(battle["places"] or 0)
     mines = battle_mines(battle)
@@ -335,7 +359,12 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
         if scope != "solo" and place <= len(mines):
             mine_id = mines[place - 1]
             async with conn.transaction():
-                until = await capture_mine(conn, mine_id, entry["id"], battle_id, now)
+                held = await conn.fetchrow("SELECT team_id, battle_id, captured_until FROM mines WHERE id = $1 FOR UPDATE",
+                                           mine_id)
+                if held and held["battle_id"] == battle_id and held["team_id"] == entry["id"]:
+                    until = held["captured_until"]            # повтор итогов: рудник уже наш, срок не продлеваем
+                else:
+                    until = await capture_mine(conn, mine_id, entry["id"], battle_id, now)
         got: list[int] = []
         if rewards:
             given, _ = await grant_many(conn, await members_of(entry), rewards, f"B{battle_id}_P{place}", now, got)
@@ -357,11 +386,33 @@ async def finish_battle(conn, battle, now: datetime) -> dict:
             notices += [{"user_id": u, "title": battle["title"], "tpl": dict(battle).get("title_tpl"), "place": place, "rewards": reward_all, "all": True,
                          "mine_id": None} for u in got]
     results = {"scope": scope, "places": rows, "participants_rewarded": participants}
-    await conn.execute("UPDATE battles SET results = $2::jsonb WHERE battle_id = $1",
+    await conn.execute("UPDATE battles SET results = $2::jsonb, status = 'finished' WHERE battle_id = $1",
                        battle_id, json.dumps(results, ensure_ascii=False, default=str))
     logger.info("[BATTLE] №%s итоги: %s мест, рудников %s, наград %s", battle_id, len(rows), len(mines), len(notices))
     results["notices"] = notices
     return results
+
+
+async def refund_entries(conn, battle_id: int, only_incomplete: bool) -> int:
+    """
+    🔋 Батарейки заявки — назад тем, кто вносил (аудит 1.7): при отмене битвы — всем, при итогах — командам
+    с неполной заявкой. Идемпотентно: возвращённая запись журнала удаляется. Возвращает число батареек.
+    """
+    from shared.resources import change_resource
+    keep = await registered_teams(conn, battle_id) if only_incomplete else set()
+    async with conn.transaction():
+        rows = await conn.fetch("SELECT id, team_id, user_id FROM battle_entry_log WHERE battle_id = $1 FOR UPDATE",
+                                battle_id)
+        back = [r for r in rows if r["team_id"] not in keep]
+        for r in back:
+            await change_resource(conn, r["user_id"], "battery", 1, "battle_entry", f"{battle_id}:refund")
+        if back:
+            await conn.execute("DELETE FROM battle_entry_log WHERE id = ANY($1::bigint[])", [r["id"] for r in back])
+            await conn.execute("DELETE FROM battle_entries WHERE battle_id = $1 AND team_id = ANY($2::bigint[])",
+                               battle_id, list({r["team_id"] for r in back}))
+    if back:
+        logger.info("[BATTLE] №%s: возвращено батареек %s", battle_id, len(back))
+    return len(back)
 
 
 async def contribute_battery(conn, battle_id: int, user_id: int, now: datetime) -> dict:

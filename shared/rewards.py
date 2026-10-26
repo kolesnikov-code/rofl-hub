@@ -5,7 +5,6 @@
 """
 from __future__ import annotations
 
-import json
 import logging
 
 from shared.economy import ALL_KINDS, ITEM_EFFECTS, season_key, utcnow
@@ -48,15 +47,17 @@ async def resolve_recipients(conn, target: str, value: str) -> tuple[list[int], 
         parts = value.split()
         if len(parts) != 2 or not all(p.isdigit() for p in parts):
             return [], "формат: <битва> <место>"
+        from shared.battles import result_entries
         row = await conn.fetchrow("SELECT results FROM battles WHERE battle_id = $1", int(parts[0]))
-        data = (json.loads(row["results"]) if isinstance(row["results"], str) else row["results"]) if row and row["results"] else {}
-        scores = data.get("scores", [])
+        scope, entries = result_entries(row["results"] if row else None)
         place = int(parts[1])
-        if not 1 <= place <= len(scores):
+        if not 1 <= place <= len(entries):
             return [], "такого места в итогах нет"
-        team = scores[place - 1]
-        rows = await conn.fetch("SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked", team["team_id"])
-        return [r["user_id"] for r in rows], f"{place} место битвы №{parts[0]} («{team['team_name']}»)"
+        winner = entries[place - 1]
+        if scope == "solo":
+            return [winner["id"]], f"{place} место битвы №{parts[0]} ({winner['name']})"
+        rows = await conn.fetch("SELECT user_id FROM users WHERE team_id = $1 AND NOT is_blocked", winner["id"])
+        return [r["user_id"] for r in rows], f"{place} место битвы №{parts[0]} («{winner['name']}»)"
     return [], "неизвестный адресат"
 
 

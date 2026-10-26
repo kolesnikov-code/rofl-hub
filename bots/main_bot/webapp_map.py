@@ -105,7 +105,7 @@ def _log_payload(rows: list, lang: str) -> list:
         event = EVENTS_BY_ID.get(r["event_id"])
         if not event:
             continue
-        option = event["options"][r["option"]] if r["option"] < len(event["options"]) else None
+        option = event["options"][r["option"]] if 0 <= r["option"] < len(event["options"]) else None   # −1 — прошли мимо
         out.append({"no": r["fork_no"], "icon": event["icon"], "text": event_text(event["text"], lang),
                     "choice": event_text(option["text"], lang) if option else "—", "votes": r["votes"],
                     "cargo": r["cargo_delta"], "delay": r["delay_min"]})

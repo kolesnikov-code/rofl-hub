@@ -151,3 +151,22 @@ def test_reward_notice_text_place_all_manual_and_mine():
     for lang in ("ru", "en") + tuple(PACK_CODES):
         for key in ("rn.place", "rn.all", "rn.got", "rn.manual", "rn.mine", "rn.where", "auc.outbid", "auc.bid_ok"):
             assert t(lang, key, title="T", place=1, r="x", mine=1, hours=24, refund=1, price=2) != key, (lang, key)
+
+
+def test_earn_scores_exclude_market_and_transfers():
+    """Аудит 2.1/2.2: ТОП сезона и номинация «заработок» — без биржи, переводов и подарков (накрутка твинками)."""
+    from shared.battles import EARN_CONDITION
+    from shared.economy import SEASON_EARN_REASONS
+    for reason in ("market_sell", "transfer_in", "admin_gift", "prize"):
+        assert reason not in SEASON_EARN_REASONS
+    assert "ANY($3" in EARN_CONDITION and "game_win:%" in EARN_CONDITION
+
+
+def test_result_entries_reads_v2_and_old_results():
+    """Аудит 1.8: сезон и «Призёры битвы» в подарках читают итоги v2 (раньше — только старый формат)."""
+    from shared.battles import result_entries
+    assert result_entries('{"scope": "teams", "places": [{"place": 1, "id": 7, "name": "A"}]}') == \
+        ("teams", [{"id": 7, "name": "A"}])
+    assert result_entries({"scope": "solo", "places": [{"id": 5, "name": "@x"}]}) == ("solo", [{"id": 5, "name": "@x"}])
+    assert result_entries({"scores": [{"team_id": 3, "team_name": "Old"}]}) == ("teams", [{"id": 3, "name": "Old"}])
+    assert result_entries(None) == ("teams", [])

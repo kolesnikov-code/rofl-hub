@@ -58,14 +58,17 @@ async def season_teams(conn, moment: datetime, limit: int = 20) -> list[dict]:
     rows = await conn.fetch(
         "SELECT results FROM battles WHERE status = 'finished' AND ends_at >= $1 AND ends_at < $2 AND results IS NOT NULL",
         start, end)
+    from shared.battles import result_entries
     points: dict[int, dict] = {}
     for r in rows:
-        data = json.loads(r["results"]) if isinstance(r["results"], str) else r["results"]
-        for place, sc in enumerate((data or {}).get("scores", []), start=1):
+        scope, entries = result_entries(r["results"])
+        if scope == "solo":                       # личный зачёт очков команде не даёт
+            continue
+        for place, sc in enumerate(entries, start=1):
             pts = SEASON_BATTLE_POINTS.get(place, 0)
             if not pts:
                 continue
-            entry = points.setdefault(sc["team_id"], {"team_id": sc["team_id"], "name": sc["team_name"], "points": 0})
+            entry = points.setdefault(sc["id"], {"team_id": sc["id"], "name": sc["name"], "points": 0})
             entry["points"] += pts
     return sorted(points.values(), key=lambda x: (-x["points"], x["team_id"]))[:limit]
 
@@ -83,19 +86,21 @@ async def finalize_season(conn, moment: datetime) -> dict | None:
     key = season_key(moment)
     if key < SEASON_FIRST:
         return None
-    if not await conn.fetchval(
-            "INSERT INTO season_results (season) VALUES ($1) ON CONFLICT DO NOTHING RETURNING 1", key):
-        return None
-    top = await season_top(conn, moment, limit=SEASON_BADGE_PLACES)
-    winners = []
-    for place, row in enumerate(top, start=1):
-        await conn.execute("INSERT INTO user_badges (user_id, season, place) VALUES ($1, $2, $3) "
-                           "ON CONFLICT DO NOTHING", row["user_id"], key, place)
-        winners.append({"place": place, "user_id": row["user_id"], "earned": int(row["earned"]),
-                        "name": ("@" + row["username"]) if row["username"] else (row["display_name"] or "")})
-    teams = await season_teams(conn, moment, limit=3)
-    payload = {"players": winners, "teams": teams}
-    await conn.execute("UPDATE season_results SET payload = $2::jsonb WHERE season = $1", key, json.dumps(payload))
+    # Одна транзакция (аудит 1.3): сбой посередине откатывает и отметку «сезон подведён» — повтор доделает значки
+    async with conn.transaction():
+        if not await conn.fetchval(
+                "INSERT INTO season_results (season) VALUES ($1) ON CONFLICT DO NOTHING RETURNING 1", key):
+            return None
+        top = await season_top(conn, moment, limit=SEASON_BADGE_PLACES)
+        winners = []
+        for place, row in enumerate(top, start=1):
+            await conn.execute("INSERT INTO user_badges (user_id, season, place) VALUES ($1, $2, $3) "
+                               "ON CONFLICT DO NOTHING", row["user_id"], key, place)
+            winners.append({"place": place, "user_id": row["user_id"], "earned": int(row["earned"]),
+                            "name": ("@" + row["username"]) if row["username"] else (row["display_name"] or "")})
+        teams = await season_teams(conn, moment, limit=3)
+        payload = {"players": winners, "teams": teams}
+        await conn.execute("UPDATE season_results SET payload = $2::jsonb WHERE season = $1", key, json.dumps(payload))
     logger.info("[SEASON] %s подведён: %s игроков, %s команд", key, len(winners), len(teams))
     return payload
 

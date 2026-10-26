@@ -12,6 +12,7 @@ from aiogram import F, Router, types
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
+from bots.main_bot.guards import feature_enabled
 from bots.main_bot.handlers.menu import get_reply_main_keyboard
 from shared import analytics
 from shared.analytics import track
@@ -289,6 +290,8 @@ async def process_auction_bid_click(callback: types.CallbackQuery, user_lang: st
         await callback.answer()
         return
     auction_id, bid_step = int(parts[1]), int(parts[2])
+    if not await feature_enabled(callback, "auctions", user_lang):   # тумблер аукционов — и для чата
+        return
 
     from shared.auctions import AuctionError, notify_outbid, place_bid
     lang = user_lang

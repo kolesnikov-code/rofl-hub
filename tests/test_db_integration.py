@@ -1385,7 +1385,10 @@ async def test_account_deletion_full_cycle(conn):
     await _mk_user(conn, 970, 777, inv_cutlets=5, display_name="Тестовый Игрок", referred_by=None)
     await _mk_user(conn, 971, 0)
     await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES (970, 4)")
-    await grant_bundle(conn, 970, {"metal": 30, "crystal": 7}, "test")
+    await grant_bundle(conn, 970, {"metal": 30, "crystal": 7, "stone": 4, "battery": 2, "core": 1}, "test")
+    await conn.execute("UPDATE users SET horses = 2, carts = 1, drones_attack = 3, shuttle_until = NOW() + INTERVAL "
+                       "'5 days' WHERE user_id = 970")
+    await _tech(conn, 970, comm=1)
     await conn.execute("INSERT INTO miners (user_id, kind, expires_at) VALUES (970, 'intern', $1)",
                        now + timedelta(days=36500))
     await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ('ROFL-HUB-DEL', 970)")
@@ -1417,8 +1420,10 @@ async def test_account_deletion_full_cycle(conn):
     assert (u["username"], u["display_name"], u["balance"], u["inv_cutlets"], u["team_id"]) == \
         (None, None, 0, 0, None)
     assert u["deleted_at"] == later and u["deletion_requested_at"] is None
-    assert set((await get_resources(conn, 970)).values()) <= {0}
-    for table in ("miners", "vip_aliases", "game_stats"):
+    from shared.economy import ALL_KINDS
+    assert set((await get_resources(conn, 970, ALL_KINDS)).values()) <= {0}    # аудит 1.9: всё сырьё, не только базовое
+    assert (u["horses"], u["carts"], u["drones_attack"], u["shuttle_until"]) == (0, 0, 0, None)
+    for table in ("miners", "vip_aliases", "game_stats", "user_tech"):
         assert await conn.fetchval(f"SELECT COUNT(*) FROM {table} WHERE user_id = 970") == 0
     team = await conn.fetchrow("SELECT captain_id, members_count FROM teams WHERE team_id = $1", team_id)
     assert (team["captain_id"], team["members_count"]) == (971, 1)        # корона — ветерану
@@ -2019,7 +2024,7 @@ async def test_finalize_season_is_idempotent_and_gives_only_badges(conn):
     await conn.execute(
         "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, status, results) "
         "VALUES ('B', 'farm', 'farm', $1, $1, 'finished', $2::jsonb)",
-        moment, '{"scores": [{"team_id": %d, "team_name": "S", "score": 5}]}' % tid)
+        moment, '{"scope": "teams", "places": [{"place": 1, "id": %d, "name": "S", "score": 5}]}' % tid)   # формат v2
     ledger_before = await conn.fetchval("SELECT COUNT(*) FROM ledger")
 
     res = await finalize_season(conn, moment)
@@ -2377,13 +2382,13 @@ async def test_expedition_solo_forks_and_results(conn):
     with pytest.raises(ExpError) as e:                                # чужой отряд
         await vote(conn, 1701, e1["id"], 0, sched[1][0] + timedelta(minutes=1))
     assert e.value.key == "exp.err_not_member"
-    # Отряд 1701 молчит — после закрытия голосования берётся первый (осторожный) вариант
+    # Отряд 1701 молчит — после закрытия голосования проходит мимо (аудит 1.2: без добычи, потерь и задержки)
     e2 = await conn.fetchrow("SELECT * FROM expeditions WHERE user_id = 1701")
     s2 = fork_schedule(e2["departed_at"], e2["planned_minutes"], 2)
     async with conn.transaction():
         await resolve_due_forks(conn, e2["id"], s2[1][1] + timedelta(minutes=1))
     assert [r["option"] for r in await conn.fetch(
-        "SELECT option FROM expedition_log WHERE expedition_id = $1 ORDER BY fork_no", e2["id"])] == [0, 0]
+        "SELECT option FROM expedition_log WHERE expedition_id = $1 ORDER BY fork_no", e2["id"])] == [-1, -1]
     target = await conn.fetchrow("SELECT * FROM expedition_targets WHERE id = $1", tid)
     results = await finalize_target(conn, target, target["resolve_at"] + timedelta(minutes=1))
     assert results["arrived"] == 2 and results["late"] == 0
@@ -2680,6 +2685,10 @@ async def test_auction_bids_refund_outbid_and_list(conn):
         assert e.value.key == key
     lots = await list_auctions(conn, 1901)
     assert lots[0]["id"] == aid and lots[0]["mine"] and lots[0]["price"] == 1700 and lots[0]["bids"] == [100, 500]
+    await conn.execute("UPDATE auctions SET ends_at = NOW() - INTERVAL '1 second' WHERE auction_id = $1", aid)
+    with pytest.raises(AuctionError) as e:                                 # время вышло, демон ещё не закрыл
+        await place_bid(conn, 1900, aid, 100)
+    assert e.value.key == "auc.err_closed"
     await conn.execute("UPDATE auctions SET status = 'closed' WHERE auction_id = $1", aid)
     with pytest.raises(AuctionError) as e:
         await place_bid(conn, 1900, aid, 100)
@@ -2742,3 +2751,86 @@ async def test_quiz_next_question_skips_seen_and_starts_new_lap(conn, global_db,
     assert await conn.fetchval("SELECT COUNT(*) FROM quiz_seen WHERE user_id = 1995") == 3
     await games._next_question(1995)                              # база пройдена — круг заново
     assert await conn.fetchval("SELECT COUNT(*) FROM quiz_seen WHERE user_id = 1995") == 1
+
+
+async def test_lazy_farm_never_moves_time_backwards(conn):
+    """Аудит 1.4: «сейчас», взятое до блокировки, раньше откатывало время фермы — отрезок начислялся дважды."""
+    from datetime import timedelta
+    from shared.economy import utcnow
+    from shared.farm_logic import apply_lazy_farm
+    now = utcnow()
+    await _mk_user(conn, 21, 0)
+    await conn.execute("UPDATE users SET last_update_time = $1 WHERE user_id = 21", now - timedelta(hours=10))
+    await conn.execute("INSERT INTO miners (user_id, kind, purchased_at, expires_at) VALUES (21, 'junior', $1, $2)",
+                       now - timedelta(hours=10), now + timedelta(days=29))
+    async with conn.transaction():
+        await apply_lazy_farm(conn, 21, now)                           # 10 ч × 5 = 50
+    async with conn.transaction():
+        user, _ = await apply_lazy_farm(conn, 21, now - timedelta(hours=2))   # «старое сейчас» — ничего не меняет
+    assert user["last_update_time"] == now
+    async with conn.transaction():
+        user, _ = await apply_lazy_farm(conn, 21, now + timedelta(hours=1))
+    assert user["balance"] == 55                                       # +1 ч, без повтора двух часов
+
+
+
+async def test_expedition_finish_now_keeps_marching_squads_and_survives_restart(conn):
+    """Аудит 1.1/1.3: «Итоги сейчас» не делает опоздавшими тех, кто успевал к плановому часу; зависшие итоги доделываются."""
+    from datetime import timedelta
+    from shared.economy import FINISH_RETRY_MINUTES, utcnow
+    from shared.expeditions import finalize_target, start_solo
+    from shared.resources import grant_bundle
+    now = utcnow()
+    tid = await _exp_target(conn, "solo", now, prizes='{"1": [{"kind": "coins", "amount": 300}]}', places=1)
+    await _mk_user(conn, 1710, 0)
+    await grant_bundle(conn, 1710, {"hydrogen": 20}, "test")
+    async with conn.transaction():
+        await start_solo(conn, 1710, tid, now)
+    # Владелец жмёт «Итоги сейчас», отряд ещё в пути (как делает пульт)
+    await conn.execute("UPDATE expedition_targets SET planned_resolve_at = COALESCE(planned_resolve_at, resolve_at), "
+                       "resolve_at = LEAST(resolve_at, $2) WHERE id = $1", tid, now + timedelta(minutes=1))
+    # Сбой посреди итогов: статус «подводятся», наград ещё нет
+    await conn.execute("UPDATE expedition_targets SET status = 'finishing', finishing_at = $2 WHERE id = $1",
+                       tid, now)
+    target = await conn.fetchrow("SELECT * FROM expedition_targets WHERE id = $1", tid)
+    assert (await finalize_target(conn, target, now + timedelta(minutes=2)))["skipped"]   # свежий захват — не трогаем
+    later = now + timedelta(minutes=FINISH_RETRY_MINUTES + 1)
+    results = await finalize_target(conn, target, later)                                     # повтор после рестарта
+    assert results["arrived"] == 1 and results["late"] == 0
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1710") == 300
+    assert await conn.fetchval("SELECT status FROM expedition_targets WHERE id = $1", tid) == "finished"
+    assert (await finalize_target(conn, target, later + timedelta(hours=1)))["skipped"]      # дважды не выдаётся
+
+
+async def test_battle_entries_refund_on_cancel_and_incomplete(conn):
+    """Аудит 1.7: батарейки заявки возвращаются при отмене битвы и командам с неполной заявкой."""
+    from datetime import timedelta
+    from shared.battles import contribute_battery, finish_battle, refund_entries
+    from shared.economy import utcnow
+    from shared.resources import get_resources, grant_bundle
+    now = utcnow()
+    for uid in (1720, 1721):
+        await _mk_user(conn, uid, 0)
+        await grant_bundle(conn, uid, {"battery": 5}, "test")
+    t1 = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('R1', 1720, 1) "
+                             "RETURNING team_id")
+    t2 = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('R2', 1721, 1) "
+                             "RETURNING team_id")
+    await conn.execute("UPDATE users SET team_id = $1 WHERE user_id = 1720", t1)
+    await conn.execute("UPDATE users SET team_id = $1 WHERE user_id = 1721", t2)
+    bid = await conn.fetchval(
+        "INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, status, scope, places, mine_ids) "
+        "VALUES ('Руда', 'farm_mined', 'x', $1, $2, 'active', 'teams', 1, ARRAY[3]) RETURNING battle_id",
+        now - timedelta(hours=1), now + timedelta(hours=1))
+    for _ in range(5):
+        async with conn.transaction():
+            await contribute_battery(conn, bid, 1720, now)                # полная заявка
+    for _ in range(2):
+        async with conn.transaction():
+            await contribute_battery(conn, bid, 1721, now)                # неполная
+    battle = await conn.fetchrow("SELECT * FROM battles WHERE battle_id = $1", bid)
+    await finish_battle(conn, battle, now + timedelta(hours=2))
+    assert (await get_resources(conn, 1721, ("battery",)))["battery"] == 5    # неполная — вернулась
+    assert (await get_resources(conn, 1720, ("battery",)))["battery"] == 0    # полная — сгорела как взнос
+    assert await refund_entries(conn, bid, only_incomplete=True) == 0         # повтор — ничего
+    assert await conn.fetchval("SELECT status FROM battles WHERE battle_id = $1", bid) == "finished"

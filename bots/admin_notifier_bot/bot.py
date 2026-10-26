@@ -46,7 +46,7 @@ from bots.main_bot.utils.quest_loader import all_quests, load_quests
 from shared import metrics
 from shared.analytics import purge_old_events
 from shared.database import db
-from shared.economy import PROMOTER_CODE_MAX_LEN
+from shared.economy import FINISH_RETRY_MINUTES, PROMOTER_CODE_MAX_LEN
 from shared.feature_flags import FLAG_TITLES, all_feature_flags, get_flag, toggle_flag
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -375,7 +375,9 @@ async def expedition_daemon_step(bot: Bot) -> None:
     from shared.economy import utcnow
     from shared.expeditions import finalize_target
     async with db.pool.acquire() as conn:
-        due = await conn.fetch("SELECT * FROM expedition_targets WHERE status = 'open' AND resolve_at <= NOW() ORDER BY id")
+        due = await conn.fetch(   # + зависшие «подводятся итоги» после рестарта (аудит 1.3)
+            "SELECT * FROM expedition_targets WHERE (status = 'open' AND resolve_at <= NOW()) OR (status = 'finishing' "
+            "AND finishing_at < NOW() - make_interval(mins => $1::int)) ORDER BY id", FINISH_RETRY_MINUTES)
     for target in due:
         async with db.pool.acquire() as conn:
             results = await finalize_target(conn, target, utcnow())
@@ -658,8 +660,9 @@ async def check_finished_battles(bot: Bot) -> None:
     except Exception:
         logger.exception("[EXP_DAEMON] сбой")
     async with db.pool.acquire() as conn:
-        due = await conn.fetch(
-            "SELECT * FROM battles WHERE status = 'active' AND ends_at <= NOW()")
+        due = await conn.fetch(   # + зависшие «подводятся итоги» после рестарта (аудит 1.3)
+            "SELECT * FROM battles WHERE (status = 'active' AND ends_at <= NOW()) OR (status = 'finishing' "
+            "AND finishing_at < NOW() - make_interval(mins => $1::int))", FINISH_RETRY_MINUTES)
     for battle in due:
         if is_manual(battle["nomination_key"]) and not battle["manual_results"]:
             if battle["battle_id"] not in _manual_pinged:   # ручные итоги — владелец вписывает в пульте

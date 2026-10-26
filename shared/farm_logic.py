@@ -254,6 +254,10 @@ async def apply_lazy_farm(conn, user_id: int, now: datetime | None = None):
         return None, []
 
     now = now or utcnow()
+    # Момент мог быть взят ДО блокировки (параллельный запрос или массовая выдача призов успела пересчитать
+    # ферму позже) — время фермы никогда не идёт назад, иначе отрезок начислится второй раз
+    if user["last_update_time"] is not None and now < user["last_update_time"]:
+        now = user["last_update_time"]
     rows = await conn.fetch(
         "SELECT miner_id, kind, purchased_at, expires_at, fuel_until "
         "FROM miners WHERE user_id = $1 ORDER BY miner_id FOR UPDATE",

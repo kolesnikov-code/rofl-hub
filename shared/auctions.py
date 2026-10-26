@@ -8,6 +8,7 @@ ends_at демон админ-бота (close_auction). Каналов нет (2
 from __future__ import annotations
 
 from shared.auction_logic import compute_bid
+from shared.economy import utcnow
 from shared.ledger import change_balance
 from shared.locales import t
 
@@ -32,6 +33,9 @@ async def place_bid(conn, user_id: int, auction_id: int, bid_step: int) -> dict:
     auction = await conn.fetchrow("SELECT * FROM auctions WHERE auction_id = $1 FOR UPDATE", auction_id)
     if auction is None:
         raise AuctionError("auc.err_none")
+    # Время вышло — лот закрыт, даже если демон закрытия ещё не дошёл до него (аудит 2.10: ставки «после гонга»)
+    if auction["ends_at"] is not None and auction["ends_at"] <= utcnow():
+        raise AuctionError("auc.err_closed")
     user = await conn.fetchrow("SELECT balance FROM users WHERE user_id = $1 FOR UPDATE", user_id)
     if user is None:
         raise AuctionError("common.no_profile")

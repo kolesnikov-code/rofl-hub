@@ -14,6 +14,8 @@ from __future__ import annotations
 import logging
 import uuid
 
+import asyncpg
+
 from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 from aiogram.types import LabeledPrice, PreCheckoutQuery
@@ -181,10 +183,24 @@ async def process_successful_payment(message: types.Message, bot: Bot, user_lang
     charge_id = payment.telegram_payment_charge_id
     payload = payment.invoice_payload
 
+    order = None
     try:
         async with db.pool.acquire() as conn:
-            order = await _load_order_for_user(conn, user_id, payload)
-        ok, text = await _deliver_in_transaction(user_id, order, charge_id, user_lang)
+            if await already_delivered(conn, charge_id):   # повтор апдейта — товар уже выдан, не возвращаем Stars
+                await message.answer(t(user_lang, "pay.already"), parse_mode="HTML")
+                return
+            try:
+                order = await _load_order_for_user(conn, user_id, payload)
+            except CatalogError as e:
+                # Товар перестал быть доступным между pre_checkout и оплатой (второй инвойс на тот же
+                # холодильник, правка каталога) — это не «сбой», а честный авто-возврат ниже
+                ok, text = False, str(e)
+        if order is not None:
+            ok, text = await _deliver_in_transaction(user_id, order, charge_id, user_lang)
+    except asyncpg.UniqueViolationError:
+        # Два одновременных обработчика одного платежа: второй упёрся в UNIQUE(charge_id) — товар выдан первым
+        await message.answer(t(user_lang, "pay.already"), parse_mode="HTML")
+        return
     except Exception:
         logger.exception("[PAYMENT_DELIVERY_CRASH] user=%s charge=%s payload=%s", user_id, charge_id, payload)
         await _alert_admin(bot, f"🚨 Сбой доставки после оплаты!\nuser={user_id}\ncharge={charge_id}\npayload={payload}")
@@ -192,7 +208,7 @@ async def process_successful_payment(message: types.Message, bot: Bot, user_lang
         return
 
     if ok:
-        await track(user_id, "purchase", sku=order["sku"], stars=payment.total_amount)
+        await track(user_id, "purchase", sku=order["sku"] if order else payload, stars=payment.total_amount)
         await message.answer(
             t(user_lang, "pay.success", charge=charge_id, stars=payment.total_amount, text=text),
             parse_mode="HTML")

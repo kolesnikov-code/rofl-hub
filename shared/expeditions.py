@@ -35,6 +35,7 @@ from shared.economy import (
     EXP_MAP_H,
     EXP_MAP_W,
     EXP_SOLO_HYDROGEN,
+    FINISH_RETRY_MINUTES,
     MEGA_CLAN_MAX_MEMBERS,
     drone_exp_effects,
     exp_peek_budget,
@@ -78,7 +79,11 @@ def fork_schedule(departed_at: datetime, planned_minutes: int, forks: int) -> li
 
 
 def decide(votes: list[tuple[int, datetime]], n_options: int) -> tuple[int, int]:
-    """Решение отряда: (вариант, голосов за него). Ничья — кто раньше проголосовал; без голосов — вариант 0."""
+    """
+    Решение отряда: (вариант, голосов за него). Ничья — кто раньше проголосовал.
+    Без голосов — PASS_OPTION: отряд проходит мимо без добычи, потерь и задержки (аудит 26.10: «осторожный»
+    вариант 0 удлинял путь на 30–60 мин, и молчавший отряд опаздывал к итогам без наград).
+    """
     tally: dict[int, list] = {}
     for option, at in votes:
         if 0 <= option < n_options:
@@ -86,9 +91,12 @@ def decide(votes: list[tuple[int, datetime]], n_options: int) -> tuple[int, int]
             entry[0] += 1
             entry[1] = min(entry[1], at)
     if not tally:
-        return 0, 0
+        return PASS_OPTION, 0
     option, (count, _) = min(tally.items(), key=lambda kv: (-kv[1][0], kv[1][1]))
     return option, count
+
+
+PASS_OPTION = -1   # «прошли мимо» — никто не выбрал вариант
 
 
 def apply_option(cargo: int, option: dict, effects: dict) -> tuple[int, int]:
@@ -182,7 +190,7 @@ async def resolve_due_forks(conn, exp_id: int, now: datetime) -> dict | None:
     Разрешает развилки к моменту now (в транзакции вызывающего; строка отряда блокируется).
     Развилка срабатывает, когда отряд до неё ДОШЁЛ (open_at): если выбор сделан заранее (соло — выбран вариант,
     отряд — проголосовали все) — сразу, в момент max(дошли, последний голос); иначе голосование идёт до
-    закрытия (следующая развилка или прибытие), молчание — первый, самый осторожный вариант.
+    закрытия (следующая развилка или прибытие), молчание — отряд проходит мимо (PASS_OPTION).
     Возвращает свежую строку отряда.
     """
     exp = await conn.fetchrow("SELECT * FROM expeditions WHERE id = $1 FOR UPDATE", exp_id)
@@ -212,7 +220,8 @@ async def resolve_due_forks(conn, exp_id: int, now: datetime) -> dict | None:
         option, count = decide([(v["option"], v["created_at"]) for v in votes], len(event["options"]))
         if effects is None:
             effects = await squad_effects(conn, exp["mode"], exp["user_id"], exp["team_id"])
-        cargo, delay = apply_option(exp["cargo"], event["options"][option], effects)
+        cargo, delay = ((exp["cargo"], 0) if option == PASS_OPTION
+                        else apply_option(exp["cargo"], event["options"][option], effects))
         moment = max([open_at] + [v["created_at"] for v in votes]) if early else close_at
         moment = min(moment, now)
         arrive = max(exp["arrive_at"] + timedelta(minutes=delay), moment + timedelta(minutes=1))
@@ -457,12 +466,16 @@ async def finalize_target(conn, target, now: datetime) -> dict:
     from shared.battles import prizes_by_place
     from shared.prizes import grant_many, normalize_rewards
     tid = target["id"]
-    if not await conn.fetchval("UPDATE expedition_targets SET status = 'finished' WHERE id = $1 AND status = 'open' "
-                               "RETURNING 1", tid):
+    # Захват итогов: 'open' → 'finishing'. Зависший 'finishing' (рестарт посреди выдачи) можно повторить —
+    # каждый шаг ниже идемпотентен (статусы отрядов, ключи reward_grants). Аудит 1.3: раньше статус 'finished'
+    # ставился ДО выдачи, и сбой посередине оставлял игроков без наград навсегда.
+    if not await conn.fetchval(
+            "UPDATE expedition_targets SET status = 'finishing', finishing_at = $2::timestamptz WHERE id = $1 AND (status = 'open' "
+            "OR (status = 'finishing' AND finishing_at < $2::timestamptz - make_interval(mins => $3::int))) RETURNING 1",
+            tid, now, FINISH_RETRY_MINUTES):
         return {"skipped": True}
-    resolve_at = target["resolve_at"]
-    moment = min(now, resolve_at)
-    arrived, late = [], 0
+    # «Итоги сейчас» (аудит 1.1): отряды судим по ПЛАНОВОМУ часу итогов — кто успевал к нему, тот дошёл
+    deadline = target["planned_resolve_at"] or target["resolve_at"]
     for exp in await conn.fetch("SELECT * FROM expeditions WHERE target_id = $1 ORDER BY id", tid):
         async with conn.transaction():
             if exp["status"] == "gathering":
@@ -470,13 +483,12 @@ async def finalize_target(conn, target, now: datetime) -> dict:
                 continue
             if exp["status"] != "marching":
                 continue
-            fresh = await resolve_due_forks(conn, exp["id"], moment)
-            if fresh["arrive_at"] <= resolve_at:
-                await conn.execute("UPDATE expeditions SET status = 'done' WHERE id = $1", exp["id"])
-                arrived.append(fresh)
-            else:
-                await conn.execute("UPDATE expeditions SET status = 'late' WHERE id = $1", exp["id"])
-                late += 1
+            fresh = await resolve_due_forks(conn, exp["id"], deadline)
+            status = "done" if fresh["arrive_at"] <= deadline else "late"
+            await conn.execute("UPDATE expeditions SET status = $2 WHERE id = $1", exp["id"], status)
+    arrived = [dict(r) for r in await conn.fetch(
+        "SELECT * FROM expeditions WHERE target_id = $1 AND status = 'done'", tid)]
+    late = await conn.fetchval("SELECT COUNT(*) FROM expeditions WHERE target_id = $1 AND status = 'late'", tid)
     arrived.sort(key=lambda e: (-e["cargo"], e["arrive_at"], e["id"]))
     prizes = prizes_by_place(target["prizes"])
     raw_all = target["reward_all"]
@@ -502,7 +514,7 @@ async def finalize_target(conn, target, now: datetime) -> dict:
         rows.append({"place": place, "name": await squad_name(conn, exp), "mode": exp["mode"], "cargo": exp["cargo"],
                      "members": len(members), "rewards": rewards, "given": given})
     results = {"places": rows, "arrived": len(arrived), "late": late}
-    await conn.execute("UPDATE expedition_targets SET results = $2::jsonb WHERE id = $1",
+    await conn.execute("UPDATE expedition_targets SET results = $2::jsonb, status = 'finished' WHERE id = $1",
                        tid, json.dumps(results, ensure_ascii=False, default=str))
     logger.info("[EXP] цель %s: итоги — дошли %s, опоздали %s, наград %s", tid, len(arrived), late, len(notices))
     results["notices"] = notices
