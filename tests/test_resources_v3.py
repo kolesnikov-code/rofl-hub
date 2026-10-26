@@ -21,13 +21,13 @@ NOW = datetime(2026, 10, 27, 12, 0, tzinfo=timezone.utc)
 
 def test_resource_sets_are_consistent():
     assert ALL_KINDS == RESOURCE_KINDS + EXTRA_KINDS and len(set(ALL_KINDS)) == len(ALL_KINDS)
-    assert "core" not in TRADEABLE_KINDS                      # Ядро не продаётся — только командная игра
+    assert "core" not in TRADEABLE_KINDS                      # Ядро не меняется ресурс на ресурс…
     assert set(TRADEABLE_KINDS) == set(ALL_KINDS) - {"core"}
     from shared.resources import RESOURCE_ICONS
     assert set(RESOURCE_ICONS) >= set(ALL_KINDS)
     for asset in ("stone", "wood", "fire", "energy", "battery", "cow"):
         assert asset in economy.MARKET_ASSETS, asset
-    assert "core" not in economy.MARKET_ASSETS
+    assert "core" in economy.MARKET_ASSETS and economy.market_min_price("core") == 5000   # …а продаётся от 5000 🪙
     assert economy.market_min_price("cow") == economy.MARKET_COW_MIN_PRICE > 1
 
 

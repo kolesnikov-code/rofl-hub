@@ -26,8 +26,12 @@ def test_validate_order_bounds():
     from shared.economy import MARKET_CUTLET_MIN_PRICE, MARKET_RESOURCE_MAX_QTY
     validate_order(1, MARKET_CUTLET_MIN_PRICE)
     validate_order(MARKET_MAX_QTY, MARKET_MAX_PRICE)
-    validate_order(1, MARKET_MIN_PRICE, asset="metal")
-    validate_order(MARKET_RESOURCE_MAX_QTY, 5, asset="crystal")
+    validate_order(1, 20, asset="metal")
+    validate_order(MARKET_RESOURCE_MAX_QTY, 10, asset="crystal")
+    for asset, below in (("metal", 19), ("crystal", 9), ("core", 4999), ("cow", 999)):   # полы 26.10
+        with pytest.raises(MarketError) as e:
+            validate_order(1, below, asset=asset)
+        assert e.value.key == "mk.err_price"
     for qty, price in ((0, 300), (MARKET_MAX_QTY + 1, 300), (-5, 300)):
         with pytest.raises(MarketError) as e:
             validate_order(qty, price)
@@ -76,7 +80,26 @@ def test_cutlet_floor_keeps_the_shop_cheaper_than_the_market():
     shop_cutlet_in_coins = best_stars_per_cutlet * best_coins_per_star
     assert economy.MARKET_CUTLET_MIN_PRICE >= shop_cutlet_in_coins
     assert economy.market_min_price("cutlet") == economy.MARKET_CUTLET_MIN_PRICE
-    assert economy.market_min_price("metal") == economy.MARKET_MIN_PRICE
+    assert economy.market_min_price("metal") == 20
+
+
+def test_owner_floor_prices_26_10():
+    """Полы владельца 26.10: огонь и батарейки не дешевле ингредиентов, бусты из ресурсов дороже магазина."""
+    from shared import economy
+    f = economy.MARKET_MIN_PRICES
+    assert (f["parts"], f["crystal"], f["metal"], f["hydrogen"], f["stone"], f["energy"], f["wood"]) == (10, 10, 20, 20, 30, 50, 70)
+    assert (f["fire"], f["battery"], f["cow"], f["core"], f["cutlet"]) == (170, 300, 1000, 5000, 200)
+    cost = lambda c: sum(f[k] * q for k, q in c.items())   # noqa: E731
+    bonfire = economy.WORKSHOP_RECIPES["bonfire"]
+    assert f["fire"] * bonfire["make"]["fire"] >= cost(bonfire["cost"])           # огонь — не ниже себестоимости
+    battery = economy.WORKSHOP_RECIPES["battery"]
+    assert f["battery"] * battery["make"]["battery"] >= cost(battery["cost"])
+    cutlet = economy.WORKSHOP_RECIPES["cutlet"]
+    assert cutlet["cost"] == {"cow": 1, "fire": 2} and cutlet["qty"] == 3
+    assert cost(cutlet["cost"]) / cutlet["qty"] >= f["cutlet"]                     # котлета из коровы не дешевле пола
+    nitro = economy.WORKSHOP_RECIPES["nitro_6h"]["cost"]
+    assert cost(nitro) * 4 * 30 > 299 * economy.SHOP_COINS_PER_STAR_BEST           # Азот из ресурсов дороже магазина
+    assert all(a in f for a in economy.MARKET_ASSETS)
 
 
 def test_cutlet_on_market_does_not_pay_off_for_a_plain_driller():

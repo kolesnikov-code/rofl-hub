@@ -453,6 +453,7 @@
 
   const I18N = {
     ru: {
+      mk_floorAny: "Не дешевле {p} 🪙 за 1 {x} — и в продаже, и в заявке",
       mk_sellTitleAny: "💰 ПРОДАТЬ: {x}", mk_bidTitleAny: "🙋 КУПИТЬ: {x}", mk_qtyAny: "Количество, {x}", mk_limitsAny: "До {q} {x} в ордере, до {o} открытых ордеров", mk_boughtAny: "Куплено {q} {x} за {t} 🪙", mk_cancelledAny: "Ордер снят — товар или замороженные монеты вернулись",
       map_cargoHint: "📦 Груз — очки похода: старт 100, развилки прибавляют или отнимают. Места в итогах — по грузу.", map_forkAhead: "До развилки {t} — выбери вариант заранее", map_forkNow: "Отряд у развилки! Решение ещё {t} — иначе осторожный вариант.", map_voteTeam: "Голосов: {a} из {b}. Проголосуют все — сработает на развилке сразу, иначе решит большинство.", map_myChoice: "твой выбор", news_title: "📣 СОБЫТИЯ", news_hint: "Все анонсы — здесь: битвы, походы на карте мира и аукционы. Нажми, чтобы открыть.", news_empty: "Пока тихо. Как только администрация запустит битву, поход или аукцион — анонс появится здесь.", news_left: "⏳ {t}", news_won: "🏁 {w}", news_done: "🏁 итоги подведены", tab_auctions: "🔨 Аукционы", auc_title: "🔨 АУКЦИОНЫ", auc_empty: "Лотов пока нет. Администрация выставляет VIP ID и другие призы время от времени — загляни позже.", auc_price: "Текущая цена", auc_leader: "Лидер", auc_noBids: "ставок пока нет", auc_you: "👑 ты лидер", auc_ends: "До конца", auc_noEnd: "до решения администрации", auc_bid: "💥 +{s} · спишется {c} 🪙", auc_balance: "У тебя: {b} 🪙", auc_rules: "Ставки возвратные: перебили — монеты сразу вернутся на баланс. Платит только победитель — его монеты сгорают. VIP ID переходит победителю сам, остальные призы вручает администрация.", auc_sold: "🏁 Продано за {p} 🪙", auc_unsold: "🏁 Закрыт без ставок", auc_closed: "Завершённые лоты", auc_done: "💥 Ставка принята! Цена лота: {p} 🪙",
       map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
@@ -678,6 +679,7 @@
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
+      mk_floorAny: "At least {p} 🪙 per 1 {x} — for sales and buy orders",
       mk_sellTitleAny: "💰 SELL: {x}", mk_bidTitleAny: "🙋 BUY: {x}", mk_qtyAny: "Amount, {x}", mk_limitsAny: "Up to {q} {x} per order, up to {o} open orders", mk_boughtAny: "Bought {q} {x} for {t} 🪙", mk_cancelledAny: "Order cancelled — your goods or frozen coins are back",
       map_cargoHint: "📦 Cargo is your run score: you start with 100, forks add or take away. Places are ranked by cargo.", map_forkAhead: "Fork in {t} — choose ahead", map_forkNow: "The squad is at the fork! {t} left to decide — otherwise the careful option.", map_voteTeam: "Votes: {a} of {b}. If everyone votes, it applies right at the fork; otherwise the majority decides.", map_myChoice: "your choice", news_title: "📣 EVENTS", news_hint: "All announcements live here: battles, world map runs and auctions. Tap to open.", news_empty: "All quiet for now. As soon as a battle, a run or an auction starts, it shows up here.", news_left: "⏳ {t}", news_won: "🏁 {w}", news_done: "🏁 results are in", tab_auctions: "🔨 Auctions", auc_title: "🔨 AUCTIONS", auc_empty: "No lots yet. VIP IDs and other prizes go up from time to time — check back later.", auc_price: "Current price", auc_leader: "Leader", auc_noBids: "no bids yet", auc_you: "👑 you lead", auc_ends: "Ends in", auc_noEnd: "until the team closes it", auc_bid: "💥 +{s} · costs {c} 🪙", auc_balance: "You have: {b} 🪙", auc_rules: "Bids are refundable: if you are outbid, your coins come back at once. Only the winner pays — those coins burn. A VIP ID moves to the winner automatically; other prizes are handed over by the team.", auc_sold: "🏁 Sold for {p} 🪙", auc_unsold: "🏁 Closed with no bids", auc_closed: "Finished lots", auc_done: "💥 Bid accepted! Lot price: {p} 🪙",
       map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
@@ -906,6 +908,7 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -1488,6 +1491,7 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -2070,6 +2074,7 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -2652,6 +2657,7 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -3234,6 +3240,7 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -3816,6 +3823,7 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -4398,6 +4406,7 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -4980,6 +4989,7 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -5562,6 +5572,7 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -6144,6 +6155,7 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -6726,6 +6738,7 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -7308,6 +7321,7 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",
@@ -8572,9 +8586,9 @@
   }
 
   // ================= 📈 Биржа v2: котлеты и ресурсы, заявки, график, индекс, обмен =================
-  const ASSETS = ["cutlet", "metal", "hydrogen", "crystal", "parts", "stone", "wood", "fire", "energy", "battery", "cow"];
+  const ASSETS = ["cutlet", "metal", "hydrogen", "crystal", "parts", "stone", "wood", "fire", "energy", "battery", "cow", "core"];
   const A_ICON = { cutlet: "🥩", metal: "⛏", hydrogen: "💧", crystal: "💎", parts: "⚙️", stone: "🪨", wood: "🪵",
-                   fire: "🔥", energy: "⚡", battery: "🔋", cow: "🐄" };
+                   fire: "🔥", energy: "⚡", battery: "🔋", cow: "🐄", core: "☢️" };
   let mkAsset = "cutlet", mkScope = "public";   // mkScope: "public" — общая биржа, "team" — биржа команды
   function chartSvg(history) {
     const pts = history.map((d, i) => [i, d.avg]).filter(p => p[1] !== null);
@@ -8646,7 +8660,7 @@
         '<div class="hint">' + fmt(L.mk_have, { n: num(m.have) }) + ' · 🪙 ' + num(m.balance) + '</div>' +
         '<div class="hint">' + fmt(L.mk_feeLine, { f: m.fee }) + '</div>' +
         (m.shuttle ? '<div class="hint status-ok">' + fmt(L.mk_shuttleNote, { f: m.fee }) + '</div>' : '') +
-        (a === "cutlet" ? '<div class="hint">' + fmt(L.mk_floor, { p: m.cutlet_floor }) + '</div>' : '')) +
+        '<div class="hint">' + (a === "cutlet" ? fmt(L.mk_floor, { p: m.cutlet_floor }) : fmt(L.mk_floorAny, { p: num(m.min_price), x: icon })) + '</div>') +
       card(L.mk_chart, chartSvg(m.history) + (m.index[a] && m.index[a].last !== null
         ? '<div class="hint">' + fmt(L.mk_avg, { p: m.index[a].week_avg, v: m.index[a].volume }) + '</div>' : '')) +
       card(L.mk_asks, asks) + card(L.mk_bids, bids) +

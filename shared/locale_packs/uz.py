@@ -364,7 +364,7 @@ STRINGS: dict[str, str] = {
     "games.limit": (
         "🛑 <b>Kunlik limitga yetding!</b>\n\n"
         "{game} o'yinida bugun allaqachon {limit} ta g'alaba olding. Limit 00:00 UTC da yangilanadi.\n\n"
-        "⚡ Limitni 24 soatga olib tashlash — 5 ★, 30 kunga — 99 ★ (/shop'dagi «O'yinlar» bo'limi)."
+        "⚡ Limitni 24 soatga olib tashlash — 15 ★, 30 kunga — 249 ★ (/shop'dagi «O'yinlar» bo'limi)."
     ),
     "games.no_coins": "❌ Senda 0 🪙 — raund yig'imini to'lashga hech narsa yo'q. /farm'dan ferma daromadini yig'ib ol!",
     "games.balance": "💰 Balans: <b>{balance} 🪙</b>",
@@ -1033,6 +1033,7 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",

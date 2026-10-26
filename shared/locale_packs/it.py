@@ -363,7 +363,7 @@ STRINGS = {
     "games.limit": (
         "🛑 <b>Limite giornaliero raggiunto!</b>\n\n"
         "Nel gioco {game} hai già messo a segno {limit} vittorie per oggi. Il limite si azzera alle 00:00 UTC.\n\n"
-        "⚡ Togli il limite per 24 ore — 5 ★, per 30 giorni — 99 ★ (sezione “Gaming” in /shop)."
+        "⚡ Togli il limite per 24 ore — 15 ★, per 30 giorni — 249 ★ (sezione “Gaming” in /shop)."
     ),
     "games.no_coins": "❌ Hai 0 🪙 — non puoi pagare la quota del round. Riscuoti i guadagni della fattoria in /farm!",
     "games.balance": "💰 Saldo: <b>{balance} 🪙</b>",
@@ -1031,6 +1031,7 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",

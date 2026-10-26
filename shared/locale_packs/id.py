@@ -364,7 +364,7 @@ STRINGS = {
     "games.limit": (
         "🛑 <b>Batas harian tercapai!</b>\n\n"
         "Kamu sudah meraih {limit} kemenangan di {game} hari ini. Batas di-reset pada 00:00 UTC.\n\n"
-        "⚡ Hapus batas selama 24 jam — 5 ★, selama 30 hari — 99 ★ (bagian “Game” di /shop)."
+        "⚡ Hapus batas selama 24 jam — 15 ★, selama 30 hari — 249 ★ (bagian “Game” di /shop)."
     ),
     "games.no_coins": "❌ Koinmu 0 — tidak ada yang bisa dipakai membayar biaya ronde. Ambil penghasilan ladangmu di /farm!",
     "games.balance": "💰 Saldo: <b>{balance} 🪙</b>",
@@ -1033,6 +1033,7 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",

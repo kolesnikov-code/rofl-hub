@@ -369,7 +369,7 @@ STRINGS: dict[str, str] = {
     "games.limit": (
         "🛑 <b>आज की लिमिट पूरी!</b>\n\n"
         "{game} गेम में आज की {limit} जीतें पूरी हो चुकी हैं। लिमिट 00:00 UTC पर रीसेट होगी।\n\n"
-        "⚡ 24 घंटे के लिए लिमिट हटाओ — 5 ★, 30 दिनों के लिए — 99 ★ (/shop का “गेमिंग” सेक्शन)।"
+        "⚡ 24 घंटे के लिए लिमिट हटाओ — 15 ★, 30 दिनों के लिए — 249 ★ (/shop का “गेमिंग” सेक्शन)।"
     ),
     "games.no_coins": "❌ तुम्हारे पास 0 🪙 हैं — राउंड फ़ीस देने को कुछ नहीं। /farm से फ़ार्म की कमाई समेटो!",
     "games.balance": "💰 बैलेंस: <b>{balance} 🪙</b>",
@@ -1037,6 +1037,7 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",

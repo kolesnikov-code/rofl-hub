@@ -363,7 +363,7 @@ STRINGS: dict[str, str] = {
     "games.limit": (
         "🛑 <b>¡Límite diario alcanzado!</b>\n\n"
         "Hoy ya te llevaste {limit} victorias en {game}. El límite se reinicia a las 00:00 UTC.\n\n"
-        "⚡ Quitar el límite por 24 horas — 5 ★, por 30 días — 99 ★ (sección «Juegos» en /shop)."
+        "⚡ Quitar el límite por 24 horas — 15 ★, por 30 días — 249 ★ (sección «Juegos» en /shop)."
     ),
     "games.no_coins": "❌ Tienes 0 🪙 y no puedes pagar la cuota de la ronda. ¡Recoge los ingresos de tu granja en /farm!",
     "games.balance": "💰 Saldo: <b>{balance} 🪙</b>",
@@ -1032,6 +1032,7 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",

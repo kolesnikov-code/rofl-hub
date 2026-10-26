@@ -1025,12 +1025,12 @@ async def test_workshop_crafts_spend_all_or_nothing(conn):
     assert e.value.key == "ws.err_shuttle_owned"
     row = await conn.fetchrow("SELECT farm_armor_level, has_shuttle FROM users WHERE user_id = 510")
     assert (row["farm_armor_level"], row["has_shuttle"]) == (ARMOR_MAX_LEVEL, True)
-    with pytest.raises(WorkshopError) as e:                  # котлете нужна корова и огонь (27.10)
+    with pytest.raises(WorkshopError) as e:                  # котлеты — из коровы и огня (26.10: 🐄 + 2 🔥 → 3 🥩)
         await craft(conn, 510, "cutlet", now)
     assert e.value.key == "ws.err_resources"
-    await grant_bundle(conn, 510, {"cow": 1, "fire": 5}, "test")
-    assert (await craft(conn, 510, "cutlet", now)).qty == 1
-    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 510") == 1
+    await grant_bundle(conn, 510, {"cow": 1, "fire": 2}, "test")
+    assert (await craft(conn, 510, "cutlet", now)).qty == 3
+    assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 510") == 3
     assert (await get_resources(conn, 510, ("cow", "fire"))) == {"cow": 0, "fire": 0}
     assert await conn.fetchval("SELECT shuttle_until FROM users WHERE user_id = 510") > now   # заряд 30 дней
 
@@ -1181,19 +1181,19 @@ async def test_market_v2_buy_orders_resources_floor_and_shuttle(conn):
         assert e.value.key == "mk.err_price"
 
     # Заявка на покупку металла: монеты замораживаются сразу
-    bid = await place_order(conn, 901, "metal", "buy", 100, 3)
-    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 901") == 10_000 - 300
+    bid = await place_order(conn, 901, "metal", "buy", 100, 30)          # полы 26.10: металл от 20 🪙
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 901") == 10_000 - 3000
     # Продавец с Шаттлом закрывает заявку: комиссия 5% с ЕГО продажи
     deal = await fill_order(conn, 900, bid, 100)
-    assert (deal["side"], deal["fee"], deal["seller_got"]) == ("buy", 15, 285)
+    assert (deal["side"], deal["fee"], deal["seller_got"]) == ("buy", 150, 2850)
     assert (await get_resources(conn, 901))["metal"] == 100
     assert (await get_resources(conn, 900))["metal"] == 400
-    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 900") == 10_000 + 285
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 900") == 10_000 + 2850
 
     # Продажа котлет игроком без Шаттла покупателю с Шаттлом: комиссия обычная (Шаттл не «одалживается»)
-    ask = await place_order(conn, 901, "metal", "sell", 50, 4)
+    ask = await place_order(conn, 901, "metal", "sell", 50, 40)
     deal2 = await fill_order(conn, 900, ask, 50)
-    assert (deal2["side"], deal2["fee"]) == ("sell", 20)
+    assert (deal2["side"], deal2["fee"]) == ("sell", 200)
     assert await conn.fetchval("SELECT inv_cutlets FROM users WHERE user_id = 900") == 10
 
     # Отмена заявки возвращает замороженные монеты; ордер на продажу — товар
@@ -1202,13 +1202,13 @@ async def test_market_v2_buy_orders_resources_floor_and_shuttle(conn):
     await cancel_order(conn, 901, bid2)
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 901") == balance + 2 * MARKET_CUTLET_MIN_PRICE
     with pytest.raises(MarketError) as e:
-        await place_order(conn, 901, "metal", "sell", 999, 5)    # у 901 осталось 50 металла
+        await place_order(conn, 901, "metal", "sell", 999, 50)   # у 901 осталось 50 металла
     assert e.value.key == "mk.err_no_resource"
 
     # История сделок и индекс
     hist = await price_history(conn, "metal", utcnow())
     assert len(hist) == 7 and hist[-1]["volume"] == 150
-    assert index_change(hist)["last"] == round((100 * 3 + 50 * 4) / 150, 1)
+    assert index_change(hist)["last"] == round((100 * 30 + 50 * 40) / 150, 1)
     trades = await conn.fetchval("SELECT COUNT(*) FROM market_trades")
     assert trades == 2
 
@@ -1253,7 +1253,8 @@ async def test_storage_cap_clips_mining_but_not_transfers(conn, global_db):
     ok, text, _ = await execute_solo_game_payout(920, True, "safe")       # +3 детали, влезает только 1
     assert ok and "📦" in text
     assert (await get_resources(conn, 920))["parts"] == 500
-    rows = await conn.fetch("SELECT delta FROM resource_ledger WHERE user_id = 920 AND reason = 'game_win:safe'")
+    rows = await conn.fetch("SELECT delta FROM resource_ledger WHERE user_id = 920 AND reason = 'game_win:safe' "
+                            "AND kind = 'parts'")   # ⚡ за победу (шанс 25%) пишется с той же причиной
     assert [r["delta"] for r in rows] == [1]                                # в журнал — фактически полученное
 
     # Безлимит: победы сверх суточного лимита дают ресурс (16 побед в Больше/Меньше при лимите 15)
@@ -1264,7 +1265,7 @@ async def test_storage_cap_clips_mining_but_not_transfers(conn, global_db):
 
     # Биржа: купить ресурс сверх вместимости нельзя — проверка до списания монет
     await grant_bundle(conn, 921, {"parts": 100}, "test")
-    ask = await place_order(conn, 921, "parts", "sell", 10, 2)
+    ask = await place_order(conn, 921, "parts", "sell", 10, 10)
     with pytest.raises(MarketError) as e:
         await fill_order(conn, 920, ask, 10)
     assert e.value.key == "mk.err_storage_full"
@@ -1531,23 +1532,23 @@ async def test_team_market_is_private_cheaper_and_closed_on_leave(conn):
     await grant_bundle(conn, 1300, {"metal": 500}, "test")
 
     with pytest.raises(MarketError) as e:
-        await place_order(conn, 1302, "metal", "buy", 1, 1, team_only=True)
+        await place_order(conn, 1302, "metal", "buy", 1, 20, team_only=True)
     assert e.value.key == "mk.err_no_team"
 
-    ask = await place_order(conn, 1300, "metal", "sell", 100, 10, team_only=True)
+    ask = await place_order(conn, 1300, "metal", "sell", 100, 20, team_only=True)
     assert ask not in [o["id"] for o in await list_open_orders(conn, 50, asset="metal", side="sell")]
     assert ask in [o["id"] for o in await list_open_orders(conn, 50, asset="metal", side="sell", team_id=tid)]
     with pytest.raises(MarketError) as e:
         await fill_order(conn, 1302, ask, 10)
     assert e.value.key == "mk.err_team_only"
 
-    deal = await fill_order(conn, 1301, ask, 50)            # 500 🪙, комиссия команды 5%
-    assert deal["fee"] == 500 * TEAM_MARKET_FEE_PERCENT // 100
+    deal = await fill_order(conn, 1301, ask, 50)            # 1000 🪙, комиссия команды 5%
+    assert deal["fee"] == 1000 * TEAM_MARKET_FEE_PERCENT // 100
     await conn.execute("UPDATE teams SET max_members = 1000 WHERE team_id = $1", tid)
     deal2 = await fill_order(conn, 1301, ask, 50)           # Мега-Клан — 2%
-    assert deal2["fee"] == 500 * CLAN_MARKET_FEE_PERCENT // 100
+    assert deal2["fee"] == 1000 * CLAN_MARKET_FEE_PERCENT // 100
 
-    ask2 = await place_order(conn, 1300, "metal", "sell", 100, 10, team_only=True)
+    ask2 = await place_order(conn, 1300, "metal", "sell", 100, 20, team_only=True)
     async with conn.transaction():
         await leave_team(conn, 1300, tid)
     assert await conn.fetchval("SELECT status FROM market_orders WHERE id = $1", ask2) != "open"
@@ -1723,7 +1724,7 @@ async def test_new_items_unlock_limits_and_effects_in_raids_market_station(conn,
     # Штамп: продажа без комиссии
     await activate_item(conn, 1331, "stamp", 0, now)
     await conn.execute("UPDATE users SET res_capacity = 5000 WHERE user_id = 1332")   # место под покупку
-    ask = await place_order(conn, 1331, "metal", "sell", 10, 10)
+    ask = await place_order(conn, 1331, "metal", "sell", 10, 20)
     assert (await fill_order(conn, 1332, ask, 10))["fee"] == 0
 
 
@@ -1815,9 +1816,9 @@ async def test_horses_carts_and_market_lots(conn):
     await _mk_user(conn, 1410, sum(HORSE_PRICES) + 100, created_at=now - timedelta(days=60))
     await grant_bundle(conn, 1410, {"metal": 400, "wood": 200, "fire": 20}, "test")
     for _ in range(MARKET_BASE_LOTS):                         # без лошадей — 2 лота
-        await place_order(conn, 1410, "metal", "sell", 10, 5)
+        await place_order(conn, 1410, "metal", "sell", 10, 20)
     with pytest.raises(MarketError) as e:
-        await place_order(conn, 1410, "metal", "sell", 10, 5)
+        await place_order(conn, 1410, "metal", "sell", 10, 20)
     assert e.value.key == "mk.err_too_many"
 
     await _tech(conn, 1410, tools=1)
@@ -1830,9 +1831,9 @@ async def test_horses_carts_and_market_lots(conn):
     await craft(conn, 1410, "cart", now)
     assert await conn.fetchval("SELECT carts FROM users WHERE user_id = 1410") == 1
     for _ in range(2):                                         # +1 лошадь +1 телега
-        await place_order(conn, 1410, "metal", "sell", 10, 5)
+        await place_order(conn, 1410, "metal", "sell", 10, 20)
     with pytest.raises(MarketError):
-        await place_order(conn, 1410, "metal", "sell", 10, 5)
+        await place_order(conn, 1410, "metal", "sell", 10, 20)
     for _ in range(MAX_HORSES - 1):
         await buy_horse(conn, 1410)
     with pytest.raises(TechError) as e:

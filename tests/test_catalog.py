@@ -16,7 +16,7 @@ EXPECTED_PRICES = {
     "cutlet_10": 49, "cutlet_50": 239, "cutlet_100": 449,
     "fridge_10": 99, "fridge_50": 499, "fridge_100": 999,
     "boost_nuclear_30": 199, "boost_nitrogen_30": 299,
-    "unlimit_24h": 5, "unlimit_30d": 99,
+    "unlimit_24h": 15, "unlimit_30d": 249,
     "repair_drone_365": 999, "intern_upgrade": 999,
     "coins_5k": 149, "coins_10k": 299, "coins_50k": 1299, "coins_100k": 2499,
     "clan_upgrade": 2499,

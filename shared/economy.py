@@ -163,10 +163,22 @@ MARKET_MAX_OPEN_ORDERS = 8     # открытых ордеров на игрок
 MARKET_SHOWCASE_LIMIT = 6      # ордеров на витрине /market (по одной кнопке в ряд)
 MARKET_APP_LIST_LIMIT = 200    # лучших ордеров в приложении — листаются постранично
 MARKET_APP_SWAPS_LIMIT = 100   # предложений обмена в приложении
-# Новые сырьё и материалы (27.10) тоже торгуются; Ядро ☢️ — нет (только командная добыча)
+# Новые сырьё и материалы (27.10) торгуются; ☢️ Ядро — тоже, но только за монеты и от 5000 (решение 26.10)
 MARKET_ASSETS = ("cutlet", "metal", "hydrogen", "crystal", "parts",
-                 "stone", "wood", "fire", "energy", "battery", "cow")
-MARKET_COW_MIN_PRICE = 100     # 🐄 корова — пропуск к синтезу котлеты: дешевле не продать
+                 "stone", "wood", "fire", "energy", "battery", "cow", "core")
+# ПОЛЫ ЦЕН (решение владельца 26.10, расчёт — в CLAUDE.md): дешевле не продать и не заявить на покупку.
+# Чем дороже товар, тем больше монет сгорает комиссией с каждой сделки — владелец стимулирует торговлю ради сжигания.
+# Логика: лёгкие в добыче (детали, кристаллы) дешевле, сырьё бустов (металл, водород) дороже — бусты из
+# купленных ресурсов всегда дороже магазинных за ★; огонь и батарейки — не дешевле своих ингредиентов
+# (огонь: 10 🪵 + 5 🪨 = 850 за 5; батарейки: 5 ⚡ + 5 ⛏ + 1 🔥 = 500 за 2, +20% за труд и инструменты).
+MARKET_MIN_PRICES = {
+    "parts": 10, "crystal": 10, "metal": 20, "hydrogen": 20, "stone": 30, "energy": 50, "wood": 70,
+    "fire": 170, "battery": 300,
+    "cow": 1000,       # 🐄 = 3 котлеты в мастерской; её берут те, кому срочно нужно топливо на Ядерный разгон
+    "core": 5000,      # ☢️ только из призов владельца — самый редкий товар
+    "cutlet": 200,     # пол котлеты — см. ниже (защита магазина)
+}
+MARKET_COW_MIN_PRICE = MARKET_MIN_PRICES["cow"]
 MARKET_HISTORY_DAYS = 7        # график цены и индекс биржи
 
 # ПОЛ ЦЕНЫ КОТЛЕТЫ (решение владельца 24.10): топливо — исключительное право магазина.
@@ -177,13 +189,11 @@ MARKET_HISTORY_DAYS = 7        # график цены и индекс бирж�
 # разгоном котлета приносит до 560 🪙), когда в магазин идти не хочется.
 SHOP_CUTLET_BEST_STARS_X100 = 449   # ★ за 100 котлет (самый выгодный пак) — сверяется тестом с каталогом
 SHOP_COINS_PER_STAR_BEST = 40       # 🪙 за ★ в самом выгодном паке монет — сверяется тестом
-MARKET_CUTLET_MIN_PRICE = 200
+MARKET_CUTLET_MIN_PRICE = MARKET_MIN_PRICES["cutlet"]
 
 
 def market_min_price(asset: str) -> int:
-    if asset == "cutlet":
-        return MARKET_CUTLET_MIN_PRICE
-    return MARKET_COW_MIN_PRICE if asset == "cow" else MARKET_MIN_PRICE
+    return MARKET_MIN_PRICES.get(asset, MARKET_MIN_PRICE)
 
 
 # Обмен ресурс ↔ ресурс без монет (предложения «отдам X за Y»)
@@ -319,7 +329,8 @@ RES_CAPACITY_BASE = 500           # вместимость на КАЖДЫЙ р�
 # --------------------------------------------------------------------------
 EXTRA_KINDS = ("stone", "wood", "fire", "energy", "battery", "cow", "core")
 ALL_KINDS = RESOURCE_KINDS + EXTRA_KINDS
-TRADEABLE_KINDS = RESOURCE_KINDS + ("stone", "wood", "fire", "energy", "battery", "cow")   # без Ядра
+# Обмен ресурс ↔ ресурс (без монет) — без Ядра: оно продаётся только за монеты не дешевле пола
+TRADEABLE_KINDS = RESOURCE_KINDS + ("stone", "wood", "fire", "energy", "battery", "cow")
 ENERGY_WIN_CHANCE_PERCENT = 25    # ⚡ шанс получить 1 электричество за любую победу в соло-игре
 CHEST_SPECIALS = (("wood", 10), ("stone", 10), ("energy", 3))   # особый бонус сундука (по дню)
 CHEST_STREAK_COW = 1              # 🐄 корова в сундук каждого 7-го дня серии
@@ -524,8 +535,10 @@ WORKSHOP_RECIPES.update({
     "cart": {"cost": {"wood": 40, "metal": 20, "fire": 2}, "effect": "cart", "tool": 1},
     "meds_72h": {"cost": {"crystal": 20, "fire": 2, "energy": 3}, "effect": "meds", "hours": 72, "tool": 2},
 })
-# Синтез котлеты теперь требует корову и огонь (решение владельца 27.10)
-WORKSHOP_RECIPES["cutlet"]["cost"] = {"metal": 50, "hydrogen": 50, "crystal": 50, "parts": 50, "cow": 1, "fire": 5}
+# Котлеты из коровы (решение владельца 26.10): 🐄 1 + 🔥 2 → 🥩 3. Себестоимость по полам биржи
+# (1000 + 340) / 3 ≈ 447 🪙 за котлету — дороже пола 200 и магазина (~180–196 🪙): Звёзды не теряют.
+WORKSHOP_RECIPES["cutlet"]["cost"] = {"cow": 1, "fire": 2}
+WORKSHOP_RECIPES["cutlet"]["qty"] = 3
 WORKSHOP_RECIPES["shuttle"]["tool"] = 3
 # 🤖 Боевые дроны (28.10): эксклюзив уровня Шаттла — 1000 каждого базового ресурса + своё + 1000 🪙,
 # набор 🔬; одна сборка = один дрон. Альтернатива — DRONE_COIN_PRICE монет (кнопка «Купить» в мастерской).
@@ -799,7 +812,7 @@ def duel_payout(stake_each: int) -> tuple[int, int]:
 # Дроны не лежат на складе изделий (лимит 10% их не касается) и не тратятся.
 # --------------------------------------------------------------------------
 DRONE_KINDS = ("guard", "attack", "spy")
-DRONE_COIN_PRICE = 50_000            # 🪙 за дрона в мастерской (ledger drone_buy, сгорают)
+DRONE_COIN_PRICE = 100_000           # 🪙 за дрона (ledger drone_buy, сгорают); 26.10: рецепт по полам биржи ≈ 75 000
 DRONE_RAID_ATTACK_PCT = 5            # ⚔️ каждый атакующий дрон: +5% к трофею налёта…
 DRONE_RAID_GUARD_PCT = 5             # 🛡 каждый защитник цели: −5% к трофею налётчика…
 DRONE_RAID_CAP_PCT = 50              # …но не больше ±50% (суммарно)

@@ -363,7 +363,7 @@ STRINGS = {
     "games.limit": (
         "🛑 <b>已达每日上限！</b>\n\n"
         "今天你在「{game}」里已经拿满 {limit} 场胜利。上限将于 00:00 UTC 重置。\n\n"
-        "⚡ 解除上限：24 小时 5 ★，30 天 99 ★（/shop 的「游戏专区」）。"
+        "⚡ 解除上限：24 小时 15 ★，30 天 249 ★（/shop 的「游戏专区」）。"
     ),
     "games.no_coins": "❌ 你只有 0 🪙——付不起本局费用。去 /farm 领取农场收入吧！",
     "games.balance": "💰 余额：<b>{balance} 🪙</b>",
@@ -1028,6 +1028,7 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "mk_floorAny": "At least {p} 🪙 per 1 {x} — for sales and buy orders",
     "mk_sellTitleAny": "💰 SELL: {x}",
     "mk_bidTitleAny": "🙋 BUY: {x}",
     "mk_qtyAny": "Amount, {x}",

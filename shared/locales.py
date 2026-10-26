@@ -362,7 +362,7 @@ RU: dict[str, str] = {
     "games.limit": (
         "🛑 <b>Суточный лимит достигнут!</b>\n\n"
         "В игре {game} ты уже забрал(а) {limit} побед на сегодня. Лимит обновится в 00:00 UTC.\n\n"
-        "⚡ Снять лимит на 24 часа — 5 ★, на 30 дней — 99 ★ (раздел «Игровые» в /shop)."
+        "⚡ Снять лимит на 24 часа — 15 ★, на 30 дней — 249 ★ (раздел «Игровые» в /shop)."
     ),
     "games.no_coins": "❌ У тебя 0 🪙 — нечем оплатить сбор раунда. Забери доход с фермы в /farm!",
     "games.balance": "💰 Баланс: <b>{balance} 🪙</b>",
@@ -797,7 +797,7 @@ RU: dict[str, str] = {
     "ws.recipe_nuclear_3h": "Ядерный Разгон на 3 ч",
     "ws.recipe_drone_24h": "Мастер-дрон на сутки",
     "ws.recipe_shield_24h": "Щит от налётов на сутки",
-    "ws.recipe_cutlet": "Синтез кибер-котлеты",
+    "ws.recipe_cutlet": "Кибер-котлеты из коровы ×3",
     "ws.recipe_armor": "Кибер-броня ур. {level}",
     "ws.recipe_shuttle": "Собрать Шаттл",
     "ws.btn_shuttle_owned": "🚀 Шаттл собран",
@@ -810,7 +810,7 @@ RU: dict[str, str] = {
     "ws.done_nuclear": "☢️ <b>Ядерный Разгон x5</b> активен до {until} UTC. Бурильщики едят ×3 котлет!",
     "ws.done_drone": "🛸 <b>Мастер-дрон</b> бережёт роботов до {until} UTC.",
     "ws.done_shield": "🛡 <b>Щит от налётов</b> держится до {until} UTC. Ресурсы под защитой.",
-    "ws.done_cutlet": "🥩 Синтезировано: <b>+{qty} кибер-котлета</b> на склад. Заправляй в /farm!",
+    "ws.done_cutlet": "🥩 Готово: <b>+{qty} 🥩</b> кибер-котлеты на складе. Заправляй в /farm!",
     "ws.done_armor": "🛡 <b>Кибер-броня уровня {level}!</b> Добыча фермы: <b>+{percent}%</b> на 30 дней.",
     "ws.done_shuttle": "🚀 <b>Шаттл собран!</b> Комиссия на твои продажи теперь {fee}%, в ордере до {qty} котлет. Шаттл только твой и навсегда.",
     "ws.err_unknown": "❌ Такого рецепта нет.",
@@ -1363,7 +1363,7 @@ EN: dict[str, str] = {
     "games.limit": (
         "🛑 <b>Daily limit reached!</b>\n\n"
         "You've already taken {limit} wins in {game} today. The limit resets at 00:00 UTC.\n\n"
-        "⚡ Remove the limit for 24 hours — 5 ★, for 30 days — 99 ★ (the “Gaming” section in /shop)."
+        "⚡ Remove the limit for 24 hours — 15 ★, for 30 days — 249 ★ (the “Gaming” section in /shop)."
     ),
     "games.no_coins": "❌ You have 0 🪙 — nothing to pay the round fee with. Collect your farm income in /farm!",
     "games.balance": "💰 Balance: <b>{balance} 🪙</b>",
@@ -1799,7 +1799,7 @@ EN: dict[str, str] = {
     "ws.recipe_nuclear_3h": "Nuclear Overclock for 3 h",
     "ws.recipe_drone_24h": "Master Drone for 24 h",
     "ws.recipe_shield_24h": "Raid shield for 24 h",
-    "ws.recipe_cutlet": "Synthesize a cyber-cutlet",
+    "ws.recipe_cutlet": "Cyber-cutlets from a cow ×3",
     "ws.recipe_armor": "Cyber-armor lvl {level}",
     "ws.recipe_shuttle": "Build the Shuttle",
     "ws.btn_shuttle_owned": "🚀 Shuttle built",
@@ -1812,7 +1812,7 @@ EN: dict[str, str] = {
     "ws.done_nuclear": "☢️ <b>Nuclear Overclock x5</b> active until {until} UTC. Drillers eat ×3 cutlets!",
     "ws.done_drone": "🛸 <b>Master Drone</b> protects your robots until {until} UTC.",
     "ws.done_shield": "🛡 <b>Raid shield</b> holds until {until} UTC. Your resources are safe.",
-    "ws.done_cutlet": "🥩 Synthesized: <b>+{qty} cyber-cutlet</b> in your inventory. Refuel in /farm!",
+    "ws.done_cutlet": "🥩 Done: <b>+{qty} 🥩</b> cyber-cutlets in your inventory. Refuel in /farm!",
     "ws.done_armor": "🛡 <b>Cyber-armor level {level}!</b> Farm mining: <b>+{percent}%</b> for 30 days.",
     "ws.done_shuttle": "🚀 <b>Shuttle built!</b> The fee on your sales is now {fee}%, up to {qty} cutlets per order. The shuttle is yours only, forever.",
     "ws.err_unknown": "❌ No such recipe.",

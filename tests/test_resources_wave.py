@@ -71,8 +71,8 @@ def test_armor_cost_escalates_and_stops_at_max():
 
 
 def test_owner_rules_24_10_for_workshop():
-    """Решения владельца 24.10: синтез котлеты дорогой, броня на 30 дней, Шаттл — 1000 всего + 1000 🪙."""
-    assert WORKSHOP_RECIPES["cutlet"]["cost"] == {**{k: 50 for k in RESOURCE_KINDS}, "cow": 1, "fire": 5}
+    """Решения владельца: котлеты из коровы (26.10: 🐄 + 2 🔥 → 3 🥩), броня на 30 дней, Шаттл — 1000 всего + 1000 🪙."""
+    assert WORKSHOP_RECIPES["cutlet"]["cost"] == {"cow": 1, "fire": 2} and WORKSHOP_RECIPES["cutlet"]["qty"] == 3
     assert economy.ARMOR_DAYS == 30
     assert WORKSHOP_RECIPES["shuttle"]["cost"] == {k: 1000 for k in RESOURCE_KINDS}
     assert WORKSHOP_RECIPES["shuttle"]["coins"] == 1000
