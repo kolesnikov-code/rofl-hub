@@ -101,6 +101,11 @@
   .game-tile.limit .gt-meta { color: var(--accent); }
   .quiz-opt.gone { opacity: .25; }
   .game-tile.wide { grid-column: 1 / -1; }
+  .dl-search { text-align: center; font-size: 40px; margin: 14px 0 4px; animation: dlPulse 1.4s ease-in-out infinite; }
+  @keyframes dlPulse { 0%, 100% { transform: scale(1); opacity: .7; } 50% { transform: scale(1.15); opacity: 1; } }
+  .dl-vs { text-align: center; font-size: 15px; margin: 10px 0; }
+  .btn.picked { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+  @media (prefers-reduced-motion: reduce) { .dl-search { animation: none; } }
   .qs-text { font-size: 15px; line-height: 1.5; margin: 10px 0 4px; animation: qsIn .35s ease-out; }
   @keyframes qsIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   .qs-card { border: 1px solid rgba(0,255,225,.18); border-radius: 14px; padding: 12px; margin-top: 10px; }
@@ -538,7 +543,7 @@
       map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
       tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "На карте — соло-походы и походы отрядов команд (формат у каждой цели свой). К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "🎒 За участие: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Твой выбор сработает, как только дойдёшь до развилки. Передумать можно до этого момента.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Выбор принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
       subtitle: "твоя игровая империя в одном экране",
-      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит", g_name_quests: "🗺 Квесты", qs_tile: "Истории с выборами · награда за первую победу", qs_ruOnly: "Квесты пока только на русском — перевод готовится.", qs_done: "✅ пройден", qs_progress: "⏯ в процессе", qs_new: "🆕 новый", qs_info: "{g} · {m} мин · +{r} 🪙 за первую победу", qs_start: "▶️ Начать", qs_resume: "⏯ Продолжить", qs_restart: "🔄 Начать заново", qs_list: "‹ Все квесты", qs_again: "🔄 Пройти ещё раз", qs_winFirst: "🏆 Квест пройден! +{c} 🪙 и по {q} каждого ресурса, 🪵 и 🐄", qs_winRepeat: "✅ Пройдено снова! Награда за этот квест уже получена.", qs_fail: "💀 Концовка не из лучших… Историю всегда можно переиграть!", qs_stale: "Эта сцена уже позади — продолжаем с текущего места", qs_empty: "Квестов пока нет — загляни позже.", g_sometimes: "Иногда: +1 ⚡", auc_short: "Не хватает {n} 🪙 для этой ставки", auc_confirm: "Сделать ставку на «{t}»? Спишется {c} 🪙 (вернутся, если тебя перебьют).", g_streak: "Серия: {i} {a}/{b}", g_every: "{i} за каждые {n} побед", g_win_coins: "Победа: +{r} 🪙", flags_q_flag: "Чей это флаг?", flags_q_cap: "Какая столица у страны {c}?", code_rules: "Взломай код из {d} разных цифр за {m} попыток. 🐂 — цифра на своём месте, 🐄 — цифра есть, но в другом месте.", code_left: "Попыток осталось: {n}", code_try: "Проверить", mem_rules: "Найди все {p} пар за {m} ходов. Ход — открыть две карточки.", mem_moves: "Ходов: {a}/{b}",
+      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит", dl_title: "⚔️ Дуэли", dl_tile: "Живой соперник · столы 10 / 100 / 1000 🪙", dl_intro: "Камень-ножницы-бумага с живым игроком. Ставка списывается сразу; победителю — {p}% банка, {b}% сгорает. На жест — {t} с, ничья — переигровка.", dl_table: "⚔️ Стол {s} 🪙 · победа +{p} 🪙 и 🪨{r}", dl_short: "Для этого стола нужно {s} 🪙 на балансе", dl_waiting: "Ищем соперника за столом {s} 🪙…", dl_waitLeft: "Очередь отменится через {m} мин — ставка вернётся", dl_waitHint: "Можно закрыть приложение: когда соперник найдётся, бот напишет в чат.", dl_cancel: "❌ Покинуть стол (вернуть ставку)", dl_matched: "Соперник найден! Банк {b} 🪙 · победителю {p} 🪙", dl_round: "🤝 Ничья — переигровка! Раунд {n}", dl_pick: "Выбери жест", dl_wait: "Жест принят — ждём соперника…", dl_oppMoved: "⚡ Соперник уже сделал ход!", dl_timeoutNote: "Не успеешь — жест выберет случай.", dl_win: "🎉 Победа в дуэли! +{p} 🪙 и 🪨{r}", dl_lose: "Поражение. Ставка {s} 🪙 ушла в банк соперника.", dl_vs: "Ты: {a} · Соперник: {b}", dl_cancelled: "Стол покинут — ставка {s} 🪙 вернулась на баланс.", dl_again: "⚔️ Ещё дуэль", g_name_quests: "🗺 Квесты", qs_tile: "Истории с выборами · награда за первую победу", qs_ruOnly: "Квесты пока только на русском — перевод готовится.", qs_done: "✅ пройден", qs_progress: "⏯ в процессе", qs_new: "🆕 новый", qs_info: "{g} · {m} мин · +{r} 🪙 за первую победу", qs_start: "▶️ Начать", qs_resume: "⏯ Продолжить", qs_restart: "🔄 Начать заново", qs_list: "‹ Все квесты", qs_again: "🔄 Пройти ещё раз", qs_winFirst: "🏆 Квест пройден! +{c} 🪙 и по {q} каждого ресурса, 🪵 и 🐄", qs_winRepeat: "✅ Пройдено снова! Награда за этот квест уже получена.", qs_fail: "💀 Концовка не из лучших… Историю всегда можно переиграть!", qs_stale: "Эта сцена уже позади — продолжаем с текущего места", qs_empty: "Квестов пока нет — загляни позже.", g_sometimes: "Иногда: +1 ⚡", auc_short: "Не хватает {n} 🪙 для этой ставки", auc_confirm: "Сделать ставку на «{t}»? Спишется {c} 🪙 (вернутся, если тебя перебьют).", g_streak: "Серия: {i} {a}/{b}", g_every: "{i} за каждые {n} побед", g_win_coins: "Победа: +{r} 🪙", flags_q_flag: "Чей это флаг?", flags_q_cap: "Какая столица у страны {c}?", code_rules: "Взломай код из {d} разных цифр за {m} попыток. 🐂 — цифра на своём месте, 🐄 — цифра есть, но в другом месте.", code_left: "Попыток осталось: {n}", code_try: "Проверить", mem_rules: "Найди все {p} пар за {m} ходов. Ход — открыть две карточки.", mem_moves: "Ходов: {a}/{b}",
       tab_passport: "📋 Паспорт", tab_farm: "🚜 Ферма", tab_goals: "🎯 Цели", tab_workshop: "🔧 Мастерская",
       tab_raids: "🏴‍☠️ Налёты", tab_market: "📈 Биржа", tab_team: "🏆 Команда", tab_shop: "🏪 Магазин", tab_top: "👑 ТОП",
       passport: "📋 ПАСПОРТ ИГРОКА", coins: "🪙",
@@ -678,7 +683,7 @@
       ctaHungry: "🚨 Бурильщики голодают ({n} без топлива) — добыча стоит!",
       ctaLowFuel: "⚠️ Котлет меньше, чем на сутки работы Бурильщиков.",
       ctaShopBtn: "🛒 В магазин",
-      footer: "Дуэли — пока в чате бота",
+      footer: "Вся игра — в одном приложении",
       noProfile: "Профиль не найден. Открой бота и нажми /start!",
       blocked: "Аккаунт заблокирован администрацией.",
       deleting: "Аккаунт в очереди на удаление. Передумал(а)? Отмени удаление в чате бота.",
@@ -766,7 +771,7 @@
       map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
       tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "🎒 For taking part: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your choice applies as soon as you reach the fork. You can change it until then.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Choice saved", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
       subtitle: "your game empire on one screen",
-      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit", g_name_quests: "🗺 Quests", qs_tile: "Stories with choices · reward for the first win", qs_ruOnly: "Quests are in Russian for now — a translation is on the way.", qs_done: "✅ completed", qs_progress: "⏯ in progress", qs_new: "🆕 new", qs_info: "{g} · {m} min · +{r} 🪙 for the first win", qs_start: "▶️ Start", qs_resume: "⏯ Continue", qs_restart: "🔄 Start over", qs_list: "‹ All quests", qs_again: "🔄 Play again", qs_winFirst: "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄", qs_winRepeat: "✅ Completed again! The reward for this quest was already claimed.", qs_fail: "💀 Not the best ending… You can always replay the story!", qs_stale: "That scene is behind you — continuing from where you are", qs_empty: "No quests yet — check back later.", g_sometimes: "Sometimes: +1 ⚡", auc_short: "You need {n} more 🪙 for this bid", auc_confirm: "Bid on “{t}”? {c} 🪙 will be held (returned if you are outbid).", g_streak: "Streak: {i} {a}/{b}", g_every: "{i} for every {n} wins", g_win_coins: "Win: +{r} 🪙", flags_q_flag: "Whose flag is this?", flags_q_cap: "What is the capital of {c}?", code_rules: "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.", code_left: "Tries left: {n}", code_try: "Check", mem_rules: "Find all {p} pairs in {m} moves. A move is turning over two cards.", mem_moves: "Moves: {a}/{b}",
+      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit", dl_title: "⚔️ Duels", dl_tile: "A live opponent · tables 10 / 100 / 1000 🪙", dl_intro: "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.", dl_table: "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}", dl_short: "You need {s} 🪙 on your balance for this table", dl_waiting: "Looking for an opponent at the {s} 🪙 table…", dl_waitLeft: "The queue cancels in {m} min — your stake comes back", dl_waitHint: "You can close the app: once an opponent is found, the bot will message you in the chat.", dl_cancel: "❌ Leave the table (refund stake)", dl_matched: "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙", dl_round: "🤝 Draw — replay! Round {n}", dl_pick: "Pick a gesture", dl_wait: "Gesture locked in — waiting for your opponent…", dl_oppMoved: "⚡ Your opponent has already moved!", dl_timeoutNote: "Run out of time and chance picks your gesture.", dl_win: "🎉 Duel won! +{p} 🪙 and 🪨{r}", dl_lose: "Defeat. Your {s} 🪙 stake went to your opponent's bank.", dl_vs: "You: {a} · Opponent: {b}", dl_cancelled: "You left the table — your {s} 🪙 stake is back on your balance.", dl_again: "⚔️ Another duel", g_name_quests: "🗺 Quests", qs_tile: "Stories with choices · reward for the first win", qs_ruOnly: "Quests are in Russian for now — a translation is on the way.", qs_done: "✅ completed", qs_progress: "⏯ in progress", qs_new: "🆕 new", qs_info: "{g} · {m} min · +{r} 🪙 for the first win", qs_start: "▶️ Start", qs_resume: "⏯ Continue", qs_restart: "🔄 Start over", qs_list: "‹ All quests", qs_again: "🔄 Play again", qs_winFirst: "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄", qs_winRepeat: "✅ Completed again! The reward for this quest was already claimed.", qs_fail: "💀 Not the best ending… You can always replay the story!", qs_stale: "That scene is behind you — continuing from where you are", qs_empty: "No quests yet — check back later.", g_sometimes: "Sometimes: +1 ⚡", auc_short: "You need {n} more 🪙 for this bid", auc_confirm: "Bid on “{t}”? {c} 🪙 will be held (returned if you are outbid).", g_streak: "Streak: {i} {a}/{b}", g_every: "{i} for every {n} wins", g_win_coins: "Win: +{r} 🪙", flags_q_flag: "Whose flag is this?", flags_q_cap: "What is the capital of {c}?", code_rules: "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.", code_left: "Tries left: {n}", code_try: "Check", mem_rules: "Find all {p} pairs in {m} moves. A move is turning over two cards.", mem_moves: "Moves: {a}/{b}",
       tab_passport: "📋 Passport", tab_farm: "🚜 Farm", tab_goals: "🎯 Goals", tab_workshop: "🔧 Workshop",
       tab_raids: "🏴‍☠️ Raids", tab_market: "📈 Market", tab_team: "🏆 Team", tab_shop: "🏪 Shop", tab_top: "👑 TOP",
       passport: "📋 PLAYER PASSPORT", coins: "🪙",
@@ -906,7 +911,7 @@
       ctaHungry: "🚨 Drillers are starving ({n} without fuel) — mining has stopped!",
       ctaLowFuel: "⚠️ Fewer cutlets than a day of Driller work.",
       ctaShopBtn: "🛒 To the shop",
-      footer: "Duels are in the bot chat for now",
+      footer: "The whole game in one app",
       noProfile: "Profile not found. Open the bot and press /start!",
       blocked: "Account blocked by administration.",
       deleting: "Your account is scheduled for deletion. Changed your mind? Cancel it in the bot chat.",
@@ -990,6 +995,26 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -1497,7 +1522,7 @@
     "ctaHungry": "🚨 الحفّارات جائعة ({n} بلا وقود) — التعدين متوقف!",
     "ctaLowFuel": "⚠️ الكفتات أقل مما يكفي ليوم واحد من عمل الحفّارات.",
     "ctaShopBtn": "🛒 إلى المتجر",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "لم يتم العثور على الملف. افتح البوت واضغط /start!",
     "blocked": "الحساب محظور من قِبل الإدارة.",
     "deleting": "حسابك في قائمة الحذف. غيّرت رأيك؟ ألغِ الحذف في دردشة البوت.",
@@ -1669,6 +1694,26 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -2177,7 +2222,7 @@
     "ctaHungry": "🚨 ড্রিলাররা না খেয়ে আছে ({n}টা জ্বালানি ছাড়া) — মাইনিং বন্ধ!",
     "ctaLowFuel": "⚠️ ড্রিলারদের এক দিনের কাজের চেয়েও কম কাটলেট আছে।",
     "ctaShopBtn": "🛒 দোকানে চলো",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "প্রোফাইল পাওয়া যায়নি। বট খুলে /start চাপো!",
     "blocked": "অ্যাডমিনরা অ্যাকাউন্ট ব্লক করেছে।",
     "deleting": "অ্যাকাউন্ট মুছে ফেলার অপেক্ষায় আছে। মত বদলেছে? বটের চ্যাটে মুছে ফেলা বাতিল করো।",
@@ -2348,6 +2393,26 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -2855,7 +2920,7 @@
     "ctaHungry": "🚨 Die Bohrer hungern ({n} ohne Treibstoff) — das Schürfen steht still!",
     "ctaLowFuel": "⚠️ Weniger Frikadellen als für einen Tag Bohrer-Arbeit.",
     "ctaShopBtn": "🛒 Zum Shop",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Profil nicht gefunden. Öffne den Bot und tippe /start!",
     "blocked": "Account von der Administration gesperrt.",
     "deleting": "Dein Account steht zur Löschung an. Doch umentschieden? Brich die Löschung im Bot-Chat ab.",
@@ -3027,6 +3092,26 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -3535,7 +3620,7 @@
     "ctaHungry": "🚨 ¡Los Perforadores tienen hambre ({n} sin combustible) y la extracción está parada!",
     "ctaLowFuel": "⚠️ Quedan menos chuletas que para un día de trabajo de los Perforadores.",
     "ctaShopBtn": "🛒 A la tienda",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Perfil no encontrado. ¡Abre el bot y pulsa /start!",
     "blocked": "Cuenta bloqueada por la administración.",
     "deleting": "Tu cuenta está en cola de eliminación. ¿Cambiaste de idea? Cancélala en el chat del bot.",
@@ -3706,6 +3791,26 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -4213,7 +4318,7 @@
     "ctaHungry": "🚨 Les Foreurs ont faim ({n} sans carburant) — le minage est à l'arrêt !",
     "ctaLowFuel": "⚠️ Moins de côtelettes qu'il n'en faut pour une journée de travail des Foreurs.",
     "ctaShopBtn": "🛒 Vers la boutique",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Profil introuvable. Ouvre le bot et appuie sur /start !",
     "blocked": "Compte bloqué par l'administration.",
     "deleting": "Ton compte est en cours de suppression. Tu as changé d'avis ? Annule la suppression dans le chat du bot.",
@@ -4385,6 +4490,26 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -4892,7 +5017,7 @@
     "ctaHungry": "🚨 ड्रिलर भूखे हैं ({n} बिना ईंधन) — माइनिंग रुकी है!",
     "ctaLowFuel": "⚠️ कटलेट ड्रिलरों के एक दिन के काम से भी कम हैं।",
     "ctaShopBtn": "🛒 दुकान पर",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "प्रोफ़ाइल नहीं मिली। बॉट खोलकर /start दबाओ!",
     "blocked": "एडमिन ने अकाउंट ब्लॉक कर दिया है।",
     "deleting": "अकाउंट डिलीट होने की कतार में है। इरादा बदल गया? बॉट के चैट में डिलीट रद्द कर दो।",
@@ -5064,6 +5189,26 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -5571,7 +5716,7 @@
     "ctaHungry": "🚨 Para Pengebor kelaparan ({n} tanpa bahan bakar) — penambangan berhenti!",
     "ctaLowFuel": "⚠️ Kotlet tidak cukup untuk sehari kerja para Pengebor.",
     "ctaShopBtn": "🛒 Ke toko",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Profil tidak ditemukan. Buka bot dan tekan /start!",
     "blocked": "Akun diblokir oleh admin.",
     "deleting": "Akunmu dijadwalkan untuk dihapus. Berubah pikiran? Batalkan di chat bot.",
@@ -5743,6 +5888,26 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -6250,7 +6415,7 @@
     "ctaHungry": "🚨 Le Trivelle hanno fame ({n} senza carburante) — l'estrazione è ferma!",
     "ctaLowFuel": "⚠️ Le cotolette non bastano per un giorno di lavoro delle Trivelle.",
     "ctaShopBtn": "🛒 Al negozio",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Profilo non trovato. Apri il bot e premi /start!",
     "blocked": "Account bloccato dall'amministrazione.",
     "deleting": "Il tuo account è in coda per l'eliminazione. Hai cambiato idea? Annulla l'eliminazione nella chat del bot.",
@@ -6422,6 +6587,26 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -6946,7 +7131,7 @@
     "ctaHungry": "🚨 Wiertacze głodują ({n} bez paliwa) — wydobycie stoi!",
     "ctaLowFuel": "⚠️ Kotletów starczy na mniej niż dobę pracy Wiertaczy.",
     "ctaShopBtn": "🛒 Do sklepu",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Nie znaleziono profilu. Otwórz bota i naciśnij /start!",
     "blocked": "Konto zablokowane przez administrację.",
     "deleting": "Twoje konto czeka na usunięcie. Rozmyśliłeś(-aś) się? Anuluj usunięcie w czacie bota.",
@@ -7101,6 +7286,26 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -7608,7 +7813,7 @@
     "ctaHungry": "🚨 Os Perfuradores estão com fome ({n} sem combustível) — a mineração parou!",
     "ctaLowFuel": "⚠️ Os bifes não duram nem um dia de trabalho dos Perfuradores.",
     "ctaShopBtn": "🛒 Ir à loja",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Perfil não encontrado. Abra o bot e toque em /start!",
     "blocked": "Conta bloqueada pela administração.",
     "deleting": "Sua conta está na fila de exclusão. Mudou de ideia? Cancele no chat do bot.",
@@ -7780,6 +7985,26 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -8287,7 +8512,7 @@
     "ctaHungry": "🚨 Burg'ulovchilar och qoldi ({n} tasi yoqilg'isiz) — qazib olish to'xtab turibdi!",
     "ctaLowFuel": "⚠️ Kotletlar Burg'ulovchilarning bir kunlik ishiga ham yetmaydi.",
     "ctaShopBtn": "🛒 Do'konga",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Profil topilmadi. Botni ochib, /start ni bos!",
     "blocked": "Akkaunt ma'muriyat tomonidan bloklangan.",
     "deleting": "Akkaunting o'chirish navbatida. Fikringdan qaytdingmi? O'chirishni bot chatida bekor qil.",
@@ -8459,6 +8684,26 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
     "qs_ruOnly": "Quests are in Russian for now — a translation is on the way.",
@@ -8967,7 +9212,7 @@
     "ctaHungry": "🚨 钻机在挨饿（{n} 台没燃料）——挖矿停了！",
     "ctaLowFuel": "⚠️ 肉排不够钻机工作一天了。",
     "ctaShopBtn": "🛒 去商店",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "未找到个人资料。打开机器人并点按 /start！",
     "blocked": "账号已被管理员封禁。",
     "deleting": "账号正在排队删除。改变主意了？请在机器人聊天中取消删除。",
@@ -10636,6 +10881,7 @@
     if (gameScreen === "safe") return gameSafe(box);
     if (TIMED[gameScreen]) return gameTimed(box, gameScreen);
     if (gameScreen === "quests") return viewQuests(box);
+    if (gameScreen === "duel") return viewDuel(box);
     if (gameScreen === "code") return gameCode(box);
     if (gameScreen === "memory") return gameMemory(box);
     const d = gamesData;
@@ -10650,6 +10896,8 @@
     const q = d.quiz;
     box.innerHTML = card(L.g_title,
       '<div class="game-grid">' + GAMES_LIVE.map(id => tile(d.games.find(g => g.id === id))).join("") + GAMES_SOON.map(soon).join("") +
+      (me.features && me.features.duels === false ? '' : '<button class="game-tile wide" data-game="duel"><span class="gt-name">' + L.dl_title +
+        '</span><span class="gt-meta">' + L.dl_tile + '</span></button>') +
       (me.features && me.features.quests === false ? '' : '<button class="game-tile wide" data-game="quests"><span class="gt-name">' + L.g_name_quests +
         '</span><span class="gt-meta">' + L.qs_tile + '</span></button>') + '</div>' +
       '<div class="hint" style="margin-top:10px">' + (d.unlimited ? L.g_unlimited : L.g_hint) + '</div>' +
@@ -10849,6 +11097,87 @@
       if (bar) bar.style.width = Math.max(0, left / q.seconds * 100) + "%";
       if (left <= 0) answer(-1);
     }, 1000);
+  }
+
+  // ⚔️ Дуэли: живой соперник (очередь общая с чатом). Состояние — опрос /api/duel раз в 1,5 с.
+  const DUEL_POLL_MS = 1500;   // жесты — общий MOVES (налёты)
+  const duelSeen = new Set();     // итоги, которые уже показали (повторно не всплывают)
+  let duelSig = null, duelLocal = null;
+  async function viewDuel(box) {
+    duelSig = null;
+    const draw = st => {
+      const sig = JSON.stringify([st.duel && Object.assign({}, st.duel, { left: 0, waiting_left: 0 }), st.last && st.last.id]);
+      if (sig === duelSig) return tick(st);   // ничего не поменялось — только таймер
+      duelSig = sig;
+      renderDuel(box, st);
+    };
+    const tick = st => {
+      const d = st.duel; if (!d) return;
+      const el = box.querySelector("#dlLeft"), bar = box.querySelector("#dlBar");
+      if (d.status === "active" && el) { el.textContent = "⏱ " + d.left; if (bar) bar.style.width = (d.left / st.timeout * 100) + "%"; }
+      if (d.status === "waiting" && el) el.textContent = fmt(L.dl_waitLeft, { m: Math.ceil(d.waiting_left / 60) });
+    };
+    const poll = async () => {
+      try { if (box.isConnected && gameScreen === "duel") draw(await api("/api/duel")); } catch (e) { /* сеть моргнула — следующий опрос */ }
+    };
+    draw(await api("/api/duel"));
+    gameTimer = setInterval(poll, DUEL_POLL_MS);
+    duelLocal = poll;
+  }
+  function renderDuel(box, st) {
+    const d = st.duel, last = st.last && !duelSeen.has(st.last.id) ? st.last : null;
+    const mv = m => L["rps_" + m];
+    const act = async (url, body) => {
+      box.querySelectorAll("button").forEach(x => x.disabled = true);
+      try {
+        const r = await post(url, body);
+        if (!r.ok) notify(r.message || L.error, false);
+        duelSig = null;
+        if (r.ok) renderDuel(box, r); else if (duelLocal) duelLocal();
+      } catch (e) { apiError(e); go("games"); }
+    };
+    let body;
+    if (d && d.status === "waiting") {
+      body = '<div class="dl-search">🔎</div><div class="g-result" style="text-align:center"><b>' + fmt(L.dl_waiting, { s: num(d.stake) }) +
+        '</b><br><span class="hint" id="dlLeft">' + fmt(L.dl_waitLeft, { m: Math.ceil(d.waiting_left / 60) }) + '</span></div>' +
+        '<div class="hint">' + L.dl_waitHint + '</div><button class="btn ghost" id="dlCancel">' + L.dl_cancel + '</button>';
+    } else if (d && d.status === "active") {
+      body = '<div class="g-result"><b>' + fmt(L.dl_matched, { b: num(d.stake * 2), p: num(d.payout) }) + '</b>' +
+        (d.round > 1 ? '<br>' + fmt(L.dl_round, { n: d.round }) : '') + '</div>' +
+        '<div class="quiz-top" style="margin-top:8px"><span>' + (d.my_move ? L.dl_wait : L.dl_pick) + '</span><span id="dlLeft">⏱ ' + d.left + '</span></div>' +
+        '<div class="tbar"><i id="dlBar" style="width:' + (d.left / st.timeout * 100) + '%"></i></div>' +
+        '<div class="g-moves">' + MOVES.map(m => '<button class="btn' + (d.my_move === m ? ' picked' : '') + '" data-dm="' + m + '"' +
+          (d.my_move ? ' disabled' : '') + '>' + mv(m) + '</button>').join("") + '</div>' +
+        (d.opp_moved ? '<div class="hint" style="margin-top:8px">' + L.dl_oppMoved + '</div>' : '') +
+        '<div class="hint" style="margin-top:6px">' + L.dl_timeoutNote + '</div>';
+    } else if (last) {
+      duelSeen.add(last.id);
+      body = last.cancelled ? '<div class="g-result">' + fmt(L.dl_cancelled, { s: num(last.stake) }) + '</div>'
+        : '<div class="dl-vs">' + fmt(L.dl_vs, { a: mv(last.my_move), b: mv(last.opp_move) }) + '</div>' +
+          '<div class="g-result ' + (last.win ? 'win' : 'lose') + '" id="dlRes"><b>' +
+          (last.win ? fmt(L.dl_win, { p: num(last.payout), r: last.stone }) : fmt(L.dl_lose, { s: num(last.stake) })) +
+          '</b><br><span class="hint">' + fmt(L.g_balance, { b: num(st.balance) }) + '</span></div>';
+      body += '<button class="btn" id="dlAgain">' + L.dl_again + '</button>';
+    } else {
+      body = '<div class="hint" style="margin-top:10px">' + fmt(L.dl_intro, { p: 100 - st.burn, b: st.burn, t: st.timeout }) + '</div>' +
+        st.tables.map(tb => '<button class="btn' + (st.balance < tb.stake ? ' short' : '') + '" data-stake="' + tb.stake + '">' +
+          fmt(L.dl_table, { s: num(tb.stake), p: num(tb.payout), r: tb.stone }) + '</button>').join("") +
+        '<div class="hint" style="margin-top:8px">' + fmt(L.g_balance, { b: num(st.balance) }) + '</div>';
+    }
+    box.innerHTML = card(L.dl_title, gameHead() + body);
+    bindBack(box);
+    box.querySelectorAll("[data-stake]").forEach(b => { b.onclick = () => {
+      const stake = Number(b.dataset.stake);
+      if (st.balance < stake) return notify(fmt(L.dl_short, { s: num(stake) }), false);
+      act("/api/duel/join", { stake: stake });
+    }; });
+    box.querySelectorAll("[data-dm]").forEach(b => { b.onclick = () => act("/api/duel/move", { duel_id: d.id, move: b.dataset.dm }); });
+    const cancel = box.querySelector("#dlCancel");
+    if (cancel) cancel.onclick = () => act("/api/duel/cancel", { duel_id: d.id });
+    const again = box.querySelector("#dlAgain");
+    if (again) again.onclick = () => { duelSig = null; renderDuel(box, Object.assign({}, st, { last: null })); };
+    const res = box.querySelector("#dlRes");
+    if (res && last) { vibrate(last.win); sparks(res, last.win); }
   }
 
   // 🗺 Квесты: истории с выборами (движок общий с чатом — shared/quest_engine.py)

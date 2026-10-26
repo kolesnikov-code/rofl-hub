@@ -440,6 +440,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     register_games_routes(app)    # 🕹 игры в приложении (КНБ, Больше-Меньше, Сейф, Викторина)
     from bots.main_bot.webapp_quests import register_quest_routes
     register_quest_routes(app)    # 🗺 квесты в приложении (движок общий с чатом — shared/quest_engine.py)
+    from bots.main_bot.webapp_duels import register_duel_routes
+    register_duel_routes(app)     # ⚔️ дуэли в приложении (очередь общая с чатом — shared/duels.py)
     # Арты роботов для сцены фермы: img/robots/<kind>.png (арты владельца) или .svg (заглушки)
     app.router.add_static("/img", WEBAPP_DIR / "img")
     return app

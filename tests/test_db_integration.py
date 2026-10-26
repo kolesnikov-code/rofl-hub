@@ -3135,3 +3135,59 @@ async def test_app_quests_play_to_win_reward_once_and_stale_scene(conn, global_d
         assert any(q["id"] == "golden_cutlet" and q["status"] == "done" for q in lst2["quests"])
     finally:
         await client.close()
+
+
+async def test_app_duel_two_players_draw_replay_win_and_cancel(conn, global_db):
+    """⚔️ 27.10: дуэль в приложении — общая очередь, эскроу, ничья переигрывается, победителю 80% банка."""
+    import time as _t
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.economy import DUEL_RESOURCE_REWARD, duel_payout
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    await conn.execute("UPDATE duels SET status = 'cancelled' WHERE status IN ('waiting', 'active')")   # чистый стол
+    for uid in (1860, 1861):
+        await _mk_user(conn, uid, 1000)
+    hd = lambda uid: {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": uid}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+
+    async def post(uid, url, body):
+        return await (await client.post(url, headers=hd(uid), json=body)).json()
+    try:
+        st = await (await client.get("/api/duel", headers=hd(1860))).json()
+        assert st["duel"] is None and [tb["stake"] for tb in st["tables"]] == [10, 100, 1000]
+        w = await post(1860, "/api/duel/join", {"stake": 100})
+        assert w["duel"]["status"] == "waiting" and w["balance"] == 900          # ставка в эскроу сразу
+        m = await post(1861, "/api/duel/join", {"stake": 100})
+        assert m["duel"]["status"] == "active" and m["duel"]["id"] == w["duel"]["id"] and m["duel"]["left"] > 50
+        did = m["duel"]["id"]
+        # ничья — переигровка, банк на столе
+        a = await post(1860, "/api/duel/move", {"duel_id": did, "move": "rock"})
+        assert a["duel"]["my_move"] == "rock"
+        b = await (await client.get("/api/duel", headers=hd(1861))).json()
+        assert b["duel"]["opp_moved"] and b["duel"]["my_move"] is None              # чужой жест не раскрыт
+        d = await post(1861, "/api/duel/move", {"duel_id": did, "move": "rock"})
+        assert d["duel"]["round"] == 2 and d["duel"]["my_move"] is None
+        again = await post(1861, "/api/duel/move", {"duel_id": did, "move": "rock"})
+        assert again["duel"]["my_move"] == "rock"
+        dup = await post(1861, "/api/duel/move", {"duel_id": did, "move": "paper"})
+        assert dup["ok"] is False                                                    # второй жест в раунде нельзя
+        fin = await post(1860, "/api/duel/move", {"duel_id": did, "move": "paper"})
+        payout, _ = duel_payout(100)
+        assert fin["duel"] is None and fin["last"]["win"] and fin["last"]["payout"] == payout
+        assert (fin["last"]["my_move"], fin["last"]["opp_move"]) == ("paper", "rock")
+        assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1860") == 900 + payout
+        assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1861") == 900
+        lose = await (await client.get("/api/duel", headers=hd(1861))).json()
+        assert lose["last"]["win"] is False and lose["last"]["id"] == did
+        stone = await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 1860 AND kind = 'stone'")
+        assert stone == DUEL_RESOURCE_REWARD[100]
+        # очередь можно покинуть — ставка возвращается
+        q = await post(1861, "/api/duel/join", {"stake": 10})
+        c = await post(1861, "/api/duel/cancel", {"duel_id": q["duel"]["id"]})
+        assert c["duel"] is None and c["last"]["cancelled"] and c["balance"] == 900
+        poor = await post(1861, "/api/duel/join", {"stake": 1000})
+        assert poor["ok"] is False                                                   # не хватает монет
+    finally:
+        await client.close()

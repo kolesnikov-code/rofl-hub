@@ -5,6 +5,8 @@
 Здесь — Telegram-обвязка: столы, жесты, уведомления обоим игрокам и вотчдоги.
 Состояние дуэли живёт в БД, а не в FSM — рестарт бота ничего не теряет,
 глобальный жнец (duel_reaper_loop) доигрывает зависшие раунды случайными жестами.
+С 27.10 дуэли есть и в приложении (webapp_duels.py, тот же стол и та же очередь): кто сейчас смотрит дуэль в
+приложении (duel_presence.in_app), тому ЛС не шлём — он видит всё на экране.
 """
 from __future__ import annotations
 
@@ -14,6 +16,7 @@ import logging
 from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 
+from bots.main_bot.duel_presence import in_app
 from bots.main_bot.guards import feature_enabled
 from shared.database import db
 from shared.duels import (
@@ -134,24 +137,30 @@ async def duel_join(callback: types.CallbackQuery, bot: Bot, user_lang: str = "r
         return
 
     # Пара собрана: обоим — выбор жеста
-    payout, _ = duel_payout(stake)
-    matched_kwargs = {"stake": stake, "bank": stake * 2, "payout": payout,
-                      "timeout": DUEL_MOVE_TIMEOUT_SECONDS}
     try:
-        await callback.message.edit_text(t(user_lang, "duel.matched", **matched_kwargs),
+        await callback.message.edit_text(t(user_lang, "duel.matched", **matched_kwargs(stake)),
                                          reply_markup=move_keyboard(user_lang, result.duel_id),
                                          parse_mode="HTML")
     except Exception:
         pass
-    try:
-        await bot.send_message(result.opponent_id,
-                               t(opponent_lang, "duel.matched", **matched_kwargs),
-                               reply_markup=move_keyboard(opponent_lang, result.duel_id),
-                               parse_mode="HTML")
-    except Exception:
-        logger.info("[DUEL] не доставлено приглашение сопернику %s", result.opponent_id)
-
+    await notify_matched(bot, result.duel_id, result.opponent_id, opponent_lang, stake)
     asyncio.create_task(_round_watchdog(bot, result.duel_id))
+
+
+def matched_kwargs(stake: int) -> dict:
+    payout, _ = duel_payout(stake)
+    return {"stake": stake, "bank": stake * 2, "payout": payout, "timeout": DUEL_MOVE_TIMEOUT_SECONDS}
+
+
+async def notify_matched(bot: Bot, duel_id: int, player_id: int, lang: str, stake: int) -> None:
+    """ЛС «соперник найден» с кнопками жестов — если игрок не смотрит дуэль в приложении."""
+    if bot is None or in_app(player_id):
+        return
+    try:
+        await bot.send_message(player_id, t(lang, "duel.matched", **matched_kwargs(stake)),
+                               reply_markup=move_keyboard(lang, duel_id), parse_mode="HTML")
+    except Exception:
+        logger.info("[DUEL] не доставлено приглашение сопернику %s", player_id)
 
 
 @router.callback_query(F.data.startswith("duel_cancel:"))
@@ -209,7 +218,7 @@ async def duel_move(callback: types.CallbackQuery, bot: Bot, user_lang: str = "r
 
 async def _broadcast_round_result(bot: Bot, duel_id: int, result: MoveResult,
                                   reaper: bool = False) -> None:
-    """Рассылает обоим игрокам итог раунда: переигровку или финал дуэли."""
+    """Рассылает игрокам итог раунда: переигровку или финал (кроме тех, кто смотрит дуэль в приложении)."""
     async with db.pool.acquire() as conn:
         duel = await conn.fetchrow("SELECT * FROM duels WHERE duel_id = $1", duel_id)
         langs = {p: await _lang_of(conn, p) for p in (duel["player1"], duel["player2"])}
@@ -222,6 +231,8 @@ async def _broadcast_round_result(bot: Bot, duel_id: int, result: MoveResult,
 
     if result.draw_replay:
         for player, lang in langs.items():
+            if in_app(player):
+                continue
             try:
                 await bot.send_message(
                     player,
@@ -230,7 +241,7 @@ async def _broadcast_round_result(bot: Bot, duel_id: int, result: MoveResult,
                     reply_markup=move_keyboard(lang, duel_id), parse_mode="HTML")
             except Exception:
                 pass
-        asyncio.create_task(_round_watchdog(bot, duel_id))
+        start_round_watchdog(bot, duel_id)
         return
 
     w_lang, l_lang = langs[result.winner_id], langs[result.loser_id]
@@ -248,6 +259,8 @@ async def _broadcast_round_result(bot: Bot, duel_id: int, result: MoveResult,
         stake=duel["stake"])
     for player, text, lang in ((result.winner_id, win_text, w_lang),
                                (result.loser_id, lose_text, l_lang)):
+        if in_app(player):
+            continue
         try:
             await bot.send_message(player, text, reply_markup=_rematch_kb(lang), parse_mode="HTML")
         except Exception:
@@ -257,6 +270,10 @@ async def _broadcast_round_result(bot: Bot, duel_id: int, result: MoveResult,
 # ============================================================================
 # Вотчдоги: таймаут раунда и глобальный жнец (переживает рестарты)
 # ============================================================================
+def start_round_watchdog(bot: Bot, duel_id: int) -> None:
+    asyncio.create_task(_round_watchdog(bot, duel_id))
+
+
 async def _round_watchdog(bot: Bot, duel_id: int) -> None:
     """Через таймаут доигрывает раунд случайными жестами за молчунов."""
     await asyncio.sleep(DUEL_MOVE_TIMEOUT_SECONDS + 3)

@@ -336,6 +336,12 @@
   (choose/start/progress, QuestStale/QuestNoCoins), чат /quests вызывает её же; API bots/main_bot/webapp_quests.py
   (/api/quests, /api/quest/open, /api/quest/choose). Тексты сцен — ru; не-ru видят плашку qs_ruOnly. В чате пока
   остаются только дуэли (подвал «Дуэли — пока в чате бота»).
+- ⚔️ ДУЭЛИ В ПРИЛОЖЕНИИ (27.10): плитка во всю ширину над квестами; столы → поиск соперника (можно закрыть приложение) →
+  жест с таймером → итог с искрами. Очередь ОБЩАЯ с чатом (shared/duels.py) — игрок приложения может попасть на игрока
+  чата. Приложение опрашивает GET /api/duel раз в 1,5 с (bots/main_bot/webapp_duels.py); по опросам
+  duel_presence.in_app() бот НЕ шлёт ЛС тем, кто смотрит дуэль в приложении (handlers/duels.py notify_matched,
+  _broadcast_round_result) — закрыл приложение или играет из чата → ЛС как раньше. Соперник анонимен. Подвал
+  приложения теперь «Вся игра — в одном приложении». Тест на дубли имён разбирает и «const A = 1, B = 2».
   Аукцион: кнопки ставок одного вида; не хватает монет — сообщение auc_short, хватает — подтверждение auc_confirm.
   ⚠️ Повторное имя const/function на верхнем уровне index.html роняет ВСЁ приложение — тест
   test_app_script_has_no_duplicate_top_level_names.

@@ -134,9 +134,38 @@ def test_app_script_has_no_duplicate_top_level_names():
     """Повторный const/function на верхнем уровне скрипта — SyntaxError, и приложение не открывается целиком
     (27.10: resLine склада и игр). Ловим грубым разбором: объявления с отступом в 2 пробела."""
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    names = re.findall(r"^  (?:async function|function|const|let) ([A-Za-z_$][\w$]*)", html, re.M)
+    names = re.findall(r"^  (?:async function|function) ([A-Za-z_$][\w$]*)", html, re.M)
+    # const/let — со всеми именами через запятую («const A = 1, MOVES = […]» — 27.10 так пропустили MOVES)
+    for m in re.finditer(r"^  (?:const|let) ", html, re.M):
+        names += _declared_names(html, m.end())
     dups = sorted({n for n in names if names.count(n) > 1})
     assert not dups, dups
+
+
+def _declared_names(src: str, i: int) -> list[str]:
+    """Имена из объявления const/let, начиная с позиции i: делим по запятым верхнего уровня до конца оператора."""
+    parts, depth, quote, start = [], 0, None, i
+    while i < len(src):
+        ch = src[i]
+        if quote:
+            if ch == "\\":
+                i += 1
+            elif ch == quote:
+                quote = None
+        elif ch in "\"'`":
+            quote = ch
+        elif ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth -= 1
+        elif depth == 0 and ch == ",":
+            parts.append(src[start:i])
+            start = i + 1
+        elif depth == 0 and (ch == ";" or (ch == "\n" and not src[start:i].rstrip().endswith((",", "=", "+", "(", "?", ":")))):
+            break
+        i += 1
+    parts.append(src[start:i])
+    return [m.group(1) for p in parts if (m := re.match(r"\s*([A-Za-z_$][\w$]*)\s*=", p))]
 
 
 def test_timer_starts_on_display_but_prefetch_gives_at_most_the_slack():

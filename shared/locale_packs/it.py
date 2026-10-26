@@ -1095,6 +1095,27 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 26.10): дуэли в приложении (27.10)
+    "dl_title": "⚔️ Duels",
+    "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
+    "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_short": "You need {s} 🪙 on your balance for this table",
+    "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
+    "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
+    "dl_waitHint": "You can close the app: once an opponent is found, the bot will message you in the chat.",
+    "dl_cancel": "❌ Leave the table (refund stake)",
+    "dl_matched": "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙",
+    "dl_round": "🤝 Draw — replay! Round {n}",
+    "dl_pick": "Pick a gesture",
+    "dl_wait": "Gesture locked in — waiting for your opponent…",
+    "dl_oppMoved": "⚡ Your opponent has already moved!",
+    "dl_timeoutNote": "Run out of time and chance picks your gesture.",
+    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
+    "dl_vs": "You: {a} · Opponent: {b}",
+    "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
+    "dl_again": "⚔️ Another duel",
     # TODO(перевод 26.10): квесты в приложении (27.10)
     "g_name_quests": "🗺 Quests",
     "qs_tile": "Stories with choices · reward for the first win",
@@ -1498,7 +1519,7 @@ MINIAPP = {
     "ctaHungry": "🚨 Le Trivelle hanno fame ({n} senza carburante) — l'estrazione è ferma!",
     "ctaLowFuel": "⚠️ Le cotolette non bastano per un giorno di lavoro delle Trivelle.",
     "ctaShopBtn": "🛒 Al negozio",
-    "footer": "Duels are in the bot chat for now",
+    "footer": "The whole game in one app",
     "noProfile": "Profilo non trovato. Apri il bot e premi /start!",
     "blocked": "Account bloccato dall'amministrazione.",
     "deleting": "Il tuo account è in coda per l'eliminazione. Hai cambiato idea? Annulla l'eliminazione nella chat del bot.",
