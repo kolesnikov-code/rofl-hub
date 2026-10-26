@@ -21,7 +21,8 @@
 Правила движка:
 - выбор виден, если все need-флаги собраны и ни один missing-флаг не собран;
 - "set" добавляет флаги при выборе; "cost" списывает монеты (платная подсказка);
-- сцена с "end": "win"/"fail" завершает квест; у неё нет choices.
+- сцена с "end": "win"/"fail" завершает квест; у неё нет choices;
+- "mood" (у квеста — по умолчанию, у сцены — своя) — атмосфера сцены в приложении (static/webapp/fx.js).
 
 Новый квест = новый JSON-файл, кода не требуется. Тесты проверяют каждый
 сценарий: корректность переходов, достижимость победы, длину callback_data.
@@ -40,6 +41,14 @@ QUESTS_DIR = PROJECT_ROOT / "data" / "quests"
 _quests: dict[str, dict] = {}
 
 
+def _mood_ok(mood) -> bool:
+    """✨ «mood» сцены/квеста (необязательно): строка-метка или список до двух меток (эффекты — static/webapp/fx.js)."""
+    if mood is None:
+        return True
+    moods = [mood] if isinstance(mood, str) else mood
+    return isinstance(moods, list) and 1 <= len(moods) <= 2 and all(isinstance(m, str) and m.isascii() and m for m in moods)
+
+
 def validate_quest(q: dict) -> list[str]:
     """Список ошибок сценария (пустой — сценарий валиден)."""
     errors: list[str] = []
@@ -56,10 +65,14 @@ def validate_quest(q: dict) -> list[str]:
     if q.get("start") not in scenes:
         errors.append(f"{qid}: стартовая сцена {q.get('start')!r} не найдена")
 
+    if not _mood_ok(q.get("mood")):
+        errors.append(f"{qid}: mood — метка атмосферы (static/webapp/fx.js) или список до двух меток")
     endings = 0
     for key, scene in scenes.items():
         if not key.replace("_", "").isalnum() or not key.isascii():
             errors.append(f"{qid}: имя сцены {key!r} должно быть ascii")
+        if not _mood_ok(scene.get("mood")):
+            errors.append(f"{qid}/{key}: mood — метка атмосферы или список до двух меток")
         if not scene.get("text"):
             errors.append(f"{qid}/{key}: пустой текст")
         if scene.get("end"):

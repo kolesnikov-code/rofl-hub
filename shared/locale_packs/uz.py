@@ -1103,6 +1103,10 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод 26.10): атмосферы квестов (27.10)
+    "qs_fxGallery": "🎨 Atmosphere gallery",
+    "qs_fxChoice": "🚪 Step inside",
+    "qs_fxSample": "Night. You stand at the entrance and listen to the world around you. Something changes — and the scene answers with light, shadow and motion. Pick an atmosphere below to see how it looks under quest text.",
     # TODO(перевод 26.10): дуэли в приложении (27.10)
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",

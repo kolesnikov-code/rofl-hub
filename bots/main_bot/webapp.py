@@ -56,6 +56,18 @@ def _page(name: str) -> web.Response:
     return web.Response(body=cached[1], content_type="text/html", charset="utf-8")
 
 
+async def handle_fx_js(request: web.Request) -> web.Response:
+    """✨ Движок атмосферы квестов — грузится приложением только при входе в квест (index.html не тяжелеет)."""
+    path = WEBAPP_DIR / "fx.js"
+    mtime = path.stat().st_mtime
+    cached = _PAGE_CACHE.get("fx.js")
+    if not cached or cached[0] != mtime:
+        cached = (mtime, path.read_bytes())
+        _PAGE_CACHE["fx.js"] = cached
+    return web.Response(body=cached[1], content_type="application/javascript", charset="utf-8",
+                        headers={"Cache-Control": "no-cache"})
+
+
 @web.middleware
 async def speed_middleware(request: web.Request, handler):
     """Сжатие ответов (index.html ~650 КБ → в разы меньше) и замер времени: Server-Timing + лог медленных API."""
@@ -229,6 +241,8 @@ async def handle_me(request: web.Request) -> web.Response:
     from shared.feature_flags import all_feature_flags
     payload["features"] = await all_feature_flags()
     payload["badges"] = badges   # 🏅 значки сезонов: [{season, place}]
+    from bots.main_bot.config import ADMIN_IDS
+    payload["is_owner"] = user["user_id"] in ADMIN_IDS   # владельцу — галерея атмосфер квестов
     return web.json_response(payload)
 
 
@@ -417,6 +431,7 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app["bot"] = bot  # aiogram Bot для createInvoiceLink (None — покупки из Mini App выключены)
     app.router.add_get("/", handle_index)
     app.router.add_get("/faq", handle_faq)
+    app.router.add_get("/fx.js", handle_fx_js)
     app.router.add_get("/rules", handle_rules)
     app.router.add_get("/api/me", handle_me)
     app.router.add_post("/api/bonus", handle_bonus)

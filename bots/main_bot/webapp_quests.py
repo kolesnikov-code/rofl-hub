@@ -16,11 +16,19 @@ from shared.economy import QUEST_RESOURCE_BUNDLE
 from shared.locales import t
 
 
+def scene_mood(quest: dict, scene_key: str) -> list[str]:
+    """✨ Атмосфера сцены (static/webapp/fx.js): метка сцены, иначе общая метка квеста; до двух эффектов."""
+    mood = quest["scenes"][scene_key].get("mood", quest.get("mood"))
+    if not mood:
+        return []
+    return ([mood] if isinstance(mood, str) else list(mood))[:2]
+
+
 def scene_payload(quest: dict, scene_key: str, flags: set[str]) -> dict:
     """Сцена для приложения: текст (HTML из сценария), видимые выборы с исходными индексами и ценой подсказки."""
     scene = quest["scenes"][scene_key]
     return {"id": quest["id"], "title": quest["title"], "scene": scene_key, "text": scene["text"],
-            "end": scene.get("end"),
+            "end": scene.get("end"), "mood": scene_mood(quest, scene_key),
             "choices": [] if scene.get("end") else
             [{"i": i, "label": ch["label"], "cost": ch.get("cost") or 0} for i, ch in visible_choices(scene, flags)]}
 

@@ -223,3 +223,28 @@ def test_quests_live_in_the_app():
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     assert "function viewQuests" in html and "function questScene" in html and '"/api/quest/choose"' in html
     assert "Дуэли и квесты" not in html and "Duels and quests" not in html
+
+
+def test_quest_moods_exist_in_the_fx_engine_and_every_scene_has_atmosphere():
+    """✨ Каждая метка mood в сценариях — реальный эффект static/webapp/fx.js; у каждой сцены есть атмосфера."""
+    from bots.main_bot.utils.quest_loader import all_quests
+    from bots.main_bot.webapp_quests import scene_mood
+    fx = (ROOT / "static" / "webapp" / "fx.js").read_text(encoding="utf-8")
+    effects = set(re.findall(r"^    (\w+):\s+\{ g: \"", fx, re.M))
+    assert len(effects) >= 60
+    for q in all_quests():
+        for key in q["scenes"]:
+            moods = scene_mood(q, key)
+            assert moods, (q["id"], key)
+            assert set(moods) <= effects, (q["id"], key, moods)
+
+
+def test_fx_engine_is_safe_and_served():
+    fx = (ROOT / "static" / "webapp" / "fx.js").read_text(encoding="utf-8")
+    assert "prefers-reduced-motion" in fx and "fx_off" in fx            # можно выключить, «меньше движения» уважается
+    assert "rnd(6000, 14000)" in fx                                      # молния — редко, без стробоскопа
+    assert "Math.min(window.devicePixelRatio || 1, 1.5)" in fx           # холст не жрёт батарею на 3x-экранах
+    src = (ROOT / "bots" / "main_bot" / "webapp.py").read_text(encoding="utf-8")
+    assert '"/fx.js"' in src
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "QuestFX.stop()" in html and 'sc.src = "fx.js"' in html
