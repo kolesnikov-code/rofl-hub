@@ -167,7 +167,7 @@
   const P = {
     rain: { n: 60, from: "top", vx: [-40, -10], vy: [700, 950], size: [10, 22], colors: ["rgba(170,200,255,.55)"], shape: "streak", w: 1.1 },
     glassrain: { n: 14, from: "top", vx: [-4, 4], vy: [25, 70], size: [3, 7], colors: ["rgba(200,230,255,.45)"], shape: "drop", wobble: [3, 1.5] },
-    neonrain: { n: 45, from: "top", vx: [-20, 0], vy: [500, 750], size: [10, 20], colors: ["rgba(255,60,200,.6)", "rgba(40,230,255,.6)"], shape: "streak", w: 1.3, glow: 6 },
+    neonrain: { n: 45, from: "top", vx: [-16, 0], vy: [400, 600], size: [10, 20], colors: ["rgba(255,60,200,.6)", "rgba(40,230,255,.6)"], shape: "streak", w: 1.3, glow: 6 },
     snow: { n: 45, from: "top", vx: [-15, 15], vy: [25, 60], size: [1.5, 3.5], colors: ["rgba(255,255,255,.85)"], shape: "dot", wobble: [18, .6] },
     blizzard: { n: 90, from: "right", vx: [-900, -600], vy: [40, 120], size: [8, 24], colors: ["rgba(255,255,255,.5)", "rgba(220,235,255,.35)"], shape: "streak", w: 1.2 },
     sand: { n: 110, from: "right", vx: [-520, -340], vy: [80, 170], size: [2, 6], colors: ["rgba(230,190,110,.55)", "rgba(200,160,90,.45)"], shape: "streak", w: 1.4 },
@@ -194,6 +194,9 @@
     warp: { n: 70, from: "center", vx: [0, 0], vy: [0, 0], size: [1, 2], colors: ["#fff", "#bfe9ff"], shape: "warp", radial: 1 },
     trainlights: { n: 12, from: "right", vx: [-1600, -900], vy: [0, 0], size: [40, 120], colors: ["rgba(255,220,150,.55)", "rgba(200,220,255,.45)"], shape: "streak", w: 2, glow: 8 },
     drips: { n: 6, from: "top", vx: [0, 0], vy: [0, 0], size: [1.5, 2.5], colors: ["rgba(180,220,255,.7)"], shape: "drop", gravity: 420, life: [2, 5], delay: 1 },
+    papers: { n: 7, from: "top", vx: [-25, 25], vy: [20, 45], size: [9, 14], colors: ["#f3ead2", "#e8dcc0", "#fffaf0"], shape: "paper", wobble: [35, .35], spin: [.4, 1.2] },
+    coins: { n: 14, from: "top", vx: [-6, 6], vy: [60, 110], size: [5, 8], colors: ["#ffd34d", "#f5b82e", "#ffe27a"], shape: "coin", spin: [3, 6], glow: 6 },
+    cards: { n: 8, from: "top", vx: [-20, 20], vy: [25, 55], size: [10, 14], colors: ["#fff"], shape: "card", chars: "♠♥♦♣", wobble: [30, .3], spin: [.5, 1.5] },
     hourglass: { n: 5, from: "top", vx: [0, 0], vy: [70, 110], size: [1, 1.6], colors: ["rgba(230,200,140,.7)"], shape: "stream" },
   };
 
@@ -241,7 +244,7 @@
     siren:      { g: "city", ru: "🚓 Сирена", en: "🚓 Siren", back: ["fx-noir"], front: ["fx-sirenL", "fx-sirenR"] },
     alarm:      { g: "city", ru: "🚨 Тревога", en: "🚨 Alarm", back: ["fx-alarmbg"], front: ["fx-beacon"] },
     noir:       { g: "city", ru: "🕵️ Жалюзи", en: "🕵️ Blinds", back: ["fx-noir", "fx-blinds", "fx-headl"], parts: ["dust"] },
-    headlights: { g: "city", ru: "🚗 Фары за окном", en: "🚗 Passing headlights", back: ["fx-noir", "fx-headl"] },
+    headlights: { g: "city", ru: "🚗 Фары навстречу", en: "🚗 Oncoming headlights", back: ["fx-noir"], special: "carlights" },
     flashlight: { g: "city", ru: "🔦 Фонарик", en: "🔦 Flashlight", back: ["fx-torch"], parts: ["dust"], torch: true },
     train:      { g: "city", ru: "🚇 Поезд", en: "🚇 Train", back: ["fx-train"], parts: ["trainlights"] },
     hologram:   { g: "tech", ru: "🛰 Голограмма", en: "🛰 Hologram", back: ["fx-holo", "fx-sweep"] },
@@ -259,6 +262,11 @@
     eyes:       { g: "dark", ru: "👀 Глаза во тьме", en: "👀 Eyes in the dark", back: ["fx-dark"], parts: ["eyes"] },
     shadows:    { g: "dark", ru: "🫥 Тени по краям", en: "🫥 Creeping shadows", back: ["fx-dark"], front: ["fx-shadowfront"] },
     ink:        { g: "dark", ru: "🖋 Чернильный омут", en: "🖋 Ink", back: ["fx-ink"] },
+    oil:        { g: "detective", ru: "🛢 Лужа под фонарём", en: "🛢 Puddle under a torch", back: ["fx-torch"], special: "oil", torch: true },
+    steps:      { g: "detective", ru: "👣 Следы шагов", en: "👣 Footsteps", back: ["fx-noir"], special: "steps" },
+    papers:     { g: "detective", ru: "📄 Летящие бумаги", en: "📄 Flying papers", back: ["fx-noir", "fx-headl"], parts: ["papers"] },
+    coins:      { g: "detective", ru: "🪙 Золотой дождь", en: "🪙 Golden rain", back: ["fx-glowgold"], parts: ["coins"] },
+    cards:      { g: "detective", ru: "🃏 Карты казино", en: "🃏 Casino cards", back: ["fx-clubbg"], parts: ["cards"] },
     hourglass:  { g: "dark", ru: "⏳ Песок времени", en: "⏳ Sands of time", back: ["fx-attic"], parts: ["hourglass", "dust"] },
     heartbeat:  { g: "mind", ru: "💓 Биение сердца", en: "💓 Heartbeat", front: ["fx-heart"] },
     panic:      { g: "mind", ru: "😱 Паника", en: "😱 Panic", back: ["fx-dark"], front: ["fx-panic"] },
@@ -394,7 +402,10 @@
       for (let i = 0; i < n; i++) parts.push(spawn(cfg, true));
     });
     const matrix = state.special.indexOf("matrix") >= 0, arcs = state.special.indexOf("arcs") >= 0,
-      film = state.special.indexOf("film") >= 0;
+      film = state.special.indexOf("film") >= 0, car = state.special.indexOf("carlights") >= 0,
+      oil = state.special.indexOf("oil") >= 0, steps = state.special.indexOf("steps") >= 0;
+    let clock = 0;
+    const smoke = [];
     const cols = matrix ? Array.from({ length: Math.ceil(W / 14) }, () => Math.random() * -H) : [];
     let arc = null, arcNext = 1.2;
     let torchT = 0;
@@ -422,6 +433,23 @@
         case "leaf": case "flake":
           ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
           ctx.beginPath(); ctx.ellipse(0, 0, s, s * (cfg.shape === "leaf" ? .45 : .7), 0, 0, 6.28); ctx.fill(); ctx.restore(); break;
+        case "paper":
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.shadowBlur = 0;
+          ctx.fillRect(-s * .7, -s, s * 1.4, s * 2);
+          ctx.fillStyle = "rgba(60,60,80,.35)";
+          for (let k = -2; k <= 2; k++) ctx.fillRect(-s * .5, k * s * .35, s * (k === 2 ? .6 : 1), 1);
+          ctx.restore(); break;
+        case "coin": {   // монета вращается: ширина = |cos(угла)|
+          const w = Math.max(.15, Math.abs(Math.cos(p.rot)));
+          ctx.beginPath(); ctx.ellipse(p.x, p.y, s * w, s, 0, 0, 6.28); ctx.fill();
+          ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(150,100,0,.6)"; ctx.lineWidth = 1; ctx.stroke(); break;
+        }
+        case "card":
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.shadowBlur = 0;
+          ctx.fillStyle = "#fbfbf7"; ctx.fillRect(-s * .7, -s, s * 1.4, s * 2);
+          ctx.fillStyle = (p.ch === "♥" || p.ch === "♦") ? "#d22" : "#111"; ctx.font = Math.round(s) + "px serif";
+          ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(p.ch, 0, 1);
+          ctx.restore(); break;
         case "ring": ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p.x, p.y, s, 0, 6.28); ctx.stroke(); break;
         case "drop": ctx.beginPath(); ctx.ellipse(p.x, p.y, s * .6, s, 0, 0, 6.28); ctx.fill(); break;
         case "star":
@@ -448,7 +476,7 @@
         ctx.font = "13px monospace"; ctx.fillStyle = "#3dff7a";
         for (let i = 0; i < cols.length; i++) {
           if (Math.random() < .6) ctx.fillText(pick(MATRIX), i * 14, cols[i]);
-          cols[i] += 14 * dt * 9;
+          cols[i] += 14 * dt * 4.5;   // вдвое медленнее (владелец: «разглядеть во всей красе»)
           if (cols[i] > H + rnd(0, 200)) cols[i] = rnd(-40, 0);
         }
       } else ctx.clearRect(0, 0, W, H);
@@ -495,12 +523,91 @@
         for (let i = 0; i < 4; i++) ctx.fillRect(Math.random() * W, Math.random() * H, rnd(1, 3), rnd(1, 3));
         if (Math.random() < .25) { ctx.fillStyle = "rgba(255,255,255,.5)"; ctx.fillRect(Math.random() * W, 0, 1, H); }
       }
+      clock += dt;
+      if (car) drawCar(clock % CAR_CYCLE);
+      if (oil) drawOil(clock);
+      if (steps) drawSteps(clock);
       if (state.torch) {   // 🔦 фонарик дрожит в руке
         torchT += dt;
         back.style.setProperty("--fx-x", (50 + Math.sin(torchT * .7) * 22 + Math.sin(torchT * 3.1) * 2) + "%");
         back.style.setProperty("--fx-y", (45 + Math.cos(torchT * .5) * 18 + Math.cos(torchT * 2.7) * 2) + "%");
       }
       state.raf = requestAnimationFrame(frame);
+    }
+    // 🚗 две фары появляются вдали, растут и проносятся мимо зрителя; на пике свет плавно (не вспышкой!) заливает
+    // сцену, потом — ночь и дым от проехавшей машины. Цикл CAR_CYCLE секунд.
+    const CAR_CYCLE = 13;
+    function drawCar(t) {
+      const ease = k => k * k * (3 - 2 * k);
+      ctx.shadowBlur = 0;
+      if (t > 1 && t < 6.2) {
+        const k = Math.min(1, (t - 1) / 4.6), e = k * k * k;          // приближение ускоряется
+        const cx = W * (.18 + .74 * e), cy = H * (.32 + .34 * e);      // из дальнего угла — к ближнему
+        const gap = 6 + e * W * .55, r = 2 + e * Math.max(W, H) * .32;
+        for (const sx of [-1, 1]) {
+          const x = cx + sx * gap / 2, g = ctx.createRadialGradient(x, cy, 0, x, cy, r);
+          g.addColorStop(0, "rgba(255,255,240,1)"); g.addColorStop(.15, "rgba(255,245,210,.85)");
+          g.addColorStop(.5, "rgba(255,230,170,.25)"); g.addColorStop(1, "rgba(255,220,150,0)");
+          ctx.globalAlpha = Math.min(1, .25 + k); ctx.fillStyle = g;
+          ctx.beginPath(); ctx.arc(x, cy, r, 0, 6.28); ctx.fill();
+        }
+        if (k > .75) { const glare = ease((k - .75) / .25) * .8;     // почти ослепляет — нарастает за ~1,2 с
+          ctx.globalAlpha = glare; ctx.fillStyle = "#fff8e6"; ctx.fillRect(0, 0, W, H); }
+      }
+      if (t >= 6.2 && t < 8) {                                         // фары ушли — свет гаснет плавно
+        ctx.globalAlpha = .8 * (1 - ease((t - 6.2) / 1.8)); ctx.fillStyle = "#fff8e6"; ctx.fillRect(0, 0, W, H);
+      }
+      if (t > 6.1 && t < 6.25 && smoke.length < 14) for (let i = 0; i < 14; i++)
+        smoke.push({ x: W * rnd(.55, 1.05), y: H * rnd(.55, .95), r: rnd(30, 70), vx: rnd(-14, -4), vy: rnd(-10, -3), a: rnd(.18, .32) });
+      for (let i = smoke.length - 1; i >= 0; i--) {                    // дым от проехавшей машины
+        const m = smoke[i];
+        m.x += m.vx * .016; m.y += m.vy * .016; m.r += .25; m.a -= .0009;
+        if (m.a <= 0 || t < 1) { smoke.splice(i, 1); continue; }
+        const g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r);
+        g.addColorStop(0, "rgba(170,170,180," + m.a + ")"); g.addColorStop(1, "rgba(170,170,180,0)");
+        ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, 6.28); ctx.fill();
+      }
+    }
+    // 🛢 лужа масла медленно растекается и «дышит» краями; под лучом фонаря — ярче, с бликом
+    function drawOil(t) {
+      const R = Math.min(W, H) * (.12 + .2 * (1 - Math.exp(-t / 9))), cx = W * .5, cy = H * .62;
+      ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+      ctx.beginPath();
+      for (let i = 0; i <= 48; i++) {
+        const a = i / 48 * 6.28;
+        const rr = R * (1 + .16 * Math.sin(3 * a + t * .35) + .09 * Math.sin(5 * a - t * .5) + .05 * Math.sin(8 * a + t * .8));
+        const x = cx + Math.cos(a) * rr * 1.35, y = cy + Math.sin(a) * rr * .7;
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.closePath();
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.4);
+      g.addColorStop(0, "rgba(40,22,8,.92)"); g.addColorStop(.7, "rgba(70,40,14,.85)"); g.addColorStop(1, "rgba(90,55,20,.6)");
+      ctx.fillStyle = g; ctx.fill();
+      ctx.save(); ctx.clip();                                          // свет фонаря на поверхности масла
+      const tx = W * (parseFloat(back.style.getPropertyValue("--fx-x")) || 50) / 100,
+        ty = H * (parseFloat(back.style.getPropertyValue("--fx-y")) || 45) / 100;
+      const lg = ctx.createRadialGradient(tx, ty, 0, tx, ty, 120);
+      lg.addColorStop(0, "rgba(255,210,140,.55)"); lg.addColorStop(.35, "rgba(170,120,255,.18)");
+      lg.addColorStop(.6, "rgba(80,200,255,.10)"); lg.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);                    // радужная плёнка — как у настоящего масла
+      ctx.restore();
+    }
+    // 👣 цепочка следов: проступают по одному и медленно тают
+    const STEP_EVERY = .7, STEP_LIFE = 5;
+    function drawSteps(t) {
+      const n = Math.floor(t / STEP_EVERY), total = 14;
+      ctx.shadowBlur = 0; ctx.fillStyle = "rgba(200,190,170,1)";
+      for (let i = Math.max(0, n - 8); i <= n; i++) {
+        const age = t - i * STEP_EVERY;
+        if (age < 0 || age > STEP_LIFE) continue;
+        const j = i % total, k = j / total, side = j % 2 ? 1 : -1;
+        const x = W * (.1 + .8 * k), y = H * (.85 - .55 * k) + side * 9, ang = Math.atan2(-.55 * H, .8 * W) + Math.PI / 2;
+        ctx.globalAlpha = .45 * Math.min(1, age / .4) * (1 - age / STEP_LIFE);
+        ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+        ctx.beginPath(); ctx.ellipse(0, -6, 5, 8, 0, 0, 6.28); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, 7, 4, 4.5, 0, 0, 6.28); ctx.fill();
+        ctx.restore();
+      }
     }
     function jag(x1, y1, x2, y2) {
       const pts = [[x1, y1]], n = 12;
