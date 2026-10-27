@@ -6,6 +6,7 @@
 
 Конвейер на квест (workflow quest-wave): каркас → 2 критика → доработка → автор → 4 проверки (логика, язык/юмор,
 слепой плейтест, правила/оригинальность) → правки → финальная приёмка. Бриф — docs/quests/BRIEF.md.
+Скрипт конвейера — docs/quests/quest_wave.workflow.js (Workflow с args {slots: [{id, order, slot}]}).
 После захода: прогнать tests/test_quests.py и test_minigames.py, обновить ожидаемый список в
 test_all_quests_loaded_in_order, все юнит-тесты, коммит, push, проверка деплоя, отчёт владельцу.
 
@@ -20,3 +21,4 @@ order обычных: 11, 12, … подряд. Эпики: order 101, 102, …;
 | Заход | Квесты (id) | Статус |
 |---|---|---|
 | 1 | q_lighthouse (9), q_second_face (9), q_anecdote (8.5), q_night_house (9), q_last_train (9) | выкачен 28.10 |
+| 2 | q_cold_case (9), q_wedding_mixup (8.5), q_radio_static (9), q_museum_heist (9), q_lost_expedition (9) | выкачен 28.10 |
