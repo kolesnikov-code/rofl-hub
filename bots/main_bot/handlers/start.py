@@ -19,7 +19,9 @@ from shared import analytics
 from shared.analytics import track
 from shared.account_deletion import restore_account
 from shared.database import db
-from shared.economy import START_BALANCE, START_CUTLETS_INVENTORY
+from bots.main_bot.webapp_links import app_url
+from shared.duels import invite_info, valid_invite_code
+from shared.economy import DUEL_INVITE_TTL_HOURS, START_BALANCE, START_CUTLETS_INVENTORY, duel_payout
 from shared.locales import resolve_lang, t
 
 router = Router()
@@ -82,6 +84,30 @@ def _source_from_cb(tag: str, referrer_id: int | None) -> str:
     return analytics.SOURCE_ORGANIC
 
 
+def _duel_code_from(cb_part: str | None) -> str | None:
+    """«duel_<код>» из аргумента /start или из callback (вызов друга на дуэль по ссылке, 27.10)."""
+    if cb_part and cb_part.startswith("duel_") and valid_invite_code(cb_part[5:].lower()):
+        return cb_part[5:].lower()
+    return None
+
+
+async def send_duel_invite(target: types.Message, lang: str, code: str) -> None:
+    """Сообщение «тебя вызвали на дуэль» с кнопкой в приложение (или подсказкой, если вызов протух)."""
+    async with db.pool.acquire() as conn:
+        inv = await invite_info(conn, code)
+    if inv is None:
+        await target.answer(t(lang, "duel.invite_gone"), parse_mode="HTML")
+        return
+    name = ("@" + inv["username"]) if inv["username"] else html.escape(inv["display_name"] or "?")
+    url = app_url("games")
+    markup = None
+    if url:
+        markup = types.InlineKeyboardMarkup(inline_keyboard=[[types.InlineKeyboardButton(
+            text=t(lang, "duel.invite_btn"), web_app=types.WebAppInfo(url=f"{url}&duel={code}"))]])
+    await target.answer(t(lang, "duel.invite_msg", name=name, stake=inv["stake"], payout=duel_payout(inv["stake"])[0],
+                          hours=DUEL_INVITE_TTL_HOURS), reply_markup=markup, parse_mode="HTML")
+
+
 def _auction_id_from(cb_part: str) -> int | None:
     if cb_part.startswith("auc_") and cb_part[4:].isdigit():
         return int(cb_part[4:])
@@ -127,6 +153,13 @@ async def cmd_start(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     username = html.escape(message.from_user.username or f"user_{user_id}")
     referrer_id, auction_id, raw_arg = parse_start_args(message.text, user_id)
+    duel_code = _duel_code_from(raw_arg)
+    if duel_code and referrer_id is None:
+        # Пришёл по вызову на дуэль: новичок становится рефералом того, кто позвал (бонус — только за активного друга)
+        async with db.pool.acquire() as conn:
+            inv = await invite_info(conn, duel_code)
+        if inv is not None and inv["player1"] != user_id:
+            referrer_id = inv["player1"]
     source = analytics.parse_source(raw_arg, referrer_id)
 
     returned = False
@@ -144,7 +177,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
                 (message.from_user.full_name or "")[:128] or None)
 
     ref_part = str(referrer_id) if referrer_id else "none"
-    auc_part = f"auc_{auction_id}" if auction_id else "none"
+    auc_part = f"auc_{auction_id}" if auction_id else (f"duel_{duel_code}" if duel_code else "none")
 
     if not user:
         await message.answer(
@@ -161,6 +194,11 @@ async def cmd_start(message: types.Message, state: FSMContext):
         return
     if auction_id:
         await trigger_inline_auction_window(message, auction_id)
+        return
+    if duel_code:
+        async with db.pool.acquire() as conn:
+            await conn.execute("UPDATE users SET pending_duel = $2 WHERE user_id = $1", user_id, duel_code)
+        await send_duel_invite(message, lang, duel_code)
         return
     await message.answer(
         t(lang, "start.welcome_back_app" if app_ready() else "start.welcome_back", username=username),
@@ -196,6 +234,8 @@ async def process_language_binding(callback: types.CallbackQuery, state: FSMCont
         async with conn.transaction():
             created = await register_user(conn, user_id, username, lang, referrer_id,
                                           display_name=callback.from_user.full_name, source=source)
+            if (code := _duel_code_from(auc_part)) is not None:
+                await conn.execute("UPDATE users SET pending_duel = $2 WHERE user_id = $1", user_id, code)
     if created:
         await track(user_id, "registered", source=source, lang=lang)
 
@@ -242,6 +282,8 @@ async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext, use
     if auction_id:
         await state.clear()
         await trigger_inline_auction_window(callback.message, auction_id)
+    if (code := _duel_code_from(auc_part)) is not None:
+        await send_duel_invite(callback.message, user_lang, code)
 
 
 # ============================================================================

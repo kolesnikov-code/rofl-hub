@@ -28,6 +28,10 @@ from shared.analytics import track
 from shared.daily_goals import GoalsError, all_done, chest_coins, claim_chest, claimed_today, goal_progress, goals_for
 from shared.database import db
 from shared.economy import (
+    SQUAD_CREATE_COST,
+    SQUAD_MAX_MEMBERS,
+    SQUAD_UPGRADE_COST,
+    TEAM_MAX_MEMBERS,
     DRONE_COIN_PRICE,
     DRONE_EXP_CARGO_PCT,
     DRONE_EXP_GUARD_PCT,
@@ -1205,6 +1209,7 @@ async def handle_team(request: web.Request) -> web.Response:
             balance = await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", ctx.user_id)
             return web.json_response({
                 "team": None, "teams": await random_teams(conn), "cost": TEAM_CREATE_COST, "balance": balance,
+                "squad": {"cost": SQUAD_CREATE_COST, "max": SQUAD_MAX_MEMBERS}, "team_max": TEAM_MAX_MEMBERS,
                 "limits": {"name": TEAM_NAME_MAX_LEN, "motto": TEAM_MOTTO_MAX_LEN, "symbol": TEAM_SYMBOL_MAX_LEN},
                 "stock": stock, "res_names": resource_labels(ctx.lang)})
         team = await conn.fetchrow("SELECT * FROM teams WHERE team_id = $1", user["team_id"])
@@ -1220,6 +1225,7 @@ async def handle_team(request: web.Request) -> web.Response:
     level = station["level"]
     stored = {k: station[k] for k in RESOURCE_KINDS}
     return web.json_response({
+        "squad_upgrade": {"cost": SQUAD_UPGRADE_COST, "max": TEAM_MAX_MEMBERS},
         "team": {**public_team(team), "captain": team["captain_id"] == ctx.user_id,
                  "roster": [{"name": ("@" + m["username"]) if m.get("username")
                              else ((m.get("display_name") or "").strip() or "#" + str(m["user_id"])[-4:]),
@@ -1339,7 +1345,8 @@ async def handle_team_create(request: web.Request) -> web.Response:
         async with db.pool.acquire() as conn:
             async with conn.transaction():
                 team_id = await create_team(conn, ctx.user_id, str(data.get("name", "")),
-                                            str(data.get("motto", "")), str(data.get("symbol", "")))
+                                            str(data.get("motto", "")), str(data.get("symbol", "")),
+                                            squad=bool(data.get("squad")))
     except TeamError as e:
         return fail(plain(e.localized(ctx.lang)))
     await track(ctx.user_id, "team_joined", role="captain", source="webapp")

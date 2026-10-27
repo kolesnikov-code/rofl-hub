@@ -14,7 +14,7 @@ from bots.main_bot.handlers.duels import (_broadcast_round_result, _lang_of, not
 from bots.main_bot.webapp_game import _ctx, _feature_off, _int, _json, fail
 from shared.database import db
 from shared.duels import DuelError, active_duel_of, cancel_waiting_duel, join_or_create_duel, record_move
-from shared.economy import (DUEL_BURN_PERCENT, DUEL_MOVE_TIMEOUT_SECONDS, DUEL_RESOURCE_REWARD, DUEL_TABLES,
+from shared.economy import (DUEL_BURN_PERCENT, DUEL_INVITE_TTL_HOURS, DUEL_MOVE_TIMEOUT_SECONDS, DUEL_RESOURCE_REWARD, DUEL_TABLES,
                             DUEL_WAITING_TTL_MINUTES, duel_payout, utcnow)
 from shared.locales import t
 
@@ -36,7 +36,9 @@ async def duel_state(conn, user_id: int) -> dict:
         if d["status"] == "active" and d["round_started_at"]:
             info["left"] = max(0, DUEL_MOVE_TIMEOUT_SECONDS - int((now - d["round_started_at"]).total_seconds()))
         if d["status"] == "waiting":
-            info["waiting_left"] = max(0, DUEL_WAITING_TTL_MINUTES * 60 - int((now - d["created_at"]).total_seconds()))
+            ttl = DUEL_INVITE_TTL_HOURS * 3600 if d["invite_code"] else DUEL_WAITING_TTL_MINUTES * 60
+            info["waiting_left"] = max(0, ttl - int((now - d["created_at"]).total_seconds()))
+            info["invite"] = d["invite_code"]      # приватный стол «вызов друга» — приложение покажет ссылку
         out["duel"] = info
         return out
     last = await conn.fetchrow(
@@ -57,9 +59,15 @@ async def duel_state(conn, user_id: int) -> dict:
     return out
 
 
-async def _state_response(user_id: int) -> web.Response:
+async def _state_response(user_id: int, request: web.Request | None = None) -> web.Response:
     async with db.pool.acquire() as conn:
-        return web.json_response(await duel_state(conn, user_id))
+        state = await duel_state(conn, user_id)
+    duel = state.get("duel")
+    if request is not None and duel and duel.get("invite"):
+        from bots.main_bot.webapp_game import _bot_name
+        username = await _bot_name(request)
+        duel["link"] = f"https://t.me/{username}?start=duel_{duel['invite']}" if username else ""
+    return web.json_response(state)
 
 
 async def handle_duel(request: web.Request) -> web.Response:
@@ -67,7 +75,7 @@ async def handle_duel(request: web.Request) -> web.Response:
     if isinstance(ctx, web.Response):
         return ctx
     mark_in_app(ctx.user_id)
-    return await _state_response(ctx.user_id)
+    return await _state_response(ctx.user_id, request)
 
 
 async def handle_duel_join(request: web.Request) -> web.Response:

@@ -530,6 +530,36 @@
     border-top: 1px solid rgba(255, 255, 255, .06); }
   .unit-row b { font-size: 15px; }
   .resbar { margin: 6px 0; }
+  /* 🧭 27.10: выбор режима, постепенное открытие разделов, вызов на дуэль, Дело дня, карточка достижений */
+  .modal { position: fixed; inset: 0; z-index: 50; background: rgba(4, 7, 16, .82); display: flex; align-items: center;
+    justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
+  .modal-card { width: 100%; max-width: 440px; max-height: 92vh; overflow-y: auto; background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0, 255, 225, .3); border-radius: 18px; padding: 18px; box-shadow: 0 0 40px rgba(0, 255, 225, .15); }
+  .modal-card h2 { margin-bottom: 8px; }
+  .mode-opt { display: block; width: 100%; text-align: left; margin-top: 10px; padding: 12px 14px; border-radius: 14px; cursor: pointer;
+    border: 1px solid rgba(0, 255, 225, .25); background: #0d1326; color: var(--text); font: inherit; }
+  .mode-opt b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .mode-opt span { display: block; font-size: 12px; color: var(--muted); line-height: 1.45; }
+  .mode-opt.on { border-color: var(--neon); box-shadow: 0 0 14px rgba(0, 255, 225, .25); }
+  .mode-opt:disabled { opacity: .6; }
+  .tab.lock { opacity: .55; border-style: dashed; }
+  .toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 40; max-width: 92vw; padding: 12px 16px;
+    border-radius: 14px; background: #10203a; border: 1px solid var(--neon); color: var(--text); font-size: 13px; line-height: 1.4;
+    box-shadow: 0 0 24px rgba(0, 255, 225, .3); animation: toastIn .35s ease-out; cursor: pointer; }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  .case-tile { border-color: rgba(255, 217, 61, .45); background: linear-gradient(160deg, #2a2340, #121a30); }
+  .cs-story { font-size: 14px; line-height: 1.55; position: relative; }
+  .cs-sus { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #0d1326; border: 1px solid rgba(255, 255, 255, .06); }
+  .cs-sus.culprit { border-color: var(--ok); box-shadow: 0 0 12px rgba(55, 232, 95, .25); }
+  .cs-sus.wrong { border-color: var(--bad); }
+  .cs-who { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .cs-em { font-size: 22px; }
+  .cs-sus .btn { margin-top: 8px; padding: 8px; font-size: 13px; }
+  .cs-clue { margin-top: 8px; padding: 9px 11px; border-radius: 10px; background: rgba(255, 217, 61, .07); font-size: 13px; line-height: 1.5; }
+  .cs-clue.locked { background: rgba(255, 255, 255, .03); color: var(--muted); }
+  .cs-sol { margin-top: 10px; font-size: 13px; line-height: 1.55; }
+  .cs-strip { margin-top: 10px; font-size: 24px; letter-spacing: 3px; text-align: center; }
+  .ach-img { display: block; width: 100%; max-width: 280px; margin: 10px auto 0; border-radius: 14px; box-shadow: 0 0 20px rgba(255, 77, 141, .3); }
 </style>
 </head>
 <body>
@@ -555,7 +585,7 @@
       map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
       tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "На карте — соло-походы и походы отрядов команд (формат у каждой цели свой). К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "🎒 За участие: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Твой выбор сработает, как только дойдёшь до развилки. Передумать можно до этого момента.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Выбор принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
       subtitle: "твоя игровая империя в одном экране",
-      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит", qs_epicPaid: "⚡ с Безлимитом", qs_paper: "📝 Совет: записывай детали на бумаге — внимательным разгадка даётся легче.", qs_total: "📚 Квестов в базе: {n}", qs_daily: "Новых сегодня: {a}/{b}", qs_dailyUnl: "⚡ Безлимит — квесты без ограничений", qs_locked: "🔒 до 00:00 UTC", qs_lockedNote: "Сегодня пройдено новых квестов: {b}. Остальные откроются в 00:00 UTC, а пройденные можно переигрывать сколько угодно. ⚡ Безлимит снимает ограничение.", qs_epic: "⭐ ЭПИК ·", qr_btn: "⚠️ Пожаловаться на вопрос", qr_title: "Что не так с вопросом?", qr_answer: "❌ Неверный правильный ответ", qr_question: "✏️ Ошибка или опечатка в вопросе", qr_dup: "🔁 Вопрос повторяется", qr_other: "🤔 Другое (непонятно, спорно)", qr_thanks: "Спасибо! Вопрос проверят и поправят.", qr_limit: "На сегодня жалоб достаточно — спасибо за помощь!", qs_fxGallery: "🎨 Галерея атмосфер", qs_fxChoice: "🚪 Войти внутрь", qs_fxSample: "Ночь. Ты стоишь у входа и слушаешь, как шумит мир вокруг. Что-то меняется — и сцена отвечает на это светом, тенью и движением. Выбери атмосферу ниже, чтобы посмотреть, как она выглядит под текстом квеста.", dl_title: "⚔️ Дуэли", dl_tile: "Живой соперник · столы 10 / 100 / 1000 🪙", dl_intro: "Камень-ножницы-бумага с живым игроком. Ставка списывается сразу; победителю — {p}% банка, {b}% сгорает. На жест — {t} с, ничья — переигровка.", dl_table: "⚔️ Стол {s} 🪙 · победа +{p} 🪙 и 🪨{r}", dl_short: "Для этого стола нужно {s} 🪙 на балансе", dl_waiting: "Ищем соперника за столом {s} 🪙…", dl_waitLeft: "Очередь отменится через {m} мин — ставка вернётся", dl_waitHint: "Можно закрыть приложение: когда соперник найдётся, бот напишет в чат.", dl_cancel: "❌ Покинуть стол (вернуть ставку)", dl_matched: "Соперник найден! Банк {b} 🪙 · победителю {p} 🪙", dl_round: "🤝 Ничья — переигровка! Раунд {n}", dl_pick: "Выбери жест", dl_wait: "Жест принят — ждём соперника…", dl_oppMoved: "⚡ Соперник уже сделал ход!", dl_timeoutNote: "Не успеешь — жест выберет случай.", dl_win: "🎉 Победа в дуэли! +{p} 🪙 и 🪨{r}", dl_lose: "Поражение. Ставка {s} 🪙 ушла в банк соперника.", dl_vs: "Ты: {a} · Соперник: {b}", dl_cancelled: "Стол покинут — ставка {s} 🪙 вернулась на баланс.", dl_again: "⚔️ Ещё дуэль", g_name_quests: "🗺 Квесты", qs_tile: "Истории с выборами · награда за первую победу", qs_ruOnly: "Квесты пока только на русском — перевод готовится.", qs_done: "✅ пройден", qs_progress: "⏯ в процессе", qs_new: "🆕 новый", qs_info: "{g} · {m} мин · +{r} 🪙 за первую победу", qs_start: "▶️ Начать", qs_resume: "⏯ Продолжить", qs_restart: "🔄 Начать заново", qs_list: "‹ Все квесты", qs_again: "🔄 Пройти ещё раз", qs_winFirst: "🏆 Квест пройден! +{c} 🪙 и по {q} каждого ресурса, 🪵 и 🐄", qs_winRepeat: "✅ Пройдено снова! Награда за этот квест уже получена.", qs_fail: "💀 Концовка не из лучших… Историю всегда можно переиграть!", qs_stale: "Эта сцена уже позади — продолжаем с текущего места", qs_empty: "Квестов пока нет — загляни позже.", g_sometimes: "Иногда: +1 ⚡", auc_short: "Не хватает {n} 🪙 для этой ставки", auc_confirm: "Сделать ставку на «{t}»? Спишется {c} 🪙 (вернутся, если тебя перебьют).", g_streak: "Серия: {i} {a}/{b}", g_every: "{i} за каждые {n} побед", g_win_coins: "Победа: +{r} 🪙", flags_q_flag: "Чей это флаг?", flags_q_cap: "Какая столица у страны {c}?", code_rules: "Взломай код из {d} разных цифр за {m} попыток. 🐂 — цифра на своём месте, 🐄 — цифра есть, но в другом месте.", code_left: "Попыток осталось: {n}", code_try: "Проверить", mem_rules: "Найди все {p} пар за {m} ходов. Ход — открыть две карточки.", mem_moves: "Ходов: {a}/{b}",
+      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит", md_title: "🧭 Как будешь играть?", md_hint: "ROFL HUB большой. Выбери, с чего начать, — режим можно сменить в любой момент в паспорте.", md_full: "🌐 Вся экосистема", md_fullText: "Ферма роботов, склад, мастерская, биржа, команды, налёты, рудники и карта мира — плюс все игры и истории. Разделы открываются постепенно, за 3 дня, чтобы не утонуть в кнопках.", md_puzzle: "🧩 Игры и истории", md_puzzleText: "Только викторина, мини-игры, квесты, Дело дня и дуэли с друзьями. Без экономики и лишних вкладок.", md_later: "Ферма работает в любом режиме — монеты копятся, даже если ты в неё не заглядываешь.", md_toFull: "Включить всю экосистему? Появятся ферма, склад, биржа, команды и остальные разделы.", md_toPuzzle: "Оставить только игры и истории? Ферма продолжит работать, остальные вкладки спрячутся — вернуть их можно здесь же.", md_now: "🧭 Режим: {m} · сменить", lk_new: "🎉 Открылись новые разделы: <b>{t}</b>. Нажми, чтобы заглянуть!", lk_line: "🔒 {t} — через {d} дн. или с 🧠 {l} уровня", lk_title: "Разделы открываются постепенно, чтобы было проще разобраться:", di_title: "⚔️ Тебя вызывают на дуэль!", di_text: "<b>{n}</b> вызывает тебя на дуэль «камень-ножницы-бумага».<br>Ставка {s} 🪙 · победителю {p} 🪙.", di_accept: "⚔️ Принять вызов", di_decline: "Не сейчас", di_waiting: "Ждём друга за столом {s} 🪙…", di_left: "Вызов действует ещё {h} ч — потом ставка вернётся", di_share: "📤 Отправить вызов другу", di_waitHint: "Отправь ссылку другу. Когда друг примет вызов, бот напишет тебе в чат. Ставка уже на столе; передумаешь — покинь стол, она вернётся.", di_head: "🤝 Вызвать друга", di_hint: "Свой стол по ссылке: в очередь он не попадает, ждёт только твоего друга. Новичок, пришедший по ссылке, становится твоим другом.", di_table: "🤝 Вызвать друга · стол {s} 🪙", di_shareText: "Вызываю тебя на дуэль в ROFL HUB! Ставка {s} 🪙 — посмотрим, кто кого 😎", ac_title: "🏅 Мои достижения", ac_streak: "🔥 Серия Дел дня: {n}", ac_hint: "Все достижения собираются на одну карточку — её можно выложить в историю или отправить другу.", ac_make: "📸 Создать карточку", ac_cardSub: "мои достижения", ac_cardCall: "Сможешь лучше?", ac_shareText: "Мой счёт в ROFL HUB: 🧠 {l} уровень, 🗺 {q} квестов, 🕵️ {d} дел, ⚔️ {w} побед в дуэлях. Сможешь лучше?", ac_story: "📲 Выложить в историю", ac_send: "✈️ Отправить другу", ac_save: "💾 Сохранить картинку", ac_quests: "квестов пройдено", ac_epics: "эпиков", ac_cases: "дел раскрыто", ac_duels: "побед в дуэлях", ac_wins: "побед в играх", ac_friends: "активных друзей", ac_robots: "роботов", ac_days: "дней в игре", tf_title: "💸 Перевести монеты", tf_hint: "Другу — по @username, ID или VIP ID. Минимум {m} 🪙, комиссия {f}%.", tf_locked: "🔒 Отправлять монеты можно с 🧠 {l} уровня и {c} забранных ежедневных котлет — так фейки не сливают стартовые монеты. Получать можно сразу.", tf_to: "Кому", tf_amount: "Сколько 🪙", tf_btn: "💸 Перевести", tf_ask: "Перевести {a} 🪙 игроку {to}? Комиссия {f} 🪙, получатель получит {r} 🪙.", tf_done: "Готово! {to} получает {r} 🪙", sq_choose: "Выбери, что создаёшь:", sq_squad: "🛡 Отряд", sq_squadText: "До {n} бойцов · {c} 🪙. Для себя и пары друзей; позже капитан расширит отряд до команды.", sq_team: "🏆 Команда", sq_teamText: "До {n} бойцов · {c} 🪙. Большая команда для битв и рудников.", sq_createBtn: "Создать отряд за {cost} 🪙", sq_created: "Отряд «{n}» создан — ты капитан!", sq_label: "Отряд", sq_upHint: "Отряду тесно? Расширь его до команды — до {n} бойцов.", sq_upBtn: "⬆️ Расширить до команды · {c} 🪙", sq_upAsk: "Расширить отряд до команды за {c} 🪙? Мест станет {n}.", sq_upDone: "Отряд стал командой!", cs_title: "🕵️ Дело дня", cs_tile: "Одно дело на всех · 4 подозреваемых · одно обвинение", cs_none: "Сегодня дел нет — загляни завтра.", cs_culprit: "виновный", cs_accuse: "👉 Обвинить", cs_clueLocked: "Улика {n} — пока скрыта", cs_more: "🔍 Открыть ещё улику (награда станет {r} 🪙)", cs_rules: "Обвинить можно только одного и только один раз. Чем меньше улик понадобилось — тем больше награда:", cs_solved: "🎉 Дело раскрыто! +{r} 🪙", cs_failed: "Мимо! Виновный — {n}.", cs_bonus: "🔥 Бонус за серию: +{b} 🪙", cs_solution: "Разгадка:", cs_stats: "Сегодня раскрыли {s} из {p} · в среднем улик: {a}", cs_share: "📤 Похвастаться", cs_next: "Новое дело через {t}", cs_head: "🕵️ Дело №{n}", cs_suspects: "👥 Подозреваемые", cs_clues: "🔍 Улики", cs_streak: "🔥 Серия раскрытых дел: {n} · каждый {e}-й день подряд +{b} 🪙", cs_accuseAsk: "Обвинить: {n}? Обвинение одно — передумать не получится.", cs_shareText: "🕵️ Дело дня №{n}\n{s}\n🔥 Серия: {k}\nСможешь раскрыть быстрее?", qs_epicPaid: "⚡ с Безлимитом", qs_paper: "📝 Совет: записывай детали на бумаге — внимательным разгадка даётся легче.", qs_total: "📚 Квестов в базе: {n}", qs_daily: "Новых сегодня: {a}/{b}", qs_dailyUnl: "⚡ Безлимит — квесты без ограничений", qs_locked: "🔒 до 00:00 UTC", qs_lockedNote: "Сегодня пройдено новых квестов: {b}. Остальные откроются в 00:00 UTC, а пройденные можно переигрывать сколько угодно. ⚡ Безлимит снимает ограничение.", qs_epic: "⭐ ЭПИК ·", qr_btn: "⚠️ Пожаловаться на вопрос", qr_title: "Что не так с вопросом?", qr_answer: "❌ Неверный правильный ответ", qr_question: "✏️ Ошибка или опечатка в вопросе", qr_dup: "🔁 Вопрос повторяется", qr_other: "🤔 Другое (непонятно, спорно)", qr_thanks: "Спасибо! Вопрос проверят и поправят.", qr_limit: "На сегодня жалоб достаточно — спасибо за помощь!", qs_fxGallery: "🎨 Галерея атмосфер", qs_fxChoice: "🚪 Войти внутрь", qs_fxSample: "Ночь. Ты стоишь у входа и слушаешь, как шумит мир вокруг. Что-то меняется — и сцена отвечает на это светом, тенью и движением. Выбери атмосферу ниже, чтобы посмотреть, как она выглядит под текстом квеста.", dl_title: "⚔️ Дуэли", dl_tile: "Живой соперник · столы 10 / 100 / 1000 🪙", dl_intro: "Камень-ножницы-бумага с живым игроком. Ставка списывается сразу; победителю — {p}% банка, {b}% сгорает. На жест — {t} с, ничья — переигровка.", dl_table: "⚔️ Стол {s} 🪙 · победа +{p} 🪙 и 🪨{r}", dl_short: "Для этого стола нужно {s} 🪙 на балансе", dl_waiting: "Ищем соперника за столом {s} 🪙…", dl_waitLeft: "Очередь отменится через {m} мин — ставка вернётся", dl_waitHint: "Можно закрыть приложение: когда соперник найдётся, бот напишет в чат.", dl_cancel: "❌ Покинуть стол (вернуть ставку)", dl_matched: "Соперник найден! Банк {b} 🪙 · победителю {p} 🪙", dl_round: "🤝 Ничья — переигровка! Раунд {n}", dl_pick: "Выбери жест", dl_wait: "Жест принят — ждём соперника…", dl_oppMoved: "⚡ Соперник уже сделал ход!", dl_timeoutNote: "Не успеешь — жест выберет случай.", dl_win: "🎉 Победа в дуэли! +{p} 🪙 и 🪨{r}", dl_lose: "Поражение. Ставка {s} 🪙 ушла в банк соперника.", dl_vs: "Ты: {a} · Соперник: {b}", dl_cancelled: "Стол покинут — ставка {s} 🪙 вернулась на баланс.", dl_again: "⚔️ Ещё дуэль", g_name_quests: "🗺 Квесты", qs_tile: "Истории с выборами · награда за первую победу", qs_ruOnly: "Квесты пока только на русском — перевод готовится.", qs_done: "✅ пройден", qs_progress: "⏯ в процессе", qs_new: "🆕 новый", qs_info: "{g} · {m} мин · +{r} 🪙 за первую победу", qs_start: "▶️ Начать", qs_resume: "⏯ Продолжить", qs_restart: "🔄 Начать заново", qs_list: "‹ Все квесты", qs_again: "🔄 Пройти ещё раз", qs_winFirst: "🏆 Квест пройден! +{c} 🪙 и по {q} каждого ресурса, 🪵 и 🐄", qs_winRepeat: "✅ Пройдено снова! Награда за этот квест уже получена.", qs_fail: "💀 Концовка не из лучших… Историю всегда можно переиграть!", qs_stale: "Эта сцена уже позади — продолжаем с текущего места", qs_empty: "Квестов пока нет — загляни позже.", g_sometimes: "Иногда: +1 ⚡", auc_short: "Не хватает {n} 🪙 для этой ставки", auc_confirm: "Сделать ставку на «{t}»? Спишется {c} 🪙 (вернутся, если тебя перебьют).", g_streak: "Серия: {i} {a}/{b}", g_every: "{i} за каждые {n} побед", g_win_coins: "Победа: +{r} 🪙", flags_q_flag: "Чей это флаг?", flags_q_cap: "Какая столица у страны {c}?", code_rules: "Взломай код из {d} разных цифр за {m} попыток. 🐂 — цифра на своём месте, 🐄 — цифра есть, но в другом месте.", code_left: "Попыток осталось: {n}", code_try: "Проверить", mem_rules: "Найди все {p} пар за {m} ходов. Ход — открыть две карточки.", mem_moves: "Ходов: {a}/{b}",
       tab_passport: "📋 Паспорт", tab_farm: "🚜 Ферма", tab_goals: "🎯 Цели", tab_workshop: "🔧 Мастерская",
       tab_raids: "🏴‍☠️ Налёты", tab_market: "📈 Биржа", tab_team: "🏆 Команда", tab_shop: "🏪 Магазин", tab_top: "👑 ТОП",
       passport: "📋 ПАСПОРТ ИГРОКА", coins: "🪙",
@@ -783,7 +813,7 @@
       map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
       tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "🎒 For taking part: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your choice applies as soon as you reach the fork. You can change it until then.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Choice saved", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
       subtitle: "your game empire on one screen",
-      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit", qs_epicPaid: "⚡ with Unlimited", qs_paper: "📝 Tip: jot the details down on paper — the attentive solve it more easily.", qs_total: "📚 Quests in the library: {n}", qs_daily: "New today: {a}/{b}", qs_dailyUnl: "⚡ Unlimited — no quest limits", qs_locked: "🔒 until 00:00 UTC", qs_lockedNote: "You have completed {b} new quests today. The rest open at 00:00 UTC, and you can replay completed ones as much as you like. ⚡ Unlimited lifts the limit.", qs_epic: "⭐ EPIC ·", qr_btn: "⚠️ Report this question", qr_title: "What is wrong with the question?", qr_answer: "❌ The correct answer is wrong", qr_question: "✏️ A mistake or typo in the question", qr_dup: "🔁 The question repeats", qr_other: "🤔 Other (unclear, debatable)", qr_thanks: "Thanks! The question will be checked and fixed.", qr_limit: "That is enough reports for today — thanks for helping!", qs_fxGallery: "🎨 Atmosphere gallery", qs_fxChoice: "🚪 Step inside", qs_fxSample: "Night. You stand at the entrance and listen to the world around you. Something changes — and the scene answers with light, shadow and motion. Pick an atmosphere below to see how it looks under quest text.", dl_title: "⚔️ Duels", dl_tile: "A live opponent · tables 10 / 100 / 1000 🪙", dl_intro: "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.", dl_table: "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}", dl_short: "You need {s} 🪙 on your balance for this table", dl_waiting: "Looking for an opponent at the {s} 🪙 table…", dl_waitLeft: "The queue cancels in {m} min — your stake comes back", dl_waitHint: "You can close the app: once an opponent is found, the bot will message you in the chat.", dl_cancel: "❌ Leave the table (refund stake)", dl_matched: "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙", dl_round: "🤝 Draw — replay! Round {n}", dl_pick: "Pick a gesture", dl_wait: "Gesture locked in — waiting for your opponent…", dl_oppMoved: "⚡ Your opponent has already moved!", dl_timeoutNote: "Run out of time and chance picks your gesture.", dl_win: "🎉 Duel won! +{p} 🪙 and 🪨{r}", dl_lose: "Defeat. Your {s} 🪙 stake went to your opponent's bank.", dl_vs: "You: {a} · Opponent: {b}", dl_cancelled: "You left the table — your {s} 🪙 stake is back on your balance.", dl_again: "⚔️ Another duel", g_name_quests: "🗺 Quests", qs_tile: "Stories with choices · reward for the first win", qs_ruOnly: "Quests are in Russian for now — a translation is on the way.", qs_done: "✅ completed", qs_progress: "⏯ in progress", qs_new: "🆕 new", qs_info: "{g} · {m} min · +{r} 🪙 for the first win", qs_start: "▶️ Start", qs_resume: "⏯ Continue", qs_restart: "🔄 Start over", qs_list: "‹ All quests", qs_again: "🔄 Play again", qs_winFirst: "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄", qs_winRepeat: "✅ Completed again! The reward for this quest was already claimed.", qs_fail: "💀 Not the best ending… You can always replay the story!", qs_stale: "That scene is behind you — continuing from where you are", qs_empty: "No quests yet — check back later.", g_sometimes: "Sometimes: +1 ⚡", auc_short: "You need {n} more 🪙 for this bid", auc_confirm: "Bid on “{t}”? {c} 🪙 will be held (returned if you are outbid).", g_streak: "Streak: {i} {a}/{b}", g_every: "{i} for every {n} wins", g_win_coins: "Win: +{r} 🪙", flags_q_flag: "Whose flag is this?", flags_q_cap: "What is the capital of {c}?", code_rules: "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.", code_left: "Tries left: {n}", code_try: "Check", mem_rules: "Find all {p} pairs in {m} moves. A move is turning over two cards.", mem_moves: "Moves: {a}/{b}",
+      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit", md_title: "🧭 How do you want to play?", md_hint: "ROFL HUB is big. Pick where to start — you can switch modes any time in the passport.", md_full: "🌐 The whole ecosystem", md_fullText: "A robot farm, storage, workshop, market, teams, raids, mines and the world map — plus all the games and stories. Sections open gradually over 3 days, so you don’t drown in buttons.", md_puzzle: "🧩 Games and stories", md_puzzleText: "Just the quiz, mini-games, quests, the Daily case and duels with friends. No economy, no extra tabs.", md_later: "The farm works in any mode — coins pile up even if you never look in.", md_toFull: "Turn on the whole ecosystem? The farm, storage, market, teams and the other sections will appear.", md_toPuzzle: "Keep only games and stories? The farm keeps working, the other tabs hide — you can bring them back right here.", md_now: "🧭 Mode: {m} · change", lk_new: "🎉 New sections are open: <b>{t}</b>. Tap to take a look!", lk_line: "🔒 {t} — in {d} d or from 🧠 level {l}", lk_title: "Sections open gradually, so it’s easier to find your way.", di_title: "⚔️ You’re challenged to a duel!", di_text: "<b>{n}</b> challenges you to a rock-paper-scissors duel.<br>Stake {s} 🪙 · the winner gets {p} 🪙.", di_accept: "⚔️ Accept the challenge", di_decline: "Not now", di_waiting: "Waiting for your friend at the {s} 🪙 table…", di_left: "The challenge lasts {h} more h — then your stake comes back", di_share: "📤 Send the challenge to a friend", di_waitHint: "Send the link to a friend. When they accept, the bot will message you in the chat. Your stake is already on the table; change your mind — leave the table and it comes back.", di_head: "🤝 Challenge a friend", di_hint: "Your own table by link: it skips the queue and waits only for your friend. A newcomer who joins through the link becomes your friend.", di_table: "🤝 Challenge a friend · {s} 🪙 table", di_shareText: "I challenge you to a duel in ROFL HUB! Stake {s} 🪙 — let’s see who wins 😎", ac_title: "🏅 My achievements", ac_streak: "🔥 Daily case streak: {n}", ac_hint: "All your achievements gather on one card — post it to your story or send it to a friend.", ac_make: "📸 Create the card", ac_cardSub: "my achievements", ac_cardCall: "Can you beat it?", ac_shareText: "My ROFL HUB score: 🧠 level {l}, 🗺 {q} quests, 🕵️ {d} cases, ⚔️ {w} duel wins. Can you beat it?", ac_story: "📲 Post to my story", ac_send: "✈️ Send to a friend", ac_save: "💾 Save the image", ac_quests: "quests completed", ac_epics: "epics", ac_cases: "cases solved", ac_duels: "duel wins", ac_wins: "game wins", ac_friends: "active friends", ac_robots: "robots", ac_days: "days in the game", tf_title: "💸 Send coins", tf_hint: "To a friend — by @username, ID or VIP ID. Minimum {m} 🪙, fee {f}%.", tf_locked: "🔒 You can send coins from 🧠 level {l} and {c} claimed daily cutlets — so fake accounts can’t drain starter coins. Receiving works right away.", tf_to: "To", tf_amount: "How many 🪙", tf_btn: "💸 Send", tf_ask: "Send {a} 🪙 to {to}? Fee {f} 🪙, they will receive {r} 🪙.", tf_done: "Done! {to} receives {r} 🪙", sq_choose: "What are you creating?", sq_squad: "🛡 Squad", sq_squadText: "Up to {n} fighters · {c} 🪙. For you and a couple of friends; later the captain can expand it into a team.", sq_team: "🏆 Team", sq_teamText: "Up to {n} fighters · {c} 🪙. A big team for battles and mines.", sq_createBtn: "Create a squad for {cost} 🪙", sq_created: "Squad “{n}” created — you’re the captain!", sq_label: "Squad", sq_upHint: "Squad getting crowded? Expand it into a team — up to {n} fighters.", sq_upBtn: "⬆️ Expand into a team · {c} 🪙", sq_upAsk: "Expand the squad into a team for {c} 🪙? There will be {n} places.", sq_upDone: "Your squad is now a team!", cs_title: "🕵️ Daily case", cs_tile: "One case for everyone · 4 suspects · one accusation", cs_none: "No case today — come back tomorrow.", cs_culprit: "culprit", cs_accuse: "👉 Accuse", cs_clueLocked: "Clue {n} — still hidden", cs_more: "🔍 Reveal another clue (reward becomes {r} 🪙)", cs_rules: "You can accuse only one suspect, only once. The fewer clues you needed, the bigger the reward.", cs_solved: "🎉 Case solved! +{r} 🪙", cs_failed: "Missed! The culprit was {n}.", cs_bonus: "🔥 Streak bonus: +{b} 🪙", cs_solution: "Solution:", cs_stats: "Solved today: {s} of {p} · average clues: {a}", cs_share: "📤 Show off", cs_next: "New case in {t}", cs_head: "🕵️ Case #{n}", cs_suspects: "👥 Suspects", cs_clues: "🔍 Clues", cs_streak: "🔥 Solved streak: {n} · every {e}th day in a row +{b} 🪙", cs_accuseAsk: "Accuse {n}? There’s only one accusation — no take-backs.", cs_shareText: "🕵️ Daily case #{n}\n{s}\n🔥 Streak: {k}\nCan you solve it faster?", qs_epicPaid: "⚡ with Unlimited", qs_paper: "📝 Tip: jot the details down on paper — the attentive solve it more easily.", qs_total: "📚 Quests in the library: {n}", qs_daily: "New today: {a}/{b}", qs_dailyUnl: "⚡ Unlimited — no quest limits", qs_locked: "🔒 until 00:00 UTC", qs_lockedNote: "You have completed {b} new quests today. The rest open at 00:00 UTC, and you can replay completed ones as much as you like. ⚡ Unlimited lifts the limit.", qs_epic: "⭐ EPIC ·", qr_btn: "⚠️ Report this question", qr_title: "What is wrong with the question?", qr_answer: "❌ The correct answer is wrong", qr_question: "✏️ A mistake or typo in the question", qr_dup: "🔁 The question repeats", qr_other: "🤔 Other (unclear, debatable)", qr_thanks: "Thanks! The question will be checked and fixed.", qr_limit: "That is enough reports for today — thanks for helping!", qs_fxGallery: "🎨 Atmosphere gallery", qs_fxChoice: "🚪 Step inside", qs_fxSample: "Night. You stand at the entrance and listen to the world around you. Something changes — and the scene answers with light, shadow and motion. Pick an atmosphere below to see how it looks under quest text.", dl_title: "⚔️ Duels", dl_tile: "A live opponent · tables 10 / 100 / 1000 🪙", dl_intro: "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.", dl_table: "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}", dl_short: "You need {s} 🪙 on your balance for this table", dl_waiting: "Looking for an opponent at the {s} 🪙 table…", dl_waitLeft: "The queue cancels in {m} min — your stake comes back", dl_waitHint: "You can close the app: once an opponent is found, the bot will message you in the chat.", dl_cancel: "❌ Leave the table (refund stake)", dl_matched: "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙", dl_round: "🤝 Draw — replay! Round {n}", dl_pick: "Pick a gesture", dl_wait: "Gesture locked in — waiting for your opponent…", dl_oppMoved: "⚡ Your opponent has already moved!", dl_timeoutNote: "Run out of time and chance picks your gesture.", dl_win: "🎉 Duel won! +{p} 🪙 and 🪨{r}", dl_lose: "Defeat. Your {s} 🪙 stake went to your opponent's bank.", dl_vs: "You: {a} · Opponent: {b}", dl_cancelled: "You left the table — your {s} 🪙 stake is back on your balance.", dl_again: "⚔️ Another duel", g_name_quests: "🗺 Quests", qs_tile: "Stories with choices · reward for the first win", qs_ruOnly: "Quests are in Russian for now — a translation is on the way.", qs_done: "✅ completed", qs_progress: "⏯ in progress", qs_new: "🆕 new", qs_info: "{g} · {m} min · +{r} 🪙 for the first win", qs_start: "▶️ Start", qs_resume: "⏯ Continue", qs_restart: "🔄 Start over", qs_list: "‹ All quests", qs_again: "🔄 Play again", qs_winFirst: "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄", qs_winRepeat: "✅ Completed again! The reward for this quest was already claimed.", qs_fail: "💀 Not the best ending… You can always replay the story!", qs_stale: "That scene is behind you — continuing from where you are", qs_empty: "No quests yet — check back later.", g_sometimes: "Sometimes: +1 ⚡", auc_short: "You need {n} more 🪙 for this bid", auc_confirm: "Bid on “{t}”? {c} 🪙 will be held (returned if you are outbid).", g_streak: "Streak: {i} {a}/{b}", g_every: "{i} for every {n} wins", g_win_coins: "Win: +{r} 🪙", flags_q_flag: "Whose flag is this?", flags_q_cap: "What is the capital of {c}?", code_rules: "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.", code_left: "Tries left: {n}", code_try: "Check", mem_rules: "Find all {p} pairs in {m} moves. A move is turning over two cards.", mem_moves: "Moves: {a}/{b}",
       tab_passport: "📋 Passport", tab_farm: "🚜 Farm", tab_goals: "🎯 Goals", tab_workshop: "🔧 Workshop",
       tab_raids: "🏴‍☠️ Raids", tab_market: "📈 Market", tab_team: "🏆 Team", tab_shop: "🏪 Shop", tab_top: "👑 TOP",
       passport: "📋 PLAYER PASSPORT", coins: "🪙",
@@ -1007,6 +1037,90 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "md_title": "🧭 كيف تريد أن تلعب؟",
+    "md_hint": "ROFL HUB عالم كبير. اختر من أين تبدأ — يمكن تغيير الوضع في أي وقت من الجواز.",
+    "md_full": "🌐 المنظومة كاملة",
+    "md_fullText": "مزرعة الروبوتات، المخزون، الورشة، البورصة، الفرق، الغارات، المناجم وخريطة العالم — إضافة إلى كل الألعاب والقصص. تُفتح الأقسام تدريجيًا خلال 3 أيام حتى لا تغرق في الأزرار.",
+    "md_puzzle": "🧩 ألعاب وقصص",
+    "md_puzzleText": "الكويز والألعاب المصغّرة والمهام وقضية اليوم والمبارزات مع الأصدقاء فقط. بلا اقتصاد ولا تبويبات زائدة.",
+    "md_later": "المزرعة تعمل في أي وضع — العملات تتراكم حتى لو لم تزرها.",
+    "md_toFull": "تفعيل المنظومة كاملة؟ ستظهر المزرعة والمخزون والبورصة والفرق وبقية الأقسام.",
+    "md_toPuzzle": "الإبقاء على الألعاب والقصص فقط؟ ستواصل المزرعة العمل، وتختفي بقية التبويبات — ويمكن إعادتها من هنا.",
+    "md_now": "🧭 الوضع: {m} · تغيير",
+    "lk_new": "🎉 فُتحت أقسام جديدة: <b>{t}</b>. اضغط لإلقاء نظرة!",
+    "lk_line": "🔒 {t} — بعد {d} يوم أو من 🧠 المستوى {l}",
+    "lk_title": "تُفتح الأقسام تدريجيًا ليسهل عليك التعرّف عليها:",
+    "di_title": "⚔️ لديك تحدٍّ لمبارزة!",
+    "di_text": "<b>{n}</b> يتحداك في مبارزة حجر-ورقة-مقص.<br>الرهان {s} 🪙 · للفائز {p} 🪙.",
+    "di_accept": "⚔️ قبول التحدي",
+    "di_decline": "ليس الآن",
+    "di_waiting": "بانتظار صديقك على طاولة {s} 🪙…",
+    "di_left": "يبقى التحدي صالحًا {h} ساعة أخرى — ثم يعود رهانك",
+    "di_share": "📤 أرسل التحدي إلى صديق",
+    "di_waitHint": "أرسل الرابط إلى صديق. عند قبول التحدي سيراسلك البوت في الدردشة. رهانك على الطاولة؛ إن غيّرت رأيك فغادر الطاولة ويعود إليك.",
+    "di_head": "🤝 تحدَّ صديقًا",
+    "di_hint": "طاولة خاصة عبر رابط: لا تدخل الطابور، وتنتظر صديقك فقط. اللاعب الجديد الذي ينضم عبر الرابط يصبح صديقك.",
+    "di_table": "🤝 تحدَّ صديقًا · طاولة {s} 🪙",
+    "di_shareText": "أتحداك في مبارزة على ROFL HUB! الرهان {s} 🪙 — لنرَ من يفوز 😎",
+    "ac_title": "🏅 إنجازاتي",
+    "ac_streak": "🔥 سلسلة قضايا اليوم: {n}",
+    "ac_hint": "كل إنجازاتك في بطاقة واحدة — انشرها في قصتك أو أرسلها إلى صديق.",
+    "ac_make": "📸 إنشاء البطاقة",
+    "ac_cardSub": "إنجازاتي",
+    "ac_cardCall": "هل تستطيع التفوّق؟",
+    "ac_shareText": "نتيجتي في ROFL HUB: 🧠 المستوى {l}، 🗺 {q} مهمة، 🕵️ {d} قضية، ⚔️ {w} فوز في المبارزات. هل تستطيع التفوّق؟",
+    "ac_story": "📲 انشر في قصتي",
+    "ac_send": "✈️ أرسل إلى صديق",
+    "ac_save": "💾 حفظ الصورة",
+    "ac_quests": "مهام مكتملة",
+    "ac_epics": "ملاحم",
+    "ac_cases": "قضايا محلولة",
+    "ac_duels": "فوز في المبارزات",
+    "ac_wins": "فوز في الألعاب",
+    "ac_friends": "أصدقاء نشطون",
+    "ac_robots": "روبوتات",
+    "ac_days": "أيام في اللعبة",
+    "tf_title": "💸 تحويل العملات",
+    "tf_hint": "إلى صديق — عبر @username أو ID أو VIP ID. الحد الأدنى {m} 🪙، العمولة {f}%.",
+    "tf_locked": "🔒 إرسال العملات متاح من 🧠 المستوى {l} وبعد استلام {c} كفتات يومية — حتى لا تستنزف الحسابات الوهمية عملات البداية. الاستلام متاح فورًا.",
+    "tf_to": "إلى",
+    "tf_amount": "كم 🪙",
+    "tf_btn": "💸 تحويل",
+    "tf_ask": "تحويل {a} 🪙 إلى {to}؟ العمولة {f} 🪙، وسيصل للمستلم {r} 🪙.",
+    "tf_done": "تم! وصل إلى {to} {r} 🪙",
+    "sq_choose": "اختر ما تريد إنشاءه:",
+    "sq_squad": "🛡 فرقة",
+    "sq_squadText": "حتى {n} مقاتلين · {c} 🪙. لك ولعدد من الأصدقاء؛ لاحقًا يستطيع القائد توسيعها إلى فريق.",
+    "sq_team": "🏆 فريق",
+    "sq_teamText": "حتى {n} مقاتل · {c} 🪙. فريق كبير للمعارك والمناجم.",
+    "sq_createBtn": "إنشاء فرقة مقابل {cost} 🪙",
+    "sq_created": "تم إنشاء الفرقة «{n}» — أنت القائد!",
+    "sq_label": "فرقة",
+    "sq_upHint": "ضاقت الفرقة؟ وسّعها إلى فريق — حتى {n} مقاتل.",
+    "sq_upBtn": "⬆️ التوسيع إلى فريق · {c} 🪙",
+    "sq_upAsk": "توسيع الفرقة إلى فريق مقابل {c} 🪙؟ سيصبح عدد الأماكن {n}.",
+    "sq_upDone": "أصبحت فرقتك فريقًا!",
+    "cs_title": "🕵️ قضية اليوم",
+    "cs_tile": "قضية واحدة للجميع · 4 مشتبه بهم · اتهام واحد",
+    "cs_none": "لا قضايا اليوم — عد غدًا.",
+    "cs_culprit": "الجاني",
+    "cs_accuse": "👉 اتهام",
+    "cs_clueLocked": "الدليل {n} — ما زال مخفيًا",
+    "cs_more": "🔍 اكشف دليلًا آخر (تصبح المكافأة {r} 🪙)",
+    "cs_rules": "يمكن اتهام شخص واحد فقط ومرة واحدة فقط. كلما قلّت الأدلة التي احتجتها زادت المكافأة:",
+    "cs_solved": "🎉 حُلّت القضية! +{r} 🪙",
+    "cs_failed": "خطأ! الجاني هو {n}.",
+    "cs_bonus": "🔥 مكافأة السلسلة: +{b} 🪙",
+    "cs_solution": "الحل:",
+    "cs_stats": "حُلّت اليوم: {s} من {p} · متوسط الأدلة: {a}",
+    "cs_share": "📤 تباهَ بها",
+    "cs_next": "قضية جديدة بعد {t}",
+    "cs_head": "🕵️ القضية رقم {n}",
+    "cs_suspects": "👥 المشتبه بهم",
+    "cs_clues": "🔍 الأدلة",
+    "cs_streak": "🔥 سلسلة القضايا المحلولة: {n} · كل يوم رقم {e} على التوالي +{b} 🪙",
+    "cs_accuseAsk": "اتهام {n}؟ الاتهام مرة واحدة — لا تراجع عنه.",
+    "cs_shareText": "🕵️ قضية اليوم رقم {n}\n{s}\n🔥 السلسلة: {k}\nهل تستطيع حلّها أسرع؟",
     "qs_epicPaid": "⚡ مع «بلا حدود»",
     "qs_paper": "📝 نصيحة: دوّن التفاصيل على ورقة — الحلّ أسهل على المنتبهين.",
     "qs_total": "📚 المهام في المكتبة: {n}",
@@ -1725,6 +1839,90 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "md_title": "🧭 কীভাবে খেলবে?",
+    "md_hint": "ROFL HUB অনেক বড়। কোথা থেকে শুরু করবে বেছে নাও — মোড যেকোনো সময় পাসপোর্টে বদলানো যায়।",
+    "md_full": "🌐 পুরো ইকোসিস্টেম",
+    "md_fullText": "রোবট ফার্ম, গুদাম, ওয়ার্কশপ, বাজার, টিম, রেইড, খনি আর বিশ্বের মানচিত্র — সঙ্গে সব গেম আর গল্প। সেকশনগুলো ৩ দিনে ধীরে ধীরে খোলে, যাতে বোতামের ভিড়ে হারিয়ে না যাও।",
+    "md_puzzle": "🧩 গেম আর গল্প",
+    "md_puzzleText": "শুধু কুইজ, মিনি-গেম, কোয়েস্ট, দিনের কেস আর বন্ধুদের সঙ্গে ডুয়েল। কোনো অর্থনীতি নেই, বাড়তি ট্যাবও নেই।",
+    "md_later": "যেকোনো মোডেই ফার্ম চলে — তুমি না দেখলেও মুদ্রা জমতে থাকে।",
+    "md_toFull": "পুরো ইকোসিস্টেম চালু করবে? ফার্ম, গুদাম, বাজার, টিম আর বাকি সেকশনগুলো দেখা যাবে।",
+    "md_toPuzzle": "শুধু গেম আর গল্প রাখবে? ফার্ম চলতে থাকবে, বাকি ট্যাব লুকিয়ে যাবে — এখান থেকেই আবার ফেরানো যাবে।",
+    "md_now": "🧭 মোড: {m} · বদলাও",
+    "lk_new": "🎉 নতুন সেকশন খুলেছে: <b>{t}</b>। ট্যাপ করে দেখে নাও!",
+    "lk_line": "🔒 {t} — {d} দিন পরে বা 🧠 লেভেল {l} থেকে",
+    "lk_title": "সেকশনগুলো ধীরে ধীরে খোলে, যাতে বুঝতে সহজ হয়:",
+    "di_title": "⚔️ তোমাকে ডুয়েলে চ্যালেঞ্জ করা হয়েছে!",
+    "di_text": "<b>{n}</b> তোমাকে পাথর-কাঁচি-কাগজ ডুয়েলে চ্যালেঞ্জ করছে।<br>বাজি {s} 🪙 · বিজয়ী পাবে {p} 🪙।",
+    "di_accept": "⚔️ চ্যালেঞ্জ গ্রহণ করো",
+    "di_decline": "এখন না",
+    "di_waiting": "{s} 🪙-এর টেবিলে বন্ধুর অপেক্ষা…",
+    "di_left": "চ্যালেঞ্জ আরও {h} ঘণ্টা থাকবে — তারপর বাজি ফেরত আসবে",
+    "di_share": "📤 বন্ধুকে চ্যালেঞ্জ পাঠাও",
+    "di_waitHint": "লিংকটা বন্ধুকে পাঠাও। বন্ধু চ্যালেঞ্জ নিলে বট তোমাকে চ্যাটে জানাবে। বাজি টেবিলে রাখা আছে; মত বদলালে টেবিল ছেড়ে দাও — বাজি ফেরত আসবে।",
+    "di_head": "🤝 বন্ধুকে চ্যালেঞ্জ করো",
+    "di_hint": "লিংক দিয়ে নিজের টেবিল: এটা সারিতে যায় না, শুধু তোমার বন্ধুর অপেক্ষা করে। লিংক দিয়ে আসা নতুন খেলোয়াড় তোমার বন্ধু হয়ে যায়।",
+    "di_table": "🤝 বন্ধুকে চ্যালেঞ্জ · টেবিল {s} 🪙",
+    "di_shareText": "ROFL HUB-এ তোমাকে ডুয়েলে চ্যালেঞ্জ করছি! বাজি {s} 🪙 — দেখি কে জেতে 😎",
+    "ac_title": "🏅 আমার অর্জন",
+    "ac_streak": "🔥 দিনের কেসের স্ট্রিক: {n}",
+    "ac_hint": "সব অর্জন এক কার্ডে জমা হয় — স্টোরিতে দাও বা বন্ধুকে পাঠাও।",
+    "ac_make": "📸 কার্ড তৈরি করো",
+    "ac_cardSub": "আমার অর্জন",
+    "ac_cardCall": "এর চেয়ে ভালো পারবে?",
+    "ac_shareText": "ROFL HUB-এ আমার স্কোর: 🧠 লেভেল {l}, 🗺 {q}টা কোয়েস্ট, 🕵️ {d}টা কেস, ⚔️ ডুয়েলে {w}টা জয়। এর চেয়ে ভালো পারবে?",
+    "ac_story": "📲 স্টোরিতে দাও",
+    "ac_send": "✈️ বন্ধুকে পাঠাও",
+    "ac_save": "💾 ছবি সেভ করো",
+    "ac_quests": "কোয়েস্ট শেষ",
+    "ac_epics": "এপিক",
+    "ac_cases": "কেস সমাধান",
+    "ac_duels": "ডুয়েলে জয়",
+    "ac_wins": "গেমে জয়",
+    "ac_friends": "সক্রিয় বন্ধু",
+    "ac_robots": "রোবট",
+    "ac_days": "খেলায় দিন",
+    "tf_title": "💸 মুদ্রা পাঠাও",
+    "tf_hint": "বন্ধুকে — @username, ID বা VIP ID দিয়ে। কমপক্ষে {m} 🪙, ফি {f}%।",
+    "tf_locked": "🔒 মুদ্রা পাঠানো যায় 🧠 লেভেল {l} আর {c}টা দৈনিক কাটলেট নেওয়ার পর — যাতে ভুয়া অ্যাকাউন্ট শুরুর মুদ্রা সরাতে না পারে। পাওয়া যায় এখনই।",
+    "tf_to": "কাকে",
+    "tf_amount": "কত 🪙",
+    "tf_btn": "💸 পাঠাও",
+    "tf_ask": "{to}-কে {a} 🪙 পাঠাবে? ফি {f} 🪙, প্রাপক পাবে {r} 🪙।",
+    "tf_done": "হয়ে গেছে! {to} পাচ্ছে {r} 🪙",
+    "sq_choose": "কী তৈরি করবে বেছে নাও:",
+    "sq_squad": "🛡 স্কোয়াড",
+    "sq_squadText": "{n} জন যোদ্ধা পর্যন্ত · {c} 🪙। তোমার আর দু-একজন বন্ধুর জন্য; পরে ক্যাপ্টেন একে টিমে বড় করতে পারবে।",
+    "sq_team": "🏆 টিম",
+    "sq_teamText": "{n} জন যোদ্ধা পর্যন্ত · {c} 🪙। যুদ্ধ আর খনির জন্য বড় টিম।",
+    "sq_createBtn": "{cost} 🪙-তে স্কোয়াড তৈরি করো",
+    "sq_created": "স্কোয়াড “{n}” তৈরি হয়েছে — তুমি ক্যাপ্টেন!",
+    "sq_label": "স্কোয়াড",
+    "sq_upHint": "স্কোয়াডে জায়গা কম? টিমে বড় করো — {n} জন যোদ্ধা পর্যন্ত।",
+    "sq_upBtn": "⬆️ টিমে বড় করো · {c} 🪙",
+    "sq_upAsk": "{c} 🪙-তে স্কোয়াডকে টিমে বড় করবে? জায়গা হবে {n}টা।",
+    "sq_upDone": "তোমার স্কোয়াড এখন টিম!",
+    "cs_title": "🕵️ দিনের কেস",
+    "cs_tile": "সবার জন্য একটাই কেস · ৪ জন সন্দেহভাজন · একবারই অভিযোগ",
+    "cs_none": "আজ কোনো কেস নেই — কাল এসো।",
+    "cs_culprit": "অপরাধী",
+    "cs_accuse": "👉 অভিযোগ করো",
+    "cs_clueLocked": "সূত্র {n} — এখনো লুকানো",
+    "cs_more": "🔍 আরেকটা সূত্র খোলো (পুরস্কার হবে {r} 🪙)",
+    "cs_rules": "অভিযোগ করা যায় শুধু একজনকে, শুধু একবার। যত কম সূত্র লাগবে, পুরস্কার তত বেশি:",
+    "cs_solved": "🎉 কেস সমাধান! +{r} 🪙",
+    "cs_failed": "ভুল হলো! অপরাধী ছিল {n}।",
+    "cs_bonus": "🔥 স্ট্রিক বোনাস: +{b} 🪙",
+    "cs_solution": "সমাধান:",
+    "cs_stats": "আজ সমাধান করেছে: {p} জনের মধ্যে {s} জন · গড় সূত্র: {a}",
+    "cs_share": "📤 সবাইকে দেখাও",
+    "cs_next": "নতুন কেস {t} পরে",
+    "cs_head": "🕵️ কেস #{n}",
+    "cs_suspects": "👥 সন্দেহভাজন",
+    "cs_clues": "🔍 সূত্র",
+    "cs_streak": "🔥 সমাধান করা কেসের স্ট্রিক: {n} · টানা প্রতি {e}-তম দিনে +{b} 🪙",
+    "cs_accuseAsk": "{n}-কে অভিযোগ করবে? অভিযোগ একটাই — ফেরানো যাবে না।",
+    "cs_shareText": "🕵️ দিনের কেস #{n}\n{s}\n🔥 স্ট্রিক: {k}\nআরও দ্রুত সমাধান করতে পারবে?",
     "qs_epicPaid": "⚡ আনলিমিটেড দিয়ে",
     "qs_paper": "📝 পরামর্শ: খুঁটিনাটি কাগজে লিখে রাখো — মনোযোগীরা সহজে সমাধান পায়।",
     "qs_total": "📚 লাইব্রেরিতে কোয়েস্ট: {n}",
@@ -2443,6 +2641,90 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "md_title": "🧭 Wie willst du spielen?",
+    "md_hint": "ROFL HUB ist groß. Wähle, womit du anfängst — den Modus kannst du jederzeit im Pass ändern.",
+    "md_full": "🌐 Das ganze Ökosystem",
+    "md_fullText": "Roboterfarm, Lager, Werkstatt, Börse, Teams, Raids, Minen und die Weltkarte — plus alle Spiele und Geschichten. Die Bereiche öffnen sich nach und nach über 3 Tage, damit du nicht in Buttons versinkst.",
+    "md_puzzle": "🧩 Spiele und Geschichten",
+    "md_puzzleText": "Nur Quiz, Minispiele, Quests, der Fall des Tages und Duelle mit Freunden. Ohne Wirtschaft und überflüssige Tabs.",
+    "md_later": "Die Farm läuft in jedem Modus — die Münzen sammeln sich, auch wenn du nie reinschaust.",
+    "md_toFull": "Das ganze Ökosystem einschalten? Farm, Lager, Börse, Teams und die übrigen Bereiche erscheinen.",
+    "md_toPuzzle": "Nur Spiele und Geschichten behalten? Die Farm läuft weiter, die anderen Tabs werden ausgeblendet — zurückholen kannst du sie genau hier.",
+    "md_now": "🧭 Modus: {m} · ändern",
+    "lk_new": "🎉 Neue Bereiche sind offen: <b>{t}</b>. Tippe, um reinzuschauen!",
+    "lk_line": "🔒 {t} — in {d} T. oder ab 🧠 Level {l}",
+    "lk_title": "Die Bereiche öffnen sich nach und nach, damit du dich leichter zurechtfindest:",
+    "di_title": "⚔️ Du wirst zum Duell gefordert!",
+    "di_text": "<b>{n}</b> fordert dich zum Duell „Schere, Stein, Papier“.<br>Einsatz {s} 🪙 · der Sieg bringt {p} 🪙.",
+    "di_accept": "⚔️ Herausforderung annehmen",
+    "di_decline": "Jetzt nicht",
+    "di_waiting": "Warten auf deinen Freund am {s}-🪙-Tisch…",
+    "di_left": "Die Herausforderung gilt noch {h} Std. — danach kommt dein Einsatz zurück",
+    "di_share": "📤 Herausforderung an einen Freund senden",
+    "di_waitHint": "Schick den Link an einen Freund. Sobald er annimmt, schreibt dir der Bot im Chat. Dein Einsatz liegt schon auf dem Tisch; überlegst du es dir anders — verlass den Tisch, und er kommt zurück.",
+    "di_head": "🤝 Freund herausfordern",
+    "di_hint": "Dein eigener Tisch per Link: Er kommt nicht in die Warteschlange und wartet nur auf deinen Freund. Wer neu ist und über den Link kommt, wird dein Freund.",
+    "di_table": "🤝 Freund herausfordern · Tisch {s} 🪙",
+    "di_shareText": "Ich fordere dich zum Duell in ROFL HUB! Einsatz {s} 🪙 — mal sehen, wer gewinnt 😎",
+    "ac_title": "🏅 Meine Erfolge",
+    "ac_streak": "🔥 Serie beim Fall des Tages: {n}",
+    "ac_hint": "Alle Erfolge kommen auf eine Karte — poste sie in deiner Story oder schick sie einem Freund.",
+    "ac_make": "📸 Karte erstellen",
+    "ac_cardSub": "meine Erfolge",
+    "ac_cardCall": "Schaffst du mehr?",
+    "ac_shareText": "Mein Stand in ROFL HUB: 🧠 Level {l}, 🗺 Quests: {q}, 🕵️ Fälle: {d}, ⚔️ Duellsiege: {w}. Schaffst du mehr?",
+    "ac_story": "📲 In meiner Story posten",
+    "ac_send": "✈️ An einen Freund senden",
+    "ac_save": "💾 Bild speichern",
+    "ac_quests": "Quests geschafft",
+    "ac_epics": "Epen",
+    "ac_cases": "Fälle gelöst",
+    "ac_duels": "Duellsiege",
+    "ac_wins": "Spielsiege",
+    "ac_friends": "aktive Freunde",
+    "ac_robots": "Roboter",
+    "ac_days": "Tage im Spiel",
+    "tf_title": "💸 Münzen senden",
+    "tf_hint": "An einen Freund — per @username, ID oder VIP ID. Mindestens {m} 🪙, Gebühr {f}%.",
+    "tf_locked": "🔒 Münzen senden kannst du ab 🧠 Level {l} und {c} abgeholten täglichen Frikadellen — so können Fake-Accounts keine Startmünzen abziehen. Empfangen geht sofort.",
+    "tf_to": "An",
+    "tf_amount": "Wie viele 🪙",
+    "tf_btn": "💸 Senden",
+    "tf_ask": "{a} 🪙 an {to} senden? Gebühr {f} 🪙, ankommen werden {r} 🪙.",
+    "tf_done": "Fertig! {to} erhält {r} 🪙",
+    "sq_choose": "Wähle, was du gründest:",
+    "sq_squad": "🛡 Trupp",
+    "sq_squadText": "Bis zu {n} Kämpfer · {c} 🪙. Für dich und ein paar Freunde; später kann der Kapitän ihn zum Team ausbauen.",
+    "sq_team": "🏆 Team",
+    "sq_teamText": "Bis zu {n} Kämpfer · {c} 🪙. Ein großes Team für Battles und Minen.",
+    "sq_createBtn": "Trupp gründen für {cost} 🪙",
+    "sq_created": "Trupp „{n}“ gegründet — du bist der Kapitän!",
+    "sq_label": "Trupp",
+    "sq_upHint": "Wird es im Trupp eng? Bau ihn zum Team aus — bis zu {n} Kämpfer.",
+    "sq_upBtn": "⬆️ Zum Team ausbauen · {c} 🪙",
+    "sq_upAsk": "Den Trupp für {c} 🪙 zum Team ausbauen? Dann gibt es {n} Plätze.",
+    "sq_upDone": "Dein Trupp ist jetzt ein Team!",
+    "cs_title": "🕵️ Fall des Tages",
+    "cs_tile": "Ein Fall für alle · 4 Verdächtige · eine Anklage",
+    "cs_none": "Heute gibt es keinen Fall — schau morgen wieder rein.",
+    "cs_culprit": "Täter",
+    "cs_accuse": "👉 Anklagen",
+    "cs_clueLocked": "Hinweis {n} — noch verborgen",
+    "cs_more": "🔍 Noch einen Hinweis aufdecken (Belohnung wird {r} 🪙)",
+    "cs_rules": "Du kannst nur eine Person anklagen, und nur einmal. Je weniger Hinweise du brauchst, desto größer die Belohnung:",
+    "cs_solved": "🎉 Fall gelöst! +{r} 🪙",
+    "cs_failed": "Daneben! Der Täter war {n}.",
+    "cs_bonus": "🔥 Serienbonus: +{b} 🪙",
+    "cs_solution": "Auflösung:",
+    "cs_stats": "Heute gelöst: {s} von {p} · im Schnitt Hinweise: {a}",
+    "cs_share": "📤 Angeben",
+    "cs_next": "Neuer Fall in {t}",
+    "cs_head": "🕵️ Fall Nr. {n}",
+    "cs_suspects": "👥 Verdächtige",
+    "cs_clues": "🔍 Hinweise",
+    "cs_streak": "🔥 Serie gelöster Fälle: {n} · jeden {e}. Tag in Folge +{b} 🪙",
+    "cs_accuseAsk": "{n} anklagen? Es gibt nur eine Anklage — zurücknehmen geht nicht.",
+    "cs_shareText": "🕵️ Fall des Tages Nr. {n}\n{s}\n🔥 Serie: {k}\nKannst du ihn schneller lösen?",
     "qs_epicPaid": "⚡ mit Unbegrenzt",
     "qs_paper": "📝 Tipp: Notiere dir die Details auf Papier — Aufmerksame lösen es leichter.",
     "qs_total": "📚 Quests in der Bibliothek: {n}",
@@ -3161,6 +3443,90 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "md_title": "🧭 ¿Cómo quieres jugar?",
+    "md_hint": "ROFL HUB es grande. Elige por dónde empezar: puedes cambiar de modo cuando quieras en el pasaporte.",
+    "md_full": "🌐 Todo el ecosistema",
+    "md_fullText": "Granja de robots, inventario, taller, bolsa, equipos, asaltos, minas y el mapa del mundo, además de todos los juegos e historias. Las secciones se abren poco a poco, en 3 días, para que no te ahogues entre botones.",
+    "md_puzzle": "🧩 Juegos e historias",
+    "md_puzzleText": "Solo la trivia, los minijuegos, los quests, el Caso del día y los duelos con amigos. Sin economía ni pestañas de más.",
+    "md_later": "La granja funciona en cualquier modo: las monedas se acumulan aunque nunca entres a mirarla.",
+    "md_toFull": "¿Activar todo el ecosistema? Aparecerán la granja, el inventario, la bolsa, los equipos y las demás secciones.",
+    "md_toPuzzle": "¿Dejar solo juegos e historias? La granja sigue funcionando y las demás pestañas se ocultan; puedes recuperarlas aquí mismo.",
+    "md_now": "🧭 Modo: {m} · cambiar",
+    "lk_new": "🎉 Se abrieron nuevas secciones: <b>{t}</b>. ¡Toca para echar un vistazo!",
+    "lk_line": "🔒 {t}: en {d} d o desde el nivel 🧠 {l}",
+    "lk_title": "Las secciones se abren poco a poco para que sea más fácil orientarse:",
+    "di_title": "⚔️ ¡Te retan a un duelo!",
+    "di_text": "<b>{n}</b> te reta a un duelo de piedra, papel o tijera.<br>Apuesta {s} 🪙 · quien gane se lleva {p} 🪙.",
+    "di_accept": "⚔️ Aceptar el reto",
+    "di_decline": "Ahora no",
+    "di_waiting": "Esperando a tu amigo en la mesa de {s} 🪙…",
+    "di_left": "El reto sigue activo {h} h más; después tu apuesta vuelve",
+    "di_share": "📤 Enviar el reto a un amigo",
+    "di_waitHint": "Envía el enlace a un amigo. Cuando acepte el reto, el bot te escribirá en el chat. Tu apuesta ya está en la mesa; si cambias de idea, deja la mesa y te la devolvemos.",
+    "di_head": "🤝 Retar a un amigo",
+    "di_hint": "Tu propia mesa por enlace: no entra en la cola y solo espera a tu amigo. Quien llegue nuevo por el enlace se vuelve tu amigo.",
+    "di_table": "🤝 Retar a un amigo · mesa de {s} 🪙",
+    "di_shareText": "¡Te reto a un duelo en ROFL HUB! Apuesta {s} 🪙, a ver quién gana 😎",
+    "ac_title": "🏅 Mis logros",
+    "ac_streak": "🔥 Racha de Casos del día: {n}",
+    "ac_hint": "Todos tus logros se reúnen en una tarjeta: publícala en tu historia o envíasela a un amigo.",
+    "ac_make": "📸 Crear la tarjeta",
+    "ac_cardSub": "mis logros",
+    "ac_cardCall": "¿Puedes superarlo?",
+    "ac_shareText": "Mi marcador en ROFL HUB: 🧠 nivel {l}, 🗺 {q} quests, 🕵️ {d} casos, ⚔️ {w} duelos ganados. ¿Puedes superarlo?",
+    "ac_story": "📲 Publicar en mi historia",
+    "ac_send": "✈️ Enviar a un amigo",
+    "ac_save": "💾 Guardar la imagen",
+    "ac_quests": "quests completados",
+    "ac_epics": "épicos",
+    "ac_cases": "casos resueltos",
+    "ac_duels": "duelos ganados",
+    "ac_wins": "victorias en juegos",
+    "ac_friends": "amigos activos",
+    "ac_robots": "robots",
+    "ac_days": "días en el juego",
+    "tf_title": "💸 Enviar monedas",
+    "tf_hint": "A un amigo: por @username, ID o VIP ID. Mínimo {m} 🪙, comisión {f}%.",
+    "tf_locked": "🔒 Puedes enviar monedas desde el nivel 🧠 {l} y tras reclamar {c} chuletas diarias: así las cuentas falsas no vacían las monedas iniciales. Recibir funciona desde ya.",
+    "tf_to": "Para",
+    "tf_amount": "Cuántas 🪙",
+    "tf_btn": "💸 Enviar",
+    "tf_ask": "¿Enviar {a} 🪙 a {to}? Comisión {f} 🪙, recibirá {r} 🪙.",
+    "tf_done": "¡Listo! {to} recibe {r} 🪙",
+    "sq_choose": "Elige qué quieres crear:",
+    "sq_squad": "🛡 Escuadrón",
+    "sq_squadText": "Hasta {n} luchadores · {c} 🪙. Para ti y un par de amigos; más adelante quien capitanea puede ampliarlo a equipo.",
+    "sq_team": "🏆 Equipo",
+    "sq_teamText": "Hasta {n} luchadores · {c} 🪙. Un equipo grande para batallas y minas.",
+    "sq_createBtn": "Crear escuadrón por {cost} 🪙",
+    "sq_created": "Escuadrón «{n}» creado: ¡estás al mando!",
+    "sq_label": "Escuadrón",
+    "sq_upHint": "¿El escuadrón se queda pequeño? Amplíalo a equipo: hasta {n} luchadores.",
+    "sq_upBtn": "⬆️ Ampliar a equipo · {c} 🪙",
+    "sq_upAsk": "¿Ampliar el escuadrón a equipo por {c} 🪙? Habrá {n} plazas.",
+    "sq_upDone": "¡Tu escuadrón ya es un equipo!",
+    "cs_title": "🕵️ Caso del día",
+    "cs_tile": "Un caso para todos · 4 sospechosos · una sola acusación",
+    "cs_none": "Hoy no hay caso: vuelve mañana.",
+    "cs_culprit": "culpable",
+    "cs_accuse": "👉 Acusar",
+    "cs_clueLocked": "Pista {n}: aún oculta",
+    "cs_more": "🔍 Revelar otra pista (la recompensa será {r} 🪙)",
+    "cs_rules": "Solo puedes acusar a una persona y solo una vez. Cuantas menos pistas necesites, mayor la recompensa:",
+    "cs_solved": "🎉 ¡Caso resuelto! +{r} 🪙",
+    "cs_failed": "¡Fallaste! El culpable era {n}.",
+    "cs_bonus": "🔥 Bono de racha: +{b} 🪙",
+    "cs_solution": "Solución:",
+    "cs_stats": "Resueltos hoy: {s} de {p} · pistas de media: {a}",
+    "cs_share": "📤 Presumir",
+    "cs_next": "Nuevo caso en {t}",
+    "cs_head": "🕵️ Caso n.º {n}",
+    "cs_suspects": "👥 Sospechosos",
+    "cs_clues": "🔍 Pistas",
+    "cs_streak": "🔥 Racha de casos resueltos: {n} · cada {e}.º día seguido +{b} 🪙",
+    "cs_accuseAsk": "¿Acusar a {n}? Solo hay una acusación: no podrás cambiarla.",
+    "cs_shareText": "🕵️ Caso del día n.º {n}\n{s}\n🔥 Racha: {k}\n¿Puedes resolverlo más rápido?",
     "qs_epicPaid": "⚡ con Ilimitado",
     "qs_paper": "📝 Consejo: apunta los detalles en papel; quien presta atención lo resuelve antes.",
     "qs_total": "📚 Misiones en la biblioteca: {n}",
@@ -3879,6 +4245,90 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "md_title": "🧭 Comment veux-tu jouer ?",
+    "md_hint": "ROFL HUB est vaste. Choisis par où commencer — tu peux changer de mode à tout moment dans le passeport.",
+    "md_full": "🌐 Tout l'écosystème",
+    "md_fullText": "Une ferme de robots, le stock, l'atelier, la bourse, les équipes, les raids, les mines et la carte du monde — plus tous les jeux et histoires. Les sections s'ouvrent peu à peu, sur 3 jours, pour ne pas te noyer sous les boutons.",
+    "md_puzzle": "🧩 Jeux et histoires",
+    "md_puzzleText": "Juste le quiz, les mini-jeux, les quêtes, l'Affaire du jour et les duels entre amis. Pas d'économie, pas d'onglets en trop.",
+    "md_later": "La ferme tourne dans tous les modes — les pièces s'accumulent même si tu n'y jettes jamais un œil.",
+    "md_toFull": "Activer tout l'écosystème ? La ferme, le stock, la bourse, les équipes et les autres sections apparaîtront.",
+    "md_toPuzzle": "Garder seulement les jeux et histoires ? La ferme continue de tourner, les autres onglets se cachent — tu peux les remettre ici même.",
+    "md_now": "🧭 Mode : {m} · changer",
+    "lk_new": "🎉 Nouvelles sections ouvertes : <b>{t}</b>. Touche pour y jeter un œil !",
+    "lk_line": "🔒 {t} — dans {d} j ou dès le niveau 🧠 {l}",
+    "lk_title": "Les sections s'ouvrent peu à peu, pour mieux t'y retrouver :",
+    "di_title": "⚔️ On te défie en duel !",
+    "di_text": "<b>{n}</b> te défie en duel de pierre-feuille-ciseaux.<br>Mise {s} 🪙 · le gagnant remporte {p} 🪙.",
+    "di_accept": "⚔️ Relever le défi",
+    "di_decline": "Pas maintenant",
+    "di_waiting": "On attend ton ami à la table de {s} 🪙…",
+    "di_left": "Le défi reste ouvert encore {h} h — ensuite ta mise revient",
+    "di_share": "📤 Envoyer le défi à un ami",
+    "di_waitHint": "Envoie le lien à un ami. Quand le défi sera accepté, le bot t'écrira dans le chat. Ta mise est déjà sur la table ; si tu changes d'avis, quitte la table et elle te revient.",
+    "di_head": "🤝 Défier un ami",
+    "di_hint": "Ta propre table par lien : elle ne passe pas par la file et n'attend que ton ami. Un nouveau venu arrivé par le lien devient ton ami.",
+    "di_table": "🤝 Défier un ami · table de {s} 🪙",
+    "di_shareText": "Je te défie en duel sur ROFL HUB ! Mise {s} 🪙 — on va voir qui gagne 😎",
+    "ac_title": "🏅 Mes succès",
+    "ac_streak": "🔥 Série d'Affaires du jour : {n}",
+    "ac_hint": "Tous tes succès réunis sur une carte — publie-la en story ou envoie-la à un ami.",
+    "ac_make": "📸 Créer la carte",
+    "ac_cardSub": "mes succès",
+    "ac_cardCall": "Tu fais mieux ?",
+    "ac_shareText": "Mon score sur ROFL HUB : 🧠 niveau {l}, 🗺 {q} quêtes, 🕵️ {d} affaires, ⚔️ {w} duels gagnés. Tu fais mieux ?",
+    "ac_story": "📲 Publier en story",
+    "ac_send": "✈️ Envoyer à un ami",
+    "ac_save": "💾 Enregistrer l'image",
+    "ac_quests": "quêtes terminées",
+    "ac_epics": "épopées",
+    "ac_cases": "affaires résolues",
+    "ac_duels": "duels gagnés",
+    "ac_wins": "victoires en jeu",
+    "ac_friends": "amis actifs",
+    "ac_robots": "robots",
+    "ac_days": "jours de jeu",
+    "tf_title": "💸 Envoyer des pièces",
+    "tf_hint": "À un ami — par @username, ID ou VIP ID. Minimum {m} 🪙, commission {f} %.",
+    "tf_locked": "🔒 L'envoi de pièces s'ouvre au niveau 🧠 {l} et après {c} côtelettes du jour récupérées — ainsi les faux comptes ne siphonnent pas les pièces de départ. Recevoir, c'est possible tout de suite.",
+    "tf_to": "À",
+    "tf_amount": "Combien de 🪙",
+    "tf_btn": "💸 Envoyer",
+    "tf_ask": "Envoyer {a} 🪙 à {to} ? Commission {f} 🪙, {r} 🪙 seront reçues.",
+    "tf_done": "C'est fait ! {to} reçoit {r} 🪙",
+    "sq_choose": "Choisis ce que tu crées :",
+    "sq_squad": "🛡 Escouade",
+    "sq_squadText": "Jusqu'à {n} combattants · {c} 🪙. Pour toi et quelques amis ; plus tard, la tête de l'escouade pourra l'agrandir en équipe.",
+    "sq_team": "🏆 Équipe",
+    "sq_teamText": "Jusqu'à {n} combattants · {c} 🪙. Une grande équipe pour les batailles et les mines.",
+    "sq_createBtn": "Créer une escouade pour {cost} 🪙",
+    "sq_created": "Escouade « {n} » créée — c'est toi le capitaine !",
+    "sq_label": "Escouade",
+    "sq_upHint": "L'escouade est à l'étroit ? Agrandis-la en équipe — jusqu'à {n} combattants.",
+    "sq_upBtn": "⬆️ Passer en équipe · {c} 🪙",
+    "sq_upAsk": "Agrandir l'escouade en équipe pour {c} 🪙 ? Il y aura {n} places.",
+    "sq_upDone": "Ton escouade est devenue une équipe !",
+    "cs_title": "🕵️ Affaire du jour",
+    "cs_tile": "Une affaire pour tous · 4 suspects · une seule accusation",
+    "cs_none": "Pas d'affaire aujourd'hui — reviens demain.",
+    "cs_culprit": "coupable",
+    "cs_accuse": "👉 Accuser",
+    "cs_clueLocked": "Indice {n} — encore caché",
+    "cs_more": "🔍 Révéler un autre indice (récompense : {r} 🪙)",
+    "cs_rules": "Une seule accusation, une seule fois. Moins il te faut d'indices, plus la récompense est grande :",
+    "cs_solved": "🎉 Affaire résolue ! +{r} 🪙",
+    "cs_failed": "Raté ! Le coupable était {n}.",
+    "cs_bonus": "🔥 Bonus de série : +{b} 🪙",
+    "cs_solution": "Solution :",
+    "cs_stats": "Résolue aujourd'hui : {s} sur {p} · indices en moyenne : {a}",
+    "cs_share": "📤 Frimer",
+    "cs_next": "Nouvelle affaire dans {t}",
+    "cs_head": "🕵️ Affaire n° {n}",
+    "cs_suspects": "👥 Suspects",
+    "cs_clues": "🔍 Indices",
+    "cs_streak": "🔥 Série d'affaires résolues : {n} · chaque {e}e jour d'affilée +{b} 🪙",
+    "cs_accuseAsk": "Accuser {n} ? Une seule accusation — impossible de revenir en arrière.",
+    "cs_shareText": "🕵️ Affaire du jour n° {n}\n{s}\n🔥 Série : {k}\nTu la résous plus vite ?",
     "qs_epicPaid": "⚡ avec Illimité",
     "qs_paper": "📝 Astuce : note les détails sur papier — les plus attentifs trouvent plus vite.",
     "qs_total": "📚 Quêtes dans la bibliothèque : {n}",
@@ -4597,6 +5047,90 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "md_title": "🧭 कैसे खेलना चाहोगे?",
+    "md_hint": "ROFL HUB बड़ा है। चुनो कहाँ से शुरू करना है — मोड पासपोर्ट में कभी भी बदल सकते हो।",
+    "md_full": "🌐 पूरा इकोसिस्टम",
+    "md_fullText": "रोबोट फ़ार्म, भंडार, वर्कशॉप, बाज़ार, टीमें, छापे, खदानें और दुनिया का नक्शा — साथ में सारे गेम और कहानियाँ। सेक्शन 3 दिनों में धीरे-धीरे खुलते हैं, ताकि बटनों में उलझो नहीं।",
+    "md_puzzle": "🧩 गेम और कहानियाँ",
+    "md_puzzleText": "सिर्फ़ क्विज़, मिनी-गेम, क्वेस्ट, आज का केस और दोस्तों से डुएल। न इकॉनमी, न फ़ालतू टैब।",
+    "md_later": "फ़ार्म हर मोड में चलता है — तुम झाँको या नहीं, सिक्के जमा होते रहते हैं।",
+    "md_toFull": "पूरा इकोसिस्टम चालू करें? फ़ार्म, भंडार, बाज़ार, टीमें और बाक़ी सेक्शन दिखने लगेंगे।",
+    "md_toPuzzle": "सिर्फ़ गेम और कहानियाँ रखें? फ़ार्म चलता रहेगा, बाक़ी टैब छिप जाएँगे — उन्हें यहीं से वापस ला सकते हो।",
+    "md_now": "🧭 मोड: {m} · बदलो",
+    "lk_new": "🎉 नए सेक्शन खुल गए: <b>{t}</b>। टैप करके देखो!",
+    "lk_line": "🔒 {t} — {d} दिन में या 🧠 लेवल {l} से",
+    "lk_title": "सेक्शन धीरे-धीरे खुलते हैं, ताकि समझना आसान रहे:",
+    "di_title": "⚔️ तुम्हें डुएल की चुनौती मिली है!",
+    "di_text": "<b>{n}</b> की ओर से पत्थर-कैंची-काग़ज़ डुएल की चुनौती।<br>दांव {s} 🪙 · विजेता को {p} 🪙।",
+    "di_accept": "⚔️ चुनौती स्वीकार करें",
+    "di_decline": "अभी नहीं",
+    "di_waiting": "{s} 🪙 की टेबल पर दोस्त का इंतज़ार…",
+    "di_left": "चुनौती {h} घंटे और चलेगी — फिर दांव वापस आ जाएगा",
+    "di_share": "📤 दोस्त को चुनौती भेजो",
+    "di_waitHint": "लिंक दोस्त को भेजो। चुनौती स्वीकार होते ही बॉट तुम्हें चैट में बताएगा। दांव टेबल पर है; मन बदले तो टेबल छोड़ दो, दांव वापस आ जाएगा।",
+    "di_head": "🤝 दोस्त को चुनौती दो",
+    "di_hint": "लिंक से अपनी टेबल: यह क़तार में नहीं जाती, सिर्फ़ तुम्हारे दोस्त का इंतज़ार करती है। लिंक से आया नया खिलाड़ी तुम्हारा दोस्त बन जाता है।",
+    "di_table": "🤝 दोस्त को चुनौती · टेबल {s} 🪙",
+    "di_shareText": "ROFL HUB में तुम्हें डुएल की चुनौती! दांव {s} 🪙 — देखते हैं कौन जीतता है 😎",
+    "ac_title": "🏅 मेरी उपलब्धियाँ",
+    "ac_streak": "🔥 आज के केस की स्ट्रीक: {n}",
+    "ac_hint": "सारी उपलब्धियाँ एक कार्ड पर — इसे स्टोरी में डालो या दोस्त को भेजो।",
+    "ac_make": "📸 कार्ड बनाओ",
+    "ac_cardSub": "मेरी उपलब्धियाँ",
+    "ac_cardCall": "इसे पीछे छोड़कर दिखाओ!",
+    "ac_shareText": "ROFL HUB में मेरा स्कोर: 🧠 लेवल {l}, 🗺 {q} क्वेस्ट, 🕵️ {d} केस, ⚔️ {w} डुएल जीत। इसे पीछे छोड़कर दिखाओ!",
+    "ac_story": "📲 स्टोरी में डालो",
+    "ac_send": "✈️ दोस्त को भेजो",
+    "ac_save": "💾 तस्वीर सेव करो",
+    "ac_quests": "क्वेस्ट पूरे",
+    "ac_epics": "एपिक",
+    "ac_cases": "केस सुलझे",
+    "ac_duels": "डुएल जीत",
+    "ac_wins": "गेम जीत",
+    "ac_friends": "एक्टिव दोस्त",
+    "ac_robots": "रोबोट",
+    "ac_days": "गेम में दिन",
+    "tf_title": "💸 सिक्के भेजो",
+    "tf_hint": "दोस्त को — @username, ID या VIP ID से। कम से कम {m} 🪙, फ़ीस {f}%।",
+    "tf_locked": "🔒 सिक्के भेजना 🧠 लेवल {l} और {c} रोज़ाना कटलेट लेने के बाद खुलता है — ताकि फ़र्ज़ी अकाउंट शुरुआती सिक्के न निकाल सकें। पाना तुरंत हो सकता है।",
+    "tf_to": "किसे",
+    "tf_amount": "कितने 🪙",
+    "tf_btn": "💸 भेजो",
+    "tf_ask": "{to} को {a} 🪙 भेजें? फ़ीस {f} 🪙, उन्हें {r} 🪙 मिलेंगे।",
+    "tf_done": "हो गया! {to} को {r} 🪙 मिले",
+    "sq_choose": "चुनो, क्या बनाना है:",
+    "sq_squad": "🛡 दस्ता",
+    "sq_squadText": "{n} लड़ाकों तक · {c} 🪙। तुम्हारे और कुछ दोस्तों के लिए; बाद में कप्तान इसे टीम में बढ़ा सकता है।",
+    "sq_team": "🏆 टीम",
+    "sq_teamText": "{n} लड़ाकों तक · {c} 🪙। लड़ाइयों और खदानों के लिए बड़ी टीम।",
+    "sq_createBtn": "{cost} 🪙 में दस्ता बनाओ",
+    "sq_created": "दस्ता “{n}” बन गया — तुम कप्तान हो!",
+    "sq_label": "दस्ता",
+    "sq_upHint": "दस्ते में जगह कम पड़ रही है? इसे टीम में बढ़ाओ — {n} लड़ाकों तक।",
+    "sq_upBtn": "⬆️ टीम में बढ़ाओ · {c} 🪙",
+    "sq_upAsk": "{c} 🪙 में दस्ते को टीम में बढ़ाएँ? जगहें {n} हो जाएँगी।",
+    "sq_upDone": "तुम्हारा दस्ता अब टीम है!",
+    "cs_title": "🕵️ आज का केस",
+    "cs_tile": "सबके लिए एक केस · 4 संदिग्ध · एक ही इल्ज़ाम",
+    "cs_none": "आज कोई केस नहीं — कल आना।",
+    "cs_culprit": "दोषी",
+    "cs_accuse": "👉 इल्ज़ाम लगाओ",
+    "cs_clueLocked": "सुराग {n} — अभी छिपा है",
+    "cs_more": "🔍 एक और सुराग खोलो (इनाम {r} 🪙 हो जाएगा)",
+    "cs_rules": "इल्ज़ाम सिर्फ़ एक पर और सिर्फ़ एक बार। जितने कम सुराग लगें, उतना बड़ा इनाम:",
+    "cs_solved": "🎉 केस सुलझ गया! +{r} 🪙",
+    "cs_failed": "निशाना चूका! दोषी था {n}।",
+    "cs_bonus": "🔥 स्ट्रीक बोनस: +{b} 🪙",
+    "cs_solution": "हल:",
+    "cs_stats": "आज सुलझाया: {p} में से {s} · औसत सुराग: {a}",
+    "cs_share": "📤 दिखाओ सबको",
+    "cs_next": "नया केस {t} में",
+    "cs_head": "🕵️ केस #{n}",
+    "cs_suspects": "👥 संदिग्ध",
+    "cs_clues": "🔍 सुराग",
+    "cs_streak": "🔥 सुलझे केसों की स्ट्रीक: {n} · लगातार हर {e}वें दिन +{b} 🪙",
+    "cs_accuseAsk": "{n} पर इल्ज़ाम लगाएँ? इल्ज़ाम एक ही है — वापस नहीं ले सकते।",
+    "cs_shareText": "🕵️ आज का केस #{n}\n{s}\n🔥 स्ट्रीक: {k}\nइसे और जल्दी सुलझाकर दिखाओ!",
     "qs_epicPaid": "⚡ अनलिमिटेड के साथ",
     "qs_paper": "📝 सलाह: बारीकियाँ काग़ज़ पर लिखते जाओ — ध्यान देने वालों को हल आसानी से मिलता है।",
     "qs_total": "📚 लाइब्रेरी में क्वेस्ट: {n}",
@@ -5315,6 +5849,90 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "md_title": "🧭 Mau main dengan cara apa?",
+    "md_hint": "ROFL HUB itu luas. Pilih mau mulai dari mana — mode bisa diganti kapan saja di paspor.",
+    "md_full": "🌐 Seluruh ekosistem",
+    "md_fullText": "Ladang robot, gudang, bengkel, bursa, tim, serbuan, tambang, dan peta dunia — plus semua game dan cerita. Bagian-bagian terbuka bertahap selama 3 hari, biar kamu nggak tenggelam di tombol.",
+    "md_puzzle": "🧩 Game dan cerita",
+    "md_puzzleText": "Hanya kuis, mini-game, misi, Kasus harian, dan duel dengan teman. Tanpa ekonomi dan tab tambahan.",
+    "md_later": "Ladang bekerja di mode apa pun — koin terus terkumpul, meski kamu tidak pernah melihatnya.",
+    "md_toFull": "Aktifkan seluruh ekosistem? Ladang, gudang, bursa, tim, dan bagian lainnya akan muncul.",
+    "md_toPuzzle": "Hanya game dan cerita? Ladang tetap bekerja, tab lain disembunyikan — bisa dikembalikan di sini juga.",
+    "md_now": "🧭 Mode: {m} · ganti",
+    "lk_new": "🎉 Bagian baru terbuka: <b>{t}</b>. Ketuk untuk melihat!",
+    "lk_line": "🔒 {t} — dalam {d} hari atau dari 🧠 level {l}",
+    "lk_title": "Bagian-bagian terbuka bertahap, biar lebih mudah dipahami:",
+    "di_title": "⚔️ Kamu ditantang duel!",
+    "di_text": "<b>{n}</b> menantangmu duel batu-gunting-kertas.<br>Taruhan {s} 🪙 · pemenang dapat {p} 🪙.",
+    "di_accept": "⚔️ Terima tantangan",
+    "di_decline": "Nanti saja",
+    "di_waiting": "Menunggu temanmu di meja {s} 🪙…",
+    "di_left": "Tantangan berlaku {h} jam lagi — setelah itu taruhanmu kembali",
+    "di_share": "📤 Kirim tantangan ke teman",
+    "di_waitHint": "Kirim tautan ke teman. Saat dia menerima, bot akan mengabarimu di chat. Taruhanmu sudah di meja; kalau berubah pikiran — tinggalkan meja, taruhan kembali.",
+    "di_head": "🤝 Tantang teman",
+    "di_hint": "Meja pribadi lewat tautan: tidak masuk antrean dan hanya menunggu temanmu. Pemain baru yang datang lewat tautan jadi temanmu.",
+    "di_table": "🤝 Tantang teman · meja {s} 🪙",
+    "di_shareText": "Aku menantangmu duel di ROFL HUB! Taruhan {s} 🪙 — kita lihat siapa yang menang 😎",
+    "ac_title": "🏅 Pencapaianku",
+    "ac_streak": "🔥 Rentetan Kasus harian: {n}",
+    "ac_hint": "Semua pencapaian terkumpul di satu kartu — unggah ke story atau kirim ke teman.",
+    "ac_make": "📸 Buat kartu",
+    "ac_cardSub": "pencapaianku",
+    "ac_cardCall": "Bisa lebih baik?",
+    "ac_shareText": "Skorku di ROFL HUB: 🧠 level {l}, 🗺 {q} misi, 🕵️ {d} kasus, ⚔️ {w} kemenangan duel. Bisa lebih baik?",
+    "ac_story": "📲 Unggah ke story",
+    "ac_send": "✈️ Kirim ke teman",
+    "ac_save": "💾 Simpan gambar",
+    "ac_quests": "misi selesai",
+    "ac_epics": "epik",
+    "ac_cases": "kasus terpecahkan",
+    "ac_duels": "kemenangan duel",
+    "ac_wins": "kemenangan game",
+    "ac_friends": "teman aktif",
+    "ac_robots": "robot",
+    "ac_days": "hari dalam game",
+    "tf_title": "💸 Kirim koin",
+    "tf_hint": "Ke teman — lewat @username, ID, atau VIP ID. Minimal {m} 🪙, biaya {f}%.",
+    "tf_locked": "🔒 Kirim koin bisa mulai 🧠 level {l} dan setelah {c} kotlet harian diklaim — supaya akun palsu tidak menguras koin awal. Menerima bisa langsung.",
+    "tf_to": "Kepada",
+    "tf_amount": "Berapa 🪙",
+    "tf_btn": "💸 Kirim",
+    "tf_ask": "Kirim {a} 🪙 ke {to}? Biaya {f} 🪙, penerima mendapat {r} 🪙.",
+    "tf_done": "Beres! {to} menerima {r} 🪙",
+    "sq_choose": "Pilih yang ingin kamu buat:",
+    "sq_squad": "🛡 Regu",
+    "sq_squadText": "Hingga {n} petarung · {c} 🪙. Untukmu dan beberapa teman; nanti kapten bisa memperluasnya jadi tim.",
+    "sq_team": "🏆 Tim",
+    "sq_teamText": "Hingga {n} petarung · {c} 🪙. Tim besar untuk battle dan tambang.",
+    "sq_createBtn": "Buat regu seharga {cost} 🪙",
+    "sq_created": "Regu «{n}» dibuat — kamu kaptennya!",
+    "sq_label": "Regu",
+    "sq_upHint": "Regu mulai sesak? Perluas jadi tim — hingga {n} petarung.",
+    "sq_upBtn": "⬆️ Perluas jadi tim · {c} 🪙",
+    "sq_upAsk": "Perluas regu jadi tim seharga {c} 🪙? Tempatnya jadi {n}.",
+    "sq_upDone": "Regumu sekarang jadi tim!",
+    "cs_title": "🕵️ Kasus harian",
+    "cs_tile": "Satu kasus untuk semua · 4 tersangka · satu tuduhan",
+    "cs_none": "Hari ini tidak ada kasus — mampir lagi besok.",
+    "cs_culprit": "pelaku",
+    "cs_accuse": "👉 Tuduh",
+    "cs_clueLocked": "Petunjuk {n} — masih tersembunyi",
+    "cs_more": "🔍 Buka petunjuk lagi (hadiah jadi {r} 🪙)",
+    "cs_rules": "Kamu hanya bisa menuduh satu orang, dan hanya sekali. Makin sedikit petunjuk yang dibutuhkan, makin besar hadiahnya:",
+    "cs_solved": "🎉 Kasus terpecahkan! +{r} 🪙",
+    "cs_failed": "Meleset! Pelakunya {n}.",
+    "cs_bonus": "🔥 Bonus rentetan: +{b} 🪙",
+    "cs_solution": "Jawaban:",
+    "cs_stats": "Terpecahkan hari ini: {s} dari {p} · rata-rata petunjuk: {a}",
+    "cs_share": "📤 Pamerkan",
+    "cs_next": "Kasus baru dalam {t}",
+    "cs_head": "🕵️ Kasus #{n}",
+    "cs_suspects": "👥 Tersangka",
+    "cs_clues": "🔍 Petunjuk",
+    "cs_streak": "🔥 Rentetan kasus terpecahkan: {n} · setiap hari ke-{e} berturut-turut +{b} 🪙",
+    "cs_accuseAsk": "Tuduh {n}? Tuduhan hanya sekali — tidak bisa diubah.",
+    "cs_shareText": "🕵️ Kasus harian #{n}\n{s}\n🔥 Rentetan: {k}\nBisa memecahkannya lebih cepat?",
     "qs_epicPaid": "⚡ dengan Tanpa batas",
     "qs_paper": "📝 Tips: catat detailnya di kertas — pemain yang teliti lebih mudah memecahkannya.",
     "qs_total": "📚 Misi di perpustakaan: {n}",
@@ -6033,6 +6651,90 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "md_title": "🧭 Come vuoi giocare?",
+    "md_hint": "ROFL HUB è grande. Scegli da dove iniziare: puoi cambiare modalità in qualsiasi momento nel passaporto.",
+    "md_full": "🌐 Tutto l'ecosistema",
+    "md_fullText": "Fattoria di robot, deposito, officina, borsa, squadre, incursioni, miniere e la mappa del mondo — più tutti i giochi e le storie. Le sezioni si aprono a poco a poco in 3 giorni, così non affoghi tra i pulsanti.",
+    "md_puzzle": "🧩 Giochi e storie",
+    "md_puzzleText": "Solo quiz, minigiochi, missioni, il Caso del giorno e duelli con gli amici. Niente economia, niente schede in più.",
+    "md_later": "La fattoria funziona in ogni modalità: le monete si accumulano anche se non ci dai mai un'occhiata.",
+    "md_toFull": "Attivare tutto l'ecosistema? Compariranno fattoria, deposito, borsa, squadre e le altre sezioni.",
+    "md_toPuzzle": "Tenere solo giochi e storie? La fattoria continua a lavorare, le altre schede si nascondono: puoi riattivarle proprio qui.",
+    "md_now": "🧭 Modalità: {m} · cambia",
+    "lk_new": "🎉 Nuove sezioni aperte: <b>{t}</b>. Tocca per dare un'occhiata!",
+    "lk_line": "🔒 {t} — tra {d} g o dal livello 🧠 {l}",
+    "lk_title": "Le sezioni si aprono a poco a poco, così è più facile orientarsi:",
+    "di_title": "⚔️ Ti sfidano a duello!",
+    "di_text": "<b>{n}</b> ti sfida a un duello di carta-forbice-sasso.<br>Puntata {s} 🪙 · a chi vince {p} 🪙.",
+    "di_accept": "⚔️ Accetta la sfida",
+    "di_decline": "Non ora",
+    "di_waiting": "In attesa del tuo amico al tavolo da {s} 🪙…",
+    "di_left": "La sfida vale ancora {h} h, poi la puntata ti torna indietro",
+    "di_share": "📤 Invia la sfida a un amico",
+    "di_waitHint": "Manda il link a un amico. Quando accetta, il bot ti scrive in chat. La puntata è già sul tavolo; se cambi idea, lascia il tavolo e ti torna indietro.",
+    "di_head": "🤝 Sfida un amico",
+    "di_hint": "Un tavolo tutto tuo tramite link: non entra in coda e aspetta solo il tuo amico. Chi è nuovo ed entra dal link diventa tuo amico.",
+    "di_table": "🤝 Sfida un amico · tavolo da {s} 🪙",
+    "di_shareText": "Ti sfido a duello su ROFL HUB! Puntata {s} 🪙: vediamo chi vince 😎",
+    "ac_title": "🏅 I miei traguardi",
+    "ac_streak": "🔥 Serie di Casi del giorno: {n}",
+    "ac_hint": "Tutti i traguardi finiscono su un'unica card: pubblicala nella tua storia o mandala a un amico.",
+    "ac_make": "📸 Crea la card",
+    "ac_cardSub": "i miei traguardi",
+    "ac_cardCall": "Sai fare di meglio?",
+    "ac_shareText": "Il mio punteggio su ROFL HUB: 🧠 livello {l}, 🗺 missioni: {q}, 🕵️ casi: {d}, ⚔️ duelli vinti: {w}. Sai fare di meglio?",
+    "ac_story": "📲 Pubblica nella storia",
+    "ac_send": "✈️ Invia a un amico",
+    "ac_save": "💾 Salva l'immagine",
+    "ac_quests": "missioni completate",
+    "ac_epics": "epiche",
+    "ac_cases": "casi risolti",
+    "ac_duels": "duelli vinti",
+    "ac_wins": "vittorie nei giochi",
+    "ac_friends": "amici attivi",
+    "ac_robots": "robot",
+    "ac_days": "giorni nel gioco",
+    "tf_title": "💸 Invia monete",
+    "tf_hint": "A un amico: tramite @username, ID o VIP ID. Minimo {m} 🪙, commissione {f}%.",
+    "tf_locked": "🔒 Puoi inviare monete dal livello 🧠 {l} e dopo {c} cotolette giornaliere ritirate: così gli account falsi non svuotano le monete iniziali. Riceverle puoi subito.",
+    "tf_to": "A chi",
+    "tf_amount": "Quante 🪙",
+    "tf_btn": "💸 Invia",
+    "tf_ask": "Inviare {a} 🪙 a {to}? Commissione {f} 🪙, arriveranno {r} 🪙.",
+    "tf_done": "Fatto! {to} riceve {r} 🪙",
+    "sq_choose": "Scegli cosa creare:",
+    "sq_squad": "🛡 Pattuglia",
+    "sq_squadText": "Fino a {n} combattenti · {c} 🪙. Per te e un paio di amici; più avanti il capitano potrà ampliarla in squadra.",
+    "sq_team": "🏆 Squadra",
+    "sq_teamText": "Fino a {n} combattenti · {c} 🪙. Una grande squadra per battaglie e miniere.",
+    "sq_createBtn": "Crea una pattuglia per {cost} 🪙",
+    "sq_created": "Pattuglia «{n}» creata — sei il capitano!",
+    "sq_label": "Pattuglia",
+    "sq_upHint": "La pattuglia sta stretta? Ampliala in squadra: fino a {n} combattenti.",
+    "sq_upBtn": "⬆️ Amplia in squadra · {c} 🪙",
+    "sq_upAsk": "Ampliare la pattuglia in squadra per {c} 🪙? I posti diventeranno {n}.",
+    "sq_upDone": "La tua pattuglia ora è una squadra!",
+    "cs_title": "🕵️ Caso del giorno",
+    "cs_tile": "Un caso per tutti · 4 sospettati · un'accusa",
+    "cs_none": "Oggi niente casi: torna domani.",
+    "cs_culprit": "colpevole",
+    "cs_accuse": "👉 Accusa",
+    "cs_clueLocked": "Indizio {n}: ancora nascosto",
+    "cs_more": "🔍 Scopri un altro indizio (la ricompensa diventa {r} 🪙)",
+    "cs_rules": "Puoi accusare una sola persona, una volta sola. Meno indizi ti servono, più alta è la ricompensa:",
+    "cs_solved": "🎉 Caso risolto! +{r} 🪙",
+    "cs_failed": "Mancato! Il colpevole era {n}.",
+    "cs_bonus": "🔥 Bonus serie: +{b} 🪙",
+    "cs_solution": "Soluzione:",
+    "cs_stats": "Risolto oggi da {s} su {p} · indizi in media: {a}",
+    "cs_share": "📤 Vantati",
+    "cs_next": "Nuovo caso tra {t}",
+    "cs_head": "🕵️ Caso n. {n}",
+    "cs_suspects": "👥 Sospettati",
+    "cs_clues": "🔍 Indizi",
+    "cs_streak": "🔥 Serie di casi risolti: {n} · ogni {e}° giorno di fila +{b} 🪙",
+    "cs_accuseAsk": "Accusare {n}? L'accusa è una sola: non si torna indietro.",
+    "cs_shareText": "🕵️ Caso del giorno n. {n}\n{s}\n🔥 Serie: {k}\nRiesci a risolverlo più in fretta?",
     "qs_epicPaid": "⚡ con Illimitato",
     "qs_paper": "📝 Consiglio: annota i dettagli su carta — chi è attento risolve prima.",
     "qs_total": "📚 Missioni in biblioteca: {n}",
@@ -6751,6 +7453,90 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "md_title": "🧭 Jak chcesz grać?",
+    "md_hint": "ROFL HUB jest duży. Wybierz, od czego zacząć — tryb zmienisz w każdej chwili w paszporcie.",
+    "md_full": "🌐 Cały ekosystem",
+    "md_fullText": "Farma robotów, magazyn, warsztat, giełda, drużyny, najazdy, kopalnie i mapa świata — plus wszystkie gry i historie. Sekcje otwierają się stopniowo przez 3 dni, żeby nie utonąć w przyciskach.",
+    "md_puzzle": "🧩 Gry i historie",
+    "md_puzzleText": "Tylko quiz, minigry, questy, Sprawa dnia i pojedynki ze znajomymi. Bez ekonomii i zbędnych zakładek.",
+    "md_later": "Farma działa w każdym trybie — monety się zbierają, nawet jeśli do niej nie zaglądasz.",
+    "md_toFull": "Włączyć cały ekosystem? Pojawią się farma, magazyn, giełda, drużyny i pozostałe sekcje.",
+    "md_toPuzzle": "Zostawić tylko gry i historie? Farma dalej pracuje, pozostałe zakładki się schowają — przywrócisz je właśnie tutaj.",
+    "md_now": "🧭 Tryb: {m} · zmień",
+    "lk_new": "🎉 Otwarto nowe sekcje: <b>{t}</b>. Kliknij, żeby zajrzeć!",
+    "lk_line": "🔒 {t} — za {d} dni lub od 🧠 poziomu {l}",
+    "lk_title": "Sekcje otwierają się stopniowo, żeby łatwiej było się połapać:",
+    "di_title": "⚔️ Ktoś wyzywa cię na pojedynek!",
+    "di_text": "<b>{n}</b> wyzywa cię na pojedynek w papier-kamień-nożyce.<br>Stawka {s} 🪙 · zwycięzca dostaje {p} 🪙.",
+    "di_accept": "⚔️ Przyjmij wyzwanie",
+    "di_decline": "Nie teraz",
+    "di_waiting": "Czekamy na znajomego przy stole {s} 🪙…",
+    "di_left": "Wyzwanie jest ważne jeszcze {h} godz. — potem stawka wróci",
+    "di_share": "📤 Wyślij wyzwanie znajomemu",
+    "di_waitHint": "Wyślij link znajomemu. Gdy przyjmie wyzwanie, bot napisze do ciebie na czacie. Stawka już leży na stole; jeśli się rozmyślisz — opuść stół, a wróci do ciebie.",
+    "di_head": "🤝 Wyzwij znajomego",
+    "di_hint": "Własny stół z linku: nie trafia do kolejki i czeka tylko na twojego znajomego. Nowa osoba, która dołączy z linku, zostaje twoim znajomym.",
+    "di_table": "🤝 Wyzwij znajomego · stół {s} 🪙",
+    "di_shareText": "Wyzywam cię na pojedynek w ROFL HUB! Stawka {s} 🪙 — zobaczymy, kto wygra 😎",
+    "ac_title": "🏅 Moje osiągnięcia",
+    "ac_streak": "🔥 Seria Spraw dnia: {n}",
+    "ac_hint": "Wszystkie osiągnięcia trafiają na jedną kartę — wrzuć ją do relacji albo wyślij znajomemu.",
+    "ac_make": "📸 Utwórz kartę",
+    "ac_cardSub": "moje osiągnięcia",
+    "ac_cardCall": "Dasz radę lepiej?",
+    "ac_shareText": "Mój wynik w ROFL HUB: 🧠 poziom {l}, 🗺 questy: {q}, 🕵️ sprawy: {d}, ⚔️ wygrane pojedynki: {w}. Dasz radę lepiej?",
+    "ac_story": "📲 Wrzuć do relacji",
+    "ac_send": "✈️ Wyślij znajomemu",
+    "ac_save": "💾 Zapisz obraz",
+    "ac_quests": "ukończone questy",
+    "ac_epics": "epiki",
+    "ac_cases": "rozwiązane sprawy",
+    "ac_duels": "wygrane pojedynki",
+    "ac_wins": "wygrane w grach",
+    "ac_friends": "aktywni znajomi",
+    "ac_robots": "roboty",
+    "ac_days": "dni w grze",
+    "tf_title": "💸 Przelej monety",
+    "tf_hint": "Znajomemu — przez @username, ID lub VIP ID. Minimum {m} 🪙, prowizja {f}%.",
+    "tf_locked": "🔒 Wysyłać monety możesz od 🧠 poziomu {l} i po {c} odebranych codziennych kotletach — dzięki temu fejkowe konta nie wyprowadzą monet startowych. Odbierać możesz od razu.",
+    "tf_to": "Do kogo",
+    "tf_amount": "Ile 🪙",
+    "tf_btn": "💸 Przelej",
+    "tf_ask": "Przelać {a} 🪙 do {to}? Prowizja {f} 🪙, odbiorca dostanie {r} 🪙.",
+    "tf_done": "Gotowe! {to} otrzymuje {r} 🪙",
+    "sq_choose": "Wybierz, co zakładasz:",
+    "sq_squad": "🛡 Oddział",
+    "sq_squadText": "Do {n} wojowników · {c} 🪙. Dla ciebie i paru znajomych; później kapitan rozbuduje oddział do drużyny.",
+    "sq_team": "🏆 Drużyna",
+    "sq_teamText": "Do {n} wojowników · {c} 🪙. Duża drużyna do bitew i kopalni.",
+    "sq_createBtn": "Załóż oddział za {cost} 🪙",
+    "sq_created": "Oddział „{n}” założony — jesteś kapitanem!",
+    "sq_label": "Oddział",
+    "sq_upHint": "W oddziale robi się ciasno? Rozbuduj go do drużyny — do {n} wojowników.",
+    "sq_upBtn": "⬆️ Rozbuduj do drużyny · {c} 🪙",
+    "sq_upAsk": "Rozbudować oddział do drużyny za {c} 🪙? Miejsc będzie {n}.",
+    "sq_upDone": "Twój oddział jest teraz drużyną!",
+    "cs_title": "🕵️ Sprawa dnia",
+    "cs_tile": "Jedna sprawa dla wszystkich · 4 podejrzanych · jedno oskarżenie",
+    "cs_none": "Dziś nie ma sprawy — zajrzyj jutro.",
+    "cs_culprit": "sprawca",
+    "cs_accuse": "👉 Oskarż",
+    "cs_clueLocked": "Poszlaka {n} — jeszcze ukryta",
+    "cs_more": "🔍 Odkryj kolejną poszlakę (nagroda spadnie do {r} 🪙)",
+    "cs_rules": "Oskarżyć można tylko jedną osobę i tylko raz. Im mniej poszlak potrzebujesz, tym większa nagroda:",
+    "cs_solved": "🎉 Sprawa rozwiązana! +{r} 🪙",
+    "cs_failed": "Pudło! Sprawcą był(a) {n}.",
+    "cs_bonus": "🔥 Bonus za serię: +{b} 🪙",
+    "cs_solution": "Rozwiązanie:",
+    "cs_stats": "Dziś rozwiązało {s} z {p} · średnio poszlak: {a}",
+    "cs_share": "📤 Pochwal się",
+    "cs_next": "Nowa sprawa za {t}",
+    "cs_head": "🕵️ Sprawa nr {n}",
+    "cs_suspects": "👥 Podejrzani",
+    "cs_clues": "🔍 Poszlaki",
+    "cs_streak": "🔥 Seria rozwiązanych spraw: {n} · co {e}. dzień z rzędu +{b} 🪙",
+    "cs_accuseAsk": "Oskarżyć: {n}? Oskarżenie jest jedno — nie da się zmienić zdania.",
+    "cs_shareText": "🕵️ Sprawa dnia nr {n}\n{s}\n🔥 Seria: {k}\nRozwiążesz ją szybciej?",
     "qs_epicPaid": "⚡ z Bez limitu",
     "qs_paper": "📝 Rada: zapisuj szczegóły na kartce — uważni rozwiązują łatwiej.",
     "qs_total": "📚 Questy w bibliotece: {n}",
@@ -7469,6 +8255,90 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "md_title": "🧭 Como você quer jogar?",
+    "md_hint": "O ROFL HUB é grande. Escolha por onde começar — dá para trocar de modo quando quiser no passaporte.",
+    "md_full": "🌐 Todo o ecossistema",
+    "md_fullText": "Fazenda de robôs, estoque, oficina, bolsa, equipes, saques, minas e o mapa do mundo — além de todos os jogos e histórias. As seções abrem aos poucos, em 3 dias, para você não se afogar em botões.",
+    "md_puzzle": "🧩 Jogos e histórias",
+    "md_puzzleText": "Só o quiz, os minijogos, os quests, o Caso do dia e os duelos com amigos. Sem economia, sem abas extras.",
+    "md_later": "A fazenda funciona em qualquer modo — as moedas se acumulam mesmo que você nunca dê uma olhada.",
+    "md_toFull": "Ativar todo o ecossistema? A fazenda, o estoque, a bolsa, as equipes e as outras seções vão aparecer.",
+    "md_toPuzzle": "Ficar só com jogos e histórias? A fazenda continua funcionando e as outras abas somem — dá para trazê-las de volta aqui mesmo.",
+    "md_now": "🧭 Modo: {m} · trocar",
+    "lk_new": "🎉 Novas seções abertas: <b>{t}</b>. Toque para dar uma olhada!",
+    "lk_line": "🔒 {t} — em {d} d ou a partir do nível 🧠 {l}",
+    "lk_title": "As seções abrem aos poucos, para ficar mais fácil se orientar:",
+    "di_title": "⚔️ Desafiaram você para um duelo!",
+    "di_text": "<b>{n}</b> desafia você para um duelo de pedra, papel e tesoura.<br>Aposta {s} 🪙 · quem vencer leva {p} 🪙.",
+    "di_accept": "⚔️ Aceitar o desafio",
+    "di_decline": "Agora não",
+    "di_waiting": "Esperando seu amigo na mesa de {s} 🪙…",
+    "di_left": "O desafio vale por mais {h} h — depois a aposta volta",
+    "di_share": "📤 Enviar o desafio a um amigo",
+    "di_waitHint": "Envie o link a um amigo. Quando o desafio for aceito, o bot avisa você no chat. A aposta já está na mesa; mudou de ideia — saia da mesa e ela volta.",
+    "di_head": "🤝 Desafiar um amigo",
+    "di_hint": "Sua própria mesa por link: não entra na fila e espera só o seu amigo. Quem chegar novo pelo link vira seu amigo.",
+    "di_table": "🤝 Desafiar um amigo · mesa de {s} 🪙",
+    "di_shareText": "Desafio você para um duelo no ROFL HUB! Aposta {s} 🪙 — vamos ver quem ganha 😎",
+    "ac_title": "🏅 Minhas conquistas",
+    "ac_streak": "🔥 Sequência de Casos do dia: {n}",
+    "ac_hint": "Todas as suas conquistas reunidas num cartão — poste no seu story ou envie a um amigo.",
+    "ac_make": "📸 Criar o cartão",
+    "ac_cardSub": "minhas conquistas",
+    "ac_cardCall": "Consegue fazer melhor?",
+    "ac_shareText": "Meu placar no ROFL HUB: 🧠 nível {l}, 🗺 {q} quests, 🕵️ {d} casos, ⚔️ {w} duelos vencidos. Consegue fazer melhor?",
+    "ac_story": "📲 Postar no story",
+    "ac_send": "✈️ Enviar a um amigo",
+    "ac_save": "💾 Salvar a imagem",
+    "ac_quests": "quests concluídos",
+    "ac_epics": "épicos",
+    "ac_cases": "casos resolvidos",
+    "ac_duels": "duelos vencidos",
+    "ac_wins": "vitórias em jogos",
+    "ac_friends": "amigos ativos",
+    "ac_robots": "robôs",
+    "ac_days": "dias no jogo",
+    "tf_title": "💸 Enviar moedas",
+    "tf_hint": "Para um amigo — por @username, ID ou VIP ID. Mínimo {m} 🪙, taxa {f}%.",
+    "tf_locked": "🔒 Enviar moedas libera no nível 🧠 {l} e depois de pegar {c} bifes diários — assim contas falsas não drenam as moedas iniciais. Receber já funciona.",
+    "tf_to": "Para",
+    "tf_amount": "Quantas 🪙",
+    "tf_btn": "💸 Enviar",
+    "tf_ask": "Enviar {a} 🪙 para {to}? Taxa {f} 🪙, chegam {r} 🪙.",
+    "tf_done": "Pronto! {to} recebe {r} 🪙",
+    "sq_choose": "Escolha o que criar:",
+    "sq_squad": "🛡 Esquadrão",
+    "sq_squadText": "Até {n} lutadores · {c} 🪙. Para você e alguns amigos; depois, quem comanda pode ampliar para equipe.",
+    "sq_team": "🏆 Equipe",
+    "sq_teamText": "Até {n} lutadores · {c} 🪙. Uma equipe grande para batalhas e minas.",
+    "sq_createBtn": "Criar esquadrão por {cost} 🪙",
+    "sq_created": "Esquadrão “{n}” criado — você está no comando!",
+    "sq_label": "Esquadrão",
+    "sq_upHint": "O esquadrão ficou apertado? Amplie para equipe — até {n} lutadores.",
+    "sq_upBtn": "⬆️ Ampliar para equipe · {c} 🪙",
+    "sq_upAsk": "Ampliar o esquadrão para equipe por {c} 🪙? Serão {n} vagas.",
+    "sq_upDone": "Seu esquadrão agora é uma equipe!",
+    "cs_title": "🕵️ Caso do dia",
+    "cs_tile": "Um caso para todos · 4 suspeitos · uma só acusação",
+    "cs_none": "Hoje não tem caso — volte amanhã.",
+    "cs_culprit": "culpado",
+    "cs_accuse": "👉 Acusar",
+    "cs_clueLocked": "Pista {n} — ainda oculta",
+    "cs_more": "🔍 Revelar outra pista (a recompensa vira {r} 🪙)",
+    "cs_rules": "Dá para acusar só um suspeito e só uma vez. Quanto menos pistas precisar, maior a recompensa:",
+    "cs_solved": "🎉 Caso resolvido! +{r} 🪙",
+    "cs_failed": "Errou! O culpado era {n}.",
+    "cs_bonus": "🔥 Bônus de sequência: +{b} 🪙",
+    "cs_solution": "Solução:",
+    "cs_stats": "Resolvido hoje: {s} de {p} · média de pistas: {a}",
+    "cs_share": "📤 Exibir",
+    "cs_next": "Novo caso em {t}",
+    "cs_head": "🕵️ Caso nº {n}",
+    "cs_suspects": "👥 Suspeitos",
+    "cs_clues": "🔍 Pistas",
+    "cs_streak": "🔥 Sequência de casos resolvidos: {n} · a cada {e}º dia seguido +{b} 🪙",
+    "cs_accuseAsk": "Acusar {n}? Só existe uma acusação — não dá para voltar atrás.",
+    "cs_shareText": "🕵️ Caso do dia nº {n}\n{s}\n🔥 Sequência: {k}\nConsegue resolver mais rápido?",
     "qs_epicPaid": "⚡ com Ilimitado",
     "qs_paper": "📝 Dica: anote os detalhes no papel — quem presta atenção resolve mais fácil.",
     "qs_total": "📚 Missões na biblioteca: {n}",
@@ -8187,6 +9057,90 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "md_title": "🧭 Qanday o'ynaysan?",
+    "md_hint": "ROFL HUB katta. Nimadan boshlashni tanla — rejimni istalgan payt pasportda almashtirish mumkin.",
+    "md_full": "🌐 Butun ekotizim",
+    "md_fullText": "Robotlar fermasi, ombor, ustaxona, birja, jamoalar, bosqinlar, konlar va dunyo xaritasi — ustiga barcha o'yinlar va hikoyalar. Bo'limlar tugmalarga g'arq bo'lmasliging uchun 3 kun ichida asta-sekin ochiladi.",
+    "md_puzzle": "🧩 O'yinlar va hikoyalar",
+    "md_puzzleText": "Faqat viktorina, mini-o'yinlar, kvestlar, Kun ishi va do'stlar bilan duellar. Iqtisodsiz va ortiqcha bo'limlarsiz.",
+    "md_later": "Ferma har qanday rejimda ishlaydi — unga qaramasang ham tangalar yig'ilaveradi.",
+    "md_toFull": "Butun ekotizim yoqilsinmi? Ferma, ombor, birja, jamoalar va boshqa bo'limlar paydo bo'ladi.",
+    "md_toPuzzle": "Faqat o'yinlar va hikoyalar qolsinmi? Ferma ishlashda davom etadi, boshqa bo'limlar yashirinadi — ularni shu yerda qaytarish mumkin.",
+    "md_now": "🧭 Rejim: {m} · almashtirish",
+    "lk_new": "🎉 Yangi bo'limlar ochildi: <b>{t}</b>. Ko'rish uchun bos!",
+    "lk_line": "🔒 {t} — {d} kundan keyin yoki 🧠 {l}-darajadan",
+    "lk_title": "Bo'limlar oson tushunib olishing uchun asta-sekin ochiladi:",
+    "di_title": "⚔️ Seni duelga chaqirishyapti!",
+    "di_text": "<b>{n}</b> seni «tosh-qaychi-qog'oz» dueliga chaqiryapti.<br>Garov {s} 🪙 · g'olibga {p} 🪙.",
+    "di_accept": "⚔️ Chaqiruvni qabul qilish",
+    "di_decline": "Hozir emas",
+    "di_waiting": "Do'stingni {s} 🪙 stolida kutyapmiz…",
+    "di_left": "Chaqiruv yana {h} soat amal qiladi — keyin garov qaytadi",
+    "di_share": "📤 Chaqiruvni do'stga yuborish",
+    "di_waitHint": "Havolani do'stingga yubor. Do'sting chaqiruvni qabul qilganda, bot senga chatda yozadi. Garov allaqachon stolda; fikringdan qaytsang — stolni tark et, garov qaytadi.",
+    "di_head": "🤝 Do'stni chaqirish",
+    "di_hint": "Havola orqali o'z stoling: u navbatga tushmaydi, faqat do'stingni kutadi. Havola orqali kelgan yangi o'yinchi do'sting bo'ladi.",
+    "di_table": "🤝 Do'stni chaqirish · {s} 🪙 stol",
+    "di_shareText": "Seni ROFL HUB'da duelga chaqiraman! Garov {s} 🪙 — ko'ramiz, kim kimni 😎",
+    "ac_title": "🏅 Mening yutuqlarim",
+    "ac_streak": "🔥 Kun ishlari seriyasi: {n}",
+    "ac_hint": "Barcha yutuqlaring bitta kartochkaga yig'iladi — uni hikoyaga joylash yoki do'stga yuborish mumkin.",
+    "ac_make": "📸 Kartochka yaratish",
+    "ac_cardSub": "mening yutuqlarim",
+    "ac_cardCall": "Bundan yaxshiroq qila olasanmi?",
+    "ac_shareText": "ROFL HUB'dagi hisobim: 🧠 {l}-daraja, 🗺 {q} ta kvest, 🕵️ {d} ta ish, ⚔️ duellarda {w} ta g'alaba. Bundan yaxshiroq qila olasanmi?",
+    "ac_story": "📲 Hikoyaga joylash",
+    "ac_send": "✈️ Do'stga yuborish",
+    "ac_save": "💾 Rasmni saqlash",
+    "ac_quests": "kvest o'tildi",
+    "ac_epics": "epik",
+    "ac_cases": "ish ochildi",
+    "ac_duels": "duelda g'alaba",
+    "ac_wins": "o'yinlarda g'alaba",
+    "ac_friends": "faol do'st",
+    "ac_robots": "robot",
+    "ac_days": "kun o'yinda",
+    "tf_title": "💸 Tanga o'tkazish",
+    "tf_hint": "Do'stga — @username, ID yoki VIP ID bo'yicha. Kamida {m} 🪙, komissiya {f}%.",
+    "tf_locked": "🔒 Tanga yuborish 🧠 {l}-darajadan va {c} ta kundalik kotlet olgandan keyin ochiladi — shunda feyklar boshlang'ich tangalarni o'tkazib yubora olmaydi. Qabul qilish darhol ishlaydi.",
+    "tf_to": "Kimga",
+    "tf_amount": "Qancha 🪙",
+    "tf_btn": "💸 O'tkazish",
+    "tf_ask": "{to} ga {a} 🪙 o'tkazilsinmi? Komissiya {f} 🪙, oluvchiga {r} 🪙 boradi.",
+    "tf_done": "Tayyor! {to} {r} 🪙 oladi",
+    "sq_choose": "Nima yaratishingni tanla:",
+    "sq_squad": "🛡 Otryad",
+    "sq_squadText": "{n} tagacha jangchi · {c} 🪙. O'zing va bir-ikki do'sting uchun; keyinroq sardor otryadni jamoagacha kengaytiradi.",
+    "sq_team": "🏆 Jamoa",
+    "sq_teamText": "{n} tagacha jangchi · {c} 🪙. Janglar va konlar uchun katta jamoa.",
+    "sq_createBtn": "{cost} 🪙 ga otryad yaratish",
+    "sq_created": "«{n}» otryadi yaratildi — sen sardorsan!",
+    "sq_label": "Otryad",
+    "sq_upHint": "Otryadga joy torlik qilyaptimi? Uni jamoagacha kengaytir — {n} tagacha jangchi.",
+    "sq_upBtn": "⬆️ Jamoagacha kengaytirish · {c} 🪙",
+    "sq_upAsk": "Otryad {c} 🪙 ga jamoagacha kengaytirilsinmi? Joylar {n} ta bo'ladi.",
+    "sq_upDone": "Otryad jamoaga aylandi!",
+    "cs_title": "🕵️ Kun ishi",
+    "cs_tile": "Hamma uchun bitta ish · 4 gumondor · bitta ayblov",
+    "cs_none": "Bugun ish yo'q — ertaga kel.",
+    "cs_culprit": "aybdor",
+    "cs_accuse": "👉 Ayblash",
+    "cs_clueLocked": "{n}-dalil — hozircha yashirin",
+    "cs_more": "🔍 Yana bir dalilni ochish (mukofot {r} 🪙 bo'ladi)",
+    "cs_rules": "Faqat bitta odamni va faqat bir marta ayblash mumkin. Qancha kam dalil kerak bo'lsa, mukofot shuncha katta:",
+    "cs_solved": "🎉 Ish ochildi! +{r} 🪙",
+    "cs_failed": "Adashding! Aybdor — {n}.",
+    "cs_bonus": "🔥 Seriya bonusi: +{b} 🪙",
+    "cs_solution": "Yechim:",
+    "cs_stats": "Bugun {p} tadan {s} tasi ochdi · o'rtacha dalil: {a}",
+    "cs_share": "📤 Maqtanish",
+    "cs_next": "Yangi ish {t} dan keyin",
+    "cs_head": "🕵️ Ish №{n}",
+    "cs_suspects": "👥 Gumondorlar",
+    "cs_clues": "🔍 Dalillar",
+    "cs_streak": "🔥 Ochilgan ishlar seriyasi: {n} · ketma-ket har {e}-kuni +{b} 🪙",
+    "cs_accuseAsk": "{n} ayblansinmi? Ayblov bitta — fikrdan qaytib bo'lmaydi.",
+    "cs_shareText": "🕵️ Kun ishi №{n}\n{s}\n🔥 Seriya: {k}\nTezroq ocha olasanmi?",
     "qs_epicPaid": "⚡ Cheksiz bilan",
     "qs_paper": "📝 Maslahat: tafsilotlarni qog‘ozga yozib bor — diqqatli o‘yinchiga topishmoq osonroq yechiladi.",
     "qs_total": "📚 Bazadagi kvestlar: {n}",
@@ -8905,6 +9859,90 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "md_title": "🧭 你想怎么玩？",
+    "md_hint": "ROFL HUB 内容很多。选一个起点吧——随时可以在护照里切换模式。",
+    "md_full": "🌐 完整生态",
+    "md_fullText": "机器人农场、仓库、工坊、交易所、战队、突袭、矿区和世界地图——外加全部游戏和故事。各版块会在 3 天内逐步开放，不会被一堆按钮淹没。",
+    "md_puzzle": "🧩 游戏与故事",
+    "md_puzzleText": "只有竞答、小游戏、任务、每日案件和好友对决。没有经济系统，没有多余的标签页。",
+    "md_later": "农场在任何模式下都会运转——就算你不去看，金币也在不断累积。",
+    "md_toFull": "开启完整生态？农场、仓库、交易所、战队等版块都会出现。",
+    "md_toPuzzle": "只保留游戏与故事？农场继续运转，其他标签页会隐藏——随时可以在这里恢复。",
+    "md_now": "🧭 模式：{m} · 切换",
+    "lk_new": "🎉 新版块已开放：<b>{t}</b>。点一下去看看！",
+    "lk_line": "🔒 {t} —— {d} 天后或 🧠 {l} 级开放",
+    "lk_title": "各版块逐步开放，上手更轻松：",
+    "di_title": "⚔️ 有人向你发起对决！",
+    "di_text": "<b>{n}</b> 向你发起石头剪刀布对决。<br>押注 {s} 🪙 · 胜者得 {p} 🪙。",
+    "di_accept": "⚔️ 接受挑战",
+    "di_decline": "以后再说",
+    "di_waiting": "正在 {s} 🪙 桌等待你的朋友……",
+    "di_left": "挑战还剩 {h} 小时有效——之后押注会退回",
+    "di_share": "📤 把挑战发给朋友",
+    "di_waitHint": "把链接发给朋友。朋友接受后，机器人会在聊天里通知你。押注已经放上桌了；改主意的话——离桌即可退回。",
+    "di_head": "🤝 挑战好友",
+    "di_hint": "凭链接开一张专属桌：不进排队，只等你的朋友。通过链接加入的新玩家会成为你的好友。",
+    "di_table": "🤝 挑战好友 · {s} 🪙 桌",
+    "di_shareText": "我在 ROFL HUB 向你发起对决！押注 {s} 🪙——看看谁更厉害 😎",
+    "ac_title": "🏅 我的成就",
+    "ac_streak": "🔥 每日案件连胜：{n}",
+    "ac_hint": "所有成就汇集在一张卡片上——可以发到快拍，也可以发给朋友。",
+    "ac_make": "📸 生成卡片",
+    "ac_cardSub": "我的成就",
+    "ac_cardCall": "你能超过我吗？",
+    "ac_shareText": "我在 ROFL HUB 的战绩：🧠 {l} 级，🗺 {q} 个任务，🕵️ {d} 个案件，⚔️ {w} 场对决胜利。你能超过我吗？",
+    "ac_story": "📲 发到快拍",
+    "ac_send": "✈️ 发给朋友",
+    "ac_save": "💾 保存图片",
+    "ac_quests": "已完成任务",
+    "ac_epics": "史诗任务",
+    "ac_cases": "已破案件",
+    "ac_duels": "对决胜利",
+    "ac_wins": "游戏胜利",
+    "ac_friends": "活跃好友",
+    "ac_robots": "机器人",
+    "ac_days": "游戏天数",
+    "tf_title": "💸 转账金币",
+    "tf_hint": "转给朋友——通过 @username、ID 或 VIP ID。最少 {m} 🪙，手续费 {f}%。",
+    "tf_locked": "🔒 达到 🧠 {l} 级并领取 {c} 次每日肉排后才能转出金币——这样假账号就无法套走新手金币。接收金币随时可以。",
+    "tf_to": "收款人",
+    "tf_amount": "金额 🪙",
+    "tf_btn": "💸 转账",
+    "tf_ask": "向 {to} 转账 {a} 🪙？手续费 {f} 🪙，对方将收到 {r} 🪙。",
+    "tf_done": "完成！{to} 收到 {r} 🪙",
+    "sq_choose": "选择你要创建的：",
+    "sq_squad": "🛡 小队",
+    "sq_squadText": "最多 {n} 名队员 · {c} 🪙。适合你和几个朋友；之后队长可以把小队扩建成战队。",
+    "sq_team": "🏆 战队",
+    "sq_teamText": "最多 {n} 名队员 · {c} 🪙。适合参加战斗和争夺矿区的大战队。",
+    "sq_createBtn": "创建小队，{cost} 🪙",
+    "sq_created": "小队「{n}」已创建——你是队长！",
+    "sq_label": "小队",
+    "sq_upHint": "小队太挤了？扩建成战队——最多 {n} 名队员。",
+    "sq_upBtn": "⬆️ 扩建成战队 · {c} 🪙",
+    "sq_upAsk": "花 {c} 🪙 把小队扩建成战队？名额将变为 {n} 个。",
+    "sq_upDone": "你的小队已升级为战队！",
+    "cs_title": "🕵️ 每日案件",
+    "cs_tile": "所有人同一个案件 · 4 名嫌疑人 · 只能指控一次",
+    "cs_none": "今天没有案件——明天再来吧。",
+    "cs_culprit": "真凶",
+    "cs_accuse": "👉 指控",
+    "cs_clueLocked": "线索 {n} —— 尚未揭晓",
+    "cs_more": "🔍 再揭开一条线索（奖励变为 {r} 🪙）",
+    "cs_rules": "只能指控一个人，而且只有一次机会。用到的线索越少，奖励越高：",
+    "cs_solved": "🎉 破案了！+{r} 🪙",
+    "cs_failed": "猜错了！真凶是 {n}。",
+    "cs_bonus": "🔥 连胜奖励：+{b} 🪙",
+    "cs_solution": "真相：",
+    "cs_stats": "今日破案：{s} / {p} · 平均线索：{a}",
+    "cs_share": "📤 炫耀一下",
+    "cs_next": "新案件倒计时 {t}",
+    "cs_head": "🕵️ 案件 #{n}",
+    "cs_suspects": "👥 嫌疑人",
+    "cs_clues": "🔍 线索",
+    "cs_streak": "🔥 连续破案：{n} · 每连续第 {e} 天 +{b} 🪙",
+    "cs_accuseAsk": "指控 {n}？指控只有一次——无法反悔。",
+    "cs_shareText": "🕵️ 每日案件 #{n}\n{s}\n🔥 连胜：{k}\n你能更快破案吗？",
     "qs_epicPaid": "⚡ 需开启无限模式",
     "qs_paper": "📝 提示：把细节记在纸上——细心的人更容易找到答案。",
     "qs_total": "📚 任务库共有：{n} 个任务",
@@ -9731,22 +10769,79 @@
 
   // ================= Каркас: вкладки =================
   let me = null, current = "passport";
-  function visibleTabs() {
+  function featureTabs() {
     const f = (me && me.features) || {};
     return TABS.filter(t => !TAB_FLAG[t] || f[TAB_FLAG[t]] !== false);
   }
+  // 🧭 Разделы открываются постепенно (решение владельца 27.10): новичок видит 7 вкладок, остальные — на N-й день
+  // игры или раньше, с 🧠 уровня N+1; через me.unlock_all_days дней открыто всё. Режим «🧩 Игры и истории» — без экономики.
+  const TAB_DAY = { storage: 1, workshop: 1, team: 1, market: 2, raids: 2, history: 2, lab: 3, map: 3, mines: 3, auctions: 3 };
+  const PUZZLE_TABS = ["passport", "games", "friends", "top", "shop", "history", "info"];
+  function tabLocked(t) {
+    if (!me) return false;
+    if (me.app_mode === "puzzle") return !PUZZLE_TABS.includes(t);
+    const need = TAB_DAY[t] || 0, days = me.days_in_game || 0, lvl = (me.quiz && me.quiz.level) || 0;
+    return need > 0 && days < Math.min(need, me.unlock_all_days || 3) && lvl < need + 1;
+  }
+  const visibleTabs = () => featureTabs().filter(t => !tabLocked(t));
+  const lockedTabs = () => featureTabs().filter(tabLocked);
   function startTab() {
-    let tab = null;
-    try { tab = new URLSearchParams(location.search).get("tab"); } catch (e) {}
+    let tab = null, fromUrl = false;
+    try { tab = new URLSearchParams(location.search).get("tab"); fromUrl = !!tab; } catch (e) {}
     if (!tab) { try { tab = localStorage.getItem("rofl_tab"); } catch (e) {} }
     if (tab === "rules") infoDoc = "rules";
     tab = TAB_ALIAS[tab] || tab;
-    return visibleTabs().includes(tab) ? tab : "passport";
+    // кнопка из чата ведёт прямо в раздел — даже в ещё закрытый
+    return (fromUrl ? featureTabs() : visibleTabs()).includes(tab) ? tab : "passport";
+  }
+  function tabsSeen(list) {
+    try {
+      if (list) localStorage.setItem("rofl_tabs_seen", JSON.stringify(list));
+      else return JSON.parse(localStorage.getItem("rofl_tabs_seen") || "null");
+    } catch (e) { return null; }
+  }
+  function toast(text, onClick) {
+    const old = document.querySelector(".toast");
+    if (old) old.remove();
+    const el = document.createElement("div");
+    el.className = "toast"; el.innerHTML = text;
+    el.onclick = () => { el.remove(); if (onClick) onClick(); };
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 7000);
+  }
+  // 🎉 Открылись новые разделы — короткий праздник (первое открытие только запоминает, что видно)
+  function checkUnlocks() {
+    const vis = visibleTabs(), seen = tabsSeen();
+    tabsSeen(vis);
+    if (!seen) return;
+    const fresh = vis.filter(t => !seen.includes(t));
+    if (fresh.length) toast(fmt(L.lk_new, { t: fresh.map(t => L["tab_" + t]).join(", ") }), () => go(fresh[0]));
+  }
+  function lockInfo() {
+    if (me.app_mode === "puzzle") return askConfirm(L.md_toFull, () => setMode("full"));
+    const days = me.days_in_game || 0, lines = [];
+    [1, 2, 3].forEach(n => {
+      const ts = lockedTabs().filter(t => TAB_DAY[t] === n);
+      if (ts.length) lines.push(fmt(L.lk_line, { t: ts.map(t => L["tab_" + t]).join(", "), d: Math.max(1, n - days), l: n + 1 }));
+    });
+    notify(L.lk_title + "\n\n" + lines.join("\n"));
+  }
+  async function setMode(mode) {
+    try { await post("/api/mode", { mode: mode }); } catch (e) { return apiError(e); }
+    me.app_mode = mode;
+    tabsSeen(visibleTabs());   // смена режима — не повод для «открылись разделы»
+    go(tabLocked(current) ? "passport" : current);
   }
   function renderTabs() {
-    document.getElementById("tabs").innerHTML = visibleTabs().map(t =>
-      '<button class="tab' + (t === current ? ' on' : '') + '" data-tab="' + t + '">' + L["tab_" + t] + '</button>').join("");
-    document.querySelectorAll(".tab").forEach(b => { b.onclick = () => go(b.dataset.tab); });
+    const list = visibleTabs();
+    if (!list.includes(current) && featureTabs().includes(current)) list.push(current);
+    const locked = lockedTabs().filter(t => t !== current).length;
+    document.getElementById("tabs").innerHTML = list.map(t =>
+      '<button class="tab' + (t === current ? ' on' : '') + '" data-tab="' + t + '">' + L["tab_" + t] + '</button>').join("") +
+      (locked ? '<button class="tab lock" id="tabLock">' + (me.app_mode === "puzzle" ? '🌐 +' : '🔒 +') + locked + '</button>' : '');
+    document.querySelectorAll(".tab[data-tab]").forEach(b => { b.onclick = () => go(b.dataset.tab); });
+    const lk = document.getElementById("tabLock");
+    if (lk) lk.onclick = lockInfo;
     const on = document.querySelector(".tab.on");
     if (on && on.scrollIntoView) on.scrollIntoView({ inline: "center", block: "nearest" });
   }
@@ -9772,6 +10867,152 @@
     }
   }
   async function refreshMe() { me = await api("/api/me"); }
+  // ================= 🧭 Окна: выбор режима и вызов на дуэль =================
+  function modal(html) {
+    const m = document.createElement("div");
+    m.className = "modal";
+    m.innerHTML = '<div class="modal-card">' + html + '</div>';
+    document.body.appendChild(m);
+    return m;
+  }
+  // Взрослому — вся экосистема, тому, кто пришёл ради загадок, — только игры и истории (решение владельца 27.10)
+  function chooseMode(after) {
+    const m = modal('<h2>' + L.md_title + '</h2><div class="hint">' + L.md_hint + '</div>' +
+      '<button class="mode-opt" data-mode="full"><b>' + L.md_full + '</b><span>' + L.md_fullText + '</span></button>' +
+      '<button class="mode-opt" data-mode="puzzle"><b>' + L.md_puzzle + '</b><span>' + L.md_puzzleText + '</span></button>' +
+      '<div class="hint" style="margin-top:10px">' + L.md_later + '</div>');
+    m.querySelectorAll("[data-mode]").forEach(b => { b.onclick = async () => {
+      m.querySelectorAll("button").forEach(x => x.disabled = true);
+      await setMode(b.dataset.mode);
+      m.remove();
+      if (after) after();
+    }; });
+  }
+  function inviteCode() {
+    let c = null;
+    try { c = new URLSearchParams(location.search).get("duel"); } catch (e) {}
+    const sp = tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param;
+    if (!c && sp && /^duel_/.test(sp)) c = sp.slice(5);
+    c = (c || me.pending_duel || "").toLowerCase();
+    return /^[a-z0-9]{4,16}$/.test(c) ? c : null;
+  }
+  async function offerDuel(code, after) {
+    let inv;
+    try { inv = await api("/api/duel/invite?code=" + encodeURIComponent(code)); } catch (e) { return after(); }
+    if (!inv.ok) {
+      post("/api/duel/decline", {}).catch(() => {});
+      me.pending_duel = null;
+      notify(inv.message || L.error, false);
+      return after();
+    }
+    if (inv.mine) return after();
+    const m = modal('<h2>' + L.di_title + '</h2><div class="g-result">' + fmt(L.di_text, { n: esc(inv.from), s: num(inv.stake), p: num(inv.payout) }) +
+      '</div><div class="hint" style="margin-top:8px">' + fmt(L.g_balance, { b: num(me.balance) }) + '</div>' +
+      '<button class="btn" id="diAccept">' + L.di_accept + '</button><button class="btn ghost" id="diDecline">' + L.di_decline + '</button>');
+    m.querySelector("#diAccept").onclick = async () => {
+      m.querySelectorAll("button").forEach(x => x.disabled = true);
+      try {
+        const r = await post("/api/duel/accept", { code: code });
+        m.remove();
+        me.pending_duel = null;
+        if (r.ok === false) { notify(r.message || L.error, false); return after(); }
+        gameScreen = "duel"; go("games");
+      } catch (e) { m.remove(); apiError(e); after(); }
+    };
+    m.querySelector("#diDecline").onclick = () => {
+      post("/api/duel/decline", {}).catch(() => {});
+      me.pending_duel = null; m.remove(); after();
+    };
+  }
+  async function copyText(text, el) {
+    try { await navigator.clipboard.writeText(text); return notify(L.ref_copied); } catch (e) {}
+    try {
+      const r = document.createRange(); r.selectNodeContents(el);
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      document.execCommand("copy"); notify(L.ref_copied);
+    } catch (e2) { notify(text); }
+  }
+  function shareLink(url, text) {
+    const u = "https://t.me/share/url?url=" + encodeURIComponent(url) + "&text=" + encodeURIComponent(text);
+    if (tg && tg.openTelegramLink) tg.openTelegramLink(u); else window.open(u, "_blank");
+  }
+
+  // ================= 🏅 Достижения и карточка «поделиться» =================
+  const ACH = [["quests", "🗺"], ["epics", "⭐"], ["cases", "🕵️"], ["duels", "⚔️"], ["wins", "🏆"], ["friends", "🤝"], ["robots", "🤖"], ["days", "📅"]];
+  function achCard(c) {
+    const tiles = ACH.map(a => '<div class="res"><div class="ri">' + a[1] + '</div><div class="rn">' + num(c[a[0]]) + '</div><div class="rs">' +
+      L["ac_" + a[0]] + '</div></div>').join("");
+    return card(L.ac_title, '<div class="res-grid">' + tiles + '</div>' +
+      (c.case_streak ? '<div class="hint">' + fmt(L.ac_streak, { n: c.case_streak }) + '</div>' : '') +
+      '<div class="hint">' + L.ac_hint + '</div>' +
+      '<button class="btn" id="acMake">' + L.ac_make + '</button><div id="acOut"></div>' +
+      '<button class="btn ghost" id="mdSwitch">' + fmt(L.md_now, { m: me.app_mode === "puzzle" ? L.md_puzzle : L.md_full }) + '</button>');
+  }
+  function rr(x, a, b, w, h, r) {
+    x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r);
+    x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath();
+  }
+  const clip = (s, n) => { s = String(s || ""); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
+  // Неоновая карточка 1080×1920 (формат Историй). JPEG — чтобы уложиться в лимит загрузки.
+  function drawAchCard(c) {
+    const W = 1080, H = 1920, cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    const x = cv.getContext("2d"), F = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+    const g = x.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, "#0b0620"); g.addColorStop(.55, "#1a0b3a"); g.addColorStop(1, "#04121f");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.strokeStyle = "rgba(0,255,225,.07)"; x.lineWidth = 2;
+    for (let i = 0; i <= W; i += 90) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, H); x.stroke(); }
+    for (let j = 0; j <= H; j += 90) { x.beginPath(); x.moveTo(0, j); x.lineTo(W, j); x.stroke(); }
+    x.textAlign = "center";
+    x.shadowColor = "#ff4d8d"; x.shadowBlur = 40; x.fillStyle = "#ff6fa5"; x.font = "900 112px " + F; x.fillText("ROFL HUB", W / 2, 210);
+    x.shadowColor = "#00ffe1"; x.shadowBlur = 22; x.fillStyle = "#bffff6"; x.font = "600 44px " + F; x.fillText(L.ac_cardSub, W / 2, 285);
+    x.shadowBlur = 0; x.fillStyle = "#ffffff"; x.font = "800 72px " + F; x.fillText(clip(c.name, 22), W / 2, 430);
+    x.fillStyle = "#ffd93d"; x.font = "600 46px " + F;
+    x.fillText(["🧠 " + c.level, c.rank, c.vip ? "💎 " + c.vip : ""].filter(Boolean).join("  ·  "), W / 2, 510);
+    if (c.team) { x.fillStyle = "#9fe8ff"; x.font = "500 40px " + F; x.fillText("🛡 " + clip(c.team.name, 26), W / 2, 575); }
+    ACH.forEach((a, i) => {
+      const bx = 90 + (i % 2) * 470, by = 650 + Math.floor(i / 2) * 250, bw = 430, bh = 210, col = i % 2 ? "0,255,225" : "255,77,141";
+      x.fillStyle = "rgba(255,255,255,.06)"; rr(x, bx, by, bw, bh, 34); x.fill();
+      x.shadowColor = "rgb(" + col + ")"; x.shadowBlur = 18; x.strokeStyle = "rgba(" + col + ",.75)"; x.lineWidth = 4;
+      rr(x, bx, by, bw, bh, 34); x.stroke(); x.shadowBlur = 0;
+      x.fillStyle = "#ffffff"; x.font = "60px " + F; x.fillText(a[1], bx + bw / 2, by + 78);
+      x.font = "800 64px " + F; x.fillText(num(c[a[0]]), bx + bw / 2, by + 150);
+      x.fillStyle = "#b9b3d6"; x.font = "500 32px " + F; x.fillText(clip(L["ac_" + a[0]], 24), bx + bw / 2, by + 192);
+    });
+    x.fillStyle = "#ffffff"; x.font = "800 50px " + F; x.fillText(L.ac_cardCall, W / 2, 1740);
+    x.fillStyle = "#00ffe1"; x.font = "500 36px " + F; x.fillText(String(c.link || "").replace(/^https:\/\//, ""), W / 2, 1810);
+    return cv.toDataURL("image/jpeg", .9);
+  }
+  function bindAch(box, c) {
+    const sw = box.querySelector("#mdSwitch");
+    if (sw) sw.onclick = () => askConfirm(me.app_mode === "puzzle" ? L.md_toFull : L.md_toPuzzle,
+      () => setMode(me.app_mode === "puzzle" ? "full" : "puzzle"));
+    const mk = box.querySelector("#acMake");
+    if (!mk) return;
+    mk.onclick = async () => {
+      mk.disabled = true;
+      let img;
+      try { img = drawAchCard(c); } catch (e) { mk.disabled = false; return notify(L.error, false); }
+      let url = null;
+      try { const r = await post("/api/card/upload", { image: img }); if (r.ok) url = r.url; } catch (e) {}
+      const text = fmt(L.ac_shareText, { l: c.level, q: c.quests, d: c.cases, w: c.duels });
+      const canStory = url && tg && tg.shareToStory;
+      box.querySelector("#acOut").innerHTML = '<img class="ach-img" src="' + img + '" alt="">' +
+        (canStory ? '<button class="btn" id="acStory">' + L.ac_story + '</button>' : '') +
+        '<button class="btn ghost" id="acSend">' + L.ac_send + '</button>' +
+        '<button class="btn ghost" id="acSave">' + L.ac_save + '</button>';
+      mk.style.display = "none";
+      const st = box.querySelector("#acStory");
+      if (st) st.onclick = () => { try { tg.shareToStory(url, { text: clip(text + " " + c.link, 200) }); } catch (e) { notify(L.oldClient, false); } };
+      box.querySelector("#acSend").onclick = () => shareLink(c.link, text);
+      box.querySelector("#acSave").onclick = () => {
+        if (url && tg && tg.downloadFile) { try { return tg.downloadFile({ url: url, file_name: "rofl-hub-card.jpg" }); } catch (e) {} }
+        const a = document.createElement("a"); a.href = img; a.download = "rofl-hub-card.jpg"; document.body.appendChild(a); a.click(); a.remove();
+      };
+    };
+  }
+
 
   // ================= 📋 Паспорт =================
   async function viewPassport(box) {
@@ -9799,7 +11040,9 @@
     // 📣 События — все анонсы внутри игры (каналов нет, решение владельца 26.10); оба запроса летят одновременно
     const goalsReq = (me.features || {}).goals !== false ? api("/api/goals").catch(() => null) : Promise.resolve(null);
     const newsReq = api("/api/news").catch(() => null);
+    const achReq = api("/api/card").catch(() => null);
     try { const g = await goalsReq; if (g) { box.insertAdjacentHTML("beforeend", goalsCard(g)); bindGoals(box); } } catch (e) {}
+    try { const c = await achReq; if (c && c.ok) { box.insertAdjacentHTML("beforeend", achCard(c)); bindAch(box, c); } } catch (e) {}
     try { const n = await newsReq; if (n) { box.insertAdjacentHTML("beforeend", newsCard(n)); bindNews(box); } } catch (e) {}
   }
   function newsCard(d) {
@@ -9817,7 +11060,7 @@
   }
   function bindNews(root) {
     root.querySelectorAll("[data-news]").forEach(b => {
-      b.onclick = () => { const tab = b.dataset.news; if (tab === "top") topMode = "events"; go(visibleTabs().includes(tab) ? tab : "passport"); };
+      b.onclick = () => { const tab = b.dataset.news; if (tab === "top") topMode = "events"; go(featureTabs().includes(tab) ? tab : "passport"); };
     });
   }
 
@@ -10490,13 +11733,28 @@
       card(L.tm_search,
         '<label class="lbl">' + L.tm_searchPh + '<input id="tmQ" type="text" maxlength="' + lim.name + '"></label>' +
         '<button class="btn ghost" id="tmFind">' + L.tm_searchBtn + '</button><div id="tmFound"></div>') +
-      card(L.tm_create, '<div class="hint">' + fmt(L.tm_hubHint, { cost: num(d.cost) }) + '</div>' +
+      card(L.tm_create, (d.squad ? '<div class="hint">' + L.sq_choose + '</div>' +
+          '<button class="mode-opt" data-kind="squad"><b>' + L.sq_squad + '</b><span>' + fmt(L.sq_squadText, { n: d.squad.max, c: num(d.squad.cost) }) + '</span></button>' +
+          '<button class="mode-opt" data-kind="team"><b>' + L.sq_team + '</b><span>' + fmt(L.sq_teamText, { n: d.team_max, c: num(d.cost) }) + '</span></button>'
+        : '<div class="hint">' + fmt(L.tm_hubHint, { cost: num(d.cost) }) + '</div>') +
         '<label class="lbl">' + fmt(L.tm_name, { n: lim.name }) + '<input id="tmN" type="text" maxlength="' + lim.name + '"></label>' +
         '<label class="lbl">' + fmt(L.tm_motto, { n: lim.motto }) + '<input id="tmM" type="text" maxlength="' + lim.motto + '"></label>' +
         '<label class="lbl">' + fmt(L.tm_symbol, { n: lim.symbol }) + '<input id="tmS" type="text" maxlength="' + lim.symbol + '" placeholder="🔥"></label>' +
-        (d.balance < d.cost ? '<div class="hint">' + fmt(L.tm_noMoney, { cost: num(d.cost), b: num(d.balance) }) + '</div>' : '') +
-        '<button class="btn" id="tmCreate"' + (d.balance < d.cost ? ' disabled' : '') + '>' + fmt(L.tm_createBtn, { cost: num(d.cost) }) + '</button>');
+        '<div class="hint" id="tmNoMoney"></div><button class="btn" id="tmCreate"></button>');
     bindTeamJoin(box);
+    // 🛡 Отряд (до 5 бойцов) дешевле команды — с ним новичок не ждёт 100 000 🪙 (решение владельца 27.10)
+    let kind = d.squad ? "squad" : "team";
+    const setKind = k => {
+      kind = k;
+      const cost = k === "squad" ? d.squad.cost : d.cost;
+      box.querySelectorAll("[data-kind]").forEach(b => b.classList.toggle("on", b.dataset.kind === k));
+      const nm = document.getElementById("tmNoMoney"), btn = document.getElementById("tmCreate");
+      nm.textContent = d.balance < cost ? fmt(L.tm_noMoney, { cost: num(cost), b: num(d.balance) }) : "";
+      btn.textContent = fmt(k === "squad" ? L.sq_createBtn : L.tm_createBtn, { cost: num(cost) });
+      btn.disabled = d.balance < cost;
+    };
+    box.querySelectorAll("[data-kind]").forEach(b => { b.onclick = () => setKind(b.dataset.kind); });
+    setKind(kind);
     const rot = document.getElementById("tmRotate");
     rot.onclick = async () => {
       rot.disabled = true;
@@ -10527,8 +11785,8 @@
     const cb = document.getElementById("tmCreate");
     cb.onclick = () => act(cb, "/api/team/create", {
       name: document.getElementById("tmN").value, motto: document.getElementById("tmM").value,
-      symbol: document.getElementById("tmS").value
-    }, async () => { notify(fmt(L.tm_created, { n: document.getElementById("tmN").value.trim() })); await refreshMe(); go("team"); });
+      symbol: document.getElementById("tmS").value, squad: kind === "squad"
+    }, async () => { notify(fmt(kind === "squad" ? L.sq_created : L.tm_created, { n: document.getElementById("tmN").value.trim() })); await refreshMe(); go("team"); });
   }
   function askConfirm(text, then) {
     if (tg && tg.showConfirm) tg.showConfirm(text, ok => { if (ok) then(); });
@@ -10538,9 +11796,12 @@
     const d = await api("/api/team");
     if (!d.team) return teamHub(box, d);
     const tm = d.team, st = d.station;
-    let teamHtml = row(tm.is_clan ? "👑 " + L.clan : L.teamLabel, esc(tm.symbol) + ' ' + esc(tm.name)) +
+    const up = tm.is_squad && tm.captain && d.squad_upgrade ? d.squad_upgrade : null;
+    let teamHtml = row(tm.is_clan ? "👑 " + L.clan : (tm.is_squad ? "🛡 " + L.sq_label : L.teamLabel), esc(tm.symbol) + ' ' + esc(tm.name)) +
       row(L.tm_mottoL, '«' + esc(tm.motto) + '»') +
       row(L.members, tm.members + " / " + tm.max) + (tm.captain ? '<div class="hint">' + L.captain + '</div>' : '') +
+      (up ? '<div class="hint">' + fmt(L.sq_upHint, { n: up.max }) + '</div><button class="btn" id="sqUp">' +
+        fmt(L.sq_upBtn, { c: num(up.cost) }) + '</button>' : '') +
       '<button class="btn ghost danger-text" id="tmLeave">' + L.tm_leave + '</button>';
     const roster = pager("tmroster", tm.roster.map(m =>
       '<div class="top-row' + (m.me ? ' me' : '') + '"><span class="brain">🧠' + m.level + '</span>' +
@@ -10609,6 +11870,9 @@
         b.onclick = () => act(b, "/api/team/help/cancel", { help_id: Number(b.dataset.id) }, async () => go("team"));
       });
     }
+    const sqUp = document.getElementById("sqUp");
+    if (sqUp) sqUp.onclick = () => askConfirm(fmt(L.sq_upAsk, { c: num(up.cost), n: up.max }),
+      () => act(sqUp, "/api/team/upgrade", {}, async () => { notify(L.sq_upDone); await refreshMe(); go("team"); }));
     const lb = document.getElementById("tmLeave");
     lb.onclick = () => askConfirm(fmt(tm.captain ? L.tm_leaveAskCaptain : L.tm_leaveAsk, { n: tm.name }),
       () => act(lb, "/api/team/leave", {}, async () => { notify(L.tm_left); await refreshMe(); go("team"); }));
@@ -10620,6 +11884,7 @@
 
   // ================= 🤝 Друзья: реферальная ссылка, статистика, рейтинг =================
   async function viewFriends(box) {
+    const tfReq = (me.features || {}).transfers === false ? Promise.resolve(null) : api("/api/transfer").catch(() => null);
     const d = await api("/api/referral");
     const R = d.rules;
     const top = pager("reftop", d.top.map((p, i) =>
@@ -10652,11 +11917,34 @@
       }
     };
     const share = document.getElementById("refShare");
-    if (share) share.onclick = () => {
-      const url = "https://t.me/share/url?url=" + encodeURIComponent(d.link) + "&text=" + encodeURIComponent(d.share_text);
-      if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, "_blank");
+    if (share) share.onclick = () => shareLink(d.link, d.share_text);
+    try { const tf = await tfReq; if (tf && tf.ok && box.isConnected) { box.insertAdjacentHTML("beforeend", transferCard(tf)); bindTransfer(box); } } catch (e) {}
+  }
+  // 💸 Перевод монет другу (чат /transfer и приложение — одна механика, shared/transfers.py)
+  function transferCard(tf) {
+    return card(L.tf_title, '<div class="hint">' + fmt(L.tf_hint, { m: num(tf.min), f: tf.fee_percent }) + '</div>' +
+      (tf.active ? '' : '<div class="hint status-bad">' + fmt(L.tf_locked, { l: tf.need_level, c: tf.need_claims }) + '</div>') +
+      '<label class="lbl">' + L.tf_to + '<input id="tfTo" type="text" maxlength="40" placeholder="@username · ID · VIP ID"></label>' +
+      '<label class="lbl">' + L.tf_amount + '<input id="tfAmt" type="number" inputmode="numeric" min="' + tf.min + '"></label>' +
+      '<div class="hint">' + fmt(L.g_balance, { b: num(me.balance) }) + '</div>' +
+      '<button class="btn" id="tfGo"' + (tf.active ? '' : ' disabled') + '>' + L.tf_btn + '</button>');
+  }
+  function bindTransfer(box) {
+    const b = box.querySelector("#tfGo");
+    if (!b) return;
+    b.onclick = async () => {
+      const data = { to: box.querySelector("#tfTo").value.trim(), amount: Number(box.querySelector("#tfAmt").value || 0) };
+      b.disabled = true;
+      try {
+        const p = await post("/api/transfer/preview", data);
+        b.disabled = false;
+        if (p.ok === false) return notify(p.message || L.error, false);
+        askConfirm(fmt(L.tf_ask, { a: num(p.amount), to: p.to, r: num(p.received), f: num(p.fee) }),
+          () => act(b, "/api/transfer", data, async r => { notify(fmt(L.tf_done, { r: num(r.received), to: r.to })); await refreshMe(); go("friends"); }));
+      } catch (e) { b.disabled = false; apiError(e); }
     };
   }
+
 
   // ================= 🏪 Магазин =================
   // Компьютер: «Для фермы» | «Игровые» | «Что даёт каждый товар» в три колонки;
@@ -11125,6 +12413,7 @@
     if (gameScreen === "duel") return viewDuel(box);
     if (gameScreen === "code") return gameCode(box);
     if (gameScreen === "memory") return gameMemory(box);
+    if (gameScreen === "case") return viewCase(box);
     const d = gamesData;
     const tile = g => {
       const lim = !d.unlimited && g.wins >= g.limit;
@@ -11136,7 +12425,9 @@
     const soon = id => '<div class="game-tile soon"><span class="gt-name">' + L["g_name_" + id] + '</span><span class="gt-meta">🔜 ' + L.g_soon + '</span></div>';
     const q = d.quiz;
     box.innerHTML = card(L.g_title,
-      '<div class="game-grid">' + GAMES_LIVE.map(id => tile(d.games.find(g => g.id === id))).join("") + GAMES_SOON.map(soon).join("") +
+      '<div class="game-grid">' + (me.features && me.features.quests === false ? '' : '<button class="game-tile wide case-tile" data-game="case">' +
+        '<span class="gt-name">' + L.cs_title + '</span><span class="gt-meta">' + L.cs_tile + '</span></button>') +
+      GAMES_LIVE.map(id => tile(d.games.find(g => g.id === id))).join("") + GAMES_SOON.map(soon).join("") +
       (me.features && me.features.duels === false ? '' : '<button class="game-tile wide" data-game="duel"><span class="gt-name">' + L.dl_title +
         '</span><span class="gt-meta">' + L.dl_tile + '</span></button>') +
       (me.features && me.features.quests === false ? '' : '<button class="game-tile wide" data-game="quests"><span class="gt-name">' + L.g_name_quests +
@@ -11362,6 +12653,72 @@
     }, 1000);
   }
 
+  // 🕵️ Дело дня: одно дело на всех в сутки, улики по одной, обвинение одно (shared/daily_case.py)
+  function caseStrip(c) {
+    let s = "";
+    for (let i = 0; i < c.total; i++) s += i < c.opened ? "🔍" : "⬛";
+    return s + (c.solved ? " ✅" : " ❌");
+  }
+  async function viewCase(box, pre) {
+    const c = pre || await api("/api/case");
+    if (!c.ok) { box.innerHTML = card(L.cs_title, gameHead() + '<div class="g-result">' + L.cs_none + '</div>'); bindBack(box); return; }
+    const R = c.rewards;
+    const ladder = Object.keys(R).map(k => '<span class="chip' + (!c.finished && Number(k) === c.opened ? ' have' : '') + '">🔍' + k +
+      ' → ' + R[k] + ' 🪙</span>').join("");
+    const sus = c.suspects.map((s, i) => {
+      const cls = c.finished ? (i === c.culprit ? ' culprit' : (i === c.accused ? ' wrong' : '')) : '';
+      return '<div class="cs-sus' + cls + '"><div class="cs-who"><span class="cs-em">' + esc(s.emoji) + '</span><b>' + esc(s.name) + '</b>' +
+        (c.finished && i === c.culprit ? ' · ' + L.cs_culprit : '') + '</div><div class="hint">' + esc(s.alibi) + '</div>' +
+        (c.finished ? '' : '<button class="btn ghost cs-acc" data-s="' + i + '">' + L.cs_accuse + '</button>') + '</div>';
+    }).join("");
+    let clues = "";
+    for (let i = 0; i < c.total; i++) clues += i < c.clues.length ? '<div class="cs-clue"><b>🔍 ' + (i + 1) + '.</b> ' + esc(c.clues[i]) + '</div>'
+      : '<div class="cs-clue locked">⬛ ' + fmt(L.cs_clueLocked, { n: i + 1 }) + '</div>';
+    const left = Math.max(0, (Date.parse(c.next_at) - Date.now()) / 1000);
+    let tail;
+    if (!c.finished) {
+      tail = (c.opened < c.total ? '<button class="btn" id="csMore">' + fmt(L.cs_more, { r: R[c.opened + 1] }) + '</button>' : '') +
+        '<div class="hint" style="margin-top:8px">' + L.cs_rules + '</div><div class="chips">' + ladder + '</div>';
+    } else {
+      const res = c.result || {};
+      tail = '<div class="g-result ' + (c.solved ? 'win' : 'lose') + '" id="csRes"><b>' +
+        (c.solved ? fmt(L.cs_solved, { r: c.reward }) : fmt(L.cs_failed, { n: esc(c.suspects[c.culprit].name) })) + '</b>' +
+        (res.bonus ? '<br>' + fmt(L.cs_bonus, { b: res.bonus }) : '') + '</div>' +
+        '<div class="cs-sol"><b>' + L.cs_solution + '</b><br>' + esc(c.solution) + '</div>' +
+        '<div class="cs-strip">' + caseStrip(c) + '</div>' +
+        (c.stats ? '<div class="hint" style="text-align:center">' + fmt(L.cs_stats, { s: c.stats.solved, p: c.stats.played,
+          a: c.stats.avg_clues === null ? "—" : c.stats.avg_clues }) + '</div>' : '') +
+        (c.link ? '<button class="btn" id="csShare">' + L.cs_share + '</button>' : '') +
+        '<div class="hint" style="text-align:center;margin-top:8px">' + fmt(L.cs_next, { t: dur(left) }) + '</div>';
+    }
+    box.innerHTML = fxStage(fmt(L.cs_head, { n: c.number }) + ' · ' + esc(c.title),
+        gameHead() + '<div class="cs-story" style="margin-top:10px">' + esc(c.story) + '</div>') +
+      card(L.cs_suspects, sus) + card(L.cs_clues, clues + tail) +
+      '<div class="hint" style="margin:-4px 4px 12px">' + fmt(L.cs_streak, { n: c.streak, e: c.streak_every, b: c.streak_bonus }) + '</div>';
+    bindBack(box);
+    runFx(box, c.mood);
+    const more = box.querySelector("#csMore");
+    if (more) more.onclick = async () => {
+      more.disabled = true;
+      try { viewCase(box, await post("/api/case/clue", {})); } catch (e) { apiError(e); more.disabled = false; }
+    };
+    box.querySelectorAll(".cs-acc").forEach(b => { b.onclick = () => {
+      const s = c.suspects[Number(b.dataset.s)];
+      askConfirm(fmt(L.cs_accuseAsk, { n: s.name }), async () => {
+        box.querySelectorAll("button").forEach(x => x.disabled = true);
+        try {
+          const r = await post("/api/case/accuse", { suspect: Number(b.dataset.s) });
+          if (r.balance !== undefined) me.balance = r.balance;
+          await viewCase(box, r);
+          const el = box.querySelector("#csRes");
+          if (el) { vibrate(!!r.solved); sparks(el, !!r.solved); }
+        } catch (e) { apiError(e); go("games"); }
+      });
+    }; });
+    const sh = box.querySelector("#csShare");
+    if (sh) sh.onclick = () => shareLink(c.link, fmt(L.cs_shareText, { n: c.number, s: caseStrip(c), k: c.streak }));
+  }
+
   // ⚔️ Дуэли: живой соперник (очередь общая с чатом). Состояние — опрос /api/duel раз в 1,5 с.
   const DUEL_POLL_MS = 1500;   // жесты — общий MOVES (налёты)
   const duelSeen = new Set();     // итоги, которые уже показали (повторно не всплывают)
@@ -11378,7 +12735,8 @@
       const d = st.duel; if (!d) return;
       const el = box.querySelector("#dlLeft"), bar = box.querySelector("#dlBar");
       if (d.status === "active" && el) { el.textContent = "⏱ " + d.left; if (bar) bar.style.width = (d.left / st.timeout * 100) + "%"; }
-      if (d.status === "waiting" && el) el.textContent = fmt(L.dl_waitLeft, { m: Math.ceil(d.waiting_left / 60) });
+      if (d.status === "waiting" && el) el.textContent = d.invite ? fmt(L.di_left, { h: Math.ceil(d.waiting_left / 3600) })
+        : fmt(L.dl_waitLeft, { m: Math.ceil(d.waiting_left / 60) });
     };
     const poll = async () => {
       try { if (box.isConnected && gameScreen === "duel") draw(await api("/api/duel")); } catch (e) { /* сеть моргнула — следующий опрос */ }
@@ -11400,7 +12758,13 @@
       } catch (e) { apiError(e); go("games"); }
     };
     let body;
-    if (d && d.status === "waiting") {
+    if (d && d.status === "waiting" && d.invite) {
+      body = '<div class="dl-search">🤝</div><div class="g-result" style="text-align:center"><b>' + fmt(L.di_waiting, { s: num(d.stake) }) +
+        '</b><br><span class="hint" id="dlLeft">' + fmt(L.di_left, { h: Math.ceil(d.waiting_left / 3600) }) + '</span></div>' +
+        (d.link ? '<div class="reflink" id="diLink">' + esc(d.link) + '</div><button class="btn" id="diShare">' + L.di_share + '</button>' +
+          '<button class="btn ghost" id="diCopy">' + L.ref_copy + '</button>' : '') +
+        '<div class="hint">' + L.di_waitHint + '</div><button class="btn ghost" id="dlCancel">' + L.dl_cancel + '</button>';
+    } else if (d && d.status === "waiting") {
       body = '<div class="dl-search">🔎</div><div class="g-result" style="text-align:center"><b>' + fmt(L.dl_waiting, { s: num(d.stake) }) +
         '</b><br><span class="hint" id="dlLeft">' + fmt(L.dl_waitLeft, { m: Math.ceil(d.waiting_left / 60) }) + '</span></div>' +
         '<div class="hint">' + L.dl_waitHint + '</div><button class="btn ghost" id="dlCancel">' + L.dl_cancel + '</button>';
@@ -11425,7 +12789,9 @@
       body = '<div class="hint" style="margin-top:10px">' + fmt(L.dl_intro, { p: 100 - st.burn, b: st.burn, t: st.timeout }) + '</div>' +
         st.tables.map(tb => '<button class="btn' + (st.balance < tb.stake ? ' short' : '') + '" data-stake="' + tb.stake + '">' +
           fmt(L.dl_table, { s: num(tb.stake), p: num(tb.payout), r: tb.stone }) + '</button>').join("") +
-        '<div class="hint" style="margin-top:8px">' + fmt(L.g_balance, { b: num(st.balance) }) + '</div>';
+        '<div class="hint" style="margin-top:8px">' + fmt(L.g_balance, { b: num(st.balance) }) + '</div>' +
+        '<div class="sub2">' + L.di_head + '</div><div class="hint">' + L.di_hint + '</div>' +
+        st.tables.map(tb => '<button class="btn ghost" data-inv="' + tb.stake + '">' + fmt(L.di_table, { s: num(tb.stake) }) + '</button>').join("");
     }
     box.innerHTML = card(L.dl_title, gameHead() + body);
     bindBack(box);
@@ -11435,6 +12801,21 @@
       act("/api/duel/join", { stake: stake });
     }; });
     box.querySelectorAll("[data-dm]").forEach(b => { b.onclick = () => act("/api/duel/move", { duel_id: d.id, move: b.dataset.dm }); });
+    box.querySelectorAll("[data-inv]").forEach(b => { b.onclick = async () => {
+      const stake = Number(b.dataset.inv);
+      if (st.balance < stake) return notify(fmt(L.dl_short, { s: num(stake) }), false);
+      box.querySelectorAll("button").forEach(x => x.disabled = true);
+      try {
+        const r = await post("/api/duel/invite", { stake: stake });
+        if (r.ok === false) notify(r.message || L.error, false);
+        duelSig = null;
+        if (duelLocal) duelLocal();
+      } catch (e) { apiError(e); go("games"); }
+    }; });
+    const diShare = box.querySelector("#diShare");
+    if (diShare) diShare.onclick = () => shareLink(d.link, fmt(L.di_shareText, { s: num(d.stake) }));
+    const diCopy = box.querySelector("#diCopy");
+    if (diCopy) diCopy.onclick = () => copyText(d.link, box.querySelector("#diLink"));
     const cancel = box.querySelector("#dlCancel");
     if (cancel) cancel.onclick = () => act("/api/duel/cancel", { duel_id: d.id });
     const again = box.querySelector("#dlAgain");
@@ -11724,6 +13105,9 @@
       renderChrome();
       current = startTab();
       await go(current);
+      const next = () => { if (!me.app_mode) chooseMode(checkUnlocks); else checkUnlocks(); };
+      const code = inviteCode();
+      if (code) offerDuel(code, next); else next();
     } catch (e) {
       const code = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) || "ru";
       setLang(code);

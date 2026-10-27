@@ -888,6 +888,26 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS idx_quiz_reports_open ON quiz_reports (qkey) WHERE resolved_at IS NULL;",
+    # --- 27.10 волна «после оценки 9 агентов»: режим приложения, вызов друга на дуэль, дело дня ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS app_mode VARCHAR(10);",          # puzzle | full | NULL — не выбран
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS pending_duel VARCHAR(16);",      # код вызова, пришедший по ссылке
+    "ALTER TABLE duels ADD COLUMN IF NOT EXISTS invite_code VARCHAR(16);",      # приватная дуэль «вызов друга»
+    "CREATE UNIQUE INDEX IF NOT EXISTS duels_invite_code_idx ON duels (invite_code) WHERE invite_code IS NOT NULL;",
+    """
+    CREATE TABLE IF NOT EXISTS daily_case_runs (
+        user_id BIGINT NOT NULL,
+        day DATE NOT NULL,
+        case_id VARCHAR(32) NOT NULL,
+        clues INT NOT NULL DEFAULT 1,
+        accused INT,
+        solved BOOLEAN,
+        reward INT NOT NULL DEFAULT 0,
+        started_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        finished_at TIMESTAMP WITH TIME ZONE,
+        PRIMARY KEY (user_id, day)
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS daily_case_runs_day_idx ON daily_case_runs (day);",
 ]
 
 

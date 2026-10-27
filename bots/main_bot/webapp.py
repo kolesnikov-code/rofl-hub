@@ -243,6 +243,11 @@ async def handle_me(request: web.Request) -> web.Response:
     payload["badges"] = badges   # 🏅 значки сезонов: [{season, place}]
     from bots.main_bot.config import ADMIN_IDS
     payload["is_owner"] = user["user_id"] in ADMIN_IDS   # владельцу — галерея атмосфер квестов
+    from shared.economy import APP_UNLOCK_ALL_DAYS
+    payload["days_in_game"] = max(0, (now - user["created_at"]).days)
+    payload["app_mode"] = user["app_mode"]
+    payload["unlock_all_days"] = APP_UNLOCK_ALL_DAYS
+    payload["pending_duel"] = user["pending_duel"]
     return web.json_response(payload)
 
 
@@ -457,6 +462,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     register_quest_routes(app)    # 🗺 квесты в приложении (движок общий с чатом — shared/quest_engine.py)
     from bots.main_bot.webapp_duels import register_duel_routes
     register_duel_routes(app)     # ⚔️ дуэли в приложении (очередь общая с чатом — shared/duels.py)
+    from bots.main_bot.webapp_social import register_social_routes
+    register_social_routes(app)   # 🤝 режим, переводы, вызов друга, дело дня, карточка, отряд → команда
     # Арты роботов для сцены фермы: img/robots/<kind>.png (арты владельца) или .svg (заглушки)
     app.router.add_static("/img", WEBAPP_DIR / "img")
     return app

@@ -33,7 +33,7 @@ async def conn():
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
                         "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items, team_banners, user_tech, user_badges, "
                         "season_results, battle_entries, battle_entry_log, reward_grants, expedition_targets, expeditions, "
-                        "expedition_members, expedition_votes, expedition_log, expedition_peeks RESTART IDENTITY")
+                        "expedition_members, expedition_votes, expedition_log, expedition_peeks, daily_case_runs RESTART IDENTITY")
         await c.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
                         "captured_until = NULL, last_paid_at = NULL")
         await c.execute("DELETE FROM feature_flags WHERE key LIKE 'wsr:%'")
@@ -3339,5 +3339,108 @@ async def test_app_duel_two_players_draw_replay_win_and_cancel(conn, global_db):
         assert c["duel"] is None and c["last"]["cancelled"] and c["balance"] == 900
         poor = await post(1861, "/api/duel/join", {"stake": 1000})
         assert poor["ok"] is False                                                   # не хватает монет
+    finally:
+        await client.close()
+
+
+async def test_social_wave_squad_invite_duel_case_card_mode(conn, global_db):
+    """🧭 27.10: отряд → команда, вызов друга по ссылке (мимо очереди), Дело дня, карточка, режим приложения."""
+    import base64
+    import time as _t
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared import daily_case
+    from shared.economy import (DAILY_CASE_REWARD, SQUAD_CREATE_COST, SQUAD_MAX_MEMBERS, SQUAD_UPGRADE_COST,
+                                TEAM_MAX_MEMBERS, duel_payout, utcnow)
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    await conn.execute("UPDATE duels SET status = 'cancelled' WHERE status IN ('waiting', 'active')")
+    await conn.execute("DELETE FROM daily_case_runs")
+    for uid in (1900, 1901, 1902):
+        await _mk_user(conn, uid, 200_000)
+    hd = lambda uid: {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": uid}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+
+    async def post(uid, url, body):
+        return await (await client.post(url, headers=hd(uid), json=body)).json()
+
+    async def get(uid, url):
+        return await (await client.get(url, headers=hd(uid))).json()
+    try:
+        # режим приложения
+        me = await get(1900, "/api/me")
+        assert me["app_mode"] is None and me["days_in_game"] == 0 and me["unlock_all_days"] >= 1
+        assert (await post(1900, "/api/mode", {"mode": "puzzle"}))["mode"] == "puzzle"
+        assert (await post(1900, "/api/mode", {"mode": "hacker"}))["ok"] is False
+        assert (await get(1900, "/api/me"))["app_mode"] == "puzzle"
+
+        # отряд: дешевле, 5 мест; капитан расширяет до команды
+        hub = await get(1900, "/api/team")
+        assert hub["squad"] == {"cost": SQUAD_CREATE_COST, "max": SQUAD_MAX_MEMBERS}
+        r = await post(1900, "/api/team/create", {"name": "Тестовый отряд", "motto": "Вперёд", "symbol": "🔥", "squad": True})
+        assert r["ok"], r
+        assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1900") == 200_000 - SQUAD_CREATE_COST
+        tm = await get(1900, "/api/team")
+        assert tm["team"]["is_squad"] and tm["team"]["max"] == SQUAD_MAX_MEMBERS
+        assert (await post(1901, "/api/team/upgrade", {}))["ok"] is False            # не капитан
+        up = await post(1900, "/api/team/upgrade", {})
+        assert up["ok"] and up["max"] == TEAM_MAX_MEMBERS
+        assert (await get(1900, "/api/team"))["team"]["is_squad"] is False
+        assert (await post(1900, "/api/team/upgrade", {}))["ok"] is False            # второй раз — уже команда
+        assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1900") == \
+            200_000 - SQUAD_CREATE_COST - SQUAD_UPGRADE_COST
+
+        # вызов друга: приватный стол, обычная очередь его не видит
+        inv = await post(1900, "/api/duel/invite", {"stake": 100})
+        assert inv["ok"] and daily_case and len(inv["code"]) >= 6
+        st = await get(1900, "/api/duel")
+        assert st["duel"]["invite"] == inv["code"] and st["duel"]["waiting_left"] > 3600
+        q = await post(1902, "/api/duel/join", {"stake": 100})                     # чужой — в обычную очередь
+        assert q["duel"]["status"] == "waiting" and q["duel"]["id"] != inv["duel_id"]
+        await post(1902, "/api/duel/cancel", {"duel_id": q["duel"]["id"]})
+        info = await get(1901, "/api/duel/invite?code=" + inv["code"])
+        assert info["ok"] and info["stake"] == 100 and info["payout"] == duel_payout(100)[0] and not info["mine"]
+        assert (await get(1900, "/api/duel/invite?code=" + inv["code"]))["mine"]
+        assert (await post(1900, "/api/duel/accept", {"code": inv["code"]}))["ok"] is False   # сам себя не вызовешь
+        await conn.execute("UPDATE users SET pending_duel = $1 WHERE user_id = 1901", inv["code"])
+        acc = await post(1901, "/api/duel/accept", {"code": inv["code"]})
+        assert acc["ok"] and acc["duel_id"] == inv["duel_id"]
+        assert await conn.fetchval("SELECT pending_duel FROM users WHERE user_id = 1901") is None
+        assert (await get(1901, "/api/duel"))["duel"]["status"] == "active"
+        gone = await get(1902, "/api/duel/invite?code=" + inv["code"])
+        assert gone["ok"] is False and gone["gone"]                                     # принятый вызов протух
+
+        # Дело дня: улика уменьшает награду, обвинение одно
+        c = await get(1902, "/api/case")
+        assert c["ok"] and c["opened"] == 1 and not c["finished"] and "culprit" not in c and "solution" not in c
+        c2 = await post(1902, "/api/case/clue", {})
+        assert c2["opened"] == 2 and len(c2["clues"]) == 2
+        case = daily_case.case_for_day(utcnow().date())
+        before = await conn.fetchval("SELECT balance FROM users WHERE user_id = 1902")
+        win = await post(1902, "/api/case/accuse", {"suspect": case["culprit"]})
+        assert win["finished"] and win["solved"] and win["reward"] == DAILY_CASE_REWARD[2] and win["solution"]
+        assert win["balance"] == before + DAILY_CASE_REWARD[2] and len(win["clues"]) == 4
+        again = await post(1902, "/api/case/accuse", {"suspect": case["culprit"]})
+        assert again["finished"] and await conn.fetchval("SELECT balance FROM users WHERE user_id = 1902") == win["balance"]
+        wrong = (case["culprit"] + 1) % 4
+        lose = await post(1901, "/api/case/accuse", {"suspect": wrong})
+        assert lose["finished"] and not lose["solved"] and lose["reward"] == 0 and lose["stats"]["played"] == 2
+        assert await conn.fetchval("SELECT COUNT(*) FROM ledger WHERE reason = 'daily_case'") == 1
+
+        # карточка достижений и загрузка картинки
+        card = await get(1902, "/api/card")
+        assert card["ok"] and card["cases"] == 1 and card["case_streak"] == 1 and card["days"] == 0
+        jpg = "data:image/jpeg;base64," + base64.b64encode(b"\xff\xd8\xff\xe0" + b"0" * 100).decode()
+        upl = await post(1902, "/api/card/upload", {"image": jpg})
+        assert upl["ok"] and upl["url"].endswith(".jpg")
+        img = await client.get("/card/" + upl["url"].rsplit("/card/", 1)[1])
+        assert img.status == 200 and img.headers["Content-Type"] == "image/jpeg"
+        assert (await post(1902, "/api/card/upload", {"image": "data:image/gif;base64,R0lGODlh"}))["ok"] is False
+
+        # перевод: новичку отправлять нельзя, сервер объясняет почему
+        tf = await get(1902, "/api/transfer")
+        assert tf["ok"] and tf["active"] is False
+        assert (await post(1902, "/api/transfer/preview", {"to": "1901", "amount": 100}))["ok"] is False
     finally:
         await client.close()

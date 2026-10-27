@@ -15,7 +15,9 @@ import logging
 import random
 from dataclasses import dataclass
 
-from shared.economy import DUEL_TABLES, duel_payout
+import secrets
+
+from shared.economy import DUEL_INVITE_CODE_LEN, DUEL_INVITE_TTL_HOURS, DUEL_TABLES, DUEL_WAITING_TTL_MINUTES, duel_payout
 from shared.economy import DUEL_RESOURCE_KIND, DUEL_RESOURCE_REWARD
 from shared.ledger import InsufficientFunds, change_balance
 from shared.resources import change_resource, resource_capacity
@@ -79,7 +81,7 @@ async def join_or_create_duel(conn, user_id: int, stake: int) -> JoinResult:
         raise DuelError("duel.no_coins", stake=stake)
 
     waiting = await conn.fetchrow(
-        "SELECT * FROM duels WHERE status = 'waiting' AND stake = $1 AND player1 != $2 "
+        "SELECT * FROM duels WHERE status = 'waiting' AND stake = $1 AND player1 != $2 AND invite_code IS NULL "
         "ORDER BY duel_id LIMIT 1 FOR UPDATE SKIP LOCKED",
         stake, user_id)
 
@@ -93,6 +95,70 @@ async def join_or_create_duel(conn, user_id: int, stake: int) -> JoinResult:
     duel_id = await conn.fetchval(
         "INSERT INTO duels (stake, player1) VALUES ($1, $2) RETURNING duel_id", stake, user_id)
     return JoinResult(duel_id=duel_id, matched=False)
+
+
+# ---------------------------------------------------------------- ⚔️ вызов друга по ссылке (27.10)
+_CODE_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789"   # без 0/o/1/l/i — код читается вслух
+
+
+def new_invite_code() -> str:
+    return "".join(secrets.choice(_CODE_ALPHABET) for _ in range(DUEL_INVITE_CODE_LEN))
+
+
+def valid_invite_code(code: str | None) -> bool:
+    return bool(code) and len(code) == DUEL_INVITE_CODE_LEN and all(c in _CODE_ALPHABET for c in code)
+
+
+async def create_invite_duel(conn, user_id: int, stake: int) -> tuple[int, str]:
+    """Приватная дуэль: ставка в эскроу, стол ждёт друга по ссылке (в общую очередь не попадает)."""
+    if stake not in DUEL_TABLES:
+        raise DuelError("duel.bad_table")
+    if await active_duel_of(conn, user_id) is not None:
+        raise DuelError("duel.already_in")
+    try:
+        await change_balance(conn, user_id, -stake, "duel_stake", f"invite_{stake}")
+    except InsufficientFunds:
+        raise DuelError("duel.no_coins", stake=stake)
+    for _ in range(5):   # коллизия кода почти невозможна, но уникальный индекс всё равно страхует
+        code = new_invite_code()
+        if not await conn.fetchval("SELECT 1 FROM duels WHERE invite_code = $1", code):
+            break
+    duel_id = await conn.fetchval(
+        "INSERT INTO duels (stake, player1, invite_code) VALUES ($1, $2, $3) RETURNING duel_id", stake, user_id, code)
+    return duel_id, code
+
+
+async def invite_info(conn, code: str):
+    """Открытый вызов по коду (ждёт соперника и не протух) или None."""
+    if not valid_invite_code(code):
+        return None
+    return await conn.fetchrow(
+        "SELECT d.duel_id, d.stake, d.player1, d.created_at, u.username, u.display_name FROM duels d "
+        "JOIN users u ON u.user_id = d.player1 WHERE d.invite_code = $1 AND d.status = 'waiting' "
+        "AND d.created_at > NOW() - make_interval(hours => $2)", code, DUEL_INVITE_TTL_HOURS)
+
+
+async def accept_invite_duel(conn, user_id: int, code: str) -> JoinResult:
+    """Друг принимает вызов: его ставка в эскроу, дуэль начинается. Внутри транзакции."""
+    if not valid_invite_code(code):
+        raise DuelError("duel.invite_gone")
+    duel = await conn.fetchrow(
+        "SELECT * FROM duels WHERE invite_code = $1 AND status = 'waiting' "
+        "AND created_at > NOW() - make_interval(hours => $2) FOR UPDATE", code, DUEL_INVITE_TTL_HOURS)
+    if duel is None:
+        raise DuelError("duel.invite_gone")
+    if duel["player1"] == user_id:
+        raise DuelError("duel.invite_self")
+    if await active_duel_of(conn, user_id) is not None:
+        raise DuelError("duel.already_in")
+    try:
+        await change_balance(conn, user_id, -duel["stake"], "duel_stake", f"invite_{duel['duel_id']}")
+    except InsufficientFunds:
+        raise DuelError("duel.no_coins", stake=duel["stake"])
+    await conn.execute("UPDATE duels SET player2 = $2, status = 'active', round_started_at = NOW() WHERE duel_id = $1",
+                       duel["duel_id"], user_id)
+    await conn.execute("UPDATE users SET pending_duel = NULL WHERE user_id = $1", user_id)
+    return JoinResult(duel_id=duel["duel_id"], matched=True, opponent_id=duel["player1"])
 
 
 async def cancel_waiting_duel(conn, duel_id: int, user_id: int) -> int:
@@ -202,10 +268,11 @@ async def find_stuck_active_duels(conn, older_than_seconds: int):
 
 async def expire_waiting_duels(conn, older_than_minutes: int) -> list[tuple[int, int, int]]:
     """Отменяет протухшие очереди. Возвращает [(duel_id, player1, stake)] для уведомлений."""
-    rows = await conn.fetch(
-        "SELECT * FROM duels WHERE status = 'waiting' "
-        "AND created_at < NOW() - make_interval(mins => $1) FOR UPDATE SKIP LOCKED",
-        older_than_minutes)
+    rows = await conn.fetch(   # вызов друга живёт дольше общей очереди (DUEL_INVITE_TTL_HOURS)
+        "SELECT * FROM duels WHERE status = 'waiting' AND ("
+        "(invite_code IS NULL AND created_at < NOW() - make_interval(mins => $1)) OR "
+        "(invite_code IS NOT NULL AND created_at < NOW() - make_interval(hours => $2))) FOR UPDATE SKIP LOCKED",
+        older_than_minutes, DUEL_INVITE_TTL_HOURS)
     expired = []
     for duel in rows:
         await conn.execute(

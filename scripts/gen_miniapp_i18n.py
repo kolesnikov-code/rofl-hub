@@ -30,7 +30,7 @@ def main() -> None:
     pattern = re.compile(re.escape(START) + r".*?" + re.escape(END), re.DOTALL)
     replacement = (f"{START} — {len(packs)} языков, автогенерация scripts/gen_miniapp_i18n.py, "
                    f"не редактировать руками\n  const I18N_EXTRA = {blob};\n  {END}")
-    new_html, count = pattern.subn(replacement, html)
+    new_html, count = pattern.subn(lambda _m: replacement, html)   # функция: «\n» в текстах не становится переводом строки
     if count != 1:
         raise SystemExit("Маркеры I18N_EXTRA не найдены в index.html")
     INDEX.write_text(new_html, encoding="utf-8")

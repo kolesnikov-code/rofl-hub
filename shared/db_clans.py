@@ -11,7 +11,8 @@ import logging
 import re
 
 from shared.database import db
-from shared.economy import (TEAM_CREATE_COST, TEAM_MOTTO_MAX_LEN, TEAM_NAME_MAX_LEN, TEAM_ROULETTE_SIZE,
+from shared.economy import (SQUAD_CREATE_COST, SQUAD_MAX_MEMBERS, SQUAD_UPGRADE_COST, TEAM_CREATE_COST,
+                            TEAM_MAX_MEMBERS, TEAM_MOTTO_MAX_LEN, TEAM_NAME_MAX_LEN, TEAM_ROULETTE_SIZE,
                             TEAM_SEARCH_LIMIT, TEAM_SYMBOL_MAX_LEN)
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
@@ -50,7 +51,7 @@ def public_team(row) -> dict:
     return {"id": row["team_id"], "name": html.unescape(row["team_name"] or ""),
             "motto": html.unescape(row["city"] or ""), "symbol": html.unescape(row["school_num"] or ""),
             "members": row["members_count"], "max": row["max_members"],
-            "is_clan": row["max_members"] >= 1000}
+            "is_clan": row["max_members"] >= 1000, "is_squad": row["max_members"] <= SQUAD_MAX_MEMBERS}
 
 
 async def random_teams(conn, limit: int = TEAM_ROULETTE_SIZE) -> list[dict]:
@@ -151,8 +152,11 @@ async def leave_team(conn, user_id: int, team_id: int | None = None) -> dict | N
     return result
 
 
-async def create_team(conn, captain_id: int, name: str, motto: str, symbol: str) -> int:
-    """Создаёт команду (внутри транзакции вызывающего): тексты проверяются, цена — через ledger."""
+async def create_team(conn, captain_id: int, name: str, motto: str, symbol: str, squad: bool = False) -> int:
+    """Создаёт команду (внутри транзакции вызывающего): тексты проверяются, цена — через ledger.
+    squad=True — 🛡 отряд до SQUAD_MAX_MEMBERS бойцов за SQUAD_CREATE_COST (решение владельца 27.10)."""
+    cost = SQUAD_CREATE_COST if squad else TEAM_CREATE_COST
+    max_members = SQUAD_MAX_MEMBERS if squad else TEAM_MAX_MEMBERS
     name = validate_team_text(name, TEAM_NAME_MAX_LEN)
     motto = validate_team_text(motto, TEAM_MOTTO_MAX_LEN)
     symbol = validate_team_text(symbol, TEAM_SYMBOL_MAX_LEN)
@@ -161,22 +165,39 @@ async def create_team(conn, captain_id: int, name: str, motto: str, symbol: str)
         raise TeamError("common.no_profile")
     if user["team_id"] is not None:
         raise TeamError("team.err_already")
-    if user["balance"] < TEAM_CREATE_COST:
-        raise TeamError("team.err_money", cost=TEAM_CREATE_COST, balance=user["balance"])
+    if user["balance"] < cost:
+        raise TeamError("team.err_money", cost=cost, balance=user["balance"])
     if await conn.fetchval("SELECT team_id FROM teams WHERE captain_id = $1", captain_id):
         raise TeamError("team.err_captain")
     if await conn.fetchval("SELECT team_id FROM teams WHERE team_name = $1", name):
         raise TeamError("team.err_taken", name=name)
     try:
-        await change_balance(conn, captain_id, -TEAM_CREATE_COST, "team_create", name)
+        await change_balance(conn, captain_id, -cost, "squad_create" if squad else "team_create", name)
     except InsufficientFunds:
-        raise TeamError("team.err_money", cost=TEAM_CREATE_COST, balance=user["balance"])
+        raise TeamError("team.err_money", cost=cost, balance=user["balance"])
     team_id = await conn.fetchval(
-        "INSERT INTO teams (team_name, captain_id, city, school_num) VALUES ($1, $2, $3, $4) RETURNING team_id",
-        name, captain_id, motto, symbol)
+        "INSERT INTO teams (team_name, captain_id, city, school_num, max_members) VALUES ($1, $2, $3, $4, $5) "
+        "RETURNING team_id", name, captain_id, motto, symbol, max_members)
     await conn.execute("UPDATE users SET team_id = $1, team_joined_at = NOW() WHERE user_id = $2", team_id, captain_id)
     logger.info("[TEAM_CREATED] team=%s captain=%s", team_id, captain_id)
     return team_id
+
+
+async def upgrade_squad(conn, captain_id: int) -> dict:
+    """🛡→🏆 Капитан расширяет отряд до команды (TEAM_MAX_MEMBERS), доплачивая SQUAD_UPGRADE_COST."""
+    team = await conn.fetchrow("SELECT * FROM teams WHERE captain_id = $1 FOR UPDATE", captain_id)
+    if not team:
+        raise TeamError("team.err_not_captain")
+    if team["max_members"] > SQUAD_MAX_MEMBERS:
+        raise TeamError("team.err_not_squad")
+    try:
+        await change_balance(conn, captain_id, -SQUAD_UPGRADE_COST, "squad_upgrade", str(team["team_id"]))
+    except InsufficientFunds:
+        balance = await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", captain_id)
+        raise TeamError("team.err_money", cost=SQUAD_UPGRADE_COST, balance=balance)
+    await conn.execute("UPDATE teams SET max_members = $2 WHERE team_id = $1", team["team_id"], TEAM_MAX_MEMBERS)
+    logger.info("[SQUAD_UPGRADED] team=%s captain=%s", team["team_id"], captain_id)
+    return {"team_id": team["team_id"], "max": TEAM_MAX_MEMBERS}
 
 
 async def create_new_team_in_db(captain_id: int, team_name: str, city: str, school: str) -> tuple[bool, str]:

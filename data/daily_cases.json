@@ -1,0 +1,996 @@
+[
+ {
+  "id": "cake_contest",
+  "mood": "candle",
+  "culprit": 3,
+  "ru": {
+   "title": "Торт-победитель исчез",
+   "story": "Финал конкурса кондитеров. В 14:00 трёхъярусный торт «Сорок свечей» поставили под стеклянную крышку, в 14:20 витрина оказалась пуста. Двери зала были закрыты. Под подозрением — четверо, кто был в зале в тот день.",
+   "suspects": [
+    {
+     "name": "Повар Арсений",
+     "emoji": "👨‍🍳",
+     "alibi": "Месил тесто у дальней печи — руки по локоть в муке."
+    },
+    {
+     "name": "Курьер Лиза",
+     "emoji": "🛵",
+     "alibi": "Привезла коробки и, по её словам, сразу уехала."
+    },
+    {
+     "name": "Робот-уборщик Шнырь",
+     "emoji": "🤖",
+     "alibi": "Мыл пол в зале по расписанию."
+    },
+    {
+     "name": "Ведущий Марк",
+     "emoji": "🎤",
+     "alibi": "Репетировал речь в гримёрке."
+    }
+   ],
+   "clues": [
+    "На крышке витрины — отпечаток пальца в креме. Муки на нём нет ни крупинки.",
+    "У Шныря вместо рук — щётки: поднять стеклянную крышку он не может.",
+    "Камера у входа: Лиза выгрузила коробки в 13:50, её мопед уехал в 13:55 — и больше не возвращался.",
+    "В гримёрке — салфетка с кремом и лист с речью в липких пятнах."
+   ],
+   "solution": "Арсений весь в муке, а отпечаток чистый; Шнырь крышку не поднимет; Лиза уехала ещё до того, как торт поставили под крышку. Остаётся Марк: он «репетировал» с тортом — и речь, и салфетка в креме."
+  },
+  "en": {
+   "title": "The winning cake vanished",
+   "story": "The pastry contest final. At 14:00 the three-tier “Forty Candles” cake went under a glass lid; at 14:20 the display was empty. The hall doors were closed. The suspects are the four who were in the hall that day.",
+   "suspects": [
+    {
+     "name": "Chef Arseny",
+     "emoji": "👨‍🍳",
+     "alibi": "Kneading dough by the far oven — floury up to the elbows."
+    },
+    {
+     "name": "Courier Lisa",
+     "emoji": "🛵",
+     "alibi": "Dropped off boxes and, she says, left right away."
+    },
+    {
+     "name": "Cleaning robot Scrub",
+     "emoji": "🤖",
+     "alibi": "Mopping the hall on schedule."
+    },
+    {
+     "name": "Host Mark",
+     "emoji": "🎤",
+     "alibi": "Rehearsing his speech in the dressing room."
+    }
+   ],
+   "clues": [
+    "A fingerprint in cream on the display lid — not a speck of flour on it.",
+    "Scrub has brushes instead of hands: it can’t lift a glass lid.",
+    "The entrance camera: Lisa unloaded the boxes at 13:50, her scooter left at 13:55 — and never came back.",
+    "In the dressing room: a napkin with cream and a speech sheet with sticky stains."
+   ],
+   "solution": "Arseny is covered in flour but the print is clean; Scrub can’t lift the lid; Lisa left before the cake even went under the lid. That leaves Mark, who “rehearsed” with the cake — cream on the napkin and the speech."
+  }
+ },
+ {
+  "id": "dark_lighthouse",
+  "mood": "fog",
+  "culprit": 2,
+  "ru": {
+   "title": "Маяк, который погас",
+   "story": "В ночь шторма маяк на мысе погас: кто-то вывинтил лампу наверху. До фонаря ведут 120 ступеней винтовой лестницы. Ночью на мысе были четверо.",
+   "suspects": [
+    {
+     "name": "Смотритель Игнат",
+     "emoji": "🧓",
+     "alibi": "Спал внизу после смены — колени больные, наверх поднимается раз в день."
+    },
+    {
+     "name": "Рыбачка Ода",
+     "emoji": "🎣",
+     "alibi": "Всю ночь в резиновых сапогах чинила сети у причала."
+    },
+    {
+     "name": "Фотограф Кирилл",
+     "emoji": "📸",
+     "alibi": "Снимал шторм с берега, на маяк, говорит, не заходил."
+    },
+    {
+     "name": "Робот Блик",
+     "emoji": "🤖",
+     "alibi": "Моет стёкла фонаря снаружи, ездит на магнитах."
+    }
+   ],
+   "clues": [
+    "На ступенях — свежие мокрые следы кроссовок 43-го размера.",
+    "Блик держится только на металле и стекле: по каменной лестнице он не поедет.",
+    "Игнат ходит только в валенках 46-го размера — других у него нет.",
+    "В камере Кирилла — кадр «маяк без света на фоне звёзд», снят сверху вниз в 02:14."
+   ],
+   "solution": "Следы кроссовок — не сапоги Оды и не валенки Игната, а Блик лестницу не одолеет. Кирилл хотел редкий кадр «тёмного маяка» и сам выключил свет: снимок сделан с высоты, с самого маяка."
+  },
+  "en": {
+   "title": "The lighthouse that went dark",
+   "story": "On the night of the storm the cape lighthouse went dark: someone unscrewed the lamp at the top. 120 spiral steps lead up to the lantern. Four people were on the cape that night.",
+   "suspects": [
+    {
+     "name": "Keeper Ignat",
+     "emoji": "🧓",
+     "alibi": "Slept downstairs after his shift — bad knees, climbs up once a day."
+    },
+    {
+     "name": "Fisher Oda",
+     "emoji": "🎣",
+     "alibi": "Mended nets at the pier all night in rubber boots."
+    },
+    {
+     "name": "Photographer Kirill",
+     "emoji": "📸",
+     "alibi": "Shot the storm from the shore; says he never went inside."
+    },
+    {
+     "name": "Robot Glint",
+     "emoji": "🤖",
+     "alibi": "Washes the lantern glass from outside, rides on magnets."
+    }
+   ],
+   "clues": [
+    "Fresh wet sneaker prints, size 43, on the steps.",
+    "Glint only clings to metal and glass: it can’t climb stone stairs.",
+    "Ignat only ever wears size-46 felt boots — he owns nothing else.",
+    "Kirill’s camera holds a shot of “the dark lighthouse against the stars”, taken looking down at 02:14."
+   ],
+   "solution": "Sneaker prints rule out Oda’s rubber boots and Ignat’s felt boots, and Glint can’t climb. Kirill wanted a rare shot of a dark lighthouse and switched it off himself — the photo was taken from up high, from the lighthouse."
+  }
+ },
+ {
+  "id": "orchid_greenhouse",
+  "mood": "forest",
+  "culprit": 2,
+  "ru": {
+   "title": "Орхидея, которая ушла сама",
+   "story": "Из оранжереи пропала редчайшая орхидея — вынули прямо из горшка, вместе с корнями. Вечером внутри были четверо. Утром на полу нашли дорожку из земли.",
+   "suspects": [
+    {
+     "name": "Садовница Вера",
+     "emoji": "👩‍🌾",
+     "alibi": "Поливала кактусы в другом крыле."
+    },
+    {
+     "name": "Охранник Тимур",
+     "emoji": "💂",
+     "alibi": "Обходил территорию. «В цветах я не разбираюсь, честно»."
+    },
+    {
+     "name": "Студентка Ася",
+     "emoji": "🎓",
+     "alibi": "Пишет диплом об орхидеях, засиделась с конспектами."
+    },
+    {
+     "name": "Робот-поливалка Кап",
+     "emoji": "🤖",
+     "alibi": "Ездит по рельсу между грядками."
+    }
+   ],
+   "clues": [
+    "Дорожка земли ведёт к служебной двери. Робот Кап с рельса не съезжает.",
+    "Цветок вынули мастерски, не повредив ни одного корешка — работа знатока.",
+    "Вера весь вечер была на камере в кактусовом крыле, Тимур — на камерах периметра снаружи.",
+    "В общежитии у Аси нашли пакет с той же фирменной корой, что в горшке."
+   ],
+   "solution": "Кап к двери не доедет; Тимур весь вечер на камерах снаружи, Вера — в кактусовом крыле. Остаётся Ася — знаток орхидей с корой из того самого горшка."
+  },
+  "en": {
+   "title": "The orchid that walked away",
+   "story": "The rarest orchid vanished from the greenhouse — lifted out of its pot, roots and all. Four were inside that evening. In the morning there was a trail of soil on the floor.",
+   "suspects": [
+    {
+     "name": "Gardener Vera",
+     "emoji": "👩‍🌾",
+     "alibi": "Watering cacti in the other wing."
+    },
+    {
+     "name": "Guard Timur",
+     "emoji": "💂",
+     "alibi": "Patrolling the grounds. “I know nothing about flowers, honestly.”"
+    },
+    {
+     "name": "Student Asya",
+     "emoji": "🎓",
+     "alibi": "Writing her thesis on orchids, stayed late with her notes."
+    },
+    {
+     "name": "Watering robot Drip",
+     "emoji": "🤖",
+     "alibi": "Rides a rail between the beds."
+    }
+   ],
+   "clues": [
+    "The soil trail leads to the service door. Drip never leaves its rail.",
+    "The flower was lifted expertly, not a single root damaged — the work of a connoisseur.",
+    "Vera was on the cactus-wing camera all evening, Timur on the outdoor perimeter cameras.",
+    "In Asya’s dorm: a bag of the same branded bark as in the pot."
+   ],
+   "solution": "Drip can’t reach the door; Timur was on the outdoor cameras all evening, Vera in the cactus wing. That leaves Asya — the orchid expert with bark from that very pot."
+  }
+ },
+ {
+  "id": "talent_show_fuse",
+  "mood": "neon",
+  "culprit": 0,
+  "ru": {
+   "title": "Свет погас на номере",
+   "story": "Школьный конкурс талантов. Ровно в 18:30, на номере фаворита — фокусника Лёвы — в зале выбило пробки. Щиток за кулисами открывается ключом. Рядом были четверо.",
+   "suspects": [
+    {
+     "name": "Звукорежиссёр Даня",
+     "emoji": "🎧",
+     "alibi": "Сидел за пультом в конце зала."
+    },
+    {
+     "name": "Певица Мила",
+     "emoji": "🎤",
+     "alibi": "Выступала следующей, ждала у сцены."
+    },
+    {
+     "name": "Завхоз Пал Палыч",
+     "emoji": "🔑",
+     "alibi": "Пил чай в буфете, ключ от щитка — у него на связке."
+    },
+    {
+     "name": "Робот-прожектор Луч",
+     "emoji": "🤖",
+     "alibi": "Светил на сцену с потолочной балки."
+    }
+   ],
+   "clues": [
+    "Пробки не выбило — их выкрутили руками, щиток открыт родным ключом. У Луча рук нет, он ездит только по балке.",
+    "Пал Палыч ещё днём забыл связку ключей на гвозде у пульта звукорежиссёра.",
+    "Мила всё время номера стояла у сцены в свете прожектора — видна на всех видео.",
+    "Пал Палыч до 18:40 пил чай с вахтёршей (чеки буфета 18:25 и 18:38). На видео зала в 18:29 место за пультом пустует."
+   ],
+   "solution": "Щиток открыли родным ключом, а связка Пал Палыча с обеда висела у пульта Дани. У Луча нет рук, Мила на всех видео, Пал Палыч в буфете. А в 18:29 пульт пустует: Даня ушёл за кулисы и выкрутил пробки — обиделся, что Лёва выступает со «своей музыкой»."
+  },
+  "en": {
+   "title": "Lights out mid-act",
+   "story": "A school talent show. At exactly 18:30, during the favourite’s act — magician Lyova — the hall’s fuses went. The fuse box backstage opens with a key. Four were nearby.",
+   "suspects": [
+    {
+     "name": "Sound tech Danya",
+     "emoji": "🎧",
+     "alibi": "At the mixing desk at the back of the hall."
+    },
+    {
+     "name": "Singer Mila",
+     "emoji": "🎤",
+     "alibi": "On next, waiting by the stage."
+    },
+    {
+     "name": "Caretaker Pal Palych",
+     "emoji": "🔑",
+     "alibi": "Having tea in the canteen; the fuse-box key is on his ring."
+    },
+    {
+     "name": "Spotlight robot Beam",
+     "emoji": "🤖",
+     "alibi": "Lighting the stage from a ceiling beam."
+    }
+   ],
+   "clues": [
+    "The fuses didn’t blow — they were unscrewed by hand, the box opened with its own key. Beam has no hands and only rides along its beam.",
+    "Earlier that day Pal Palych left his key ring on a nail by the sound desk.",
+    "Mila stood by the stage in the spotlight through the whole act — she’s in every video.",
+    "Pal Palych had tea with the porter until 18:40 (canteen receipts 18:25 and 18:38). The hall video at 18:29 shows the sound desk empty."
+   ],
+   "solution": "The box was opened with its own key, and Pal Palych’s ring had hung by Danya’s desk since the afternoon. Beam has no hands, Mila is in every video, Pal Palych was in the canteen. And at 18:29 the desk is empty: Danya slipped backstage and pulled the fuses — sore that Lyova performed with “his own music”."
+  }
+ },
+ {
+  "id": "train_painting",
+  "mood": "train",
+  "culprit": 1,
+  "ru": {
+   "title": "Картина в купе №7",
+   "story": "Ночной поезд. Коллекционер везёт маленький пейзаж в тубусе. Утром тубус пуст. В вагоне не спали четверо, двери тамбуров заперты с 23:00.",
+   "suspects": [
+    {
+     "name": "Проводница Нина",
+     "emoji": "🧑‍✈️",
+     "alibi": "Разносила чай до полуночи, потом сидела в служебном."
+    },
+    {
+     "name": "Студент Олег",
+     "emoji": "🎒",
+     "alibi": "Ехал на верхней полке в том же купе, «спал в наушниках»."
+    },
+    {
+     "name": "Пианистка Ксения",
+     "emoji": "🎹",
+     "alibi": "Разминала пальцы в соседнем купе, играла на клавиатуре без звука."
+    },
+    {
+     "name": "Робот-кондуктор Билетик",
+     "emoji": "🤖",
+     "alibi": "Проверял билеты, катается по коридору."
+    }
+   ],
+   "clues": [
+    "Тубус открыли изнутри купе: крышку снимали лёжа — пыль стёрта только сверху.",
+    "Билетик ездит по коридору на колёсах и в купе не заходит — порог высокий.",
+    "Нина и Ксения всю ночь были в коридоре вместе: проводница подливала пианистке чай.",
+    "Наушники Олега всю ночь пролежали на столике — разряженные, без проводов."
+   ],
+   "solution": "Крышку снимали лёжа сверху — с верхней полки. Робот в купе не заедет, Нина и Ксения всю ночь вместе в коридоре. Олег «спал в наушниках», которые пролежали на столе разряженными, — он не спал."
+  },
+  "en": {
+   "title": "The painting in compartment 7",
+   "story": "A night train. A collector carries a small landscape in a tube. In the morning the tube is empty. Four in the carriage were awake; the vestibule doors were locked from 23:00.",
+   "suspects": [
+    {
+     "name": "Attendant Nina",
+     "emoji": "🧑‍✈️",
+     "alibi": "Served tea until midnight, then sat in the staff cabin."
+    },
+    {
+     "name": "Student Oleg",
+     "emoji": "🎒",
+     "alibi": "On the top bunk of the same compartment, “asleep in headphones”."
+    },
+    {
+     "name": "Pianist Ksenia",
+     "emoji": "🎹",
+     "alibi": "Warming up her fingers next door on a silent keyboard."
+    },
+    {
+     "name": "Conductor robot Ticket",
+     "emoji": "🤖",
+     "alibi": "Checks tickets, rolls along the corridor."
+    }
+   ],
+   "clues": [
+    "The tube was opened from inside the compartment, lying down — dust wiped only on top.",
+    "Ticket rolls along the corridor on wheels and never enters compartments — the threshold is high.",
+    "Nina and Ksenia were together in the corridor all night: the attendant kept refilling the pianist’s tea.",
+    "Oleg’s headphones lay on the table all night — dead battery, no cable."
+   ],
+   "solution": "The lid was taken off lying down, from above — from the top bunk. The robot can’t enter, Nina and Ksenia were together all night. Oleg was “asleep in headphones” that lay dead on the table — he wasn’t asleep."
+  }
+ },
+ {
+  "id": "chess_clock",
+  "mood": "clocks",
+  "culprit": 3,
+  "ru": {
+   "title": "Шахматные часы врут",
+   "story": "Финал городского турнира. После партии чемпион заявил: его шахматные часы «съели» три минуты, и он проиграл по времени. Часы стояли на столе судьи в перерыве. В комнате были четверо.",
+   "suspects": [
+    {
+     "name": "Судья Борис Ефимович",
+     "emoji": "🧑‍⚖️",
+     "alibi": "Отходил за водой на две минуты."
+    },
+    {
+     "name": "Соперник Гоша",
+     "emoji": "♟",
+     "alibi": "Разминался в коридоре."
+    },
+    {
+     "name": "Фотограф Света",
+     "emoji": "📷",
+     "alibi": "Снимала доску сверху для новостей."
+    },
+    {
+     "name": "Помощник Ян",
+     "emoji": "📋",
+     "alibi": "Записывал ходы в протокол за столом судьи."
+    }
+   ],
+   "clues": [
+    "Часы перевели, пока судья ходил за водой: уходя, он сверил время, вернувшись — увидел разницу. Кнопка сзади — только вплотную к столу.",
+    "На всех кадрах Светы она стоит на стремянке — в двух метрах от стола.",
+    "Гоша весь перерыв был в коридоре: камера в коридоре его видит без перерыва.",
+    "Протокол Яна весь перерыв пуст — хотя он, по его словам, «записывал ходы»."
+   ],
+   "solution": "Время сбили, пока судьи не было, и только вплотную к столу. Света на стремянке, Гоша на камере в коридоре. Судья отлучался, а Ян сидел у самого стола — и вместо записи в протоколе «перевёл время»: он болел за Гошу."
+  },
+  "en": {
+   "title": "The chess clock lies",
+   "story": "A city tournament final. After the game the champion claimed his chess clock “ate” three minutes and he lost on time. During the break the clock stood on the arbiter’s table. Four were in the room.",
+   "suspects": [
+    {
+     "name": "Arbiter Boris",
+     "emoji": "🧑‍⚖️",
+     "alibi": "Stepped out for water for two minutes."
+    },
+    {
+     "name": "Opponent Gosha",
+     "emoji": "♟",
+     "alibi": "Stretching in the corridor."
+    },
+    {
+     "name": "Photographer Sveta",
+     "emoji": "📷",
+     "alibi": "Shooting the board from above for the news."
+    },
+    {
+     "name": "Assistant Yan",
+     "emoji": "📋",
+     "alibi": "Recording moves on the score sheet at the arbiter’s table."
+    }
+   ],
+   "clues": [
+    "The clock was changed while the arbiter fetched water: he checked it before leaving and saw the gap on return. The button is on the back — reachable only right at the table.",
+    "In all of Sveta’s photos she’s on a stepladder — two metres from the table.",
+    "Gosha spent the whole break in the corridor: the corridor camera shows him nonstop.",
+    "Yan’s score sheet is blank for the whole break — though he says he was “recording moves”."
+   ],
+   "solution": "The clock was changed while the arbiter was away, from right at the table. Sveta was on a stepladder, Gosha on the corridor camera. The arbiter stepped out, and Yan sat right at the table — instead of writing, he “adjusted” the clock: he was rooting for Gosha."
+  }
+ },
+ {
+  "id": "station_battery",
+  "mood": "space",
+  "culprit": 0,
+  "ru": {
+   "title": "Батарейка с орбиты",
+   "story": "Орбитальная станция. Из шкафа с запасами пропала единственная запасная батарейка для радиомаяка. Шкаф открывается отпечатком ладони. На борту четверо.",
+   "suspects": [
+    {
+     "name": "Инженер Рая",
+     "emoji": "🛠",
+     "alibi": "Чинила солнечную панель снаружи, в скафандре."
+    },
+    {
+     "name": "Командир Ли",
+     "emoji": "👩‍🚀",
+     "alibi": "Вела сеанс связи с Землёй."
+    },
+    {
+     "name": "Повар-робот Шеф",
+     "emoji": "🤖",
+     "alibi": "Готовил ужин из тюбиков."
+    },
+    {
+     "name": "Биолог Матвей",
+     "emoji": "🔬",
+     "alibi": "Поливал салат в оранжерее модуля."
+    }
+   ],
+   "clues": [
+    "Шкаф открыли ладонью — у робота Шефа ладоней нет, только захваты.",
+    "Батарейка пропала во время 40-минутного сеанса связи. Все 40 минут в кадре командир и Матвей — он показывал Земле салат.",
+    "Журнал шлюза: Рая вернулась внутрь за 12 минут до пропажи и сняла перчатки.",
+    "На батарейке осталась крошечная капля смазки для солнечных панелей."
+   ],
+   "solution": "У робота нет ладоней, командир и Матвей весь сеанс в кадре. Рая вернулась из шлюза до пропажи — и на батарейке смазка её панелей. Рая хотела поставить батарейку в свой самодельный приёмник."
+  },
+  "en": {
+   "title": "A battery from orbit",
+   "story": "An orbital station. The only spare battery for the radio beacon vanished from the supply locker, which opens with a palm print. Four are on board.",
+   "suspects": [
+    {
+     "name": "Engineer Raya",
+     "emoji": "🛠",
+     "alibi": "Fixing a solar panel outside, in a spacesuit."
+    },
+    {
+     "name": "Commander Li",
+     "emoji": "👩‍🚀",
+     "alibi": "Running a call with Earth."
+    },
+    {
+     "name": "Chef robot Chef",
+     "emoji": "🤖",
+     "alibi": "Making dinner from tubes."
+    },
+    {
+     "name": "Biologist Matvey",
+     "emoji": "🔬",
+     "alibi": "Watering lettuce in the module greenhouse."
+    }
+   ],
+   "clues": [
+    "The locker was opened with a palm — Chef has no palms, only grippers.",
+    "The battery vanished during the 40-minute call with Earth. The commander and Matvey were on screen for all 40 — he was showing Earth his lettuce.",
+    "Airlock log: Raya came back inside 12 minutes before the theft and took off her gloves.",
+    "A tiny drop of solar-panel grease was left on the battery."
+   ],
+   "solution": "The robot has no palms, the commander and Matvey were on screen throughout. Raya came in from the airlock before the theft — and the battery carries her panel grease. Raya wanted the battery for her homemade receiver."
+  }
+ },
+ {
+  "id": "pizza_review",
+  "mood": "food",
+  "culprit": 3,
+  "ru": {
+   "title": "Кто написал гадкий отзыв",
+   "story": "Пиццерия «Сыр-бор» получила разгромный отзыв: «тесто как подошва». Автор — аноним с ноутбука, подключённого к Wi-Fi самой пиццерии в 21:17. В 21:17 в зале было четверо.",
+   "suspects": [
+    {
+     "name": "Повар Бруно",
+     "emoji": "🍕",
+     "alibi": "Крутил тесто на кухне."
+    },
+    {
+     "name": "Курьер Федя",
+     "emoji": "🛵",
+     "alibi": "Ждал заказ у стойки, листал телефон."
+    },
+    {
+     "name": "Гость Аркадий",
+     "emoji": "🧔",
+     "alibi": "Ужинал один за угловым столиком с ноутбуком."
+    },
+    {
+     "name": "Конкурентка Лола",
+     "emoji": "👩‍💼",
+     "alibi": "Владелица пиццерии напротив, «зашла за солью»."
+    }
+   ],
+   "clues": [
+    "Отзыв написан с ноутбука — с телефона так оформить нельзя.",
+    "У Феди и Бруно ноутбуков с собой не было.",
+    "Ноутбук Аркадия весь вечер стоял закрытым: он ел и читал бумажную книгу.",
+    "Лола «зашла за солью» с сумкой для ноутбука — и ушла, так и не купив соли."
+   ],
+   "solution": "Нужен ноутбук — у Феди и Бруно их нет, у Аркадия закрыт весь вечер. Лола «зашла за солью» с ноутбуком, подключилась к Wi-Fi конкурента и написала отзыв, чтобы его гости ушли к ней."
+  },
+  "en": {
+   "title": "Who wrote the nasty review",
+   "story": "The “Cheese Feud” pizzeria got a scathing review: “crust like a boot sole”. The author is anonymous, posting from a laptop on the pizzeria’s own Wi-Fi at 21:17. Four were in the room at 21:17.",
+   "suspects": [
+    {
+     "name": "Chef Bruno",
+     "emoji": "🍕",
+     "alibi": "Spinning dough in the kitchen."
+    },
+    {
+     "name": "Courier Fedya",
+     "emoji": "🛵",
+     "alibi": "Waiting for an order at the counter, scrolling his phone."
+    },
+    {
+     "name": "Guest Arkady",
+     "emoji": "🧔",
+     "alibi": "Dining alone at a corner table with a laptop."
+    },
+    {
+     "name": "Rival Lola",
+     "emoji": "👩‍💼",
+     "alibi": "Owns the pizzeria across the street, “dropped in for salt”."
+    }
+   ],
+   "clues": [
+    "The review was written on a laptop — you can’t format it like that from a phone.",
+    "Fedya and Bruno had no laptops with them.",
+    "Arkady’s laptop stayed closed all evening: he ate and read a paper book.",
+    "Lola “dropped in for salt” carrying a laptop bag — and left without buying any salt."
+   ],
+   "solution": "It takes a laptop — Fedya and Bruno have none, Arkady’s was closed all evening. Lola “dropped in for salt” with a laptop, joined her rival’s Wi-Fi and wrote the review to lure his guests to her place."
+  }
+ },
+ {
+  "id": "snowman_crown",
+  "mood": "snow",
+  "culprit": 1,
+  "ru": {
+   "title": "Корона снеговика",
+   "story": "Во дворе слепили гигантского снеговика с короной из фольги — и ночью корона пропала. Утром вокруг снеговика нашли следы. Под подозрением четверо соседей.",
+   "suspects": [
+    {
+     "name": "Бабушка Зоя",
+     "emoji": "👵",
+     "alibi": "Вечером пекла пироги, из дома не выходила."
+    },
+    {
+     "name": "Школьник Гриша",
+     "emoji": "🧒",
+     "alibi": "Гулял с собакой до девяти."
+    },
+    {
+     "name": "Дворник Ахмед",
+     "emoji": "🧹",
+     "alibi": "Чистил снег с шести утра."
+    },
+    {
+     "name": "Робот-снегоуборщик Сугроб",
+     "emoji": "🤖",
+     "alibi": "Работает только днём."
+    }
+   ],
+   "clues": [
+    "Снег шёл до полуночи, следы у снеговика — свежие, на новом снегу.",
+    "Сугроб на ночь стоит на зарядке в гараже — журнал зарядки без пропусков.",
+    "Рядом со следами человека — отпечатки собачьих лап. Собака из четверых есть только у Гриши.",
+    "У Гриши на подоконнике сохнут мокрые варежки с блёстками фольги."
+   ],
+   "solution": "Следы свежие, после полуночи: Зоя из дома не выходила, робот всю ночь на зарядке. Рядом с человеком шла собака — значит, не Ахмед, а собака из четверых только у Гриши, и на его варежках фольга. Гриша выгулял собаку второй раз — за короной для школьного спектакля."
+  },
+  "en": {
+   "title": "The snowman’s crown",
+   "story": "The yard built a giant snowman with a foil crown — and at night the crown vanished. In the morning there were tracks around it. Four neighbours are suspects.",
+   "suspects": [
+    {
+     "name": "Granny Zoya",
+     "emoji": "👵",
+     "alibi": "Baked pies all evening, never left the house."
+    },
+    {
+     "name": "Schoolboy Grisha",
+     "emoji": "🧒",
+     "alibi": "Walked his dog until nine."
+    },
+    {
+     "name": "Janitor Akhmed",
+     "emoji": "🧹",
+     "alibi": "Cleared snow from six in the morning."
+    },
+    {
+     "name": "Snow robot Drift",
+     "emoji": "🤖",
+     "alibi": "Works only in daytime."
+    }
+   ],
+   "clues": [
+    "It snowed until midnight; the tracks by the snowman are fresh, on new snow.",
+    "Drift charges in the garage overnight — the charging log has no gaps.",
+    "Next to the human tracks: dog paw prints. Of the four, only Grisha has a dog.",
+    "On Grisha’s windowsill: wet mittens glittering with bits of foil."
+   ],
+   "solution": "The tracks were made after midnight: Zoya never went out, the robot was charging. A dog walked beside the human — so not Akhmed; of the four, only Grisha has a dog, and his mittens sparkle with foil. Grisha took the dog out a second time — to fetch a crown for the school play."
+  }
+ },
+ {
+  "id": "museum_mask",
+  "mood": "attic",
+  "culprit": 3,
+  "ru": {
+   "title": "Маска из запасника",
+   "story": "Из запасника музея исчезла древняя маска. Дверь запасника открывается картой сотрудника, в журнал пишется время. Вчера карты прикладывали четверо.",
+   "suspects": [
+    {
+     "name": "Реставратор Ева",
+     "emoji": "🖌",
+     "alibi": "Карта в 15:10 — забрала кисти."
+    },
+    {
+     "name": "Охранник Стас",
+     "emoji": "💂",
+     "alibi": "Карта в 17:45 — обход перед закрытием."
+    },
+    {
+     "name": "Экскурсовод Павел",
+     "emoji": "🗣",
+     "alibi": "Карта в 12:00 — показывал запасник гостям."
+    },
+    {
+     "name": "Стажёр Тоня",
+     "emoji": "🧾",
+     "alibi": "Карта в 16:30 — переписывала инвентарь."
+    }
+   ],
+   "clues": [
+    "В 16:00 смотритель видел маску на полке через стеклянную дверь — и сфотографировал её для отчёта.",
+    "В 17:00 директор заглянул через ту же дверь, не входя: маски уже не было.",
+    "Ева в 15:10 вышла через три минуты — с кистями, без сумки.",
+    "В инвентаре, который Тоня переписывала, маска отмечена «на реставрации» — её почерком."
+   ],
+   "solution": "Маска была на месте в 16:00 и исчезла до 17:00. В этот час карту прикладывала только Тоня — в 16:30. Павел и Ева были раньше, Стас позже. А запись «на реставрации» её рукой должна была запутать следы."
+  },
+  "en": {
+   "title": "The mask from the storeroom",
+   "story": "An ancient mask disappeared from the museum storeroom. The door opens with a staff card, and the log records the time. Yesterday four people used their cards.",
+   "suspects": [
+    {
+     "name": "Restorer Eva",
+     "emoji": "🖌",
+     "alibi": "Card at 15:10 — picked up brushes."
+    },
+    {
+     "name": "Guard Stas",
+     "emoji": "💂",
+     "alibi": "Card at 17:45 — closing round."
+    },
+    {
+     "name": "Guide Pavel",
+     "emoji": "🗣",
+     "alibi": "Card at 12:00 — showed the storeroom to guests."
+    },
+    {
+     "name": "Intern Tonya",
+     "emoji": "🧾",
+     "alibi": "Card at 16:30 — updating the inventory."
+    }
+   ],
+   "clues": [
+    "At 16:00 the curator saw the mask on the shelf through the glass door — and photographed it for a report.",
+    "At 17:00 the director looked through the same door without entering: the mask was already gone.",
+    "Eva left at 15:10 after three minutes — with brushes, no bag.",
+    "In the inventory Tonya was updating, the mask is marked “out for restoration” — in her handwriting."
+   ],
+   "solution": "The mask was there at 16:00 and gone by 17:00. In that hour only Tonya used her card — at 16:30. Pavel and Eva came earlier, Stas later. The “out for restoration” note in her hand was meant to muddy the trail."
+  }
+ },
+ {
+  "id": "radio_quiz",
+  "mood": "radar",
+  "culprit": 2,
+  "ru": {
+   "title": "Подсказка в прямом эфире",
+   "story": "Радиовикторина. Слушатель Пётр ответил на все десять вопросов за секунду — будто знал ответы заранее. Листок с ответами лежал в студии. Доступ к нему был у четверых.",
+   "suspects": [
+    {
+     "name": "Ведущая Алина",
+     "emoji": "🎙",
+     "alibi": "Читала вопросы в эфире."
+    },
+    {
+     "name": "Звукорежиссёр Тёма",
+     "emoji": "🎚",
+     "alibi": "Вёл эфир за стеклом."
+    },
+    {
+     "name": "Редактор Инна",
+     "emoji": "✍️",
+     "alibi": "Составляла вопросы и печатала листок."
+    },
+    {
+     "name": "Уборщик Сеня",
+     "emoji": "🧽",
+     "alibi": "Мыл коридор, в студию не заходил."
+    }
+   ],
+   "clues": [
+    "Во время эфира Пётр переписывался с номером, зарегистрированным на сотрудника станции.",
+    "Алина и Тёма весь эфир в прямом видео студии, их телефоны сданы на входе.",
+    "Сеня в студию не заходил — и телефона у него нет, только рация.",
+    "Инна до эфира сфотографировала листок — снимок нашёлся в её облаке."
+   ],
+   "solution": "Во время эфира писал сотрудник станции с телефоном. Телефоны Алины и Тёмы сданы на входе, у Сени только рация. Остаётся Инна — и снимок листка нашёлся в её облаке. Пётр — её двоюродный брат."
+  },
+  "en": {
+   "title": "A tip-off on live air",
+   "story": "A radio quiz. Listener Pyotr answered all ten questions in a second — as if he knew the answers in advance. The answer sheet lay in the studio. Four people had access to it.",
+   "suspects": [
+    {
+     "name": "Host Alina",
+     "emoji": "🎙",
+     "alibi": "Reading the questions on air."
+    },
+    {
+     "name": "Sound engineer Tyoma",
+     "emoji": "🎚",
+     "alibi": "Running the broadcast behind the glass."
+    },
+    {
+     "name": "Editor Inna",
+     "emoji": "✍️",
+     "alibi": "Wrote the questions and printed the sheet."
+    },
+    {
+     "name": "Cleaner Senya",
+     "emoji": "🧽",
+     "alibi": "Mopped the corridor, never entered the studio."
+    }
+   ],
+   "clues": [
+    "During the broadcast Pyotr was texting a number registered to a station employee.",
+    "Alina and Tyoma are on the studio’s live video the whole broadcast; their phones were handed in at the door.",
+    "Senya never entered the studio — and he has no phone, only a walkie-talkie.",
+    "Inna photographed the sheet beforehand — the shot turned up in her cloud."
+   ],
+   "solution": "A staffer with a phone was texting during the broadcast. Alina’s and Tyoma’s phones were handed in, Senya has only a radio. That leaves Inna — and the photo of the sheet was in her cloud. Pyotr is her cousin."
+  }
+ },
+ {
+  "id": "robot_race",
+  "mood": "electric",
+  "culprit": 1,
+  "ru": {
+   "title": "Саботаж на гонке роботов",
+   "story": "Гонка роботов-майнеров. У фаворита — робота «Молния» — на старте отвалилось колесо: кто-то ослабил гайки. Боксы открыты для команд с 9:00 до 10:00. Подходили четверо.",
+   "suspects": [
+    {
+     "name": "Механик «Молнии» Кира",
+     "emoji": "🔧",
+     "alibi": "Готовила робота с 9:00 до 9:30."
+    },
+    {
+     "name": "Пилот соперников Роман",
+     "emoji": "🏎",
+     "alibi": "Говорит, был на трибуне."
+    },
+    {
+     "name": "Комментатор Вика",
+     "emoji": "🎤",
+     "alibi": "Брала интервью у команд в боксах."
+    },
+    {
+     "name": "Мальчик Тимоша",
+     "emoji": "🧒",
+     "alibi": "Сын организатора, бегал по боксам."
+    }
+   ],
+   "clues": [
+    "Гайки ослабили специальным ключом на 17 — у детей и журналистов таких нет.",
+    "Кира в 9:30 проверила колёса при судье — тогда всё было крепко.",
+    "После 9:30 к «Молнии» подходили только Вика, Тимоша и Роман.",
+    "У Романа в кармане комбинезона — ключ на 17 с краской цвета «Молнии»."
+   ],
+   "solution": "Нужен ключ на 17 — его нет у Вики и Тимоши. Кира при судье в 9:30 проверила колёса: всё было крепко, значит, гайки ослабили позже. После 9:30 подходили Вика, Тимоша и Роман — и у Романа в кармане ключ в краске «Молнии»."
+  },
+  "en": {
+   "title": "Sabotage at the robot race",
+   "story": "A race of miner robots. The favourite, “Lightning”, lost a wheel at the start: someone loosened the nuts. The pits were open to teams from 9:00 to 10:00. Four came near.",
+   "suspects": [
+    {
+     "name": "Lightning’s mechanic Kira",
+     "emoji": "🔧",
+     "alibi": "Prepped the robot from 9:00 to 9:30."
+    },
+    {
+     "name": "Rival pilot Roman",
+     "emoji": "🏎",
+     "alibi": "Says he was in the stands."
+    },
+    {
+     "name": "Commentator Vika",
+     "emoji": "🎤",
+     "alibi": "Interviewing teams in the pits."
+    },
+    {
+     "name": "Little Timosha",
+     "emoji": "🧒",
+     "alibi": "The organiser’s son, running around the pits."
+    }
+   ],
+   "clues": [
+    "The nuts were loosened with a special 17 mm wrench — kids and reporters don’t carry those.",
+    "At 9:30 Kira checked the wheels with a judge — everything was tight then.",
+    "After 9:30 only Vika, Timosha and Roman came near Lightning.",
+    "In Roman’s overalls pocket: a 17 mm wrench with paint the colour of Lightning."
+   ],
+   "solution": "It takes a 17 mm wrench — Vika and Timosha have none. Kira checked the wheels with a judge at 9:30 and they were tight, so the nuts were loosened later. After 9:30 came Vika, Timosha and Roman — and Roman’s pocket holds a wrench with Lightning’s paint."
+  }
+ },
+ {
+  "id": "wedding_ring",
+  "mood": "hearts",
+  "culprit": 0,
+  "ru": {
+   "title": "Кольцо в бокале",
+   "story": "Свадьба. Жених спрятал кольцо в бокал невесты для сюрприза — а когда пришло время, кольца там не оказалось. Бокал стоял на столе у сцены. Рядом были четверо.",
+   "suspects": [
+    {
+     "name": "Свидетель Костя",
+     "emoji": "🤵",
+     "alibi": "Говорит, весь вечер танцевал."
+    },
+    {
+     "name": "Официант Гена",
+     "emoji": "🍾",
+     "alibi": "Разносил шампанское."
+    },
+    {
+     "name": "Тётя Люба",
+     "emoji": "👒",
+     "alibi": "Сидела у стола и вязала."
+    },
+    {
+     "name": "Фотограф Дина",
+     "emoji": "📸",
+     "alibi": "Снимала танцпол."
+    }
+   ],
+   "clues": [
+    "Кольцо пропало между 20:10 и 20:20 — в это время бокал не меняли.",
+    "Гена в 20:10–20:20 был на кухне: повар отругал его за разбитый поднос.",
+    "На фото Дины танцпол в 20:12 и 20:18 — Кости в кадре нет.",
+    "Тётя Люба всё это время сидела у стола — и видела, как «кто-то в бабочке» наклонился к бокалу. Бабочки в тот вечер были только у свидетеля и официантов."
+   ],
+   "solution": "Гена на кухне, Дина на танцполе с камерой, тётя Люба — свидетель, а не вор. Костя «танцевал», но на фото танцпола его нет — он в бабочке наклонился к бокалу. Он хотел вернуть кольцо жениху «эффектно» в своей речи — и чуть не сорвал праздник."
+  },
+  "en": {
+   "title": "The ring in the glass",
+   "story": "A wedding. The groom hid the ring in the bride’s glass as a surprise — but when the moment came, the ring was gone. The glass stood on the table by the stage. Four were nearby.",
+   "suspects": [
+    {
+     "name": "Best man Kostya",
+     "emoji": "🤵",
+     "alibi": "Says he danced all evening."
+    },
+    {
+     "name": "Waiter Gena",
+     "emoji": "🍾",
+     "alibi": "Serving champagne."
+    },
+    {
+     "name": "Aunt Lyuba",
+     "emoji": "👒",
+     "alibi": "Sat by the table, knitting."
+    },
+    {
+     "name": "Photographer Dina",
+     "emoji": "📸",
+     "alibi": "Shooting the dance floor."
+    }
+   ],
+   "clues": [
+    "The ring vanished between 20:10 and 20:20 — the glass wasn’t changed then.",
+    "From 20:10 to 20:20 Gena was in the kitchen: the cook scolded him for a broken tray.",
+    "Dina’s dance-floor shots at 20:12 and 20:18 — Kostya isn’t in them.",
+    "Aunt Lyuba sat by the table the whole time — and saw “someone in a bow tie” lean over the glass. Only the best man and the waiters wore bow ties that night."
+   ],
+   "solution": "Gena was in the kitchen, Dina was on the dance floor with her camera, Aunt Lyuba is a witness, not the thief. Kostya “danced” but isn’t in the dance-floor photos — he’s the one in the bow tie who leaned over the glass. He wanted to hand the ring back “with flair” in his speech — and nearly ruined the day."
+  }
+ },
+ {
+  "id": "library_book",
+  "mood": "papers",
+  "culprit": 3,
+  "ru": {
+   "title": "Книга, которую никто не брал",
+   "story": "Из читального зала пропала редкая книга о картах звёздного неба. Выносить книги нельзя, на выходе рамка — она звенит на метку в каждой книге. Вечером в зале были четверо.",
+   "suspects": [
+    {
+     "name": "Библиотекарь Римма",
+     "emoji": "📚",
+     "alibi": "Работала за стойкой."
+    },
+    {
+     "name": "Астроном-любитель Глеб",
+     "emoji": "🔭",
+     "alibi": "Читал о созвездиях, ушёл в 19:00."
+    },
+    {
+     "name": "Школьница Варя",
+     "emoji": "🎒",
+     "alibi": "Делала уроки, ушла в 19:30."
+    },
+    {
+     "name": "Переплётчик Аким",
+     "emoji": "🧵",
+     "alibi": "Чинил корешки в задней комнате."
+    }
+   ],
+   "clues": [
+    "Рамка в тот вечер ни разу не звенела.",
+    "Метку с книги не срезали — её нашли бы. Значит, книга не проходила рамку.",
+    "Через рамку в тот вечер прошли все, кроме того, кто работал в задней комнате.",
+    "У задней комнаты — свой выход во двор, без рамки, ключ только у переплётчика."
+   ],
+   "solution": "Рамка не звенела и метку не срезали — книгу вынесли мимо рамки. Глеб, Варя и Римма выходили через рамку. А у задней комнаты Акима свой выход во двор без рамки — книга ушла там."
+  },
+  "en": {
+   "title": "The book nobody borrowed",
+   "story": "A rare book of star charts vanished from the reading room. Books can’t leave; the exit has a gate that beeps at the tag in every book. Four were in the room that evening.",
+   "suspects": [
+    {
+     "name": "Librarian Rimma",
+     "emoji": "📚",
+     "alibi": "Working at the desk."
+    },
+    {
+     "name": "Amateur astronomer Gleb",
+     "emoji": "🔭",
+     "alibi": "Read about constellations, left at 19:00."
+    },
+    {
+     "name": "Schoolgirl Varya",
+     "emoji": "🎒",
+     "alibi": "Did homework, left at 19:30."
+    },
+    {
+     "name": "Bookbinder Akim",
+     "emoji": "🧵",
+     "alibi": "Mending spines in the back room."
+    }
+   ],
+   "clues": [
+    "The gate didn’t beep once that evening.",
+    "The tag wasn’t cut off — it would have been found. So the book never passed the gate.",
+    "Everyone passed through the gate that evening except the person working in the back room.",
+    "The back room has its own door to the yard, with no gate — only the bookbinder has the key."
+   ],
+   "solution": "The gate never beeped and the tag wasn’t cut — the book left without passing the gate. Gleb, Varya and Rimma all went through it. Akim’s back room has its own gate-free door to the yard — that’s how the book left."
+  }
+ }
+]
