@@ -25,7 +25,8 @@
 - "mood" (у квеста — по умолчанию, у сцены — своя) — атмосфера сцены в приложении (static/webapp/fx.js);
 - "fx_text" (у сцены) — надпись для эффекта «🪞 запотевшее зеркало» — дословно фраза из сцены, от которой мурашки;
   без надписи палец рисует на стекле "fx_draw": "figure" (высокая фигура, по умолчанию) или "face" (лицо духа/зверя).
-  Зеркало ставим только туда, где в тексте есть зеркало/стекло (ванная, шкаф, витрина);
+  Зеркало ставим только туда, где в тексте есть зеркало/стекло (ванная, шкаф, витрина), и НИКОГДА в комедии (HORROR_MOODS);
+- "fx_lock" (у сцены с mood "keypad") — исход набора кода по сюжету: "open" или "error"; без него — только набор, без вердикта;
 - "epic": true — эпик (~час игры): вне ротации и суточного лимита, владелец включает отдельно (тумблер epic:<id>).
 
 Новый квест = новый JSON-файл, кода не требуется. Тесты проверяют каждый
@@ -43,6 +44,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 QUESTS_DIR = PROJECT_ROOT / "data" / "quests"
 
 _quests: dict[str, dict] = {}
+# 😂 владелец 27.10: «только в комедию случайно не вставь» — жуткие эффекты в комедиях запрещены валидатором
+HORROR_MOODS = frozenset({"mirror", "mirrorface", "mirrortext", "handprints", "ghosts", "ghostsE", "skulls", "eyes", "spiders"})
 FX_TEXT_MAX = 32   # 🪞 надпись на запотевшем зеркале (mood "mirror"): короткая, чтобы влезла в 2 строки на телефоне
 
 
@@ -76,6 +79,9 @@ def validate_quest(q: dict) -> list[str]:
         errors.append(f"{qid}: notes — true/false (совет «записывай детали на бумаге»)")
     if not _mood_ok(q.get("mood")):
         errors.append(f"{qid}: mood — метка атмосферы (static/webapp/fx.js) или список до двух меток")
+    is_comedy = "омеди" in str(q.get("genre", "")).lower()
+    if is_comedy and any(m in HORROR_MOODS for m in ([q.get("mood")] if isinstance(q.get("mood"), str) else q.get("mood") or [])):
+        errors.append(f"{qid}: в комедии без хоррор-эффектов")
     endings = 0
     for key, scene in scenes.items():
         if not key.replace("_", "").isalnum() or not key.isascii():
@@ -87,6 +93,10 @@ def validate_quest(q: dict) -> list[str]:
             errors.append(f"{qid}/{key}: fx_text — надпись на зеркале, 1–{FX_TEXT_MAX} символов")
         if scene.get("fx_draw") not in (None, "figure", "face"):
             errors.append(f"{qid}/{key}: fx_draw — figure или face")
+        if scene.get("fx_lock") not in (None, "open", "error"):
+            errors.append(f"{qid}/{key}: fx_lock — open (код подошёл) или error (не подошёл)")
+        if is_comedy and any(m in HORROR_MOODS for m in ([scene.get("mood")] if isinstance(scene.get("mood"), str) else scene.get("mood") or [])):
+            errors.append(f"{qid}/{key}: в комедии без хоррор-эффектов ({', '.join(sorted(HORROR_MOODS))})")
         if not scene.get("text"):
             errors.append(f"{qid}/{key}: пустой текст")
         if scene.get("end"):

@@ -301,3 +301,24 @@ def test_owner_pult_has_quests_tab_and_unlimit_and_mirror_has_no_stock_phrase():
         assert route in api
     fx = (ROOT / "static" / "webapp" / "fx.js").read_text(encoding="utf-8")
     assert "Я РЯДОМ" not in fx and 'special: "keypad"' in fx and 'special: "candles"' in fx
+
+
+def test_no_horror_in_comedies_and_lock_words_in_every_language():
+    """27.10: «только в комедию случайно не вставь» — валидатор режет хоррор-эффекты в комедиях;
+    кодовый замок показывает исход сюжета (fx_lock) словами на языке игрока — все 14 языков."""
+    from bots.main_bot.utils.quest_loader import HORROR_MOODS, validate_quest
+    from shared.locales import SUPPORTED_LANGS
+    base = {"id": "fun", "title": "t", "teaser": "t", "genre": "Комедия", "minutes": "5", "reward_coins": 50, "start": "a",
+            "scenes": {"a": {"text": "x", "mood": "mirror", "choices": [{"label": "b", "goto": "w"}]},
+                       "w": {"text": "y", "end": "win"}}}
+    assert any("комедии" in e for e in validate_quest(base))
+    base["genre"] = "Мистика"
+    assert validate_quest(base) == []
+    base["scenes"]["a"]["fx_lock"] = "maybe"
+    assert any("fx_lock" in e for e in validate_quest(base))
+    assert {"mirror", "handprints", "skulls"} <= HORROR_MOODS
+    fx = (ROOT / "static" / "webapp" / "fx.js").read_text(encoding="utf-8")
+    words = fx[fx.index("const FX_WORDS"):fx.index("const RUNES")]
+    for lang in SUPPORTED_LANGS:
+        assert re.search(r"\b" + lang + r": \{ open: \"[^\"]+\", error: \"[^\"]+\" \}", words), lang
+    assert "Math.random() < .4" not in fx                                 # «открыто» — только если открылось по сюжету

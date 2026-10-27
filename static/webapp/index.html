@@ -11497,7 +11497,8 @@
     return '<div class="card qs-stage"><div class="fx-back"></div><h2>' + title +
       '<button class="fx-toggle" id="qsFx" title="✨">✨</button></h2>' + inner + '</div>';
   }
-  function runFx(box, mood, text, draw) {
+  function runFx(box, mood, text, draw, lock) {
+    const fxOpts = { text: text, draw: draw, lock: lock, lang: me.lang };
     const btn = box.querySelector("#qsFx");
     loadFx().then(ok => {
       const stage = box.querySelector(".qs-stage");
@@ -11505,9 +11506,9 @@
       if (btn) {
         btn.classList.toggle("off", !QuestFX.enabled());
         btn.onclick = () => { QuestFX.setEnabled(!QuestFX.enabled()); btn.classList.toggle("off", !QuestFX.enabled());
-          if (QuestFX.enabled()) QuestFX.start(stage, mood, { text: text, draw: draw }); else { QuestFX.stop(); stage.querySelector(".fx-back").innerHTML = ""; } };
+          if (QuestFX.enabled()) QuestFX.start(stage, mood, fxOpts); else { QuestFX.stop(); stage.querySelector(".fx-back").innerHTML = ""; } };
       }
-      QuestFX.start(stage, mood, { text: text, draw: draw });
+      QuestFX.start(stage, mood, fxOpts);
     });
   }
   // 🎨 Галерея атмосфер — владельцу: все эффекты на тестовой сцене
@@ -11524,7 +11525,7 @@
         name(f) + '</button>').join("") + '</div>');
     box.querySelector("#qsList").onclick = () => { questOpen = null; go("games"); };
     box.querySelectorAll("[data-fx]").forEach(b => { b.onclick = () => { questFxGallery(box, b.dataset.fx); window.scrollTo(0, 0); }; });
-    runFx(box, [cur.id]);
+    runFx(box, [cur.id]);   // галерея: исход замка и надпись зеркала — из пресета эффекта
   }
   function questScene(box, sc, result) {
     const choices = sc.choices.map(ch => '<button class="quiz-opt" data-ch="' + ch.i + '">' + esc(ch.label) +
@@ -11532,7 +11533,7 @@
     const ends = sc.end ? '<button class="btn" id="qsAgain">' + L.qs_again + '</button>' : '';
     box.innerHTML = fxStage(esc(sc.title), '<button class="btn ghost" id="qsList" style="margin-top:0;padding:8px;font-size:13px">' + L.qs_list + '</button>' +
       '<div class="qs-text">' + qsText(sc.text) + '</div>' + (result || '') + choices + ends);
-    runFx(box, sc.mood || [], sc.fx_text, sc.fx_draw);
+    runFx(box, sc.mood || [], sc.fx_text, sc.fx_draw, sc.fx_lock);
     box.querySelector("#qsList").onclick = () => { questOpen = null; go("games"); };
     const again = box.querySelector("#qsAgain");
     if (again) again.onclick = async () => {

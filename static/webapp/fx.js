@@ -12,6 +12,14 @@
  */
 (function () {
   "use strict";
+  // 🌐 надписи эффектов на языке игрока (14 языков экосистемы); новый текстовый эффект — новая пара ключей здесь
+  const FX_WORDS = {
+    ru: { open: "ОТКРЫТО", error: "ОШИБКА" }, en: { open: "OPEN", error: "ERROR" }, uz: { open: "OCHIQ", error: "XATO" },
+    es: { open: "ABIERTO", error: "ERROR" }, fr: { open: "OUVERT", error: "ERREUR" }, pt: { open: "ABERTO", error: "ERRO" },
+    de: { open: "OFFEN", error: "FEHLER" }, it: { open: "APERTO", error: "ERRORE" }, pl: { open: "OTWARTE", error: "BŁĄD" },
+    id: { open: "TERBUKA", error: "SALAH" }, zh: { open: "已开启", error: "错误" }, hi: { open: "खुला", error: "त्रुटि" },
+    bn: { open: "খোলা", error: "ভুল" }, ar: { open: "مفتوح", error: "خطأ" },
+  };
   const RUNES = "ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ☉☽✶⟁⌬";
   const MATRIX = "01ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ0123456789";
   const reduceMotion = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -309,7 +317,9 @@
     skulls:     { g: "dark", ru: "💀 Черепа во тьме", en: "💀 Skulls in the dark", back: ["fx-dungeon"], parts: ["skulls"] },
     pumpkins:   { g: "dark", ru: "🎃 Тыквенная ночь", en: "🎃 Pumpkin night", back: ["fx-night"], parts: ["pumpkins"] },
     candlesE:   { g: "dark", ru: "🕯 Свечи во мраке", en: "🕯 Candles in the dark", back: ["fx-void"], special: "candles" },
-    keypad:     { g: "detective", ru: "🔢 Кодовый замок", en: "🔢 Code lock", back: ["fx-dark"], special: "keypad" },
+    keypad:     { g: "detective", ru: "🔢 Кодовый замок: набор", en: "🔢 Code lock: typing", back: ["fx-dark"], special: "keypad" },
+    keypadok:   { g: "detective", ru: "🔢 Кодовый замок: открыт", en: "🔢 Code lock: open", back: ["fx-dark"], special: "keypad", lock: "open" },
+    keypadno:   { g: "detective", ru: "🔢 Кодовый замок: ошибка", en: "🔢 Code lock: error", back: ["fx-dark"], special: "keypad", lock: "error" },
     notes:      { g: "fun", ru: "🎵 Музыка", en: "🎵 Music", back: ["fx-clubbg"], parts: ["notes"] },
     hearts:     { g: "fun", ru: "💖 Сердечки", en: "💖 Hearts", back: ["fx-dream"], parts: ["hearts"] },
     confetti:   { g: "fun", ru: "🎉 Конфетти", en: "🎉 Confetti", back: ["fx-glowgold"], parts: ["confetti"] },
@@ -402,7 +412,9 @@
     const still = reduceMotion();
     state = { raf: 0, timers: [], timeouts: [], front: [], parts: [], special: [], torch: false,
       text: String((opts && opts.text) || list.map(id => FX[id].text).find(Boolean) || "").toUpperCase().slice(0, 32),
-      draw: ((opts && opts.draw) || list.map(id => FX[id].draw).find(Boolean)) === "face" ? "face" : "figure" };
+      draw: ((opts && opts.draw) || list.map(id => FX[id].draw).find(Boolean)) === "face" ? "face" : "figure",
+      lock: ["open", "error"].indexOf(opts && opts.lock) >= 0 ? opts.lock : list.map(id => FX[id].lock).find(Boolean) || "",
+      words: FX_WORDS[(opts && opts.lang) || ""] || FX_WORDS.en };
     const front = frontLayer();
     list.forEach(id => {
       const fx = FX[id];
@@ -475,7 +487,7 @@
       film = state.special.indexOf("film") >= 0, car = state.special.indexOf("carlights") >= 0,
       oil = state.special.indexOf("oil") >= 0, steps = state.special.indexOf("steps") >= 0,
       hands = state.special.indexOf("hands") >= 0, mirror = state.special.indexOf("mirror") >= 0;
-    const mirrorText = state.text, mirrorDraw = state.draw;
+    const mirrorText = state.text, mirrorDraw = state.draw, lockResult = state.lock, words = state.words;
     const candles = state.special.indexOf("candles") >= 0, keypad = state.special.indexOf("keypad") >= 0;
     let clock = 0;
     const smoke = [];
@@ -910,7 +922,8 @@
         if (kp.phase === "wait") { kp.phase = "type"; kp.code = Array.from({ length: 4 + Math.floor(Math.random() * 3) }, () => Math.floor(Math.random() * 12)); kp.typed = 0; kp.tm = .2; }
         else if (kp.phase === "type") {
           if (kp.typed < kp.code.length) { kp.lit.push({ k: kp.code[kp.typed], t: .45, c: pick(KEY_COLORS) }); kp.typed++; kp.tm = rnd(.45, .8); }
-          else { kp.phase = "result"; kp.ok = Math.random() < .4; kp.tm = 2.2; }
+          else if (lockResult) { kp.phase = "result"; kp.ok = lockResult === "open"; kp.tm = 4.5; }
+          else { kp.phase = "clear"; kp.tm = .9; }
         } else { kp.phase = "wait"; kp.typed = 0; kp.tm = 1.2; }
       }
       if (Math.random() < dt * .8) kp.lit.push({ k: Math.floor(Math.random() * 12), t: .3, c: pick(KEY_COLORS), dim: 1 });   // случайные огоньки
@@ -921,7 +934,7 @@
       // табло
       ctx.globalAlpha = 1; ctx.fillStyle = "rgba(0,0,0,.6)"; ctx.fillRect(x0, y0 - cell * .8, kw, cell * .55);
       ctx.font = "bold " + Math.round(cell * .32) + "px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      const msg = kp.phase === "result" ? (kp.ok ? "ОТКРЫТО" : "ОШИБКА") : "✱".repeat(kp.typed).padEnd(6, "·");
+      const msg = kp.phase === "result" ? (kp.ok ? words.open : words.error) : "✱".repeat(kp.phase === "clear" ? 0 : kp.typed).padEnd(6, "·");
       const mc = kp.phase === "result" ? (kp.ok ? "rgba(120,255,160," : "rgba(255,110,110,") : "rgba(140,220,255,";
       ctx.fillStyle = mc + (kp.phase === "result" ? (.55 + .25 * Math.sin(t * 3)) : .8) + ")";
       ctx.fillText(msg, x0 + kw / 2, y0 - cell * .52);
