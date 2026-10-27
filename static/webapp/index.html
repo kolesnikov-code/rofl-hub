@@ -5544,7 +5544,7 @@
     "as_fire": "आग",
     "as_energy": "बिजली",
     "as_battery": "बैटरियाँ",
-    "as_cow": "गायें",
+    "as_cow": "बकरियाँ",
     "as_core": "कोर",
     "tool_1": "मोटे औज़ार",
     "tool_2": "बारीक ट्यूनिंग के औज़ार",
@@ -10806,7 +10806,16 @@
 
   // Словарь игрока поверх английского: недостающий в паке ключ не ломает экран
   let L = Object.assign({}, I18N.en, I18N.ru);
-  function setLang(code) { L = Object.assign({}, I18N.en, I18N[code] || (code === "ru" ? I18N.ru : I18N.en)); }
+  // 🐐 Культурная локализация (владелец 28.10): в хинди корова священна — ресурс «корова» показываем козой
+  // (механика та же). ICON_SWAPS — те же замены, что shared/locales.ICON_SWAPS на сервере.
+  const ICON_SWAPS = { hi: [["🐄", "🐐"]] };
+  let curLang = "ru";
+  const swapIcons = txt => (ICON_SWAPS[curLang] || []).reduce((a, p) => a.split(p[0]).join(p[1]), txt);
+  function setLang(code) {
+    L = Object.assign({}, I18N.en, I18N[code] || (code === "ru" ? I18N.ru : I18N.en));
+    curLang = code;
+    if (typeof RES_ICON !== "undefined") RES_ICON.cow = swapIcons("🐄");
+  }
   const fmt = (s, o) => String(s || "").replace(/\{(\w+)\}/g, (_, k) => (o[k] !== undefined ? o[k] : ""));
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const num = n => Number(n || 0).toLocaleString("ru-RU");
@@ -10828,7 +10837,9 @@
     const res = await fetch(path, Object.assign({
       headers: { "X-Telegram-Init-Data": initData, "Content-Type": "application/json" }
     }, opts || {}));
-    const body = await res.json().catch(() => ({}));
+    const raw = await res.text().catch(() => "");
+    let body = {};
+    try { body = JSON.parse(swapIcons(raw)); } catch (e) {}
     if (!res.ok) throw { status: res.status, body: body };
     return body;
   }

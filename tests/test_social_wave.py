@@ -134,3 +134,14 @@ def test_generated_i18n_block_is_valid_json():
     end = HTML.index("// I18N_EXTRA_END")
     packs = json.loads(HTML[start:end].rstrip().rstrip(";"))
     assert len(packs) == 12 and "\n" in packs["de"]["cs_shareText"]
+
+
+def test_hindi_shows_a_goat_instead_of_a_cow():
+    """Владелец 28.10: в хинди корова священна — ресурс «корова» показывается козой; механика та же."""
+    from shared.locales import localize_icons, t
+    from shared.resources import format_bundle
+    assert localize_icons("hi", "🐄 1 + 🔥 2 → 🥩 3") == "🐐 1 + 🔥 2 → 🥩 3"
+    assert localize_icons("bn", "🐄") == "🐄" and localize_icons("ru", "🐄") == "🐄"
+    assert "🐄" not in t("hi", "games.resource_gain", icon="🐄", qty=1, name="x", total=5) and "🐐" in t("hi", "games.resource_gain", icon="🐄", qty=1, name="x", total=5)
+    assert "गाय" not in format_bundle("hi", {"cow": 1})
+    assert 'const ICON_SWAPS = { hi: [["🐄", "🐐"]] };' in HTML and "JSON.parse(swapIcons(raw))" in HTML

@@ -2235,8 +2235,20 @@ for _code in PACK_CODES:
 SUPPORTED_LANGS = tuple(STRINGS)
 
 
+# 🐐 Культурная локализация (владелец 28.10): для хинди корова священна — ресурс «корова» там показывается козой
+# (механика та же: 🐐 + 🔥 → 🥩). Подмена только отображения: ключи, биржа и журналы не меняются.
+ICON_SWAPS: dict[str, tuple[tuple[str, str], ...]] = {"hi": (("🐄", "🐐"),)}
+
+
+def localize_icons(lang: str | None, text: str) -> str:
+    for old, new in ICON_SWAPS.get(resolve_lang(lang), ()):
+        text = text.replace(old, new)
+    return text
+
+
 def t(lang: str | None, key: str, **kwargs) -> str:
     """Текст по ключу на языке игрока. ru — эталон и запасной вариант."""
     resolved = resolve_lang(lang)
     template = STRINGS[resolved].get(key) or RU[key]
-    return template.format(**kwargs) if kwargs else template
+    text = template.format(**kwargs) if kwargs else template
+    return localize_icons(resolved, text) if resolved in ICON_SWAPS else text
