@@ -1111,6 +1111,7 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qs_fiction": "Alle Figuren, Namen und Ereignisse in diesen Geschichten sind frei erfunden. Ähnlichkeiten mit realen Personen, lebend oder verstorben, oder mit tatsächlichen Ereignissen sind rein zufällig.",
     "qs_check": "Prüfen",
     "qs_tries": "Versuche: {n}",
     "qs_wrong": "❌ Falsch. Verbleibende Versuche: {n}",

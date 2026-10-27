@@ -1109,6 +1109,7 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qs_fiction": "Todos os personagens, nomes e acontecimentos destas histórias são fictícios. Qualquer semelhança com pessoas reais, vivas ou falecidas, ou com fatos reais é mera coincidência.",
     "qs_check": "Verificar",
     "qs_tries": "Tentativas: {n}",
     "qs_wrong": "❌ Errado. Tentativas restantes: {n}",

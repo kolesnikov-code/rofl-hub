@@ -1110,6 +1110,7 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qs_fiction": "Todos los personajes, nombres y hechos de estas historias son ficticios. Cualquier parecido con personas reales, vivas o muertas, o con hechos reales es pura coincidencia.",
     "qs_check": "Comprobar",
     "qs_tries": "Intentos: {n}",
     "qs_wrong": "❌ Incorrecto. Intentos restantes: {n}",

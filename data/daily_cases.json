@@ -292,7 +292,7 @@
    "story": "Ночной поезд. Коллекционер везёт маленький пейзаж в тубусе. Утром тубус пуст. В вагоне не спали четверо, двери тамбуров заперты с 23:00.",
    "suspects": [
     {
-     "name": "Проводница Нина",
+     "name": "Проводница Рита",
      "emoji": "🧑‍✈️",
      "alibi": "Разносила чай до полуночи, потом сидела в служебном."
     },
@@ -315,17 +315,17 @@
    "clues": [
     "Тубус открыли изнутри купе: крышку снимали лёжа — пыль стёрта только сверху.",
     "Билетик ездит по коридору на колёсах и в купе не заходит — порог высокий.",
-    "Нина и Ксения всю ночь были в коридоре вместе: проводница подливала пианистке чай.",
+    "Рита и Ксения всю ночь были в коридоре вместе: проводница подливала пианистке чай.",
     "Наушники Олега всю ночь пролежали на столике — разряженные, без проводов."
    ],
-   "solution": "Крышку снимали лёжа сверху — с верхней полки. Робот в купе не заедет, Нина и Ксения всю ночь вместе в коридоре. Олег «спал в наушниках», которые пролежали на столе разряженными, — он не спал."
+   "solution": "Крышку снимали лёжа сверху — с верхней полки. Робот в купе не заедет, Рита и Ксения всю ночь вместе в коридоре. Олег «спал в наушниках», которые пролежали на столе разряженными, — он не спал."
   },
   "en": {
    "title": "The painting in compartment 7",
    "story": "A night train. A collector carries a small landscape in a tube. In the morning the tube is empty. Four in the carriage were awake; the vestibule doors were locked from 23:00.",
    "suspects": [
     {
-     "name": "Attendant Nina",
+     "name": "Attendant Rita",
      "emoji": "🧑‍✈️",
      "alibi": "Served tea until midnight, then sat in the staff cabin."
     },
@@ -348,10 +348,10 @@
    "clues": [
     "The tube was opened from inside the compartment, lying down — dust wiped only on top.",
     "Ticket rolls along the corridor on wheels and never enters compartments — the threshold is high.",
-    "Nina and Ksenia were together in the corridor all night: the attendant kept refilling the pianist’s tea.",
+    "Rita and Ksenia were together in the corridor all night: the attendant kept refilling the pianist’s tea.",
     "Oleg’s headphones lay on the table all night — dead battery, no cable."
    ],
-   "solution": "The lid was taken off lying down, from above — from the top bunk. The robot can’t enter, Nina and Ksenia were together all night. Oleg was “asleep in headphones” that lay dead on the table — he wasn’t asleep."
+   "solution": "The lid was taken off lying down, from above — from the top bunk. The robot can’t enter, Rita and Ksenia were together all night. Oleg was “asleep in headphones” that lay dead on the table — he wasn’t asleep."
   }
  },
  {

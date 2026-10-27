@@ -1111,6 +1111,7 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qs_fiction": "Hikoyalardagi barcha qahramonlar, ismlar va voqealar to'qima. Tirik yoki vafot etgan haqiqiy odamlar va haqiqiy voqealar bilan har qanday o'xshashlik tasodifiy.",
     "qs_check": "Tekshirish",
     "qs_tries": "Urinishlar: {n}",
     "qs_wrong": "❌ Noto'g'ri. Qolgan urinishlar: {n}",

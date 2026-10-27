@@ -1111,6 +1111,7 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qs_fiction": "Semua tokoh, nama, dan peristiwa dalam cerita ini fiktif. Kemiripan dengan orang sungguhan, yang masih hidup maupun sudah meninggal, atau dengan peristiwa nyata hanyalah kebetulan.",
     "qs_check": "Periksa",
     "qs_tries": "Percobaan: {n}",
     "qs_wrong": "❌ Salah. Sisa percobaan: {n}",
