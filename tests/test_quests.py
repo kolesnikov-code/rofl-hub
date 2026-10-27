@@ -28,12 +28,16 @@ def _load():
 def test_all_quests_loaded_in_order():
     """3 флагмана + 7 «в запас» под ротацию (/quests_admin). Порядок — поле order."""
     quests = all_quests()
-    assert [q["id"] for q in quests] == [
+    ids = [q["id"] for q in quests]
+    assert ids[:10] == [
         "golden_cutlet", "miner_career", "locked_safe",
         "night_drone", "cutlet_exchange", "robot_chef",
         "ice_expedition", "space_signal", "blackout", "metro_veteran",
-        "forty_candles",   # ⭐ эпик (27.10) — вне ротации, только с Безлимитом
     ]
+    assert "forty_candles" in ids   # ⭐ эпик (27.10) — вне ротации, только с Безлимитом
+    # банк растёт заходами (docs/quests/QUEUE.md): порядок — по order, без повторов
+    orders = [q["order"] for q in quests]
+    assert orders == sorted(orders) and len(set(orders)) == len(orders) and len(set(ids)) == len(ids)
 
 
 def test_every_quest_is_valid():
