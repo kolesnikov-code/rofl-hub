@@ -290,3 +290,14 @@ def test_quest_rotation_v2_rules_and_app_ui():
     assert 'F.data == "epic_pick"' in admin and "Внести эпик в список" in admin and 'Command("unlimit")' in admin
     db_src = (ROOT / "shared" / "database.py").read_text(encoding="utf-8")
     assert "('quest:golden_cutlet', TRUE)" in db_src                     # первые три остаются видны после смены дефолта
+
+
+def test_owner_pult_has_quests_tab_and_unlimit_and_mirror_has_no_stock_phrase():
+    """27.10: эпики/ротация и Безлимит по @username — и в пульте-приложении; зеркало без дежурной надписи."""
+    pult = (ROOT / "static" / "webapp" / "admin.html").read_text(encoding="utf-8")
+    api = (ROOT / "bots" / "main_bot" / "webapp_admin.py").read_text(encoding="utf-8")
+    assert 'quests: ["🗺 Квесты", viewQuests]' in pult and '"/api/admin/unlimit"' in pult
+    for route in ('"/api/admin/quests"', '"/api/admin/quest"', '"/api/admin/unlimit"'):
+        assert route in api
+    fx = (ROOT / "static" / "webapp" / "fx.js").read_text(encoding="utf-8")
+    assert "Я РЯДОМ" not in fx and 'special: "keypad"' in fx and 'special: "candles"' in fx

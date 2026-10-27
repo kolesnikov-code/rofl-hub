@@ -29,6 +29,7 @@ def scene_payload(quest: dict, scene_key: str, flags: set[str]) -> dict:
     scene = quest["scenes"][scene_key]
     return {"id": quest["id"], "title": quest["title"], "scene": scene_key, "text": scene["text"],
             "end": scene.get("end"), "mood": scene_mood(quest, scene_key), "fx_text": scene.get("fx_text") or "",
+            "fx_draw": scene.get("fx_draw") or "",
             "choices": [] if scene.get("end") else
             [{"i": i, "label": ch["label"], "cost": ch.get("cost") or 0} for i, ch in visible_choices(scene, flags)]}
 

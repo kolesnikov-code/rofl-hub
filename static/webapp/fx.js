@@ -80,6 +80,7 @@
   .fx-magic{background:radial-gradient(ellipse at 50% 100%,rgba(170,80,255,.3),transparent 65%),rgba(15,5,30,.45)}
   .fx-glowgold{background:radial-gradient(ellipse at 50% 60%,rgba(255,210,90,.12),transparent 70%),rgba(5,15,8,.45)}
   .fx-dark{background:rgba(0,0,0,.6)}
+  .fx-void{background:radial-gradient(ellipse at 50% 110%,rgba(40,0,60,.35),transparent 60%),#000}
   .fx-ghost{background:radial-gradient(ellipse at 50% 50%,rgba(120,255,200,.08),rgba(0,10,10,.65) 75%)}
   /* 🪩 клуб: диско-шар и лазеры (без стробоскопа) */
   .fx-clubbg{background:radial-gradient(circle at 50% 0%,rgba(255,60,200,.18),transparent 50%),rgba(10,0,25,.6);animation:fxHue 16s linear infinite}
@@ -167,7 +168,7 @@
   const P = {
     rain: { n: 60, from: "top", vx: [-40, -10], vy: [700, 950], size: [10, 22], colors: ["rgba(170,200,255,.55)"], shape: "streak", w: 1.1 },
     glassrain: { n: 14, from: "top", vx: [-4, 4], vy: [25, 70], size: [3, 7], colors: ["rgba(200,230,255,.45)"], shape: "drop", wobble: [3, 1.5] },
-    neonrain: { n: 45, from: "top", vx: [-16, 0], vy: [400, 600], size: [10, 20], colors: ["rgba(255,60,200,.6)", "rgba(40,230,255,.6)"], shape: "streak", w: 1.3, glow: 6 },
+    neonrain: { n: 50, from: "top", vx: [-16, 0], vy: [400, 600], size: [12, 24], colors: ["rgba(255,80,215,.95)", "rgba(60,240,255,.95)", "rgba(190,120,255,.9)"], shape: "streak", w: 1.7, glow: 16 },
     snow: { n: 45, from: "top", vx: [-15, 15], vy: [25, 60], size: [1.5, 3.5], colors: ["rgba(255,255,255,.85)"], shape: "dot", wobble: [18, .6] },
     blizzard: { n: 90, from: "right", vx: [-900, -600], vy: [40, 120], size: [8, 24], colors: ["rgba(255,255,255,.5)", "rgba(220,235,255,.35)"], shape: "streak", w: 1.2 },
     sand: { n: 110, from: "right", vx: [-520, -340], vy: [80, 170], size: [2, 6], colors: ["rgba(230,190,110,.55)", "rgba(200,160,90,.45)"], shape: "streak", w: 1.4 },
@@ -271,7 +272,7 @@
     dream:      { g: "mystic", ru: "💭 Сон", en: "💭 Dream", back: ["fx-dream"], parts: ["petals"] },
     insight:    { g: "mystic", ru: "💡 Озарение", en: "💡 Insight", back: ["fx-dark", "fx-rings", "fx-rings fx-rings2"] },
     club:       { g: "city", ru: "🪩 Клуб", en: "🪩 Club", back: ["fx-clubbg", "fx-lasers", "fx-lasers fx-lasers2"], parts: ["disco"] },
-    neon:       { g: "city", ru: "🌃 Неоновый дождь", en: "🌃 Neon rain", back: ["fx-clubbg"], parts: ["neonrain"] },
+    neon:       { g: "city", ru: "🌃 Неоновый дождь", en: "🌃 Neon rain", back: ["fx-void"], parts: ["neonrain"] },
     siren:      { g: "city", ru: "🚓 Сирена", en: "🚓 Siren", back: ["fx-noir"], front: ["fx-sirenL", "fx-sirenR"] },
     alarm:      { g: "city", ru: "🚨 Тревога", en: "🚨 Alarm", back: ["fx-alarmbg"], front: ["fx-beacon"] },
     noir:       { g: "city", ru: "🕵️ Жалюзи", en: "🕵️ Blinds", back: ["fx-noir", "fx-blinds", "fx-headl"], parts: ["dust"] },
@@ -307,7 +308,8 @@
     spiders:    { g: "dark", ru: "🕷 Пауки на паутинке", en: "🕷 Spiders on threads", back: ["fx-attic"], parts: ["spiders"] },
     skulls:     { g: "dark", ru: "💀 Черепа во тьме", en: "💀 Skulls in the dark", back: ["fx-dungeon"], parts: ["skulls"] },
     pumpkins:   { g: "dark", ru: "🎃 Тыквенная ночь", en: "🎃 Pumpkin night", back: ["fx-night"], parts: ["pumpkins"] },
-    candlesE:   { g: "dark", ru: "🕯 Свечи во мраке", en: "🕯 Candles in the dark", back: ["fx-dark"], parts: ["candlesE"] },
+    candlesE:   { g: "dark", ru: "🕯 Свечи во мраке", en: "🕯 Candles in the dark", back: ["fx-void"], special: "candles" },
+    keypad:     { g: "detective", ru: "🔢 Кодовый замок", en: "🔢 Code lock", back: ["fx-dark"], special: "keypad" },
     notes:      { g: "fun", ru: "🎵 Музыка", en: "🎵 Music", back: ["fx-clubbg"], parts: ["notes"] },
     hearts:     { g: "fun", ru: "💖 Сердечки", en: "💖 Hearts", back: ["fx-dream"], parts: ["hearts"] },
     confetti:   { g: "fun", ru: "🎉 Конфетти", en: "🎉 Confetti", back: ["fx-glowgold"], parts: ["confetti"] },
@@ -329,7 +331,9 @@
     sparkle:    { g: "mystic", ru: "✨ Звёздная пыль", en: "✨ Stardust", back: ["fx-dark"], parts: ["sparkle"] },
     bolts:      { g: "tech", ru: "⚡ Разряды", en: "⚡ Sparks", back: ["fx-dark"], parts: ["bolts"] },
     handprints: { g: "dark", ru: "🖐 Руки на стекле", en: "🖐 Hands on the glass", back: ["fx-dark", "fx-fog"], special: "hands" },
-    mirror:     { g: "dark", ru: "🪞 Запотевшее зеркало", en: "🪞 Fogged mirror", back: ["fx-dark"], special: "mirror" },
+    mirror:     { g: "dark", ru: "🪞 Зеркало: фигура", en: "🪞 Mirror: a figure", back: ["fx-dark"], special: "mirror" },
+    mirrorface: { g: "dark", ru: "🪞 Зеркало: лицо", en: "🪞 Mirror: a face", back: ["fx-dark"], special: "mirror", draw: "face" },
+    mirrortext: { g: "dark", ru: "🪞 Зеркало: надпись", en: "🪞 Mirror: writing", back: ["fx-dark"], special: "mirror", text: "НЕ ОБОРАЧИВАЙСЯ" },
     hourglass:  { g: "dark", ru: "⏳ Песок времени", en: "⏳ Sands of time", back: ["fx-attic"], parts: ["hourglass", "dust"] },
     heartbeat:  { g: "mind", ru: "💓 Биение сердца", en: "💓 Heartbeat", front: ["fx-heart"] },
     panic:      { g: "mind", ru: "😱 Паника", en: "😱 Panic", back: ["fx-dark"], front: ["fx-panic"] },
@@ -397,7 +401,8 @@
     injectCss();
     const still = reduceMotion();
     state = { raf: 0, timers: [], timeouts: [], front: [], parts: [], special: [], torch: false,
-      text: String((opts && opts.text) || "Я РЯДОМ").toUpperCase().slice(0, 32) };
+      text: String((opts && opts.text) || list.map(id => FX[id].text).find(Boolean) || "").toUpperCase().slice(0, 32),
+      draw: ((opts && opts.draw) || list.map(id => FX[id].draw).find(Boolean)) === "face" ? "face" : "figure" };
     const front = frontLayer();
     list.forEach(id => {
       const fx = FX[id];
@@ -470,7 +475,8 @@
       film = state.special.indexOf("film") >= 0, car = state.special.indexOf("carlights") >= 0,
       oil = state.special.indexOf("oil") >= 0, steps = state.special.indexOf("steps") >= 0,
       hands = state.special.indexOf("hands") >= 0, mirror = state.special.indexOf("mirror") >= 0;
-    const mirrorText = state.text;
+    const mirrorText = state.text, mirrorDraw = state.draw;
+    const candles = state.special.indexOf("candles") >= 0, keypad = state.special.indexOf("keypad") >= 0;
     let clock = 0;
     const smoke = [];
     const cols = matrix ? Array.from({ length: Math.ceil(W / 14) }, () => Math.random() * -H) : [];
@@ -560,6 +566,8 @@
         }
       } else ctx.clearRect(0, 0, W, H);
       if (mirror) drawMirror(clock);
+      if (candles) drawCandles(clock);
+      if (keypad) drawKeypad(clock, dt);
       if (hands) drawHands(clock, dt);
       for (const p of parts) {
         const c = p.cfg;
@@ -764,6 +772,7 @@
       mctx.clearRect(0, 0, W, H);
       mctx.save(); frame(mctx); mctx.clip();
       mctx.globalAlpha = fogA; mctx.drawImage(fogTex, 0, 0);
+      if (!mirrorText) { drawMirrorShape(c, mx, my, mw, mh, fogA); mctx.restore(); finishMirror(c, frame); return; }
       let fs = Math.min(46, Math.max(22, mw / 8));
       let lines = mirrorLines(fs);
       while (fs > 18 && Math.max.apply(null, lines.map(l => mctx.measureText(l).width)) > mw * .88) { fs -= 2; mctx.font = "bold " + fs + 'px "Segoe Print","Comic Sans MS","Marker Felt",cursive'; }
@@ -790,10 +799,148 @@
         });
       });
       mctx.restore();
+      finishMirror(c, frame);
+    }
+    function finishMirror(c, frame) {
       mctx.globalCompositeOperation = "source-over";
       mctx.globalAlpha = .55; mctx.lineWidth = 3; mctx.strokeStyle = "#8a7550"; frame(mctx); mctx.stroke();   // рама
       if (c < .05) mirrorDrips = null;
       ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.drawImage(mc, 0, 0, W, H);
+    }
+    // контуры для «рисунка пальцем»: координаты 0..1 внутри квадрата/прямоугольника рисунка
+    const ellipsePts = (cx, cy, rx, ry, n, wob) => Array.from({ length: n + 1 }, (_, i) => {
+      const a = i / n * 6.28 - 1.57, w = 1 + (wob || 0) * Math.sin(i * 2.7);
+      return [cx + Math.cos(a) * rx * w, cy + Math.sin(a) * ry * w];
+    });
+    const SHAPES = {
+      // высокая тонкая фигура без лица: голова, длинная шея, узкие плечи, руки ниже колен с длинными пальцами
+      figure: { box: [.42, 1], strokes: [
+        { pts: ellipsePts(.5, .1, .1, .085, 22) },
+        { pts: [[.5, .19], [.5, .26]] },
+        { pts: [[.3, .29], [.5, .26], [.7, .29]] },
+        { pts: [[.5, .26], [.5, .58]] },
+        { pts: [[.3, .29], [.24, .5], [.2, .72], [.18, .8]] },
+        { pts: [[.18, .8], [.12, .9]] }, { pts: [[.18, .8], [.17, .92]] }, { pts: [[.18, .8], [.22, .9]] },
+        { pts: [[.7, .29], [.76, .5], [.8, .72], [.82, .8]] },
+        { pts: [[.82, .8], [.78, .9]] }, { pts: [[.82, .8], [.83, .92]] }, { pts: [[.82, .8], [.88, .9]] },
+        { pts: [[.5, .58], [.42, .78], [.4, .99]] },
+        { pts: [[.5, .58], [.58, .78], [.6, .99]] },
+      ], drips: [[.5, .19], [.18, .92], [.83, .92], [.4, .99]] },
+      // лицо духа: неровный овал, пустые глазницы, длинный зубастый рот
+      face: { box: [1, 1], strokes: [
+        { pts: ellipsePts(.5, .5, .3, .42, 34, .05) },
+        { pts: ellipsePts(.38, .4, .075, .055, 14), fill: 1 },
+        { pts: ellipsePts(.62, .4, .075, .055, 14), fill: 1 },
+        { pts: [[.47, .52], [.5, .58], [.53, .52]] },
+        { pts: [[.3, .68], [.34, .74], [.38, .67], [.42, .75], [.46, .67], [.5, .76], [.54, .67], [.58, .75], [.62, .67], [.66, .74], [.7, .68]] },
+      ], drips: [[.38, .46], [.62, .46], [.42, .75], [.58, .75]] },
+    };
+    function drawMirrorShape(c, mx, my, mw, mh, fogA) {
+      const sh = SHAPES[mirrorDraw] || SHAPES.figure;
+      const bh = mh * .92, bw = Math.min(mw * .9, bh * sh.box[0] / sh.box[1]);
+      const bx = mx + (mw - bw) / 2, by = my + (mh - bh) / 2;
+      const P = q => [bx + q[0] * bw, by + q[1] * bh];
+      const lens = sh.strokes.map(st => st.pts.reduce((L, q, i) => i ? L + Math.hypot((q[0] - st.pts[i - 1][0]) * bw, (q[1] - st.pts[i - 1][1]) * bh) : 0, 0));
+      const total = lens.reduce((a, b) => a + b, 0);
+      const draw = Math.max(0, Math.min(1, (c - 2.8) / 5.5)) * total;         // палец рисует ~5,5 с
+      const refog = c > 12.5 ? (k => k * k * (3 - 2 * k))(Math.min(1, (c - 12.5) / 3)) : 0;
+      mctx.globalCompositeOperation = "destination-out";
+      mctx.globalAlpha = (1 - refog) * .92;
+      mctx.lineWidth = Math.max(4, bw * .035); mctx.lineJoin = mctx.lineCap = "round"; mctx.strokeStyle = mctx.fillStyle = "#000";
+      let left = draw;
+      sh.strokes.forEach((st, si) => {
+        if (left <= 0) return;
+        const pts = st.pts.map(P);
+        mctx.beginPath(); mctx.moveTo(pts[0][0], pts[0][1]);
+        let rest = left;
+        for (let i = 1; i < pts.length && rest > 0; i++) {
+          const seg = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]), k = Math.min(1, rest / seg);
+          mctx.lineTo(pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * k, pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * k);
+          rest -= seg;
+        }
+        mctx.stroke();
+        if (st.fill && left >= lens[si]) { mctx.beginPath(); pts.forEach((q, i) => i ? mctx.lineTo(q[0], q[1]) : mctx.moveTo(q[0], q[1])); mctx.fill(); }
+        left -= lens[si];
+      });
+      if (draw >= total) {                                                   // дорисовал — по стеклу бегут капли
+        const grow = Math.min(1, (c - 8.3) / 4);
+        mctx.lineWidth = 2.2;
+        sh.drips.forEach((q, i) => { const p = P(q); mctx.beginPath(); mctx.moveTo(p[0], p[1]); mctx.lineTo(p[0], p[1] + (18 + i * 9) * grow); mctx.stroke(); });
+      }
+      mctx.globalCompositeOperation = "source-over";
+    }
+    // 🕯 свечи: живые язычки (сумма медленных синусов, без мигания), дыхание тёплого ореола, тонкий дымок
+    let candleSet = null;
+    function drawCandles(t) {
+      if (!candleSet) candleSet = Array.from({ length: 6 }, (_, i) => {
+        const y = rnd(.55, .92); return { x: (i + .5) / 6 + rnd(-.05, .05), y: y, s: .55 + y * .7, ph: rnd(0, 6.28), ph2: rnd(0, 6.28), h: rnd(.7, 1.2) };
+      });
+      ctx.shadowBlur = 0;
+      candleSet.forEach(cd => {
+        const x = cd.x * W, base = cd.y * H, s = cd.s, bodyH = 34 * s * cd.h, top = base - bodyH;
+        const breathe = .16 + .07 * Math.sin(t * .7 + cd.ph);
+        const halo = ctx.createRadialGradient(x, top - 8 * s, 0, x, top - 8 * s, 90 * s);
+        halo.addColorStop(0, "rgba(255,190,110," + breathe + ")"); halo.addColorStop(1, "rgba(255,150,60,0)");
+        ctx.globalAlpha = 1; ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(x, top - 8 * s, 90 * s, 0, 6.28); ctx.fill();
+        const body = ctx.createLinearGradient(x - 6 * s, 0, x + 6 * s, 0);
+        body.addColorStop(0, "rgba(120,100,80,.9)"); body.addColorStop(.5, "rgba(235,222,195,.95)"); body.addColorStop(1, "rgba(120,100,80,.9)");
+        ctx.fillStyle = body; ctx.fillRect(x - 6 * s, top, 12 * s, bodyH);
+        const fl = 1 + .12 * Math.sin(t * 2.3 + cd.ph) + .06 * Math.sin(t * 5.1 + cd.ph2);
+        const sway = 1.6 * s * Math.sin(t * 1.3 + cd.ph2), fh = 16 * s * fl, fx = x + sway, fy = top - 2 * s;
+        const flame = ctx.createRadialGradient(fx, fy - fh * .35, 0, fx, fy - fh * .35, fh * .75);
+        flame.addColorStop(0, "rgba(255,255,235,1)"); flame.addColorStop(.35, "rgba(255,210,120,.95)");
+        flame.addColorStop(.75, "rgba(255,130,40,.55)"); flame.addColorStop(1, "rgba(255,90,20,0)");
+        ctx.fillStyle = flame; ctx.beginPath();
+        ctx.moveTo(fx, fy - fh); ctx.quadraticCurveTo(fx + 5.5 * s, fy - fh * .35, fx, fy); ctx.quadraticCurveTo(fx - 5.5 * s, fy - fh * .35, fx, fy - fh); ctx.fill();
+        ctx.strokeStyle = "rgba(200,200,210,.10)"; ctx.lineWidth = 1;                  // дымок вьётся вверх
+        ctx.beginPath(); ctx.moveTo(fx, fy - fh);
+        for (let k = 1; k <= 8; k++) ctx.lineTo(fx + Math.sin(t * 1.1 + k * .8 + cd.ph) * k * 1.6 * s, fy - fh - k * 9 * s);
+        ctx.stroke();
+      });
+    }
+    // 🔢 кодовый замок: невидимая рука набирает код, клавиши мягко подсвечиваются разными цветами,
+    // на табло растут звёздочки; потом спокойное «ОТКРЫТО» или «ОШИБКА» — и снова. Без вспышек.
+    const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "✱", "0", "#"];
+    const KEY_COLORS = ["120,220,255", "255,190,90", "200,140,255", "120,255,170", "255,130,170"];
+    let kp = null;
+    function drawKeypad(t, dt) {
+      if (!kp) kp = { phase: "wait", tm: 1, code: [], typed: 0, lit: [], ok: false };
+      kp.tm -= dt;
+      if (kp.tm <= 0) {
+        if (kp.phase === "wait") { kp.phase = "type"; kp.code = Array.from({ length: 4 + Math.floor(Math.random() * 3) }, () => Math.floor(Math.random() * 12)); kp.typed = 0; kp.tm = .2; }
+        else if (kp.phase === "type") {
+          if (kp.typed < kp.code.length) { kp.lit.push({ k: kp.code[kp.typed], t: .45, c: pick(KEY_COLORS) }); kp.typed++; kp.tm = rnd(.45, .8); }
+          else { kp.phase = "result"; kp.ok = Math.random() < .4; kp.tm = 2.2; }
+        } else { kp.phase = "wait"; kp.typed = 0; kp.tm = 1.2; }
+      }
+      if (Math.random() < dt * .8) kp.lit.push({ k: Math.floor(Math.random() * 12), t: .3, c: pick(KEY_COLORS), dim: 1 });   // случайные огоньки
+      const cell = Math.min(44, W * .12, H * .55 / 5.3), kw = cell * 3, kh = cell * 4, x0 = W - kw - 22, y0 = (H - kh) / 2 + cell * .5;   // справа, фоном под текстом
+      ctx.shadowBlur = 0; ctx.lineWidth = 1;
+      ctx.globalAlpha = .55; ctx.fillStyle = "rgba(10,14,24,.75)"; ctx.fillRect(x0 - 10, y0 - cell * .95, kw + 20, kh + cell + 6);
+      ctx.strokeStyle = "rgba(140,170,200,.35)"; ctx.strokeRect(x0 - 10, y0 - cell * .95, kw + 20, kh + cell + 6);
+      // табло
+      ctx.globalAlpha = 1; ctx.fillStyle = "rgba(0,0,0,.6)"; ctx.fillRect(x0, y0 - cell * .8, kw, cell * .55);
+      ctx.font = "bold " + Math.round(cell * .32) + "px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      const msg = kp.phase === "result" ? (kp.ok ? "ОТКРЫТО" : "ОШИБКА") : "✱".repeat(kp.typed).padEnd(6, "·");
+      const mc = kp.phase === "result" ? (kp.ok ? "rgba(120,255,160," : "rgba(255,110,110,") : "rgba(140,220,255,";
+      ctx.fillStyle = mc + (kp.phase === "result" ? (.55 + .25 * Math.sin(t * 3)) : .8) + ")";
+      ctx.fillText(msg, x0 + kw / 2, y0 - cell * .52);
+      kp.lit.forEach(l => { l.t -= dt; });
+      kp.lit = kp.lit.filter(l => l.t > 0);
+      KEYS.forEach((k, i) => {
+        const cx = x0 + (i % 3 + .5) * cell, cy = y0 + (Math.floor(i / 3) + .5) * cell, r = cell * .36;
+        const lit = kp.lit.filter(l => l.k === i).pop();
+        const a = lit ? Math.min(1, lit.t / .2) * (lit.dim ? .25 : .55) : 0;
+        if (a > 0) {
+          const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 1.5);
+          g.addColorStop(0, "rgba(" + lit.c + "," + a + ")"); g.addColorStop(1, "rgba(" + lit.c + ",0)");
+          ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r * 1.5, 0, 6.28); ctx.fill();
+        }
+        ctx.globalAlpha = .7; ctx.strokeStyle = a > 0 ? "rgba(" + lit.c + ",.8)" : "rgba(150,180,210,.35)";
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.28); ctx.stroke();
+        ctx.fillStyle = a > 0 ? "rgba(255,255,255,.9)" : "rgba(170,190,215,.55)"; ctx.font = Math.round(r * .9) + "px sans-serif";
+        ctx.fillText(k, cx, cy + 1);
+      });
     }
     function jag(x1, y1, x2, y2) {
       const pts = [[x1, y1]], n = 12;

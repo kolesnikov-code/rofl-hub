@@ -481,8 +481,36 @@
     });
   }
 
+  // 🗺 Квесты: эпики (только с ⚡ Безлимитом) и ротация до 10; ⚡ Безлимит игроку по @username
+  async function viewQuests(app) {
+    const d = await api("/api/admin/quests");
+    const rot = d.quests.filter(q => !q.epic), epics = d.quests.filter(q => q.epic), on = rot.filter(q => q.on).length;
+    const row = q => '<div class="row"><span>' + (q.on ? "🟢 " : "⚫ ") + esc(q.title) + '<br><small class="hint">' + esc(q.genre) +
+      ' · ' + esc(q.minutes) + ' мин · начинали ' + q.started + ', прошли ' + q.done + '</small></span><button class="mini" data-q="' +
+      esc(q.id) + '" data-on="' + (q.on ? 1 : 0) + '">' + (q.on ? (q.epic ? "➖ Убрать" : "Скрыть") : (q.epic ? "➕ В список" : "Показать")) + '</button></div>';
+    app.innerHTML =
+      '<div class="card"><h2>⚡ Безлимит игроку</h2><div class="hint">Снимает лимиты игр и квестов и открывает эпики. Игрок должен хотя бы раз нажать /start.</div>' +
+      '<label>Игрок: @username, ID или VIP ID</label><input id="unWho" placeholder="@username">' +
+      '<label>Дней (добавляются к текущему сроку; 0 — снять)</label><div class="chips">' +
+      [1, 7, 30, 365, 0].map(n => '<button class="chip' + (n === 30 ? ' on' : '') + '" data-days="' + n + '">' + (n ? n + " дн." : "снять") + '</button>').join("") +
+      '</div><button class="btn" id="unGo">⚡ Выдать</button></div>' +
+      '<div class="card"><h2>⭐ Эпики — ' + epics.length + '</h2><div class="hint">Большие истории на 20+ минут. Вне ротации и суточного лимита, открываются игрокам только с ⚡ Безлимитом. В приложении — первыми, в золотой рамке.</div>' +
+      (epics.length ? epics.map(row).join("") : '<div class="hint">Эпиков пока нет.</div>') + '</div>' +
+      '<div class="card"><h2>🗺 Ротация — ' + on + '/' + d.rotation_size + ' · всего квестов ' + d.total + '</h2><div class="hint">Игрок проходит ' +
+      d.daily_new + ' новых квеста в сутки, потом непройденные гаснут до 00:00 UTC (Безлимит снимает). Пройденные переигрываются без ограничений.</div>' +
+      rot.map(row).join("") + '</div>';
+    let days = 30;
+    app.querySelectorAll("[data-days]").forEach(b => { b.onclick = () => {
+      days = Number(b.dataset.days); app.querySelectorAll("[data-days]").forEach(x => x.classList.toggle("on", x === b)); }; });
+    $("unGo").onclick = () => act($("unGo"), "/api/admin/unlimit", { who: $("unWho").value, days: days },
+      r => say(r.until ? "⚡ Безлимит до " + r.until + " UTC" : "⚫ Безлимит снят"));
+    app.querySelectorAll("[data-q]").forEach(b => {
+      b.onclick = () => act(b, "/api/admin/quest", { id: b.dataset.q, enabled: b.dataset.on !== "1" }, () => viewQuests(app));
+    });
+  }
+
   const TABS = { battles: ["⚔️ Битвы и акции", viewBattles], exp: ["🗺 Экспедиции", viewExp], gift: ["🎁 Подарки", viewGift],
-                 vip: ["🔨 Аукционы", viewVip], flags: ["🎛 Тумблеры", viewFlags] };
+                 quests: ["🗺 Квесты", viewQuests], vip: ["🔨 Аукционы", viewVip], flags: ["🎛 Тумблеры", viewFlags] };
   async function go() {
     $("tabs").innerHTML = Object.entries(TABS).map(([k, [t]]) => '<button class="tab' + (tab === k ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>').join("");
     $("tabs").querySelectorAll("[data-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.tab; go(); }; });

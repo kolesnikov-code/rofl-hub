@@ -1,5 +1,6 @@
 """
-🎛 Пульт владельца — Mini App (решение 27.10): битвы и акции, призы, подарки, VIP-аукционы, тумблеры.
+🎛 Пульт владельца — Mini App (решение 27.10): битвы и акции, призы, подарки, VIP-аукционы, тумблеры,
+квесты (ротация до 10 + эпики) и ⚡ Безлимит игроку по @username.
 
 Открывается из ГЛАВНОГО бота командой /admin (initData подписан его токеном), доступ — только ID из
 переменной ADMIN_ID. Пульт лишь пишет в базу: игроки видят битвы, цели и лоты в приложении (Паспорт → События,
@@ -520,6 +521,75 @@ async def handle_admin_flag(request: web.Request) -> web.Response:
     return web.json_response({"ok": True})
 
 
+# ---------------------------------------------------------------- квесты и Безлимит (27.10)
+async def handle_admin_quests(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from bots.main_bot.utils.quest_loader import all_quests
+    from shared import quest_engine as qe
+    from shared.economy import QUEST_DAILY_NEW, QUEST_ROTATION_SIZE
+    from shared.feature_flags import get_flag
+    async with db.pool.acquire() as conn:
+        stats = {r["quest_id"]: (r["started"], r["done"]) for r in await conn.fetch(
+            "SELECT quest_id, COUNT(*) AS started, COUNT(*) FILTER (WHERE completed_at IS NOT NULL) AS done "
+            "FROM quest_progress GROUP BY quest_id")}
+    quests = [{"id": q["id"], "title": q["title"], "genre": q["genre"], "minutes": q["minutes"], "epic": qe.is_epic(q),
+               "on": await get_flag(qe.flag_key(q)), "started": stats.get(q["id"], (0, 0))[0],
+               "done": stats.get(q["id"], (0, 0))[1]} for q in all_quests()]
+    return web.json_response({"ok": True, "quests": quests, "total": len(quests),
+                              "rotation_size": QUEST_ROTATION_SIZE, "daily_new": QUEST_DAILY_NEW})
+
+
+async def handle_admin_quest_toggle(request: web.Request) -> web.Response:
+    """Включить/скрыть квест или эпик; в обычной ротации — не больше QUEST_ROTATION_SIZE."""
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from bots.main_bot.utils.quest_loader import all_quests, get_quest
+    from shared import quest_engine as qe
+    from shared.economy import QUEST_ROTATION_SIZE
+    from shared.feature_flags import get_flag, set_flag
+    data = await _body(request)
+    quest = get_quest(str(data.get("id") or ""))
+    if quest is None:
+        return _fail("Квест не найден")
+    enable = bool(data.get("enabled"))
+    if enable and not qe.is_epic(quest) and not await get_flag(qe.flag_key(quest)):
+        on = sum([await get_flag(qe.flag_key(q)) for q in all_quests() if not qe.is_epic(q)])
+        if on >= QUEST_ROTATION_SIZE:
+            return _fail(f"В списке уже {QUEST_ROTATION_SIZE} квестов — сначала скрой какой-нибудь")
+    await set_flag(qe.flag_key(quest), enable)
+    return web.json_response({"ok": True})
+
+
+async def handle_admin_unlimit(request: web.Request) -> web.Response:
+    """⚡ Безлимит игроку (ID / @username / VIP ID) на N дней; 0 — снять. Игроку — ЛС на его языке."""
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared.locales import resolve_lang, t
+    from shared.rewards import grant_unlimit
+    data = await _body(request)
+    who, days = str(data.get("who") or "").strip(), _int(data.get("days"), -1)
+    if not who or days < 0:
+        return _fail("Укажи игрока и число дней")
+    async with db.pool.acquire() as conn:
+        async with conn.transaction():
+            res = await grant_unlimit(conn, who, days)
+    if res is None:
+        return _fail("Игрок не найден (он должен хотя бы раз нажать /start)")
+    until = f"{res['until']:%d.%m.%Y %H:%M}" if res["until"] else None
+    bot = request.app.get("bot")
+    if bot is not None and until:
+        try:
+            await bot.send_message(res["user_id"], "🎁 " + t(resolve_lang(res["lang"]), "dlv.unlimit", until=until),
+                                   parse_mode="HTML")
+        except Exception:
+            pass
+    return web.json_response({"ok": True, "until": until})
+
+
 def register_admin_routes(app: web.Application) -> None:
     app.router.add_get("/admin", handle_admin_page)
     app.router.add_get("/api/admin/meta", handle_admin_meta)
@@ -531,6 +601,9 @@ def register_admin_routes(app: web.Application) -> None:
     app.router.add_get("/api/admin/vip", handle_admin_vip)
     app.router.add_post("/api/admin/vip/auction", handle_admin_vip_auction)
     app.router.add_post("/api/admin/flag", handle_admin_flag)
+    app.router.add_get("/api/admin/quests", handle_admin_quests)
+    app.router.add_post("/api/admin/quest", handle_admin_quest_toggle)
+    app.router.add_post("/api/admin/unlimit", handle_admin_unlimit)
     app.router.add_get("/api/admin/targets", handle_admin_targets)
     app.router.add_post("/api/admin/target", handle_admin_target_create)
     app.router.add_post("/api/admin/target/close", handle_admin_target_close)

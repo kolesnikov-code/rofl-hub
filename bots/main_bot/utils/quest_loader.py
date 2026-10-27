@@ -23,7 +23,9 @@
 - "set" добавляет флаги при выборе; "cost" списывает монеты (платная подсказка);
 - сцена с "end": "win"/"fail" завершает квест; у неё нет choices;
 - "mood" (у квеста — по умолчанию, у сцены — своя) — атмосфера сцены в приложении (static/webapp/fx.js);
-- "fx_text" (у сцены) — надпись для эффекта «🪞 запотевшее зеркало», например «УХОДИ»;
+- "fx_text" (у сцены) — надпись для эффекта «🪞 запотевшее зеркало» — дословно фраза из сцены, от которой мурашки;
+  без надписи палец рисует на стекле "fx_draw": "figure" (высокая фигура, по умолчанию) или "face" (лицо духа/зверя).
+  Зеркало ставим только туда, где в тексте есть зеркало/стекло (ванная, шкаф, витрина);
 - "epic": true — эпик (~час игры): вне ротации и суточного лимита, владелец включает отдельно (тумблер epic:<id>).
 
 Новый квест = новый JSON-файл, кода не требуется. Тесты проверяют каждый
@@ -83,6 +85,8 @@ def validate_quest(q: dict) -> list[str]:
         fx_text = scene.get("fx_text")
         if fx_text is not None and (not isinstance(fx_text, str) or not 0 < len(fx_text) <= FX_TEXT_MAX):
             errors.append(f"{qid}/{key}: fx_text — надпись на зеркале, 1–{FX_TEXT_MAX} символов")
+        if scene.get("fx_draw") not in (None, "figure", "face"):
+            errors.append(f"{qid}/{key}: fx_draw — figure или face")
         if not scene.get("text"):
             errors.append(f"{qid}/{key}: пустой текст")
         if scene.get("end"):
