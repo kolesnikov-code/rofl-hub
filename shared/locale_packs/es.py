@@ -36,6 +36,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "quest.epic_locked": "⭐ Las épicas son grandes historias de más de 20 minutos y se desbloquean con ⚡ Ilimitado.",
     "quest.locked": "🔒 Ya hiciste tus {n} misiones nuevas de hoy. Las demás se abren a las 00:00 UTC, o activa ⚡ Ilimitado. Las completadas se pueden repetir.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Esta sección ahora está en la app del juego: ahí es más cómoda y bonita. Pulsa el botón 👇",
@@ -1103,6 +1104,8 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qs_epicPaid": "⚡ con Ilimitado",
+    "qs_paper": "📝 Consejo: apunta los detalles en papel; quien presta atención lo resuelve antes.",
     "qs_total": "📚 Misiones en la biblioteca: {n}",
     "qs_daily": "Nuevas hoy: {a}/{b}",
     "qs_dailyUnl": "⚡ Ilimitado: misiones sin límite",

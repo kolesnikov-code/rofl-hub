@@ -37,6 +37,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "quest.epic_locked": "⭐ Epiklar — 20+ daqiqalik katta hikoyalar, ular ⚡ Cheksiz bilan ochiladi.",
     "quest.locked": "🔒 Bugungi {n} ta yangi kvest o‘tildi. Qolganlari 00:00 UTC da ochiladi — yoki ⚡ Cheksizni yoq. O‘tilgan kvestlarni qayta o‘ynash mumkin.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Bu bo'lim endi o'yin ilovasida — u yerda qulayroq va chiroyliroq. Tugmani bos 👇",
@@ -1104,6 +1105,8 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qs_epicPaid": "⚡ Cheksiz bilan",
+    "qs_paper": "📝 Maslahat: tafsilotlarni qog‘ozga yozib bor — diqqatli o‘yinchiga topishmoq osonroq yechiladi.",
     "qs_total": "📚 Bazadagi kvestlar: {n}",
     "qs_daily": "Bugun yangi: {a}/{b}",
     "qs_dailyUnl": "⚡ Cheksiz — kvestlar cheklovsiz",

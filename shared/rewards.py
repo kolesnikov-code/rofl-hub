@@ -107,3 +107,21 @@ async def give_all(pool_conn, recipients: list[int], gift: dict) -> tuple[int, i
             bad += 1
             logger.exception("[REWARD] подарок %s игроку %s не выдан", gift, uid)
     return ok, bad
+
+
+UNLIMIT_MAX_DAYS = 3650
+
+
+async def grant_unlimit(conn, who: str, days: int) -> dict | None:
+    """⚡ Подписка-Безлимит от владельца (27.10: «дать доступ себе и жене»): снимает лимиты побед и квестов, открывает
+    эпики. who — ID / @username / VIP ID; days > 0 — продлить, 0 — снять. None — игрок не найден."""
+    from shared.economy import extend_expiry
+    ids, _ = await resolve_recipients(conn, "player", who)
+    if not ids:
+        return None
+    uid = ids[0]
+    row = await conn.fetchrow("SELECT unlimit_until, lang FROM users WHERE user_id = $1 FOR UPDATE", uid)
+    days = max(0, min(int(days), UNLIMIT_MAX_DAYS))
+    until = extend_expiry(row["unlimit_until"], utcnow(), days) if days else None
+    await conn.execute("UPDATE users SET unlimit_until = $2 WHERE user_id = $1", uid, until)
+    return {"user_id": uid, "until": until, "lang": row["lang"]}

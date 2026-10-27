@@ -36,6 +36,7 @@ BUTTONS = {
 }
 
 STRINGS = {
+    "quest.epic_locked": "⭐ As épicas são grandes histórias de 20+ minutos e abrem com o ⚡ Ilimitado.",
     "quest.locked": "🔒 Você já fez suas {n} missões novas de hoje. As outras abrem às 00:00 UTC — ou ative o ⚡ Ilimitado. As concluídas podem ser jogadas de novo.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Esta seção agora fica no app do jogo — lá é mais prático e bonito. Toque no botão 👇",
@@ -1102,6 +1103,8 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qs_epicPaid": "⚡ com Ilimitado",
+    "qs_paper": "📝 Dica: anote os detalhes no papel — quem presta atenção resolve mais fácil.",
     "qs_total": "📚 Missões na biblioteca: {n}",
     "qs_daily": "Novas hoje: {a}/{b}",
     "qs_dailyUnl": "⚡ Ilimitado — missões sem limite",

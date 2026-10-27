@@ -176,8 +176,9 @@ async def quest_choice(callback: types.CallbackQuery, user_lang: str = "ru"):
     except qe.QuestNoCoins as e:
         await callback.answer(t(user_lang, "quest.no_coins", cost=e.cost), show_alert=True)
         return
-    except qe.QuestLocked:
-        await callback.answer(t(user_lang, "quest.locked", n=QUEST_DAILY_NEW), show_alert=True)
+    except qe.QuestLocked as e:
+        await callback.answer(t(user_lang, "quest.epic_locked") if e.reason == "epic"
+                              else t(user_lang, "quest.locked", n=QUEST_DAILY_NEW), show_alert=True)
         return
     if res is None:
         await callback.answer()

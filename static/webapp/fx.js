@@ -197,6 +197,37 @@
     papers: { n: 7, from: "top", vx: [-25, 25], vy: [20, 45], size: [9, 14], colors: ["#f3ead2", "#e8dcc0", "#fffaf0"], shape: "paper", wobble: [35, .35], spin: [.4, 1.2] },
     coins: { n: 14, from: "top", vx: [-6, 6], vy: [60, 110], size: [5, 8], colors: ["#ffd34d", "#f5b82e", "#ffe27a"], shape: "coin", spin: [3, 6], glow: 6 },
     cards: { n: 8, from: "top", vx: [-20, 20], vy: [25, 55], size: [10, 14], colors: ["#fff"], shape: "card", chars: "♠♥♦♣", wobble: [30, .3], spin: [.5, 1.5] },
+    // 😀 эмодзи-частицы (владелец 27.10: «как падающая бумага и карты — шедеврально»)
+    letters: { from: "top", vx: [-20, 20], vy: [25, 50], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["✉️", "📩", "💌"], wobble: [30, .35], spin: [.3, .9], n: 8 },
+    money: { from: "top", vx: [-25, 25], vy: [35, 70], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["💵", "💸", "💶"], wobble: [35, .4], spin: [.5, 1.4], n: 10 },
+    gems: { from: "any", vx: [0, 0], vy: [0, 0], size: [14, 22], colors: ["#fff"], shape: "emoji", chars: ["💎", "💍", "✨"], life: [2, 4], n: 7 },
+    keys: { from: "top", vx: [-10, 10], vy: [30, 55], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["🗝️", "🔑"], spin: [.8, 2], n: 6 },
+    ghostsE: { from: "bottom", vx: [-10, 10], vy: [-35, -15], size: [20, 30], colors: ["#fff"], shape: "emoji", chars: ["👻"], wobble: [28, .3], life: [5, 9], alpha: .45, n: 4 },
+    bats: { from: "right", vx: [-160, -90], vy: [-15, 15], size: [16, 24], colors: ["#fff"], shape: "emoji", chars: ["🦇"], wobble: [40, 1.6], n: 6 },
+    notes: { from: "bottom", vx: [-12, 12], vy: [-55, -30], size: [16, 24], colors: ["#fff"], shape: "emoji", chars: ["🎵", "🎶", "🎼"], wobble: [22, .6], life: [3, 6], n: 9 },
+    hearts: { from: "bottom", vx: [-10, 10], vy: [-45, -25], size: [14, 22], colors: ["#fff"], shape: "emoji", chars: ["💖", "💕", "❤️", "💗"], wobble: [20, .5], life: [3, 6], n: 9 },
+    confetti: { from: "top", vx: [-30, 30], vy: [50, 90], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["🎉", "🎊", "🥳", "✨"], wobble: [30, .8], spin: [1, 3], n: 12 },
+    balloons: { from: "bottom", vx: [-8, 8], vy: [-50, -25], size: [22, 32], colors: ["#fff"], shape: "emoji", chars: ["🎈"], wobble: [16, .3], n: 6 },
+    snowE: { from: "top", vx: [-12, 12], vy: [25, 50], size: [12, 20], colors: ["#fff"], shape: "emoji", chars: ["❄️", "❅", "❆"], wobble: [20, .5], spin: [.3, 1], n: 12 },
+    autumn: { from: "top", vx: [-25, 25], vy: [30, 55], size: [16, 24], colors: ["#fff"], shape: "emoji", chars: ["🍁", "🍂"], wobble: [40, .45], spin: [1, 2.5], n: 10 },
+    gearsE: { from: "top", vx: [-8, 8], vy: [35, 60], size: [16, 26], colors: ["#fff"], shape: "emoji", chars: ["⚙️", "🔩", "🔧"], spin: [1, 3], n: 8 },
+    butterflies: { from: "any", vx: [-15, 15], vy: [-15, 15], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["🦋"], brown: 30, n: 5 },
+    fish: { from: "left", vx: [30, 70], vy: [-6, 6], size: [18, 26], colors: ["#fff"], shape: "emoji", chars: ["🐟", "🐠", "🐡"], wobble: [10, .5], flip: 1, n: 6 },
+    ufo: { from: "left", vx: [40, 80], vy: [-8, 8], size: [22, 30], colors: ["#fff"], shape: "emoji", chars: ["🛸", "🚀", "🛰️"], wobble: [25, .5], flip: 1, n: 3 },
+    sparkle: { from: "any", vx: [0, 0], vy: [0, 0], size: [12, 20], colors: ["#fff"], shape: "emoji", chars: ["✨", "⭐", "🌟"], life: [1.5, 3.5], n: 10 },
+    zzz: { from: "bottom", vx: [-6, 6], vy: [-30, -15], size: [16, 26], colors: ["#fff"], shape: "emoji", chars: ["💤"], wobble: [18, .4], life: [4, 7], alpha: .7, n: 4 },
+    question: { from: "any", vx: [-4, 4], vy: [-8, -2], size: [18, 30], colors: ["#fff"], shape: "emoji", chars: ["❓", "❔", "🔍"], life: [2.5, 5], alpha: .75, n: 6 },
+    clocks: { from: "any", vx: [0, 0], vy: [0, 0], size: [16, 26], colors: ["#fff"], shape: "emoji", chars: ["⏰", "⌛", "⏳", "🕰️"], life: [2, 4], n: 6 },
+    food: { from: "top", vx: [-20, 20], vy: [40, 75], size: [18, 26], colors: ["#fff"], shape: "emoji", chars: ["🍕", "🍔", "🌭", "🍩", "🧁", "🍟"], spin: [.8, 2.2], n: 10 },
+    skulls: { from: "any", vx: [0, 0], vy: [-4, 4], size: [16, 24], colors: ["#fff"], shape: "emoji", chars: ["💀"], life: [3, 6], alpha: .4, n: 4 },
+    spiders: { from: "top", vx: [0, 0], vy: [10, 22], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["🕷️"], life: [5, 9], thread: 1, n: 4 },
+    pumpkins: { from: "any", vx: [0, 0], vy: [0, 0], size: [20, 30], colors: ["#fff"], shape: "emoji", chars: ["🎃"], life: [3, 6], twinkle: .5, n: 5 },
+    candlesE: { from: "any", vx: [0, 0], vy: [0, 0], size: [18, 26], colors: ["#fff"], shape: "emoji", chars: ["🕯️"], twinkle: .9, n: 7 },
+    paws: { from: "any", vx: [0, 0], vy: [0, 0], size: [14, 20], colors: ["#fff"], shape: "emoji", chars: ["🐾"], life: [2, 4], alpha: .6, n: 7 },
+    dice: { from: "top", vx: [-15, 15], vy: [50, 90], size: [16, 24], colors: ["#fff"], shape: "emoji", chars: ["🎲"], spin: [2, 5], n: 7 },
+    popcorn: { from: "bottom", vx: [-30, 30], vy: [-140, -90], size: [14, 20], colors: ["#fff"], shape: "emoji", chars: ["🍿"], gravity: 140, spin: [1, 3], life: [2, 3.5], n: 8 },
+    bolts: { from: "any", vx: [0, 0], vy: [0, 0], size: [16, 26], colors: ["#fff"], shape: "emoji", chars: ["⚡"], life: [.8, 1.8], n: 5 },
+    flowers: { from: "top", vx: [-18, 18], vy: [22, 45], size: [14, 22], colors: ["#fff"], shape: "emoji", chars: ["🌸", "🌼", "🌷", "🌺"], wobble: [30, .4], spin: [.5, 1.5], n: 10 },
     hourglass: { n: 5, from: "top", vx: [0, 0], vy: [70, 110], size: [1, 1.6], colors: ["rgba(230,200,140,.7)"], shape: "stream" },
   };
 
@@ -267,6 +298,38 @@
     papers:     { g: "detective", ru: "📄 Летящие бумаги", en: "📄 Flying papers", back: ["fx-noir", "fx-headl"], parts: ["papers"] },
     coins:      { g: "detective", ru: "🪙 Золотой дождь", en: "🪙 Golden rain", back: ["fx-glowgold"], parts: ["coins"] },
     cards:      { g: "detective", ru: "🃏 Карты казино", en: "🃏 Casino cards", back: ["fx-clubbg"], parts: ["cards"] },
+    letters:    { g: "detective", ru: "✉️ Летящие письма", en: "✉️ Flying letters", back: ["fx-noir"], parts: ["letters"] },
+    money:      { g: "heist", ru: "💸 Денежный дождь", en: "💸 Money rain", back: ["fx-glowgold"], parts: ["money"] },
+    gems:       { g: "heist", ru: "💎 Сокровищница", en: "💎 Treasure vault", back: ["fx-dark"], parts: ["gems"] },
+    keys:       { g: "heist", ru: "🗝 Ключи и замки", en: "🗝 Keys and locks", back: ["fx-noir"], parts: ["keys"] },
+    ghostsE:    { g: "dark", ru: "👻 Призраки", en: "👻 Ghosts", back: ["fx-dark", "fx-fog"], parts: ["ghostsE"] },
+    bats:       { g: "dark", ru: "🦇 Летучие мыши", en: "🦇 Bats", back: ["fx-night"], parts: ["bats"] },
+    spiders:    { g: "dark", ru: "🕷 Пауки на паутинке", en: "🕷 Spiders on threads", back: ["fx-attic"], parts: ["spiders"] },
+    skulls:     { g: "dark", ru: "💀 Черепа во тьме", en: "💀 Skulls in the dark", back: ["fx-dungeon"], parts: ["skulls"] },
+    pumpkins:   { g: "dark", ru: "🎃 Тыквенная ночь", en: "🎃 Pumpkin night", back: ["fx-night"], parts: ["pumpkins"] },
+    candlesE:   { g: "dark", ru: "🕯 Свечи во мраке", en: "🕯 Candles in the dark", back: ["fx-dark"], parts: ["candlesE"] },
+    notes:      { g: "fun", ru: "🎵 Музыка", en: "🎵 Music", back: ["fx-clubbg"], parts: ["notes"] },
+    hearts:     { g: "fun", ru: "💖 Сердечки", en: "💖 Hearts", back: ["fx-dream"], parts: ["hearts"] },
+    confetti:   { g: "fun", ru: "🎉 Конфетти", en: "🎉 Confetti", back: ["fx-glowgold"], parts: ["confetti"] },
+    balloons:   { g: "fun", ru: "🎈 Воздушные шары", en: "🎈 Balloons", back: ["fx-dream"], parts: ["balloons"] },
+    food:       { g: "fun", ru: "🍕 Еда с неба", en: "🍕 Food from the sky", back: ["fx-dream"], parts: ["food"] },
+    popcorn:    { g: "fun", ru: "🍿 Попкорн", en: "🍿 Popcorn", back: ["fx-film"], parts: ["popcorn"] },
+    dice:       { g: "fun", ru: "🎲 Кости", en: "🎲 Dice", back: ["fx-clubbg"], parts: ["dice"] },
+    zzz:        { g: "mind", ru: "💤 Сон", en: "💤 Sleep", back: ["fx-night"], parts: ["zzz"] },
+    question:   { g: "mind", ru: "❓ Загадка", en: "❓ Mystery", back: ["fx-noir"], parts: ["question"] },
+    clocks:     { g: "mind", ru: "⏰ Время уходит", en: "⏰ Time is running out", back: ["fx-dark"], parts: ["clocks"] },
+    autumn:     { g: "nature", ru: "🍁 Кленовые листья", en: "🍁 Maple leaves", back: ["fx-forest"], parts: ["autumn"] },
+    flowers:    { g: "nature", ru: "🌸 Цветочный дождь", en: "🌸 Flower rain", back: ["fx-forest"], parts: ["flowers"] },
+    butterflies:{ g: "nature", ru: "🦋 Бабочки", en: "🦋 Butterflies", back: ["fx-forest"], parts: ["butterflies"] },
+    snowE:      { g: "nature", ru: "❄️ Снежинки", en: "❄️ Snowflakes", back: ["fx-night"], parts: ["snowE"] },
+    paws:       { g: "nature", ru: "🐾 Следы зверя", en: "🐾 Animal tracks", back: ["fx-forest"], parts: ["paws"] },
+    fish:       { g: "water", ru: "🐠 Рыбы", en: "🐠 Fish", back: ["fx-deep", "fx-caust"], parts: ["fish"] },
+    gearsE:     { g: "tech", ru: "⚙️ Шестерёнки", en: "⚙️ Gears", back: ["fx-dark"], parts: ["gearsE"] },
+    ufo:        { g: "sky", ru: "🛸 Тарелки и ракеты", en: "🛸 Saucers and rockets", back: ["fx-space"], parts: ["ufo"] },
+    sparkle:    { g: "mystic", ru: "✨ Звёздная пыль", en: "✨ Stardust", back: ["fx-dark"], parts: ["sparkle"] },
+    bolts:      { g: "tech", ru: "⚡ Разряды", en: "⚡ Sparks", back: ["fx-dark"], parts: ["bolts"] },
+    handprints: { g: "dark", ru: "🖐 Руки на стекле", en: "🖐 Hands on the glass", back: ["fx-dark", "fx-fog"], special: "hands" },
+    mirror:     { g: "dark", ru: "🪞 Запотевшее зеркало", en: "🪞 Fogged mirror", back: ["fx-dark"], special: "mirror" },
     hourglass:  { g: "dark", ru: "⏳ Песок времени", en: "⏳ Sands of time", back: ["fx-attic"], parts: ["hourglass", "dust"] },
     heartbeat:  { g: "mind", ru: "💓 Биение сердца", en: "💓 Heartbeat", front: ["fx-heart"] },
     panic:      { g: "mind", ru: "😱 Паника", en: "😱 Panic", back: ["fx-dark"], front: ["fx-panic"] },
@@ -323,7 +386,7 @@
     state = null;
   }
 
-  function start(stage, moods) {
+  function start(stage, moods, opts) {
     stop();
     if (!stage) return;
     const back = stage.querySelector(".fx-back");
@@ -333,7 +396,8 @@
     if (!list.length || !enabled()) return;
     injectCss();
     const still = reduceMotion();
-    state = { raf: 0, timers: [], timeouts: [], front: [], parts: [], special: [], torch: false };
+    state = { raf: 0, timers: [], timeouts: [], front: [], parts: [], special: [], torch: false,
+      text: String((opts && opts.text) || "Я РЯДОМ").toUpperCase().slice(0, 32) };
     const front = frontLayer();
     list.forEach(id => {
       const fx = FX[id];
@@ -385,6 +449,7 @@
       const p = { cfg: cfg, size: range(cfg.size), color: pick(cfg.colors), vx: range(cfg.vx), vy: range(cfg.vy),
         t: 0, life: cfg.life ? range(cfg.life) : 0, ph: Math.random() * 6.28, rot: Math.random() * 6.28,
         spin: cfg.spin ? range(cfg.spin) * (Math.random() < .5 ? -1 : 1) : 0, ch: cfg.chars ? pick(cfg.chars) : "", wait: 0 };
+      if (cfg.shape === "emoji" && !cfg.spin) p.rot = 0;
       const f = cfg.from;
       p.x = f === "left" ? -20 : f === "right" ? W + 20 : f === "center" ? W / 2 : Math.random() * W;
       p.y = f === "top" ? -20 : f === "bottom" ? H + 20 : f === "center" ? H / 2 : Math.random() * H;
@@ -403,7 +468,9 @@
     });
     const matrix = state.special.indexOf("matrix") >= 0, arcs = state.special.indexOf("arcs") >= 0,
       film = state.special.indexOf("film") >= 0, car = state.special.indexOf("carlights") >= 0,
-      oil = state.special.indexOf("oil") >= 0, steps = state.special.indexOf("steps") >= 0;
+      oil = state.special.indexOf("oil") >= 0, steps = state.special.indexOf("steps") >= 0,
+      hands = state.special.indexOf("hands") >= 0, mirror = state.special.indexOf("mirror") >= 0;
+    const mirrorText = state.text;
     let clock = 0;
     const smoke = [];
     const cols = matrix ? Array.from({ length: Math.ceil(W / 14) }, () => Math.random() * -H) : [];
@@ -450,6 +517,18 @@
           ctx.fillStyle = (p.ch === "♥" || p.ch === "♦") ? "#d22" : "#111"; ctx.font = Math.round(s) + "px serif";
           ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(p.ch, 0, 1);
           ctx.restore(); break;
+        case "emoji": {
+          ctx.shadowBlur = 0; ctx.globalAlpha = Math.max(0, Math.min(1, a * (cfg.alpha || 1)));
+          if (cfg.thread) {   // 🕷 паук спускается на паутинке
+            ctx.strokeStyle = "rgba(220,220,230,.45)"; ctx.lineWidth = .8;
+            ctx.beginPath(); ctx.moveTo(p.x, 0); ctx.lineTo(p.x, p.y - s * .4); ctx.stroke();
+          }
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+          if (cfg.flip) ctx.scale(-1, 1);   // рыбы и тарелки «смотрят» по ходу движения
+          ctx.font = Math.round(s) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+          ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(p.ch, 0, 0);
+          ctx.restore(); break;
+        }
         case "ring": ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p.x, p.y, s, 0, 6.28); ctx.stroke(); break;
         case "drop": ctx.beginPath(); ctx.ellipse(p.x, p.y, s * .6, s, 0, 0, 6.28); ctx.fill(); break;
         case "star":
@@ -480,6 +559,8 @@
           if (cols[i] > H + rnd(0, 200)) cols[i] = rnd(-40, 0);
         }
       } else ctx.clearRect(0, 0, W, H);
+      if (mirror) drawMirror(clock);
+      if (hands) drawHands(clock, dt);
       for (const p of parts) {
         const c = p.cfg;
         if (p.wait > 0) { p.wait -= dt; continue; }
@@ -608,6 +689,111 @@
         ctx.beginPath(); ctx.ellipse(0, 7, 4, 4.5, 0, 0, 6.28); ctx.fill();
         ctx.restore();
       }
+    }
+    // 🖐 следы ладоней проступают на запотевшем стекле одна за другой, чуть сползают вниз и тают
+    const prints = [];
+    let printNext = .6;
+    function drawHands(t, dt) {
+      printNext -= dt;
+      if (printNext <= 0 && prints.length < 7) {
+        const pair = Math.random() < .35, x = rnd(.15, .85) * W, y = rnd(.2, .75) * H, s = rnd(.9, 1.35);
+        prints.push({ x: x, y: y, s: s, rot: rnd(-.35, .35), left: Math.random() < .5, t: 0, life: rnd(6, 9), drip: rnd(25, 60) });
+        if (pair) prints.push({ x: x + 70 * s, y: y + rnd(-15, 15), s: s, rot: rnd(-.35, .35), left: true, t: -.5, life: rnd(6, 9), drip: rnd(25, 60) });
+        printNext = rnd(1.4, 2.6);
+      }
+      ctx.shadowBlur = 0;
+      for (let i = prints.length - 1; i >= 0; i--) {
+        const h = prints[i];
+        h.t += dt;
+        if (h.t <= 0) continue;
+        if (h.t > h.life) { prints.splice(i, 1); continue; }
+        const k = h.t / h.life, a = (k < .1 ? k / .1 : k > .7 ? (1 - k) / .3 : 1) * .33, slide = Math.min(10, h.t * 1.6);
+        ctx.save(); ctx.translate(h.x, h.y + slide); ctx.rotate(h.rot); ctx.scale(h.left ? -h.s : h.s, h.s);
+        ctx.fillStyle = "rgba(225,240,245," + a + ")";
+        ctx.shadowColor = "rgba(225,240,245," + a + ")"; ctx.shadowBlur = 8;
+        ctx.beginPath(); ctx.ellipse(0, 0, 15, 18, 0, 0, 6.28); ctx.fill();                        // ладонь
+        [[-11, -30, 4.2, 12, -.18], [-3.5, -36, 4.4, 14, -.05], [4.5, -35, 4.3, 13.5, .06], [11.5, -28, 3.8, 10.5, .2]]
+          .forEach(f => { ctx.beginPath(); ctx.ellipse(f[0], f[1], f[2], f[3], f[4], 0, 6.28); ctx.fill(); });   // пальцы
+        ctx.beginPath(); ctx.ellipse(-19, -2, 4.4, 10, -.9, 0, 6.28); ctx.fill();                  // большой палец
+        ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(225,240,245," + (a * .8) + ")"; ctx.lineWidth = 1.6;   // капли стекают
+        const dl = Math.min(h.drip, h.t * 9);
+        ctx.beginPath(); ctx.moveTo(-6, 16); ctx.lineTo(-6, 16 + dl); ctx.moveTo(7, 15); ctx.lineTo(7, 15 + dl * .6); ctx.stroke();
+        ctx.restore();
+      }
+    }
+    // 🪞 зеркало запотевает, на нём проступает надпись «пальцем» (текст — из сцены квеста), от букв бегут капли,
+    // потом пар снова затягивает стекло. Цикл MIRROR_CYCLE секунд. Без резких вспышек и скримеров.
+    const MIRROR_CYCLE = 16;
+    let fogTex = null, mc = null, mctx = null, mirrorDrips = null;
+    function fogTexture() {
+      const c = document.createElement("canvas"); c.width = Math.max(1, W); c.height = Math.max(1, H);
+      const g = c.getContext("2d");
+      g.fillStyle = "rgb(150,162,172)"; g.fillRect(0, 0, W, H);
+      for (let i = 0; i < W * H / 90; i++) {   // мелкие капельки конденсата
+        g.fillStyle = "rgba(255,255,255," + rnd(.05, .25) + ")";
+        g.beginPath(); g.arc(Math.random() * W, Math.random() * H, rnd(.5, 2.2), 0, 6.28); g.fill();
+      }
+      const v = g.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .2, W / 2, H / 2, Math.max(W, H) * .75);
+      v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(30,35,45,.45)");
+      g.fillStyle = v; g.fillRect(0, 0, W, H);
+      return c;
+    }
+    function mirrorLines(fs) {
+      const words = mirrorText.split(/\s+/).filter(Boolean);
+      mctx.font = "bold " + fs + 'px "Segoe Print","Comic Sans MS","Marker Felt",cursive';
+      if (mctx.measureText(mirrorText).width < W * .74 || words.length < 2) return [mirrorText];
+      let best = [mirrorText], bestW = Infinity;
+      for (let i = 1; i < words.length; i++) {
+        const a = words.slice(0, i).join(" "), b = words.slice(i).join(" ");
+        const w = Math.max(mctx.measureText(a).width, mctx.measureText(b).width);
+        if (w < bestW) { bestW = w; best = [a, b]; }
+      }
+      return best;
+    }
+    function drawMirror(t) {
+      if (!mc || mc.width !== Math.max(1, W)) {
+        mc = document.createElement("canvas"); mc.width = Math.max(1, W); mc.height = Math.max(1, H);
+        mctx = mc.getContext("2d"); fogTex = fogTexture(); mirrorDrips = null;
+      }
+      const c = t % MIRROR_CYCLE, ease = k => k * k * (3 - 2 * k);
+      const fogA = .62 * ease(Math.min(1, c / 2.5));
+      const mx = W * .07, my = H * .44, mw = W * .86, mh = H * .5, rr = 18;
+      const frame = g => { g.beginPath(); g.moveTo(mx + rr, my); g.arcTo(mx + mw, my, mx + mw, my + mh, rr);
+        g.arcTo(mx + mw, my + mh, mx, my + mh, rr); g.arcTo(mx, my + mh, mx, my, rr); g.arcTo(mx, my, mx + mw, my, rr); g.closePath(); };
+      mctx.globalCompositeOperation = "source-over"; mctx.globalAlpha = 1;
+      mctx.clearRect(0, 0, W, H);
+      mctx.save(); frame(mctx); mctx.clip();
+      mctx.globalAlpha = fogA; mctx.drawImage(fogTex, 0, 0);
+      let fs = Math.min(46, Math.max(22, mw / 8));
+      let lines = mirrorLines(fs);
+      while (fs > 18 && Math.max.apply(null, lines.map(l => mctx.measureText(l).width)) > mw * .88) { fs -= 2; mctx.font = "bold " + fs + 'px "Segoe Print","Comic Sans MS","Marker Felt",cursive'; }
+      const lh = fs * 1.25, top = my + mh * .4 - (lines.length - 1) * lh / 2;
+      const widths = lines.map(l => mctx.measureText(l).width), total = widths.reduce((x, y) => x + y, 0);
+      const write = Math.max(0, Math.min(1, (c - 2.8) / 3.6));           // «пишут пальцем» 3,6 с
+      const refog = c > 12.5 ? ease(Math.min(1, (c - 12.5) / 3)) : 0;   // пар снова затягивает надпись
+      if (!mirrorDrips) mirrorDrips = Array.from({ length: 7 }, () => ({ u: Math.random(), len: rnd(25, 80), line: Math.floor(Math.random() * lines.length) }));
+      mctx.globalCompositeOperation = "destination-out";
+      mctx.globalAlpha = (1 - refog) * .92;
+      mctx.lineWidth = Math.max(3, fs * .14); mctx.lineJoin = mctx.lineCap = "round";
+      mctx.textBaseline = "middle"; mctx.textAlign = "left"; mctx.strokeStyle = mctx.fillStyle = "#000";
+      let done = 0;
+      lines.forEach((l, i) => {
+        const x0 = (W - widths[i]) / 2, y = top + i * lh, shown = Math.max(0, Math.min(widths[i], write * total - done));
+        done += widths[i];
+        if (shown <= 0) return;
+        mctx.save(); mctx.beginPath(); mctx.rect(x0 - 6, y - lh, shown + 6, lh * 2); mctx.clip();
+        mctx.strokeText(l, x0, y); mctx.fillText(l, x0, y); mctx.restore();
+        mirrorDrips.filter(d => d.line === i && d.u * widths[i] < shown).forEach(d => {     // капли от букв
+          const grow = Math.min(1, Math.max(0, (c - 3 - d.u * 3.6) / 4));
+          mctx.lineWidth = 2.2; mctx.beginPath(); mctx.moveTo(x0 + d.u * widths[i], y + fs * .35);
+          mctx.lineTo(x0 + d.u * widths[i], y + fs * .35 + d.len * grow); mctx.stroke();
+        });
+      });
+      mctx.restore();
+      mctx.globalCompositeOperation = "source-over";
+      mctx.globalAlpha = .55; mctx.lineWidth = 3; mctx.strokeStyle = "#8a7550"; frame(mctx); mctx.stroke();   // рама
+      if (c < .05) mirrorDrips = null;
+      ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.drawImage(mc, 0, 0, W, H);
     }
     function jag(x1, y1, x2, y2) {
       const pts = [[x1, y1]], n = 12;

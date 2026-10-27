@@ -38,6 +38,7 @@ BUTTONS = {
 }
 
 STRINGS = {
+    "quest.epic_locked": "⭐ Les épopées sont de grandes histoires de 20+ minutes — elles s’ouvrent avec ⚡ Illimité.",
     "quest.locked": "🔒 Tu as fait tes {n} nouvelles quêtes du jour. Les autres s’ouvrent à 00:00 UTC — ou active ⚡ Illimité. Les quêtes terminées se rejouent.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Cette section est désormais dans l'appli du jeu — plus pratique et plus belle. Appuie sur le bouton 👇",
@@ -1103,6 +1104,8 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qs_epicPaid": "⚡ avec Illimité",
+    "qs_paper": "📝 Astuce : note les détails sur papier — les plus attentifs trouvent plus vite.",
     "qs_total": "📚 Quêtes dans la bibliothèque : {n}",
     "qs_daily": "Nouvelles aujourd’hui : {a}/{b}",
     "qs_dailyUnl": "⚡ Illimité — quêtes sans limite",

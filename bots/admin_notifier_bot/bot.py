@@ -140,6 +140,7 @@ async def cmd_admin_start(message: types.Message):
         "мастерская, налёты, цели, станция команды, техработы\n"
         "• /quests_admin — Ротация квестов: скрыть/показать + статистика прохождений\n"
         "• /quiz_reports — Жалобы игроков на вопросы викторины (разобрал — закрой кнопкой)\n"
+        "• /unlimit @username 30 — Выдать ⚡ Безлимит (лимиты игр и квестов, эпики) · 0 — снять\n"
         "• /recipes — Рецепты недели: 40 временных рецептов мастерской, включай по 2–4\n"
         "• /workshop_recipes — Постоянные рецепты мастерской: включить/выключить любые\n"
         "• /mines — Рудники: кто держит и до когда · /award_mine [битва] [команда] — рудник за ручную битву\n"
@@ -1037,6 +1038,36 @@ async def epic_pick(callback: types.CallbackQuery):
         return
     await callback.message.answer("⭐ <b>Какой эпик внести в список?</b>", parse_mode="HTML",
                                   reply_markup=types.InlineKeyboardMarkup(inline_keyboard=rows))
+
+
+# ============================================================================
+# ⚡ ПОДПИСКА-БЕЗЛИМИТ ОТ ВЛАДЕЛЬЦА: /unlimit @username 30 (0 — снять). Снимает лимиты игр и квестов, открывает эпики.
+# ============================================================================
+@dp.message(Command("unlimit"))
+async def cmd_unlimit(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    from shared.locales import resolve_lang, t
+    from shared.rewards import UNLIMIT_MAX_DAYS, grant_unlimit
+    parts = (message.text or "").split()
+    if len(parts) != 3 or not parts[2].isdigit():
+        await message.answer("Формат: <code>/unlimit @username 30</code> — Безлимит на 30 дней "
+                             f"(до {UNLIMIT_MAX_DAYS}; дни добавляются к текущему сроку). "
+                             "<code>/unlimit @username 0</code> — снять.", parse_mode="HTML")
+        return
+    async with db.pool.acquire() as conn:
+        async with conn.transaction():
+            res = await grant_unlimit(conn, parts[1], int(parts[2]))
+    if res is None:
+        await message.answer(f"❌ Игрок {html.escape(parts[1])} не найден (ID, @username или VIP ID; "
+                             "игрок должен хотя бы раз нажать /start в главном боте).")
+        return
+    if res["until"] is None:
+        await message.answer(f"⚫ Безлимит у {html.escape(parts[1])} снят.")
+        return
+    until = f"{res['until']:%d.%m.%Y %H:%M}"
+    await message.answer(f"⚡ {html.escape(parts[1])}: Безлимит до {until} UTC — лимиты игр и квестов сняты, эпики открыты.")
+    await notify_user_via_main_bot(res["user_id"], "🎁 " + t(resolve_lang(res["lang"]), "dlv.unlimit", until=until))
 
 
 # ============================================================================

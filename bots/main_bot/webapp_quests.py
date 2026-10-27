@@ -28,7 +28,7 @@ def scene_payload(quest: dict, scene_key: str, flags: set[str]) -> dict:
     """Сцена для приложения: текст (HTML из сценария), видимые выборы с исходными индексами и ценой подсказки."""
     scene = quest["scenes"][scene_key]
     return {"id": quest["id"], "title": quest["title"], "scene": scene_key, "text": scene["text"],
-            "end": scene.get("end"), "mood": scene_mood(quest, scene_key),
+            "end": scene.get("end"), "mood": scene_mood(quest, scene_key), "fx_text": scene.get("fx_text") or "",
             "choices": [] if scene.get("end") else
             [{"i": i, "label": ch["label"], "cost": ch.get("cost") or 0} for i, ch in visible_choices(scene, flags)]}
 
@@ -40,6 +40,10 @@ async def _guard(request):
     if (off := await _feature_off("quests", ctx.lang)) is not None:
         return off
     return ctx
+
+
+def _locked_text(lang: str, reason: str) -> str:
+    return t(lang, "quest.epic_locked") if reason == "epic" else t(lang, "quest.locked", n=QUEST_DAILY_NEW)
 
 
 async def handle_quests(request: web.Request) -> web.Response:
@@ -55,7 +59,9 @@ async def handle_quests(request: web.Request) -> web.Response:
                               "quests": [
         {"id": q["id"], "title": q["title"], "genre": q["genre"], "minutes": q["minutes"], "reward": q["reward_coins"],
          "teaser": q["teaser"], "status": qe.status_of(q, progs.get(q["id"])), "epic": qe.is_epic(q),
-         "locked": qe.locked_for(q, progs.get(q["id"]), daily)} for q in quests]})
+         "notes": bool(q.get("notes") or qe.is_epic(q)),
+         "notes": bool(q.get("notes") or qe.is_epic(q)),
+         "locked": qe.lock_reason(q, progs.get(q["id"]), daily)} for q in quests]})
 
 
 async def handle_quest_open(request: web.Request) -> web.Response:
@@ -69,8 +75,8 @@ async def handle_quest_open(request: web.Request) -> web.Response:
         if not quest or not await qe.quest_accessible(conn, quest["id"], ctx.user_id):
             return fail(t(ctx.lang, "quest.not_found"))
         prog = await qe.progress(conn, ctx.user_id, quest["id"])
-        if qe.locked_for(quest, prog, await qe.daily_state(conn, ctx.user_id)):
-            return fail(t(ctx.lang, "quest.locked", n=QUEST_DAILY_NEW))
+        if (reason := qe.lock_reason(quest, prog, await qe.daily_state(conn, ctx.user_id))) is not None:
+            return fail(_locked_text(ctx.lang, reason))
         if data.get("restart") or prog is None or qe.is_finished(quest, prog["scene"]):
             await qe.start(conn, ctx.user_id, quest)
             scene_key, flags = quest["start"], set()
@@ -97,8 +103,8 @@ async def handle_quest_choose(request: web.Request) -> web.Response:
         return web.json_response({"ok": True, "stale": True, **scene_payload(quest, stale.current, stale.flags)})
     except qe.QuestNoCoins as e:
         return fail(t(ctx.lang, "quest.no_coins", cost=e.cost))
-    except qe.QuestLocked:
-        return fail(t(ctx.lang, "quest.locked", n=QUEST_DAILY_NEW))
+    except qe.QuestLocked as e:
+        return fail(_locked_text(ctx.lang, e.reason))
     if res is None:
         return fail(t(ctx.lang, "quest.stale"))
     out = {"ok": True, "outcome": res["outcome"], "balance": balance, **scene_payload(quest, res["scene"], res["flags"])}

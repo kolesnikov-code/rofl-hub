@@ -23,6 +23,7 @@
 - "set" добавляет флаги при выборе; "cost" списывает монеты (платная подсказка);
 - сцена с "end": "win"/"fail" завершает квест; у неё нет choices;
 - "mood" (у квеста — по умолчанию, у сцены — своя) — атмосфера сцены в приложении (static/webapp/fx.js);
+- "fx_text" (у сцены) — надпись для эффекта «🪞 запотевшее зеркало», например «УХОДИ»;
 - "epic": true — эпик (~час игры): вне ротации и суточного лимита, владелец включает отдельно (тумблер epic:<id>).
 
 Новый квест = новый JSON-файл, кода не требуется. Тесты проверяют каждый
@@ -40,6 +41,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 QUESTS_DIR = PROJECT_ROOT / "data" / "quests"
 
 _quests: dict[str, dict] = {}
+FX_TEXT_MAX = 32   # 🪞 надпись на запотевшем зеркале (mood "mirror"): короткая, чтобы влезла в 2 строки на телефоне
 
 
 def _mood_ok(mood) -> bool:
@@ -68,6 +70,8 @@ def validate_quest(q: dict) -> list[str]:
 
     if "epic" in q and not isinstance(q["epic"], bool):
         errors.append(f"{qid}: epic — true/false")
+    if "notes" in q and not isinstance(q["notes"], bool):
+        errors.append(f"{qid}: notes — true/false (совет «записывай детали на бумаге»)")
     if not _mood_ok(q.get("mood")):
         errors.append(f"{qid}: mood — метка атмосферы (static/webapp/fx.js) или список до двух меток")
     endings = 0
@@ -76,6 +80,9 @@ def validate_quest(q: dict) -> list[str]:
             errors.append(f"{qid}: имя сцены {key!r} должно быть ascii")
         if not _mood_ok(scene.get("mood")):
             errors.append(f"{qid}/{key}: mood — метка атмосферы или список до двух меток")
+        fx_text = scene.get("fx_text")
+        if fx_text is not None and (not isinstance(fx_text, str) or not 0 < len(fx_text) <= FX_TEXT_MAX):
+            errors.append(f"{qid}/{key}: fx_text — надпись на зеркале, 1–{FX_TEXT_MAX} символов")
         if not scene.get("text"):
             errors.append(f"{qid}/{key}: пустой текст")
         if scene.get("end"):

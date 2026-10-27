@@ -277,13 +277,16 @@ def test_quest_rotation_v2_rules_and_app_ui():
     q, epic = {"id": "a"}, {"id": "e", "epic": True}
     assert qe.locked_for(q, None, locked) and not qe.locked_for(q, None, free)
     assert not qe.locked_for(q, {"completed_at": "x"}, locked)            # пройденный — переигрывается
-    assert not qe.locked_for(epic, None, locked)                          # эпик — событие, вне лимита
+    unl = {"done": 9, "max": 3, "unlimited": True, "locked": False}
+    assert qe.lock_reason(epic, None, free) == "epic"                     # эпик платный: только с Безлимитом
+    assert qe.lock_reason(epic, None, unl) is None and qe.lock_reason(q, None, locked) == "day"
     assert qe.flag_key(epic) == "epic:e" and qe.flag_key(q) == "quest:a"
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     for k in ("qs_total", "qs_daily", "qs_dailyUnl", "qs_locked", "qs_lockedNote", "qs_epic"):
         assert html.count(k + ":") == 2, k
-    assert "q.locked ? ' dim'" in html and 'id="qsUnlim"' in html
+    assert "q.locked === \"day\" ? ' dim'" in html and 'id="qsUnlim"' in html and "data-unlim" in html
+    assert html.count("qs_epicPaid:") == 2 and html.count("qs_paper:") == 2
     admin = (ROOT / "bots" / "admin_notifier_bot" / "bot.py").read_text(encoding="utf-8")
-    assert 'F.data == "epic_pick"' in admin and "Внести эпик в список" in admin
+    assert 'F.data == "epic_pick"' in admin and "Внести эпик в список" in admin and 'Command("unlimit")' in admin
     db_src = (ROOT / "shared" / "database.py").read_text(encoding="utf-8")
     assert "('quest:golden_cutlet', TRUE)" in db_src                     # первые три остаются видны после смены дефолта

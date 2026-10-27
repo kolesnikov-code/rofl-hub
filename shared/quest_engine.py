@@ -6,8 +6,9 @@
 платные подсказки — ledger quest_hint. choose() вызывается ВНУТРИ транзакции.
 
 Ротация v2 (владелец 27.10): в списке до QUEST_ROTATION_SIZE квестов (тумблеры quest:<id>) + эпики (epic:<id>, поле
-"epic": true в JSON — событие, вне лимитов). За сутки UTC засчитываются QUEST_DAILY_NEW новых прохождений; потом
-непройденные квесты гаснут до 00:00 (Безлимит снимает), пройденные переигрываются без ограничений.
+"epic": true в JSON — событие ≥20 минут, ТОЛЬКО с ⚡ Безлимитом: «эпики должны быть платными»). За сутки UTC
+засчитываются QUEST_DAILY_NEW новых прохождений; потом непройденные квесты гаснут до 00:00 (Безлимит снимает),
+пройденные переигрываются без ограничений.
 """
 from __future__ import annotations
 
@@ -30,7 +31,11 @@ class QuestStale(Exception):
 
 
 class QuestLocked(Exception):
-    """Новые прохождения на сегодня закончились (QUEST_DAILY_NEW) — квест погас до 00:00 UTC."""
+    """Квест закрыт: reason "day" — новые прохождения на сегодня закончились, "epic" — эпик только с Безлимитом."""
+
+    def __init__(self, reason: str = "day"):
+        super().__init__(reason)
+        self.reason = reason
 
 
 class QuestNoCoins(Exception):
@@ -83,9 +88,17 @@ async def daily_state(conn, user_id: int) -> dict:
             "locked": not unlimited and done >= QUEST_DAILY_NEW}
 
 
+def lock_reason(quest: dict, prog, daily: dict) -> str | None:
+    """None — играть можно; "epic" — эпик без Безлимита; "day" — лимит новых исчерпан, а квест ещё не пройден."""
+    if is_epic(quest):
+        return None if daily["unlimited"] else "epic"
+    if daily["locked"] and not (prog and prog["completed_at"]):
+        return "day"
+    return None
+
+
 def locked_for(quest: dict, prog, daily: dict) -> bool:
-    """Погас ли квест сегодня: лимит исчерпан, квест не эпик и ещё ни разу не пройден."""
-    return daily["locked"] and not is_epic(quest) and not (prog and prog["completed_at"])
+    return lock_reason(quest, prog, daily) is not None
 
 
 async def quest_accessible(conn, quest_id: str, user_id: int) -> bool:
@@ -144,8 +157,8 @@ async def choose(conn, user_id: int, quest: dict, scene_key: str, idx: int) -> d
     if not prog:
         return None
     flags = flags_of(prog)
-    if locked_for(quest, prog, await daily_state(conn, user_id)):
-        raise QuestLocked()
+    if (reason := lock_reason(quest, prog, await daily_state(conn, user_id))) is not None:
+        raise QuestLocked(reason)
     if prog["scene"] != scene_key:
         current = prog["scene"] if prog["scene"] in quest["scenes"] else quest["start"]
         raise QuestStale(current, flags)

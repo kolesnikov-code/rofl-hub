@@ -3023,6 +3023,52 @@ async def test_quest_rotation_v2_three_new_per_day_then_dim_unlimited_lifts(conn
         await client.close()
 
 
+async def test_epic_needs_unlimited_and_owner_grants_it_by_username(conn, global_db):
+    """⭐ 27.10: эпик — только с Безлимитом (и в списке, и в движке); /unlimit @username выдаёт и снимает подписку."""
+    import time as _t
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.utils.quest_loader import get_quest
+    from bots.main_bot.webapp import create_webapp
+    from shared import quest_engine as qe
+    from shared.feature_flags import invalidate_cache, set_flag
+    from shared.rewards import grant_unlimit
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    await _mk_user(conn, 1860, 1000)
+    await conn.execute("UPDATE users SET username = 'epic_fan', unlimit_until = NULL WHERE user_id = 1860")
+    await conn.execute("DELETE FROM quest_progress WHERE user_id = 1860")
+    epic = get_quest("forty_candles")
+    assert qe.is_epic(epic)
+    await set_flag("epic:forty_candles", True)
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1860}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    try:
+        d = await (await client.get("/api/quests", headers=head)).json()
+        card = next(q for q in d["quests"] if q["id"] == "forty_candles")
+        assert card["epic"] and card["locked"] == "epic" and card["notes"]
+        assert d["quests"][0]["id"] == "forty_candles"                       # эпики — первыми
+        shut = await (await client.post("/api/quest/open", headers=head, json={"id": "forty_candles"})).json()
+        assert shut["ok"] is False
+        assert await grant_unlimit(conn, "@nobody_here_123", 30) is None
+        res = await grant_unlimit(conn, "@Epic_Fan", 30)                     # регистр не важен
+        assert res["user_id"] == 1860 and res["until"] is not None
+        opened = await (await client.post("/api/quest/open", headers=head, json={"id": "forty_candles"})).json()
+        assert opened["ok"] and opened["scene"] == "intro"
+        async with conn.transaction():
+            step = await qe.choose(conn, 1860, epic, "intro", 1)
+        assert step["scene"] == "arrival"
+        assert (await grant_unlimit(conn, "1860", 0))["until"] is None      # 0 — снять
+        with pytest.raises(qe.QuestLocked):
+            async with conn.transaction():
+                await qe.choose(conn, 1860, epic, "arrival", 0)
+    finally:
+        await set_flag("epic:forty_candles", False)
+        invalidate_cache()
+        await conn.execute("DELETE FROM quest_progress WHERE user_id = 1860")
+        await client.close()
+
+
 async def test_quiz_report_after_answer_once_per_question_limit_and_resolve(conn, global_db):
     """⚠️ 27.10: жалоба — только на отвеченный вопрос, текст берётся из раунда; одна на вопрос; лимит в сутки; владелец закрывает."""
     import time as _t

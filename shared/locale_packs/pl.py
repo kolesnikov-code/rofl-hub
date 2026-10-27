@@ -36,6 +36,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "quest.epic_locked": "⭐ Epiki to duże historie na ponad 20 minut — otwierają się z ⚡ Bez limitu.",
     "quest.locked": "🔒 Dzisiejsze {n} nowe questy zaliczone. Pozostałe otworzą się o 00:00 UTC — albo włącz ⚡ Bez limitu. Ukończone questy można powtarzać.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Ta sekcja jest teraz w aplikacji gry — tam jest wygodniej i ładniej. Naciśnij przycisk 👇",
@@ -1101,6 +1102,8 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qs_epicPaid": "⚡ z Bez limitu",
+    "qs_paper": "📝 Rada: zapisuj szczegóły na kartce — uważni rozwiązują łatwiej.",
     "qs_total": "📚 Questy w bibliotece: {n}",
     "qs_daily": "Nowe dziś: {a}/{b}",
     "qs_dailyUnl": "⚡ Bez limitu — questy bez ograniczeń",

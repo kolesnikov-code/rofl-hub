@@ -37,6 +37,7 @@ BUTTONS = {
 }
 
 STRINGS = {
+    "quest.epic_locked": "⭐ Epik adalah cerita besar 20+ menit — terbuka dengan ⚡ Tanpa batas.",
     "quest.locked": "🔒 {n} misi baru hari ini sudah selesai. Sisanya terbuka pukul 00:00 UTC — atau aktifkan ⚡ Tanpa batas. Misi yang sudah selesai bisa dimainkan ulang.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Bagian ini sekarang ada di aplikasi game — di sana lebih nyaman dan lebih keren. Ketuk tombolnya 👇",
@@ -1104,6 +1105,8 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qs_epicPaid": "⚡ dengan Tanpa batas",
+    "qs_paper": "📝 Tips: catat detailnya di kertas — pemain yang teliti lebih mudah memecahkannya.",
     "qs_total": "📚 Misi di perpustakaan: {n}",
     "qs_daily": "Baru hari ini: {a}/{b}",
     "qs_dailyUnl": "⚡ Tanpa batas — misi tanpa batasan",
