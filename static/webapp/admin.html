@@ -489,6 +489,8 @@
       ' · ' + esc(q.minutes) + ' мин · начинали ' + q.started + ', прошли ' + q.done + '</small></span><button class="mini" data-q="' +
       esc(q.id) + '" data-on="' + (q.on ? 1 : 0) + '">' + (q.on ? (q.epic ? "➖ Убрать" : "Скрыть") : (q.epic ? "➕ В список" : "Показать")) + '</button></div>';
     app.innerHTML =
+      '<div class="card"><h2>🎨 Галерея атмосфер</h2><div class="hint">Все эффекты квестов на тестовой сцене — видна только тебе.</div>' +
+      '<button class="btn" id="fxGal">🎨 Открыть галерею</button></div>' +
       '<div class="card"><h2>⚡ Безлимит игроку</h2><div class="hint">Снимает лимиты игр и квестов и открывает эпики. Игрок должен хотя бы раз нажать /start.</div>' +
       '<label>Игрок: @username, ID или VIP ID</label><input id="unWho" placeholder="@username">' +
       '<label>Дней (добавляются к текущему сроку; 0 — снять)</label><div class="chips">' +
@@ -499,6 +501,7 @@
       '<div class="card"><h2>🗺 Ротация — ' + on + '/' + d.rotation_size + ' · всего квестов ' + d.total + '</h2><div class="hint">Игрок проходит ' +
       d.daily_new + ' новых квеста в сутки, потом непройденные гаснут до 00:00 UTC (Безлимит снимает). Пройденные переигрываются без ограничений.</div>' +
       rot.map(row).join("") + '</div>';
+    $("fxGal").onclick = () => { location.href = "/?tab=games&fx=gallery"; };
     let days = 30;
     app.querySelectorAll("[data-days]").forEach(b => { b.onclick = () => {
       days = Number(b.dataset.days); app.querySelectorAll("[data-days]").forEach(x => x.classList.toggle("on", x === b)); }; });

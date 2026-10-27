@@ -175,7 +175,8 @@ def test_long_lists_are_paged_and_the_shop_has_three_panels():
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     for pager_id in ('scopeKey + "asks-"', 'scopeKey + "bids-"', 'scopeKey + "swaps"', 'pager("top"', 'pager("reftop"'):
         assert pager_id in html
-    assert "span-tablet" in html and 'pager("shopinfo"' in html
+    # магазин как «Инфо» (владелец 27.10): переключатель категорий, игровые первыми, описания — своей категории
+    assert 'let shopCat = "games"' in html and 'data-cat="' in html and "i.cat === shopCat" in html
 
 
 

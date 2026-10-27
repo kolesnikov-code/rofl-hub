@@ -893,6 +893,11 @@ SCHEMA_STATEMENTS: list[str] = [
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS pending_duel VARCHAR(16);",      # код вызова, пришедший по ссылке
     "ALTER TABLE duels ADD COLUMN IF NOT EXISTS invite_code VARCHAR(16);",      # приватная дуэль «вызов друга»
     "CREATE UNIQUE INDEX IF NOT EXISTS duels_invite_code_idx ON duels (invite_code) WHERE invite_code IS NOT NULL;",
+    # --- 27.10, вечер: ввод ответа и таймер в сценах квестов (момент входа в сцену и неверные попытки) ---
+    "ALTER TABLE quest_progress ADD COLUMN IF NOT EXISTS scene_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP;",
+    "ALTER TABLE quest_progress ADD COLUMN IF NOT EXISTS tries INT NOT NULL DEFAULT 0;",
+    # сколько раз игрок заходил к персонажу (scene.who): с третьего раза тот «раздражается» (владелец 27.10)
+    "ALTER TABLE quest_progress ADD COLUMN IF NOT EXISTS visits JSONB NOT NULL DEFAULT '{}'::jsonb;",
     """
     CREATE TABLE IF NOT EXISTS daily_case_runs (
         user_id BIGINT NOT NULL,

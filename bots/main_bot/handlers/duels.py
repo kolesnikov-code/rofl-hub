@@ -250,8 +250,6 @@ async def _broadcast_round_result(bot: Bot, duel_id: int, result: MoveResult,
         winner_move=t(w_lang, f"duel.btn_move_{result.winner_move}"),
         loser_move=t(w_lang, f"duel.btn_move_{result.loser_move}"),
         payout=result.payout, burned=result.burned, balance=balances[result.winner_id])
-    if result.metal:
-        win_text += "\n" + t(w_lang, "duel.metal_gain", metal=result.metal)
     lose_text = prefix[result.loser_id] + t(
         l_lang, "duel.lose",
         winner_move=t(l_lang, f"duel.btn_move_{result.winner_move}"),

@@ -13,9 +13,9 @@ from bots.main_bot.duel_presence import mark_in_app
 from bots.main_bot.handlers.duels import (_broadcast_round_result, _lang_of, notify_matched, start_round_watchdog)
 from bots.main_bot.webapp_game import _ctx, _feature_off, _int, _json, fail
 from shared.database import db
-from shared.duels import DuelError, active_duel_of, cancel_waiting_duel, join_or_create_duel, record_move
-from shared.economy import (DUEL_BURN_PERCENT, DUEL_INVITE_TTL_HOURS, DUEL_MOVE_TIMEOUT_SECONDS, DUEL_RESOURCE_REWARD, DUEL_TABLES,
-                            DUEL_WAITING_TTL_MINUTES, duel_payout, utcnow)
+from shared.duels import DuelError, active_duel_of, cancel_waiting_duel, has_premium, join_or_create_duel, record_move
+from shared.economy import (DUEL_BURN_PERCENT, DUEL_BURN_PERCENT_PREMIUM, DUEL_INVITE_TTL_HOURS, DUEL_MOVE_TIMEOUT_SECONDS,
+                            DUEL_TABLES, DUEL_WAITING_TTL_MINUTES, duel_burn_percent, duel_payout, utcnow)
 from shared.locales import t
 
 RESULT_SHOW_SECONDS = 120     # итог последней дуэли приложение показывает, если она закончилась недавно
@@ -23,15 +23,18 @@ RESULT_SHOW_SECONDS = 120     # итог последней дуэли прил�
 
 async def duel_state(conn, user_id: int) -> dict:
     now = utcnow()
-    out = {"ok": True, "timeout": DUEL_MOVE_TIMEOUT_SECONDS, "ttl": DUEL_WAITING_TTL_MINUTES, "burn": DUEL_BURN_PERCENT,
+    premium = await has_premium(conn, user_id)    # выплаты на столах — по комиссии самого игрока
+    out = {"ok": True, "timeout": DUEL_MOVE_TIMEOUT_SECONDS, "ttl": DUEL_WAITING_TTL_MINUTES,
+           "burn": duel_burn_percent(premium), "premium": premium,
+           "burn_base": DUEL_BURN_PERCENT, "burn_premium": DUEL_BURN_PERCENT_PREMIUM,
            "balance": await conn.fetchval("SELECT balance FROM users WHERE user_id = $1", user_id),
-           "tables": [{"stake": s, "payout": duel_payout(s)[0], "stone": DUEL_RESOURCE_REWARD.get(s, 0)} for s in DUEL_TABLES],
+           "tables": [{"stake": s, "payout": duel_payout(s, premium)[0]} for s in DUEL_TABLES],
            "duel": None, "last": None}
     d = await active_duel_of(conn, user_id)
     if d is not None:
         me1 = d["player1"] == user_id
         my_move, opp_move = (d["move1"], d["move2"]) if me1 else (d["move2"], d["move1"])
-        info = {"id": d["duel_id"], "status": d["status"], "stake": d["stake"], "payout": duel_payout(d["stake"])[0],
+        info = {"id": d["duel_id"], "status": d["status"], "stake": d["stake"], "payout": duel_payout(d["stake"], premium)[0],
                 "round": d["rounds"], "my_move": my_move, "opp_moved": opp_move is not None}
         if d["status"] == "active" and d["round_started_at"]:
             info["left"] = max(0, DUEL_MOVE_TIMEOUT_SECONDS - int((now - d["round_started_at"]).total_seconds()))
@@ -50,12 +53,15 @@ async def duel_state(conn, user_id: int) -> dict:
             out["last"] = {"id": last["duel_id"], "cancelled": True, "stake": last["stake"]}
         else:
             me1 = last["player1"] == user_id
-            payout, burned = duel_payout(last["stake"])
+            # фактическая выплата — из журнала (комиссия зависела от Безлимита победителя в момент победы)
+            paid = await conn.fetchval("SELECT delta FROM ledger WHERE reason = 'duel_win' AND ref = $1",
+                                       str(last["duel_id"]))
+            payout = paid if paid is not None else duel_payout(last["stake"])[0]
+            burned = last["stake"] * 2 - payout
             out["last"] = {"id": last["duel_id"], "win": last["winner_id"] == user_id, "stake": last["stake"],
                            "my_move": last["move1"] if me1 else last["move2"],
                            "opp_move": last["move2"] if me1 else last["move1"],
-                           "payout": payout, "burned": burned, "rounds": last["rounds"],
-                           "stone": DUEL_RESOURCE_REWARD.get(last["stake"], 0)}
+                           "payout": payout, "burned": burned, "rounds": last["rounds"]}
     return out
 
 

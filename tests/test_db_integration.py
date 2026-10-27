@@ -1998,11 +1998,13 @@ async def test_dome_costs_five_times_more_for_a_mega_clan(conn):
     assert await get_resources(conn, 1460, tuple(cost)) == left               # ничего не списано
 
 
-async def test_duel_win_gives_stone(conn):
+async def test_duel_gives_only_coins_and_unlimited_halves_the_fee(conn):
+    """Владелец 27.10, вечер: дуэли без ресурсов; комиссия 20%, у победителя с ⚡ Безлимитом — 10%."""
     from shared.duels import join_or_create_duel, record_move
-    from shared.economy import DUEL_RESOURCE_REWARD
+    from shared.economy import duel_payout
+    from datetime import datetime, timedelta, timezone
     from shared.resources import get_resources
-    await _mk_user(conn, 1470, 100)
+    await _mk_user(conn, 1470, 100, unlimit_until=datetime.now(timezone.utc) + timedelta(days=1))
     await _mk_user(conn, 1471, 100)
     async with conn.transaction():
         r1 = await join_or_create_duel(conn, 1470, 100)
@@ -2012,7 +2014,8 @@ async def test_duel_win_gives_stone(conn):
         await record_move(conn, r1.duel_id, 1470, "rock")
     async with conn.transaction():
         await record_move(conn, r1.duel_id, 1471, "scissors")
-    assert (await get_resources(conn, 1470, ("stone", "metal"))) == {"stone": DUEL_RESOURCE_REWARD[100], "metal": 0}
+    assert (await get_resources(conn, 1470, ("stone", "metal"))) == {"stone": 0, "metal": 0}
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1470") == duel_payout(100, premium=True)[0]
 
 
 async def test_finalize_season_is_idempotent_and_gives_only_badges(conn):
@@ -3292,7 +3295,7 @@ async def test_app_duel_two_players_draw_replay_win_and_cancel(conn, global_db):
     import time as _t
     from aiohttp.test_utils import TestClient, TestServer
     from bots.main_bot.webapp import create_webapp
-    from shared.economy import DUEL_RESOURCE_REWARD, duel_payout
+    from shared.economy import duel_payout
     from shared.webapp_auth import sign_init_data
     token = "123456:TEST"
     await conn.execute("UPDATE duels SET status = 'cancelled' WHERE status IN ('waiting', 'active')")   # чистый стол
@@ -3332,7 +3335,7 @@ async def test_app_duel_two_players_draw_replay_win_and_cancel(conn, global_db):
         lose = await (await client.get("/api/duel", headers=hd(1861))).json()
         assert lose["last"]["win"] is False and lose["last"]["id"] == did
         stone = await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 1860 AND kind = 'stone'")
-        assert stone == DUEL_RESOURCE_REWARD[100]
+        assert not stone                                                            # дуэли ресурсов не дают
         # очередь можно покинуть — ставка возвращается
         q = await post(1861, "/api/duel/join", {"stake": 10})
         c = await post(1861, "/api/duel/cancel", {"duel_id": q["duel"]["id"]})
@@ -3370,7 +3373,7 @@ async def test_social_wave_squad_invite_duel_case_card_mode(conn, global_db):
     try:
         # режим приложения
         me = await get(1900, "/api/me")
-        assert me["app_mode"] is None and me["days_in_game"] == 0 and me["unlock_all_days"] >= 1
+        assert me["app_mode"] is None and me["days_in_game"] == 0
         assert (await post(1900, "/api/mode", {"mode": "puzzle"}))["mode"] == "puzzle"
         assert (await post(1900, "/api/mode", {"mode": "hacker"}))["ok"] is False
         assert (await get(1900, "/api/me"))["app_mode"] == "puzzle"
@@ -3442,5 +3445,68 @@ async def test_social_wave_squad_invite_duel_case_card_mode(conn, global_db):
         tf = await get(1902, "/api/transfer")
         assert tf["ok"] and tf["active"] is False
         assert (await post(1902, "/api/transfer/preview", {"to": "1901", "amount": 100}))["ok"] is False
+    finally:
+        await client.close()
+
+
+async def test_quest_input_timer_and_annoyed_character(conn, global_db):
+    """🔐 27.10, вечер: код набирают руками (сверяет сервер), ⏱ таймер считает сервер, с 3-го захода персонаж ворчит."""
+    import time as _t
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.feature_flags import invalidate_cache, set_flag
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    from datetime import datetime, timezone
+    await _mk_user(conn, 1950, 1000, unlimit_until=datetime(2099, 1, 1, tzinfo=timezone.utc))
+    await conn.execute("DELETE FROM quest_progress WHERE user_id = 1950")
+    for qid in ("locked_safe", "forty_candles"):
+        await set_flag("quest:" + qid, True)
+    await set_flag("epic:forty_candles", True)
+    invalidate_cache()
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1950}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+
+    async def post(url, body):
+        return await (await client.post(url, headers=head, json=body)).json()
+
+    async def to_door():
+        await post("/api/quest/open", {"id": "locked_safe", "restart": True})
+        await conn.execute("UPDATE quest_progress SET scene = 'door', scene_at = NOW() WHERE user_id = 1950 AND quest_id = 'locked_safe'")
+    try:
+        await to_door()
+        sc = await post("/api/quest/open", {"id": "locked_safe"})
+        assert sc["scene"] == "door" and sc["input"]["tries_left"] == 1 and 85 <= sc["timer"]["left"] <= 90
+        early = await post("/api/quest/timeout", {"id": "locked_safe", "scene": "door"})
+        assert early["wait"] and early["scene"] == "door"                         # время ещё не вышло
+        bad = await post("/api/quest/answer", {"id": "locked_safe", "scene": "door", "text": "1234"})
+        assert bad["wrong"] and bad["outcome"] == "fail" and bad["scene"] == "end_alarm"   # одна попытка
+        await to_door()
+        before = await conn.fetchval("SELECT balance FROM users WHERE user_id = 1950")
+        ok = await post("/api/quest/answer", {"id": "locked_safe", "scene": "door", "text": " 4-6-0-7 "})
+        assert ok["outcome"] == "win_first" and ok["reward"]["res_each"] == 2      # 50 🪙 → 2 камня
+        assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 1950") == before + 50
+        stone = await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 1950 AND kind = 'stone'")
+        assert stone == 2
+        # таймер: «опоздавший» выбор не засчитывается, сцена уходит в timer.goto
+        await to_door()
+        await conn.execute("UPDATE quest_progress SET scene_at = NOW() - INTERVAL '5 minutes' WHERE user_id = 1950 AND quest_id = 'locked_safe'")
+        late = await post("/api/quest/choose", {"id": "locked_safe", "scene": "door", "i": 0})
+        assert late["timeout"] and late["scene"] == "end_timeout" and late["outcome"] == "fail"
+        # персонаж «раздражается» с третьего захода
+        await post("/api/quest/open", {"id": "forty_candles", "restart": True})
+        await conn.execute("UPDATE quest_progress SET scene = 'people' WHERE user_id = 1950 AND quest_id = 'forty_candles'")
+        from bots.main_bot.utils.quest_loader import get_quest
+        q = get_quest("forty_candles")
+        gleb_i = next(i for i, ch in enumerate(q["scenes"]["people"]["choices"]) if ch["goto"] == "gleb")
+        back_i = next(i for i, ch in enumerate(q["scenes"]["gleb"]["choices"]) if ch["goto"] == "people")
+        texts = []
+        for _ in range(3):
+            r = await post("/api/quest/choose", {"id": "forty_candles", "scene": "people", "i": gleb_i})
+            texts.append(r["text"])
+            await post("/api/quest/choose", {"id": "forty_candles", "scene": "gleb", "i": back_i})
+        annoyed = q["scenes"]["gleb"]["annoyed"][0]
+        assert annoyed not in texts[0] and annoyed not in texts[1] and annoyed in texts[2]
     finally:
         await client.close()

@@ -41,8 +41,9 @@ def test_station_drone_removed_no_resources_from_air():
 
 
 def test_sources_of_new_resources():
-    assert economy.DUEL_RESOURCE_KIND == "stone"
-    assert economy.QUEST_EXTRA_BUNDLE == {"wood": 10, "cow": 1}
+    # 27.10, вечер: дуэли без ресурсов, квесты — только 🪨 камень (1–2, эпик 5)
+    assert not hasattr(economy, "DUEL_RESOURCE_REWARD") and economy.QUEST_STONE_KIND == "stone"
+    assert economy.quest_stones(20, False) == 1 and economy.quest_stones(50, False) == 2 and economy.quest_stones(100, True) == 5
     assert 0 < economy.ENERGY_WIN_CHANCE_PERCENT < 100
     assert {k for k, _ in economy.CHEST_SPECIALS} == {"wood", "stone", "energy"}
     assert economy.CHEST_STREAK_COW >= 1
@@ -329,7 +330,6 @@ def test_new_locale_keys_ru_en():
         assert "X" in t(lang, "raid.err_need_tech", tech="X")
         for rid in ("bonfire", "battery", "cart", "meds_72h"):
             assert t(lang, f"ws.recipe_{rid}") != f"ws.recipe_{rid}"
-    assert "Камень" in t("ru", "duel.metal_gain", metal=2)
     assert "рофл" not in t("ru", "games.energy_gain").lower()
 
 
@@ -444,7 +444,7 @@ def test_mines_map_free_brighter_held_armored():
 
 def test_shop_stars_hint_on_both_showcases():
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    assert html.count("'<div class=\"hint\">' + L.shopHint + '</div>'") == 2
+    assert html.count("'<div class=\"hint\">' + L.shopHint + '</div>'") == 1   # одна витрина открытой категории
 
 
 def test_workshop_sources_cover_every_resource():

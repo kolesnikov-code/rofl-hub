@@ -13,9 +13,10 @@ from aiogram.filters import Command
 
 from bots.main_bot.guards import feature_enabled
 from bots.main_bot.utils.quest_loader import get_quest, visible_choices
+from bots.main_bot.webapp_links import app_url
 from shared import quest_engine as qe
 from shared.database import db
-from shared.economy import QUEST_DAILY_NEW, QUEST_RESOURCE_BUNDLE
+from shared.economy import QUEST_DAILY_NEW, quest_stones
 from shared.locales import t
 
 router = Router()
@@ -48,6 +49,9 @@ def _scene_kb(quest: dict, scene_key: str, flags: set[str], lang: str) -> types.
     rows = [[types.InlineKeyboardButton(text=ch["label"],
                                         callback_data=f"qst:{quest['id']}:{scene_key}:{i}")]
             for i, ch in visible_choices(scene, flags)]
+    if scene.get("input") and (url := app_url("games")):
+        # 🔐 ответ (код, шифр) набирается в приложении — там же идёт таймер сцены
+        rows.insert(0, [types.InlineKeyboardButton(text=t(lang, "quest.btn_answer_app"), web_app=types.WebAppInfo(url=url))])
     return types.InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -185,7 +189,7 @@ async def quest_choice(callback: types.CallbackQuery, user_lang: str = "ru"):
         return
     footer = {
         "win_first": t(user_lang, "quest.win_first", coins=quest["reward_coins"])
-        + t(user_lang, "quest.win_resources", qty=QUEST_RESOURCE_BUNDLE),
+        + t(user_lang, "quest.win_resources", qty=quest_stones(quest["reward_coins"], bool(quest.get("epic")))),
         "win_repeat": t(user_lang, "quest.win_repeat"),
         "fail": t(user_lang, "quest.fail_footer"),
     }.get(res["outcome"], "")

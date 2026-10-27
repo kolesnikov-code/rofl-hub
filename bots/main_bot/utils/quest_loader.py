@@ -36,7 +36,11 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from pathlib import Path
+from shared.economy import QUEST_EPIC_REWARD, QUEST_REWARD_MAX, QUEST_REWARD_MIN
+
+TIMER_MIN_SECONDS, TIMER_MAX_SECONDS = 15, 600     # ⏱ таймер сцены: от 15 секунд до 10 минут
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +72,10 @@ def validate_quest(q: dict) -> list[str]:
             errors.append(f"{qid}: нет поля {field}")
     if not isinstance(q.get("reward_coins"), int) or q["reward_coins"] < 0:
         errors.append(f"{qid}: reward_coins должен быть неотрицательным числом")
+    elif q.get("epic") and q["reward_coins"] != QUEST_EPIC_REWARD:
+        errors.append(f"{qid}: эпик даёт ровно {QUEST_EPIC_REWARD} монет")
+    elif not q.get("epic") and not QUEST_REWARD_MIN <= q["reward_coins"] <= QUEST_REWARD_MAX:
+        errors.append(f"{qid}: награда обычного квеста — {QUEST_REWARD_MIN}…{QUEST_REWARD_MAX} монет (владелец 27.10)")
 
     scenes = q.get("scenes") or {}
     if q.get("start") not in scenes:
@@ -107,8 +115,29 @@ def validate_quest(q: dict) -> list[str]:
                 errors.append(f"{qid}/{key}: у концовки не должно быть choices")
             continue
         choices = scene.get("choices") or []
-        if not choices:
-            errors.append(f"{qid}/{key}: сцена без choices и без end — тупик")
+        inp, timer = scene.get("input"), scene.get("timer")
+        if inp is not None:
+            answers = inp.get("answers") if isinstance(inp, dict) else None
+            if not answers or not all(isinstance(a, str) and normalize_answer(a) for a in answers):
+                errors.append(f"{qid}/{key}: input.answers — непустой список ответов")
+            for edge in ("ok", "fail"):
+                if (inp or {}).get(edge) not in scenes:
+                    errors.append(f"{qid}/{key}: input.{edge} {(inp or {}).get(edge)!r} не существует")
+            if not isinstance((inp or {}).get("tries", 3), int) or (inp or {}).get("tries", 3) < 1:
+                errors.append(f"{qid}/{key}: input.tries — целое ≥ 1")
+        if timer is not None:
+            if not isinstance(timer, dict) or not isinstance(timer.get("seconds"), int) \
+                    or not TIMER_MIN_SECONDS <= timer["seconds"] <= TIMER_MAX_SECONDS:
+                errors.append(f"{qid}/{key}: timer.seconds — {TIMER_MIN_SECONDS}…{TIMER_MAX_SECONDS}")
+            if (timer or {}).get("goto") not in scenes:
+                errors.append(f"{qid}/{key}: timer.goto не существует")
+        if scene.get("annoyed") is not None and (not isinstance(scene["annoyed"], list)
+                                                 or not all(isinstance(x, str) and x for x in scene["annoyed"])):
+            errors.append(f"{qid}/{key}: annoyed — список реплик")
+        if scene.get("who") is not None and not isinstance(scene["who"], str):
+            errors.append(f"{qid}/{key}: who — строка (персонаж)")
+        if not choices and inp is None:
+            errors.append(f"{qid}/{key}: сцена без choices, без input и без end — тупик")
         for i, ch in enumerate(choices):
             if not ch.get("label"):
                 errors.append(f"{qid}/{key}#{i}: пустой label")
@@ -136,6 +165,42 @@ def visible_choices(scene: dict, flags: set[str]) -> list[tuple[int, dict]]:
     return result
 
 
+def normalize_answer(text: str) -> str:
+    """Ответ игрока и эталон сравниваются без регистра, пробелов, дефисов и точек; ё = е."""
+    return re.sub(r"[\s\-–—.,!?:;\"'«»]+", "", str(text or "")).lower().replace("ё", "е")
+
+
+ANNOY_AFTER_VISITS = 3     # с третьего захода к одному персонажу он отвечает с раздражением
+
+
+def visit_key(scene_key: str, scene: dict) -> str:
+    """Чьи это визиты: персонаж (scene.who — общий у его сцен) или сама сцена."""
+    return scene.get("who") or scene_key
+
+
+def annoyed_line(quest: dict, scene_key: str, visits: dict | None) -> str:
+    """Реплика «я уже всё рассказал(а)» — если игрок заходит к персонажу третий раз и дальше; иначе пусто."""
+    scene = quest["scenes"][scene_key]
+    who = visit_key(scene_key, scene)
+    lines = scene.get("annoyed") or next((s.get("annoyed") for s in quest["scenes"].values()
+                                          if s.get("who") == who and s.get("annoyed")), None)
+    n = int((visits or {}).get(who, 0))
+    if not lines or n < ANNOY_AFTER_VISITS:
+        return ""
+    return lines[min(n - ANNOY_AFTER_VISITS, len(lines) - 1)]
+
+
+def scene_edges(scene: dict, flags: set[str]) -> list[tuple[str, frozenset]]:
+    """Все переходы из сцены при флагах: видимые выборы, верный/исчерпанный ввод ответа, истечение таймера."""
+    edges = [(ch["goto"], frozenset(ch.get("set", []))) for _, ch in visible_choices(scene, flags)]
+    if (inp := scene.get("input")):
+        edges.append((inp["ok"], frozenset(inp.get("set", []))))
+        edges.append((inp["fail"], frozenset()))
+    if (timer := scene.get("timer")):
+        edges.append((timer["goto"], frozenset()))
+    return edges
+
+
 def win_reachable(q: dict) -> bool:
     """BFS по состояниям (сцена, флаги): достижима ли победа из старта."""
     scenes = q["scenes"]
@@ -151,8 +216,8 @@ def win_reachable(q: dict) -> bool:
             return True
         if scene.get("end"):
             continue
-        for _, ch in visible_choices(scene, set(flags)):
-            queue.append((ch["goto"], flags | frozenset(ch.get("set", []))))
+        for goto, add in scene_edges(scene, set(flags)):
+            queue.append((goto, flags | add))
     return False
 
 

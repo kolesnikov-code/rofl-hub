@@ -13,6 +13,7 @@ from bots.main_bot.utils.quest_loader import (
     get_quest,
     load_quests,
     validate_quest,
+    scene_edges,
     visible_choices,
     win_reachable,
 )
@@ -62,8 +63,8 @@ def test_every_scene_is_reachable_from_start():
             scene = scenes[key]
             if scene.get("end"):
                 continue
-            for _, ch in visible_choices(scene, set(flags)):
-                stack.append((ch["goto"], flags | frozenset(ch.get("set", []))))
+            for goto, add in scene_edges(scene, set(flags)):   # выборы + ввод ответа + таймер
+                stack.append((goto, flags | add))
         dead = set(scenes) - seen_scenes
         assert not dead, f"{q['id']}: недостижимые сцены {dead}"
 
@@ -82,15 +83,15 @@ def test_no_stuck_states():
             scene = scenes[key]
             if scene.get("end"):
                 continue
-            visible = visible_choices(scene, set(flags))
-            assert visible, f"{q['id']}/{key}: тупик при флагах {sorted(flags)}"
-            for _, ch in visible:
-                stack.append((ch["goto"], flags | frozenset(ch.get("set", []))))
+            edges = scene_edges(scene, set(flags))
+            assert edges, f"{q['id']}/{key}: тупик при флагах {sorted(flags)}"
+            for goto, add in edges:
+                stack.append((goto, flags | add))
 
 
 def test_rewards_and_hints_are_sane():
     for q in all_quests():
-        assert 50 <= q["reward_coins"] <= 500, q["id"]
+        assert 20 <= q["reward_coins"] <= 100, q["id"]  # владелец 27.10: обычные 20–50, эпик 100
         for key, scene in q["scenes"].items():
             for ch in scene.get("choices") or []:
                 if ch.get("cost"):
@@ -105,18 +106,46 @@ def test_detective_requires_evidence_for_win():
     assert win_choices and all("vik_caught" in ch.get("need", []) for ch in win_choices)
 
 
-def test_safe_door_requires_all_four_digits():
+def test_safe_door_is_typed_by_hand_under_a_timer():
+    """27.10, вечер: код двери игрок НАБИРАЕТ сам (кнопки с готовым кодом нет), одна попытка и 90 секунд."""
     q = get_quest("locked_safe")
     door = q["scenes"]["door"]
-    win = [ch for ch in door["choices"] if ch["goto"] == "end_win"]
-    assert win and set(win[0]["need"]) == {"digit_a", "digit_b", "digit_c", "digit_d"}
+    assert door["input"]["answers"] == ["4607"] and door["input"]["ok"] == "end_win" and door["input"]["tries"] == 1
+    assert door["timer"]["goto"] == "end_timeout" and q["scenes"]["end_timeout"]["end"] == "fail"
+    assert all("4607" not in ch["label"] and "4-6-0-7" not in ch["label"] for ch in door["choices"])
+    # каждая из четырёх головоломок открывает свою цифру
+    sets = {f for k in ("pa_win", "pb_win", "pc_win", "pd_win") for ch in q["scenes"][k]["choices"] for f in ch.get("set", [])}
+    assert {"digit_a", "digit_b", "digit_c", "digit_d"} <= sets
+
+
+def test_answers_are_normalized_and_validator_checks_input_and_timer():
+    from bots.main_bot.utils.quest_loader import normalize_answer
+    assert normalize_answer(" Ёлка - 1 ") == normalize_answer("елка1") == "елка1"
+    assert normalize_answer("4-6-0-7") == "4607"
+    q = _mini_quest()
+    q["scenes"]["a"]["input"] = {"answers": ["x"], "ok": "nowhere", "fail": "w"}
+    q["scenes"]["a"]["timer"] = {"seconds": 5, "goto": "w"}
+    errs = " ".join(validate_quest(q))
+    assert "input.ok" in errs and "timer.seconds" in errs
+
+
+def test_annoyed_line_after_third_visit():
+    from bots.main_bot.utils.quest_loader import ANNOY_AFTER_VISITS, annoyed_line
+    q = get_quest("forty_candles")
+    assert annoyed_line(q, "vera", {"vera": 1}) == ""
+    first = annoyed_line(q, "vera", {"vera": ANNOY_AFTER_VISITS})
+    assert first and first == q["scenes"]["vera"]["annoyed"][0]
+    # сцена-пересказ того же персонажа берёт его реплики
+    assert annoyed_line(q, "vera_note", {"vera": 99}) == q["scenes"]["vera"]["annoyed"][-1]
+    # галочек «уже выяснено» больше нет — о повторах скажет сам персонаж
+    assert not any(ch["label"].endswith("✓") for sc in q["scenes"].values() for ch in sc.get("choices", []))
 
 
 # ---------------------------------------------------------------- валидатор и фильтр
 def _mini_quest(**overrides):
     q = {
         "id": "mini", "order": 1, "title": "t", "genre": "g", "minutes": "5",
-        "teaser": "tz", "reward_coins": 100, "start": "a",
+        "teaser": "tz", "reward_coins": 30, "start": "a",
         "scenes": {
             "a": {"text": "x", "choices": [{"label": "go", "goto": "w"}]},
             "w": {"text": "win", "end": "win"},

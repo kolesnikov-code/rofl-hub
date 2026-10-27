@@ -118,6 +118,13 @@
   .fx-toggle { float: right; background: none; border: 1px solid rgba(0,255,225,.3); border-radius: 10px; color: var(--text);
     font-size: 13px; padding: 2px 8px; margin-top: -4px; cursor: pointer; }
   .fx-toggle.off { opacity: .45; }
+  .fx-sw { float: right; display: inline-flex; align-items: center; gap: 6px; font: 400 11px/1 -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--muted); letter-spacing: 0; text-transform: none; text-shadow: none; }
+  .fx-sw .fx-toggle { float: none; }
+  .qs-input { display: flex; gap: 8px; margin-top: 10px; }
+  .qs-input input { flex: 1; min-width: 0; padding: 11px 12px; border-radius: 12px; border: 1px solid rgba(0,255,225,.35);
+    background: #0d1326; color: var(--text); font: 600 16px/1.2 inherit; letter-spacing: .08em; }
+  .qs-input .btn { width: auto; margin-top: 0; padding: 0 16px; }
   .fx-gal { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
   .fx-gal .btn { margin-top: 0; padding: 9px 6px; font-size: 13px; }
   @media (prefers-reduced-motion: reduce) { .qs-text { animation: none; } }
@@ -585,7 +592,7 @@
       map_peek: "🔎 Разведать развилку · осталось {n}", map_peeked: "🔎 Развилка разведана — последствия видны всему отряду", map_peekBlind: "🙈 Первая экспедиция сезона — вслепую.",
       tab_map: "🗺 Карта", map_title: "🗺 КАРТА МИРА", map_empty: "Целей пока нет. Они появляются на карте время от времени — загляни позже.", map_hint: "На карте — соло-походы и походы отрядов команд (формат у каждой цели свой). К часу итогов надо успеть дойти — опоздавшие не участвуют.", map_resolve: "Итоги через {t}", map_squads: "Отрядов: {n}", map_forks: "Развилок в пути: {n}", map_path: "Путь", map_mode_solo: "👤 соло", map_mode_team: "🏆 командой", map_mode_clan: "👑 кланом", map_ok: "успеешь", map_no: "не успеешь", map_prizes: "Призы по местам", map_rewardAll: "🎒 За участие: {r}", map_goSolo: "👤 Выступить соло · 💧 {n}", map_gearBattery: "🔋 Внести батарейку · {a}/{b}", map_gearCutlet: "🥩 Внести котлету · {a}/{b}", map_gearHint: "Снаряжение вносят бойцы по одной штуке. Полный комплект — отряд выходит сам. Не собрали к итогам — всё вернётся.", map_needTeam: "Командный зачёт — вступи в команду, чтобы идти отрядом.", map_notYours: "Эта цель не для твоего отряда.", map_my: "🚩 МОЙ ОТРЯД", map_gathering: "Сбор снаряжения", map_marching: "В пути · прибытие через {t}", map_arrived: "На месте — ждём час итогов", map_late: "Опаздываем к итогам — срезайте путь на развилках!", map_cargo: "📦 Груз", map_fork: "Развилка {k} из {n}", map_vote: "Голосование ещё {t}. Решает большинство команды.", map_voteSolo: "Твой выбор сработает, как только дойдёшь до развилки. Передумать можно до этого момента.", map_votes: "голосов: {n}", map_myVote: "твой голос", map_noHint: "Разведать можно столько развилок, сколько у лидера отряда 🛰 Дронов-шпионов и уровней 🔭 разведки — по меньшему из двух. Остальные — вслепую.", map_waitFork: "Следующая развилка — впереди по пути.", map_log: "Журнал пути", map_effects: "Дроны отряда: ⚔️ +{a}% добычи · 🛡 −{g}% потерь · 🛰 −{s}% пути", map_you: "Ты", map_done: "✅ Отряд выступил!", map_added: "✅ Внесено", map_voted: "🗳 Выбор принят", map_fight: "силовой", map_pick: "Нажми на цель на карте — или выбери в списке ниже.", dr_title: "🤖 БОЕВЫЕ ДРОНЫ", dr_guard: "🛡 Дрон-защитник", dr_attack: "⚔️ Атакующий дрон", dr_spy: "🛰 Дрон-шпион", dr_hint: "Личные спутники в налётах и экспедициях. Действие суммируется, дроны не тратятся и не занимают склад.", dr_eff_guard: "Налёт на тебя: −{rg}% к трофею налётчика · экспедиции: −{eg}% потерь груза. За каждого дрона.", dr_eff_attack: "Твой налёт: +{ra}% к трофею · экспедиции: +{ec}% к силовой добыче. За каждого дрона.", dr_eff_spy: "Разведка налётов: +{st} цель · экспедиции: путь короче на {es}%, а с 🔭 разведкой лидера — разведка развилок. За каждого дрона.", dr_buy: "Купить за {c} 🪙", dr_bought: "🤖 Дрон в строю!", dr_have: "У тебя: {n}", eff_bdrone: "боевой дрон — личный спутник в налётах и экспедициях", raid_note_drones: "🤖 Сработали боевые дроны",
       subtitle: "твоя игровая империя в одном экране",
-      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит", md_title: "🧭 Как будешь играть?", md_hint: "ROFL HUB большой. Выбери, с чего начать, — режим можно сменить в любой момент в паспорте.", md_full: "🌐 Вся экосистема", md_fullText: "Ферма роботов, склад, мастерская, биржа, команды, налёты, рудники и карта мира — плюс все игры и истории. Разделы открываются постепенно, за 3 дня, чтобы не утонуть в кнопках.", md_puzzle: "🧩 Игры и истории", md_puzzleText: "Только викторина, мини-игры, квесты, Дело дня и дуэли с друзьями. Без экономики и лишних вкладок.", md_later: "Ферма работает в любом режиме — монеты копятся, даже если ты в неё не заглядываешь.", md_toFull: "Включить всю экосистему? Появятся ферма, склад, биржа, команды и остальные разделы.", md_toPuzzle: "Оставить только игры и истории? Ферма продолжит работать, остальные вкладки спрячутся — вернуть их можно здесь же.", md_now: "🧭 Режим: {m} · сменить", lk_new: "🎉 Открылись новые разделы: <b>{t}</b>. Нажми, чтобы заглянуть!", lk_line: "🔒 {t} — через {d} дн. или с 🧠 {l} уровня", lk_title: "Разделы открываются постепенно, чтобы было проще разобраться:", di_title: "⚔️ Тебя вызывают на дуэль!", di_text: "<b>{n}</b> вызывает тебя на дуэль «камень-ножницы-бумага».<br>Ставка {s} 🪙 · победителю {p} 🪙.", di_accept: "⚔️ Принять вызов", di_decline: "Не сейчас", di_waiting: "Ждём друга за столом {s} 🪙…", di_left: "Вызов действует ещё {h} ч — потом ставка вернётся", di_share: "📤 Отправить вызов другу", di_waitHint: "Отправь ссылку другу. Когда друг примет вызов, бот напишет тебе в чат. Ставка уже на столе; передумаешь — покинь стол, она вернётся.", di_head: "🤝 Вызвать друга", di_hint: "Свой стол по ссылке: в очередь он не попадает, ждёт только твоего друга. Новичок, пришедший по ссылке, становится твоим другом.", di_table: "🤝 Вызвать друга · стол {s} 🪙", di_shareText: "Вызываю тебя на дуэль в ROFL HUB! Ставка {s} 🪙 — посмотрим, кто кого 😎", ac_title: "🏅 Мои достижения", ac_streak: "🔥 Серия Дел дня: {n}", ac_hint: "Все достижения собираются на одну карточку — её можно выложить в историю или отправить другу.", ac_make: "📸 Создать карточку", ac_cardSub: "мои достижения", ac_cardCall: "Сможешь лучше?", ac_shareText: "Мой счёт в ROFL HUB: 🧠 {l} уровень, 🗺 {q} квестов, 🕵️ {d} дел, ⚔️ {w} побед в дуэлях. Сможешь лучше?", ac_story: "📲 Выложить в историю", ac_send: "✈️ Отправить другу", ac_save: "💾 Сохранить картинку", ac_quests: "квестов пройдено", ac_epics: "эпиков", ac_cases: "дел раскрыто", ac_duels: "побед в дуэлях", ac_wins: "побед в играх", ac_friends: "активных друзей", ac_robots: "роботов", ac_days: "дней в игре", tf_title: "💸 Перевести монеты", tf_hint: "Другу — по @username, ID или VIP ID. Минимум {m} 🪙, комиссия {f}%.", tf_locked: "🔒 Отправлять монеты можно с 🧠 {l} уровня и {c} забранных ежедневных котлет — так фейки не сливают стартовые монеты. Получать можно сразу.", tf_to: "Кому", tf_amount: "Сколько 🪙", tf_btn: "💸 Перевести", tf_ask: "Перевести {a} 🪙 игроку {to}? Комиссия {f} 🪙, получатель получит {r} 🪙.", tf_done: "Готово! {to} получает {r} 🪙", sq_choose: "Выбери, что создаёшь:", sq_squad: "🛡 Отряд", sq_squadText: "До {n} бойцов · {c} 🪙. Для себя и пары друзей; позже капитан расширит отряд до команды.", sq_team: "🏆 Команда", sq_teamText: "До {n} бойцов · {c} 🪙. Большая команда для битв и рудников.", sq_createBtn: "Создать отряд за {cost} 🪙", sq_created: "Отряд «{n}» создан — ты капитан!", sq_label: "Отряд", sq_upHint: "Отряду тесно? Расширь его до команды — до {n} бойцов.", sq_upBtn: "⬆️ Расширить до команды · {c} 🪙", sq_upAsk: "Расширить отряд до команды за {c} 🪙? Мест станет {n}.", sq_upDone: "Отряд стал командой!", cs_title: "🕵️ Дело дня", cs_tile: "Одно дело на всех · 4 подозреваемых · одно обвинение", cs_none: "Сегодня дел нет — загляни завтра.", cs_culprit: "виновный", cs_accuse: "👉 Обвинить", cs_clueLocked: "Улика {n} — пока скрыта", cs_more: "🔍 Открыть ещё улику (награда станет {r} 🪙)", cs_rules: "Обвинить можно только одного и только один раз. Чем меньше улик понадобилось — тем больше награда:", cs_solved: "🎉 Дело раскрыто! +{r} 🪙", cs_failed: "Мимо! Виновный — {n}.", cs_bonus: "🔥 Бонус за серию: +{b} 🪙", cs_solution: "Разгадка:", cs_stats: "Сегодня раскрыли {s} из {p} · в среднем улик: {a}", cs_share: "📤 Похвастаться", cs_next: "Новое дело через {t}", cs_head: "🕵️ Дело №{n}", cs_suspects: "👥 Подозреваемые", cs_clues: "🔍 Улики", cs_streak: "🔥 Серия раскрытых дел: {n} · каждый {e}-й день подряд +{b} 🪙", cs_accuseAsk: "Обвинить: {n}? Обвинение одно — передумать не получится.", cs_shareText: "🕵️ Дело дня №{n}\n{s}\n🔥 Серия: {k}\nСможешь раскрыть быстрее?", qs_epicPaid: "⚡ с Безлимитом", qs_paper: "📝 Совет: записывай детали на бумаге — внимательным разгадка даётся легче.", qs_total: "📚 Квестов в базе: {n}", qs_daily: "Новых сегодня: {a}/{b}", qs_dailyUnl: "⚡ Безлимит — квесты без ограничений", qs_locked: "🔒 до 00:00 UTC", qs_lockedNote: "Сегодня пройдено новых квестов: {b}. Остальные откроются в 00:00 UTC, а пройденные можно переигрывать сколько угодно. ⚡ Безлимит снимает ограничение.", qs_epic: "⭐ ЭПИК ·", qr_btn: "⚠️ Пожаловаться на вопрос", qr_title: "Что не так с вопросом?", qr_answer: "❌ Неверный правильный ответ", qr_question: "✏️ Ошибка или опечатка в вопросе", qr_dup: "🔁 Вопрос повторяется", qr_other: "🤔 Другое (непонятно, спорно)", qr_thanks: "Спасибо! Вопрос проверят и поправят.", qr_limit: "На сегодня жалоб достаточно — спасибо за помощь!", qs_fxGallery: "🎨 Галерея атмосфер", qs_fxChoice: "🚪 Войти внутрь", qs_fxSample: "Ночь. Ты стоишь у входа и слушаешь, как шумит мир вокруг. Что-то меняется — и сцена отвечает на это светом, тенью и движением. Выбери атмосферу ниже, чтобы посмотреть, как она выглядит под текстом квеста.", dl_title: "⚔️ Дуэли", dl_tile: "Живой соперник · столы 10 / 100 / 1000 🪙", dl_intro: "Камень-ножницы-бумага с живым игроком. Ставка списывается сразу; победителю — {p}% банка, {b}% сгорает. На жест — {t} с, ничья — переигровка.", dl_table: "⚔️ Стол {s} 🪙 · победа +{p} 🪙 и 🪨{r}", dl_short: "Для этого стола нужно {s} 🪙 на балансе", dl_waiting: "Ищем соперника за столом {s} 🪙…", dl_waitLeft: "Очередь отменится через {m} мин — ставка вернётся", dl_waitHint: "Можно закрыть приложение: когда соперник найдётся, бот напишет в чат.", dl_cancel: "❌ Покинуть стол (вернуть ставку)", dl_matched: "Соперник найден! Банк {b} 🪙 · победителю {p} 🪙", dl_round: "🤝 Ничья — переигровка! Раунд {n}", dl_pick: "Выбери жест", dl_wait: "Жест принят — ждём соперника…", dl_oppMoved: "⚡ Соперник уже сделал ход!", dl_timeoutNote: "Не успеешь — жест выберет случай.", dl_win: "🎉 Победа в дуэли! +{p} 🪙 и 🪨{r}", dl_lose: "Поражение. Ставка {s} 🪙 ушла в банк соперника.", dl_vs: "Ты: {a} · Соперник: {b}", dl_cancelled: "Стол покинут — ставка {s} 🪙 вернулась на баланс.", dl_again: "⚔️ Ещё дуэль", g_name_quests: "🗺 Квесты", qs_tile: "Истории с выборами · награда за первую победу", qs_ruOnly: "Квесты пока только на русском — перевод готовится.", qs_done: "✅ пройден", qs_progress: "⏯ в процессе", qs_new: "🆕 новый", qs_info: "{g} · {m} мин · +{r} 🪙 за первую победу", qs_start: "▶️ Начать", qs_resume: "⏯ Продолжить", qs_restart: "🔄 Начать заново", qs_list: "‹ Все квесты", qs_again: "🔄 Пройти ещё раз", qs_winFirst: "🏆 Квест пройден! +{c} 🪙 и по {q} каждого ресурса, 🪵 и 🐄", qs_winRepeat: "✅ Пройдено снова! Награда за этот квест уже получена.", qs_fail: "💀 Концовка не из лучших… Историю всегда можно переиграть!", qs_stale: "Эта сцена уже позади — продолжаем с текущего места", qs_empty: "Квестов пока нет — загляни позже.", g_sometimes: "Иногда: +1 ⚡", auc_short: "Не хватает {n} 🪙 для этой ставки", auc_confirm: "Сделать ставку на «{t}»? Спишется {c} 🪙 (вернутся, если тебя перебьют).", g_streak: "Серия: {i} {a}/{b}", g_every: "{i} за каждые {n} побед", g_win_coins: "Победа: +{r} 🪙", flags_q_flag: "Чей это флаг?", flags_q_cap: "Какая столица у страны {c}?", code_rules: "Взломай код из {d} разных цифр за {m} попыток. 🐂 — цифра на своём месте, 🐄 — цифра есть, но в другом месте.", code_left: "Попыток осталось: {n}", code_try: "Проверить", mem_rules: "Найди все {p} пар за {m} ходов. Ход — открыть две карточки.", mem_moves: "Ходов: {a}/{b}",
+      tab_games: "🕹 Игры", g_credited: "Начислено: {x}", g_charged: "Списано: {x}", g_title: "🕹 ИГРЫ", g_hint: "Побеждай — получай монеты и ресурсы. У каждой игры свой лимит побед в сутки (сброс в 00:00 UTC).", g_unlimited: "⚡ Безлимит включён — побеждай сколько угодно", g_limit: "лимит отыгран · 🔓 можно снять", g_soon: "скоро", g_back: "‹ Все игры", g_again: "Ещё раз", g_balance: "Баланс: {b} 🪙", g_name_rps: "✊ Камень-ножницы-бумага", g_name_hl: "🔼 Больше-Меньше", g_name_safe: "🔐 Кибер-Сейф", g_name_quiz: "🧠 Викторина", g_name_words: "🔤 Слова из слова", g_name_math: "➗ Математика", g_name_flags: "🏳️ Флаги и столицы", g_name_code: "💻 Взлом кода", g_name_memory: "🃏 Мемори", g_prize: "Победа: +{r} 🪙 и {i}", g_win: "🎉 Победа!", g_lose: "Проигрыш!", g_draw: "🤝 Ничья!", g_timeout: "⏱ Время вышло!", g_level: "🎉 Новый уровень интеллекта: {l}! +{b} 🪙", g_intern: "🤖 На ферме ждёт новый Робот-Стажёр", g_full: "склад полон", rps_pick: "Выбери жест — бот выбирает одновременно с тобой.", rps_rock: "✊ Камень", rps_scissors: "✌️ Ножницы", rps_paper: "✋ Бумага", rps_vs: "Ты: {a} · Бот: {b}", hl_q: "Следующее число от 1 до 100 будет больше или меньше?", hl_up: "▲ Больше", hl_down: "▼ Меньше", hl_was: "Выпало: {n}", hl_next: "Следующее число", safe_q: "Угадай код сейфа: один из {n}.", safe_code: "Код был: {n}", quiz_of: "Вопрос {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Дальше ›", quiz_correct: "Правильный ответ: {a}", quiz_sum_title: "🏁 РАУНД ОКОНЧЕН", quiz_sum: "Верных ответов", quiz_coins: "Монеты за раунд", quiz_again: "Ещё раунд", quiz_level: "🧠 Уровень {l} · до следующего {a}/{b} верных", g_limit_title: "⏳ ЛИМИТ НА СЕГОДНЯ", g_limit_text: "Победы в этой игре на сегодня отыграны. Новые — после 00:00 UTC. Или включи ⚡ Безлимит и играй без ограничений.", g_limit_btn: "⚡ Снять лимит", qs_check: "Проверить", qs_tries: "Попыток: {n}", qs_wrong: "❌ Неверно. Осталось попыток: {n}", qs_timeUp: "⏱ Время вышло!", qs_timer: "⏱ Время на решение", qs_answerPh: "Твой ответ", news_season: "🏁 Завершённые — с 1-го числа: каждый месяц новый сезон, и шансы всех снова равны.", qs_fxOff: "отключить эффекты:", qs_fxOn: "включить эффекты:", tab_guide: "🧭 Как играть", md_title: "🧭 Как будешь играть?", md_hint: "ROFL HUB большой. Выбери, с чего начать, — режим можно сменить в любой момент в паспорте.", md_full: "🌐 Вся экосистема", md_fullText: "Ферма роботов, склад, мастерская, биржа, команды, налёты, рудники и карта мира — плюс все игры и истории. Всё открыто сразу.", md_puzzle: "🧩 Игры и истории", md_puzzleText: "Только викторина, мини-игры, квесты, Дело дня и дуэли с друзьями. Без экономики и лишних вкладок.", md_later: "Ферма работает в любом режиме — монеты копятся, даже если ты в неё не заглядываешь.", md_toFull: "Включить всю экосистему? Появятся ферма, склад, биржа, команды и остальные разделы.", md_toPuzzle: "Оставить только игры и истории? Ферма продолжит работать, остальные вкладки спрячутся — вернуть их можно здесь же.", md_now: "🧭 Режим: {m} · сменить", lk_new: "🎉 Открылись новые разделы: <b>{t}</b>. Нажми, чтобы заглянуть!", di_title: "⚔️ Тебя вызывают на дуэль!", di_text: "<b>{n}</b> вызывает тебя на дуэль «камень-ножницы-бумага».<br>Ставка {s} 🪙 · победителю {p} 🪙.", di_accept: "⚔️ Принять вызов", di_decline: "Не сейчас", di_waiting: "Ждём друга за столом {s} 🪙…", di_left: "Вызов действует ещё {h} ч — потом ставка вернётся", di_share: "📤 Отправить вызов другу", di_waitHint: "Отправь ссылку другу. Когда друг примет вызов, бот напишет тебе в чат. Ставка уже на столе; передумаешь — покинь стол, она вернётся.", di_head: "🤝 Вызвать друга", di_hint: "Свой стол по ссылке: в очередь он не попадает, ждёт только твоего друга. Новичок, пришедший по ссылке, становится твоим другом.", di_table: "🤝 Вызвать друга · стол {s} 🪙", di_shareText: "Вызываю тебя на дуэль в ROFL HUB! Ставка {s} 🪙 — посмотрим, кто кого 😎", ac_title: "🏅 Мои достижения", ac_streak: "🔥 Серия Дел дня: {n}", ac_hint: "Все достижения собираются на одну карточку — её можно выложить в историю или отправить другу.", ac_make: "📸 Создать карточку", ac_cardSub: "мои достижения", ac_cardCall: "Сможешь лучше?", ac_shareText: "Мой счёт в ROFL HUB: 🧠 {l} уровень, 🗺 {q} квестов, 🕵️ {d} дел, ⚔️ {w} побед в дуэлях. Сможешь лучше?", ac_story: "📲 Выложить в историю", ac_send: "✈️ Отправить другу", ac_save: "💾 Сохранить картинку", ac_quests: "квестов пройдено", ac_epics: "эпиков", ac_cases: "дел раскрыто", ac_duels: "побед в дуэлях", ac_wins: "побед в играх", ac_friends: "активных друзей", ac_robots: "роботов", ac_days: "дней в игре", tf_title: "💸 Перевести монеты", tf_hint: "Другу — по @username, ID или VIP ID. Минимум {m} 🪙, комиссия {f}%.", tf_locked: "🔒 Отправлять монеты можно с 🧠 {l} уровня и {c} забранных ежедневных котлет — так фейки не сливают стартовые монеты. Получать можно сразу.", tf_to: "Кому", tf_amount: "Сколько 🪙", tf_btn: "💸 Перевести", tf_ask: "Перевести {a} 🪙 игроку {to}? Комиссия {f} 🪙, получатель получит {r} 🪙.", tf_done: "Готово! {to} получает {r} 🪙", sq_choose: "Выбери, что создаёшь:", sq_squad: "🛡 Отряд", sq_squadText: "До {n} бойцов · {c} 🪙. Для себя и пары друзей; позже капитан расширит отряд до команды.", sq_team: "🏆 Команда", sq_teamText: "До {n} бойцов · {c} 🪙. Большая команда для битв и рудников.", sq_createBtn: "Создать отряд за {cost} 🪙", sq_created: "Отряд «{n}» создан — ты капитан!", sq_label: "Отряд", sq_upHint: "Отряду тесно? Расширь его до команды — до {n} бойцов.", sq_upBtn: "⬆️ Расширить до команды · {c} 🪙", sq_upAsk: "Расширить отряд до команды за {c} 🪙? Мест станет {n}.", sq_upDone: "Отряд стал командой!", cs_title: "🕵️ Дело дня", cs_tile: "Одно дело на всех · 4 подозреваемых · одно обвинение", cs_none: "Сегодня дел нет — загляни завтра.", cs_culprit: "виновный", cs_accuse: "👉 Обвинить", cs_clueLocked: "Улика {n} — пока скрыта", cs_more: "🔍 Открыть ещё улику (награда станет {r} 🪙)", cs_rules: "Обвинить можно только одного и только один раз. Чем меньше улик понадобилось — тем больше награда:", cs_solved: "🎉 Дело раскрыто! +{r} 🪙", cs_failed: "Мимо! Виновный — {n}.", cs_bonus: "🔥 Бонус за серию: +{b} 🪙", cs_solution: "Разгадка:", cs_stats: "Сегодня раскрыли {s} из {p} · в среднем улик: {a}", cs_share: "📤 Похвастаться", cs_next: "Новое дело через {t}", cs_head: "🕵️ Дело №{n}", cs_suspects: "👥 Подозреваемые", cs_clues: "🔍 Улики", cs_streak: "🔥 Серия раскрытых дел: {n} · каждый {e}-й день подряд +{b} 🪙", cs_accuseAsk: "Обвинить: {n}? Обвинение одно — передумать не получится.", cs_shareText: "🕵️ Дело дня №{n}\n{s}\n🔥 Серия: {k}\nСможешь раскрыть быстрее?", qs_epicPaid: "⚡ с Безлимитом", qs_paper: "📝 Совет: записывай детали на бумаге — внимательным разгадка даётся легче.", qs_total: "📚 Квестов в базе: {n}", qs_daily: "Новых сегодня: {a}/{b}", qs_dailyUnl: "⚡ Безлимит — квесты без ограничений", qs_locked: "🔒 до 00:00 UTC", qs_lockedNote: "Сегодня пройдено новых квестов: {b}. Остальные откроются в 00:00 UTC, а пройденные можно переигрывать сколько угодно. ⚡ Безлимит снимает ограничение.", qs_epic: "⭐ ЭПИК ·", qr_btn: "⚠️ Пожаловаться на вопрос", qr_title: "Что не так с вопросом?", qr_answer: "❌ Неверный правильный ответ", qr_question: "✏️ Ошибка или опечатка в вопросе", qr_dup: "🔁 Вопрос повторяется", qr_other: "🤔 Другое (непонятно, спорно)", qr_thanks: "Спасибо! Вопрос проверят и поправят.", qr_limit: "На сегодня жалоб достаточно — спасибо за помощь!", qs_fxGallery: "🎨 Галерея атмосфер", qs_fxChoice: "🚪 Войти внутрь", qs_fxSample: "Ночь. Ты стоишь у входа и слушаешь, как шумит мир вокруг. Что-то меняется — и сцена отвечает на это светом, тенью и движением. Выбери атмосферу ниже, чтобы посмотреть, как она выглядит под текстом квеста.", dl_title: "⚔️ Дуэли", dl_tile: "Живой соперник · столы 10 / 100 / 1000 🪙", dl_intro: "Камень-ножницы-бумага с живым игроком. Ставка списывается сразу; победителю — {p}% банка, {b}% сгорает. На жест — {t} с, ничья — переигровка.", dl_table: "⚔️ Стол {s} 🪙 · победа +{p} 🪙", dl_short: "Для этого стола нужно {s} 🪙 на балансе", dl_waiting: "Ищем соперника за столом {s} 🪙…", dl_waitLeft: "Очередь отменится через {m} мин — ставка вернётся", dl_waitHint: "Можно закрыть приложение: когда соперник найдётся, бот напишет в чат.", dl_cancel: "❌ Покинуть стол (вернуть ставку)", dl_matched: "Соперник найден! Банк {b} 🪙 · победителю {p} 🪙", dl_round: "🤝 Ничья — переигровка! Раунд {n}", dl_pick: "Выбери жест", dl_wait: "Жест принят — ждём соперника…", dl_oppMoved: "⚡ Соперник уже сделал ход!", dl_timeoutNote: "Не успеешь — жест выберет случай.", dl_win: "🎉 Победа в дуэли! +{p} 🪙", dl_lose: "Поражение. Ставка {s} 🪙 ушла в банк соперника.", dl_vs: "Ты: {a} · Соперник: {b}", dl_cancelled: "Стол покинут — ставка {s} 🪙 вернулась на баланс.", dl_again: "⚔️ Ещё дуэль", dl_premOn: "⚡ У тебя Безлимит — комиссия с выигрыша {b}% вместо {a}%.", dl_premOff: "⚡ С Безлимитом комиссия с выигрыша — {b}% вместо {a}%.", g_name_quests: "🗺 Квесты", qs_tile: "Истории с выборами · награда за первую победу", qs_ruOnly: "Квесты пока только на русском — перевод готовится.", qs_done: "✅ пройден", qs_progress: "⏯ в процессе", qs_new: "🆕 новый", qs_info: "{g} · {m} мин · +{r} 🪙 за первую победу", qs_start: "▶️ Начать", qs_resume: "⏯ Продолжить", qs_restart: "🔄 Начать заново", qs_list: "‹ Все квесты", qs_again: "🔄 Пройти ещё раз", qs_winFirst: "🏆 Квест пройден! +{c} 🪙 и 🪨 {q}", qs_winRepeat: "✅ Пройдено снова! Награда за этот квест уже получена.", qs_fail: "💀 Концовка не из лучших… Историю всегда можно переиграть!", qs_stale: "Эта сцена уже позади — продолжаем с текущего места", qs_empty: "Квестов пока нет — загляни позже.", g_sometimes: "Иногда: +1 ⚡", auc_short: "Не хватает {n} 🪙 для этой ставки", auc_confirm: "Сделать ставку на «{t}»? Спишется {c} 🪙 (вернутся, если тебя перебьют).", g_streak: "Серия: {i} {a}/{b}", g_every: "{i} за каждые {n} побед", g_win_coins: "Победа: +{r} 🪙", flags_q_flag: "Чей это флаг?", flags_q_cap: "Какая столица у страны {c}?", code_rules: "Взломай код из {d} разных цифр за {m} попыток. 🐂 — цифра на своём месте, 🐄 — цифра есть, но в другом месте.", code_left: "Попыток осталось: {n}", code_try: "Проверить", mem_rules: "Найди все {p} пар за {m} ходов. Ход — открыть две карточки.", mem_moves: "Ходов: {a}/{b}",
       tab_passport: "📋 Паспорт", tab_farm: "🚜 Ферма", tab_goals: "🎯 Цели", tab_workshop: "🔧 Мастерская",
       tab_raids: "🏴‍☠️ Налёты", tab_market: "📈 Биржа", tab_team: "🏆 Команда", tab_shop: "🏪 Магазин", tab_top: "👑 ТОП",
       passport: "📋 ПАСПОРТ ИГРОКА", coins: "🪙",
@@ -650,7 +657,7 @@
       lab_tools: "🧰 ИНСТРУМЕНТЫ", lab_toolsHint: "Наборы не тратятся — они открывают сложные сборки и уровни технологий.",
       lab_nextTool: "Следующий набор: {t}", lab_craftTool: "Собрать набор", lab_toolsMax: "🧬 Все наборы собраны!",
       lab_level: "Уровень {l} из {m}", lab_max: "🏆 Максимальный уровень", lab_wait: "⏳ Следующий уровень через {t}",
-      lab_up: "Изучить уровень {l}", res_stone_src: "дуэли, рудники, сундук", res_wood_src: "квесты, рудники, сундук", res_fire_src: "Костёр в мастерской", res_energy_src: "шанс за победу, сундук", res_battery_src: "мастерская", res_cow_src: "квесты, сундук 7-го дня, биржа", res_core_src: "призы организатора", sk_items: "🧪 Изделий на складе: {n} / {m} (10% вместимости)", sk_cutletsName: "Кибер-котлеты", it_total: "На складе: {n} шт.", bt_entry: "🔋 Заявка команды: {n} / {m}", bt_entered: "✅ Команда в битве за рудники", bt_give: "Внести 🔋 (у тебя {n})", bt_info: "За рудники бьются только команды с заявкой: {f} 🔋, клан — {fc} 🔋. Скидывайтесь всей командой!", bt_notAllowed: "Эта битва не для твоего типа команды", mn_place: "🏆 приз за {p} место", mn_soonShort: "Старт: {d}", top_events: "🎯 Акции", ev_empty: "Сейчас акций нет — загляни позже!", ev_my: "Твоё место: {p}", ev_noPlace: "Ты пока вне таблицы — вперёд!", ev_manual: "Победителей определит организатор", ev_places: "Призовых мест: {n}", ev_prizes: "🎁 Призы", ev_leaders: "Лидеры", lab_sciGate: "📚 Уровень {l} откроется, когда все технологии будут изучены до уровня {l}", lab_cooldown: "После изучения следующий уровень — через {d} дн.", lab_done: "🔬 Готово! Уровень {l}",
+      lab_up: "Изучить уровень {l}", res_stone_src: "квесты, рудники, сундук", res_wood_src: "рудники, сундук", res_fire_src: "Костёр в мастерской", res_energy_src: "шанс за победу, сундук", res_battery_src: "мастерская", res_cow_src: "сундук 7-го дня, биржа", res_core_src: "призы организатора", sk_items: "🧪 Изделий на складе: {n} / {m} (10% вместимости)", sk_cutletsName: "Кибер-котлеты", it_total: "На складе: {n} шт.", bt_entry: "🔋 Заявка команды: {n} / {m}", bt_entered: "✅ Команда в битве за рудники", bt_give: "Внести 🔋 (у тебя {n})", bt_info: "За рудники бьются только команды с заявкой: {f} 🔋, клан — {fc} 🔋. Скидывайтесь всей командой!", bt_notAllowed: "Эта битва не для твоего типа команды", mn_place: "🏆 приз за {p} место", mn_soonShort: "Старт: {d}", top_events: "🎯 Акции", ev_empty: "Сейчас акций нет — загляни позже!", ev_my: "Твоё место: {p}", ev_noPlace: "Ты пока вне таблицы — вперёд!", ev_manual: "Победителей определит организатор", ev_places: "Призовых мест: {n}", ev_prizes: "🎁 Призы", ev_leaders: "Лидеры", lab_sciGate: "📚 Уровень {l} откроется, когда все технологии будут изучены до уровня {l}", lab_cooldown: "После изучения следующий уровень — через {d} дн.", lab_done: "🔬 Готово! Уровень {l}",
       lab_eff_comm: "1 уровень — налёты и доход с рудников; каждый следующий −{c} мин перезарядки налёта",
       lab_eff_scout: "Без неё налётов нет; целей в разведке: 2 + уровень",
       lab_eff_attack: "Без него налётов нет; каждый уровень после первого +{a}% к трофеям",
@@ -813,7 +820,7 @@
       map_peek: "🔎 Scout this fork · {n} left", map_peeked: "🔎 Fork scouted — outcomes visible to the whole squad", map_peekBlind: "🙈 The first expedition of the season is blind.",
       tab_map: "🗺 Map", map_title: "🗺 WORLD MAP", map_empty: "No targets yet. They appear on the map from time to time — check back later.", map_hint: "The map has solo runs and team squad runs (each target sets its format). Arrive before the results — latecomers are out.", map_resolve: "Results in {t}", map_squads: "Squads: {n}", map_forks: "Forks on the way: {n}", map_path: "Travel", map_mode_solo: "👤 solo", map_mode_team: "🏆 team", map_mode_clan: "👑 clan", map_ok: "in time", map_no: "too late", map_prizes: "Prizes by place", map_rewardAll: "🎒 For taking part: {r}", map_goSolo: "👤 Go solo · 💧 {n}", map_gearBattery: "🔋 Add a battery · {a}/{b}", map_gearCutlet: "🥩 Add a cutlet · {a}/{b}", map_gearHint: "Squad members add gear one piece at a time. Full kit — the squad sets out on its own. Not gathered in time — everything is returned.", map_needTeam: "Team ranking — join a team to march as a squad.", map_notYours: "This target isn't for your squad.", map_my: "🚩 MY SQUAD", map_gathering: "Gathering gear", map_marching: "On the way · arriving in {t}", map_arrived: "Arrived — waiting for the results", map_late: "Running late — take shortcuts at the forks!", map_cargo: "📦 Cargo", map_fork: "Fork {k} of {n}", map_vote: "Voting for {t} more. The team majority decides.", map_voteSolo: "Your choice applies as soon as you reach the fork. You can change it until then.", map_votes: "votes: {n}", map_myVote: "your vote", map_noHint: "A squad can scout as many forks as its leader has 🛰 Spy drones and 🔭 Scouting levels — whichever is lower. The rest are blind.", map_waitFork: "The next fork is further down the road.", map_log: "Travel log", map_effects: "Squad drones: ⚔️ +{a}% loot · 🛡 −{g}% losses · 🛰 −{s}% travel", map_you: "You", map_done: "✅ The squad has set out!", map_added: "✅ Added", map_voted: "🗳 Choice saved", map_fight: "force", map_pick: "Tap a target on the map — or pick one in the list below.", dr_title: "🤖 COMBAT DRONES", dr_guard: "🛡 Guard drone", dr_attack: "⚔️ Attack drone", dr_spy: "🛰 Spy drone", dr_hint: "Personal companions in raids and expeditions. Effects stack; drones are never used up and take no storage.", dr_eff_guard: "Raid on you: −{rg}% to the raider's loot · expeditions: −{eg}% cargo losses. Per drone.", dr_eff_attack: "Your raid: +{ra}% loot · expeditions: +{ec}% to force loot. Per drone.", dr_eff_spy: "Raid scouting: +{st} target · expeditions: {es}% shorter trip, and with the leader's 🔭 Scouting — fork scouting. Per drone.", dr_buy: "Buy for {c} 🪙", dr_bought: "🤖 Drone deployed!", dr_have: "You have: {n}", eff_bdrone: "combat drone — a personal companion in raids and expeditions", raid_note_drones: "🤖 Combat drones kicked in",
       subtitle: "your game empire on one screen",
-      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit", md_title: "🧭 How do you want to play?", md_hint: "ROFL HUB is big. Pick where to start — you can switch modes any time in the passport.", md_full: "🌐 The whole ecosystem", md_fullText: "A robot farm, storage, workshop, market, teams, raids, mines and the world map — plus all the games and stories. Sections open gradually over 3 days, so you don’t drown in buttons.", md_puzzle: "🧩 Games and stories", md_puzzleText: "Just the quiz, mini-games, quests, the Daily case and duels with friends. No economy, no extra tabs.", md_later: "The farm works in any mode — coins pile up even if you never look in.", md_toFull: "Turn on the whole ecosystem? The farm, storage, market, teams and the other sections will appear.", md_toPuzzle: "Keep only games and stories? The farm keeps working, the other tabs hide — you can bring them back right here.", md_now: "🧭 Mode: {m} · change", lk_new: "🎉 New sections are open: <b>{t}</b>. Tap to take a look!", lk_line: "🔒 {t} — in {d} d or from 🧠 level {l}", lk_title: "Sections open gradually, so it’s easier to find your way.", di_title: "⚔️ You’re challenged to a duel!", di_text: "<b>{n}</b> challenges you to a rock-paper-scissors duel.<br>Stake {s} 🪙 · the winner gets {p} 🪙.", di_accept: "⚔️ Accept the challenge", di_decline: "Not now", di_waiting: "Waiting for your friend at the {s} 🪙 table…", di_left: "The challenge lasts {h} more h — then your stake comes back", di_share: "📤 Send the challenge to a friend", di_waitHint: "Send the link to a friend. When they accept, the bot will message you in the chat. Your stake is already on the table; change your mind — leave the table and it comes back.", di_head: "🤝 Challenge a friend", di_hint: "Your own table by link: it skips the queue and waits only for your friend. A newcomer who joins through the link becomes your friend.", di_table: "🤝 Challenge a friend · {s} 🪙 table", di_shareText: "I challenge you to a duel in ROFL HUB! Stake {s} 🪙 — let’s see who wins 😎", ac_title: "🏅 My achievements", ac_streak: "🔥 Daily case streak: {n}", ac_hint: "All your achievements gather on one card — post it to your story or send it to a friend.", ac_make: "📸 Create the card", ac_cardSub: "my achievements", ac_cardCall: "Can you beat it?", ac_shareText: "My ROFL HUB score: 🧠 level {l}, 🗺 {q} quests, 🕵️ {d} cases, ⚔️ {w} duel wins. Can you beat it?", ac_story: "📲 Post to my story", ac_send: "✈️ Send to a friend", ac_save: "💾 Save the image", ac_quests: "quests completed", ac_epics: "epics", ac_cases: "cases solved", ac_duels: "duel wins", ac_wins: "game wins", ac_friends: "active friends", ac_robots: "robots", ac_days: "days in the game", tf_title: "💸 Send coins", tf_hint: "To a friend — by @username, ID or VIP ID. Minimum {m} 🪙, fee {f}%.", tf_locked: "🔒 You can send coins from 🧠 level {l} and {c} claimed daily cutlets — so fake accounts can’t drain starter coins. Receiving works right away.", tf_to: "To", tf_amount: "How many 🪙", tf_btn: "💸 Send", tf_ask: "Send {a} 🪙 to {to}? Fee {f} 🪙, they will receive {r} 🪙.", tf_done: "Done! {to} receives {r} 🪙", sq_choose: "What are you creating?", sq_squad: "🛡 Squad", sq_squadText: "Up to {n} fighters · {c} 🪙. For you and a couple of friends; later the captain can expand it into a team.", sq_team: "🏆 Team", sq_teamText: "Up to {n} fighters · {c} 🪙. A big team for battles and mines.", sq_createBtn: "Create a squad for {cost} 🪙", sq_created: "Squad “{n}” created — you’re the captain!", sq_label: "Squad", sq_upHint: "Squad getting crowded? Expand it into a team — up to {n} fighters.", sq_upBtn: "⬆️ Expand into a team · {c} 🪙", sq_upAsk: "Expand the squad into a team for {c} 🪙? There will be {n} places.", sq_upDone: "Your squad is now a team!", cs_title: "🕵️ Daily case", cs_tile: "One case for everyone · 4 suspects · one accusation", cs_none: "No case today — come back tomorrow.", cs_culprit: "culprit", cs_accuse: "👉 Accuse", cs_clueLocked: "Clue {n} — still hidden", cs_more: "🔍 Reveal another clue (reward becomes {r} 🪙)", cs_rules: "You can accuse only one suspect, only once. The fewer clues you needed, the bigger the reward.", cs_solved: "🎉 Case solved! +{r} 🪙", cs_failed: "Missed! The culprit was {n}.", cs_bonus: "🔥 Streak bonus: +{b} 🪙", cs_solution: "Solution:", cs_stats: "Solved today: {s} of {p} · average clues: {a}", cs_share: "📤 Show off", cs_next: "New case in {t}", cs_head: "🕵️ Case #{n}", cs_suspects: "👥 Suspects", cs_clues: "🔍 Clues", cs_streak: "🔥 Solved streak: {n} · every {e}th day in a row +{b} 🪙", cs_accuseAsk: "Accuse {n}? There’s only one accusation — no take-backs.", cs_shareText: "🕵️ Daily case #{n}\n{s}\n🔥 Streak: {k}\nCan you solve it faster?", qs_epicPaid: "⚡ with Unlimited", qs_paper: "📝 Tip: jot the details down on paper — the attentive solve it more easily.", qs_total: "📚 Quests in the library: {n}", qs_daily: "New today: {a}/{b}", qs_dailyUnl: "⚡ Unlimited — no quest limits", qs_locked: "🔒 until 00:00 UTC", qs_lockedNote: "You have completed {b} new quests today. The rest open at 00:00 UTC, and you can replay completed ones as much as you like. ⚡ Unlimited lifts the limit.", qs_epic: "⭐ EPIC ·", qr_btn: "⚠️ Report this question", qr_title: "What is wrong with the question?", qr_answer: "❌ The correct answer is wrong", qr_question: "✏️ A mistake or typo in the question", qr_dup: "🔁 The question repeats", qr_other: "🤔 Other (unclear, debatable)", qr_thanks: "Thanks! The question will be checked and fixed.", qr_limit: "That is enough reports for today — thanks for helping!", qs_fxGallery: "🎨 Atmosphere gallery", qs_fxChoice: "🚪 Step inside", qs_fxSample: "Night. You stand at the entrance and listen to the world around you. Something changes — and the scene answers with light, shadow and motion. Pick an atmosphere below to see how it looks under quest text.", dl_title: "⚔️ Duels", dl_tile: "A live opponent · tables 10 / 100 / 1000 🪙", dl_intro: "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.", dl_table: "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}", dl_short: "You need {s} 🪙 on your balance for this table", dl_waiting: "Looking for an opponent at the {s} 🪙 table…", dl_waitLeft: "The queue cancels in {m} min — your stake comes back", dl_waitHint: "You can close the app: once an opponent is found, the bot will message you in the chat.", dl_cancel: "❌ Leave the table (refund stake)", dl_matched: "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙", dl_round: "🤝 Draw — replay! Round {n}", dl_pick: "Pick a gesture", dl_wait: "Gesture locked in — waiting for your opponent…", dl_oppMoved: "⚡ Your opponent has already moved!", dl_timeoutNote: "Run out of time and chance picks your gesture.", dl_win: "🎉 Duel won! +{p} 🪙 and 🪨{r}", dl_lose: "Defeat. Your {s} 🪙 stake went to your opponent's bank.", dl_vs: "You: {a} · Opponent: {b}", dl_cancelled: "You left the table — your {s} 🪙 stake is back on your balance.", dl_again: "⚔️ Another duel", g_name_quests: "🗺 Quests", qs_tile: "Stories with choices · reward for the first win", qs_ruOnly: "Quests are in Russian for now — a translation is on the way.", qs_done: "✅ completed", qs_progress: "⏯ in progress", qs_new: "🆕 new", qs_info: "{g} · {m} min · +{r} 🪙 for the first win", qs_start: "▶️ Start", qs_resume: "⏯ Continue", qs_restart: "🔄 Start over", qs_list: "‹ All quests", qs_again: "🔄 Play again", qs_winFirst: "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄", qs_winRepeat: "✅ Completed again! The reward for this quest was already claimed.", qs_fail: "💀 Not the best ending… You can always replay the story!", qs_stale: "That scene is behind you — continuing from where you are", qs_empty: "No quests yet — check back later.", g_sometimes: "Sometimes: +1 ⚡", auc_short: "You need {n} more 🪙 for this bid", auc_confirm: "Bid on “{t}”? {c} 🪙 will be held (returned if you are outbid).", g_streak: "Streak: {i} {a}/{b}", g_every: "{i} for every {n} wins", g_win_coins: "Win: +{r} 🪙", flags_q_flag: "Whose flag is this?", flags_q_cap: "What is the capital of {c}?", code_rules: "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.", code_left: "Tries left: {n}", code_try: "Check", mem_rules: "Find all {p} pairs in {m} moves. A move is turning over two cards.", mem_moves: "Moves: {a}/{b}",
+      tab_games: "🕹 Games", g_credited: "Credited: {x}", g_charged: "Charged: {x}", g_title: "🕹 GAMES", g_hint: "Win to earn coins and resources. Each game has its own daily win limit (resets at 00:00 UTC).", g_unlimited: "⚡ Unlimited is on — win as much as you like", g_limit: "limit reached · 🔓 can be lifted", g_soon: "soon", g_back: "‹ All games", g_again: "Again", g_balance: "Balance: {b} 🪙", g_name_rps: "✊ Rock-paper-scissors", g_name_hl: "🔼 Higher-Lower", g_name_safe: "🔐 Cyber Safe", g_name_quiz: "🧠 Quiz", g_name_words: "🔤 Words from a word", g_name_math: "➗ Math", g_name_flags: "🏳️ Flags and capitals", g_name_code: "💻 Code breaker", g_name_memory: "🃏 Memory", g_prize: "Win: +{r} 🪙 and {i}", g_win: "🎉 Victory!", g_lose: "Defeat!", g_draw: "🤝 Draw!", g_timeout: "⏱ Time's up!", g_level: "🎉 New intelligence level: {l}! +{b} 🪙", g_intern: "🤖 A new Robot Intern is waiting on the farm", g_full: "storage full", rps_pick: "Pick a gesture — the bot picks at the same time.", rps_rock: "✊ Rock", rps_scissors: "✌️ Scissors", rps_paper: "✋ Paper", rps_vs: "You: {a} · Bot: {b}", hl_q: "Will the next number from 1 to 100 be higher or lower?", hl_up: "▲ Higher", hl_down: "▼ Lower", hl_was: "It was: {n}", hl_next: "Next number", safe_q: "Guess the safe code: one of {n}.", safe_code: "The code was: {n}", quiz_of: "Question {a}/{b}", quiz_hint: "💡 50/50 · {c} 🪙", quiz_next: "Next ›", quiz_correct: "Correct answer: {a}", quiz_sum_title: "🏁 ROUND OVER", quiz_sum: "Correct answers", quiz_coins: "Coins this round", quiz_again: "Another round", quiz_level: "🧠 Level {l} · {a}/{b} correct to the next", g_limit_title: "⏳ LIMIT FOR TODAY", g_limit_text: "You've used up today's wins in this game. New ones come after 00:00 UTC. Or turn on ⚡ Unlimited and play without limits.", g_limit_btn: "⚡ Lift the limit", qs_check: "Check", qs_tries: "Tries: {n}", qs_wrong: "❌ Wrong. Tries left: {n}", qs_timeUp: "⏱ Time is up!", qs_timer: "⏱ Time to decide", qs_answerPh: "Your answer", news_season: "🏁 Finished events since the 1st: every month is a new season and everyone’s chances are even again.", qs_fxOff: "turn off effects ›", qs_fxOn: "turn on effects ›", tab_guide: "🧭 How to play", md_title: "🧭 How do you want to play?", md_hint: "ROFL HUB is big. Pick where to start — you can switch modes any time in the passport.", md_full: "🌐 The whole ecosystem", md_fullText: "A robot farm, storage, workshop, market, teams, raids, mines and the world map — plus all the games and stories. Everything is open from the start.", md_puzzle: "🧩 Games and stories", md_puzzleText: "Just the quiz, mini-games, quests, the Daily case and duels with friends. No economy, no extra tabs.", md_later: "The farm works in any mode — coins pile up even if you never look in.", md_toFull: "Turn on the whole ecosystem? The farm, storage, market, teams and the other sections will appear.", md_toPuzzle: "Keep only games and stories? The farm keeps working, the other tabs hide — you can bring them back right here.", md_now: "🧭 Mode: {m} · change", lk_new: "🎉 New sections are open: <b>{t}</b>. Tap to take a look!", di_title: "⚔️ You’re challenged to a duel!", di_text: "<b>{n}</b> challenges you to a rock-paper-scissors duel.<br>Stake {s} 🪙 · the winner gets {p} 🪙.", di_accept: "⚔️ Accept the challenge", di_decline: "Not now", di_waiting: "Waiting for your friend at the {s} 🪙 table…", di_left: "The challenge lasts {h} more h — then your stake comes back", di_share: "📤 Send the challenge to a friend", di_waitHint: "Send the link to a friend. When they accept, the bot will message you in the chat. Your stake is already on the table; change your mind — leave the table and it comes back.", di_head: "🤝 Challenge a friend", di_hint: "Your own table by link: it skips the queue and waits only for your friend. A newcomer who joins through the link becomes your friend.", di_table: "🤝 Challenge a friend · {s} 🪙 table", di_shareText: "I challenge you to a duel in ROFL HUB! Stake {s} 🪙 — let’s see who wins 😎", ac_title: "🏅 My achievements", ac_streak: "🔥 Daily case streak: {n}", ac_hint: "All your achievements gather on one card — post it to your story or send it to a friend.", ac_make: "📸 Create the card", ac_cardSub: "my achievements", ac_cardCall: "Can you beat it?", ac_shareText: "My ROFL HUB score: 🧠 level {l}, 🗺 {q} quests, 🕵️ {d} cases, ⚔️ {w} duel wins. Can you beat it?", ac_story: "📲 Post to my story", ac_send: "✈️ Send to a friend", ac_save: "💾 Save the image", ac_quests: "quests completed", ac_epics: "epics", ac_cases: "cases solved", ac_duels: "duel wins", ac_wins: "game wins", ac_friends: "active friends", ac_robots: "robots", ac_days: "days in the game", tf_title: "💸 Send coins", tf_hint: "To a friend — by @username, ID or VIP ID. Minimum {m} 🪙, fee {f}%.", tf_locked: "🔒 You can send coins from 🧠 level {l} and {c} claimed daily cutlets — so fake accounts can’t drain starter coins. Receiving works right away.", tf_to: "To", tf_amount: "How many 🪙", tf_btn: "💸 Send", tf_ask: "Send {a} 🪙 to {to}? Fee {f} 🪙, they will receive {r} 🪙.", tf_done: "Done! {to} receives {r} 🪙", sq_choose: "What are you creating?", sq_squad: "🛡 Squad", sq_squadText: "Up to {n} fighters · {c} 🪙. For you and a couple of friends; later the captain can expand it into a team.", sq_team: "🏆 Team", sq_teamText: "Up to {n} fighters · {c} 🪙. A big team for battles and mines.", sq_createBtn: "Create a squad for {cost} 🪙", sq_created: "Squad “{n}” created — you’re the captain!", sq_label: "Squad", sq_upHint: "Squad getting crowded? Expand it into a team — up to {n} fighters.", sq_upBtn: "⬆️ Expand into a team · {c} 🪙", sq_upAsk: "Expand the squad into a team for {c} 🪙? There will be {n} places.", sq_upDone: "Your squad is now a team!", cs_title: "🕵️ Daily case", cs_tile: "One case for everyone · 4 suspects · one accusation", cs_none: "No case today — come back tomorrow.", cs_culprit: "culprit", cs_accuse: "👉 Accuse", cs_clueLocked: "Clue {n} — still hidden", cs_more: "🔍 Reveal another clue (reward becomes {r} 🪙)", cs_rules: "You can accuse only one suspect, only once. The fewer clues you needed, the bigger the reward.", cs_solved: "🎉 Case solved! +{r} 🪙", cs_failed: "Missed! The culprit was {n}.", cs_bonus: "🔥 Streak bonus: +{b} 🪙", cs_solution: "Solution:", cs_stats: "Solved today: {s} of {p} · average clues: {a}", cs_share: "📤 Show off", cs_next: "New case in {t}", cs_head: "🕵️ Case #{n}", cs_suspects: "👥 Suspects", cs_clues: "🔍 Clues", cs_streak: "🔥 Solved streak: {n} · every {e}th day in a row +{b} 🪙", cs_accuseAsk: "Accuse {n}? There’s only one accusation — no take-backs.", cs_shareText: "🕵️ Daily case #{n}\n{s}\n🔥 Streak: {k}\nCan you solve it faster?", qs_epicPaid: "⚡ with Unlimited", qs_paper: "📝 Tip: jot the details down on paper — the attentive solve it more easily.", qs_total: "📚 Quests in the library: {n}", qs_daily: "New today: {a}/{b}", qs_dailyUnl: "⚡ Unlimited — no quest limits", qs_locked: "🔒 until 00:00 UTC", qs_lockedNote: "You have completed {b} new quests today. The rest open at 00:00 UTC, and you can replay completed ones as much as you like. ⚡ Unlimited lifts the limit.", qs_epic: "⭐ EPIC ·", qr_btn: "⚠️ Report this question", qr_title: "What is wrong with the question?", qr_answer: "❌ The correct answer is wrong", qr_question: "✏️ A mistake or typo in the question", qr_dup: "🔁 The question repeats", qr_other: "🤔 Other (unclear, debatable)", qr_thanks: "Thanks! The question will be checked and fixed.", qr_limit: "That is enough reports for today — thanks for helping!", qs_fxGallery: "🎨 Atmosphere gallery", qs_fxChoice: "🚪 Step inside", qs_fxSample: "Night. You stand at the entrance and listen to the world around you. Something changes — and the scene answers with light, shadow and motion. Pick an atmosphere below to see how it looks under quest text.", dl_title: "⚔️ Duels", dl_tile: "A live opponent · tables 10 / 100 / 1000 🪙", dl_intro: "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.", dl_table: "⚔️ Table {s} 🪙 · win +{p} 🪙", dl_short: "You need {s} 🪙 on your balance for this table", dl_waiting: "Looking for an opponent at the {s} 🪙 table…", dl_waitLeft: "The queue cancels in {m} min — your stake comes back", dl_waitHint: "You can close the app: once an opponent is found, the bot will message you in the chat.", dl_cancel: "❌ Leave the table (refund stake)", dl_matched: "Opponent found! Bank {b} 🪙 · winner gets {p} 🪙", dl_round: "🤝 Draw — replay! Round {n}", dl_pick: "Pick a gesture", dl_wait: "Gesture locked in — waiting for your opponent…", dl_oppMoved: "⚡ Your opponent has already moved!", dl_timeoutNote: "Run out of time and chance picks your gesture.", dl_win: "🎉 Duel won! +{p} 🪙", dl_lose: "Defeat. Your {s} 🪙 stake went to your opponent's bank.", dl_vs: "You: {a} · Opponent: {b}", dl_cancelled: "You left the table — your {s} 🪙 stake is back on your balance.", dl_again: "⚔️ Another duel", dl_premOn: "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.", dl_premOff: "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.", g_name_quests: "🗺 Quests", qs_tile: "Stories with choices · reward for the first win", qs_ruOnly: "Quests are in Russian for now — a translation is on the way.", qs_done: "✅ completed", qs_progress: "⏯ in progress", qs_new: "🆕 new", qs_info: "{g} · {m} min · +{r} 🪙 for the first win", qs_start: "▶️ Start", qs_resume: "⏯ Continue", qs_restart: "🔄 Start over", qs_list: "‹ All quests", qs_again: "🔄 Play again", qs_winFirst: "🏆 Quest completed! +{c} 🪙 and 🪨 {q}", qs_winRepeat: "✅ Completed again! The reward for this quest was already claimed.", qs_fail: "💀 Not the best ending… You can always replay the story!", qs_stale: "That scene is behind you — continuing from where you are", qs_empty: "No quests yet — check back later.", g_sometimes: "Sometimes: +1 ⚡", auc_short: "You need {n} more 🪙 for this bid", auc_confirm: "Bid on “{t}”? {c} 🪙 will be held (returned if you are outbid).", g_streak: "Streak: {i} {a}/{b}", g_every: "{i} for every {n} wins", g_win_coins: "Win: +{r} 🪙", flags_q_flag: "Whose flag is this?", flags_q_cap: "What is the capital of {c}?", code_rules: "Crack a code of {d} different digits in {m} tries. 🐂 — right digit in the right place, 🐄 — right digit in the wrong place.", code_left: "Tries left: {n}", code_try: "Check", mem_rules: "Find all {p} pairs in {m} moves. A move is turning over two cards.", mem_moves: "Moves: {a}/{b}",
       tab_passport: "📋 Passport", tab_farm: "🚜 Farm", tab_goals: "🎯 Goals", tab_workshop: "🔧 Workshop",
       tab_raids: "🏴‍☠️ Raids", tab_market: "📈 Market", tab_team: "🏆 Team", tab_shop: "🏪 Shop", tab_top: "👑 TOP",
       passport: "📋 PLAYER PASSPORT", coins: "🪙",
@@ -878,7 +885,7 @@
       lab_tools: "🧰 TOOLS", lab_toolsHint: "Tool kits are never used up — they unlock advanced recipes and tech levels.",
       lab_nextTool: "Next kit: {t}", lab_craftTool: "Build the kit", lab_toolsMax: "🧬 All kits built!",
       lab_level: "Level {l} of {m}", lab_max: "🏆 Max level", lab_wait: "⏳ Next level in {t}",
-      lab_up: "Research level {l}", res_stone_src: "duels, mines, chest", res_wood_src: "quests, mines, chest", res_fire_src: "Bonfire in the workshop", res_energy_src: "a chance per win, chest", res_battery_src: "workshop", res_cow_src: "quests, 7th-day chest, market", res_core_src: "organizer prizes", sk_items: "🧪 Items in storage: {n} / {m} (10% of capacity)", sk_cutletsName: "Cyber-cutlets", it_total: "In storage: {n} pcs", bt_entry: "🔋 Team entry: {n} / {m}", bt_entered: "✅ Your team is in the battle for mines", bt_give: "Add 🔋 (you have {n})", bt_info: "Only teams with an entry fight for mines: {f} 🔋, clan — {fc} 🔋. Chip in as a team!", bt_notAllowed: "This battle isn't for your team type", mn_place: "🏆 prize for place {p}", mn_soonShort: "Starts: {d}", top_events: "🎯 Events", ev_empty: "No events right now — check back later!", ev_my: "Your place: {p}", ev_noPlace: "You're not in the table yet — go!", ev_manual: "The organizer picks the winners", ev_places: "Prize places: {n}", ev_prizes: "🎁 Prizes", ev_leaders: "Leaders", lab_sciGate: "📚 Level {l} opens once every tech is researched to level {l}", lab_cooldown: "After researching, the next level opens in {d} d.", lab_done: "🔬 Done! Level {l}",
+      lab_up: "Research level {l}", res_stone_src: "quests, mines, chest", res_wood_src: "mines, chest", res_fire_src: "Bonfire in the workshop", res_energy_src: "a chance per win, chest", res_battery_src: "workshop", res_cow_src: "7th-day chest, market", res_core_src: "organizer prizes", sk_items: "🧪 Items in storage: {n} / {m} (10% of capacity)", sk_cutletsName: "Cyber-cutlets", it_total: "In storage: {n} pcs", bt_entry: "🔋 Team entry: {n} / {m}", bt_entered: "✅ Your team is in the battle for mines", bt_give: "Add 🔋 (you have {n})", bt_info: "Only teams with an entry fight for mines: {f} 🔋, clan — {fc} 🔋. Chip in as a team!", bt_notAllowed: "This battle isn't for your team type", mn_place: "🏆 prize for place {p}", mn_soonShort: "Starts: {d}", top_events: "🎯 Events", ev_empty: "No events right now — check back later!", ev_my: "Your place: {p}", ev_noPlace: "You're not in the table yet — go!", ev_manual: "The organizer picks the winners", ev_places: "Prize places: {n}", ev_prizes: "🎁 Prizes", ev_leaders: "Leaders", lab_sciGate: "📚 Level {l} opens once every tech is researched to level {l}", lab_cooldown: "After researching, the next level opens in {d} d.", lab_done: "🔬 Done! Level {l}",
       lab_eff_comm: "Level 1 — raids and mine income; each next level −{c} min raid recharge",
       lab_eff_scout: "No raids without it; targets in scouting: 2 + level",
       lab_eff_attack: "No raids without it; each level after the first +{a}% loot",
@@ -1037,10 +1044,22 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "qs_check": "تحقّق",
+    "qs_tries": "المحاولات: {n}",
+    "qs_wrong": "❌ خطأ. المحاولات المتبقية: {n}",
+    "qs_timeUp": "⏱ انتهى الوقت!",
+    "qs_timer": "⏱ وقت القرار",
+    "qs_answerPh": "إجابتك",
+    "news_season": "🏁 المنتهية منذ اليوم الأول من الشهر: كل شهر موسم جديد وتعود فرص الجميع متساوية.",
+    "qs_fxOff": "إيقاف المؤثرات:",
+    "qs_fxOn": "تشغيل المؤثرات:",
+    "tab_guide": "🧭 طريقة اللعب",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 كيف تريد أن تلعب؟",
     "md_hint": "ROFL HUB عالم كبير. اختر من أين تبدأ — يمكن تغيير الوضع في أي وقت من الجواز.",
     "md_full": "🌐 المنظومة كاملة",
-    "md_fullText": "مزرعة الروبوتات، المخزون، الورشة، البورصة، الفرق، الغارات، المناجم وخريطة العالم — إضافة إلى كل الألعاب والقصص. تُفتح الأقسام تدريجيًا خلال 3 أيام حتى لا تغرق في الأزرار.",
+    "md_fullText": "مزرعة الروبوتات، المخزون، الورشة، البورصة، الفرق، الغارات، المناجم وخريطة العالم — إضافة إلى كل الألعاب والقصص. كل الأقسام مفتوحة من البداية.",
     "md_puzzle": "🧩 ألعاب وقصص",
     "md_puzzleText": "الكويز والألعاب المصغّرة والمهام وقضية اليوم والمبارزات مع الأصدقاء فقط. بلا اقتصاد ولا تبويبات زائدة.",
     "md_later": "المزرعة تعمل في أي وضع — العملات تتراكم حتى لو لم تزرها.",
@@ -1048,8 +1067,6 @@
     "md_toPuzzle": "الإبقاء على الألعاب والقصص فقط؟ ستواصل المزرعة العمل، وتختفي بقية التبويبات — ويمكن إعادتها من هنا.",
     "md_now": "🧭 الوضع: {m} · تغيير",
     "lk_new": "🎉 فُتحت أقسام جديدة: <b>{t}</b>. اضغط لإلقاء نظرة!",
-    "lk_line": "🔒 {t} — بعد {d} يوم أو من 🧠 المستوى {l}",
-    "lk_title": "تُفتح الأقسام تدريجيًا ليسهل عليك التعرّف عليها:",
     "di_title": "⚔️ لديك تحدٍّ لمبارزة!",
     "di_text": "<b>{n}</b> يتحداك في مبارزة حجر-ورقة-مقص.<br>الرهان {s} 🪙 · للفائز {p} 🪙.",
     "di_accept": "⚔️ قبول التحدي",
@@ -1143,7 +1160,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -1155,7 +1172,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -1172,7 +1189,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -1519,12 +1536,12 @@
     "lab_max": "🏆 المستوى الأقصى",
     "lab_wait": "⏳ المستوى التالي بعد {t}",
     "lab_up": "ادرس المستوى {l}",
-    "res_stone_src": "المبارزات، المناجم، الصندوق",
-    "res_wood_src": "المهمات، المناجم، الصندوق",
+    "res_stone_src": "المهمات، المناجم، الصندوق",
+    "res_wood_src": "المناجم، الصندوق",
     "res_fire_src": "نار المخيم في الورشة",
     "res_energy_src": "فرصة مع كل فوز، المناجم، الصندوق",
     "res_battery_src": "الورشة",
-    "res_cow_src": "المهمات، صندوق اليوم السابع، البورصة",
+    "res_cow_src": "صندوق اليوم السابع، البورصة",
     "res_core_src": "المناجم وجوائز المنظّم",
     "sk_items": "🧪 العناصر في المخزن: {n} / {m} (10% من السعة)",
     "sk_cutletsName": "شرائح سايبر",
@@ -1839,10 +1856,22 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "qs_check": "যাচাই করো",
+    "qs_tries": "চেষ্টা: {n}",
+    "qs_wrong": "❌ ভুল। বাকি চেষ্টা: {n}",
+    "qs_timeUp": "⏱ সময় শেষ!",
+    "qs_timer": "⏱ সিদ্ধান্তের সময়",
+    "qs_answerPh": "তোমার উত্তর",
+    "news_season": "🏁 শেষ হওয়াগুলো — মাসের ১ তারিখ থেকে: প্রতি মাসে নতুন সিজন, সবার সুযোগ আবার সমান।",
+    "qs_fxOff": "ইফেক্ট বন্ধ করো:",
+    "qs_fxOn": "ইফেক্ট চালু করো:",
+    "tab_guide": "🧭 কীভাবে খেলবে",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 কীভাবে খেলবে?",
     "md_hint": "ROFL HUB অনেক বড়। কোথা থেকে শুরু করবে বেছে নাও — মোড যেকোনো সময় পাসপোর্টে বদলানো যায়।",
     "md_full": "🌐 পুরো ইকোসিস্টেম",
-    "md_fullText": "রোবট ফার্ম, গুদাম, ওয়ার্কশপ, বাজার, টিম, রেইড, খনি আর বিশ্বের মানচিত্র — সঙ্গে সব গেম আর গল্প। সেকশনগুলো ৩ দিনে ধীরে ধীরে খোলে, যাতে বোতামের ভিড়ে হারিয়ে না যাও।",
+    "md_fullText": "রোবট ফার্ম, গুদাম, ওয়ার্কশপ, বাজার, টিম, রেইড, খনি আর বিশ্বের মানচিত্র — সঙ্গে সব গেম আর গল্প। সব সেকশন শুরু থেকেই খোলা।",
     "md_puzzle": "🧩 গেম আর গল্প",
     "md_puzzleText": "শুধু কুইজ, মিনি-গেম, কোয়েস্ট, দিনের কেস আর বন্ধুদের সঙ্গে ডুয়েল। কোনো অর্থনীতি নেই, বাড়তি ট্যাবও নেই।",
     "md_later": "যেকোনো মোডেই ফার্ম চলে — তুমি না দেখলেও মুদ্রা জমতে থাকে।",
@@ -1850,8 +1879,6 @@
     "md_toPuzzle": "শুধু গেম আর গল্প রাখবে? ফার্ম চলতে থাকবে, বাকি ট্যাব লুকিয়ে যাবে — এখান থেকেই আবার ফেরানো যাবে।",
     "md_now": "🧭 মোড: {m} · বদলাও",
     "lk_new": "🎉 নতুন সেকশন খুলেছে: <b>{t}</b>। ট্যাপ করে দেখে নাও!",
-    "lk_line": "🔒 {t} — {d} দিন পরে বা 🧠 লেভেল {l} থেকে",
-    "lk_title": "সেকশনগুলো ধীরে ধীরে খোলে, যাতে বুঝতে সহজ হয়:",
     "di_title": "⚔️ তোমাকে ডুয়েলে চ্যালেঞ্জ করা হয়েছে!",
     "di_text": "<b>{n}</b> তোমাকে পাথর-কাঁচি-কাগজ ডুয়েলে চ্যালেঞ্জ করছে।<br>বাজি {s} 🪙 · বিজয়ী পাবে {p} 🪙।",
     "di_accept": "⚔️ চ্যালেঞ্জ গ্রহণ করো",
@@ -1945,7 +1972,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -1957,7 +1984,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -1974,7 +2001,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -2322,12 +2349,12 @@
     "lab_max": "🏆 সর্বোচ্চ লেভেল",
     "lab_wait": "⏳ পরের লেভেল {t} পরে",
     "lab_up": "লেভেল {l} শেখো",
-    "res_stone_src": "ডুয়েল, খনি, সিন্দুক",
-    "res_wood_src": "কোয়েস্ট, খনি, সিন্দুক",
+    "res_stone_src": "কোয়েস্ট, খনি, সিন্দুক",
+    "res_wood_src": "খনি, সিন্দুক",
     "res_fire_src": "ওয়ার্কশপে আগুনের কুণ্ড",
     "res_energy_src": "প্রতি জয়ে সুযোগ, খনি, সিন্দুক",
     "res_battery_src": "ওয়ার্কশপ",
-    "res_cow_src": "কোয়েস্ট, ৭ম দিনের সিন্দুক, বাজার",
+    "res_cow_src": "৭ম দিনের সিন্দুক, বাজার",
     "res_core_src": "খনি আর আয়োজকের পুরস্কার",
     "sk_items": "🧪 গুদামে জিনিস: {n} / {m} (ধারণক্ষমতার 10%)",
     "sk_cutletsName": "সাইবার-কাটলেট",
@@ -2641,10 +2668,22 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "qs_check": "Prüfen",
+    "qs_tries": "Versuche: {n}",
+    "qs_wrong": "❌ Falsch. Verbleibende Versuche: {n}",
+    "qs_timeUp": "⏱ Die Zeit ist um!",
+    "qs_timer": "⏱ Zeit für die Entscheidung",
+    "qs_answerPh": "Deine Antwort",
+    "news_season": "🏁 Beendet seit dem 1.: Jeden Monat beginnt eine neue Saison, und alle haben wieder gleiche Chancen.",
+    "qs_fxOff": "Effekte aus:",
+    "qs_fxOn": "Effekte an:",
+    "tab_guide": "🧭 So wird gespielt",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 Wie willst du spielen?",
     "md_hint": "ROFL HUB ist groß. Wähle, womit du anfängst — den Modus kannst du jederzeit im Pass ändern.",
     "md_full": "🌐 Das ganze Ökosystem",
-    "md_fullText": "Roboterfarm, Lager, Werkstatt, Börse, Teams, Raids, Minen und die Weltkarte — plus alle Spiele und Geschichten. Die Bereiche öffnen sich nach und nach über 3 Tage, damit du nicht in Buttons versinkst.",
+    "md_fullText": "Roboterfarm, Lager, Werkstatt, Börse, Teams, Raids, Minen und die Weltkarte — plus alle Spiele und Geschichten. Alle Bereiche sind von Anfang an offen.",
     "md_puzzle": "🧩 Spiele und Geschichten",
     "md_puzzleText": "Nur Quiz, Minispiele, Quests, der Fall des Tages und Duelle mit Freunden. Ohne Wirtschaft und überflüssige Tabs.",
     "md_later": "Die Farm läuft in jedem Modus — die Münzen sammeln sich, auch wenn du nie reinschaust.",
@@ -2652,8 +2691,6 @@
     "md_toPuzzle": "Nur Spiele und Geschichten behalten? Die Farm läuft weiter, die anderen Tabs werden ausgeblendet — zurückholen kannst du sie genau hier.",
     "md_now": "🧭 Modus: {m} · ändern",
     "lk_new": "🎉 Neue Bereiche sind offen: <b>{t}</b>. Tippe, um reinzuschauen!",
-    "lk_line": "🔒 {t} — in {d} T. oder ab 🧠 Level {l}",
-    "lk_title": "Die Bereiche öffnen sich nach und nach, damit du dich leichter zurechtfindest:",
     "di_title": "⚔️ Du wirst zum Duell gefordert!",
     "di_text": "<b>{n}</b> fordert dich zum Duell „Schere, Stein, Papier“.<br>Einsatz {s} 🪙 · der Sieg bringt {p} 🪙.",
     "di_accept": "⚔️ Herausforderung annehmen",
@@ -2747,7 +2784,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -2759,7 +2796,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -2776,7 +2813,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -3123,12 +3160,12 @@
     "lab_max": "🏆 Höchste Stufe",
     "lab_wait": "⏳ Nächste Stufe in {t}",
     "lab_up": "Stufe {l} erforschen",
-    "res_stone_src": "Duelle, Minen, Truhe",
-    "res_wood_src": "Quests, Minen, Truhe",
+    "res_stone_src": "Quests, Minen, Truhe",
+    "res_wood_src": "Minen, Truhe",
     "res_fire_src": "Lagerfeuer in der Werkstatt",
     "res_energy_src": "Chance pro Sieg, Minen, Truhe",
     "res_battery_src": "Werkstatt",
-    "res_cow_src": "Quests, Truhe am 7. Tag, Börse",
+    "res_cow_src": "Truhe am 7. Tag, Börse",
     "res_core_src": "Minen und Preise des Veranstalters",
     "sk_items": "🧪 Gegenstände im Lager: {n} / {m} (10 % der Kapazität)",
     "sk_cutletsName": "Cyber-Koteletts",
@@ -3443,10 +3480,22 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "qs_check": "Comprobar",
+    "qs_tries": "Intentos: {n}",
+    "qs_wrong": "❌ Incorrecto. Intentos restantes: {n}",
+    "qs_timeUp": "⏱ ¡Se acabó el tiempo!",
+    "qs_timer": "⏱ Tiempo para decidir",
+    "qs_answerPh": "Tu respuesta",
+    "news_season": "🏁 Terminados desde el día 1: cada mes es una nueva temporada y todos vuelven a tener las mismas opciones.",
+    "qs_fxOff": "desactivar efectos:",
+    "qs_fxOn": "activar efectos:",
+    "tab_guide": "🧭 Cómo jugar",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 ¿Cómo quieres jugar?",
     "md_hint": "ROFL HUB es grande. Elige por dónde empezar: puedes cambiar de modo cuando quieras en el pasaporte.",
     "md_full": "🌐 Todo el ecosistema",
-    "md_fullText": "Granja de robots, inventario, taller, bolsa, equipos, asaltos, minas y el mapa del mundo, además de todos los juegos e historias. Las secciones se abren poco a poco, en 3 días, para que no te ahogues entre botones.",
+    "md_fullText": "Granja de robots, inventario, taller, bolsa, equipos, asaltos, minas y el mapa del mundo, además de todos los juegos e historias. Todas las secciones están abiertas desde el principio.",
     "md_puzzle": "🧩 Juegos e historias",
     "md_puzzleText": "Solo la trivia, los minijuegos, los quests, el Caso del día y los duelos con amigos. Sin economía ni pestañas de más.",
     "md_later": "La granja funciona en cualquier modo: las monedas se acumulan aunque nunca entres a mirarla.",
@@ -3454,8 +3503,6 @@
     "md_toPuzzle": "¿Dejar solo juegos e historias? La granja sigue funcionando y las demás pestañas se ocultan; puedes recuperarlas aquí mismo.",
     "md_now": "🧭 Modo: {m} · cambiar",
     "lk_new": "🎉 Se abrieron nuevas secciones: <b>{t}</b>. ¡Toca para echar un vistazo!",
-    "lk_line": "🔒 {t}: en {d} d o desde el nivel 🧠 {l}",
-    "lk_title": "Las secciones se abren poco a poco para que sea más fácil orientarse:",
     "di_title": "⚔️ ¡Te retan a un duelo!",
     "di_text": "<b>{n}</b> te reta a un duelo de piedra, papel o tijera.<br>Apuesta {s} 🪙 · quien gane se lleva {p} 🪙.",
     "di_accept": "⚔️ Aceptar el reto",
@@ -3549,7 +3596,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -3561,7 +3608,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -3578,7 +3625,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -3926,12 +3973,12 @@
     "lab_max": "🏆 Nivel máximo",
     "lab_wait": "⏳ Siguiente nivel en {t}",
     "lab_up": "Investigar nivel {l}",
-    "res_stone_src": "duelos, minas, cofre",
-    "res_wood_src": "misiones, minas, cofre",
+    "res_stone_src": "misiones, minas, cofre",
+    "res_wood_src": "minas, cofre",
     "res_fire_src": "Hoguera en el taller",
     "res_energy_src": "probabilidad por victoria, minas, cofre",
     "res_battery_src": "taller",
-    "res_cow_src": "misiones, cofre del 7.º día, bolsa",
+    "res_cow_src": "cofre del 7.º día, bolsa",
     "res_core_src": "minas y premios del organizador",
     "sk_items": "🧪 Objetos en el almacén: {n} / {m} (10% de la capacidad)",
     "sk_cutletsName": "Ciber-chuletas",
@@ -4245,10 +4292,22 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "qs_check": "Vérifier",
+    "qs_tries": "Essais : {n}",
+    "qs_wrong": "❌ Faux. Essais restants : {n}",
+    "qs_timeUp": "⏱ Temps écoulé !",
+    "qs_timer": "⏱ Temps pour décider",
+    "qs_answerPh": "Ta réponse",
+    "news_season": "🏁 Terminés depuis le 1er : chaque mois, une nouvelle saison, et tout le monde repart à égalité.",
+    "qs_fxOff": "désactiver les effets :",
+    "qs_fxOn": "activer les effets :",
+    "tab_guide": "🧭 Comment jouer",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 Comment veux-tu jouer ?",
     "md_hint": "ROFL HUB est vaste. Choisis par où commencer — tu peux changer de mode à tout moment dans le passeport.",
     "md_full": "🌐 Tout l'écosystème",
-    "md_fullText": "Une ferme de robots, le stock, l'atelier, la bourse, les équipes, les raids, les mines et la carte du monde — plus tous les jeux et histoires. Les sections s'ouvrent peu à peu, sur 3 jours, pour ne pas te noyer sous les boutons.",
+    "md_fullText": "Une ferme de robots, le stock, l'atelier, la bourse, les équipes, les raids, les mines et la carte du monde — plus tous les jeux et histoires. Toutes les sections sont ouvertes dès le départ.",
     "md_puzzle": "🧩 Jeux et histoires",
     "md_puzzleText": "Juste le quiz, les mini-jeux, les quêtes, l'Affaire du jour et les duels entre amis. Pas d'économie, pas d'onglets en trop.",
     "md_later": "La ferme tourne dans tous les modes — les pièces s'accumulent même si tu n'y jettes jamais un œil.",
@@ -4256,8 +4315,6 @@
     "md_toPuzzle": "Garder seulement les jeux et histoires ? La ferme continue de tourner, les autres onglets se cachent — tu peux les remettre ici même.",
     "md_now": "🧭 Mode : {m} · changer",
     "lk_new": "🎉 Nouvelles sections ouvertes : <b>{t}</b>. Touche pour y jeter un œil !",
-    "lk_line": "🔒 {t} — dans {d} j ou dès le niveau 🧠 {l}",
-    "lk_title": "Les sections s'ouvrent peu à peu, pour mieux t'y retrouver :",
     "di_title": "⚔️ On te défie en duel !",
     "di_text": "<b>{n}</b> te défie en duel de pierre-feuille-ciseaux.<br>Mise {s} 🪙 · le gagnant remporte {p} 🪙.",
     "di_accept": "⚔️ Relever le défi",
@@ -4351,7 +4408,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -4363,7 +4420,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -4380,7 +4437,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -4727,12 +4784,12 @@
     "lab_max": "🏆 Niveau maximal",
     "lab_wait": "⏳ Niveau suivant dans {t}",
     "lab_up": "Étudier le niveau {l}",
-    "res_stone_src": "duels, mines, coffre",
-    "res_wood_src": "quêtes, mines, coffre",
+    "res_stone_src": "quêtes, mines, coffre",
+    "res_wood_src": "mines, coffre",
     "res_fire_src": "Feu de camp à l'atelier",
     "res_energy_src": "chance à chaque victoire, mines, coffre",
     "res_battery_src": "atelier",
-    "res_cow_src": "quêtes, coffre du 7e jour, bourse",
+    "res_cow_src": "coffre du 7e jour, bourse",
     "res_core_src": "mines et récompenses de l'organisateur",
     "sk_items": "🧪 Objets en réserve : {n} / {m} (10 % de la capacité)",
     "sk_cutletsName": "Cyber-côtelettes",
@@ -5047,10 +5104,22 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "qs_check": "जाँचो",
+    "qs_tries": "कोशिशें: {n}",
+    "qs_wrong": "❌ गलत। बची कोशिशें: {n}",
+    "qs_timeUp": "⏱ समय खत्म!",
+    "qs_timer": "⏱ फ़ैसले का समय",
+    "qs_answerPh": "तुम्हारा जवाब",
+    "news_season": "🏁 पूरे हुए — महीने की 1 तारीख से: हर महीने नया सीज़न, और सबके मौके फिर बराबर।",
+    "qs_fxOff": "इफ़ेक्ट बंद करें:",
+    "qs_fxOn": "इफ़ेक्ट चालू करें:",
+    "tab_guide": "🧭 कैसे खेलें",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 कैसे खेलना चाहोगे?",
     "md_hint": "ROFL HUB बड़ा है। चुनो कहाँ से शुरू करना है — मोड पासपोर्ट में कभी भी बदल सकते हो।",
     "md_full": "🌐 पूरा इकोसिस्टम",
-    "md_fullText": "रोबोट फ़ार्म, भंडार, वर्कशॉप, बाज़ार, टीमें, छापे, खदानें और दुनिया का नक्शा — साथ में सारे गेम और कहानियाँ। सेक्शन 3 दिनों में धीरे-धीरे खुलते हैं, ताकि बटनों में उलझो नहीं।",
+    "md_fullText": "रोबोट फ़ार्म, भंडार, वर्कशॉप, बाज़ार, टीमें, छापे, खदानें और दुनिया का नक्शा — साथ में सारे गेम और कहानियाँ। सारे सेक्शन शुरू से ही खुले हैं।",
     "md_puzzle": "🧩 गेम और कहानियाँ",
     "md_puzzleText": "सिर्फ़ क्विज़, मिनी-गेम, क्वेस्ट, आज का केस और दोस्तों से डुएल। न इकॉनमी, न फ़ालतू टैब।",
     "md_later": "फ़ार्म हर मोड में चलता है — तुम झाँको या नहीं, सिक्के जमा होते रहते हैं।",
@@ -5058,8 +5127,6 @@
     "md_toPuzzle": "सिर्फ़ गेम और कहानियाँ रखें? फ़ार्म चलता रहेगा, बाक़ी टैब छिप जाएँगे — उन्हें यहीं से वापस ला सकते हो।",
     "md_now": "🧭 मोड: {m} · बदलो",
     "lk_new": "🎉 नए सेक्शन खुल गए: <b>{t}</b>। टैप करके देखो!",
-    "lk_line": "🔒 {t} — {d} दिन में या 🧠 लेवल {l} से",
-    "lk_title": "सेक्शन धीरे-धीरे खुलते हैं, ताकि समझना आसान रहे:",
     "di_title": "⚔️ तुम्हें डुएल की चुनौती मिली है!",
     "di_text": "<b>{n}</b> की ओर से पत्थर-कैंची-काग़ज़ डुएल की चुनौती।<br>दांव {s} 🪙 · विजेता को {p} 🪙।",
     "di_accept": "⚔️ चुनौती स्वीकार करें",
@@ -5153,7 +5220,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -5165,7 +5232,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -5182,7 +5249,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -5529,12 +5596,12 @@
     "lab_max": "🏆 सबसे ऊँचा लेवल",
     "lab_wait": "⏳ अगला लेवल {t} में",
     "lab_up": "लेवल {l} सीखो",
-    "res_stone_src": "द्वंद्व, खदानें, संदूक",
-    "res_wood_src": "क्वेस्ट, खदानें, संदूक",
+    "res_stone_src": "क्वेस्ट, खदानें, संदूक",
+    "res_wood_src": "खदानें, संदूक",
     "res_fire_src": "वर्कशॉप में अलाव",
     "res_energy_src": "हर जीत पर मौका, खदानें, संदूक",
     "res_battery_src": "वर्कशॉप",
-    "res_cow_src": "क्वेस्ट, 7वें दिन का संदूक, बाज़ार",
+    "res_cow_src": "7वें दिन का संदूक, बाज़ार",
     "res_core_src": "खदानें और आयोजक के इनाम",
     "sk_items": "🧪 गोदाम में चीज़ें: {n} / {m} (क्षमता का 10%)",
     "sk_cutletsName": "साइबर-कटलेट",
@@ -5849,10 +5916,22 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "qs_check": "Periksa",
+    "qs_tries": "Percobaan: {n}",
+    "qs_wrong": "❌ Salah. Sisa percobaan: {n}",
+    "qs_timeUp": "⏱ Waktu habis!",
+    "qs_timer": "⏱ Waktu untuk memutuskan",
+    "qs_answerPh": "Jawabanmu",
+    "news_season": "🏁 Yang selesai sejak tanggal 1: tiap bulan musim baru, dan peluang semua pemain kembali setara.",
+    "qs_fxOff": "matikan efek:",
+    "qs_fxOn": "nyalakan efek:",
+    "tab_guide": "🧭 Cara bermain",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 Mau main dengan cara apa?",
     "md_hint": "ROFL HUB itu luas. Pilih mau mulai dari mana — mode bisa diganti kapan saja di paspor.",
     "md_full": "🌐 Seluruh ekosistem",
-    "md_fullText": "Ladang robot, gudang, bengkel, bursa, tim, serbuan, tambang, dan peta dunia — plus semua game dan cerita. Bagian-bagian terbuka bertahap selama 3 hari, biar kamu nggak tenggelam di tombol.",
+    "md_fullText": "Ladang robot, gudang, bengkel, bursa, tim, serbuan, tambang, dan peta dunia — plus semua game dan cerita. Semua bagian terbuka sejak awal.",
     "md_puzzle": "🧩 Game dan cerita",
     "md_puzzleText": "Hanya kuis, mini-game, misi, Kasus harian, dan duel dengan teman. Tanpa ekonomi dan tab tambahan.",
     "md_later": "Ladang bekerja di mode apa pun — koin terus terkumpul, meski kamu tidak pernah melihatnya.",
@@ -5860,8 +5939,6 @@
     "md_toPuzzle": "Hanya game dan cerita? Ladang tetap bekerja, tab lain disembunyikan — bisa dikembalikan di sini juga.",
     "md_now": "🧭 Mode: {m} · ganti",
     "lk_new": "🎉 Bagian baru terbuka: <b>{t}</b>. Ketuk untuk melihat!",
-    "lk_line": "🔒 {t} — dalam {d} hari atau dari 🧠 level {l}",
-    "lk_title": "Bagian-bagian terbuka bertahap, biar lebih mudah dipahami:",
     "di_title": "⚔️ Kamu ditantang duel!",
     "di_text": "<b>{n}</b> menantangmu duel batu-gunting-kertas.<br>Taruhan {s} 🪙 · pemenang dapat {p} 🪙.",
     "di_accept": "⚔️ Terima tantangan",
@@ -5955,7 +6032,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -5967,7 +6044,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -5984,7 +6061,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -6331,12 +6408,12 @@
     "lab_max": "🏆 Level maksimum",
     "lab_wait": "⏳ Level berikutnya dalam {t}",
     "lab_up": "Pelajari level {l}",
-    "res_stone_src": "duel, tambang, peti",
-    "res_wood_src": "misi, tambang, peti",
+    "res_stone_src": "misi, tambang, peti",
+    "res_wood_src": "tambang, peti",
     "res_fire_src": "Api unggun di bengkel",
     "res_energy_src": "peluang tiap menang, tambang, peti",
     "res_battery_src": "bengkel",
-    "res_cow_src": "misi, peti hari ke-7, bursa",
+    "res_cow_src": "peti hari ke-7, bursa",
     "res_core_src": "tambang dan hadiah penyelenggara",
     "sk_items": "🧪 Barang di gudang: {n} / {m} (10% kapasitas)",
     "sk_cutletsName": "Siber-kotlet",
@@ -6651,10 +6728,22 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "qs_check": "Verifica",
+    "qs_tries": "Tentativi: {n}",
+    "qs_wrong": "❌ Sbagliato. Tentativi rimasti: {n}",
+    "qs_timeUp": "⏱ Tempo scaduto!",
+    "qs_timer": "⏱ Tempo per decidere",
+    "qs_answerPh": "La tua risposta",
+    "news_season": "🏁 Conclusi dal giorno 1: ogni mese è una nuova stagione e le possibilità di tutti tornano pari.",
+    "qs_fxOff": "disattiva effetti:",
+    "qs_fxOn": "attiva effetti:",
+    "tab_guide": "🧭 Come si gioca",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 Come vuoi giocare?",
     "md_hint": "ROFL HUB è grande. Scegli da dove iniziare: puoi cambiare modalità in qualsiasi momento nel passaporto.",
     "md_full": "🌐 Tutto l'ecosistema",
-    "md_fullText": "Fattoria di robot, deposito, officina, borsa, squadre, incursioni, miniere e la mappa del mondo — più tutti i giochi e le storie. Le sezioni si aprono a poco a poco in 3 giorni, così non affoghi tra i pulsanti.",
+    "md_fullText": "Fattoria di robot, deposito, officina, borsa, squadre, incursioni, miniere e la mappa del mondo — più tutti i giochi e le storie. Tutte le sezioni sono aperte fin da subito.",
     "md_puzzle": "🧩 Giochi e storie",
     "md_puzzleText": "Solo quiz, minigiochi, missioni, il Caso del giorno e duelli con gli amici. Niente economia, niente schede in più.",
     "md_later": "La fattoria funziona in ogni modalità: le monete si accumulano anche se non ci dai mai un'occhiata.",
@@ -6662,8 +6751,6 @@
     "md_toPuzzle": "Tenere solo giochi e storie? La fattoria continua a lavorare, le altre schede si nascondono: puoi riattivarle proprio qui.",
     "md_now": "🧭 Modalità: {m} · cambia",
     "lk_new": "🎉 Nuove sezioni aperte: <b>{t}</b>. Tocca per dare un'occhiata!",
-    "lk_line": "🔒 {t} — tra {d} g o dal livello 🧠 {l}",
-    "lk_title": "Le sezioni si aprono a poco a poco, così è più facile orientarsi:",
     "di_title": "⚔️ Ti sfidano a duello!",
     "di_text": "<b>{n}</b> ti sfida a un duello di carta-forbice-sasso.<br>Puntata {s} 🪙 · a chi vince {p} 🪙.",
     "di_accept": "⚔️ Accetta la sfida",
@@ -6757,7 +6844,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -6769,7 +6856,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -6786,7 +6873,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -7133,12 +7220,12 @@
     "lab_max": "🏆 Livello massimo",
     "lab_wait": "⏳ Livello successivo tra {t}",
     "lab_up": "Studia il livello {l}",
-    "res_stone_src": "duelli, miniere, forziere",
-    "res_wood_src": "missioni, miniere, forziere",
+    "res_stone_src": "missioni, miniere, forziere",
+    "res_wood_src": "miniere, forziere",
     "res_fire_src": "Falò in officina",
     "res_energy_src": "possibilità a ogni vittoria, miniere, forziere",
     "res_battery_src": "officina",
-    "res_cow_src": "missioni, forziere del 7° giorno, borsa",
+    "res_cow_src": "forziere del 7° giorno, borsa",
     "res_core_src": "miniere e premi dell'organizzatore",
     "sk_items": "🧪 Oggetti in magazzino: {n} / {m} (10% della capienza)",
     "sk_cutletsName": "Cyber-cotolette",
@@ -7453,10 +7540,22 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "qs_check": "Sprawdź",
+    "qs_tries": "Próby: {n}",
+    "qs_wrong": "❌ Źle. Pozostało prób: {n}",
+    "qs_timeUp": "⏱ Czas minął!",
+    "qs_timer": "⏱ Czas na decyzję",
+    "qs_answerPh": "Twoja odpowiedź",
+    "news_season": "🏁 Zakończone od 1. dnia miesiąca: co miesiąc nowy sezon i wszyscy znów mają równe szanse.",
+    "qs_fxOff": "wyłącz efekty:",
+    "qs_fxOn": "włącz efekty:",
+    "tab_guide": "🧭 Jak grać",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 Jak chcesz grać?",
     "md_hint": "ROFL HUB jest duży. Wybierz, od czego zacząć — tryb zmienisz w każdej chwili w paszporcie.",
     "md_full": "🌐 Cały ekosystem",
-    "md_fullText": "Farma robotów, magazyn, warsztat, giełda, drużyny, najazdy, kopalnie i mapa świata — plus wszystkie gry i historie. Sekcje otwierają się stopniowo przez 3 dni, żeby nie utonąć w przyciskach.",
+    "md_fullText": "Farma robotów, magazyn, warsztat, giełda, drużyny, najazdy, kopalnie i mapa świata — plus wszystkie gry i historie. Wszystkie sekcje są otwarte od początku.",
     "md_puzzle": "🧩 Gry i historie",
     "md_puzzleText": "Tylko quiz, minigry, questy, Sprawa dnia i pojedynki ze znajomymi. Bez ekonomii i zbędnych zakładek.",
     "md_later": "Farma działa w każdym trybie — monety się zbierają, nawet jeśli do niej nie zaglądasz.",
@@ -7464,8 +7563,6 @@
     "md_toPuzzle": "Zostawić tylko gry i historie? Farma dalej pracuje, pozostałe zakładki się schowają — przywrócisz je właśnie tutaj.",
     "md_now": "🧭 Tryb: {m} · zmień",
     "lk_new": "🎉 Otwarto nowe sekcje: <b>{t}</b>. Kliknij, żeby zajrzeć!",
-    "lk_line": "🔒 {t} — za {d} dni lub od 🧠 poziomu {l}",
-    "lk_title": "Sekcje otwierają się stopniowo, żeby łatwiej było się połapać:",
     "di_title": "⚔️ Ktoś wyzywa cię na pojedynek!",
     "di_text": "<b>{n}</b> wyzywa cię na pojedynek w papier-kamień-nożyce.<br>Stawka {s} 🪙 · zwycięzca dostaje {p} 🪙.",
     "di_accept": "⚔️ Przyjmij wyzwanie",
@@ -7559,7 +7656,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -7571,7 +7668,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -7588,7 +7685,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -7952,12 +8049,12 @@
     "lab_max": "🏆 Maksymalny poziom",
     "lab_wait": "⏳ Następny poziom za {t}",
     "lab_up": "Zbadaj poziom {l}",
-    "res_stone_src": "pojedynki, kopalnie, skrzynia",
-    "res_wood_src": "zadania, kopalnie, skrzynia",
+    "res_stone_src": "zadania, kopalnie, skrzynia",
+    "res_wood_src": "kopalnie, skrzynia",
     "res_fire_src": "Ognisko w warsztacie",
     "res_energy_src": "szansa za zwycięstwo, kopalnie, skrzynia",
     "res_battery_src": "warsztat",
-    "res_cow_src": "zadania, skrzynia 7. dnia, giełda",
+    "res_cow_src": "skrzynia 7. dnia, giełda",
     "res_core_src": "kopalnie i nagrody organizatora",
     "sk_items": "🧪 Przedmioty w magazynie: {n} / {m} (10% pojemności)",
     "sk_cutletsName": "Cyber-kotlety",
@@ -8255,10 +8352,22 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "qs_check": "Verificar",
+    "qs_tries": "Tentativas: {n}",
+    "qs_wrong": "❌ Errado. Tentativas restantes: {n}",
+    "qs_timeUp": "⏱ O tempo acabou!",
+    "qs_timer": "⏱ Tempo para decidir",
+    "qs_answerPh": "Sua resposta",
+    "news_season": "🏁 Encerrados desde o dia 1: todo mês é uma nova temporada e as chances de todos voltam a ser iguais.",
+    "qs_fxOff": "desligar efeitos:",
+    "qs_fxOn": "ligar efeitos:",
+    "tab_guide": "🧭 Como jogar",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 Como você quer jogar?",
     "md_hint": "O ROFL HUB é grande. Escolha por onde começar — dá para trocar de modo quando quiser no passaporte.",
     "md_full": "🌐 Todo o ecossistema",
-    "md_fullText": "Fazenda de robôs, estoque, oficina, bolsa, equipes, saques, minas e o mapa do mundo — além de todos os jogos e histórias. As seções abrem aos poucos, em 3 dias, para você não se afogar em botões.",
+    "md_fullText": "Fazenda de robôs, estoque, oficina, bolsa, equipes, saques, minas e o mapa do mundo — além de todos os jogos e histórias. Todas as seções ficam abertas desde o início.",
     "md_puzzle": "🧩 Jogos e histórias",
     "md_puzzleText": "Só o quiz, os minijogos, os quests, o Caso do dia e os duelos com amigos. Sem economia, sem abas extras.",
     "md_later": "A fazenda funciona em qualquer modo — as moedas se acumulam mesmo que você nunca dê uma olhada.",
@@ -8266,8 +8375,6 @@
     "md_toPuzzle": "Ficar só com jogos e histórias? A fazenda continua funcionando e as outras abas somem — dá para trazê-las de volta aqui mesmo.",
     "md_now": "🧭 Modo: {m} · trocar",
     "lk_new": "🎉 Novas seções abertas: <b>{t}</b>. Toque para dar uma olhada!",
-    "lk_line": "🔒 {t} — em {d} d ou a partir do nível 🧠 {l}",
-    "lk_title": "As seções abrem aos poucos, para ficar mais fácil se orientar:",
     "di_title": "⚔️ Desafiaram você para um duelo!",
     "di_text": "<b>{n}</b> desafia você para um duelo de pedra, papel e tesoura.<br>Aposta {s} 🪙 · quem vencer leva {p} 🪙.",
     "di_accept": "⚔️ Aceitar o desafio",
@@ -8361,7 +8468,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -8373,7 +8480,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -8390,7 +8497,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -8737,12 +8844,12 @@
     "lab_max": "🏆 Nível máximo",
     "lab_wait": "⏳ Próximo nível em {t}",
     "lab_up": "Estudar nível {l}",
-    "res_stone_src": "duelos, minas, baú",
-    "res_wood_src": "missões, minas, baú",
+    "res_stone_src": "missões, minas, baú",
+    "res_wood_src": "minas, baú",
     "res_fire_src": "Fogueira na oficina",
     "res_energy_src": "chance por vitória, minas, baú",
     "res_battery_src": "oficina",
-    "res_cow_src": "missões, baú do 7º dia, bolsa",
+    "res_cow_src": "baú do 7º dia, bolsa",
     "res_core_src": "minas e prêmios do organizador",
     "sk_items": "🧪 Itens no armazém: {n} / {m} (10% da capacidade)",
     "sk_cutletsName": "Ciber-costeletas",
@@ -9057,10 +9164,22 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "qs_check": "Tekshirish",
+    "qs_tries": "Urinishlar: {n}",
+    "qs_wrong": "❌ Noto'g'ri. Qolgan urinishlar: {n}",
+    "qs_timeUp": "⏱ Vaqt tugadi!",
+    "qs_timer": "⏱ Qaror uchun vaqt",
+    "qs_answerPh": "Javobing",
+    "news_season": "🏁 Tugaganlar — oyning 1-sanasidan: har oy yangi mavsum, hammaning imkoniyati yana teng.",
+    "qs_fxOff": "effektlarni o'chirish:",
+    "qs_fxOn": "effektlarni yoqish:",
+    "tab_guide": "🧭 Qanday o'ynash",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 Qanday o'ynaysan?",
     "md_hint": "ROFL HUB katta. Nimadan boshlashni tanla — rejimni istalgan payt pasportda almashtirish mumkin.",
     "md_full": "🌐 Butun ekotizim",
-    "md_fullText": "Robotlar fermasi, ombor, ustaxona, birja, jamoalar, bosqinlar, konlar va dunyo xaritasi — ustiga barcha o'yinlar va hikoyalar. Bo'limlar tugmalarga g'arq bo'lmasliging uchun 3 kun ichida asta-sekin ochiladi.",
+    "md_fullText": "Robotlar fermasi, ombor, ustaxona, birja, jamoalar, bosqinlar, konlar va dunyo xaritasi — ustiga barcha o'yinlar va hikoyalar. Barcha bo'limlar boshidan ochiq.",
     "md_puzzle": "🧩 O'yinlar va hikoyalar",
     "md_puzzleText": "Faqat viktorina, mini-o'yinlar, kvestlar, Kun ishi va do'stlar bilan duellar. Iqtisodsiz va ortiqcha bo'limlarsiz.",
     "md_later": "Ferma har qanday rejimda ishlaydi — unga qaramasang ham tangalar yig'ilaveradi.",
@@ -9068,8 +9187,6 @@
     "md_toPuzzle": "Faqat o'yinlar va hikoyalar qolsinmi? Ferma ishlashda davom etadi, boshqa bo'limlar yashirinadi — ularni shu yerda qaytarish mumkin.",
     "md_now": "🧭 Rejim: {m} · almashtirish",
     "lk_new": "🎉 Yangi bo'limlar ochildi: <b>{t}</b>. Ko'rish uchun bos!",
-    "lk_line": "🔒 {t} — {d} kundan keyin yoki 🧠 {l}-darajadan",
-    "lk_title": "Bo'limlar oson tushunib olishing uchun asta-sekin ochiladi:",
     "di_title": "⚔️ Seni duelga chaqirishyapti!",
     "di_text": "<b>{n}</b> seni «tosh-qaychi-qog'oz» dueliga chaqiryapti.<br>Garov {s} 🪙 · g'olibga {p} 🪙.",
     "di_accept": "⚔️ Chaqiruvni qabul qilish",
@@ -9163,7 +9280,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -9175,7 +9292,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -9192,7 +9309,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -9539,12 +9656,12 @@
     "lab_max": "🏆 Eng yuqori daraja",
     "lab_wait": "⏳ Keyingi daraja {t} dan keyin",
     "lab_up": "{l}-darajani o'rganish",
-    "res_stone_src": "duellar, konlar, sandiq",
-    "res_wood_src": "kvestlar, konlar, sandiq",
+    "res_stone_src": "kvestlar, konlar, sandiq",
+    "res_wood_src": "konlar, sandiq",
     "res_fire_src": "Ustaxonadagi gulxan",
     "res_energy_src": "g'alaba uchun imkoniyat, konlar, sandiq",
     "res_battery_src": "ustaxona",
-    "res_cow_src": "kvestlar, 7-kun sandig'i, birja",
+    "res_cow_src": "7-kun sandig'i, birja",
     "res_core_src": "konlar va tashkilotchi sovrinlari",
     "sk_items": "🧪 Ombordagi buyumlar: {n} / {m} (sig'imning 10%)",
     "sk_cutletsName": "Kiber-kotletlar",
@@ -9859,10 +9976,22 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "qs_check": "检查",
+    "qs_tries": "剩余次数：{n}",
+    "qs_wrong": "❌ 不对。剩余次数：{n}",
+    "qs_timeUp": "⏱ 时间到！",
+    "qs_timer": "⏱ 决定时间",
+    "qs_answerPh": "你的答案",
+    "news_season": "🏁 已结束：从本月 1 日起。每个月都是新赛季，所有人的机会重新平等。",
+    "qs_fxOff": "关闭特效：",
+    "qs_fxOn": "开启特效：",
+    "tab_guide": "🧭 玩法说明",
+    "dl_premOn": "⚡ You have Unlimited — the winnings fee is {b}% instead of {a}%.",
+    "dl_premOff": "⚡ With Unlimited the winnings fee is {b}% instead of {a}%.",
     "md_title": "🧭 你想怎么玩？",
     "md_hint": "ROFL HUB 内容很多。选一个起点吧——随时可以在护照里切换模式。",
     "md_full": "🌐 完整生态",
-    "md_fullText": "机器人农场、仓库、工坊、交易所、战队、突袭、矿区和世界地图——外加全部游戏和故事。各版块会在 3 天内逐步开放，不会被一堆按钮淹没。",
+    "md_fullText": "机器人农场、仓库、工坊、交易所、战队、突袭、矿区和世界地图——外加全部游戏和故事。所有版块从一开始就全部开放。",
     "md_puzzle": "🧩 游戏与故事",
     "md_puzzleText": "只有竞答、小游戏、任务、每日案件和好友对决。没有经济系统，没有多余的标签页。",
     "md_later": "农场在任何模式下都会运转——就算你不去看，金币也在不断累积。",
@@ -9870,8 +9999,6 @@
     "md_toPuzzle": "只保留游戏与故事？农场继续运转，其他标签页会隐藏——随时可以在这里恢复。",
     "md_now": "🧭 模式：{m} · 切换",
     "lk_new": "🎉 新版块已开放：<b>{t}</b>。点一下去看看！",
-    "lk_line": "🔒 {t} —— {d} 天后或 🧠 {l} 级开放",
-    "lk_title": "各版块逐步开放，上手更轻松：",
     "di_title": "⚔️ 有人向你发起对决！",
     "di_text": "<b>{n}</b> 向你发起石头剪刀布对决。<br>押注 {s} 🪙 · 胜者得 {p} 🪙。",
     "di_accept": "⚔️ 接受挑战",
@@ -9965,7 +10092,7 @@
     "dl_title": "⚔️ Duels",
     "dl_tile": "A live opponent · tables 10 / 100 / 1000 🪙",
     "dl_intro": "Rock-paper-scissors against a live player. The stake is taken right away; the winner gets {p}% of the bank, {b}% burns. {t} s per gesture, a draw is replayed.",
-    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙 and 🪨{r}",
+    "dl_table": "⚔️ Table {s} 🪙 · win +{p} 🪙",
     "dl_short": "You need {s} 🪙 on your balance for this table",
     "dl_waiting": "Looking for an opponent at the {s} 🪙 table…",
     "dl_waitLeft": "The queue cancels in {m} min — your stake comes back",
@@ -9977,7 +10104,7 @@
     "dl_wait": "Gesture locked in — waiting for your opponent…",
     "dl_oppMoved": "⚡ Your opponent has already moved!",
     "dl_timeoutNote": "Run out of time and chance picks your gesture.",
-    "dl_win": "🎉 Duel won! +{p} 🪙 and 🪨{r}",
+    "dl_win": "🎉 Duel won! +{p} 🪙",
     "dl_lose": "Defeat. Your {s} 🪙 stake went to your opponent's bank.",
     "dl_vs": "You: {a} · Opponent: {b}",
     "dl_cancelled": "You left the table — your {s} 🪙 stake is back on your balance.",
@@ -9994,7 +10121,7 @@
     "qs_restart": "🔄 Start over",
     "qs_list": "‹ All quests",
     "qs_again": "🔄 Play again",
-    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and {q} of each resource, 🪵 and 🐄",
+    "qs_winFirst": "🏆 Quest completed! +{c} 🪙 and 🪨 {q}",
     "qs_winRepeat": "✅ Completed again! The reward for this quest was already claimed.",
     "qs_fail": "💀 Not the best ending… You can always replay the story!",
     "qs_stale": "That scene is behind you — continuing from where you are",
@@ -10342,12 +10469,12 @@
     "lab_max": "🏆 最高等级",
     "lab_wait": "⏳ {t}后可升下一级",
     "lab_up": "研究 {l} 级",
-    "res_stone_src": "决斗、矿场、宝箱",
-    "res_wood_src": "任务、矿场、宝箱",
+    "res_stone_src": "任务、矿场、宝箱",
+    "res_wood_src": "矿场、宝箱",
     "res_fire_src": "工坊里的篝火",
     "res_energy_src": "每次获胜有几率、矿场、宝箱",
     "res_battery_src": "工坊",
-    "res_cow_src": "任务、第 7 天宝箱、交易所",
+    "res_cow_src": "第 7 天宝箱、交易所",
     "res_core_src": "矿场和主办方奖励",
     "sk_items": "🧪 仓库中的物品：{n} / {m}（容量的 10%）",
     "sk_cutletsName": "赛博肉排",
@@ -10760,7 +10887,7 @@
   const bindPagers = root => (root || document).querySelectorAll(".pager").forEach(bindPager);
   // Сколько колонок плашек у вкладки на широком экране (см. CSS #app[data-cols])
   const VIEW_COLS = { games: 1, lab: 3, mines: 2, map: 2, auctions: 2, history: 1, info: 1, passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
-                      team: 3, friends: 3, shop: 3, top: 1, faq: 1, rules: 1 };
+                      team: 3, friends: 3, shop: 1, top: 1, faq: 1, rules: 1 };
   const resLine = stock => RES.map(k => '<span class="chip">' + RES_ICON[k] + ' ' + num(stock[k]) + '</span>').join("");
   const bundle = b => RES_ALL.filter(k => b && b[k]).map(k => RES_ICON[k] + ' ' + b[k]).join(" · ") || "—";
   const costChips = (cost, stock) => RES_ALL.filter(k => cost[k]).map(k =>
@@ -10773,16 +10900,10 @@
     const f = (me && me.features) || {};
     return TABS.filter(t => !TAB_FLAG[t] || f[TAB_FLAG[t]] !== false);
   }
-  // 🧭 Разделы открываются постепенно (решение владельца 27.10): новичок видит 7 вкладок, остальные — на N-й день
-  // игры или раньше, с 🧠 уровня N+1; через me.unlock_all_days дней открыто всё. Режим «🧩 Игры и истории» — без экономики.
-  const TAB_DAY = { storage: 1, workshop: 1, team: 1, market: 2, raids: 2, history: 2, lab: 3, map: 3, mines: 3, auctions: 3 };
+  // 🧭 Режим «🧩 Игры и истории» прячет экономику; во «🌐 Всей экосистеме» все вкладки открыты сразу (владелец 27.10,
+  // вечер: «пусть сразу бегут торговать» — поэтапно открываются только рецепты и технологии)
   const PUZZLE_TABS = ["passport", "games", "friends", "top", "shop", "history", "info"];
-  function tabLocked(t) {
-    if (!me) return false;
-    if (me.app_mode === "puzzle") return !PUZZLE_TABS.includes(t);
-    const need = TAB_DAY[t] || 0, days = me.days_in_game || 0, lvl = (me.quiz && me.quiz.level) || 0;
-    return need > 0 && days < Math.min(need, me.unlock_all_days || 3) && lvl < need + 1;
-  }
+  const tabLocked = t => !!me && me.app_mode === "puzzle" && !PUZZLE_TABS.includes(t);
   const visibleTabs = () => featureTabs().filter(t => !tabLocked(t));
   const lockedTabs = () => featureTabs().filter(tabLocked);
   function startTab() {
@@ -10817,15 +10938,7 @@
     const fresh = vis.filter(t => !seen.includes(t));
     if (fresh.length) toast(fmt(L.lk_new, { t: fresh.map(t => L["tab_" + t]).join(", ") }), () => go(fresh[0]));
   }
-  function lockInfo() {
-    if (me.app_mode === "puzzle") return askConfirm(L.md_toFull, () => setMode("full"));
-    const days = me.days_in_game || 0, lines = [];
-    [1, 2, 3].forEach(n => {
-      const ts = lockedTabs().filter(t => TAB_DAY[t] === n);
-      if (ts.length) lines.push(fmt(L.lk_line, { t: ts.map(t => L["tab_" + t]).join(", "), d: Math.max(1, n - days), l: n + 1 }));
-    });
-    notify(L.lk_title + "\n\n" + lines.join("\n"));
-  }
+  const lockInfo = () => askConfirm(L.md_toFull, () => setMode("full"));
   async function setMode(mode) {
     try { await post("/api/mode", { mode: mode }); } catch (e) { return apiError(e); }
     me.app_mode = mode;
@@ -10838,7 +10951,7 @@
     const locked = lockedTabs().filter(t => t !== current).length;
     document.getElementById("tabs").innerHTML = list.map(t =>
       '<button class="tab' + (t === current ? ' on' : '') + '" data-tab="' + t + '">' + L["tab_" + t] + '</button>').join("") +
-      (locked ? '<button class="tab lock" id="tabLock">' + (me.app_mode === "puzzle" ? '🌐 +' : '🔒 +') + locked + '</button>' : '');
+      (locked ? '<button class="tab lock" id="tabLock">' + '🌐 +' + locked + '</button>' : '');
     document.querySelectorAll(".tab[data-tab]").forEach(b => { b.onclick = () => go(b.dataset.tab); });
     const lk = document.getElementById("tabLock");
     if (lk) lk.onclick = lockInfo;
@@ -11056,7 +11169,8 @@
         (x.prize ? (x.sub ? ' · ' : '') + '<span>' + (x.kind === "auction" ? '💰 ' : '🎁 ') + esc(x.prize) + '</span>' : '') +
         '</span></span><span class="ni-rt">' + right + '</span></button>';
     }).join("");
-    return card(L.news_title, (items || '<div class="hint">' + L.news_empty + '</div>') + (items ? '<div class="hint">' + L.news_hint + '</div>' : ''));
+    return card(L.news_title, (items || '<div class="hint">' + L.news_empty + '</div>') + (items ? '<div class="hint">' + L.news_hint + '</div>' : '') +
+      '<div class="hint">' + L.news_season + '</div>');
   }
   function bindNews(root) {
     root.querySelectorAll("[data-news]").forEach(b => {
@@ -11155,7 +11269,7 @@
     bindShopLinks();
   }
   function bindShopLinks() {
-    document.querySelectorAll(".goShop").forEach(b => { b.onclick = () => go("shop"); });
+    document.querySelectorAll(".goShop").forEach(b => { b.onclick = () => { shopCat = "farm"; go("shop"); }; });
   }
   // CTA-триггеры: покупка предлагается в момент «боли»
   function buildCta(f) {
@@ -11949,16 +12063,21 @@
   // ================= 🏪 Магазин =================
   // Компьютер: «Для фермы» | «Игровые» | «Что даёт каждый товар» в три колонки;
   // планшет: две колонки товаров, описание — под ними во всю ширину; телефон — одной лентой.
+  // 🏪 Магазин как «Инфо» (владелец 27.10): переключатель «Игровые | Для фермы» сверху, под товарами — что даёт
+  // каждый товар ЭТОЙ категории. Игровые первыми: Безлимит в приложении востребован больше всего.
+  let shopCat = "games";
   async function viewShop(box) {
     const shop = await api("/api/shop");
     const btn = item => '<button class="shop-item" data-sku="' + esc(item.sku) + '">' + esc(item.label) + '</button>';
-    const info = (shop.info || []).map(i => '<div class="info-item"><b>' + esc(i.title) + '</b><span>' + esc(i.text) + '</span></div>');
-    box.innerHTML =
-      card(L.shopFarm, '<div class="hint">' + L.shopHint + '</div>' + shop.farm.map(btn).join("")) +
-      card(L.shopGames, '<div class="hint">' + L.shopHint + '</div>' + shop.games.map(btn).join("")) +
-      '<div class="card span-tablet"><h2>' + L.shop_info + '</h2>' + pager("shopinfo", info, 4, "") +
-      '<button class="btn ghost" id="shopInfo">FAQ ↗</button></div>';
-    document.querySelectorAll(".shop-item").forEach(b => { b.onclick = () => buy(b.dataset.sku, b); });
+    const info = (shop.info || []).filter(i => !i.cat || i.cat === shopCat)
+      .map(i => '<div class="info-item"><b>' + esc(i.title) + '</b><span>' + esc(i.text) + '</span></div>').join("");
+    box.innerHTML = '<div class="span-all"><div class="doc-switch">' +
+      [["games", L.shopGames], ["farm", L.shopFarm]].map(c => '<button class="idx' + (shopCat === c[0] ? ' on' : '') +
+        '" data-cat="' + c[0] + '">' + c[1] + '</button>').join("") + '</div>' +
+      card(shopCat === "farm" ? L.shopFarm : L.shopGames, '<div class="hint">' + L.shopHint + '</div>' + shop[shopCat].map(btn).join("")) +
+      card(L.shop_info, info + '<button class="btn ghost" id="shopInfo">FAQ ↗</button>') + '</div>';
+    box.querySelectorAll("[data-cat]").forEach(b => { b.onclick = () => { shopCat = b.dataset.cat; go("shop"); }; });
+    box.querySelectorAll(".shop-item").forEach(b => { b.onclick = () => buy(b.dataset.sku, b); });
     document.getElementById("shopInfo").onclick = () => { docSection = "shop-items"; infoDoc = "faq"; go("info"); };
   }
   async function buy(sku, btn) {
@@ -12075,7 +12194,7 @@
   let infoDoc = "faq";
   function viewInfo(box) {
     box.innerHTML = '<div class="span-all"><div class="doc-switch">' +
-      ['faq', 'rules'].map(d => '<button class="idx' + (infoDoc === d ? ' on' : '') + '" data-doc="' + d + '">' + L["tab_" + d] + '</button>').join("") +
+      ['faq', 'rules', 'guide'].map(d => '<button class="idx' + (infoDoc === d ? ' on' : '') + '" data-doc="' + d + '">' + L["tab_" + d] + '</button>').join("") +
       '</div><div id="docBox"></div></div>';
     viewDoc("/" + infoDoc)(document.getElementById("docBox"));
     box.querySelectorAll("[data-doc]").forEach(b => { b.onclick = () => { infoDoc = b.dataset.doc; go("info"); }; });
@@ -12443,7 +12562,7 @@
     box.innerHTML = card(L.g_limit_title, gameHead() + '<div class="g-result" style="margin-top:10px"><b>' + L["g_name_" + id] +
       '</b><br>' + L.g_limit_text + '</div><button class="btn" id="gUnlim">' + L.g_limit_btn + '</button>');
     bindBack(box);
-    box.querySelector("#gUnlim").onclick = () => go("shop");
+    box.querySelector("#gUnlim").onclick = () => { shopCat = "games"; go("shop"); };
   }
 
   function gameRps(box, last, mark) {
@@ -12782,13 +12901,15 @@
       body = last.cancelled ? '<div class="g-result">' + fmt(L.dl_cancelled, { s: num(last.stake) }) + '</div>'
         : '<div class="dl-vs">' + fmt(L.dl_vs, { a: mv(last.my_move), b: mv(last.opp_move) }) + '</div>' +
           '<div class="g-result ' + (last.win ? 'win' : 'lose') + '" id="dlRes"><b>' +
-          (last.win ? fmt(L.dl_win, { p: num(last.payout), r: last.stone }) : fmt(L.dl_lose, { s: num(last.stake) })) +
+          (last.win ? fmt(L.dl_win, { p: num(last.payout) }) : fmt(L.dl_lose, { s: num(last.stake) })) +
           '</b><br><span class="hint">' + fmt(L.g_balance, { b: num(st.balance) }) + '</span></div>';
       body += '<button class="btn" id="dlAgain">' + L.dl_again + '</button>';
     } else {
       body = '<div class="hint" style="margin-top:10px">' + fmt(L.dl_intro, { p: 100 - st.burn, b: st.burn, t: st.timeout }) + '</div>' +
+        (st.burn_premium ? '<div class="hint' + (st.premium ? ' status-ok' : '') + '">' +
+          fmt(st.premium ? L.dl_premOn : L.dl_premOff, { a: st.burn_base, b: st.burn_premium }) + '</div>' : '') +
         st.tables.map(tb => '<button class="btn' + (st.balance < tb.stake ? ' short' : '') + '" data-stake="' + tb.stake + '">' +
-          fmt(L.dl_table, { s: num(tb.stake), p: num(tb.payout), r: tb.stone }) + '</button>').join("") +
+          fmt(L.dl_table, { s: num(tb.stake), p: num(tb.payout) }) + '</button>').join("") +
         '<div class="hint" style="margin-top:8px">' + fmt(L.g_balance, { b: num(st.balance) }) + '</div>' +
         '<div class="sub2">' + L.di_head + '</div><div class="hint">' + L.di_hint + '</div>' +
         st.tables.map(tb => '<button class="btn ghost" data-inv="' + tb.stake + '">' + fmt(L.di_table, { s: num(tb.stake) }) + '</button>').join("");
@@ -12847,12 +12968,9 @@
         '<button class="btn' + (q.status === "progress" ? ' ghost' : '') + '" data-qs="' + q.id + '" data-restart="1">' +
         (q.status === "new" ? L.qs_start : L.qs_restart) + '</button>') + '</div>';
     box.innerHTML = card(L.g_name_quests, gameHead() + (d.ru_only ? '<div class="hint" style="margin-top:8px">' + L.qs_ruOnly + '</div>' : '') +
-      head + (d.quests.length ? d.quests.map(qsCard).join("") : '<div class="hint">' + L.qs_empty + '</div>') +
-      (me.is_owner ? '<button class="btn ghost" id="qsGallery">' + L.qs_fxGallery + '</button>' : ''));
+      head + (d.quests.length ? d.quests.map(qsCard).join("") : '<div class="hint">' + L.qs_empty + '</div>'));
     bindBack(box);
-    const gal = box.querySelector("#qsGallery");
-    if (gal) gal.onclick = () => questFxGallery(box);
-    box.querySelectorAll("#qsUnlim, [data-unlim]").forEach(b => { b.onclick = () => go("shop"); });
+    box.querySelectorAll("#qsUnlim, [data-unlim]").forEach(b => { b.onclick = () => { shopCat = "games"; go("shop"); }; });
     box.querySelectorAll("[data-qs]").forEach(b => { b.onclick = async () => {
       b.disabled = true;
       try {
@@ -12876,17 +12994,22 @@
   // Карточка-«сцена»: живой фон под текстом + кнопка ✨ (выключить/включить эффекты)
   function fxStage(title, inner) {
     return '<div class="card qs-stage"><div class="fx-back"></div><h2>' + title +
-      '<button class="fx-toggle" id="qsFx" title="✨">✨</button></h2>' + inner + '</div>';
+      '<span class="fx-sw"><span id="qsFxL">' + L.qs_fxOff + '</span><button class="fx-toggle" id="qsFx" title="✨">✨</button></span></h2>' +
+      inner + '</div>';
   }
   function runFx(box, mood, text, draw, lock) {
     const fxOpts = { text: text, draw: draw, lock: lock, lang: me.lang };
     const btn = box.querySelector("#qsFx");
     loadFx().then(ok => {
       const stage = box.querySelector(".qs-stage");
-      if (!ok || !stage || !stage.isConnected) { if (btn) btn.style.display = "none"; return; }
+      if (!ok || !stage || !stage.isConnected) { const sw = box.querySelector(".fx-sw"); if (sw) sw.style.display = "none"; return; }
       if (btn) {
-        btn.classList.toggle("off", !QuestFX.enabled());
-        btn.onclick = () => { QuestFX.setEnabled(!QuestFX.enabled()); btn.classList.toggle("off", !QuestFX.enabled());
+        const lbl = box.querySelector("#qsFxL"), mark = () => {
+          btn.classList.toggle("off", !QuestFX.enabled());
+          if (lbl) lbl.textContent = QuestFX.enabled() ? L.qs_fxOff : L.qs_fxOn;
+        };
+        mark();
+        btn.onclick = () => { QuestFX.setEnabled(!QuestFX.enabled()); mark();
           if (QuestFX.enabled()) QuestFX.start(stage, mood, fxOpts); else { QuestFX.stop(); stage.querySelector(".fx-back").innerHTML = ""; } };
       }
       QuestFX.start(stage, mood, fxOpts);
@@ -12908,37 +13031,68 @@
     box.querySelectorAll("[data-fx]").forEach(b => { b.onclick = () => { questFxGallery(box, b.dataset.fx); window.scrollTo(0, 0); }; });
     runFx(box, [cur.id]);   // галерея: исход замка и надпись зеркала — из пресета эффекта
   }
+  // Сцена квеста: выборы, 🔐 ввод ответа (ребус, шифр, код — сверяет сервер) и ⏱ таймер (время тоже считает сервер)
   function questScene(box, sc, result) {
+    stopGameTimer();     // таймер прошлой сцены (и её атмосфера) — до отрисовки новой
     const choices = sc.choices.map(ch => '<button class="quiz-opt" data-ch="' + ch.i + '">' + esc(ch.label) +
       (ch.cost ? ' · ' + ch.cost + ' 🪙' : '') + '</button>').join("");
     const ends = sc.end ? '<button class="btn" id="qsAgain">' + L.qs_again + '</button>' : '';
+    const timer = sc.timer ? '<div class="quiz-top" style="margin-top:8px"><span>' + L.qs_timer + '</span><span id="qsLeft">⏱ ' +
+      sc.timer.left + '</span></div><div class="tbar"><i id="qsBar" style="width:' + (sc.timer.left / sc.timer.seconds * 100) + '%"></i></div>' : '';
+    const input = sc.input ? '<div class="qs-input"><input id="qsAns" type="text" maxlength="40" autocomplete="off" autocapitalize="off" ' +
+      'spellcheck="false" placeholder="' + esc(sc.input.hint || L.qs_answerPh) + '"><button class="btn" id="qsAnsGo">' + L.qs_check +
+      '</button></div><div class="hint">' + fmt(L.qs_tries, { n: sc.input.tries_left }) + '</div>' : '';
     box.innerHTML = fxStage(esc(sc.title), '<button class="btn ghost" id="qsList" style="margin-top:0;padding:8px;font-size:13px">' + L.qs_list + '</button>' +
-      '<div class="qs-text">' + qsText(sc.text) + '</div>' + (result || '') + choices + ends);
+      '<div class="qs-text">' + qsText(sc.text) + '</div>' + (result || '') + timer + input + choices + ends);
     runFx(box, sc.mood || [], sc.fx_text, sc.fx_draw, sc.fx_lock);
-    box.querySelector("#qsList").onclick = () => { questOpen = null; go("games"); };
+    box.querySelector("#qsList").onclick = () => { stopGameTimer(); questOpen = null; go("games"); };
     const again = box.querySelector("#qsAgain");
     if (again) again.onclick = async () => {
       const r = await post("/api/quest/open", { id: sc.id, restart: true });
       if (r.ok) { questOpen = r; questScene(box, r); window.scrollTo(0, 0); }
     };
-    box.querySelectorAll("[data-ch]").forEach(b => { b.onclick = async () => {
-      box.querySelectorAll("[data-ch]").forEach(x => x.disabled = true);
+    const lock = on => box.querySelectorAll("[data-ch], #qsAnsGo").forEach(x => x.disabled = on);
+    // общий разбор ответа сервера на выбор, ответ и «время вышло»
+    const step = async (url, body) => {
+      lock(true);
       try {
-        const r = await post("/api/quest/choose", { id: sc.id, scene: sc.scene, i: Number(b.dataset.ch) });
-        if (!r.ok) { box.querySelectorAll("[data-ch]").forEach(x => x.disabled = false); return notify(r.message || L.error, false); }
+        const r = await post(url, Object.assign({ id: sc.id, scene: sc.scene }, body));
+        if (!r.ok) { lock(false); return notify(r.message || L.error, false); }
+        if (r.wait) { lock(false); return; }                        // время ещё не вышло — сервер считает сам
         if (r.stale) notify(L.qs_stale, false);
         questOpen = r.end ? null : r;
-        let res = "";
-        if (r.outcome === "win_first") res = '<div class="g-result win"><b>' + fmt(L.qs_winFirst, { c: r.reward.coins, q: r.reward.res_each }) +
+        let res = r.timeout ? '<div class="g-result lose"><b>' + L.qs_timeUp + '</b></div>' : '';
+        if (r.outcome === "win_first") res += '<div class="g-result win"><b>' + fmt(L.qs_winFirst, { c: r.reward.coins, q: r.reward.res_each }) +
           '</b><br><span class="hint">' + fmt(L.g_balance, { b: num(r.balance) }) + '</span></div>';
-        else if (r.outcome === "win_repeat") res = '<div class="g-result win">' + L.qs_winRepeat + '</div>';
-        else if (r.outcome === "fail") res = '<div class="g-result lose">' + L.qs_fail + '</div>';
+        else if (r.outcome === "win_repeat") res += '<div class="g-result win">' + L.qs_winRepeat + '</div>';
+        else if (r.outcome === "fail") res += '<div class="g-result lose">' + L.qs_fail + '</div>';
+        else if (r.wrong) res += '<div class="g-result lose">' + fmt(L.qs_wrong, { n: r.input ? r.input.tries_left : 0 }) + '</div>';
         questScene(box, r, res);
-        if (r.outcome) { vibrate(r.outcome !== "fail"); sparks(box.querySelector(".g-result"), r.outcome !== "fail"); }
+        if (r.outcome) { vibrate(r.outcome !== "fail"); sparks(box.querySelector(".g-result:last-of-type"), r.outcome !== "fail"); }
+        else if (r.wrong) vibrate(false);
         const top = box.querySelector(".qs-text");
         if (top && top.scrollIntoView) top.scrollIntoView({ block: "nearest" });
-      } catch (e) { apiError(e); go("games"); }
-    }; });
+      } catch (e) { stopGameTimer(); apiError(e); go("games"); }
+    };
+    box.querySelectorAll("[data-ch]").forEach(b => { b.onclick = () => step("/api/quest/choose", { i: Number(b.dataset.ch) }); });
+    const ans = box.querySelector("#qsAns"), go1 = box.querySelector("#qsAnsGo");
+    if (ans) {
+      const send = () => { if (ans.value.trim()) step("/api/quest/answer", { text: ans.value.trim() }); };
+      go1.onclick = send;
+      ans.onkeydown = e => { if (e.key === "Enter") send(); };
+    }
+    if (sc.timer) {
+      const end = Date.now() + sc.timer.left * 1000;
+      let asked = false;
+      gameTimer = setInterval(() => {
+        if (!box.isConnected) return stopGameTimer();
+        const left = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+        const el = box.querySelector("#qsLeft"), bar = box.querySelector("#qsBar");
+        if (el) el.textContent = "⏱ " + left;
+        if (bar) bar.style.width = (left / sc.timer.seconds * 100) + "%";
+        if (left <= 0 && !asked) { asked = true; step("/api/quest/timeout", {}).then(() => { asked = false; }); }
+      }, 500);
+    }
   }
 
   // 💻 Взлом кода: «быки и коровы» — 4 разные цифры, 🐂 на своём месте, 🐄 есть, но не там
@@ -13104,6 +13258,9 @@
       setLang(me.lang);
       renderChrome();
       current = startTab();
+      let fxGal = false;
+      try { fxGal = new URLSearchParams(location.search).get("fx") === "gallery"; } catch (e) {}
+      if (fxGal && me.is_owner) { current = "games"; renderTabs(); gameScreen = "quests"; return questFxGallery(document.getElementById("app")); }
       await go(current);
       const next = () => { if (!me.app_mode) chooseMode(checkUnlocks); else checkUnlocks(); };
       const code = inviteCode();

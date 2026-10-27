@@ -43,9 +43,11 @@ def test_every_game_mines_its_own_resource():
     assert game_resource_gain("unknown") is None
 
 
-def test_duel_metal_grows_with_table():
-    rewards = [economy.DUEL_RESOURCE_REWARD[s] for s in economy.DUEL_TABLES]
-    assert rewards == sorted(rewards) and rewards[0] > 0
+def test_duel_fee_is_lower_with_unlimited():
+    """Дуэли — только монеты (владелец 27.10): комиссия 20%, с ⚡ Безлимитом 10%; ресурсов нет."""
+    assert economy.duel_payout(100) == (160, 40)
+    assert economy.duel_payout(100, premium=True) == (180, 20)
+    assert not hasattr(economy, "DUEL_RESOURCE_KIND")
 
 
 def test_format_bundle_orders_by_kind_and_skips_zero():
@@ -227,7 +229,7 @@ def test_station_costs_and_level_ups():
 def test_new_sections_exist_in_ru_and_en():
     for lang in ("ru", "en"):
         for key in ("ws.header", "raid.header", "goal.header", "st.header", "res.metal",
-                    "games.resource_gain", "duel.metal_gain", "quest.win_resources"):
+                    "games.resource_gain", "quest.win_resources"):
             assert key in STRINGS[lang], (lang, key)
         for k in RESOURCE_KINDS:
             assert STRINGS[lang][f"res.{k}"].strip()

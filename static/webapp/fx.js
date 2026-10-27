@@ -207,7 +207,8 @@
     coins: { n: 14, from: "top", vx: [-6, 6], vy: [60, 110], size: [5, 8], colors: ["#ffd34d", "#f5b82e", "#ffe27a"], shape: "coin", spin: [3, 6], glow: 6 },
     cards: { n: 8, from: "top", vx: [-20, 20], vy: [25, 55], size: [10, 14], colors: ["#fff"], shape: "card", chars: "♠♥♦♣", wobble: [30, .3], spin: [.5, 1.5] },
     // 😀 эмодзи-частицы (владелец 27.10: «как падающая бумага и карты — шедеврально»)
-    letters: { from: "top", vx: [-20, 20], vy: [25, 50], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["✉️", "📩", "💌"], wobble: [30, .35], spin: [.3, .9], n: 8 },
+    letters: { from: "top", vx: [-20, 20], vy: [25, 50], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["✉️"], wobble: [30, .35], spin: [.3, .9], n: 8 },   // классические конверты (владелец 27.10: без сердечек и стрелок)
+    loveletters: { from: "top", vx: [-20, 20], vy: [25, 50], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["💌", "💌", "✉️"], wobble: [30, .35], spin: [.3, .9], n: 8 },
     money: { from: "top", vx: [-25, 25], vy: [35, 70], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["💵", "💸", "💶"], wobble: [35, .4], spin: [.5, 1.4], n: 10 },
     gems: { from: "any", vx: [0, 0], vy: [0, 0], size: [14, 22], colors: ["#fff"], shape: "emoji", chars: ["💎", "💍", "✨"], life: [2, 4], n: 7 },
     keys: { from: "top", vx: [-10, 10], vy: [30, 55], size: [16, 22], colors: ["#fff"], shape: "emoji", chars: ["🗝️", "🔑"], spin: [.8, 2], n: 6 },
@@ -308,6 +309,7 @@
     coins:      { g: "detective", ru: "🪙 Золотой дождь", en: "🪙 Golden rain", back: ["fx-glowgold"], parts: ["coins"] },
     cards:      { g: "detective", ru: "🃏 Карты казино", en: "🃏 Casino cards", back: ["fx-clubbg"], parts: ["cards"] },
     letters:    { g: "detective", ru: "✉️ Летящие письма", en: "✉️ Flying letters", back: ["fx-noir"], parts: ["letters"] },
+    loveletters: { g: "fun", ru: "💌 Любовные письма", en: "💌 Love letters", back: ["fx-dream"], parts: ["loveletters"] },   // только для сцен признаний
     money:      { g: "heist", ru: "💸 Денежный дождь", en: "💸 Money rain", back: ["fx-glowgold"], parts: ["money"] },
     gems:       { g: "heist", ru: "💎 Сокровищница", en: "💎 Treasure vault", back: ["fx-dark"], parts: ["gems"] },
     keys:       { g: "heist", ru: "🗝 Ключи и замки", en: "🗝 Keys and locks", back: ["fx-noir"], parts: ["keys"] },

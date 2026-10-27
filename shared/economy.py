@@ -174,15 +174,12 @@ DUEL_INVITE_TTL_HOURS = 24
 DUEL_INVITE_CODE_LEN = 8
 # 🕵️ ДЕЛО ДНЯ (27.10): одно мини-дело на всех в сутки UTC. Первая улика бесплатно, каждая следующая — «ход».
 # Награда только за раскрытие и тем больше, чем меньше улик понадобилось (индекс = открытых улик).
-DAILY_CASE_REWARD = {1: 60, 2: 45, 3: 30, 4: 20}
+DAILY_CASE_REWARD = {1: 40, 2: 30, 3: 20, 4: 10}   # 27.10, вечер: под новые награды квестов (20–50)
 DAILY_CASE_STREAK_BONUS_EVERY = 7       # каждый 7-й день серии раскрытых дел — бонус
-DAILY_CASE_STREAK_BONUS = 100
+DAILY_CASE_STREAK_BONUS = 50
 # 📸 Карточка достижений: картинка хранится в памяти сервера для «поделиться», не дольше часа и не больше 2 МБ
 SHARE_CARD_TTL_SECONDS = 3600
 SHARE_CARD_MAX_BYTES = 2_000_000
-# 🧭 Вкладки открываются постепенно (решение владельца 27.10): день с регистрации ИЛИ уровень интеллекта.
-# Старичкам (≥ APP_UNLOCK_ALL_DAYS дней) открыто всё сразу.
-APP_UNLOCK_ALL_DAYS = 3
 
 # --------------------------------------------------------------------------
 # Переводы монет между игроками
@@ -364,6 +361,8 @@ def mine_kind(mine_id: int) -> str:
     """Ресурс рудника: по кругу металл → водород → кристаллы → детали → камень → древесина → ⚡."""
     return MINE_KINDS[(mine_id - 1) % len(MINE_KINDS)]
 DUEL_BURN_PERCENT = 20
+# ⚡ С Безлимитом («премиум» на сутки или месяц) комиссия победителя вдвое ниже (владелец 27.10, вечер)
+DUEL_BURN_PERCENT_PREMIUM = 10
 
 
 # --------------------------------------------------------------------------
@@ -382,15 +381,25 @@ GAME_RESOURCE = {          # игра → ресурс за победу
     # ➗ математика — без ресурса за раунд: ⚡ за каждые 10 верных (GAME_MILESTONES)
 }
 RESOURCE_PER_WIN = {"rps": 1, "hl": 1, "quiz": 1, "safe": 3, "flags": 1, "code": 2, "memory": 1}
-DUEL_RESOURCE_REWARD = {10: 2, 100: 4, 1000: 8}   # 🪨 Камень победителю дуэли по столу (27.10: был металл)
-DUEL_RESOURCE_KIND = "stone"
+# Дуэли НЕ добывают ресурсы (владелец 27.10, вечер): только ставки монет и комиссия — ресурсы дают другие игры
 # 🗺 Ротация квестов v2 (владелец 27.10): в списке до 10 квестов (эпики — сверх, их включает владелец отдельно);
 # за сутки UTC засчитываются 3 НОВЫХ прохождения, потом непройденные гаснут до 00:00 (Безлимит снимает ограничение);
 # переигрывать пройденное можно сколько угодно.
 QUEST_ROTATION_SIZE = 10
 QUEST_DAILY_NEW = 3
-QUEST_RESOURCE_BUNDLE = 5     # каждого ресурса за ПЕРВОЕ прохождение квеста
-QUEST_EXTRA_BUNDLE = {"wood": 10, "cow": 1}   # + древесина и корова (коровы редкие: топливо — право магазина)
+# Награда за ПЕРВОЕ прохождение (владелец 27.10, вечер: «квесты так быстро набивают кошельки — спрос на роботов упадёт»):
+# обычный квест 20–50 🪙 (reward_coins в JSON, валидатор держит вилку) и 1–2 🪨 камня, эпик — ровно 100 🪙 и 5 🪨.
+QUEST_REWARD_MIN, QUEST_REWARD_MAX = 20, 50
+QUEST_EPIC_REWARD = 100
+QUEST_STONE_KIND = "stone"
+QUEST_STONE_SMALL, QUEST_STONE_BIG, QUEST_STONE_EPIC = 1, 2, 5
+QUEST_STONE_BIG_FROM = 40     # квест с наградой от 40 🪙 (длиннее и сложнее) даёт 2 камня
+
+
+def quest_stones(reward_coins: int, epic: bool) -> int:
+    if epic:
+        return QUEST_STONE_EPIC
+    return QUEST_STONE_BIG if reward_coins >= QUEST_STONE_BIG_FROM else QUEST_STONE_SMALL
 RESOURCE_MAX_STOCK = 100_000  # технический потолок запаса на ресурс (защита от переполнения)
 # СКЛАД С ЛИМИТОМ (решение владельца 25.10): добыча сверх вместимости пропадает — ресурсы
 # не лежат мёртвым грузом, их тратят или продают на бирже. Расширение — в мастерской.
@@ -878,12 +887,16 @@ def tournament_winners_count(participants: int) -> int:
     return -(-participants * TOURNAMENT_WINNERS_PERCENT // 100)  # ceil
 
 
-def duel_payout(stake_each: int) -> tuple[int, int]:
-    """Возвращает (выплата победителю, сожжено) для дуэли с равными ставками."""
+def duel_burn_percent(premium: bool = False) -> int:
+    return DUEL_BURN_PERCENT_PREMIUM if premium else DUEL_BURN_PERCENT
+
+
+def duel_payout(stake_each: int, premium: bool = False) -> tuple[int, int]:
+    """Возвращает (выплата победителю, сожжено) для дуэли с равными ставками; premium — у победителя Безлимит."""
     if stake_each <= 0:
         raise ValueError("stake must be positive")
     bank = stake_each * 2
-    burned = bank * DUEL_BURN_PERCENT // 100
+    burned = bank * duel_burn_percent(premium) // 100
     return bank - burned, burned
 
 

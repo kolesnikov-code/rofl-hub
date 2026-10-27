@@ -2,25 +2,24 @@
 📣 События и 🔨 аукционы в приложении (решение владельца 26.10: каналов нет — все анонсы внутри игры).
 
 GET  /api/news          — лента «События» внизу паспорта: идущие битвы и акции, цели на карте мира,
-                          открытые аукционы и свежие итоги (за EVENTS_RECENT_DAYS), с кнопкой в нужную вкладку.
+                          открытые аукционы и итоги ТЕКУЩЕГО СЕЗОНА (с 1-го числа месяца — владелец 27.10: новичок видит, что каждый
+                          месяц шансы всех уравниваются), с кнопкой в нужную вкладку.
 GET  /api/auctions      — вкладка «Аукционы»: открытые лоты владельца и последние закрытые.
 POST /api/auction/bid   — ставка {id, step} (shared/auctions.place_bid; перебитому — личное сообщение).
 """
 from __future__ import annotations
 
 import json
-from datetime import timedelta
 
 from aiohttp import web
 
 from bots.main_bot.webapp_game import _ctx, _feature_off, _int, _json, fail
 from shared.analytics import track
 from shared.database import db
-from shared.economy import utcnow
+from shared.economy import season_bounds, utcnow
 from shared.locales import t
 from shared.titles import localized_title
 
-EVENTS_RECENT_DAYS = 3        # итоги битв и походов держатся в ленте трое суток
 EVENTS_LIMIT = 30
 
 
@@ -56,7 +55,7 @@ async def handle_news(request: web.Request) -> web.Response:
     if isinstance(ctx, web.Response):
         return ctx
     now = utcnow()
-    since = now - timedelta(days=EVENTS_RECENT_DAYS)
+    since = season_bounds(now)[0]     # завершённые — за текущий сезон (календарный месяц UTC)
     items = []
     async with db.pool.acquire() as conn:
         for b in await conn.fetch(

@@ -17,10 +17,8 @@ from dataclasses import dataclass
 
 import secrets
 
-from shared.economy import DUEL_INVITE_CODE_LEN, DUEL_INVITE_TTL_HOURS, DUEL_TABLES, DUEL_WAITING_TTL_MINUTES, duel_payout
-from shared.economy import DUEL_RESOURCE_KIND, DUEL_RESOURCE_REWARD
+from shared.economy import DUEL_INVITE_CODE_LEN, DUEL_INVITE_TTL_HOURS, DUEL_TABLES, DUEL_WAITING_TTL_MINUTES, duel_payout, utcnow
 from shared.ledger import InsufficientFunds, change_balance
-from shared.resources import change_resource, resource_capacity
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +54,12 @@ class MoveResult:
     payout: int = 0
     burned: int = 0
     rounds: int = 1
-    metal: int = 0              # 🪨 Камень победителю (27.10; поле осталось metal — совместимость)
+
+
+async def has_premium(conn, user_id: int) -> bool:
+    """⚡ Безлимит активен — комиссия дуэли DUEL_BURN_PERCENT_PREMIUM вместо DUEL_BURN_PERCENT."""
+    until = await conn.fetchval("SELECT unlimit_until FROM users WHERE user_id = $1", user_id)
+    return until is not None and until > utcnow()
 
 
 async def active_duel_of(conn, user_id: int):
@@ -230,12 +233,9 @@ async def _resolve_round(conn, duel) -> MoveResult:
         winner_id, loser_id = duel["player2"], duel["player1"]
         winner_move, loser_move = move2, move1
 
-    payout, burned = duel_payout(duel["stake"])
+    premium = await has_premium(conn, winner_id)
+    payout, burned = duel_payout(duel["stake"], premium)
     await change_balance(conn, winner_id, payout, "duel_win", str(duel["duel_id"]))
-    metal = DUEL_RESOURCE_REWARD.get(duel["stake"], 0)
-    if metal:
-        await change_resource(conn, winner_id, DUEL_RESOURCE_KIND, metal, "duel_win", str(duel["duel_id"]),
-                              cap=await resource_capacity(conn, winner_id))
     await conn.execute(
         "UPDATE duels SET status = 'finished', winner_id = $2, finished_at = NOW() WHERE duel_id = $1",
         duel["duel_id"], winner_id)
@@ -254,7 +254,7 @@ async def _resolve_round(conn, duel) -> MoveResult:
                 duel["duel_id"], duel["stake"], winner_id, payout, burned)
     return MoveResult(finished=True, winner_id=winner_id, loser_id=loser_id,
                       winner_move=winner_move, loser_move=loser_move,
-                      payout=payout, burned=burned, rounds=duel["rounds"], metal=metal)
+                      payout=payout, burned=burned, rounds=duel["rounds"])
 
 
 async def find_stuck_active_duels(conn, older_than_seconds: int):

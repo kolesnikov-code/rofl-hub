@@ -14,8 +14,10 @@ from __future__ import annotations
 
 import json
 
-from bots.main_bot.utils.quest_loader import all_quests, visible_choices
-from shared.economy import (QUEST_DAILY_NEW, QUEST_EXTRA_BUNDLE, QUEST_RESOURCE_BUNDLE, QUEST_ROTATION_SIZE,
+from datetime import timedelta
+
+from bots.main_bot.utils.quest_loader import all_quests, normalize_answer, visible_choices, visit_key
+from shared.economy import (QUEST_DAILY_NEW, QUEST_STONE_KIND, quest_stones, QUEST_ROTATION_SIZE,
                             RESOURCE_KINDS, is_active, utcnow)
 from shared.feature_flags import get_flag
 from shared.ledger import InsufficientFunds, change_balance
@@ -42,6 +44,12 @@ class QuestNoCoins(Exception):
     def __init__(self, cost: int):
         super().__init__(cost)
         self.cost = cost
+
+
+def visits_of(raw) -> dict:
+    if raw is None:
+        return {}
+    return json.loads(raw) if isinstance(raw, str) else dict(raw)
 
 
 def flags_of(row) -> set[str]:
@@ -117,8 +125,34 @@ async def completed_ids(conn, user_id: int) -> set[str]:
 
 
 async def progress(conn, user_id: int, quest_id: str):
-    return await conn.fetchrow("SELECT scene, flags, completed_at FROM quest_progress WHERE user_id = $1 AND quest_id = $2",
-                               user_id, quest_id)
+    return await conn.fetchrow("SELECT scene, flags, completed_at, scene_at, tries, visits FROM quest_progress "
+                               "WHERE user_id = $1 AND quest_id = $2", user_id, quest_id)
+
+
+TIMER_GRACE_SECONDS = 2      # сеть и анимация: не отнимаем у игрока последние секунды
+
+
+def timer_left(scene: dict, prog, now=None) -> int | None:
+    """⏱ Сколько секунд осталось на сцене с таймером (None — таймера нет)."""
+    timer = scene.get("timer")
+    if not timer or not prog or prog.get("scene_at") is None:
+        return None
+    passed = ((now or utcnow()) - prog["scene_at"]).total_seconds()
+    return max(0, int(timer["seconds"] - passed))
+
+
+def _expired(scene: dict, prog, now=None) -> bool:
+    timer = scene.get("timer")
+    if not timer or prog["scene_at"] is None:
+        return False
+    return (now or utcnow()) > prog["scene_at"] + timedelta(seconds=timer["seconds"] + TIMER_GRACE_SECONDS)
+
+
+def tries_left(scene: dict, prog) -> int | None:
+    inp = scene.get("input")
+    if not inp:
+        return None
+    return max(0, inp.get("tries", 3) - (prog["tries"] if prog else 0))
 
 
 def status_of(quest: dict, prog) -> str:
@@ -134,9 +168,10 @@ async def start(conn, user_id: int, quest: dict) -> None:
     """Начать (или начать заново) — со стартовой сцены, флаги сброшены; отметка первой победы сохраняется."""
     await conn.execute(
         """
-        INSERT INTO quest_progress (user_id, quest_id, scene, flags, updated_at)
-        VALUES ($1, $2, $3, '[]'::jsonb, NOW())
-        ON CONFLICT (user_id, quest_id) DO UPDATE SET scene = $3, flags = '[]'::jsonb, updated_at = NOW()
+        INSERT INTO quest_progress (user_id, quest_id, scene, flags, updated_at, scene_at, tries)
+        VALUES ($1, $2, $3, '[]'::jsonb, NOW(), NOW(), 0)
+        ON CONFLICT (user_id, quest_id) DO UPDATE SET scene = $3, flags = '[]'::jsonb, updated_at = NOW(),
+            scene_at = NOW(), tries = 0, visits = '{}'::jsonb
         """, user_id, quest["id"], quest["start"])
 
 
@@ -169,6 +204,8 @@ async def choose(conn, user_id: int, quest: dict, scene_key: str, idx: int) -> d
     choice = choices[idx]
     if (idx, choice) not in visible_choices(scene, flags):   # перепроверка по текущим флагам
         raise QuestStale(scene_key, flags)
+    if _expired(scene, prog):                                 # ⏱ не успел(а) — выбор не засчитывается
+        return {**await _move(conn, user_id, quest, prog, scene["timer"]["goto"], flags), "timeout": True}
 
     cost = choice.get("cost") or 0
     if cost:
@@ -177,15 +214,19 @@ async def choose(conn, user_id: int, quest: dict, scene_key: str, idx: int) -> d
         except InsufficientFunds:
             raise QuestNoCoins(cost) from None
 
-    new_flags = flags | set(choice.get("set", []))
-    target_key = choice["goto"]
+    return await _move(conn, user_id, quest, prog, choice["goto"], flags | set(choice.get("set", [])))
+
+
+async def _move(conn, user_id: int, quest: dict, prog, target_key: str, new_flags: set[str]) -> dict:
+    """Переход в сцену: награда за первую победу, отметка концовки, сброс таймера и попыток."""
+    qid = quest["id"]
     target = quest["scenes"][target_key]
     outcome = None
     if target.get("end") == "win":
         if prog["completed_at"] is None:
             await conn.execute("SELECT 1 FROM users WHERE user_id = $1 FOR UPDATE", user_id)
             await change_balance(conn, user_id, quest["reward_coins"], "quest_reward", qid)
-            await grant_bundle(conn, user_id, {**{k: QUEST_RESOURCE_BUNDLE for k in RESOURCE_KINDS}, **QUEST_EXTRA_BUNDLE},
+            await grant_bundle(conn, user_id, {QUEST_STONE_KIND: quest_stones(quest["reward_coins"], is_epic(quest))},
                                "quest_reward", qid, cap=await resource_capacity(conn, user_id))
             await conn.execute("UPDATE quest_progress SET completed_at = NOW() WHERE user_id = $1 AND quest_id = $2",
                                user_id, qid)
@@ -194,6 +235,62 @@ async def choose(conn, user_id: int, quest: dict, scene_key: str, idx: int) -> d
             outcome = "win_repeat"
     elif target.get("end") == "fail":
         outcome = "fail"
-    await conn.execute("UPDATE quest_progress SET scene = $3, flags = $4::jsonb, updated_at = NOW() "
-                       "WHERE user_id = $1 AND quest_id = $2", user_id, qid, target_key, json.dumps(sorted(new_flags)))
-    return {"scene": target_key, "flags": new_flags, "outcome": outcome}
+    who = visit_key(target_key, target)
+    visits = await conn.fetchval(
+        "UPDATE quest_progress SET scene = $3, flags = $4::jsonb, updated_at = NOW(), scene_at = NOW(), tries = 0, "
+        "visits = visits || jsonb_build_object($5::text, COALESCE((visits->>$5::text)::int, 0) + 1) "
+        "WHERE user_id = $1 AND quest_id = $2 RETURNING visits", user_id, qid, target_key, json.dumps(sorted(new_flags)), who)
+    return {"scene": target_key, "flags": new_flags, "outcome": outcome, "scene_at": utcnow(), "tries": 0,
+            "visits": visits_of(visits)}
+
+
+async def _locked_scene(conn, user_id: int, quest: dict, scene_key: str):
+    """Строка прогресса под блокировкой и проверки «квест открыт» и «это текущая сцена»."""
+    prog = await conn.fetchrow("SELECT * FROM quest_progress WHERE user_id = $1 AND quest_id = $2 FOR UPDATE",
+                               user_id, quest["id"])
+    if not prog:
+        return None
+    if (reason := lock_reason(quest, prog, await daily_state(conn, user_id))) is not None:
+        raise QuestLocked(reason)
+    if prog["scene"] != scene_key:
+        current = prog["scene"] if prog["scene"] in quest["scenes"] else quest["start"]
+        raise QuestStale(current, flags_of(prog))
+    return prog
+
+
+async def answer(conn, user_id: int, quest: dict, scene_key: str, text: str) -> dict | None:
+    """
+    🔐 Ввод ответа (ребус, шифр, код) в сцене с "input" — внутри транзакции. Верно → input.ok (+ input.set);
+    неверно → попытка сгорает, кончились → input.fail. Таймер истёк → timer.goto, ответ не засчитывается.
+    Итог как у choose + "wrong": True и "tries_left", если ответ неверный, но попытки остались.
+    """
+    prog = await _locked_scene(conn, user_id, quest, scene_key)
+    if prog is None:
+        return None
+    scene = quest["scenes"][scene_key]
+    inp = scene.get("input")
+    if not inp:
+        return None
+    flags = flags_of(prog)
+    if _expired(scene, prog):
+        return {**await _move(conn, user_id, quest, prog, scene["timer"]["goto"], flags), "timeout": True}
+    given = normalize_answer(text)
+    if given and any(given == normalize_answer(a) for a in inp["answers"]):
+        return await _move(conn, user_id, quest, prog, inp["ok"], flags | set(inp.get("set", [])))
+    tries = prog["tries"] + 1
+    if tries >= inp.get("tries", 3):
+        return {**await _move(conn, user_id, quest, prog, inp["fail"], flags), "wrong": True}
+    await conn.execute("UPDATE quest_progress SET tries = $3 WHERE user_id = $1 AND quest_id = $2", user_id, quest["id"], tries)
+    return {"scene": scene_key, "flags": flags, "outcome": None, "wrong": True,
+            "scene_at": prog["scene_at"], "tries": tries, "visits": visits_of(prog["visits"])}
+
+
+async def timeout(conn, user_id: int, quest: dict, scene_key: str) -> dict | None:
+    """⏱ Время сцены вышло — переход в timer.goto. Время считает сервер: рано — None (приложение ждёт дальше)."""
+    prog = await _locked_scene(conn, user_id, quest, scene_key)
+    if prog is None:
+        return None
+    scene = quest["scenes"][scene_key]
+    if not _expired(scene, prog):
+        return None
+    return {**await _move(conn, user_id, quest, prog, scene["timer"]["goto"], flags_of(prog)), "timeout": True}

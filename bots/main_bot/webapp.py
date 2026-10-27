@@ -197,6 +197,10 @@ async def handle_faq(request: web.Request) -> web.Response:
     """Полный справочник экосистемы — публичная страница без авторизации."""
     return _page("faq.html")
 
+async def handle_guide(request: web.Request) -> web.Response:
+    """🧭 «Как играть»: каждый раздел приложения по порядку вкладок — публичная страница без авторизации."""
+    return _page("guide.html")
+
 
 async def handle_rules(request: web.Request) -> web.Response:
     """Пользовательское соглашение — публичная страница без авторизации."""
@@ -243,10 +247,8 @@ async def handle_me(request: web.Request) -> web.Response:
     payload["badges"] = badges   # 🏅 значки сезонов: [{season, place}]
     from bots.main_bot.config import ADMIN_IDS
     payload["is_owner"] = user["user_id"] in ADMIN_IDS   # владельцу — галерея атмосфер квестов
-    from shared.economy import APP_UNLOCK_ALL_DAYS
     payload["days_in_game"] = max(0, (now - user["created_at"]).days)
     payload["app_mode"] = user["app_mode"]
-    payload["unlock_all_days"] = APP_UNLOCK_ALL_DAYS
     payload["pending_duel"] = user["pending_duel"]
     return web.json_response(payload)
 
@@ -438,6 +440,7 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app.router.add_get("/faq", handle_faq)
     app.router.add_get("/fx.js", handle_fx_js)
     app.router.add_get("/rules", handle_rules)
+    app.router.add_get("/guide", handle_guide)   # 🧭 «Как играть» — третья подвкладка «Инфо»
     app.router.add_get("/api/me", handle_me)
     app.router.add_post("/api/bonus", handle_bonus)
     app.router.add_post("/api/intern", handle_intern)

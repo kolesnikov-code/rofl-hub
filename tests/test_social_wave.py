@@ -8,7 +8,7 @@ from pathlib import Path
 
 from shared import daily_case
 from shared.duels import new_invite_code, valid_invite_code
-from shared.economy import (APP_UNLOCK_ALL_DAYS, DAILY_CASE_REWARD, SQUAD_CREATE_COST, SQUAD_MAX_MEMBERS,
+from shared.economy import (DAILY_CASE_REWARD, SQUAD_CREATE_COST, SQUAD_MAX_MEMBERS,
                             SQUAD_UPGRADE_COST, TEAM_CREATE_COST, TEAM_MAX_MEMBERS)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -113,14 +113,9 @@ def test_social_routes_registered():
 
 
 # ---------------------------------------------------------------- 🧭 приложение
-def test_progressive_tabs_and_puzzle_mode_in_app():
-    m = re.search(r"const TAB_DAY = \{([^}]*)\}", HTML)
-    days = dict((k, int(v)) for k, v in re.findall(r"(\w+): (\d)", m.group(1)))
-    assert max(days.values()) <= APP_UNLOCK_ALL_DAYS
-    tabs = re.findall(r'"(\w+)"', re.search(r"const TABS = \[([^\]]*)\]", HTML).group(1))
-    assert set(days) <= set(tabs)
-    first_day = [t for t in tabs if t not in days]
-    assert {"passport", "games", "friends", "shop", "info"} <= set(first_day) and len(first_day) <= 8
+def test_all_tabs_open_in_full_mode_and_puzzle_mode_hides_economy():
+    """Владелец 27.10, вечер: во «🌐 Всей экосистеме» вкладки открыты сразу, поэтапно — только рецепты и технологии."""
+    assert "TAB_DAY" not in HTML and 'me.app_mode === "puzzle" && !PUZZLE_TABS.includes(t)' in HTML
     puzzle = re.findall(r'"(\w+)"', re.search(r"const PUZZLE_TABS = \[([^\]]*)\]", HTML).group(1))
     assert "games" in puzzle and "farm" not in puzzle and "market" not in puzzle and "raids" not in puzzle
 

@@ -200,10 +200,13 @@ def _win_path(quest):
                 node, step = prev[node]
                 path.append(step)
             return path[::-1]
-        for i, ch in visible_choices(scene, set(node[1])):
-            nxt = (ch["goto"], node[1] | frozenset(ch.get("set", [])))
+        steps = [((node[0], i), ch["goto"], frozenset(ch.get("set", []))) for i, ch in visible_choices(scene, set(node[1]))]
+        if (inp := scene.get("input")):          # 🔐 верный ответ — тоже шаг
+            steps.append(((node[0], "answer"), inp["ok"], frozenset(inp.get("set", []))))
+        for step, goto, add in steps:
+            nxt = (goto, node[1] | add)
             if nxt not in prev:
-                prev[nxt] = (node, (node[0], i))
+                prev[nxt] = (node, step)
                 todo.append(nxt)
     return None
 
