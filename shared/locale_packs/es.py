@@ -1102,6 +1102,14 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qr_btn": "⚠️ Reportar la pregunta",
+    "qr_title": "¿Qué falla en la pregunta?",
+    "qr_answer": "❌ La respuesta correcta es errónea",
+    "qr_question": "✏️ Error o errata en la pregunta",
+    "qr_dup": "🔁 La pregunta se repite",
+    "qr_other": "🤔 Otro (confusa, discutible)",
+    "qr_thanks": "¡Gracias! Revisaremos y corregiremos la pregunta.",
+    "qr_limit": "Ya hay suficientes reportes por hoy. ¡Gracias por ayudar!",
     # TODO(перевод 26.10): атмосферы квестов (27.10)
     "qs_fxGallery": "🎨 Atmosphere gallery",
     "qs_fxChoice": "🚪 Step inside",

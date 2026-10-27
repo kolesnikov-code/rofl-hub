@@ -1098,6 +1098,14 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qr_btn": "⚠️ 举报这道题",
+    "qr_title": "这道题有什么问题？",
+    "qr_answer": "❌ 正确答案有误",
+    "qr_question": "✏️ 题目有错误或错别字",
+    "qr_dup": "🔁 题目重复了",
+    "qr_other": "🤔 其他（不清楚、有争议）",
+    "qr_thanks": "谢谢！我们会核查并修正这道题。",
+    "qr_limit": "今天的举报已经够多了——谢谢你的帮助！",
     # TODO(перевод 26.10): атмосферы квестов (27.10)
     "qs_fxGallery": "🎨 Atmosphere gallery",
     "qs_fxChoice": "🚪 Step inside",

@@ -867,6 +867,21 @@ SCHEMA_STATEMENTS: list[str] = [
         PRIMARY KEY (user_id, qkey)
     );
     """,
+    # --- 27.10: жалобы игроков на вопросы викторины (одна жалоба игрока на вопрос; владелец разбирает /quiz_reports) ---
+    """
+    CREATE TABLE IF NOT EXISTS quiz_reports (
+        id SERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        qkey VARCHAR(16) NOT NULL,
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        reason VARCHAR(16) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        resolved_at TIMESTAMP WITH TIME ZONE,
+        UNIQUE (user_id, qkey)
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_quiz_reports_open ON quiz_reports (qkey) WHERE resolved_at IS NULL;",
 ]
 
 

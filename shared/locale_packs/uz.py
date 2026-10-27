@@ -1103,6 +1103,14 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qr_btn": "⚠️ Savol ustidan shikoyat",
+    "qr_title": "Savolda nima noto‘g‘ri?",
+    "qr_answer": "❌ To‘g‘ri javob xato",
+    "qr_question": "✏️ Savolda xato yoki imlo xatosi",
+    "qr_dup": "🔁 Savol takrorlanyapti",
+    "qr_other": "🤔 Boshqa (tushunarsiz, bahsli)",
+    "qr_thanks": "Rahmat! Savol tekshirilib, tuzatiladi.",
+    "qr_limit": "Bugun uchun shikoyatlar yetarli — yordaming uchun rahmat!",
     # TODO(перевод 26.10): атмосферы квестов (27.10)
     "qs_fxGallery": "🎨 Atmosphere gallery",
     "qs_fxChoice": "🚪 Step inside",

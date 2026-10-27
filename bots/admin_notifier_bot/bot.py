@@ -138,6 +138,7 @@ async def cmd_admin_start(message: types.Message):
         "• /features — Тумблеры разделов: игры, дуэли, квесты, магазин, переводы, биржа, "
         "мастерская, налёты, цели, станция команды, техработы\n"
         "• /quests_admin — Ротация квестов: скрыть/показать + статистика прохождений\n"
+        "• /quiz_reports — Жалобы игроков на вопросы викторины (разобрал — закрой кнопкой)\n"
         "• /recipes — Рецепты недели: 40 временных рецептов мастерской, включай по 2–4\n"
         "• /workshop_recipes — Постоянные рецепты мастерской: включить/выключить любые\n"
         "• /mines — Рудники: кто держит и до когда · /award_mine [битва] [команда] — рудник за ручную битву\n"
@@ -991,6 +992,56 @@ async def quest_toggle(callback: types.CallbackQuery):
     await callback.answer(f"Квест {'показан 🟢' if new_value else 'скрыт ⚫'}")
     try:
         text, kb = await _quests_admin_view()
+        await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
+    except Exception:
+        pass
+
+
+# ============================================================================
+# ⚠️ ЖАЛОБЫ НА ВОПРОСЫ ВИКТОРИНЫ (игроки жалуются в приложении после ответа)
+# ============================================================================
+from shared import quiz_reports  # noqa: E402
+
+QUIZ_REPORTS_SHOWN = 10
+
+
+async def _quiz_reports_view() -> tuple[str, types.InlineKeyboardMarkup | None]:
+    async with db.pool.acquire() as conn:
+        items = await quiz_reports.open_reports(conn, QUIZ_REPORTS_SHOWN)
+        total = await quiz_reports.open_count(conn)
+    if not items:
+        return "⚠️ <b>ЖАЛОБЫ НА ВОПРОСЫ</b>\n\nОткрытых жалоб нет — база чистая 👌", None
+    lines, rows = [], []
+    for i, it in enumerate(items, 1):
+        why = ", ".join(f"{quiz_reports.REASON_RU.get(k, k)} ×{v}"
+                        for k, v in sorted(it["reasons"].items(), key=lambda kv: -kv[1]))
+        lines.append(f"<b>{i}.</b> {html.escape(it['question'])}\n✅ <i>{html.escape(it['answer'])}</i>\n"
+                     f"⚠️ жалоб: {it['n']} — {why}")
+        rows.append([types.InlineKeyboardButton(text=f"✔️ Разобран №{i}", callback_data=f"qrep_done:{it['qkey']}")])
+    text = (f"⚠️ <b>ЖАЛОБЫ НА ВОПРОСЫ</b> · вопросов с жалобами: {total}\n"
+            "..................................................\n" + "\n\n".join(lines) +
+            "\n\n<i>Поправь вопрос в data/questions.csv (или попроси Claude) и нажми «Разобран».</i>")
+    return text, types.InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+@dp.message(Command("quiz_reports"))
+async def cmd_quiz_reports(message: types.Message):
+    if not is_admin(message.from_user.id):
+        return
+    text, kb = await _quiz_reports_view()
+    await message.answer(text, reply_markup=kb, parse_mode="HTML")
+
+
+@dp.callback_query(F.data.startswith("qrep_done:"))
+async def quiz_report_done(callback: types.CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer()
+        return
+    async with db.pool.acquire() as conn:
+        closed = await quiz_reports.resolve(conn, callback.data.split(":", 1)[1])
+    await callback.answer(f"Закрыто жалоб: {closed}")
+    try:
+        text, kb = await _quiz_reports_view()
         await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
     except Exception:
         pass

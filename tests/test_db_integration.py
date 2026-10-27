@@ -2967,6 +2967,54 @@ async def test_app_games_api_rounds_limits_hint_and_timer(conn, global_db):
         await client.close()
 
 
+async def test_quiz_report_after_answer_once_per_question_limit_and_resolve(conn, global_db):
+    """⚠️ 27.10: жалоба — только на отвеченный вопрос, текст берётся из раунда; одна на вопрос; лимит в сутки; владелец закрывает."""
+    import time as _t
+    import json as _j
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared import quiz_reports
+    from shared.economy import QUIZ_REPORT_DAILY_LIMIT
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    await _mk_user(conn, 1840, 1000)
+    await conn.execute("DELETE FROM quiz_reports WHERE user_id = 1840")
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1840}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    try:
+        q = await (await client.post("/api/quiz/next", headers=head, json={})).json()
+        early = await (await client.post("/api/quiz/report", headers=head, json={"round_id": q["round_id"], "reason": "answer"})).json()
+        assert early["ok"] is False and early["code"] == "stale"          # до ответа жаловаться нельзя
+        await client.post("/api/quiz/answer", headers=head, json={"round_id": q["round_id"], "option": 0})
+        bad = await client.post("/api/quiz/report", headers=head, json={"round_id": q["round_id"], "reason": "hack"})
+        assert bad.status == 400
+        for reason in ("answer", "question"):                              # повтор — меняет причину, не дублирует
+            r = await (await client.post("/api/quiz/report", headers=head, json={"round_id": q["round_id"], "reason": reason})).json()
+            assert r["ok"]
+        rows = await conn.fetch("SELECT * FROM quiz_reports WHERE user_id = 1840")
+        state = await conn.fetchval("SELECT state FROM game_rounds WHERE id = $1", q["round_id"])
+        state = _j.loads(state) if isinstance(state, str) else state
+        assert len(rows) == 1 and rows[0]["reason"] == "question" and rows[0]["question"] == state["q"]
+        assert rows[0]["answer"] == state["options"][state["correct"]]
+        other = await (await client.post("/api/quiz/report", headers=head, json={"round_id": 999999999, "reason": "dup"})).json()
+        assert other["ok"] is False                                         # чужой/несуществующий раунд
+        listed = {it["qkey"]: it for it in await quiz_reports.open_reports(conn, 50)}
+        assert listed[state["key"]]["reasons"].get("question", 0) >= 1
+        assert await quiz_reports.resolve(conn, state["key"]) >= 1
+        assert state["key"] not in {it["qkey"] for it in await quiz_reports.open_reports(conn, 50)}
+        # лимит в сутки
+        await conn.execute("INSERT INTO quiz_reports (user_id, qkey, question, answer, reason) "
+                           "SELECT 1840, 'lim' || g, 'q', 'a', 'other' FROM generate_series(1, $1) g", QUIZ_REPORT_DAILY_LIMIT)
+        q2 = await (await client.post("/api/quiz/next", headers=head, json={})).json()
+        await client.post("/api/quiz/answer", headers=head, json={"round_id": q2["round_id"], "option": 0})
+        lim = await (await client.post("/api/quiz/report", headers=head, json={"round_id": q2["round_id"], "reason": "dup"})).json()
+        assert lim["ok"] is False and lim["code"] == "limit"
+    finally:
+        await conn.execute("DELETE FROM quiz_reports WHERE user_id = 1840")
+        await client.close()
+
+
 async def test_app_new_games_math_flags_code_memory_and_milestones(conn, global_db):
     """🕹 27.10: математика, флаги, взлом кода, мемори; 🪨 за каждые 10 верных в викторине, ⚡ — в математике."""
     import json as _j

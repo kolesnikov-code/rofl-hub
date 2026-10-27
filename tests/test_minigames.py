@@ -248,3 +248,19 @@ def test_fx_engine_is_safe_and_served():
     assert '"/fx.js"' in src
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     assert "QuestFX.stop()" in html and 'sc.src = "fx.js"' in html
+
+
+def test_quiz_report_button_reasons_route_and_owner_command():
+    """⚠️ 27.10: жалоба на вопрос — кнопка после ответа, причины = REASONS сервера, маршрут и /quiz_reports владельца."""
+    from shared.quiz_reports import REASON_RU, REASONS
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    js = re.search(r'const QR_REASONS = \[([^\]]*)\]', html).group(1)
+    assert tuple(re.findall(r'"(\w+)"', js)) == REASONS and set(REASON_RU) == set(REASONS)
+    assert '"/api/quiz/report"' in html and 'quizReport(box.querySelector("#qRep"), q.round_id)' in html
+    for k in ("qr_btn", "qr_title", "qr_thanks", "qr_limit", *("qr_" + r for r in REASONS)):
+        assert html.count(k + ":") == 2, k                          # ru и en в самом приложении
+    web = (ROOT / "bots" / "main_bot" / "webapp_games.py").read_text(encoding="utf-8")
+    assert '"/api/quiz/report", handle_quiz_report' in web
+    admin = (ROOT / "bots" / "admin_notifier_bot" / "bot.py").read_text(encoding="utf-8")
+    assert 'Command("quiz_reports")' in admin and "/quiz_reports" in admin and 'startswith("qrep_done:")' in admin
+    assert economy.QUIZ_REPORT_DAILY_LIMIT > 0

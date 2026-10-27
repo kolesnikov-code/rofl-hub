@@ -1103,6 +1103,14 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qr_btn": "⚠️ Laporkan pertanyaan",
+    "qr_title": "Apa yang salah dengan pertanyaannya?",
+    "qr_answer": "❌ Jawaban benarnya salah",
+    "qr_question": "✏️ Ada kesalahan atau salah ketik",
+    "qr_dup": "🔁 Pertanyaannya berulang",
+    "qr_other": "🤔 Lainnya (tidak jelas, diperdebatkan)",
+    "qr_thanks": "Terima kasih! Pertanyaan akan dicek dan diperbaiki.",
+    "qr_limit": "Laporan hari ini sudah cukup — terima kasih sudah membantu!",
     # TODO(перевод 26.10): атмосферы квестов (27.10)
     "qs_fxGallery": "🎨 Atmosphere gallery",
     "qs_fxChoice": "🚪 Step inside",

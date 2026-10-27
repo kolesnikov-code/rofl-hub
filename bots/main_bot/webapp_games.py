@@ -5,7 +5,7 @@
 отдаётся игроку уже ПОСЛЕ ответа; таймер викторины считает сервер.
 
 API: GET /api/games · POST /api/games/rps · /api/games/hl/new · /api/games/hl/play · /api/games/safe ·
-/api/quiz/next · /api/quiz/hint · /api/quiz/answer · (27.10) /api/math/next|answer · /api/flags/next|answer ·
+/api/quiz/next · /api/quiz/hint · /api/quiz/answer · /api/quiz/report · (27.10) /api/math/next|answer · /api/flags/next|answer ·
 /api/code/new · /api/code/guess · /api/memory/new · /api/memory/flip.
 """
 from __future__ import annotations
@@ -30,6 +30,7 @@ from shared.economy import (CODE_DIGITS, CODE_MAX_ATTEMPTS, FLAGS_ANSWER_SECONDS
 from shared.minigames import (bulls_cows, code_secret, flags_round_state, math_round_state, memory_deck, memory_flip,
                               valid_code_guess)
 from shared.ledger import InsufficientFunds, change_balance
+from shared.quiz_reports import ReportError, add_report
 from shared.locales import t
 
 HL_BASE_RANGE = (10, 90)     # то же, что в чате: «следующее число от 1 до 100 больше или меньше base?»
@@ -297,6 +298,23 @@ async def handle_quiz_answer(request: web.Request) -> web.Response:
     return await _timed_answer(request, "quiz")
 
 
+async def handle_quiz_report(request: web.Request) -> web.Response:
+    """⚠️ Жалоба на вопрос — только после ответа (текст вопроса берётся из закрытого раунда, не от приложения)."""
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    data = await _json(request)
+    try:
+        async with db.pool.acquire() as conn:
+            await add_report(conn, ctx.user_id, _int(data.get("round_id")), str(data.get("reason") or ""))
+    except ReportError as e:
+        if e.code == "bad":
+            return _bad()
+        return web.json_response({"ok": False, "code": e.code,
+                                  "message": t(ctx.lang, "quiz.stale") if e.code == "stale" else ""})
+    return web.json_response({"ok": True})
+
+
 async def _new_round(ctx, game: str, state: dict) -> int:
     async with db.pool.acquire() as conn:
         return await conn.fetchval("INSERT INTO game_rounds (user_id, game, state) VALUES ($1, $2, $3::jsonb) RETURNING id",
@@ -427,6 +445,7 @@ def register_games_routes(app: web.Application) -> None:
     app.router.add_post("/api/quiz/next", handle_quiz_next)
     app.router.add_post("/api/quiz/hint", handle_quiz_hint)
     app.router.add_post("/api/quiz/answer", handle_quiz_answer)
+    app.router.add_post("/api/quiz/report", handle_quiz_report)
     app.router.add_post("/api/{game:quiz|math|flags}/start", handle_round_start)
     app.router.add_post("/api/math/next", handle_math_next)
     app.router.add_post("/api/math/answer", handle_math_answer)

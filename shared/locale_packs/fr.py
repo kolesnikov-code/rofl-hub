@@ -1102,6 +1102,14 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qr_btn": "⚠️ Signaler la question",
+    "qr_title": "Qu’est-ce qui ne va pas ?",
+    "qr_answer": "❌ La bonne réponse est fausse",
+    "qr_question": "✏️ Erreur ou faute dans la question",
+    "qr_dup": "🔁 La question se répète",
+    "qr_other": "🤔 Autre (pas clair, discutable)",
+    "qr_thanks": "Merci ! La question sera vérifiée et corrigée.",
+    "qr_limit": "Assez de signalements pour aujourd’hui — merci pour ton aide !",
     # TODO(перевод 26.10): атмосферы квестов (27.10)
     "qs_fxGallery": "🎨 Atmosphere gallery",
     "qs_fxChoice": "🚪 Step inside",
