@@ -22,7 +22,8 @@
 - выбор виден, если все need-флаги собраны и ни один missing-флаг не собран;
 - "set" добавляет флаги при выборе; "cost" списывает монеты (платная подсказка);
 - сцена с "end": "win"/"fail" завершает квест; у неё нет choices;
-- "mood" (у квеста — по умолчанию, у сцены — своя) — атмосфера сцены в приложении (static/webapp/fx.js).
+- "mood" (у квеста — по умолчанию, у сцены — своя) — атмосфера сцены в приложении (static/webapp/fx.js);
+- "epic": true — эпик (~час игры): вне ротации и суточного лимита, владелец включает отдельно (тумблер epic:<id>).
 
 Новый квест = новый JSON-файл, кода не требуется. Тесты проверяют каждый
 сценарий: корректность переходов, достижимость победы, длину callback_data.
@@ -65,6 +66,8 @@ def validate_quest(q: dict) -> list[str]:
     if q.get("start") not in scenes:
         errors.append(f"{qid}: стартовая сцена {q.get('start')!r} не найдена")
 
+    if "epic" in q and not isinstance(q["epic"], bool):
+        errors.append(f"{qid}: epic — true/false")
     if not _mood_ok(q.get("mood")):
         errors.append(f"{qid}: mood — метка атмосферы (static/webapp/fx.js) или список до двух меток")
     endings = 0

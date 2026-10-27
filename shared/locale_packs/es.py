@@ -36,6 +36,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "quest.locked": "🔒 Ya hiciste tus {n} misiones nuevas de hoy. Las demás se abren a las 00:00 UTC, o activa ⚡ Ilimitado. Las completadas se pueden repetir.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Esta sección ahora está en la app del juego: ahí es más cómoda y bonita. Pulsa el botón 👇",
     "app.keyboard_gone": "🧹 Quitamos los botones antiguos de abajo: ahora todo el juego está en la app. También puedes abrirla con el botón «🎮 ROFL HUB» junto al campo de texto.",
@@ -1102,6 +1103,12 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qs_total": "📚 Misiones en la biblioteca: {n}",
+    "qs_daily": "Nuevas hoy: {a}/{b}",
+    "qs_dailyUnl": "⚡ Ilimitado: misiones sin límite",
+    "qs_locked": "🔒 hasta las 00:00 UTC",
+    "qs_lockedNote": "Hoy has completado {b} misiones nuevas. Las demás se abren a las 00:00 UTC y las completadas puedes repetirlas cuanto quieras. ⚡ Ilimitado quita el límite.",
+    "qs_epic": "⭐ ÉPICA ·",
     "qr_btn": "⚠️ Reportar la pregunta",
     "qr_title": "¿Qué falla en la pregunta?",
     "qr_answer": "❌ La respuesta correcta es errónea",

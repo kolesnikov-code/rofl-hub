@@ -37,6 +37,7 @@ BUTTONS = {
 }
 
 STRINGS = {
+    "quest.locked": "🔒 {n} misi baru hari ini sudah selesai. Sisanya terbuka pukul 00:00 UTC — atau aktifkan ⚡ Tanpa batas. Misi yang sudah selesai bisa dimainkan ulang.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Bagian ini sekarang ada di aplikasi game — di sana lebih nyaman dan lebih keren. Ketuk tombolnya 👇",
     "app.keyboard_gone": "🧹 Tombol lama di bawah sudah dihapus: sekarang seluruh game ada di aplikasi. Kamu juga bisa membukanya dengan tombol «🎮 ROFL HUB» di samping kolom ketik.",
@@ -1103,6 +1104,12 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qs_total": "📚 Misi di perpustakaan: {n}",
+    "qs_daily": "Baru hari ini: {a}/{b}",
+    "qs_dailyUnl": "⚡ Tanpa batas — misi tanpa batasan",
+    "qs_locked": "🔒 sampai 00:00 UTC",
+    "qs_lockedNote": "Hari ini kamu sudah menyelesaikan {b} misi baru. Sisanya terbuka pukul 00:00 UTC, dan misi yang sudah selesai bisa dimainkan ulang sepuasnya. ⚡ Tanpa batas menghapus batasan.",
+    "qs_epic": "⭐ EPIK ·",
     "qr_btn": "⚠️ Laporkan pertanyaan",
     "qr_title": "Apa yang salah dengan pertanyaannya?",
     "qr_answer": "❌ Jawaban benarnya salah",

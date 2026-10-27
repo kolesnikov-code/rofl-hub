@@ -38,6 +38,7 @@ BUTTONS = {
 }
 
 STRINGS = {
+    "quest.locked": "🔒 Deine {n} neuen Quests für heute sind geschafft. Die übrigen öffnen um 00:00 UTC — oder schalte ⚡ Unbegrenzt ein. Abgeschlossene Quests kannst du wiederholen.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Dieser Bereich ist jetzt in der Spiel-App – dort ist es bequemer und schöner. Tippe auf den Button 👇",
     "app.keyboard_gone": "🧹 Die alten Buttons unten sind weg: Das ganze Spiel ist jetzt in der App. Du kannst sie auch über den Button «🎮 ROFL HUB» neben dem Eingabefeld öffnen.",
@@ -1103,6 +1104,12 @@ STRINGS = {
 }
 
 MINIAPP = {
+    "qs_total": "📚 Quests in der Bibliothek: {n}",
+    "qs_daily": "Neu heute: {a}/{b}",
+    "qs_dailyUnl": "⚡ Unbegrenzt — Quests ohne Limit",
+    "qs_locked": "🔒 bis 00:00 UTC",
+    "qs_lockedNote": "Du hast heute {b} neue Quests abgeschlossen. Die übrigen öffnen um 00:00 UTC, abgeschlossene kannst du beliebig oft wiederholen. ⚡ Unbegrenzt hebt das Limit auf.",
+    "qs_epic": "⭐ EPOS ·",
     "qr_btn": "⚠️ Frage melden",
     "qr_title": "Was stimmt mit der Frage nicht?",
     "qr_answer": "❌ Die richtige Antwort ist falsch",

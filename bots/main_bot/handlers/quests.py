@@ -15,7 +15,7 @@ from bots.main_bot.guards import feature_enabled
 from bots.main_bot.utils.quest_loader import get_quest, visible_choices
 from shared import quest_engine as qe
 from shared.database import db
-from shared.economy import QUEST_RESOURCE_BUNDLE
+from shared.economy import QUEST_DAILY_NEW, QUEST_RESOURCE_BUNDLE
 from shared.locales import t
 
 router = Router()
@@ -175,6 +175,9 @@ async def quest_choice(callback: types.CallbackQuery, user_lang: str = "ru"):
         return
     except qe.QuestNoCoins as e:
         await callback.answer(t(user_lang, "quest.no_coins", cost=e.cost), show_alert=True)
+        return
+    except qe.QuestLocked:
+        await callback.answer(t(user_lang, "quest.locked", n=QUEST_DAILY_NEW), show_alert=True)
         return
     if res is None:
         await callback.answer()

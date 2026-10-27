@@ -322,6 +322,7 @@ RU: dict[str, str] = {
     "quest.stale": "⏳ Эта сцена уже позади — продолжаем с текущего места!",
     "quest.no_coins": "❌ Подсказка стоит {cost} 🪙, а на балансе меньше. Загляни на ферму!",
     "quest.not_found": "❌ Квест не найден.",
+    "quest.locked": "🔒 На сегодня новые квесты пройдены ({n} из {n}). Остальные откроются в 00:00 UTC — или включи ⚡ Безлимит. Пройденные квесты можно переигрывать.",
     "menu.btn_quests": "🗺️ КВЕСТЫ",
 
     # ---------------- ферма ----------------
@@ -1392,6 +1393,7 @@ EN: dict[str, str] = {
     "quest.stale": "⏳ That scene is already behind you — continuing from the current spot!",
     "quest.no_coins": "❌ The hint costs {cost} 🪙 and your balance is lower. Visit your farm!",
     "quest.not_found": "❌ Quest not found.",
+    "quest.locked": "🔒 You've done your {n} new quests for today. The rest open at 00:00 UTC — or turn on ⚡ Unlimited. Completed quests can be replayed.",
     "menu.btn_quests": "🗺️ QUESTS",
 
     # ---------------- farm ----------------

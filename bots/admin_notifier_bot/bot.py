@@ -42,11 +42,12 @@ if not ADMIN_BOT_TOKEN:
 if not ADMIN_IDS or ADMIN_SECRET_CHANNEL_ID == 0:
     raise RuntimeError("🚨 ОШИБКА БЕЗОПАСНОСТИ: Ключи лимитов или список ADMIN_IDS не заданы в .env!")
 
-from bots.main_bot.utils.quest_loader import all_quests, load_quests
+from bots.main_bot.utils.quest_loader import all_quests, get_quest, load_quests
+from shared import quest_engine as qe
 from shared import metrics
 from shared.analytics import purge_old_events
 from shared.database import db
-from shared.economy import FINISH_RETRY_MINUTES, PROMOTER_CODE_MAX_LEN
+from shared.economy import FINISH_RETRY_MINUTES, PROMOTER_CODE_MAX_LEN, QUEST_DAILY_NEW, QUEST_ROTATION_SIZE
 from shared.feature_flags import FLAG_TITLES, all_feature_flags, get_flag, toggle_flag
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -958,19 +959,33 @@ async def _quests_admin_view() -> tuple[str, types.InlineKeyboardMarkup]:
             """SELECT quest_id, COUNT(*) AS started,
                       COUNT(*) FILTER (WHERE completed_at IS NOT NULL) AS done
                FROM quest_progress GROUP BY quest_id""")}
-    lines, rows = [], []
+    lines, rows, epics_on, epics_off = [], [], [], []
+    on_count = 0
     for q in all_quests():
-        visible = await get_flag(f"quest:{q['id']}")
+        visible = await get_flag(qe.flag_key(q))
         started, done = stats.get(q["id"], (0, 0))
+        if qe.is_epic(q):
+            (epics_on if visible else epics_off).append((q, started, done))
+            continue
+        on_count += visible
         lines.append(f"{'🟢' if visible else '⚫'} <b>{q['title']}</b> — "
                      f"начинали: {started}, прошли: {done}")
         rows.append([types.InlineKeyboardButton(
             text=f"{'🟢 Скрыть' if visible else '⚫ Показать'}: {q['title'][:30]}",
             callback_data=f"quest_toggle:{q['id']}")])
-    text = ("🗺 <b>РОТАЦИЯ КВЕСТОВ</b>\n"
+    epic_lines = [f"⭐ <b>{q['title']}</b> — начинали: {s}, прошли: {d}" for q, s, d in epics_on]
+    for q, _, _ in epics_on:
+        rows.append([types.InlineKeyboardButton(text=f"⭐ Убрать эпик: {q['title'][:28]}",
+                                                callback_data=f"quest_toggle:{q['id']}")])
+    if epics_off:
+        rows.append([types.InlineKeyboardButton(text="➕ Внести эпик в список", callback_data="epic_pick")])
+    text = (f"🗺 <b>РОТАЦИЯ КВЕСТОВ</b> · в списке {on_count}/{QUEST_ROTATION_SIZE} · всего в базе {qe.total_count()}\n"
             "..................................................\n"
             + "\n".join(lines) +
-            "\n\n<i>⚫ Скрытый квест пропадает из списка у игроков; кто начал — доиграет.</i>")
+            ("\n\n⭐ <b>ЭПИКИ В СПИСКЕ</b>\n" + "\n".join(epic_lines) if epic_lines else "") +
+            f"\n\n<i>Игрок проходит {QUEST_DAILY_NEW} новых квеста в сутки, потом непройденные гаснут до 00:00 UTC "
+            "(Безлимит снимает); пройденные переигрываются без ограничений. Эпики — вне лимита. "
+            "⚫ Скрытый квест пропадает из списка; кто начал — доиграет.</i>")
     return text, types.InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -987,14 +1002,41 @@ async def quest_toggle(callback: types.CallbackQuery):
     if not is_admin(callback.from_user.id):
         await callback.answer()
         return
-    quest_id = callback.data.split(":", 1)[1]
-    new_value = await toggle_flag(f"quest:{quest_id}")
-    await callback.answer(f"Квест {'показан 🟢' if new_value else 'скрыт ⚫'}")
+    quest = get_quest(callback.data.split(":", 1)[1])
+    if quest is None:
+        await callback.answer("Квест не найден")
+        return
+    key = qe.flag_key(quest)
+    if not qe.is_epic(quest) and not await get_flag(key):
+        on = sum([await get_flag(qe.flag_key(q)) for q in all_quests() if not qe.is_epic(q)])
+        if on >= QUEST_ROTATION_SIZE:
+            await callback.answer(f"В списке уже {QUEST_ROTATION_SIZE} квестов — сначала скрой какой-нибудь",
+                                  show_alert=True)
+            return
+    new_value = await toggle_flag(key)
+    await callback.answer(f"{'Эпик' if qe.is_epic(quest) else 'Квест'} {'показан 🟢' if new_value else 'скрыт ⚫'}")
     try:
         text, kb = await _quests_admin_view()
         await callback.message.edit_text(text, reply_markup=kb, parse_mode="HTML")
     except Exception:
         pass
+
+
+@dp.callback_query(F.data == "epic_pick")
+async def epic_pick(callback: types.CallbackQuery):
+    """«➕ Внести эпик в список» → выбор эпика (эпики — события, вне ротации и суточного лимита)."""
+    if not is_admin(callback.from_user.id):
+        await callback.answer()
+        return
+    rows = [[types.InlineKeyboardButton(text=f"⭐ {q['title'][:40]} · {q['minutes']} мин",
+                                        callback_data=f"quest_toggle:{q['id']}")]
+            for q in all_quests() if qe.is_epic(q) and not await get_flag(qe.flag_key(q))]
+    await callback.answer()
+    if not rows:
+        await callback.message.answer("Все эпики уже в списке (или их пока нет в базе).")
+        return
+    await callback.message.answer("⭐ <b>Какой эпик внести в список?</b>", parse_mode="HTML",
+                                  reply_markup=types.InlineKeyboardMarkup(inline_keyboard=rows))
 
 
 # ============================================================================

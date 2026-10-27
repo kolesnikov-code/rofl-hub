@@ -264,3 +264,26 @@ def test_quiz_report_button_reasons_route_and_owner_command():
     admin = (ROOT / "bots" / "admin_notifier_bot" / "bot.py").read_text(encoding="utf-8")
     assert 'Command("quiz_reports")' in admin and "/quiz_reports" in admin and 'startswith("qrep_done:")' in admin
     assert economy.QUIZ_REPORT_DAILY_LIMIT > 0
+
+
+def test_quest_rotation_v2_rules_and_app_ui():
+    """🗺 27.10 ротация v2: 3 новых прохождения в сутки, потом непройденные гаснут; эпики вне лимита; новые — скрыты."""
+    from shared import quest_engine as qe
+    from shared.feature_flags import _default_for
+    assert economy.QUEST_ROTATION_SIZE == 10 and economy.QUEST_DAILY_NEW == 3
+    assert _default_for("quest:new_one") is False and _default_for("epic:big") is False
+    locked = {"done": 3, "max": 3, "unlimited": False, "locked": True}
+    free = {"done": 1, "max": 3, "unlimited": False, "locked": False}
+    q, epic = {"id": "a"}, {"id": "e", "epic": True}
+    assert qe.locked_for(q, None, locked) and not qe.locked_for(q, None, free)
+    assert not qe.locked_for(q, {"completed_at": "x"}, locked)            # пройденный — переигрывается
+    assert not qe.locked_for(epic, None, locked)                          # эпик — событие, вне лимита
+    assert qe.flag_key(epic) == "epic:e" and qe.flag_key(q) == "quest:a"
+    html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    for k in ("qs_total", "qs_daily", "qs_dailyUnl", "qs_locked", "qs_lockedNote", "qs_epic"):
+        assert html.count(k + ":") == 2, k
+    assert "q.locked ? ' dim'" in html and 'id="qsUnlim"' in html
+    admin = (ROOT / "bots" / "admin_notifier_bot" / "bot.py").read_text(encoding="utf-8")
+    assert 'F.data == "epic_pick"' in admin and "Внести эпик в список" in admin
+    db_src = (ROOT / "shared" / "database.py").read_text(encoding="utf-8")
+    assert "('quest:golden_cutlet', TRUE)" in db_src                     # первые три остаются видны после смены дефолта

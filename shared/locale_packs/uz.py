@@ -37,6 +37,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "quest.locked": "🔒 Bugungi {n} ta yangi kvest o‘tildi. Qolganlari 00:00 UTC da ochiladi — yoki ⚡ Cheksizni yoq. O‘tilgan kvestlarni qayta o‘ynash mumkin.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Bu bo'lim endi o'yin ilovasida — u yerda qulayroq va chiroyliroq. Tugmani bos 👇",
     "app.keyboard_gone": "🧹 Pastdagi eski tugmalar olib tashlandi: endi butun o'yin ilovada. Uni kiritish maydoni yonidagi «🎮 ROFL HUB» tugmasi bilan ham ochishing mumkin.",
@@ -1103,6 +1104,12 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qs_total": "📚 Bazadagi kvestlar: {n}",
+    "qs_daily": "Bugun yangi: {a}/{b}",
+    "qs_dailyUnl": "⚡ Cheksiz — kvestlar cheklovsiz",
+    "qs_locked": "🔒 00:00 UTC gacha",
+    "qs_lockedNote": "Bugun {b} ta yangi kvest o‘tilding. Qolganlari 00:00 UTC da ochiladi, o‘tilganlarini xohlagancha qayta o‘ynash mumkin. ⚡ Cheksiz cheklovni olib tashlaydi.",
+    "qs_epic": "⭐ EPIK ·",
     "qr_btn": "⚠️ Savol ustidan shikoyat",
     "qr_title": "Savolda nima noto‘g‘ri?",
     "qr_answer": "❌ To‘g‘ri javob xato",

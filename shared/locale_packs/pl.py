@@ -36,6 +36,7 @@ BUTTONS: dict[str, str] = {
 }
 
 STRINGS: dict[str, str] = {
+    "quest.locked": "🔒 Dzisiejsze {n} nowe questy zaliczone. Pozostałe otworzą się o 00:00 UTC — albo włącz ⚡ Bez limitu. Ukończone questy można powtarzać.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Ta sekcja jest teraz w aplikacji gry — tam jest wygodniej i ładniej. Naciśnij przycisk 👇",
     "app.keyboard_gone": "🧹 Stare przyciski na dole zniknęły: cała gra jest teraz w aplikacji. Możesz ją też otworzyć przyciskiem «🎮 ROFL HUB» obok pola wpisywania.",
@@ -1100,6 +1101,12 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    "qs_total": "📚 Questy w bibliotece: {n}",
+    "qs_daily": "Nowe dziś: {a}/{b}",
+    "qs_dailyUnl": "⚡ Bez limitu — questy bez ograniczeń",
+    "qs_locked": "🔒 do 00:00 UTC",
+    "qs_lockedNote": "Ukończono dziś {b} nowe questy. Pozostałe otworzą się o 00:00 UTC, a ukończone możesz powtarzać do woli. ⚡ Bez limitu znosi ograniczenie.",
+    "qs_epic": "⭐ EPIKA ·",
     "qr_btn": "⚠️ Zgłoś pytanie",
     "qr_title": "Co jest nie tak z pytaniem?",
     "qr_answer": "❌ Poprawna odpowiedź jest błędna",

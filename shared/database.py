@@ -379,6 +379,12 @@ SCHEMA_STATEMENTS: list[str] = [
         ('quest:metro_veteran', FALSE)
     ON CONFLICT (key) DO NOTHING;
     """,
+    # 27.10 ротация v2: новые квесты по умолчанию скрыты — первые три (были видны «по умолчанию») фиксируем включёнными
+    """
+    INSERT INTO feature_flags (key, enabled) VALUES
+        ('quest:golden_cutlet', TRUE), ('quest:miner_career', TRUE), ('quest:locked_safe', TRUE)
+    ON CONFLICT (key) DO NOTHING;
+    """,
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS source VARCHAR(32) NOT NULL DEFAULT 'organic';",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS qualified_at TIMESTAMP WITH TIME ZONE;",
     # Робот-Стажёр активирован (бесплатный вечный робот, один на игрока при старте)

@@ -829,9 +829,12 @@ async def test_feature_flags_set_toggle_and_cache():
         ff.invalidate_cache()
         assert await ff.get_flag("games") is False         # прочитано из БД, не из кэша
 
+        await ff.set_flag("quest:golden_cutlet", True)
         assert await ff.toggle_flag("quest:golden_cutlet") is False   # был виден → скрыт
         assert await ff.get_flag("quest:golden_cutlet") is False
         assert await ff.toggle_flag("quest:golden_cutlet") is True
+        await global_db.pool.execute("DELETE FROM feature_flags WHERE key = 'quest:brand_new_quest'")
+        assert await ff.get_flag("quest:brand_new_quest") is False     # ротация v2: новый квест приезжает скрытым
 
         await ff.set_flag("games", True)                   # вернуть как было
     finally:
@@ -2964,6 +2967,59 @@ async def test_app_games_api_rounds_limits_hint_and_timer(conn, global_db):
             await set_flag("games", True)
             invalidate_cache()
     finally:
+        await client.close()
+
+
+async def test_quest_rotation_v2_three_new_per_day_then_dim_unlimited_lifts(conn, global_db):
+    """🗺 27.10: после 3 новых прохождений за сутки непройденный квест гаснет (и в API, и в движке); пройденный
+    переигрывается; Безлимит снимает ограничение."""
+    import time as _t
+    from datetime import timedelta
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.utils.quest_loader import get_quest
+    from bots.main_bot.webapp import create_webapp
+    from shared import quest_engine as qe
+    from shared.economy import utcnow
+    from shared.feature_flags import invalidate_cache, set_flag
+    from shared.webapp_auth import sign_init_data
+    token = "123456:TEST"
+    await _mk_user(conn, 1850, 1000)
+    await conn.execute("DELETE FROM quest_progress WHERE user_id = 1850")
+    await conn.execute("UPDATE users SET unlimit_until = NULL WHERE user_id = 1850")
+    done_ids = ["golden_cutlet", "miner_career", "locked_safe"]
+    for qid in done_ids:
+        await set_flag(f"quest:{qid}", True)
+        await conn.execute("INSERT INTO quest_progress (user_id, quest_id, scene, flags, completed_at) "
+                           "VALUES (1850, $1, 'end_win', '[]'::jsonb, now())", qid)
+    await set_flag("quest:robot_chef", True)
+    head = {"X-Telegram-Init-Data": sign_init_data({"auth_date": str(int(_t.time())), "user": {"id": 1850}}, token)}
+    client = TestClient(TestServer(create_webapp(token)))
+    await client.start_server()
+    try:
+        d = await (await client.get("/api/quests", headers=head)).json()
+        assert d["daily"]["locked"] and d["total"] >= 10
+        by = {q["id"]: q for q in d["quests"]}
+        assert by["robot_chef"]["locked"] and not by["golden_cutlet"]["locked"]
+        closed = await (await client.post("/api/quest/open", headers=head, json={"id": "robot_chef"})).json()
+        assert closed["ok"] is False
+        again = await (await client.post("/api/quest/open", headers=head, json={"id": "golden_cutlet", "restart": True})).json()
+        assert again["ok"]                                                  # пройденный — переигрывается
+        chef = get_quest("robot_chef")
+        await qe.start(conn, 1850, chef)                                    # начатый раньше — тоже ждёт полуночи
+        with pytest.raises(qe.QuestLocked):
+            async with conn.transaction():
+                await qe.choose(conn, 1850, chef, chef["start"], 0)
+        await conn.execute("UPDATE quest_progress SET completed_at = completed_at - interval '1 day' "
+                           "WHERE user_id = 1850 AND quest_id = 'locked_safe'")
+        assert not (await qe.daily_state(conn, 1850))["locked"]            # вчерашние не считаются
+        await conn.execute("UPDATE quest_progress SET completed_at = now() WHERE user_id = 1850")
+        await conn.execute("UPDATE users SET unlimit_until = $1 WHERE user_id = 1850", utcnow() + timedelta(hours=1))
+        d2 = await (await client.get("/api/quests", headers=head)).json()
+        assert d2["daily"]["unlimited"] and not any(q["locked"] for q in d2["quests"])
+    finally:
+        await set_flag("quest:robot_chef", False)
+        invalidate_cache()
+        await conn.execute("DELETE FROM quest_progress WHERE user_id = 1850")
         await client.close()
 
 
