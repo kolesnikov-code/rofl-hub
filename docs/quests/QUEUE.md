@@ -23,4 +23,4 @@ order обычных: 11, 12, … подряд. Эпики: order 101, 102, …;
 | 1 | q_lighthouse (9), q_second_face (9), q_anecdote (8.5), q_night_house (9), q_last_train (9) | выкачен 28.10 |
 | 2 | q_cold_case (9), q_wedding_mixup (8.5), q_radio_static (9), q_museum_heist (9), q_lost_expedition (9) | выкачен 28.10 |
 | 3 | q_premiere (8.5), q_ski_lodge (8.5), q_dacha_show (8.5), q_sunken_ship (8.5), q_loop_day (8.5) | выкачен 28.10 |
-| 4 | q_archive_fire, q_robot_strike, q_lighthouse_bell, q_casino_ship, q_mars_garden | идёт |
+| 4 | q_archive_fire (9), q_robot_strike (8.5), q_drowned_bell (9), q_green_wave (9), q_mars_garden (9) | выкачен 29.10 |
