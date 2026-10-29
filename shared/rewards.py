@@ -6,12 +6,14 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 
 from shared.economy import ALL_KINDS, ITEM_EFFECTS, season_key, utcnow
 
 logger = logging.getLogger(__name__)
 
-TARGETS = ("player", "team", "season", "season_prev", "battle")
+TARGETS = ("player", "team", "season", "season_prev", "battle", "active")
+ACTIVE_DAYS = 7   # «все активные» — заходили за последнюю неделю
 GIFTS = ("coins", "resource", "sku", "item")
 
 
@@ -28,6 +30,13 @@ async def resolve_recipients(conn, target: str, value: str) -> tuple[list[int], 
             if uid is None:
                 uid = await conn.fetchval("SELECT user_id FROM vip_aliases WHERE lower(alias) = lower($1)", raw)
         return ([uid] if uid else []), f"игрок {value}"
+    if target == "active":
+        # 🧥 Раздача всем, кто заходил за последние ACTIVE_DAYS дней (кнопка пульта «раздать детали костюмов»)
+        days = max(1, min(int(value) if value.isdigit() else ACTIVE_DAYS, 90))
+        rows = await conn.fetch("SELECT user_id FROM users WHERE NOT is_blocked AND deleted_at IS NULL "
+                                "AND deletion_requested_at IS NULL AND last_seen_at > $1 ORDER BY user_id",
+                                utcnow() - timedelta(days=days))
+        return [r["user_id"] for r in rows], f"все активные за {days} дн."
     if target == "team":
         team = (await conn.fetchrow("SELECT team_id, team_name FROM teams WHERE team_id = $1", int(value))
                 if value.isdigit() else

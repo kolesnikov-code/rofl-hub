@@ -43,7 +43,7 @@ from shared.economy import (
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import resolve_lang, t
-from shared.economy import ENERGY_WIN_CHANCE_PERCENT, GAME_MILESTONES
+from shared.economy import GAME_MILESTONES, energy_chance_percent
 from shared.resources import RESOURCE_ICONS, change_resource, game_resource_gain, resource_capacity
 
 router = Router()
@@ -133,7 +133,7 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             user = await conn.fetchrow(
-                "SELECT balance, unlimit_until FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+                "SELECT balance, unlimit_until, suit, suit_level FROM users WHERE user_id = $1 FOR UPDATE", user_id)
             if not user:
                 return False, t(lang, "common.no_profile"), 0, None
 
@@ -183,12 +183,16 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                         info["milestone"] = {"kind": kind_m, "qty": 1, "total": stock_m}
                         status += "\n" + t(lang, "games.resource_gain", icon=RESOURCE_ICONS[kind_m], qty=1,
                                             name=t(lang, f"res.{kind_m}"), total=stock_m)
-                # ⚡ Электричество иногда «выпадает» в любой победе (27.10)
-                if random.randrange(100) < ENERGY_WIN_CHANCE_PERCENT:
+                # ⚡ Электричество иногда «выпадает» в любой победе (27.10); 🧥 костюм электрика — чаще (30.10)
+                if random.randrange(100) < energy_chance_percent(user["suit"], user["suit_level"]):
                     await change_resource(conn, user_id, "energy", 1, f"game_win:{game_type}",
                                           cap=await resource_capacity(conn, user_id))
                     status += "\n" + t(lang, "games.energy_gain")
                     info["energy"] = 1
+            elif is_draw:
+                # Ничья ничего не даёт и ничего не списывает (владелец 30.10)
+                new_balance = user["balance"]
+                status = t(lang, "games.draw")
             else:
                 try:
                     new_balance = await change_balance(conn, user_id, -LOSE_PENALTY, f"game_loss:{game_type}")

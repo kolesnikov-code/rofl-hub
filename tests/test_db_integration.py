@@ -33,7 +33,8 @@ async def conn():
                         "user_resources, resource_ledger, raids, daily_goal_claims, "
                         "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items, team_banners, user_tech, user_badges, "
                         "season_results, battle_entries, battle_entry_log, reward_grants, expedition_targets, expeditions, "
-                        "expedition_members, expedition_votes, expedition_log, expedition_peeks, daily_case_runs RESTART IDENTITY")
+                        "expedition_members, expedition_votes, expedition_log, expedition_peeks, daily_case_runs, "
+                        "user_gear, user_equip, gear_ledger RESTART IDENTITY")
         await c.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
                         "captured_until = NULL, last_paid_at = NULL")
         await c.execute("DELETE FROM feature_flags WHERE key LIKE 'wsr:%'")
@@ -834,7 +835,7 @@ async def test_feature_flags_set_toggle_and_cache():
         assert await ff.get_flag("quest:golden_cutlet") is False
         assert await ff.toggle_flag("quest:golden_cutlet") is True
         await global_db.pool.execute("DELETE FROM feature_flags WHERE key = 'quest:brand_new_quest'")
-        assert await ff.get_flag("quest:brand_new_quest") is False     # ротация v2: новый квест приезжает скрытым
+        assert await ff.get_flag("quest:brand_new_quest") is True      # ротация v3: новый квест — сразу в банке
 
         await ff.set_flag("games", True)                   # вернуть как было
     finally:
@@ -2973,7 +2974,7 @@ async def test_app_games_api_rounds_limits_hint_and_timer(conn, global_db):
         await client.close()
 
 
-async def test_quest_rotation_v2_three_new_per_day_then_dim_unlimited_lifts(conn, global_db):
+async def test_quest_rotation_v2_three_new_per_day_then_dim_unlimited_lifts(conn, global_db, monkeypatch):
     """🗺 27.10: после 3 новых прохождений за сутки непройденный квест гаснет (и в API, и в движке); пройденный
     переигрывается; Безлимит снимает ограничение."""
     import time as _t
@@ -2989,6 +2990,7 @@ async def test_quest_rotation_v2_three_new_per_day_then_dim_unlimited_lifts(conn
     await _mk_user(conn, 1850, 1000)
     await conn.execute("DELETE FROM quest_progress WHERE user_id = 1850")
     await conn.execute("UPDATE users SET unlimit_until = NULL WHERE user_id = 1850")
+    monkeypatch.setattr(qe, "daily_rotation", lambda pool, day: pool)    # весь банк — «квесты дня»
     done_ids = ["golden_cutlet", "miner_career", "locked_safe"]
     for qid in done_ids:
         await set_flag(f"quest:{qid}", True)
@@ -3510,3 +3512,89 @@ async def test_quest_input_timer_and_annoyed_character(conn, global_db):
         assert annoyed not in texts[0] and annoyed not in texts[1] and annoyed in texts[2]
     finally:
         await client.close()
+
+
+# ---------------------------------------------------------------- 🧍 персонаж и костюмы, ничья (30.10)
+async def test_draw_costs_nothing_and_gives_nothing(conn, global_db):
+    pytest.importorskip("aiogram")
+    from bots.main_bot.handlers.games import execute_solo_game_payout
+    await _mk_user(conn, 3100, 50)
+    ok, _, balance = await execute_solo_game_payout(3100, False, "rps", is_draw=True)
+    assert ok and balance == 50
+    assert await conn.fetchval("SELECT COUNT(*) FROM ledger WHERE user_id = 3100") == 0
+    ok, _, balance = await execute_solo_game_payout(3100, False, "rps")
+    assert ok and balance == 49                                           # проигрыш по-прежнему −1
+
+
+async def test_gear_season_cap_full_set_upgrade_market_and_exo(conn):
+    import random as _r
+    from shared import gear
+    from shared.economy import GEAR_SLOTS, GEAR_SUITS, utcnow
+    from shared.market import MarketError, fill_order, place_order
+    from shared.resources import change_resource
+    now = utcnow()
+    await _mk_user(conn, 3101, 100_000)
+    await _mk_user(conn, 3102, 100_000)
+    # 1) выпадение: не больше одного костюма деталей за сезон
+    got = await gear.drop_random(conn, 3101, 9, "T1", now, rng=_r.Random(7))
+    assert len(got) == 5 and await gear.drop_random(conn, 3101, 3, "T2", now) == []
+    assert await gear.season_drops(conn, 3101, now) == 5
+    # 2) полный комплект шахтёра — костюм действует, сняли шлем — нет
+    for p in GEAR_SLOTS:
+        await gear.change_gear(conn, 3101, "mn", p, 1, 1, "test")
+    for p in GEAR_SLOTS:
+        await gear.equip(conn, 3101, "mn", p, 1, now)
+    row = await conn.fetchrow("SELECT suit, suit_level, suit_since FROM users WHERE user_id = 3101")
+    assert (row["suit"], row["suit_level"]) == ("mn", 1) and row["suit_since"] is not None
+    await gear.unequip(conn, 3101, "head", now)
+    assert await conn.fetchval("SELECT suit FROM users WHERE user_id = 3101") is None
+    assert await gear.have(conn, 3101, "mn", "head") == 1                  # снятая деталь — в сумке
+    with pytest.raises(gear.GearError):
+        await gear.equip(conn, 3101, "el", "head", 2, now)                 # такой детали нет
+    # 3) прокачка надетой детали: ресурсы и монеты сгорают, уровень костюма — по слабой детали
+    await gear.equip(conn, 3101, "mn", "head", 1, now)
+    for kind, qty in (("metal", 150), ("stone", 80)):
+        await change_resource(conn, 3101, kind, qty, "test")
+    await gear.upgrade(conn, 3101, "mn", "body", now)
+    assert await conn.fetchval("SELECT level FROM user_equip WHERE user_id = 3101 AND slot = 'body'") == 2
+    assert await conn.fetchval("SELECT suit_level FROM users WHERE user_id = 3101") == 1
+    assert await conn.fetchval("SELECT delta FROM ledger WHERE user_id = 3101 AND reason = 'gear_upgrade'") == -300
+    with pytest.raises(gear.GearError):
+        await gear.upgrade(conn, 3101, "mn", "body", now)                  # уже 2-й уровень
+    # 4) биржа деталей: пол 500, комиссия 10% сгорает, деталь переходит покупателю
+    await gear.change_gear(conn, 3101, "el", "hands", 1, 1, "test")
+    before = await gear.have(conn, 3101, "el", "hands")                  # случайные детали шага 1 могли совпасть
+    with pytest.raises(MarketError):
+        await place_order(conn, 3101, "g_el_hands", "sell", 1, 499)
+    order = await place_order(conn, 3101, "g_el_hands", "sell", 1, 500)
+    assert await gear.have(conn, 3101, "el", "hands") == before - 1        # деталь в эскроу
+    deal = await fill_order(conn, 3102, order, 1)
+    assert deal["fee"] == 50 and deal["seller_got"] == 450
+    assert await gear.have(conn, 3102, "el", "hands") == 1
+    # 5) сплав экзо-брони требует все 30 деталей 2-го уровня
+    with pytest.raises(gear.GearError):
+        await gear.merge_exo(conn, 3102, now)
+    for s in GEAR_SUITS:
+        for p in GEAR_SLOTS:
+            await gear.change_gear(conn, 3102, s, p, 2, 1, "test")
+    for kind, qty in (("core", 1), ("battery", 5), ("energy", 50)):
+        await change_resource(conn, 3102, kind, qty, "test")
+    await gear.merge_exo(conn, 3102, now)
+    assert await conn.fetchval("SELECT suit FROM users WHERE user_id = 3102") == "exo"
+    assert await conn.fetchval("SELECT COALESCE(SUM(qty), 0) FROM user_gear WHERE user_id = 3102 AND level = 2") == 0
+    assert await gear.have(conn, 3102, "el", "hands") == 1                 # детали 1-го уровня не тронуты
+
+
+async def test_miner_suit_pays_once_a_day_only_for_mining_after_wearing(conn):
+    from datetime import timedelta as _td
+    from shared import gear
+    from shared.economy import utcnow
+    now = utcnow()
+    day = now.replace(hour=0, minute=0, second=0, microsecond=0) - _td(days=1)
+    await _mk_user(conn, 3103, 0, suit="mn", suit_level=1, suit_since=day + _td(hours=12))
+    for hours, amount in ((6, 400), (13, 1000), (20, 999)):              # первая добыча — до того, как надел(а)
+        await conn.execute("INSERT INTO ledger (user_id, delta, reason, created_at) VALUES (3103, $1, 'mining', $2)",
+                           amount, day + _td(hours=hours))
+    assert await gear.pay_miner_bonus(conn, 3103, day) == 99               # 5% от 1999, вниз
+    assert await gear.pay_miner_bonus(conn, 3103, day) == 0                # второй раз за те же сутки — нет
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 3103") == 99

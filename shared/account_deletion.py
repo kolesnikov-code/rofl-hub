@@ -129,6 +129,10 @@ async def purge_account(conn, user_id: int, now: datetime) -> bool:
     await conn.execute("DELETE FROM game_counters WHERE user_id = $1", user_id)
     await conn.execute("DELETE FROM user_tech WHERE user_id = $1", user_id)      # Лаборатория — тоже с нуля
     await conn.execute("DELETE FROM user_badges WHERE user_id = $1", user_id)
+    await conn.execute("DELETE FROM user_gear WHERE user_id = $1", user_id)       # 🧍 сумка и надетые костюмы
+    await conn.execute("DELETE FROM user_equip WHERE user_id = $1", user_id)
+    await conn.execute("UPDATE users SET suit = NULL, suit_level = NULL, suit_since = NULL, gender = NULL "
+                       "WHERE user_id = $1", user_id)
     await conn.execute(
         """
         UPDATE users SET

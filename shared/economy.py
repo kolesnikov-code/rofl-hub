@@ -238,6 +238,8 @@ MARKET_CUTLET_MIN_PRICE = MARKET_MIN_PRICES["cutlet"]
 
 
 def market_min_price(asset: str) -> int:
+    if asset.startswith("g_"):
+        return GEAR_MIN_PRICE   # 🧥 деталь костюма (30.10)
     return MARKET_MIN_PRICES.get(asset, MARKET_MIN_PRICE)
 
 
@@ -770,6 +772,8 @@ def market_limits(shuttle: bool, asset: str = "cutlet") -> tuple[int, int]:
     """(макс. штук в ордере, макс. открытых ордеров) — с Шаттлом логистика шире."""
     if asset == "cutlet":
         qty = SHUTTLE_MARKET_MAX_QTY if shuttle else MARKET_MAX_QTY
+    elif asset.startswith("g_"):
+        qty = GEAR_MARKET_MAX_QTY
     else:
         qty = SHUTTLE_RESOURCE_MAX_QTY if shuttle else MARKET_RESOURCE_MAX_QTY
     return qty, (SHUTTLE_MARKET_MAX_OPEN_ORDERS if shuttle else MARKET_MAX_OPEN_ORDERS)
@@ -979,7 +983,93 @@ def exp_peek_budget(spies: int, scout_level: int, forks: int, first_of_season: b
     return max(0, min(spies, scout_level, forks))
 
 
-def exp_travel_minutes(distance: float, mode: str, spy_pct: int = 0) -> int:
-    """Минуты пути: расстояние / скорость отряда, шпионы сокращают путь."""
+def exp_travel_minutes(distance: float, mode: str, spy_pct: int = 0, suit_pct: int = 0) -> int:
+    """Минуты пути: расстояние / скорость отряда, шпионы сокращают путь, 🪖 костюм военного — ещё на suit_pct%."""
     minutes = distance / EXP_SPEED[mode] * 60 * (100 - max(0, min(spy_pct, DRONE_EXP_SPEED_CAP))) / 100
+    minutes = minutes * (100 - max(0, min(suit_pct, 50))) / 100
     return max(EXP_MIN_TRAVEL_MINUTES, int(round(minutes)))
+
+
+# --------------------------------------------------------------------------
+# 🧍 ПЕРСОНАЖ И КОСТЮМЫ (решение владельца 30.10). Костюм — 5 деталей (шлем, куртка, перчатки, штаны, ботинки);
+# бонус работает, только когда надет ПОЛНЫЙ комплект одного костюма (уровень костюма = меньший из уровней деталей).
+# Детали выпадают случайно (пульт владельца, призы битв и экспедиций): не больше GEAR_SEASON_CAP за сезон на игрока —
+# ровно один костюм, но у всех разные детали, поэтому одинаковые собирают через биржу (комиссия сгорает).
+# Прокачка детали до 2-го уровня — рецепт за ресурсы + монеты (сгорают). Все 6 костюмов на 2-м уровне сплавляются
+# в нано-экзо-броню (все бонусы сразу, 2-й уровень); сплавленные детали исчезают навсегда.
+# --------------------------------------------------------------------------
+GEAR_SUITS = ("el", "mn", "ml", "st", "sc", "en")   # электрик, шахтёр, военный, маскировка, учёный, инженер
+GEAR_EXO = "exo"                                     # нано-экзо-броня (только сплавом, на бирже не торгуется)
+GEAR_SLOTS = ("head", "body", "hands", "legs", "feet")
+GEAR_MAX_LEVEL = 2
+GEAR_SEASON_CAP = len(GEAR_SLOTS)    # деталей за сезон на игрока — ровно один костюм
+GEAR_MIN_PRICE = 500                 # пол цены детали на бирже (продажа и заявка)
+GEAR_MARKET_MAX_QTY = 5              # деталей в одном ордере
+# Сила бонуса полного костюма по уровню, в процентах (у каждого костюма — своя «линия»)
+SUIT_BONUS = {
+    "el": {1: 50, 2: 60},   # ⚡ шанс электричества за победу в соло-игре (без костюма — ENERGY_WIN_CHANCE_PERCENT)
+    "mn": {1: 5, 2: 8},     # ⛏ раз в сутки: % от монет, добытых фермой за прошлые сутки UTC (округление вниз)
+    "ml": {1: 10, 2: 15},   # 🪖 налёты: +% трофея; экспедиции: +% к добыче развилок и −% пути
+    "st": {1: 30, 2: 50},   # 🥷 шанс не попасть в разведку налётчика
+    "sc": {1: 20, 2: 30},   # 🔬 перерыв между уровнями технологий короче на %
+    "en": {1: 10, 2: 15},   # 🔧 ресурсы рецептов мастерской дешевле на % (округление вверх — в пользу экосистемы)
+}
+# Прокачка детали 1 → 2: ресурсы в тему костюма + монеты (сгорают, ledger gear_upgrade)
+GEAR_UPGRADE_COST = {
+    "el": {"energy": 20, "battery": 1, "metal": 50},
+    "mn": {"metal": 150, "stone": 80},
+    "ml": {"metal": 100, "parts": 100, "fire": 10},
+    "st": {"hydrogen": 120, "wood": 80},
+    "sc": {"crystal": 150, "energy": 10},
+    "en": {"parts": 150, "battery": 1, "crystal": 30},
+}
+GEAR_UPGRADE_COINS = 300
+# Сплав всех 30 деталей 2-го уровня в нано-экзо-броню (ledger gear_exo)
+GEAR_EXO_COST = {"core": 1, "battery": 5, "energy": 50}
+GEAR_EXO_COINS = 3000
+
+
+def gear_asset(suit: str, slot: str) -> str:
+    """Ключ товара биржи для детали 1-го уровня: g_<костюм>_<слот> (≤ 16 символов колонки asset)."""
+    return f"g_{suit}_{slot}"
+
+
+def parse_gear_asset(asset: str) -> tuple[str, str] | None:
+    parts = (asset or "").split("_")
+    if len(parts) == 3 and parts[0] == "g" and parts[1] in GEAR_SUITS and parts[2] in GEAR_SLOTS:
+        return parts[1], parts[2]
+    return None
+
+
+GEAR_ASSETS = tuple(gear_asset(s, p) for s in GEAR_SUITS for p in GEAR_SLOTS)
+
+
+def suit_bonus(suit: str | None, level: int | None, line: str) -> int:
+    """% бонуса линии line (el/mn/ml/st/sc/en) у надетого полного костюма; экзо-броня даёт все линии 2-го уровня."""
+    if not suit or not level:
+        return 0
+    if suit == GEAR_EXO:
+        return SUIT_BONUS[line][GEAR_MAX_LEVEL]
+    if suit != line:
+        return 0
+    return SUIT_BONUS[line].get(min(int(level), GEAR_MAX_LEVEL), 0)
+
+
+def energy_chance_percent(suit: str | None, level: int | None) -> int:
+    return suit_bonus(suit, level, "el") or ENERGY_WIN_CHANCE_PERCENT
+
+
+def discounted_cost(cost: dict[str, int], pct: int) -> dict[str, int]:
+    """Скидка инженера: каждый ресурс дешевле на pct%, округление ВВЕРХ (в пользу экосистемы)."""
+    if not pct:
+        return dict(cost)
+    return {k: -(-v * (100 - pct) // 100) for k, v in cost.items()}
+
+
+def miner_bonus(mined: int, pct: int) -> int:
+    """Бонус шахтёра за сутки: % от добытого, округление ВНИЗ (каждая монета — против инфляции)."""
+    return max(0, mined) * max(0, pct) // 100
+
+
+def tech_cooldown_cut(days: float, pct: int) -> float:
+    return days * (100 - max(0, pct)) / 100

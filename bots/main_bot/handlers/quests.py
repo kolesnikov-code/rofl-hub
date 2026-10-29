@@ -70,13 +70,18 @@ async def _completed_ids(user_id: int) -> set[str]:
         return await qe.completed_ids(conn, user_id)
 
 
+async def _visible(user_id: int) -> list[dict]:
+    async with db.pool.acquire() as conn:
+        return await qe.visible_for(conn, user_id)
+
+
 @router.message(Command("quests"))
 async def cmd_quests(message: types.Message, user_lang: str = "ru"):
     if not await feature_enabled(message, "quests", user_lang):
         return
     completed = await _completed_ids(message.from_user.id)
     await message.answer(t(user_lang, "quest.list_header"),
-                         reply_markup=_list_kb(completed, user_lang, await qe.visible_quests()),
+                         reply_markup=_list_kb(completed, user_lang, await _visible(message.from_user.id)),
                          parse_mode="HTML")
 
 
@@ -87,7 +92,7 @@ async def quest_list_callback(callback: types.CallbackQuery, user_lang: str = "r
     await callback.answer()
     completed = await _completed_ids(callback.from_user.id)
     await _safe_edit(callback.message, t(user_lang, "quest.list_header"),
-                     _list_kb(completed, user_lang, await qe.visible_quests()))
+                     _list_kb(completed, user_lang, await _visible(callback.from_user.id)))
 
 
 @router.callback_query(F.data.startswith("quest_info:"))

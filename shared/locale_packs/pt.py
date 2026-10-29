@@ -104,6 +104,14 @@ STRINGS = {
     "hist.shuttle_charge": "🚀 Shuttle charge",
     "hist.team_help_give": "🤝 Help for a teammate",
     "hist.team_help_get": "🤝 Help from a teammate",
+    "gear.err_unknown": "🧥 There is no such part.",
+    "gear.err_none": "🧥 You don't have this part.",
+    "gear.err_max": "🧥 This part is already at the top level.",
+    "gear.err_coins": "🪙 Not enough coins: you need {need}.",
+    "gear.err_exo_missing": "💠 Fusion needs all 30 level-2 parts: you have {have} of {need}.",
+    "hist.gear_upgrade": "⬆️ Suit part upgrade",
+    "hist.gear_exo": "💠 Nano exo-armour fusion",
+    "hist.suit_miner": "⛏ Miner suit bonus",
     "hist.other": "• Other",
     "hist.src_gift": "🎁 Gift from the team",
     "hist.src_battle": "🏟 Battle or event",
@@ -262,7 +270,7 @@ STRINGS = {
         "Aqui você pode enfrentar o bot em duelos rápidos ou encarar o "
         "teste relâmpago de inteligência para faturar alto — ou zerar o saldo!\n\n"
         "💸 Vitória paga: <b>+2 🪙</b> (Ciber-Cofre: <b>+5</b>)\n"
-        "💀 Derrota ou empate desconta: <b>-1 🪙</b>\n"
+        "💀 Derrota desconta: <b>-1 🪙</b>, empate não custa nada\n"
         "🧠 No Quiz há um cronômetro de 30 segundos e níveis de inteligência: o nível 1 pede 10 respostas certas e paga <b>+100 🪙</b>, "
         "cada nível seguinte é 10 respostas mais longo — mas a recompensa cresce em 100!\n"
         "..................................................\n"
@@ -431,7 +439,7 @@ STRINGS = {
     # ---------------- jogos: motor comum ----------------
     "games.win": "🎉 <b>VITÓRIA!</b> 🎉\nCreditado: <b>+{reward} 🪙</b>",
     "games.lose": "💀 <b>DERROTA!</b>\nDescontado: <b>-{penalty} 🪙</b>",
-    "games.draw": "🤝 <b>EMPATE!</b>\nDescontado: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>EMPATE!</b>\nNenhuma moeda descontada.",
     "games.limit": (
         "🛑 <b>Limite diário atingido!</b>\n\n"
         "Você já pegou {limit} vitórias em {game} hoje. O limite renova às 00:00 UTC.\n\n"
@@ -458,7 +466,7 @@ STRINGS = {
     # ---------------- PPT ----------------
     "rps.intro": (
         "🪨✂️🧻 <b>PEDRA-PAPEL-TESOURA</b>\n\n"
-        "Vitória: <b>+{reward}</b> · Derrota/empate: <b>-{penalty}</b>\n"
+        "Vitória: <b>+{reward}</b> · Derrota: <b>-{penalty}</b> · Empate: <b>0</b>\n"
         "Limite de vitórias por dia: <b>{limit}</b>"
     ),
     "rps.rock": "🪨 Pedra",
@@ -1109,6 +1117,69 @@ STRINGS = {
 }
 
 MINIAPP = {
+    # TODO(перевод 30.10): персонаж и костюмы — пока по-английски
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Todos os personagens, nomes e acontecimentos destas histórias são fictícios. Qualquer semelhança com pessoas reais, vivas ou falecidas, ou com fatos reais é mera coincidência.",
     "qs_check": "Verificar",
     "qs_tries": "Tentativas: {n}",

@@ -105,6 +105,14 @@ STRINGS: dict[str, str] = {
     "hist.shuttle_charge": "🚀 Shuttle charge",
     "hist.team_help_give": "🤝 Help for a teammate",
     "hist.team_help_get": "🤝 Help from a teammate",
+    "gear.err_unknown": "🧥 There is no such part.",
+    "gear.err_none": "🧥 You don't have this part.",
+    "gear.err_max": "🧥 This part is already at the top level.",
+    "gear.err_coins": "🪙 Not enough coins: you need {need}.",
+    "gear.err_exo_missing": "💠 Fusion needs all 30 level-2 parts: you have {have} of {need}.",
+    "hist.gear_upgrade": "⬆️ Suit part upgrade",
+    "hist.gear_exo": "💠 Nano exo-armour fusion",
+    "hist.suit_miner": "⛏ Miner suit bonus",
     "hist.other": "• Other",
     "hist.src_gift": "🎁 Gift from the team",
     "hist.src_battle": "🏟 Battle or event",
@@ -263,7 +271,7 @@ STRINGS: dict[str, str] = {
         "Bu yerda botga qarshi tezkor bellashuvlarga kirishing yoki intellektual sprint-testdan "
         "o'tishing mumkin — jekpotni urasan yoki balansni yutqazib qo'yasan!\n\n"
         "💸 G'alaba keltiradi: <b>+2 🪙</b> (Kiber-Seyf: <b>+5</b>)\n"
-        "💀 Mag'lubiyat yoki durang olib ketadi: <b>-1 🪙</b>\n"
+        "💀 Mag'lubiyat olib ketadi: <b>-1 🪙</b>, durang — hech narsa\n"
         "🧠 Viktorinada — 30 soniyalik taymer va intellekt darajalari: 1-daraja — 10 to'g'ri javob va <b>+100 🪙</b>, "
         "keyin har bir daraja 10 javobga uzunroq, lekin mukofot ham 100 ga o'sadi!\n"
         "..................................................\n"
@@ -432,7 +440,7 @@ STRINGS: dict[str, str] = {
     # ---------------- игры: общий движок ----------------
     "games.win": "🎉 <b>G'ALABA!</b> 🎉\nHisoblandi: <b>+{reward} 🪙</b>",
     "games.lose": "💀 <b>MAG'LUBIYAT!</b>\nYechildi: <b>-{penalty} 🪙</b>",
-    "games.draw": "🤝 <b>DURANG!</b>\nYechildi: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>DURANG!</b>\nTangalar yechilmadi.",
     "games.limit": (
         "🛑 <b>Kunlik limitga yetding!</b>\n\n"
         "{game} o'yinida bugun allaqachon {limit} ta g'alaba olding. Limit 00:00 UTC da yangilanadi.\n\n"
@@ -459,7 +467,7 @@ STRINGS: dict[str, str] = {
     # ---------------- КНБ ----------------
     "rps.intro": (
         "🪨✂️🧻 <b>TOSH-QAYCHI-QOG'OZ</b>\n\n"
-        "G'alaba: <b>+{reward}</b> · Mag'lubiyat/durang: <b>-{penalty}</b>\n"
+        "G'alaba: <b>+{reward}</b> · Mag'lubiyat: <b>-{penalty}</b> · Durang: <b>0</b>\n"
         "Kunlik g'alaba limiti: <b>{limit}</b>"
     ),
     "rps.rock": "🪨 Tosh",
@@ -1111,6 +1119,69 @@ STRINGS: dict[str, str] = {
 }
 
 MINIAPP: dict[str, str] = {
+    # TODO(перевод 30.10): персонаж и костюмы — пока по-английски
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Hikoyalardagi barcha qahramonlar, ismlar va voqealar to'qima. Tirik yoki vafot etgan haqiqiy odamlar va haqiqiy voqealar bilan har qanday o'xshashlik tasodifiy.",
     "qs_check": "Tekshirish",
     "qs_tries": "Urinishlar: {n}",

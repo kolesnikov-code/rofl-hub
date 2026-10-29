@@ -467,6 +467,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     register_duel_routes(app)     # ⚔️ дуэли в приложении (очередь общая с чатом — shared/duels.py)
     from bots.main_bot.webapp_social import register_social_routes
     register_social_routes(app)   # 🤝 режим, переводы, вызов друга, дело дня, карточка, отряд → команда
+    from bots.main_bot.webapp_gear import register_gear_routes
+    register_gear_routes(app)     # 🧍 персонаж: аватар, костюмы, прокачка, экзо-броня, рынок деталей
     # Арты роботов для сцены фермы: img/robots/<kind>.png (арты владельца) или .svg (заглушки)
     app.router.add_static("/img", WEBAPP_DIR / "img")
     return app

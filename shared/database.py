@@ -913,6 +913,59 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS daily_case_runs_day_idx ON daily_case_runs (day);",
+    # 30.10 ротация квестов v3: весь банк обычных квестов — в ротации дня (10 случайных на всех); разово возвращаем
+    # в банк квесты, скрытые по старым правилам; дальше тумблер quest:<id> = «исключить из ротации»
+    """
+    DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT 1 FROM feature_flags WHERE key = 'migr:quest_pool_20261030') THEN
+        PERFORM pg_advisory_xact_lock(20261030);
+        IF NOT EXISTS (SELECT 1 FROM feature_flags WHERE key = 'migr:quest_pool_20261030') THEN
+          UPDATE feature_flags SET enabled = TRUE WHERE key LIKE 'quest:%';
+          INSERT INTO feature_flags (key, enabled) VALUES ('migr:quest_pool_20261030', TRUE) ON CONFLICT (key) DO NOTHING;
+        END IF;
+      END IF;
+    END $$;
+    """,
+    # --- 30.10 🧍 персонаж и костюмы (shared/gear.py) ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS gender VARCHAR(1);",              # m | f | NULL — не выбран
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS suit VARCHAR(3);",                # действующий полный комплект
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS suit_level SMALLINT;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS suit_since TIMESTAMP WITH TIME ZONE;",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS miner_bonus_day DATE;",          # бонус шахтёра выплачен за сутки
+    """
+    CREATE TABLE IF NOT EXISTS user_gear (
+        user_id BIGINT NOT NULL,
+        suit VARCHAR(3) NOT NULL,
+        slot VARCHAR(5) NOT NULL,
+        level SMALLINT NOT NULL DEFAULT 1,
+        qty INT NOT NULL DEFAULT 0 CHECK (qty >= 0),
+        PRIMARY KEY (user_id, suit, slot, level)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS user_equip (
+        user_id BIGINT NOT NULL,
+        slot VARCHAR(5) NOT NULL,
+        suit VARCHAR(3) NOT NULL,
+        level SMALLINT NOT NULL DEFAULT 1,
+        PRIMARY KEY (user_id, slot)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS gear_ledger (
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        suit VARCHAR(3) NOT NULL,
+        slot VARCHAR(5) NOT NULL,
+        level SMALLINT NOT NULL,
+        delta INT NOT NULL,
+        reason VARCHAR(32) NOT NULL,
+        ref VARCHAR(64),
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS gear_ledger_user_idx ON gear_ledger (user_id, reason, created_at);",
 ]
 
 

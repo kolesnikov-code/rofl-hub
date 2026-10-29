@@ -14,6 +14,7 @@ from aiogram.types import BotCommand, ErrorEvent, MenuButtonWebApp, WebAppInfo
 from bots.main_bot.config import BOT_TOKEN, SHOP_TEST_MODE, SHOP_TEST_USER_IDS, WEBAPP_PORT, WEBAPP_URL
 from bots.main_bot.webapp import start_webapp_server
 from bots.main_bot.handlers.account import account_reaper_loop, router as account_router
+from shared.gear import miner_bonus_loop
 from shared.mines import mine_payout_loop
 from bots.main_bot.handlers.clans import router as clans_router
 from bots.main_bot.handlers.duels import duel_reaper_loop, router as duels_router
@@ -156,6 +157,8 @@ async def main() -> None:
     asyncio.create_task(account_reaper_loop(bot))
     # Рудники: раз в 5 минут бойцы команд-владельцев получают ресурс за прошедшие часы
     asyncio.create_task(mine_payout_loop())
+    # ⛏ Костюм шахтёра: раз в сутки +% от добытого фермой за прошлые сутки UTC
+    asyncio.create_task(miner_bonus_loop())
 
     # Mini App: веб-сервер (статика + API + Stars-инвойсы) и кнопка меню чата
     try:

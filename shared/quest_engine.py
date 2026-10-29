@@ -5,13 +5,17 @@
 (сцена + флаги, переживает рестарты); награда — только за ПЕРВУЮ победу (ledger quest_reward + набор ресурсов),
 платные подсказки — ledger quest_hint. choose() вызывается ВНУТРИ транзакции.
 
-Ротация v2 (владелец 27.10): в списке до QUEST_ROTATION_SIZE квестов (тумблеры quest:<id>) + эпики (epic:<id>, поле
+Ротация v3 (владелец 30.10): каждый день UTC всем показываются ОДНИ И ТЕ ЖЕ QUEST_ROTATION_SIZE случайных обычных квестов
+из всего банка (daily_rotation — перемешивание по дате); тумблер quest:<id> теперь значит «в банке ротации» (по умолчанию
+да; выключенный владельцем квест не выпадает). Начатый и недопройденный квест остаётся в списке игрока, пока не пройден.
+Ротация v2 (владелец 27.10): эпики (epic:<id>, поле
 "epic": true в JSON — событие ≥20 минут, ТОЛЬКО с ⚡ Безлимитом: «эпики должны быть платными»). За сутки UTC
 засчитываются QUEST_DAILY_NEW новых прохождений; потом непройденные квесты гаснут до 00:00 (Безлимит снимает),
 пройденные переигрываются без ограничений.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 
 from datetime import timedelta
@@ -75,13 +79,35 @@ def total_count() -> int:
     return len(all_quests())
 
 
-async def visible_quests() -> list[dict]:
-    """Включённые владельцем: эпики (события) первыми, затем ротация — не больше QUEST_ROTATION_SIZE."""
-    epics, rotation = [], []
+def daily_rotation(pool: list[dict], day) -> list[dict]:
+    """Квесты дня: одинаковые для всех — порядок задаёт хэш (дата, id), меняется каждые сутки UTC."""
+    def key(q):
+        return hashlib.sha256(f"{day.isoformat()}:{q['id']}".encode()).hexdigest()
+    return sorted(pool, key=key)[:QUEST_ROTATION_SIZE]
+
+
+async def visible_quests(day=None) -> list[dict]:
+    """Список дня: включённые эпики (события) первыми, затем QUEST_ROTATION_SIZE случайных квестов дня из банка."""
+    epics, pool = [], []
     for q in all_quests():
         if await get_flag(flag_key(q)):
-            (epics if is_epic(q) else rotation).append(q)
-    return epics + rotation[:QUEST_ROTATION_SIZE]
+            (epics if is_epic(q) else pool).append(q)
+    return epics + daily_rotation(pool, day or utcnow().date())
+
+
+async def visible_for(conn, user_id: int, day=None) -> list[dict]:
+    """Список игрока: квесты дня + его начатые и не пройденные (чтобы смена дня не обрывала прохождение)."""
+    quests = await visible_quests(day)
+    shown = {q["id"] for q in quests}
+    rows = await conn.fetch("SELECT quest_id, scene FROM quest_progress WHERE user_id = $1 AND completed_at IS NULL",
+                            user_id)
+    by_id = {q["id"]: q for q in all_quests()}
+    for r in rows:
+        q = by_id.get(r["quest_id"])
+        if q and q["id"] not in shown and not is_finished(q, r["scene"]) and (not is_epic(q) or await get_flag(flag_key(q))):
+            quests.append(q)
+            shown.add(q["id"])
+    return quests
 
 
 async def daily_state(conn, user_id: int) -> dict:
@@ -110,9 +136,11 @@ def locked_for(quest: dict, prog, daily: dict) -> bool:
 
 
 async def quest_accessible(conn, quest_id: str, user_id: int) -> bool:
-    """Скрытый квест доступен лишь тем, кто его уже начал (доигрывание в ротации)."""
+    """Квест сегодня в списке игрока — или он его уже начинал (доигрывание / переигровка пройденного)."""
     quest = next((q for q in all_quests() if q["id"] == quest_id), None)
-    if quest and await get_flag(flag_key(quest)):
+    if quest is None:
+        return False
+    if any(q["id"] == quest_id for q in await visible_quests()):
         return True
     return bool(await conn.fetchval("SELECT 1 FROM quest_progress WHERE user_id = $1 AND quest_id = $2",
                                     user_id, quest_id))

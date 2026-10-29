@@ -158,7 +158,7 @@ async def handle_map(request: web.Request) -> web.Response:
             if mode is None or not exp_mode_allowed(r["scope"], mode):
                 continue
             ox, oy = origin_for(mode, ctx.user_id if mode == "solo" else team_id)
-            minutes = exp_travel_minutes(distance(ox, oy, r["x"], r["y"]), mode, eff["speed"])
+            minutes = exp_travel_minutes(distance(ox, oy, r["x"], r["y"]), mode, eff["speed"], eff.get("suit", 0))
             options.append({"mode": mode, "minutes": minutes, "ok": now.timestamp() + minutes * 60 <= r["resolve_at"].timestamp()})
         prizes = prizes_by_place(r["prizes"])
         reward_all = _rewards(r["reward_all"])

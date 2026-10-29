@@ -118,6 +118,7 @@
     if (r.kind === "robot") return ROBOT_NAME[r.robot] + " " + durLabel(r.hours) + (r.qty > 1 ? " ×" + r.qty : "");
     if (r.kind === "boost") return BOOST_NAME[r.boost] + " " + durLabel(r.hours);
     if (r.kind === "bdrone") return DRONE_NAME[r.drone] + (r.qty > 1 ? " ×" + r.qty : "");
+    if (r.kind === "gear") return "🧥 Детали костюмов ×" + r.qty;
     return "🎁 " + r.text;
   }
 
@@ -137,7 +138,7 @@
         list.map((r, i) => '<div class="rw"><span>' + esc(rewardLabel(r)) + '</span><button class="mini" data-del="' + i + '">✕</button></div>').join("") +
         '<div class="grid2" style="margin-top:8px"><select class="rk">' +
         [["coins", "🪙 Монеты"], ["resource", "📦 Ресурс"], ["cutlets", "🥩 Котлеты"], ["item", "🧪 Изделие на склад"],
-         ["robot", "🤖 Робот на срок"], ["boost", "⚡ Буст / Безлимит / Щит"], ["bdrone", "🤖 Боевой дрон (навсегда)"], ["text", "🎁 Ручной приз (текст)"]]
+         ["robot", "🤖 Робот на срок"], ["boost", "⚡ Буст / Безлимит / Щит"], ["bdrone", "🤖 Боевой дрон (навсегда)"], ["gear", "🧥 Детали костюмов (случайные)"], ["text", "🎁 Ручной приз (текст)"]]
           .map(([k, t]) => '<option value="' + k + '"' + (k === kind ? " selected" : "") + '>' + t + '</option>').join("") +
         '</select><div class="rp"></div></div><button class="mini" style="margin-top:8px" data-add="1">➕ Добавить и выбрать ещё</button>';
       params();
@@ -166,6 +167,7 @@
         robot: '<select class="rs">' + opts(ROBOT_NAME) + '</select>' + dur() + '<input class="rq" type="number" min="1" value="1" style="margin-top:6px">',
         boost: '<select class="rs">' + opts(BOOST_NAME) + '</select>' + dur(),
         bdrone: '<select class="rs">' + opts(DRONE_NAME) + '</select><input class="rq" type="number" min="1" value="1" style="margin-top:6px">',
+        gear: '<input class="rq" type="number" min="1" max="5" value="1" placeholder="деталей (1–5)"><div class="hint">Костюм и слот — случайные; за сезон игроку не больше 5 деталей (лишнее не выдаётся).</div>',
         text: '<input class="rt" placeholder="например: Telegram Premium на 3 месяца">',
       }[k];
     }
@@ -178,6 +180,7 @@
       if (k === "robot") return hours > 0 ? { kind: k, robot: q(".rs").value, hours: hours, qty: Math.max(1, Number(q(".rq").value) || 1) } : null;
       if (k === "boost") return hours > 0 ? { kind: k, boost: q(".rs").value, hours: hours } : null;
       if (k === "bdrone") return { kind: k, drone: q(".rs").value, qty: Math.max(1, Number(q(".rq").value) || 1) };
+      if (k === "gear") return { kind: k, qty: Math.min(5, Math.max(1, Number(q(".rq").value) || 1)) };
       const t = q(".rt").value.trim(); return t ? { kind: "text", text: t } : null;
     }
     BUILDERS.push({ host, list, read });
@@ -333,16 +336,27 @@
   // ---------------- 🎁 Подарок
   const gift = { target: "player", value: "", rewards: [] };
   function viewGift(app) {
-    const T = { player: "👤 Игрок", team: "🏆 Команда / клан", season: "📊 ТОП текущего сезона", season_prev: "🏁 ТОП прошлого сезона", battle: "⚔️ Призёры битвы" };
-    const P = { player: "ID, @username или VIP ID", team: "ID или точное название", season: "Сколько лучших (1–100)", season_prev: "Сколько лучших (1–100)", battle: "Номер битвы и место: 5 1" };
+    const T = { player: "👤 Игрок", team: "🏆 Команда / клан", season: "📊 ТОП текущего сезона", season_prev: "🏁 ТОП прошлого сезона", battle: "⚔️ Призёры битвы", active: "🌐 Все активные" };
+    const P = { active: "За сколько последних дней заходили (по умолчанию 7)", player: "ID, @username или VIP ID", team: "ID или точное название", season: "Сколько лучших (1–100)", season_prev: "Сколько лучших (1–100)", battle: "Номер битвы и место: 5 1" };
     app.innerHTML = '<div class="card"><h2>🎁 Подарок</h2><label>Кому</label><div class="chips">' +
       Object.entries(T).map(([k, t]) => '<button class="chip' + (gift.target === k ? ' on' : '') + '" data-t="' + k + '">' + t + '</button>').join("") + '</div>' +
       '<label>' + P[gift.target] + '</label><input id="gVal" value="' + esc(gift.value) + '">' +
       '<h3>Награда</h3><div id="gRw"></div><div class="grid2"><button class="btn ghost" id="gCheck">🔎 Проверить получателей</button>' +
-      '<button class="btn" id="gGo">🎁 Выдать</button></div></div>';
+      '<button class="btn" id="gGo">🎁 Выдать</button></div></div>' +
+      '<div class="card"><h2>🧥 Раздача деталей костюмов</h2><div class="hint">Каждому, кто заходил за 7 дней, — случайные детали 1-го уровня ' +
+      '(костюм и слот у всех разные). Лимит — 5 деталей на игрока за сезон: повторное нажатие лишнего не выдаст. ' +
+      'Одинаковые детали игроки добирают на бирже (комиссия сгорает). Детали можно давать и призом битвы или экспедиции.</div>' +
+      '<label>Деталей каждому (1–5)</label><input id="gearN" type="number" min="1" max="5" value="5">' +
+      '<button class="btn" id="gearGo">🧥 Раздать всем активным</button></div>';
     app.querySelectorAll("[data-t]").forEach(b => { b.onclick = () => { gift.value = $("gVal").value; gift.target = b.dataset.t; viewGift(app); }; });
     rewardBuilder($("gRw"), gift.rewards);
     const body = dry => { flushRewards(); return { target: gift.target, value: $("gVal").value, rewards: gift.rewards, dry_run: dry }; };
+    $("gearGo").onclick = e => {
+      const n = Math.min(5, Math.max(1, Number($("gearN").value) || 5));
+      if (!confirm("Раздать по " + n + " случайных деталей всем активным за 7 дней?")) return;
+      act(e.target, "/api/admin/reward", { target: "active", value: "7", rewards: [{ kind: "gear", qty: n }], dry_run: false },
+        r => say("✅ Раздано: " + r.given + (r.failed ? ", сбоев: " + r.failed : "") + " · " + r.label));
+    };
     $("gCheck").onclick = e => act(e.target, "/api/admin/reward", body(true), r => say("Получателей: " + r.count + " (" + r.label + ")"));
     $("gGo").onclick = e => { flushRewards(); if (!confirm("Выдать: " + (gift.rewards.map(rewardLabel).join(" + ") || "ничего") + "?")) return;
       act(e.target, "/api/admin/reward", body(false), r => { say("✅ Выдано: " + r.given + (r.failed ? ", сбоев: " + r.failed : "") + " · " + r.label); gift.rewards.length = 0; viewGift(app); }); };
@@ -481,13 +495,13 @@
     });
   }
 
-  // 🗺 Квесты: эпики (только с ⚡ Безлимитом) и ротация до 10; ⚡ Безлимит игроку по @username
+  // 🗺 Квесты: эпики (только с ⚡ Безлимитом) и банк ротации (10 случайных в день); ⚡ Безлимит игроку по @username
   async function viewQuests(app) {
     const d = await api("/api/admin/quests");
     const rot = d.quests.filter(q => !q.epic), epics = d.quests.filter(q => q.epic), on = rot.filter(q => q.on).length;
-    const row = q => '<div class="row"><span>' + (q.on ? "🟢 " : "⚫ ") + esc(q.title) + '<br><small class="hint">' + esc(q.genre) +
+    const row = q => '<div class="row"><span>' + (q.today ? "📅 " : "") + (q.on ? "🟢 " : "⚫ ") + esc(q.title) + '<br><small class="hint">' + esc(q.genre) +
       ' · ' + esc(q.minutes) + ' мин · начинали ' + q.started + ', прошли ' + q.done + '</small></span><button class="mini" data-q="' +
-      esc(q.id) + '" data-on="' + (q.on ? 1 : 0) + '">' + (q.on ? (q.epic ? "➖ Убрать" : "Скрыть") : (q.epic ? "➕ В список" : "Показать")) + '</button></div>';
+      esc(q.id) + '" data-on="' + (q.on ? 1 : 0) + '">' + (q.on ? (q.epic ? "➖ Убрать" : "Исключить") : (q.epic ? "➕ В список" : "Вернуть")) + '</button></div>';
     app.innerHTML =
       '<div class="card"><h2>🎨 Галерея атмосфер</h2><div class="hint">Все эффекты квестов на тестовой сцене — видна только тебе.</div>' +
       '<button class="btn" id="fxGal">🎨 Открыть галерею</button></div>' +
@@ -498,8 +512,9 @@
       '</div><button class="btn" id="unGo">⚡ Выдать</button></div>' +
       '<div class="card"><h2>⭐ Эпики — ' + epics.length + '</h2><div class="hint">Большие истории на 20+ минут. Вне ротации и суточного лимита, открываются игрокам только с ⚡ Безлимитом. В приложении — первыми, в золотой рамке.</div>' +
       (epics.length ? epics.map(row).join("") : '<div class="hint">Эпиков пока нет.</div>') + '</div>' +
-      '<div class="card"><h2>🗺 Ротация — ' + on + '/' + d.rotation_size + ' · всего квестов ' + d.total + '</h2><div class="hint">Игрок проходит ' +
-      d.daily_new + ' новых квеста в сутки, потом непройденные гаснут до 00:00 UTC (Безлимит снимает). Пройденные переигрываются без ограничений.</div>' +
+      '<div class="card"><h2>🗺 Банк ротации — ' + on + ' из ' + rot.length + '</h2><div class="hint">Каждый день всем показываются одни и те же ' +
+      d.rotation_size + ' случайных квестов из банка (📅 — сегодняшние). Без Безлимита игрок проходит ' + d.daily_new +
+      ' новых в сутки, потом непройденные гаснут до 00:00 UTC. Пройденные переигрываются без ограничений. ⚫ Исключённый квест не выпадает.</div>' +
       rot.map(row).join("") + '</div>';
     $("fxGal").onclick = () => { location.href = "/?tab=games&fx=gallery"; };
     let days = 30;

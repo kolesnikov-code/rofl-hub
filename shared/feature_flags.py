@@ -37,6 +37,7 @@ FLAG_DEFAULTS: dict[str, bool] = {
     "mines": True,
     "expeditions": True,
     "auctions": True,
+    "gear": True,
 }
 # Человеческие подписи для пульта в админ-боте
 FLAG_TITLES: dict[str, str] = {
@@ -55,6 +56,7 @@ FLAG_TITLES: dict[str, str] = {
     "mines": "⛏ Рудники (карта и начисления)",
     "expeditions": "🗺 Карта мира и экспедиции",
     "auctions": "🔨 Аукционы (вкладка приложения и ставки)",
+    "gear": "🧍 Персонаж и костюмы",
 }
 
 _CACHE_TTL = 20.0
@@ -62,8 +64,10 @@ _cache: dict[str, tuple[bool, float]] = {}
 
 
 def _default_for(key: str) -> bool:
-    if key.startswith("quest:") or key.startswith("epic:"):
-        return False   # ротация v2: новый квест/эпик приезжает скрытым, включает владелец (/quests_admin)
+    if key.startswith("quest:"):
+        return True    # ротация v3 (30.10): новый квест сам попадает в банк ротации дня; владелец может исключить
+    if key.startswith("epic:"):
+        return False   # эпик приезжает скрытым, включает владелец (/quests_admin)
     if key.startswith("recipe:"):
         return False   # рецепты недели запускает только владелец (/recipes)
     return FLAG_DEFAULTS.get(key, True)

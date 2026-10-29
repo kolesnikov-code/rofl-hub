@@ -359,6 +359,31 @@
     border-radius: 12px; border: 1px solid rgba(255,77,141,.4); background: rgba(255,77,141,.08); color: var(--text);
     font-weight: 800; font-size: 14px; text-align: left; cursor: pointer; }
   .target .tr { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 600; }
+  /* 🧍 Персонаж (30.10): аватар со слотами, сумка, рынок деталей */
+  .ps-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .ps-gender { display: flex; gap: 6px; flex: 0 0 auto; }
+  .ps-gender .chip { cursor: pointer; font-weight: 800; padding: 6px 12px; background: #0d1326; color: var(--text); }
+  .ps-gender .chip.on { background: linear-gradient(90deg, var(--neon), #00b3ff); color: #04121c; border-color: transparent; }
+  .ps-figure { display: flex; gap: 12px; align-items: center; }
+  .ps-avatar { width: 38%; max-width: 170px; flex: 0 0 auto; filter: drop-shadow(0 0 10px rgba(0,255,225,.25)); }
+  .ps-slots { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .ps-slot, .ps-item { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 12px;
+    background: rgba(13,19,38,.7); border: 1px solid rgba(138,147,184,.25); font-size: 13px; }
+  .ps-slot.on, .ps-item { border-color: var(--sc, rgba(0,255,225,.3)); box-shadow: inset 3px 0 0 var(--sc, transparent); }
+  .ps-item { justify-content: space-between; margin-bottom: 6px; }
+  .ps-si { font-size: 20px; flex: 0 0 auto; }
+  .ps-sn { flex: 1 1 auto; min-width: 0; }
+  .ps-sn small { color: var(--muted); }
+  .ps-sb { display: flex; gap: 4px; flex: 0 0 auto; }
+  .ps-sb .mini { margin-top: 0; padding: 6px 9px; }
+  .ps-active { margin-top: 10px; padding: 10px 12px; border-radius: 12px; font-size: 13px;
+    border: 1px solid var(--sc); background: rgba(13,19,38,.7); box-shadow: 0 0 14px color-mix(in srgb, var(--sc) 35%, transparent); }
+  .ps-suit { padding: 8px 0; border-bottom: 1px solid rgba(138,147,184,.15); }
+  .ps-suit b { color: var(--sc); }
+  .ps-sell { padding: 10px; border-radius: 12px; border: 1px solid rgba(0,255,225,.3); margin: 8px 0; }
+  .ps-sell input { width: 100%; margin: 4px 0 6px; padding: 9px; border-radius: 10px; border: 1px solid rgba(0,255,225,.3);
+    background: #0d1326; color: var(--text); font-size: 15px; }
+  @media (max-width: 380px) { .ps-figure { flex-direction: column; } .ps-avatar { width: 55%; } .ps-slots { width: 100%; } }
   .sub2 { color: var(--accent); font-weight: 800; font-size: 13px; margin: 12px 0 4px; letter-spacing: .5px; }
   .rules { padding-left: 18px; color: var(--text); font-size: 13px; line-height: 1.45; }
   .rules li { margin-bottom: 6px; }
@@ -586,6 +611,7 @@
 
   const I18N = {
     ru: {
+      tab_persona: "🧍 Персонаж", ps_title: "🧍 ПЕРСОНАЖ", ps_hint: "Надень полный костюм — 5 деталей одного костюма: бонус работает, пока костюм на тебе.", ps_m: "М", ps_f: "Ж", ps_slot_head: "Шлем", ps_slot_body: "Куртка", ps_slot_hands: "Перчатки", ps_slot_legs: "Штаны", ps_slot_feet: "Ботинки", ps_suit_el: "⚡ Электрик", ps_suit_mn: "⛏ Шахтёр", ps_suit_ml: "🪖 Военный", ps_suit_st: "🥷 Маскировка", ps_suit_sc: "🔬 Учёный", ps_suit_en: "🔧 Инженер", ps_suit_exo: "💠 Нано-экзо-броня", ps_eff_el: "электричество в играх — в {p}% побед", ps_eff_mn: "раз в сутки +{p}% к монетам, добытым фермой", ps_eff_ml: "+{p}% трофея в налётах и добычи в экспедициях, поход на {p}% быстрее", ps_eff_st: "{p}% шанс не попасть в разведку налётчиков", ps_eff_sc: "перерыв между уровнями технологий на {p}% короче", ps_eff_en: "ресурсы для рецептов мастерской на {p}% дешевле", ps_active: "Надет костюм: {s}, {n} уровень", ps_none: "Полный костюм не надет — бонусов пока нет.", ps_level: "{n} ур.", ps_empty: "пусто", ps_off: "Снять", ps_wear: "Надеть", ps_sell: "Продать", ps_bag: "🎒 СУМКА", ps_bagEmpty: "Сумка пуста. Детали костюмов выпадают в событиях: в экспедициях, битвах за рудники и сезонных раздачах.", ps_season: "Деталей в этом сезоне: {got} из {cap}", ps_suits: "📖 КОСТЮМЫ И БОНУСЫ", ps_lvl2: "на 2-м уровне", ps_upg_el: "Перемотать жилы медью, вшить заземление и вставить свежую батарейку — костюм начинает ловить искры.", ps_upg_mn: "Прошить швы стальной нитью и подбить налокотники камнем — костюм держит удар породы.", ps_upg_ml: "Наварить пластины, прокалить их в огне и закалить — броне не страшна засада.", ps_upg_st: "Пропитать ткань водородным гелем и нашить кору-хамелеон — костюм тает на фоне.", ps_upg_sc: "Вплести кристаллические сенсоры и подать ток — костюм сам подсказывает формулы.", ps_upg_en: "Перебрать крепления на точные детали и встроить батарейку — костюм бережёт каждую гайку.", ps_upgAsk: "Улучшить «{part}» до 2-го уровня? Уйдёт: {cost} и {c} 🪙.", ps_upgDone: "⬆️ Деталь улучшена до 2-го уровня!", ps_exoTitle: "💠 НАНО-ЭКЗО-БРОНЯ", ps_exoText: "Сплав всех шести костюмов 2-го уровня (30 деталей): все бонусы сразу. Сплавленные детали исчезают навсегда.", ps_exoHave: "Деталей 2-го уровня", ps_exoGo: "💠 Сплавить броню", ps_exoAsk: "Сплавить 30 деталей в нано-экзо-броню? Это навсегда.", ps_exoDone: "💠 Нано-экзо-броня готова и надета!", ps_market: "🏷 РЫНОК ДЕТАЛЕЙ", ps_marketHint: "Детали 1-го уровня продаются за монеты. Цена — не меньше {min} 🪙, комиссия {fee}% сгорает.", ps_marketEmpty: "Сейчас никто не продаёт детали.", ps_buy: "Купить за {p} 🪙", ps_bought: "🧥 Деталь в сумке!", ps_myLots: "Мои лоты", ps_cancel: "Снять", ps_sellTitle: "Продать", ps_price: "Цена за штуку, 🪙", ps_qty: "Сколько штук", ps_sellGo: "Выставить", ps_listed: "🏷 Лот выставлен на рынок деталей", raid_note_suit: "🪖 Костюм военного: трофей больше",
       tab_history: "📜 История", hist_title: "📜 ИСТОРИЯ ЗА {d} ДНЕЙ", hist_coins: "🪙 Монеты", hist_res: "📦 Ресурсы", hist_market: "📈 Биржа", hist_gifts: "🎁 Награды", hist_in: "Пришло", hist_out: "Ушло", hist_topIn: "Откуда пришли", hist_topOut: "Куда ушли", hist_empty: "За это время здесь пусто.", hist_bought: "Куплено", hist_sold: "Продано", hist_hint: "Хранится 30 дней: монеты, ресурсы, сделки на бирже, награды и подарки.",
       mk_floorAny: "Не дешевле {p} 🪙 за 1 {x} — и в продаже, и в заявке",
       mk_sellTitleAny: "💰 ПРОДАТЬ: {x}", mk_bidTitleAny: "🙋 КУПИТЬ: {x}", mk_qtyAny: "Количество, {x}", mk_limitsAny: "До {q} {x} в ордере, до {o} открытых ордеров", mk_boughtAny: "Куплено {q} {x} за {t} 🪙", mk_cancelledAny: "Ордер снят — товар или замороженные монеты вернулись",
@@ -814,6 +840,7 @@
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
+      tab_persona: "🧍 Character", ps_title: "🧍 CHARACTER", ps_hint: "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.", ps_m: "M", ps_f: "F", ps_slot_head: "Helmet", ps_slot_body: "Jacket", ps_slot_hands: "Gloves", ps_slot_legs: "Trousers", ps_slot_feet: "Boots", ps_suit_el: "⚡ Electrician", ps_suit_mn: "⛏ Miner", ps_suit_ml: "🪖 Soldier", ps_suit_st: "🥷 Stealth", ps_suit_sc: "🔬 Scientist", ps_suit_en: "🔧 Engineer", ps_suit_exo: "💠 Nano exo-armour", ps_eff_el: "electricity drops in {p}% of game wins", ps_eff_mn: "once a day +{p}% of the coins your farm mined", ps_eff_ml: "+{p}% raid loot and expedition haul, trips {p}% faster", ps_eff_st: "{p}% chance to stay off raiders' scouting lists", ps_eff_sc: "{p}% shorter wait between technology levels", ps_eff_en: "workshop recipes need {p}% fewer resources", ps_active: "Suit on: {s}, level {n}", ps_none: "No full suit on — no bonuses yet.", ps_level: "lvl {n}", ps_empty: "empty", ps_off: "Take off", ps_wear: "Wear", ps_sell: "Sell", ps_bag: "🎒 BAG", ps_bagEmpty: "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.", ps_season: "Parts this season: {got} of {cap}", ps_suits: "📖 SUITS AND BONUSES", ps_lvl2: "at level 2", ps_upg_el: "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.", ps_upg_mn: "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.", ps_upg_ml: "Weld on plates, fire and temper them — this armour shrugs off an ambush.", ps_upg_st: "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.", ps_upg_sc: "Weave in crystal sensors and run a current — the suit whispers formulas.", ps_upg_en: "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.", ps_upgAsk: "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.", ps_upgDone: "⬆️ Part upgraded to level 2!", ps_exoTitle: "💠 NANO EXO-ARMOUR", ps_exoText: "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.", ps_exoHave: "Level-2 parts", ps_exoGo: "💠 Fuse the armour", ps_exoAsk: "Fuse 30 parts into nano exo-armour? This is permanent.", ps_exoDone: "💠 Nano exo-armour is ready and on!", ps_market: "🏷 PARTS MARKET", ps_marketHint: "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.", ps_marketEmpty: "Nobody is selling parts right now.", ps_buy: "Buy for {p} 🪙", ps_bought: "🧥 The part is in your bag!", ps_myLots: "My lots", ps_cancel: "Withdraw", ps_sellTitle: "Sell", ps_price: "Price per part, 🪙", ps_qty: "How many", ps_sellGo: "List it", ps_listed: "🏷 Listed on the parts market", raid_note_suit: "🪖 Soldier suit: bigger loot",
       tab_history: "📜 History", hist_title: "📜 HISTORY FOR {d} DAYS", hist_coins: "🪙 Coins", hist_res: "📦 Resources", hist_market: "📈 Market", hist_gifts: "🎁 Rewards", hist_in: "In", hist_out: "Out", hist_topIn: "Where they came from", hist_topOut: "Where they went", hist_empty: "Nothing here for this period.", hist_bought: "Bought", hist_sold: "Sold", hist_hint: "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
       mk_floorAny: "At least {p} 🪙 per 1 {x} — for sales and buy orders",
       mk_sellTitleAny: "💰 SELL: {x}", mk_bidTitleAny: "🙋 BUY: {x}", mk_qtyAny: "Amount, {x}", mk_limitsAny: "Up to {q} {x} per order, up to {o} open orders", mk_boughtAny: "Bought {q} {x} for {t} 🪙", mk_cancelledAny: "Order cancelled — your goods or frozen coins are back",
@@ -1045,6 +1072,68 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "جميع الشخصيات والأسماء والأحداث في هذه القصص من نسج الخيال. وأي تشابه مع أشخاص حقيقيين، أحياء أو أموات، أو مع أحداث حقيقية هو محض مصادفة.",
     "qs_check": "تحقّق",
     "qs_tries": "المحاولات: {n}",
@@ -1858,6 +1947,68 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "এই গল্পগুলোর সব চরিত্র, নাম ও ঘটনা কাল্পনিক। জীবিত বা মৃত কোনো বাস্তব মানুষ কিংবা বাস্তব ঘটনার সঙ্গে যেকোনো মিল সম্পূর্ণ কাকতালীয়।",
     "qs_check": "যাচাই করো",
     "qs_tries": "চেষ্টা: {n}",
@@ -2671,6 +2822,68 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Alle Figuren, Namen und Ereignisse in diesen Geschichten sind frei erfunden. Ähnlichkeiten mit realen Personen, lebend oder verstorben, oder mit tatsächlichen Ereignissen sind rein zufällig.",
     "qs_check": "Prüfen",
     "qs_tries": "Versuche: {n}",
@@ -3484,6 +3697,68 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Todos los personajes, nombres y hechos de estas historias son ficticios. Cualquier parecido con personas reales, vivas o muertas, o con hechos reales es pura coincidencia.",
     "qs_check": "Comprobar",
     "qs_tries": "Intentos: {n}",
@@ -4297,6 +4572,68 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Tous les personnages, noms et événements de ces histoires sont fictifs. Toute ressemblance avec des personnes réelles, vivantes ou décédées, ou avec des faits réels serait purement fortuite.",
     "qs_check": "Vérifier",
     "qs_tries": "Essais : {n}",
@@ -5110,6 +5447,68 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "इन कहानियों के सभी पात्र, नाम और घटनाएँ काल्पनिक हैं। किसी भी जीवित या मृत वास्तविक व्यक्ति या वास्तविक घटना से कोई भी समानता मात्र संयोग है।",
     "qs_check": "जाँचो",
     "qs_tries": "कोशिशें: {n}",
@@ -5923,6 +6322,68 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Semua tokoh, nama, dan peristiwa dalam cerita ini fiktif. Kemiripan dengan orang sungguhan, yang masih hidup maupun sudah meninggal, atau dengan peristiwa nyata hanyalah kebetulan.",
     "qs_check": "Periksa",
     "qs_tries": "Percobaan: {n}",
@@ -6736,6 +7197,68 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Tutti i personaggi, i nomi e gli eventi di queste storie sono immaginari. Ogni riferimento a persone reali, vive o defunte, o a fatti realmente accaduti è puramente casuale.",
     "qs_check": "Verifica",
     "qs_tries": "Tentativi: {n}",
@@ -7549,6 +8072,68 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Wszystkie postacie, imiona i wydarzenia w tych historiach są fikcyjne. Wszelkie podobieństwo do prawdziwych osób, żyjących lub zmarłych, oraz do prawdziwych wydarzeń jest przypadkowe.",
     "qs_check": "Sprawdź",
     "qs_tries": "Próby: {n}",
@@ -8362,6 +8947,68 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Todos os personagens, nomes e acontecimentos destas histórias são fictícios. Qualquer semelhança com pessoas reais, vivas ou falecidas, ou com fatos reais é mera coincidência.",
     "qs_check": "Verificar",
     "qs_tries": "Tentativas: {n}",
@@ -9175,6 +9822,68 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "Hikoyalardagi barcha qahramonlar, ismlar va voqealar to'qima. Tirik yoki vafot etgan haqiqiy odamlar va haqiqiy voqealar bilan har qanday o'xshashlik tasodifiy.",
     "qs_check": "Tekshirish",
     "qs_tries": "Urinishlar: {n}",
@@ -9988,6 +10697,68 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "tab_persona": "🧍 Character",
+    "ps_title": "🧍 CHARACTER",
+    "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
+    "ps_m": "M",
+    "ps_f": "F",
+    "ps_slot_head": "Helmet",
+    "ps_slot_body": "Jacket",
+    "ps_slot_hands": "Gloves",
+    "ps_slot_legs": "Trousers",
+    "ps_slot_feet": "Boots",
+    "ps_suit_el": "⚡ Electrician",
+    "ps_suit_mn": "⛏ Miner",
+    "ps_suit_ml": "🪖 Soldier",
+    "ps_suit_st": "🥷 Stealth",
+    "ps_suit_sc": "🔬 Scientist",
+    "ps_suit_en": "🔧 Engineer",
+    "ps_suit_exo": "💠 Nano exo-armour",
+    "ps_eff_el": "electricity drops in {p}% of game wins",
+    "ps_eff_mn": "once a day +{p}% of the coins your farm mined",
+    "ps_eff_ml": "+{p}% raid loot and expedition haul, trips {p}% faster",
+    "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
+    "ps_eff_sc": "{p}% shorter wait between technology levels",
+    "ps_eff_en": "workshop recipes need {p}% fewer resources",
+    "ps_active": "Suit on: {s}, level {n}",
+    "ps_none": "No full suit on — no bonuses yet.",
+    "ps_level": "lvl {n}",
+    "ps_empty": "empty",
+    "ps_off": "Take off",
+    "ps_wear": "Wear",
+    "ps_sell": "Sell",
+    "ps_bag": "🎒 BAG",
+    "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
+    "ps_season": "Parts this season: {got} of {cap}",
+    "ps_suits": "📖 SUITS AND BONUSES",
+    "ps_lvl2": "at level 2",
+    "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
+    "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
+    "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
+    "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
+    "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
+    "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
+    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
+    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_exoTitle": "💠 NANO EXO-ARMOUR",
+    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Level-2 parts",
+    "ps_exoGo": "💠 Fuse the armour",
+    "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
+    "ps_exoDone": "💠 Nano exo-armour is ready and on!",
+    "ps_market": "🏷 PARTS MARKET",
+    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_marketEmpty": "Nobody is selling parts right now.",
+    "ps_buy": "Buy for {p} 🪙",
+    "ps_bought": "🧥 The part is in your bag!",
+    "ps_myLots": "My lots",
+    "ps_cancel": "Withdraw",
+    "ps_sellTitle": "Sell",
+    "ps_price": "Price per part, 🪙",
+    "ps_qty": "How many",
+    "ps_sellGo": "List it",
+    "ps_listed": "🏷 Listed on the parts market",
+    "raid_note_suit": "🪖 Soldier suit: bigger loot",
     "qs_fiction": "故事中的所有人物、姓名和事件均为虚构。如与真实人物（无论在世或已故）或真实事件雷同，纯属巧合。",
     "qs_check": "检查",
     "qs_tries": "剩余次数：{n}",
@@ -10827,11 +11598,11 @@
                      energy: "⚡", battery: "🔋", cow: "🐄", core: "☢️" };
   const TOOL_ICON = { 1: "⚒️", 2: "🛠", 3: "🔬", 4: "🧬" };
   const KINDS = ["intern", "junior", "premium"];   // от самого слабого к самому мощному
-  const TABS = ["passport", "games", "farm", "storage", "workshop", "lab", "market", "map", "mines", "raids", "team", "auctions", "friends", "shop", "top", "history", "info"];
+  const TABS = ["passport", "persona", "games", "farm", "storage", "workshop", "lab", "market", "map", "mines", "raids", "team", "auctions", "friends", "shop", "top", "history", "info"];
   // Старые ссылки (?tab=goals и т.п.) ведут туда, куда переехали разделы
   const TAB_ALIAS = { goals: "passport", faq: "info", rules: "info" };
   const TAB_FLAG = { games: "games", lab: "workshop", workshop: "workshop", raids: "raids", market: "market", shop: "shop", mines: "mines", map: "expeditions",
-                     auctions: "auctions" };
+                     auctions: "auctions", persona: "gear" };
 
   async function api(path, opts) {
     const res = await fetch(path, Object.assign({
@@ -10910,7 +11681,7 @@
   }
   const bindPagers = root => (root || document).querySelectorAll(".pager").forEach(bindPager);
   // Сколько колонок плашек у вкладки на широком экране (см. CSS #app[data-cols])
-  const VIEW_COLS = { games: 1, lab: 3, mines: 2, map: 2, auctions: 2, history: 1, info: 1, passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
+  const VIEW_COLS = { persona: 2, games: 1, lab: 3, mines: 2, map: 2, auctions: 2, history: 1, info: 1, passport: 2, farm: 2, storage: 3, goals: 1, workshop: 2, raids: 2, market: 3,
                       team: 3, friends: 3, shop: 1, top: 1, faq: 1, rules: 1 };
   const resLine = stock => RES.map(k => '<span class="chip">' + RES_ICON[k] + ' ' + num(stock[k]) + '</span>').join("");
   const bundle = b => RES_ALL.filter(k => b && b[k]).map(k => RES_ICON[k] + ' ' + b[k]).join(" · ") || "—";
@@ -13210,7 +13981,140 @@
     }; });
   }
 
-  const VIEWS = { passport: viewPassport, games: viewGames, farm: viewFarm, storage: viewStorage, workshop: viewWorkshop,
+
+  // ================= 🧍 Персонаж и костюмы (владелец 30.10) =================
+  // Бонус даёт только полный комплект одного костюма; детали выпадают в событиях, одинаковые добираются на бирже.
+  const SLOT_ICON = { head: "⛑", body: "🦺", hands: "🧤", legs: "👖", feet: "🥾" };
+  const SUIT_COLOR = { el: "#ffd23f", mn: "#d68a3a", ml: "#6fae4f", st: "#7a7fa8", sc: "#3fd0ea", en: "#ff8a4c", exo: "#b77bff" };
+  ["el", "mn", "ml", "st", "sc", "en"].forEach(s => Object.keys(SLOT_ICON).forEach(p => { A_ICON["g_" + s + "_" + p] = SLOT_ICON[p]; }));
+  let psData = null, psSell = null;
+  const suitName = s => L["ps_suit_" + s] || s;
+  const partName = (s, p) => SLOT_ICON[p] + " " + L["ps_slot_" + p] + " · " + suitName(s);
+  // Аватар: нейтральная фигура; М — атлет (шире плечи), Ж — стройнее (уже плечи, талия); надетое — цветом костюма
+  function avatarSvg(gender, worn) {
+    const D = { m: [24, 96, 38, 82, 36, 84], f: [32, 88, 44, 76, 34, 86], n: [28, 92, 40, 80, 36, 84] }[gender || "n"];
+    const [sL, sR, wL, wR, hL, hR] = D;
+    const col = slot => worn[slot] ? SUIT_COLOR[worn[slot].suit] : null;
+    const glow = slot => worn[slot] && worn[slot].level >= 2 ? ' filter="url(#psGlow)"' : '';
+    const fill = (slot, base) => col(slot) || base;
+    const skin = "#2b3560", line = 'stroke="rgba(0,255,225,.55)" stroke-width="1.4"';
+    const torso = 'M' + sL + ',62 L' + sR + ',62 L' + wR + ',112 L' + hR + ',128 L' + hL + ',128 L' + wL + ',112 Z';
+    return '<svg class="ps-avatar" viewBox="0 0 120 230" aria-hidden="true"><defs><filter id="psGlow"><feGaussianBlur stdDeviation="2.2" result="b"/>' +
+      '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' +
+      // руки
+      '<path d="M' + sL + ',64 L' + (sL - 10) + ',112 L' + (sL - 8) + ',140" fill="none" stroke="' + fill("body", skin) + '" stroke-width="' + (gender === "f" ? 9 : 12) + '" stroke-linecap="round"' + glow("body") + '/>' +
+      '<path d="M' + sR + ',64 L' + (sR + 10) + ',112 L' + (sR + 8) + ',140" fill="none" stroke="' + fill("body", skin) + '" stroke-width="' + (gender === "f" ? 9 : 12) + '" stroke-linecap="round"' + glow("body") + '/>' +
+      // кисти / перчатки
+      '<circle cx="' + (sL - 8) + '" cy="146" r="' + (col("hands") ? 8 : 6) + '" fill="' + fill("hands", skin) + '" ' + line + glow("hands") + '/>' +
+      '<circle cx="' + (sR + 8) + '" cy="146" r="' + (col("hands") ? 8 : 6) + '" fill="' + fill("hands", skin) + '" ' + line + glow("hands") + '/>' +
+      // ноги / штаны
+      '<path d="M' + (hL + 2) + ',126 L' + (hL + 6) + ',204 L' + 57 + ',204 L59,132 Z" fill="' + fill("legs", skin) + '" ' + line + glow("legs") + '/>' +
+      '<path d="M' + (hR - 2) + ',126 L' + (hR - 6) + ',204 L' + 63 + ',204 L61,132 Z" fill="' + fill("legs", skin) + '" ' + line + glow("legs") + '/>' +
+      // ботинки
+      '<rect x="' + (hL + 2) + '" y="200" width="' + (57 - hL) + '" height="' + (col("feet") ? 14 : 8) + '" rx="4" fill="' + fill("feet", skin) + '" ' + line + glow("feet") + '/>' +
+      '<rect x="61" y="200" width="' + (hR - 63) + '" height="' + (col("feet") ? 14 : 8) + '" rx="4" fill="' + fill("feet", skin) + '" ' + line + glow("feet") + '/>' +
+      // торс / куртка
+      '<path d="' + torso + '" fill="' + fill("body", skin) + '" ' + line + glow("body") + '/>' +
+      (col("body") ? '<path d="M60,64 L60,124" stroke="rgba(0,0,0,.35)" stroke-width="2"/>' : '') +
+      // шея и голова
+      '<rect x="54" y="44" width="12" height="20" rx="4" fill="' + skin + '"/>' +
+      '<ellipse cx="60" cy="30" rx="' + (gender === "f" ? 14 : 15) + '" ry="17" fill="' + skin + '" ' + line + '/>' +
+      (gender === "f" ? '<path d="M45,30 Q44,6 60,8 Q76,6 75,30 L77,52 L71,40 L71,24 Q60,16 49,24 L49,40 L43,52 Z" fill="#3a4478" opacity=".9"/>' : '') +
+      // шлем
+      (col("head") ? '<path d="M42,32 Q42,8 60,8 Q78,8 78,32 L74,34 L74,28 L46,28 L46,34 Z" fill="' + col("head") + '" ' + line + glow("head") + '/>' +
+        '<rect x="47" y="27" width="26" height="7" rx="3" fill="rgba(0,255,225,.55)"/>' : '') +
+      '</svg>';
+  }
+  const effText = (line, pct) => fmt(L["ps_eff_" + line], { p: pct });
+  async function viewPersona(box) {
+    const d = psData = await api("/api/gear");
+    const worn = d.worn || {}, cur = d.active || {};
+    const genderChips = '<div class="ps-gender">' + ["m", "f"].map(g =>
+      '<button class="chip' + (d.gender === g ? ' on' : '') + '" data-g="' + g + '">' + L["ps_" + g] + '</button>').join("") + '</div>';
+    const slots = d.slots.map(p => {
+      const w = worn[p];
+      return '<div class="ps-slot' + (w ? ' on' : '') + '" style="' + (w ? '--sc:' + SUIT_COLOR[w.suit] : '') + '">' +
+        '<span class="ps-si">' + SLOT_ICON[p] + '</span><span class="ps-sn"><b>' + L["ps_slot_" + p] + '</b><br><small>' +
+        (w ? suitName(w.suit) + ' · ' + fmt(L.ps_level, { n: w.level }) : L.ps_empty) + '</small></span>' +
+        (w ? '<span class="ps-sb">' + (w.suit !== d.exo_key && w.level < 2 ? '<button class="mini" data-up="' + w.suit + ':' + p + '">⬆️</button>' : '') +
+          '<button class="mini ghost" data-off="' + p + '">' + L.ps_off + '</button></span>' : '') + '</div>';
+    }).join("");
+    const activeLine = cur.suit
+      ? '<div class="ps-active" style="--sc:' + SUIT_COLOR[cur.suit] + '"><b>' + fmt(L.ps_active, { s: suitName(cur.suit), n: cur.level }) + '</b>' +
+        Object.entries(cur.effects).map(([line, pct]) => '<div>• ' + effText(line, pct) + '</div>').join("") + '</div>'
+      : '<div class="hint">' + L.ps_none + '</div>';
+    const head = '<div class="ps-head"><div class="hint">' + L.ps_hint + '</div>' + genderChips + '</div>';
+    const figure = '<div class="ps-figure">' + avatarSvg(d.gender, worn) + '<div class="ps-slots">' + slots + '</div></div>';
+    // 🎒 сумка
+    const bagRows = d.bag.map(b => '<div class="ps-item" style="--sc:' + SUIT_COLOR[b.suit] + '">' +
+      '<span>' + partName(b.suit, b.slot) + ' · ' + fmt(L.ps_level, { n: b.level }) + (b.qty > 1 ? ' <b>×' + b.qty + '</b>' : '') + '</span>' +
+      '<span class="ps-sb"><button class="mini" data-wear="' + b.suit + ':' + b.slot + ':' + b.level + '">' + L.ps_wear + '</button>' +
+      (b.suit !== d.exo_key && b.level < 2 ? '<button class="mini ghost" data-up="' + b.suit + ':' + b.slot + '">⬆️</button>' +
+        '<button class="mini ghost" data-sell="' + b.suit + ':' + b.slot + '">' + L.ps_sell + '</button>' : '') + '</span></div>');
+    const bag = '<div class="hint">' + fmt(L.ps_season, { got: d.season.got, cap: d.season.cap }) + '</div>' +
+      pager("ps-bag", bagRows, 10, '<div class="hint">' + L.ps_bagEmpty + '</div>');
+    // 📖 костюмы и бонусы + цена прокачки
+    const suits = d.suits.map(s => '<div class="ps-suit" style="--sc:' + SUIT_COLOR[s] + '"><b>' + suitName(s) + '</b>' +
+      '<div class="hint">' + effText(s, d.bonus[s][1]) + ' · ' + L.ps_lvl2 + ': ' + d.bonus[s][2] + '%</div>' +
+      '<div class="hint"><i>' + L["ps_upg_" + s] + '</i></div>' +
+      '<div class="hint">⬆️ ' + bundle(d.upgrade[s].cost) + ' · ' + num(d.upgrade[s].coins) + ' 🪙</div></div>').join("");
+    const exo = '<div class="hint">' + L.ps_exoText + '</div>' + row(L.ps_exoHave, d.exo.have + ' / ' + d.exo.need) +
+      '<div class="hint">' + bundle(d.exo.cost) + ' · ' + num(d.exo.coins) + ' 🪙</div>' +
+      '<button class="btn" id="psExo"' + (d.exo.have < d.exo.need ? ' disabled' : '') + '>' + L.ps_exoGo + '</button>';
+    // 🏷 рынок деталей
+    const mk = d.market;
+    const asks = mk.asks.map(o => '<div class="ps-item" style="--sc:' + SUIT_COLOR[o.suit] + '"><span>' + partName(o.suit, o.slot) +
+      (o.qty > 1 ? ' ×' + o.qty : '') + '</span><button class="mini" data-buy="' + o.id + '">' + fmt(L.ps_buy, { p: num(o.price) }) + '</button></div>');
+    const mine = mk.mine.map(o => '<div class="ps-item"><span>' + partName(o.suit, o.slot) + ' ×' + o.qty + ' · ' + num(o.price) + ' 🪙</span>' +
+      '<button class="mini ghost" data-cancel="' + o.id + '">' + L.ps_cancel + '</button></div>').join("");
+    let sellForm = "";
+    if (psSell) {
+      const [s, p] = psSell.split(":");
+      const own = d.bag.find(b => b.suit === s && b.slot === p && b.level === 1);
+      sellForm = '<div class="ps-sell"><b>' + L.ps_sellTitle + ': ' + partName(s, p) + '</b>' +
+        '<label class="hint">' + L.ps_price + '</label><input id="psPrice" type="number" min="' + mk.min_price + '" value="' + mk.min_price + '">' +
+        '<label class="hint">' + L.ps_qty + '</label><input id="psQty" type="number" min="1" max="' + Math.min(mk.max_qty, own ? own.qty : 1) + '" value="1">' +
+        '<div class="two"><button class="btn" id="psSellGo">' + L.ps_sellGo + '</button><button class="btn ghost" id="psSellX">✕</button></div></div>';
+    }
+    box.innerHTML = card(L.ps_title, head + figure + activeLine) +
+      card(L.ps_bag, bag) +
+      card(L.ps_market, '<div class="hint">' + fmt(L.ps_marketHint, { min: num(mk.min_price), fee: mk.fee }) + '</div>' + sellForm +
+        (mine ? '<div class="sub2">' + L.ps_myLots + '</div>' + mine : '') +
+        pager("ps-asks", asks, 10, '<div class="hint">' + L.ps_marketEmpty + '</div>'), "psMarket") +
+      card(L.ps_suits, suits) +
+      card(L.ps_exoTitle, exo);
+    const redraw = () => go("persona");
+    const done = text => async () => { if (text) notify(text, true); redraw(); };
+    box.querySelectorAll("[data-g]").forEach(b => { b.onclick = () => act(b, "/api/gear/gender", { gender: b.dataset.g }, done(null)); });
+    // делегирование: кнопки внутри листаемых списков перерисовываются пейджером
+    box.onclick = e => {
+      const b = e.target.closest("button");
+      if (!b || b.disabled) return;
+      if (b.dataset.wear) { const [s, p, l] = b.dataset.wear.split(":"); act(b, "/api/gear/equip", { suit: s, slot: p, level: Number(l) }, done(null)); }
+      else if (b.dataset.off) act(b, "/api/gear/unequip", { slot: b.dataset.off }, done(null));
+      else if (b.dataset.up) {
+        const [s, p] = b.dataset.up.split(":"), u = d.upgrade[s];
+        askConfirm(fmt(L.ps_upgAsk, { part: partName(s, p).replace(/<[^>]+>/g, ""), cost: bundle(u.cost).replace(/<[^>]+>/g, ""), c: num(u.coins) }),
+          () => act(b, "/api/gear/upgrade", { suit: s, slot: p }, done(L.ps_upgDone)));
+      }
+      else if (b.dataset.sell) { psSell = b.dataset.sell; redraw(); }
+      else if (b.dataset.buy) act(b, "/api/market/fill", { order_id: Number(b.dataset.buy), qty: 1 }, done(L.ps_bought));
+      else if (b.dataset.cancel) act(b, "/api/market/cancel", { order_id: Number(b.dataset.cancel) }, done(null));
+    };
+    const exoBtn = document.getElementById("psExo");
+    if (exoBtn) exoBtn.onclick = e => { e.stopPropagation(); askConfirm(L.ps_exoAsk, () => act(exoBtn, "/api/gear/exo", {}, done(L.ps_exoDone))); };
+    const sx = document.getElementById("psSellX");
+    if (sx) sx.onclick = e => { e.stopPropagation(); psSell = null; redraw(); };
+    const sg = document.getElementById("psSellGo");
+    if (sg) sg.onclick = e => {
+      e.stopPropagation();
+      const [s, p] = psSell.split(":");
+      act(sg, "/api/market/order", { asset: "g_" + s + "_" + p, side: "sell", qty: Number(document.getElementById("psQty").value) || 1,
+        price: Number(document.getElementById("psPrice").value) || 0 }, async () => { psSell = null; notify(L.ps_listed, true); redraw(); });
+    };
+  }
+
+  const VIEWS = { passport: viewPassport, persona: viewPersona, games: viewGames, farm: viewFarm, storage: viewStorage, workshop: viewWorkshop,
                   lab: viewLab, raids: viewRaids, market: viewMarket, auctions: viewAuctions, team: viewTeam, mines: viewMines, map: viewMap, friends: viewFriends, shop: viewShop,
                   top: viewTop, history: viewHistory, info: viewInfo };
 

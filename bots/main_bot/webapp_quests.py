@@ -65,8 +65,8 @@ async def handle_quests(request: web.Request) -> web.Response:
     ctx = await _guard(request)
     if isinstance(ctx, web.Response):
         return ctx
-    quests = await qe.visible_quests()
     async with db.pool.acquire() as conn:
+        quests = await qe.visible_for(conn, ctx.user_id)
         progs = {r["quest_id"]: r for r in await conn.fetch(
             "SELECT quest_id, scene, flags, completed_at FROM quest_progress WHERE user_id = $1", ctx.user_id)}
         daily = await qe.daily_state(conn, ctx.user_id)
@@ -74,7 +74,6 @@ async def handle_quests(request: web.Request) -> web.Response:
                               "quests": [
         {"id": q["id"], "title": q["title"], "genre": q["genre"], "minutes": q["minutes"], "reward": q["reward_coins"],
          "teaser": q["teaser"], "status": qe.status_of(q, progs.get(q["id"])), "epic": qe.is_epic(q),
-         "notes": bool(q.get("notes") or qe.is_epic(q)),
          "notes": bool(q.get("notes") or qe.is_epic(q)),
          "locked": qe.lock_reason(q, progs.get(q["id"]), daily)} for q in quests]})
 

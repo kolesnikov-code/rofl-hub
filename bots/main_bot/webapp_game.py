@@ -27,6 +27,7 @@ from shared.analytics import referral_reward_text
 from shared.analytics import track
 from shared.daily_goals import GoalsError, all_done, chest_coins, claim_chest, claimed_today, goal_progress, goals_for
 from shared.database import db
+from shared.economy import suit_bonus
 from shared.economy import (
     SQUAD_CREATE_COST,
     SQUAD_MAX_MEMBERS,
@@ -253,7 +254,8 @@ def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lan
                            balance: int = 0, armor_until=None, capacity: int = RES_CAPACITY_BASE,
                            weekly: list | None = None, created_at=None, now=None,
                            disabled=(), week_done: dict | None = None, tools_level: int = 0,
-                           team_mult: int = 1, in_team: bool = True, drones: dict | None = None) -> dict:
+                           team_mult: int = 1, in_team: bool = True, drones: dict | None = None,
+                           discount: int = 0) -> dict:
     """
     Чистый сборщик витрины мастерской (юнит-тесты без aiohttp). armor_level — действующий.
     created_at/now — поэтапное открытие (по рецепту в сутки); disabled — выключенные владельцем.
@@ -270,7 +272,7 @@ def build_workshop_payload(stock: dict, armor_level: int, has_shuttle: bool, lan
         week_left = max(0, limit - week_done.get(rid, 0)) if limit else None
         effect = recipe["effect"]
         done = (effect == "shuttle" and has_shuttle) or (effect == "storage" and next_storage_level(capacity) is None)
-        cost = None if done else recipe_cost(rid, armor_level, capacity, team_mult)
+        cost = None if done else recipe_cost(rid, armor_level, capacity, team_mult, discount)
         need_tool = recipe_tool(rid, armor_level)
         team_ok = in_team or not recipe.get("team")
         coins = recipe_coins(rid)
@@ -325,7 +327,7 @@ async def handle_workshop(request: web.Request) -> web.Response:
         stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
         user = await conn.fetchrow(
             "SELECT farm_armor_level, armor_until, has_shuttle, balance, res_capacity, created_at, team_id, "
-            "drones_guard, drones_attack, drones_spy FROM users WHERE user_id = $1", ctx.user_id)
+            "drones_guard, drones_attack, drones_spy, suit, suit_level FROM users WHERE user_id = $1", ctx.user_id)
         tools_level = (await tech_levels(conn, ctx.user_id))["tools"]
         team_mult = team_cost_multiplier(await conn.fetchval(
             "SELECT max_members FROM teams WHERE team_id = $1", user["team_id"])) if user["team_id"] else 1
@@ -348,6 +350,7 @@ async def handle_workshop(request: web.Request) -> web.Response:
                                                     created_at=user["created_at"], now=now, disabled=disabled,
                                                     week_done=week_done, tools_level=tools_level,
                                                     team_mult=team_mult, in_team=user["team_id"] is not None,
+                                                    discount=suit_bonus(user["suit"], user["suit_level"], "en"),
                                                     drones={k: user[f"drones_{k}"] for k in ("guard", "attack", "spy")}))
 
 
@@ -538,7 +541,7 @@ def _raid_err(e: RaidError, lang: str) -> str:
     return e.localized(lang)
 
 
-def build_tech_payload(state: dict, stock: dict, now) -> dict:
+def build_tech_payload(state: dict, stock: dict, now, cut_pct: int = 0) -> dict:
     """Чистый сборщик витрины Лаборатории (юнит-тесты без aiohttp)."""
     tools = state["tools"]["level"]
     levels = {k: v["level"] for k, v in state.items()}
@@ -546,7 +549,7 @@ def build_tech_payload(state: dict, stock: dict, now) -> dict:
     for key in TECH_ORDER:
         level = state[key]["level"]
         nxt = level + 1 if level < TECHS[key]["max"] else None
-        ready = next_tech_at(key, level, state[key]["updated_at"])
+        ready = next_tech_at(key, level, state[key]["updated_at"], cut_pct)
         cost = tech_cost(key, nxt) if nxt else {}
         tool = tech_tool_required(key, nxt) if nxt else 0
         wait = int((ready - now).total_seconds()) if ready and ready > now else 0
@@ -572,7 +575,10 @@ async def handle_tech(request: web.Request) -> web.Response:
     async with db.pool.acquire() as conn:
         state = await get_tech(conn, ctx.user_id)
         stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
-    payload = build_tech_payload(state, stock, utcnow())
+        suit = await conn.fetchrow("SELECT suit, suit_level FROM users WHERE user_id = $1", ctx.user_id)
+    cut = suit_bonus(suit["suit"], suit["suit_level"], "sc") if suit else 0
+    payload = build_tech_payload(state, stock, utcnow(), cut)
+    payload["suit_cut"] = cut
     payload["res_names"] = resource_labels(ctx.lang)
     return web.json_response(payload)
 

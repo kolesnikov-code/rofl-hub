@@ -111,6 +111,14 @@ RU: dict[str, str] = {
     "hist.shuttle_charge": "🚀 Заряд Шаттла",
     "hist.team_help_give": "🤝 Помощь тиммейту",
     "hist.team_help_get": "🤝 Помощь от тиммейта",
+    "gear.err_unknown": "🧥 Такой детали не бывает.",
+    "gear.err_none": "🧥 Этой детали у тебя нет.",
+    "gear.err_max": "🧥 Деталь уже на максимальном уровне.",
+    "gear.err_coins": "🪙 Не хватает монет: нужно {need}.",
+    "gear.err_exo_missing": "💠 Для сплава нужны все 30 деталей 2-го уровня: есть {have} из {need}.",
+    "hist.gear_upgrade": "⬆️ Улучшение детали костюма",
+    "hist.gear_exo": "💠 Сплав нано-экзо-брони",
+    "hist.suit_miner": "⛏ Бонус костюма шахтёра",
     "hist.other": "• Прочее",
     "hist.src_gift": "🎁 Подарок администрации",
     "hist.src_battle": "🏟 Битва или акция",
@@ -247,7 +255,7 @@ RU: dict[str, str] = {
         "Здесь ты можешь сразиться с ботом в быстрых дуэлях или пройти "
         "интеллектуальный спринт-тест, чтобы сорвать куш или слить баланс!\n\n"
         "💸 Победа приносит: <b>+2 🪙</b> (Кибер-Сейф: <b>+5</b>)\n"
-        "💀 Проигрыш или ничья списывает: <b>-1 🪙</b>\n"
+        "💀 Проигрыш списывает: <b>-1 🪙</b>, ничья — ничего\n"
         "🧠 В Викторине — таймер 30 секунд и уровни интеллекта: 1-й уровень — 10 верных ответов и <b>+100 🪙</b>, "
         "дальше каждый уровень на 10 ответов длиннее, но и награда растёт на 100!\n"
         "..................................................\n"
@@ -418,7 +426,7 @@ RU: dict[str, str] = {
     # ---------------- игры: общий движок ----------------
     "games.win": "🎉 <b>ПОБЕДА!</b> 🎉\nНачислено: <b>+{reward} 🪙</b>",
     "games.lose": "💀 <b>ПРОИГРЫШ!</b>\nСписано: <b>-{penalty} 🪙</b>",
-    "games.draw": "🤝 <b>НИЧЬЯ!</b>\nСписано: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>НИЧЬЯ!</b>\nМонеты не списаны.",
     "games.limit": (
         "🛑 <b>Суточный лимит достигнут!</b>\n\n"
         "В игре {game} ты уже забрал(а) {limit} побед на сегодня. Лимит обновится в 00:00 UTC.\n\n"
@@ -445,7 +453,7 @@ RU: dict[str, str] = {
     # ---------------- КНБ ----------------
     "rps.intro": (
         "🪨✂️🧻 <b>КАМЕНЬ-НОЖНИЦЫ-БУМАГА</b>\n\n"
-        "Победа: <b>+{reward}</b> · Проигрыш/ничья: <b>-{penalty}</b>\n"
+        "Победа: <b>+{reward}</b> · Проигрыш: <b>-{penalty}</b> · Ничья: <b>0</b>\n"
         "Лимит побед в сутки: <b>{limit}</b>"
     ),
     "rps.rock": "🪨 Камень",
@@ -1188,6 +1196,14 @@ EN: dict[str, str] = {
     "hist.shuttle_charge": "🚀 Shuttle charge",
     "hist.team_help_give": "🤝 Help for a teammate",
     "hist.team_help_get": "🤝 Help from a teammate",
+    "gear.err_unknown": "🧥 There is no such part.",
+    "gear.err_none": "🧥 You don't have this part.",
+    "gear.err_max": "🧥 This part is already at the top level.",
+    "gear.err_coins": "🪙 Not enough coins: you need {need}.",
+    "gear.err_exo_missing": "💠 Fusion needs all 30 level-2 parts: you have {have} of {need}.",
+    "hist.gear_upgrade": "⬆️ Suit part upgrade",
+    "hist.gear_exo": "💠 Nano exo-armour fusion",
+    "hist.suit_miner": "⛏ Miner suit bonus",
     "hist.other": "• Other",
     "hist.src_gift": "🎁 Gift from the team",
     "hist.src_battle": "🏟 Battle or event",
@@ -1324,7 +1340,7 @@ EN: dict[str, str] = {
         "Fight the bot in quick duels or take the intellectual sprint test "
         "to win big — or lose it all!\n\n"
         "💸 A win pays: <b>+2 🪙</b> (Cyber-Safe: <b>+5</b>)\n"
-        "💀 A loss or draw costs: <b>-1 🪙</b>\n"
+        "💀 A loss costs: <b>-1 🪙</b>, a draw costs nothing\n"
         "🧠 The Quiz has a 30-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 🪙</b>, "
         "each next level is 10 answers longer — but the reward grows by 100!\n"
         "..................................................\n"
@@ -1496,7 +1512,7 @@ EN: dict[str, str] = {
     # ---------------- games engine ----------------
     "games.win": "🎉 <b>VICTORY!</b> 🎉\nEarned: <b>+{reward} 🪙</b>",
     "games.lose": "💀 <b>DEFEAT!</b>\nDeducted: <b>-{penalty} 🪙</b>",
-    "games.draw": "🤝 <b>DRAW!</b>\nDeducted: <b>-{penalty} 🪙</b>",
+    "games.draw": "🤝 <b>DRAW!</b>\nNo coins deducted.",
     "games.limit": (
         "🛑 <b>Daily limit reached!</b>\n\n"
         "You've already taken {limit} wins in {game} today. The limit resets at 00:00 UTC.\n\n"
@@ -1523,7 +1539,7 @@ EN: dict[str, str] = {
     # ---------------- RPS ----------------
     "rps.intro": (
         "🪨✂️🧻 <b>ROCK-PAPER-SCISSORS</b>\n\n"
-        "Win: <b>+{reward}</b> · Loss/draw: <b>-{penalty}</b>\n"
+        "Win: <b>+{reward}</b> · Loss: <b>-{penalty}</b> · Draw: <b>0</b>\n"
         "Daily win limit: <b>{limit}</b>"
     ),
     "rps.rock": "🪨 Rock",

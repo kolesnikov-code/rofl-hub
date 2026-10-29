@@ -534,7 +534,9 @@ async def handle_admin_quests(request: web.Request) -> web.Response:
         stats = {r["quest_id"]: (r["started"], r["done"]) for r in await conn.fetch(
             "SELECT quest_id, COUNT(*) AS started, COUNT(*) FILTER (WHERE completed_at IS NOT NULL) AS done "
             "FROM quest_progress GROUP BY quest_id")}
+    today = {q["id"] for q in await qe.visible_quests()}
     quests = [{"id": q["id"], "title": q["title"], "genre": q["genre"], "minutes": q["minutes"], "epic": qe.is_epic(q),
+               "today": q["id"] in today and not qe.is_epic(q),
                "on": await get_flag(qe.flag_key(q)), "started": stats.get(q["id"], (0, 0))[0],
                "done": stats.get(q["id"], (0, 0))[1]} for q in all_quests()]
     return web.json_response({"ok": True, "quests": quests, "total": len(quests),
@@ -542,23 +544,18 @@ async def handle_admin_quests(request: web.Request) -> web.Response:
 
 
 async def handle_admin_quest_toggle(request: web.Request) -> web.Response:
-    """Включить/скрыть квест или эпик; в обычной ротации — не больше QUEST_ROTATION_SIZE."""
+    """Эпик — показать/скрыть; обычный квест — в банке ротации дня или исключён."""
     uid = _admin(request)
     if isinstance(uid, web.Response):
         return uid
-    from bots.main_bot.utils.quest_loader import all_quests, get_quest
+    from bots.main_bot.utils.quest_loader import get_quest
     from shared import quest_engine as qe
-    from shared.economy import QUEST_ROTATION_SIZE
-    from shared.feature_flags import get_flag, set_flag
+    from shared.feature_flags import set_flag
     data = await _body(request)
     quest = get_quest(str(data.get("id") or ""))
     if quest is None:
         return _fail("Квест не найден")
     enable = bool(data.get("enabled"))
-    if enable and not qe.is_epic(quest) and not await get_flag(qe.flag_key(quest)):
-        on = sum([await get_flag(qe.flag_key(q)) for q in all_quests() if not qe.is_epic(q)])
-        if on >= QUEST_ROTATION_SIZE:
-            return _fail(f"В списке уже {QUEST_ROTATION_SIZE} квестов — сначала скрой какой-нибудь")
     await set_flag(qe.flag_key(quest), enable)
     return web.json_response({"ok": True})
 

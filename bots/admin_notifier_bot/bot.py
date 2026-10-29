@@ -972,7 +972,7 @@ async def _quests_admin_view() -> tuple[str, types.InlineKeyboardMarkup]:
         lines.append(f"{'🟢' if visible else '⚫'} <b>{q['title']}</b> — "
                      f"начинали: {started}, прошли: {done}")
         rows.append([types.InlineKeyboardButton(
-            text=f"{'🟢 Скрыть' if visible else '⚫ Показать'}: {q['title'][:30]}",
+            text=f"{'🟢 Исключить' if visible else '⚫ Вернуть'}: {q['title'][:30]}",
             callback_data=f"quest_toggle:{q['id']}")])
     epic_lines = [f"⭐ <b>{q['title']}</b> — начинали: {s}, прошли: {d}" for q, s, d in epics_on]
     for q, _, _ in epics_on:
@@ -980,13 +980,15 @@ async def _quests_admin_view() -> tuple[str, types.InlineKeyboardMarkup]:
                                                 callback_data=f"quest_toggle:{q['id']}")])
     if epics_off:
         rows.append([types.InlineKeyboardButton(text="➕ Внести эпик в список", callback_data="epic_pick")])
-    text = (f"🗺 <b>РОТАЦИЯ КВЕСТОВ</b> · в списке {on_count}/{QUEST_ROTATION_SIZE} · всего в базе {qe.total_count()}\n"
+    text = (f"🗺 <b>РОТАЦИЯ КВЕСТОВ</b> · в банке ротации {on_count} · квестов дня {QUEST_ROTATION_SIZE} · "
+            f"всего в базе {qe.total_count()}\n"
             "..................................................\n"
             + "\n".join(lines) +
             ("\n\n⭐ <b>ЭПИКИ В СПИСКЕ</b>\n" + "\n".join(epic_lines) if epic_lines else "") +
-            f"\n\n<i>Игрок проходит {QUEST_DAILY_NEW} новых квеста в сутки, потом непройденные гаснут до 00:00 UTC "
-            "(Безлимит снимает); пройденные переигрываются без ограничений. Эпики — вне лимита. "
-            "⚫ Скрытый квест пропадает из списка; кто начал — доиграет.</i>")
+            f"\n\n<i>Каждый день всем показываются одни и те же {QUEST_ROTATION_SIZE} случайных квестов из банка "
+            f"ротации (🟢). Без Безлимита игрок проходит {QUEST_DAILY_NEW} новых в сутки, потом непройденные гаснут до "
+            "00:00 UTC; пройденные переигрываются без ограничений. Эпики — только с Безлимитом. "
+            "⚫ Исключённый квест не выпадает в ротацию; кто начал — доиграет.</i>")
     return text, types.InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -1008,12 +1010,6 @@ async def quest_toggle(callback: types.CallbackQuery):
         await callback.answer("Квест не найден")
         return
     key = qe.flag_key(quest)
-    if not qe.is_epic(quest) and not await get_flag(key):
-        on = sum([await get_flag(qe.flag_key(q)) for q in all_quests() if not qe.is_epic(q)])
-        if on >= QUEST_ROTATION_SIZE:
-            await callback.answer(f"В списке уже {QUEST_ROTATION_SIZE} квестов — сначала скрой какой-нибудь",
-                                  show_alert=True)
-            return
     new_value = await toggle_flag(key)
     await callback.answer(f"{'Эпик' if qe.is_epic(quest) else 'Квест'} {'показан 🟢' if new_value else 'скрыт ⚫'}")
     try:

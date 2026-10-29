@@ -18,6 +18,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from shared.economy import discounted_cost, suit_bonus
 from shared.economy import (
     ARMOR_DAYS,
     MAX_CARTS,
@@ -88,7 +89,7 @@ def recipe_tool(recipe_id: str, armor_level: int = 0) -> int:
 
 
 def recipe_cost(recipe_id: str, armor_level: int = 0, capacity: int = RES_CAPACITY_BASE,
-                team_mult: int = 1) -> dict[str, int] | None:
+                team_mult: int = 1, discount: int = 0) -> dict[str, int] | None:
     """
     Цена рецепта в ресурсах; для брони зависит от ДЕЙСТВУЮЩЕГО уровня
     (на максимуме — цена продления максимального уровня). None — рецепта нет.
@@ -97,12 +98,13 @@ def recipe_cost(recipe_id: str, armor_level: int = 0, capacity: int = RES_CAPACI
     if recipe is None:
         return None
     if recipe["effect"] == "armor":
-        return armor_cost(armor_level + 1)
+        return discounted_cost(armor_cost(armor_level + 1), discount)
     if recipe["effect"] == "storage":
         nxt = next_storage_level(capacity)
-        return nxt[1] if nxt else None
+        return discounted_cost(nxt[1], discount) if nxt else None
     mult = team_mult if recipe.get("team") else 1
-    return {k: v * mult for k, v in recipe["cost"].items()}
+    # 🔧 костюм инженера: ресурсы дешевле на discount%, округление вверх — в пользу экосистемы (30.10)
+    return discounted_cost({k: v * mult for k, v in recipe["cost"].items()}, discount)
 
 
 def recipe_coins(recipe_id: str) -> int:
@@ -174,7 +176,8 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
         except ItemError as e:
             raise WorkshopError(e.key, **e.kwargs) from e
 
-    cost = recipe_cost(recipe_id, armor_now, user["res_capacity"], team_mult)
+    cost = recipe_cost(recipe_id, armor_now, user["res_capacity"], team_mult,
+                       suit_bonus(user["suit"], user["suit_level"], "en"))
     if cost is None:
         raise WorkshopError("ws.err_storage_max" if effect == "storage" else "ws.err_unknown")
     coins = recipe_coins(recipe_id)

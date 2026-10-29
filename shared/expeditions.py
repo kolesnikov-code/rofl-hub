@@ -28,6 +28,7 @@ import math
 import zlib
 from datetime import datetime, timedelta
 
+from shared.economy import suit_bonus
 from shared.economy import (
     EXP_BASE_CARGO,
     EXP_BATTERIES,
@@ -105,6 +106,8 @@ def apply_option(cargo: int, option: dict, effects: dict) -> tuple[int, int]:
     gain = int(option.get("cargo", 0))
     if option.get("fight") and gain > 0:
         gain = gain * (100 + effects.get("cargo", 0)) // 100
+    if gain > 0 and effects.get("suit"):   # 🪖 костюм военного в отряде: +% к любой добыче развилок (30.10)
+        gain = gain * (100 + effects["suit"]) // 100
     loss = cargo * int(option.get("loss", 0)) * (100 - effects.get("guard", 0)) // 10000
     return max(0, cargo + gain - loss), int(option.get("delay", 0))
 
@@ -151,6 +154,9 @@ async def squad_effects(conn, mode: str, user_id: int | None, team_id: int | Non
             FROM users u WHERE {where}""", arg)
     eff = drone_exp_effects(int(row["a"]), int(row["g"]), int(row["s"]))
     eff["drones"] = {"attack": int(row["a"]), "guard": int(row["g"]), "spy": int(row["s"])}
+    # 🪖 костюм военного: отряд ведёт самый «одетый» боец (лучший бонус среди участников), 30.10
+    suits = await conn.fetch(f"SELECT u.suit, u.suit_level FROM users u WHERE {where} AND u.suit IS NOT NULL", arg)
+    eff["suit"] = max((suit_bonus(r["suit"], r["suit_level"], "ml") for r in suits), default=0)
     return eff
 
 
@@ -264,7 +270,7 @@ async def _target(conn, target_id: int, now: datetime):
 
 async def _depart(conn, exp_id: int, target, mode: str, ox: float, oy: float, user_id, team_id, now: datetime) -> dict:
     effects = await squad_effects(conn, mode, user_id, team_id)
-    minutes = exp_travel_minutes(distance(ox, oy, target["x"], target["y"]), mode, effects["speed"])
+    minutes = exp_travel_minutes(distance(ox, oy, target["x"], target["y"]), mode, effects["speed"], effects.get("suit", 0))
     if now + timedelta(minutes=minutes) > target["resolve_at"]:
         raise ExpError("exp.err_late")
     arrive = now + timedelta(minutes=minutes)
@@ -298,7 +304,7 @@ async def start_solo(conn, user_id: int, target_id: int, now: datetime) -> dict:
         raise ExpError("exp.err_busy")
     ox, oy = origin_for("solo", user_id)
     effects = await squad_effects(conn, "solo", user_id, None)
-    minutes = exp_travel_minutes(distance(ox, oy, target["x"], target["y"]), "solo", effects["speed"])
+    minutes = exp_travel_minutes(distance(ox, oy, target["x"], target["y"]), "solo", effects["speed"], effects.get("suit", 0))
     if now + timedelta(minutes=minutes) > target["resolve_at"]:
         raise ExpError("exp.err_late")
     try:
@@ -350,7 +356,7 @@ async def contribute(conn, user_id: int, target_id: int, what: str, now: datetim
         raise ExpError("exp.err_departed")
     # Успеет ли отряд, если выйдет прямо сейчас (иначе снаряжение не принимаем)
     effects = await squad_effects(conn, mode, None, team_id)
-    minutes = exp_travel_minutes(distance(exp["ox"], exp["oy"], target["x"], target["y"]), mode, effects["speed"])
+    minutes = exp_travel_minutes(distance(exp["ox"], exp["oy"], target["x"], target["y"]), mode, effects["speed"], effects.get("suit", 0))
     if now + timedelta(minutes=minutes) > target["resolve_at"]:
         raise ExpError("exp.err_late")
     column = "batteries" if what == "battery" else "cutlets"

@@ -274,7 +274,7 @@ def test_quest_rotation_v2_rules_and_app_ui():
     from shared import quest_engine as qe
     from shared.feature_flags import _default_for
     assert economy.QUEST_ROTATION_SIZE == 10 and economy.QUEST_DAILY_NEW == 3
-    assert _default_for("quest:new_one") is False and _default_for("epic:big") is False
+    assert _default_for("quest:new_one") is True and _default_for("epic:big") is False
     locked = {"done": 3, "max": 3, "unlimited": False, "locked": True}
     free = {"done": 1, "max": 3, "unlimited": False, "locked": False}
     q, epic = {"id": "a"}, {"id": "e", "epic": True}
