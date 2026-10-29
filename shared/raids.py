@@ -22,7 +22,7 @@ import random
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-from shared.economy import SUIT_BONUS, suit_bonus
+from shared.economy import SUIT_BONUS, user_bonus
 from shared.economy import (
     CARGO_LOOT_PERCENT,
     drone_raid_loot_percent,
@@ -122,8 +122,9 @@ async def find_targets(conn, attacker_id: int, attacker_team: int | None, now: d
           AND (u.raid_camo_until IS NULL OR u.raid_camo_until <= $3::timestamptz)
           AND (tm.dome_until IS NULL OR tm.dome_until <= $3::timestamptz)
           -- 🥷 костюм маскировки (и экзо-броня): с шансом цель не попадает в разведку (30.10)
-          AND NOT (u.suit IN ('st', 'exo') AND random() * 100 <
-                   CASE WHEN u.suit = 'exo' OR u.suit_level >= 2 THEN $10::int ELSE $9::int END)
+          AND NOT (random() * 100 < (CASE WHEN u.suit = 'exo' OR (u.suit = 'st' AND u.suit_level >= 2) THEN $10::int
+                                          WHEN u.suit = 'st' THEN $9::int ELSE 0 END)
+                                    + COALESCE((u.art_bonus->>'st')::int, 0))
           AND NOT EXISTS (SELECT 1 FROM raids x WHERE x.defender_id = u.user_id
                           AND x.created_at > $3::timestamptz - make_interval(hours => $6::int))
         GROUP BY u.user_id HAVING SUM(r.qty) >= $7::int
@@ -259,7 +260,7 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
     if with_drones != loot_percent:
         notes.append("drones")
         loot_percent = with_drones
-    military = suit_bonus(attacker["suit"], attacker["suit_level"], "ml")
+    military = user_bonus(attacker, "ml")
     if military:   # 🪖 костюм военного: +% к трофею (30.10)
         loot_percent = loot_percent * (100 + military) // 100
         notes.append("suit")

@@ -44,7 +44,9 @@ from shared.economy import (
     TRADEABLE_KINDS,
     market_min_price,
     team_market_fee_percent,
+    parse_art_asset,
     parse_gear_asset,
+    art_code,
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import t
@@ -53,6 +55,15 @@ from shared.resources import InsufficientResources, change_resource, free_space,
 logger = logging.getLogger(__name__)
 
 SIDES = ("sell", "buy")
+
+
+def bag_item(asset: str) -> tuple[str, str] | None:
+    """Товар из сумки персонажа: деталь костюма 1 ур. (костюм, слот) или артефакт (a<вид>, 'art')."""
+    gear = parse_gear_asset(asset)
+    if gear is not None:
+        return gear
+    kind = parse_art_asset(asset)
+    return (art_code(kind), "art") if kind else None
 
 
 class MarketError(Exception):
@@ -71,7 +82,7 @@ class MarketError(Exception):
 # Проверки
 # ============================================================================
 def validate_order(qty: int, price: int, shuttle: bool = False, asset: str = "cutlet") -> None:
-    if asset not in MARKET_ASSETS and parse_gear_asset(asset) is None:
+    if asset not in MARKET_ASSETS and bag_item(asset) is None:
         raise MarketError("mk.err_asset")
     max_qty, _ = market_limits(shuttle, asset)
     if qty <= 0 or qty > max_qty:
@@ -114,8 +125,8 @@ async def _lock_users(conn, ids: list[int]) -> dict:
 
 async def _take_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref: str) -> None:
     """Списывает товар у игрока (в эскроу ордера или продавцу-тейкеру). MarketError при нехватке."""
-    gear = parse_gear_asset(asset)
-    if gear is not None:   # 🧥 деталь костюма 1-го уровня из сумки персонажа (30.10)
+    gear = bag_item(asset)
+    if gear is not None:   # 🧥 деталь костюма 1-го уровня или 💠 артефакт из сумки персонажа (30.10)
         from shared.gear import GearError, change_gear, have
         try:
             await change_gear(conn, user_id, gear[0], gear[1], 1, -qty, reason, ref)
@@ -138,7 +149,7 @@ async def _take_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref
 
 async def _ensure_room(conn, user_id: int, asset: str, qty: int, key: str = "mk.err_storage_full") -> None:
     """Ресурс купят/получат только если он влезет на склад (котлеты и детали костюмов склад не ограничивает)."""
-    if asset == "cutlet" or parse_gear_asset(asset) is not None:
+    if asset == "cutlet" or bag_item(asset) is not None:
         return
     room = await free_space(conn, user_id, asset)
     if room < qty:
@@ -158,7 +169,7 @@ async def _newbie_price_guard(conn, buyer_id: int, asset: str, price: int) -> No
 
 
 async def _give_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref: str) -> None:
-    gear = parse_gear_asset(asset)
+    gear = bag_item(asset)
     if gear is not None:
         from shared.gear import change_gear
         await change_gear(conn, user_id, gear[0], gear[1], 1, qty, reason, ref)
@@ -193,9 +204,9 @@ async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price
         raise MarketError("mk.err_too_many", max=max_orders)
     # Проверяем запас ДО создания ордера: отказ не оставляет следов даже вне транзакции
     if side == "sell":
-        if parse_gear_asset(asset) is not None:
+        if bag_item(asset) is not None:
             from shared.gear import have as gear_have
-            have = await gear_have(conn, user_id, *parse_gear_asset(asset))
+            have = await gear_have(conn, user_id, *bag_item(asset))
         else:
             have = user["inv_cutlets"] if asset == "cutlet" else (await lock_resources(conn, user_id))[asset]
         if have < qty:

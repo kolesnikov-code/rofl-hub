@@ -16,7 +16,7 @@ from datetime import datetime, timedelta, timezone
 from aiohttp import web
 
 from shared.database import db
-from shared.economy import ALL_KINDS, ITEM_EFFECTS, MINE_HOLD_HOURS, utcnow
+from shared.economy import ALL_KINDS, ITEM_EFFECTS, MINE_HOLD_HOURS, finish_count_ok, utcnow
 from shared.webapp_auth import validate_init_data
 
 VIP_PREFIX = "ROFL-HUB-"
@@ -110,9 +110,9 @@ def validate_battle_form(data: dict, free_mines: set[int], now: datetime) -> tup
             return None, "Неверная дата старта"
     if starts < now - timedelta(minutes=10):
         return None, "Старт не может быть в прошлом"
-    hours = _int(data.get("hours"))
-    if not 1 <= hours <= 24 * 365:
-        return None, "Длительность — от 1 часа до года"
+    ends, err = end_time(data, starts, 24 * 365, "Длительность — от 1 часа до года")
+    if err:
+        return None, err
     places = _int(data.get("places"))
     if not 0 <= places <= MAX_BATTLE_PLACES:
         return None, f"Призовых мест — от 0 до {MAX_BATTLE_PLACES}"
@@ -142,8 +142,29 @@ def validate_battle_form(data: dict, free_mines: set[int], now: datetime) -> tup
     reward_all = normalize_rewards(data.get("reward_all"))
     return {"title": title, "title_tpl": tpl, "scope": scope, "nomination_key": key, "reward_all": reward_all,
             "nomination_text": nom_text,
-            "starts_at": starts, "ends_at": starts + timedelta(hours=hours), "places": places,
-            "prizes": prizes, "mine_ids": mines}, None
+            "starts_at": starts, "ends_at": ends, "places": places,
+            "prizes": prizes, "mine_ids": mines, "finish_count": finish_count_ok(data.get("finish_count"))}, None
+
+
+def end_time(data: dict, start: datetime, max_hours: int, hours_err: str) -> tuple[datetime | None, str | None]:
+    """⏱ Окончание: точная дата ends_at (UTC, из пульта) или start + hours. (момент, None) или (None, ошибка)."""
+    raw = data.get("ends_at")
+    if raw:
+        try:
+            ends = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+        except ValueError:
+            return None, "Неверная дата окончания"
+        if ends.tzinfo is None:
+            ends = ends.replace(tzinfo=timezone.utc)
+        if ends <= start + timedelta(minutes=10):
+            return None, "Окончание — хотя бы через 10 минут после старта"
+        if ends > start + timedelta(hours=max_hours):
+            return None, "Окончание слишком далеко"
+        return ends, None
+    hours = _int(data.get("hours"))
+    if not 1 <= hours <= max_hours:
+        return None, hours_err
+    return start + timedelta(hours=hours), None
 
 
 def vip_candidates(taken: set[str], limit: int = 10, offset: int = 0) -> list[str]:
@@ -208,7 +229,7 @@ async def handle_admin_battles(request: web.Request) -> web.Response:
             "id": r["battle_id"], "title": r["title"], "status": r["status"], "scope": r["scope"],
             "nomination": r["nomination_text"], "nomination_key": r["nomination_key"],
             "starts_at": _iso(r["starts_at"]), "ends_at": _iso(r["ends_at"]), "places": r["places"],
-            "mine_ids": list(r["mine_ids"] or []), "announced": r["announced"],
+            "mine_ids": list(r["mine_ids"] or []), "announced": r["announced"], "finish_count": r["finish_count"],
             "entries": sum(1 for (b, _), _v in entries.items() if b == r["battle_id"]),
             "manual_results": r["manual_results"] if not isinstance(r["manual_results"], str) else json.loads(r["manual_results"]),
             "results": [{"place": x.get("place"), "name": x.get("name"), "score": x.get("score")}
@@ -231,12 +252,13 @@ async def handle_admin_battle_create(request: web.Request) -> web.Response:
             return _fail(err)
         battle_id = await conn.fetchval(
             """INSERT INTO battles (title, nomination_key, nomination_text, starts_at, ends_at, prizes, scope, places,
-                                    mine_ids, announced, results_posted, reward_all, title_tpl)
-               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, TRUE, FALSE, $10::jsonb, $11::jsonb) RETURNING battle_id""",
+                                    mine_ids, announced, results_posted, reward_all, title_tpl, finish_count)
+               VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8, $9, TRUE, FALSE, $10::jsonb, $11::jsonb, $12)
+               RETURNING battle_id""",
             form["title"], form["nomination_key"], form["nomination_text"], form["starts_at"], form["ends_at"],
             json.dumps(form["prizes"], ensure_ascii=False), form["scope"], form["places"], form["mine_ids"],
             json.dumps(form["reward_all"], ensure_ascii=False),
-            json.dumps(form["title_tpl"]) if form["title_tpl"] else None)
+            json.dumps(form["title_tpl"]) if form["title_tpl"] else None, form["finish_count"])
     return web.json_response({"ok": True, "id": battle_id})
 
 
@@ -316,6 +338,47 @@ async def handle_admin_reward(request: web.Request) -> web.Response:
     return web.json_response({"ok": True, "given": ok, "failed": bad, "label": label})
 
 
+# ---------------------------------------------------------------- 🎁 «Подарить всем» — плашка в паспорте, без рассылки
+async def handle_admin_gifts(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared.gifts import campaigns_admin
+    async with db.pool.acquire() as conn:
+        return web.json_response({"ok": True, "campaigns": await campaigns_admin(conn)})
+
+
+async def handle_admin_gift_all(request: web.Request) -> web.Response:
+    """Раздача всем игрокам: подарок ждёт на плашке «Подарки от разработчика» до срока (по умолчанию — конец сезона)."""
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared.economy import season_bounds
+    from shared.gifts import create_campaign
+    from shared.prizes import normalize_rewards
+    data = await _body(request)
+    rewards = [r for r in normalize_rewards(data.get("rewards")) if r["kind"] != "text"]
+    if not rewards:
+        return _fail("Добавь хотя бы одну награду (ручные призы раздачей не выдаются)")
+    now = utcnow()
+    days = _int(data.get("days"))
+    expires = now + timedelta(days=days) if 1 <= days <= 90 else season_bounds(now)[1]
+    title = str(data.get("title") or "").strip()[:100]
+    async with db.pool.acquire() as conn:
+        gift_id = await create_campaign(conn, title, rewards, expires)
+    return web.json_response({"ok": True, "id": gift_id, "expires_at": expires.isoformat()})
+
+
+async def handle_admin_gift_cancel(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared.gifts import cancel
+    async with db.pool.acquire() as conn:
+        ok = await cancel(conn, _int((await _body(request)).get("id")))
+    return web.json_response({"ok": ok}) if ok else _fail("Раздача не найдена или уже отменена")
+
+
 # ---------------------------------------------------------------- VIP ID и аукционы
 async def _taken_aliases(conn) -> set[str]:
     rows = await conn.fetch("SELECT alias FROM vip_aliases UNION SELECT vip_alias FROM auctions "
@@ -357,7 +420,7 @@ async def handle_admin_vip_auction(request: web.Request) -> web.Response:
     if isinstance(uid, web.Response):
         return uid
     data = await _body(request)
-    price, step, hours = _int(data.get("price")), _int(data.get("step")), _int(data.get("hours"))
+    price, step = _int(data.get("price")), _int(data.get("step"))
     lot = None
     alias = None
     if data.get("kind") == "lot":
@@ -370,8 +433,9 @@ async def handle_admin_vip_auction(request: web.Request) -> web.Response:
             return _fail("VIP ID должен начинаться с ROFL-HUB-")
     if not 1 <= price <= 100_000_000 or not 1 <= step <= 10_000_000:
         return _fail("Цена и шаг — положительные числа")
-    if not 1 <= hours <= AUCTION_MAX_HOURS:
-        return _fail("Длительность — от 1 часа до 30 дней")
+    ends, err = end_time(data, utcnow(), AUCTION_MAX_HOURS, "Длительность — от 1 часа до 30 дней")
+    if err:
+        return _fail(err)
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             await conn.execute("SELECT pg_advisory_xact_lock(271027)")
@@ -380,9 +444,10 @@ async def handle_admin_vip_auction(request: web.Request) -> web.Response:
             title = lot["title"] if lot else f"💎 VIP ID {alias}"
             descr = lot["descr"] if lot else "VIP ID — равноправный айдишник в экосистеме: переводы монет и строка в профиле."
             auction_id = await conn.fetchval(
-                """INSERT INTO auctions (item_title, item_desc, current_price, min_step, status, vip_alias, ends_at, announced)
-                   VALUES ($1, $2, $3, $4, 'open', $5, NOW() + make_interval(hours => $6), TRUE) RETURNING auction_id""",
-                title, descr, price, step, alias, hours)
+                """INSERT INTO auctions (item_title, item_desc, current_price, min_step, status, vip_alias, ends_at, announced,
+                                         finish_count)
+                   VALUES ($1, $2, $3, $4, 'open', $5, $6, TRUE, $7) RETURNING auction_id""",
+                title, descr, price, step, alias, ends, finish_count_ok(data.get("finish_count")))
     return web.json_response({"ok": True, "id": auction_id})
 
 
@@ -413,9 +478,9 @@ def validate_target_form(data: dict, now: datetime, open_count: int) -> tuple[di
     forks = _int(data.get("forks"), 3)
     if not 1 <= forks <= EXP_FORKS_MAX:
         return None, f"Развилок — от 1 до {EXP_FORKS_MAX}"
-    hours = _int(data.get("hours"))
-    if not 1 <= hours <= 24 * 60:
-        return None, "Итоги — через 1 час … 60 дней"
+    resolve_at, err = end_time(data, now, 24 * 60, "Итоги — через 1 час … 60 дней")
+    if err:
+        return None, err
     places = _int(data.get("places"))
     if not 0 <= places <= EXP_MAX_PLACES:
         return None, f"Призовых мест — от 0 до {EXP_MAX_PLACES}"
@@ -427,8 +492,11 @@ def validate_target_form(data: dict, now: datetime, open_count: int) -> tuple[di
             prizes[str(p)] = clean
     reward_all = normalize_rewards(data.get("reward_all"))
     return {"title": title, "title_tpl": tpl, "descr": descr, "icon": icon, "scope": scope, "x": round(x, 1), "y": round(y, 1),
-            "forks": forks, "resolve_at": now + timedelta(hours=hours), "places": places, "prizes": prizes,
-            "reward_all": reward_all}, None
+            "forks": forks, "resolve_at": resolve_at, "places": places, "prizes": prizes,
+            "reward_all": reward_all, "finish_count": finish_count_ok(data.get("finish_count")),
+            # 🧥/💠 «выдавать детали костюмов / артефакт» каждому дошедшему — только соло-походы (владелец 30.10)
+            "give_gear": bool(data.get("give_gear")) and scope == "solo",
+            "give_artifact": bool(data.get("give_artifact")) and scope == "solo"}, None
 
 
 async def handle_admin_targets(request: web.Request) -> web.Response:
@@ -453,7 +521,8 @@ async def handle_admin_targets(request: web.Request) -> web.Response:
         reward_all = normalize_rewards(json.loads(raw_all) if isinstance(raw_all, str) else (raw_all or []))
         out.append({"id": r["id"], "title": r["title"], "icon": r["icon"], "x": r["x"], "y": r["y"], "scope": r["scope"],
                     "forks": r["forks"], "resolve_at": _iso(r["resolve_at"]), "places": r["places"],
-                    "status": r["status"], "squads": n, "marching": marching,
+                    "status": r["status"], "squads": n, "marching": marching, "finish_count": r["finish_count"],
+                    "give_gear": r["give_gear"], "give_artifact": r["give_artifact"],
                     "prizes": [{"place": pl, "label": rewards_label(prizes[pl])} for pl in sorted(prizes)][:20],
                     "reward_all": rewards_label(reward_all) if reward_all else "",
                     "results": [{"place": x.get("place"), "name": x.get("name"), "cargo": x.get("cargo")}
@@ -477,12 +546,15 @@ async def handle_admin_target_create(request: web.Request) -> web.Response:
                 return _fail(err)
             target_id = await conn.fetchval(
                 """INSERT INTO expedition_targets (title, descr, icon, x, y, scope, forks, resolve_at, places, prizes,
-                                                   reward_all, announced, title_tpl)
-                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, TRUE, $12::jsonb) RETURNING id""",
+                                                   reward_all, announced, title_tpl, finish_count, give_gear,
+                                                   give_artifact)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, TRUE, $12::jsonb, $13, $14, $15)
+                   RETURNING id""",
                 form["title"], form["descr"], form["icon"], form["x"], form["y"], form["scope"], form["forks"],
                 form["resolve_at"], form["places"], json.dumps(form["prizes"], ensure_ascii=False),
                 json.dumps(form["reward_all"], ensure_ascii=False),
-                json.dumps(form["title_tpl"]) if form["title_tpl"] else None)
+                json.dumps(form["title_tpl"]) if form["title_tpl"] else None, form["finish_count"], form["give_gear"],
+                form["give_artifact"])
     return web.json_response({"ok": True, "id": target_id})
 
 
@@ -595,6 +667,9 @@ def register_admin_routes(app: web.Application) -> None:
     app.router.add_post("/api/admin/battle/close", handle_admin_battle_close)
     app.router.add_post("/api/admin/battle/manual", handle_admin_battle_manual)
     app.router.add_post("/api/admin/reward", handle_admin_reward)
+    app.router.add_get("/api/admin/gifts", handle_admin_gifts)
+    app.router.add_post("/api/admin/gift_all", handle_admin_gift_all)
+    app.router.add_post("/api/admin/gift_cancel", handle_admin_gift_cancel)
     app.router.add_get("/api/admin/vip", handle_admin_vip)
     app.router.add_post("/api/admin/vip/auction", handle_admin_vip_auction)
     app.router.add_post("/api/admin/flag", handle_admin_flag)

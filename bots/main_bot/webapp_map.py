@@ -166,6 +166,7 @@ async def handle_map(request: web.Request) -> web.Response:
             "id": r["id"], "title": localized_title(r["title"], r["title_tpl"], ctx.lang), "descr": r["descr"], "icon": r["icon"], "x": r["x"], "y": r["y"],
             "scope": r["scope"], "scope_label": t(ctx.lang, f"post.scope_{r['scope']}"), "forks": r["forks"],
             "resolve_at": _iso(r["resolve_at"]), "places": r["places"], "squads": by_target.get(r["id"], 0),
+            "finish_count": r["finish_count"], "give_gear": r["give_gear"], "give_artifact": r["give_artifact"],
             "prizes": [{"place": p, "label": rewards_label(prizes[p])} for p in sorted(prizes)][:20],
             "reward_all": rewards_label(reward_all) if reward_all else "", "options": options,
         })

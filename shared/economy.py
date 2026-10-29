@@ -240,6 +240,8 @@ MARKET_CUTLET_MIN_PRICE = MARKET_MIN_PRICES["cutlet"]
 def market_min_price(asset: str) -> int:
     if asset.startswith("g_"):
         return GEAR_MIN_PRICE   # 🧥 деталь костюма (30.10)
+    if asset.startswith("a_"):
+        return ARTIFACT_MIN_PRICE   # 💠 артефакт (30.10)
     return MARKET_MIN_PRICES.get(asset, MARKET_MIN_PRICE)
 
 
@@ -772,7 +774,7 @@ def market_limits(shuttle: bool, asset: str = "cutlet") -> tuple[int, int]:
     """(макс. штук в ордере, макс. открытых ордеров) — с Шаттлом логистика шире."""
     if asset == "cutlet":
         qty = SHUTTLE_MARKET_MAX_QTY if shuttle else MARKET_MAX_QTY
-    elif asset.startswith("g_"):
+    elif asset.startswith("g_") or asset.startswith("a_"):
         qty = GEAR_MARKET_MAX_QTY
     else:
         qty = SHUTTLE_RESOURCE_MAX_QTY if shuttle else MARKET_RESOURCE_MAX_QTY
@@ -956,8 +958,11 @@ EXP_MAP_W, EXP_MAP_H = 160, 100      # условные единицы карт�
 EXP_MAX_TARGETS = 10                 # целей на карте одновременно
 # 26.10: на карте мира — и соло, и командные походы (формат задаёт владелец при создании цели); рудники — только командам
 EXP_SCOPES = ("solo", "team", "clan", "teams")   # teams — команды и кланы в одном зачёте
-EXP_SPEED = {"solo": 14, "team": 11, "clan": 9}  # единиц карты в час: большой отряд идёт медленнее
-EXP_MIN_TRAVEL_MINUTES = 20
+# 30.10 (владелец: «5–6 часов ждать — накаляет»): путь — от и до минут по расстоянию от дома отряда до цели;
+# ближе к цели — быстрее, и на карте видно, как точки соперников ползут к ней. Соло 10–30 мин, команда/клан 30–120.
+EXP_TRAVEL_RANGE = {"solo": (10, 30), "team": (30, 120), "clan": (35, 120)}
+EXP_MAX_DISTANCE = 189.0             # ≈ диагональ карты 160×100 — самый дальний путь
+EXP_MIN_TRAVEL_MINUTES = 5           # пол после всех ускорений (шпионы, костюм военного)
 EXP_SOLO_HYDROGEN = 10               # 💧 соло-вылазка
 EXP_BATTERIES = {"team": 5, "clan": 25}           # 🔋 снаряжение отряда (вносят бойцы по одной)
 EXP_CLAN_CUTLETS = 10                # 🥩 провиант Мега-Клана (решение владельца: командам котлеты не нужны)
@@ -984,8 +989,10 @@ def exp_peek_budget(spies: int, scout_level: int, forks: int, first_of_season: b
 
 
 def exp_travel_minutes(distance: float, mode: str, spy_pct: int = 0, suit_pct: int = 0) -> int:
-    """Минуты пути: расстояние / скорость отряда, шпионы сокращают путь, 🪖 костюм военного — ещё на suit_pct%."""
-    minutes = distance / EXP_SPEED[mode] * 60 * (100 - max(0, min(spy_pct, DRONE_EXP_SPEED_CAP))) / 100
+    """Минуты пути: от и до EXP_TRAVEL_RANGE по расстоянию; шпионы сокращают путь, 🪖 костюм военного — ещё на suit_pct%."""
+    lo, hi = EXP_TRAVEL_RANGE[mode]
+    minutes = lo + (hi - lo) * min(1.0, max(0.0, distance) / EXP_MAX_DISTANCE)
+    minutes = minutes * (100 - max(0, min(spy_pct, DRONE_EXP_SPEED_CAP))) / 100
     minutes = minutes * (100 - max(0, min(suit_pct, 50))) / 100
     return max(EXP_MIN_TRAVEL_MINUTES, int(round(minutes)))
 
@@ -1055,8 +1062,10 @@ def suit_bonus(suit: str | None, level: int | None, line: str) -> int:
     return SUIT_BONUS[line].get(min(int(level), GEAR_MAX_LEVEL), 0)
 
 
-def energy_chance_percent(suit: str | None, level: int | None) -> int:
-    return suit_bonus(suit, level, "el") or ENERGY_WIN_CHANCE_PERCENT
+def energy_chance_percent(suit: str | None, level: int | None, art: dict | None = None) -> int:
+    """Шанс ⚡ за победу: костюм электрика заменяет базовые 25%, артефакты добавляются сверху (не больше 95%)."""
+    base = suit_bonus(suit, level, "el") or ENERGY_WIN_CHANCE_PERCENT
+    return min(95, base + gear_bonus(None, None, art, "el"))
 
 
 def discounted_cost(cost: dict[str, int], pct: int) -> dict[str, int]:
@@ -1073,3 +1082,101 @@ def miner_bonus(mined: int, pct: int) -> int:
 
 def tech_cooldown_cut(days: float, pct: int) -> float:
     return days * (100 - max(0, pct)) / 100
+
+
+
+# --------------------------------------------------------------------------
+# ⏱ ДОСРОЧНЫЕ ИТОГИ (владелец 30.10): у экспедиции, битвы (акции, рудники) и аукциона — точное время окончания
+# И (по желанию) «раньше, если наберётся N»: дошедших до цели игроков / участников битвы / игроков, сделавших
+# ставку. Итоги — по тому, что наступит раньше (shared/autofinish.py, демон админ-бота).
+# --------------------------------------------------------------------------
+FINISH_COUNTS = (10, 100, 1000, 10000)
+
+
+def finish_count_ok(value) -> int | None:
+    try:
+        n = int(value)
+    except (TypeError, ValueError):
+        return None
+    return n if n in FINISH_COUNTS else None
+
+
+# --------------------------------------------------------------------------
+# 💠 АРТЕФАКТЫ (владелец 30.10): камни на «пояс» персонажа — ARTIFACT_SLOTS окошек под аватаром. Каждый вид усиливает
+# свою линию бонусов (те же, что у костюмов) и складывается с костюмом. Бесплатно — не больше ARTIFACT_SEASON_CAP за
+# сезон (подарок разработчика, экспедиции); остальное — биржа (пол ARTIFACT_MIN_PRICE).
+# --------------------------------------------------------------------------
+ARTIFACT_SLOTS = ("a1", "a2", "a3")
+ARTIFACT_KINDS = GEAR_SUITS                     # вид артефакта = линия бонуса
+ARTIFACT_BAG_SLOT = "art"                       # в сумке артефакт — деталь со «слотом» art и костюмом a<вид>
+ARTIFACT_BONUS = {"el": 10, "mn": 2, "ml": 5, "st": 10, "sc": 10, "en": 5}
+ARTIFACT_SEASON_CAP = 1
+ARTIFACT_MIN_PRICE = 1000
+ARTIFACT_ICONS = {"el": "🔆", "mn": "🪸", "ml": "🔴", "st": "🌫", "sc": "🔮", "en": "⚙️"}
+
+
+def art_code(kind: str) -> str:
+    """Код артефакта в сумке/поясе (колонка suit VARCHAR(3)): a + вид."""
+    return "a" + kind
+
+
+def art_kind(code: str | None) -> str | None:
+    if code and len(code) == 3 and code[0] == "a" and code[1:] in ARTIFACT_KINDS:
+        return code[1:]
+    return None
+
+
+def art_asset(kind: str) -> str:
+    return f"a_{kind}"
+
+
+def parse_art_asset(asset: str) -> str | None:
+    parts = (asset or "").split("_")
+    return parts[1] if len(parts) == 2 and parts[0] == "a" and parts[1] in ARTIFACT_KINDS else None
+
+
+ART_ASSETS = tuple(art_asset(k) for k in ARTIFACT_KINDS)
+
+
+def art_bonus_total(kinds) -> dict[str, int]:
+    """Сумма бонусов надетых артефактов по линиям: {"el": 20, …}."""
+    out: dict[str, int] = {}
+    for k in kinds:
+        if k in ARTIFACT_BONUS:
+            out[k] = out.get(k, 0) + ARTIFACT_BONUS[k]
+    return out
+
+
+def gear_bonus(suit: str | None, level: int | None, art: dict | None, line: str) -> int:
+    """Весь бонус линии: полный костюм + артефакты пояса."""
+    extra = 0
+    if art:
+        try:
+            extra = int((art if isinstance(art, dict) else {}).get(line, 0))
+        except (TypeError, ValueError):
+            extra = 0
+    return suit_bonus(suit, level, line) + extra
+
+
+def art_of(row) -> dict:
+    """users.art_bonus из строки БД (JSONB приходит строкой или словарём)."""
+    import json
+    raw = row["art_bonus"] if row is not None and "art_bonus" in row.keys() else None
+    if not raw:
+        return {}
+    return json.loads(raw) if isinstance(raw, str) else dict(raw)
+
+
+def user_bonus(row, line: str) -> int:
+    """Бонус линии по строке users (suit, suit_level, art_bonus)."""
+    if row is None:
+        return 0
+    return gear_bonus(row["suit"], row["suit_level"], art_of(row), line)
+
+
+# --------------------------------------------------------------------------
+# 🎁 ПОДАРКИ ОТ РАЗРАБОТЧИКА (владелец 30.10): «Подарить всем» — не рассылка (бан Telegram за тысячи сообщений), а
+# плашка в паспорте с кнопкой «Забрать»; подарки копятся до срока. Вещи с сезонным лимитом (детали, артефакты) видит
+# и получает только тот, кто ещё не добрал лимит сезона — справедливо и старожилам, и новичкам.
+# --------------------------------------------------------------------------
+GIFT_LIST_LIMIT = 20

@@ -53,7 +53,10 @@ def test_scope_and_travel_rules():
     solo, team, clan = (economy.exp_travel_minutes(100, m) for m in ("solo", "team", "clan"))
     assert solo < team < clan                         # большой отряд идёт медленнее
     assert economy.exp_travel_minutes(100, "team", 20) < team   # шпионы сокращают путь
-    assert economy.exp_travel_minutes(0.1, "solo") == economy.EXP_MIN_TRAVEL_MINUTES
+    # 30.10: соло 10–30 мин, команда/клан 30–120 мин по расстоянию от дома до цели
+    assert economy.exp_travel_minutes(0.1, "solo") == 10 and economy.exp_travel_minutes(500, "solo") == 30
+    assert economy.exp_travel_minutes(0, "team") == 30 and economy.exp_travel_minutes(500, "clan") == 120
+    assert economy.exp_travel_minutes(0, "solo", 30, 15) >= economy.EXP_MIN_TRAVEL_MINUTES
     assert economy.exp_travel_minutes(100, "solo", 999) == economy.exp_travel_minutes(100, "solo", economy.DRONE_EXP_SPEED_CAP)
 
 

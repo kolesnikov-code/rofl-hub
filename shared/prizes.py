@@ -10,6 +10,7 @@
 - boost     {boost, hours}           — сразу включить: nitrogen/nuclear/drone/unlimit/shield на срок;
 - bdrone    {drone, qty}             — боевой дрон guard/attack/spy (навсегда, 28.10);
 - gear      {qty}                    — случайные детали костюмов 1-го уровня (30.10; не больше сезонного лимита игрока);
+- artifact  {qty}                    — случайные артефакты для пояса персонажа (30.10; тоже с сезонным лимитом);
 - text      {text}                   — ручной приз (вручает владелец: телефон, Premium…) — только в посте.
 Выдача идемпотентна: ключ ref (битва/место/игрок) пишется в reward_grants, повтор — пропуск.
 Всё — внутри транзакции вызывающего; для ферменных наград сначала закрывается прошлое время фермы.
@@ -24,7 +25,7 @@ from shared.economy import ALL_KINDS, ITEM_COLUMNS, ITEM_EFFECTS, ONE_SHOT_COLUM
 
 logger = logging.getLogger(__name__)
 
-REWARD_KINDS = ("coins", "resource", "cutlets", "item", "robot", "boost", "bdrone", "gear", "text")
+REWARD_KINDS = ("coins", "resource", "cutlets", "item", "robot", "boost", "bdrone", "gear", "artifact", "text")
 DRONE_ICONS = {"guard": "🛡🤖", "attack": "⚔️🤖", "spy": "🛰🤖"}
 ROBOT_KINDS = ("junior", "premium")
 BOOST_COLUMNS = {"nitrogen": "boost_nitrogen_until", "nuclear": "boost_nuclear_until", "drone": "drone_until",
@@ -77,6 +78,10 @@ def normalize_reward(r: dict) -> dict | None:
         from shared.economy import GEAR_SEASON_CAP
         qty = max(1, _int(r.get("qty")) or 1)
         return {"kind": "gear", "qty": qty} if qty <= GEAR_SEASON_CAP else None
+    if kind == "artifact":
+        from shared.economy import ARTIFACT_SEASON_CAP
+        qty = max(1, _int(r.get("qty")) or 1)
+        return {"kind": "artifact", "qty": qty} if qty <= ARTIFACT_SEASON_CAP else None
     if kind == "text":
         text = str(r.get("text") or "").strip()[:200]
         return {"kind": "text", "text": text} if text else None
@@ -118,6 +123,8 @@ def reward_label(r: dict) -> str:
         return DRONE_ICONS[r["drone"]] + (f" ×{r['qty']}" if r.get("qty", 1) > 1 else "")
     if k == "gear":
         return f"🧥 ×{r['qty']}"
+    if k == "artifact":
+        return f"💠 ×{r['qty']}"
     return "🎁 " + r.get("text", "")
 
 
@@ -175,6 +182,9 @@ async def grant(conn, user_id: int, rewards: list[dict], ref: str, now: datetime
         elif k == "gear":
             from shared.gear import drop_random
             await drop_random(conn, user_id, r["qty"], ref, now)
+        elif k == "artifact":
+            from shared.gear import drop_artifacts
+            await drop_artifacts(conn, user_id, r["qty"], ref, now)
         elif k == "boost":
             column = BOOST_COLUMNS[r["boost"]]
             current = await conn.fetchval(f"SELECT {column} FROM users WHERE user_id = $1", user_id)

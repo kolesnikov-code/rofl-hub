@@ -4,7 +4,7 @@
 - Цели ставит владелец в пульте (до EXP_MAX_TARGETS сразу): координаты, зачёт (соло / команды / кланы /
   команды и кланы), число развилок, ЧАС ИТОГОВ, призы по местам и награда каждому дошедшему.
 - Отряд выходит со своей стороны карты (точка на краю, детерминированно по игроку/команде) и идёт к цели
-  со скоростью EXP_SPEED[вид]; путь укорачивают 🛰 шпионы. Кто не успевает к часу итогов, выйти не может;
+  за EXP_TRAVEL_RANGE[вид] минут по расстоянию; путь укорачивают 🛰 шпионы. Кто не успевает к часу итогов, выйти не может;
   кого задержали развилки — «опоздал» и в итогах не участвует.
 - Снаряжение: соло — EXP_SOLO_HYDROGEN водорода сразу; команда — EXP_BATTERIES["team"] батареек, клан —
   EXP_BATTERIES["clan"] батареек + EXP_CLAN_CUTLETS котлет. Вносят бойцы по одной; полный комплект — отряд
@@ -28,7 +28,7 @@ import math
 import zlib
 from datetime import datetime, timedelta
 
-from shared.economy import suit_bonus
+from shared.economy import user_bonus
 from shared.economy import (
     EXP_BASE_CARGO,
     EXP_BATTERIES,
@@ -155,8 +155,9 @@ async def squad_effects(conn, mode: str, user_id: int | None, team_id: int | Non
     eff = drone_exp_effects(int(row["a"]), int(row["g"]), int(row["s"]))
     eff["drones"] = {"attack": int(row["a"]), "guard": int(row["g"]), "spy": int(row["s"])}
     # 🪖 костюм военного: отряд ведёт самый «одетый» боец (лучший бонус среди участников), 30.10
-    suits = await conn.fetch(f"SELECT u.suit, u.suit_level FROM users u WHERE {where} AND u.suit IS NOT NULL", arg)
-    eff["suit"] = max((suit_bonus(r["suit"], r["suit_level"], "ml") for r in suits), default=0)
+    suits = await conn.fetch(f"SELECT u.suit, u.suit_level, u.art_bonus FROM users u WHERE {where} "
+                             "AND (u.suit IS NOT NULL OR u.art_bonus <> '{}'::jsonb)", arg)
+    eff["suit"] = max((user_bonus(r, "ml") for r in suits), default=0)
     return eff
 
 
@@ -500,7 +501,7 @@ async def finalize_target(conn, target, now: datetime) -> dict:
     prizes = prizes_by_place(target["prizes"])
     raw_all = target["reward_all"]
     reward_all = normalize_rewards(json.loads(raw_all) if isinstance(raw_all, str) else (raw_all or []))
-    rows, notices = [], []
+    rows, notices, solo_arrived = [], [], []
     for place, exp in enumerate(arrived, start=1):
         # командный отряд: награда — тем, кто ВСЁ ЕЩЁ в этой команде и в ней не меньше суток (аудит 2.7:
         # проголосовал в двух командах — забрал призы обеих)
@@ -510,6 +511,8 @@ async def finalize_target(conn, target, now: datetime) -> dict:
             "SELECT m.user_id FROM expedition_members m JOIN users u ON u.user_id = m.user_id "
             "WHERE m.expedition_id = $1 AND NOT u.is_blocked AND u.deleted_at IS NULL" + team_rule,
             *([exp["id"]] if exp["mode"] == "solo" else [exp["id"], exp["team_id"], deadline]))]
+        if exp["mode"] == "solo":
+            solo_arrived += [(u, place) for u in members]
         given = 0
         is_prize_place = place <= (target["places"] or 0)
         rewards = prizes.get(place, []) if is_prize_place else []
@@ -525,12 +528,52 @@ async def finalize_target(conn, target, now: datetime) -> dict:
                         for u in got]
         rows.append({"place": place, "name": await squad_name(conn, exp), "mode": exp["mode"], "cargo": exp["cargo"],
                      "members": len(members), "rewards": rewards, "given": given})
+    notices = await _gear_drops(conn, target, solo_arrived, notices, now)
     results = {"places": rows, "arrived": len(arrived), "late": late}
     await conn.execute("UPDATE expedition_targets SET results = $2::jsonb, status = 'finished' WHERE id = $1",
                        tid, json.dumps(results, ensure_ascii=False, default=str))
     logger.info("[EXP] цель %s: итоги — дошли %s, опоздали %s, наград %s", tid, len(arrived), late, len(notices))
     results["notices"] = notices
     return results
+
+
+async def _gear_drops(conn, target, solo_arrived: list[tuple[int, int]], notices: list[dict], now: datetime) -> list[dict]:
+    """
+    🧥 «Выдавать детали костюмов» / 💠 «выдавать артефакт» (владелец 30.10): каждому дошедшему соло — по одной
+    случайной детали (и/или артефакту), победил он или нет. Сезонный лимит соблюдается (shared/gear.drop_*);
+    выданное дописывается в личное сообщение о награде.
+    """
+    from shared.gear import drop_artifacts, drop_random
+    t = dict(target)
+    if not (t.get("give_gear") or t.get("give_artifact")):
+        return notices
+    by_user = {n["user_id"]: n for n in notices}
+    for uid, place in solo_arrived:
+        extra = []
+        try:
+            async with conn.transaction():
+                # повтор итогов после рестарта не выдаёт второй раз: ключ выдачи уже в журнале
+                done = {r["ref"] for r in await conn.fetch(
+                    "SELECT ref FROM gear_ledger WHERE user_id = $1 AND ref = ANY($2::text[])",
+                    uid, [f"E{t['id']}_GEAR_U{uid}", f"E{t['id']}_ART_U{uid}"])}
+                if (t.get("give_gear") and f"E{t['id']}_GEAR_U{uid}" not in done
+                        and await drop_random(conn, uid, 1, f"E{t['id']}_GEAR_U{uid}", now)):
+                    extra.append({"kind": "gear", "qty": 1})
+                if (t.get("give_artifact") and f"E{t['id']}_ART_U{uid}" not in done
+                        and await drop_artifacts(conn, uid, 1, f"E{t['id']}_ART_U{uid}", now)):
+                    extra.append({"kind": "artifact", "qty": 1})
+        except Exception:
+            logger.exception("[EXP] цель %s: деталь/артефакт игроку %s не выданы", t["id"], uid)
+            continue
+        if not extra:
+            continue
+        if uid in by_user:
+            by_user[uid]["rewards"] = list(by_user[uid]["rewards"]) + extra
+        else:
+            n = {"user_id": uid, "title": t["title"], "tpl": t.get("title_tpl"), "place": place, "rewards": extra, "all": True}
+            notices.append(n)
+            by_user[uid] = n
+    return notices
 
 
 async def cancel_target(conn, target_id: int) -> bool:

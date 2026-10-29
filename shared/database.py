@@ -966,6 +966,31 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "CREATE INDEX IF NOT EXISTS gear_ledger_user_idx ON gear_ledger (user_id, reason, created_at);",
+    # --- 30.10 (вечер): артефакты на поясе, досрочные итоги «по N», детали/артефакты за соло-походы, подарки ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS art_bonus JSONB NOT NULL DEFAULT '{}'::jsonb;",
+    "ALTER TABLE battles ADD COLUMN IF NOT EXISTS finish_count INT;",
+    "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS finish_count INT;",
+    "ALTER TABLE auctions ADD COLUMN IF NOT EXISTS finish_count INT;",
+    "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS give_gear BOOLEAN NOT NULL DEFAULT FALSE;",
+    "ALTER TABLE expedition_targets ADD COLUMN IF NOT EXISTS give_artifact BOOLEAN NOT NULL DEFAULT FALSE;",
+    """
+    CREATE TABLE IF NOT EXISTS gift_campaigns (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(100) NOT NULL DEFAULT '',
+        rewards JSONB NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        cancelled BOOLEAN NOT NULL DEFAULT FALSE
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS gift_claims (
+        campaign_id INT NOT NULL,
+        user_id BIGINT NOT NULL,
+        claimed_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (campaign_id, user_id)
+    );
+    """,
 ]
 
 

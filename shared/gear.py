@@ -12,14 +12,27 @@ suit_level / suit_since — его дёшево читают игры, налё�
 
 Выпадение деталей — случайное (костюм и слот), не больше GEAR_SEASON_CAP за сезон на игрока: так каждый
 собирает за сезон ровно один костюм, но детали у всех разные — одинаковые добирают на бирже.
+
+💠 Артефакты (30.10, вечер): в сумке — строка user_gear с suit = a<вид> и slot = 'art'; на поясе — user_equip со
+слотом a1/a2/a3. Сумма бонусов пояса — users.art_bonus (JSONB {линия: %}), складывается с костюмом
+(economy.user_bonus). Бесплатно — не больше ARTIFACT_SEASON_CAP за сезон.
 """
 from __future__ import annotations
 
+import json
 import logging
 import random
 from datetime import datetime, timedelta
 
 from shared.economy import (
+    ARTIFACT_BAG_SLOT,
+    ARTIFACT_KINDS,
+    ARTIFACT_SEASON_CAP,
+    ARTIFACT_SLOTS,
+    art_bonus_total,
+    art_code,
+    art_kind,
+    gear_bonus,
     GEAR_EXO,
     GEAR_EXO_COINS,
     GEAR_EXO_COST,
@@ -31,7 +44,6 @@ from shared.economy import (
     GEAR_UPGRADE_COST,
     miner_bonus,
     season_bounds,
-    suit_bonus,
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.resources import RESOURCE_ICONS, InsufficientResources, spend_bundle
@@ -52,6 +64,8 @@ class GearError(Exception):
 
 
 def _check(suit: str, slot: str) -> None:
+    if slot == ARTIFACT_BAG_SLOT and art_kind(suit):
+        return
     if suit not in ALL_GEAR_SUITS or slot not in GEAR_SLOTS:
         raise GearError("gear.err_unknown")
 
@@ -99,20 +113,27 @@ async def equipped(conn, user_id: int) -> dict[str, dict]:
 
 def full_set(worn: dict[str, dict]) -> tuple[str | None, int]:
     """Действующий костюм: все 5 слотов — детали одного костюма. (костюм, уровень = меньший) или (None, 0)."""
-    if set(worn) != set(GEAR_SLOTS):
+    if not all(p in worn for p in GEAR_SLOTS):
         return None, 0
-    suits = {w["suit"] for w in worn.values()}
+    suits = {worn[p]["suit"] for p in GEAR_SLOTS}
     if len(suits) != 1:
         return None, 0
-    return suits.pop(), min(w["level"] for w in worn.values())
+    return suits.pop(), min(worn[p]["level"] for p in GEAR_SLOTS)
+
+
+def belt_bonus(worn: dict[str, dict]) -> dict[str, int]:
+    return art_bonus_total(art_kind(worn[s]["suit"]) for s in ARTIFACT_SLOTS if s in worn)
 
 
 async def _refresh_suit(conn, user_id: int, now: datetime) -> tuple[str | None, int]:
-    """Пересчитывает users.suit/suit_level; suit_since сбрасывается, если сменился сам костюм."""
-    suit, level = full_set(await equipped(conn, user_id))
+    """Пересчитывает users.suit/suit_level/art_bonus; suit_since сбрасывается, если сменился костюм или пояс."""
+    worn = await equipped(conn, user_id)
+    suit, level = full_set(worn)
+    art = json.dumps(belt_bonus(worn), sort_keys=True)
     await conn.execute(
-        "UPDATE users SET suit_since = CASE WHEN suit IS DISTINCT FROM $2 THEN $4 ELSE suit_since END, "
-        "suit = $2, suit_level = $3 WHERE user_id = $1", user_id, suit, level if suit else None, now)
+        "UPDATE users SET suit_since = CASE WHEN suit IS DISTINCT FROM $2 OR art_bonus <> $5::jsonb THEN $4 "
+        "ELSE suit_since END, suit = $2, suit_level = $3, art_bonus = $5::jsonb WHERE user_id = $1",
+        user_id, suit, level if suit else None, now, art)
     return suit, level
 
 
@@ -133,6 +154,8 @@ async def set_gender(conn, user_id: int, gender: str) -> None:
 async def equip(conn, user_id: int, suit: str, slot: str, level: int, now: datetime) -> tuple[str | None, int]:
     """Надеть деталь из сумки; то, что было в слоте, возвращается в сумку. Возвращает действующий костюм."""
     _check(suit, slot)
+    if slot not in GEAR_SLOTS:
+        raise GearError("gear.err_unknown")   # артефакты — equip_artifact
     await _lock(conn, user_id)
     await change_gear(conn, user_id, suit, slot, level, -1, "equip")
     old = await conn.fetchrow("DELETE FROM user_equip WHERE user_id = $1 AND slot = $2 RETURNING suit, level",
@@ -145,14 +168,33 @@ async def equip(conn, user_id: int, suit: str, slot: str, level: int, now: datet
 
 
 async def unequip(conn, user_id: int, slot: str, now: datetime) -> tuple[str | None, int]:
-    if slot not in GEAR_SLOTS:
+    if slot not in GEAR_SLOTS and slot not in ARTIFACT_SLOTS:
         raise GearError("gear.err_unknown")
     await _lock(conn, user_id)
     old = await conn.fetchrow("DELETE FROM user_equip WHERE user_id = $1 AND slot = $2 RETURNING suit, level",
                               user_id, slot)
     if old is None:
         raise GearError("gear.err_none")
-    await change_gear(conn, user_id, old["suit"], slot, old["level"], 1, "unequip")
+    bag_slot = ARTIFACT_BAG_SLOT if slot in ARTIFACT_SLOTS else slot
+    await change_gear(conn, user_id, old["suit"], bag_slot, old["level"], 1, "unequip")
+    return await _refresh_suit(conn, user_id, now)
+
+
+async def equip_artifact(conn, user_id: int, kind: str, slot: str | None, now: datetime) -> tuple[str | None, int]:
+    """Артефакт из сумки — на пояс (в указанное окошко или первое свободное; занятое — старый камень в сумку)."""
+    if kind not in ARTIFACT_KINDS or (slot is not None and slot not in ARTIFACT_SLOTS):
+        raise GearError("gear.err_unknown")
+    await _lock(conn, user_id)
+    worn = await equipped(conn, user_id)
+    if slot is None:
+        slot = next((s for s in ARTIFACT_SLOTS if s not in worn), ARTIFACT_SLOTS[0])
+    code = art_code(kind)
+    await change_gear(conn, user_id, code, ARTIFACT_BAG_SLOT, 1, -1, "equip")
+    old = await conn.fetchrow("DELETE FROM user_equip WHERE user_id = $1 AND slot = $2 RETURNING suit, level",
+                              user_id, slot)
+    if old:
+        await change_gear(conn, user_id, old["suit"], ARTIFACT_BAG_SLOT, old["level"], 1, "unequip")
+    await conn.execute("INSERT INTO user_equip (user_id, slot, suit, level) VALUES ($1, $2, $3, 1)", user_id, slot, code)
     return await _refresh_suit(conn, user_id, now)
 
 
@@ -195,9 +237,9 @@ async def upgrade(conn, user_id: int, suit: str, slot: str, now: datetime) -> tu
 async def exo_ready(conn, user_id: int) -> dict:
     """Сколько из 30 деталей 2-го уровня есть (в сумке или надето) — для сплава нано-экзо-брони."""
     rows = await conn.fetch(
-        """SELECT suit, slot FROM user_gear WHERE user_id = $1 AND level = $2 AND qty > 0 AND suit <> $3
-           UNION SELECT suit, slot FROM user_equip WHERE user_id = $1 AND level = $2 AND suit <> $3""",
-        user_id, GEAR_MAX_LEVEL, GEAR_EXO)
+        """SELECT suit, slot FROM user_gear WHERE user_id = $1 AND level = $2 AND qty > 0 AND suit = ANY($3::text[])
+           UNION SELECT suit, slot FROM user_equip WHERE user_id = $1 AND level = $2 AND suit = ANY($3::text[])""",
+        user_id, GEAR_MAX_LEVEL, list(GEAR_SUITS))
     got = {(r["suit"], r["slot"]) for r in rows}
     return {"have": len(got), "need": len(GEAR_SUITS) * len(GEAR_SLOTS),
             "missing": [f"{s}:{p}" for s in GEAR_SUITS for p in GEAR_SLOTS if (s, p) not in got]}
@@ -211,7 +253,8 @@ async def merge_exo(conn, user_id: int, now: datetime) -> tuple[str | None, int]
         raise GearError("gear.err_exo_missing", have=state["have"], need=state["need"])
     await _spend(conn, user_id, GEAR_EXO_COST, GEAR_EXO_COINS, "gear_exo", "exo")
     # Снимаем всё надетое в сумку, потом списываем по одной детали каждого вида
-    for row in await conn.fetch("DELETE FROM user_equip WHERE user_id = $1 RETURNING slot, suit, level", user_id):
+    for row in await conn.fetch("DELETE FROM user_equip WHERE user_id = $1 AND slot = ANY($2::text[]) "
+                                "RETURNING slot, suit, level", user_id, list(GEAR_SLOTS)):
         await change_gear(conn, user_id, row["suit"], row["slot"], row["level"], 1, "unequip")
     for suit in GEAR_SUITS:
         for slot in GEAR_SLOTS:
@@ -229,11 +272,25 @@ async def merge_exo(conn, user_id: int, now: datetime) -> tuple[str | None, int]
 # ============================================================================
 # Выпадение деталей
 # ============================================================================
-async def season_drops(conn, user_id: int, now: datetime) -> int:
+async def season_drops(conn, user_id: int, now: datetime, artifacts: bool = False) -> int:
+    """Сколько бесплатных деталей (или артефактов) игрок получил в текущем сезоне — для лимита."""
     start, end = season_bounds(now)
     return await conn.fetchval(
         "SELECT COALESCE(SUM(delta), 0) FROM gear_ledger WHERE user_id = $1 AND reason = 'drop' "
-        "AND created_at >= $2 AND created_at < $3", user_id, start, end)
+        "AND created_at >= $2 AND created_at < $3 AND (slot = 'art') = $4", user_id, start, end, artifacts)
+
+
+async def drop_artifacts(conn, user_id: int, qty: int, ref: str, now: datetime,
+                         rng: random.Random | None = None) -> list[str]:
+    """Случайные артефакты, не больше остатка сезонного лимита. Возвращает виды."""
+    rng = rng or random.SystemRandom()
+    left = ARTIFACT_SEASON_CAP - await season_drops(conn, user_id, now, artifacts=True)
+    out = []
+    for _ in range(max(0, min(qty, left))):
+        kind = rng.choice(ARTIFACT_KINDS)
+        await change_gear(conn, user_id, art_code(kind), ARTIFACT_BAG_SLOT, 1, 1, "drop", ref)
+        out.append(kind)
+    return out
 
 
 async def drop_random(conn, user_id: int, qty: int, ref: str, now: datetime,
@@ -254,13 +311,14 @@ async def drop_random(conn, user_id: int, qty: int, ref: str, now: datetime,
 # ============================================================================
 async def pay_miner_bonus(conn, user_id: int, day_start: datetime) -> int:
     """Начисляет бонус за сутки [day_start, +1 день). Идемпотентно: users.miner_bonus_day. Возвращает сумму."""
-    user = await conn.fetchrow("SELECT suit, suit_level, suit_since, miner_bonus_day FROM users WHERE user_id = $1 "
+    user = await conn.fetchrow("SELECT suit, suit_level, art_bonus, suit_since, miner_bonus_day FROM users WHERE user_id = $1 "
                                "AND deleted_at IS NULL AND NOT is_blocked FOR UPDATE", user_id)
     day = day_start.date()
     if user is None or (user["miner_bonus_day"] is not None and user["miner_bonus_day"] >= day):
         return 0
     await conn.execute("UPDATE users SET miner_bonus_day = $2 WHERE user_id = $1", user_id, day)
-    pct = suit_bonus(user["suit"], user["suit_level"], "mn")
+    art = user["art_bonus"]
+    pct = gear_bonus(user["suit"], user["suit_level"], json.loads(art) if isinstance(art, str) else art, "mn")
     if not pct or user["suit_since"] is None:
         return 0
     since = max(day_start, user["suit_since"])
@@ -276,7 +334,8 @@ async def pay_miner_bonus(conn, user_id: int, day_start: datetime) -> int:
 async def miner_bonus_round(pool, now: datetime) -> int:
     """Демон: всем в костюме шахтёра (или экзо) — бонус за вчерашние сутки UTC. Каждый — своя транзакция."""
     day_start = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
-    rows = await pool.fetch("SELECT user_id FROM users WHERE suit IN ('mn', 'exo') AND deleted_at IS NULL "
+    rows = await pool.fetch("SELECT user_id FROM users WHERE (suit IN ('mn', 'exo') OR art_bonus ? 'mn') "
+                            "AND deleted_at IS NULL "
                             "AND (miner_bonus_day IS NULL OR miner_bonus_day < $1)", day_start.date())
     paid = 0
     for r in rows:

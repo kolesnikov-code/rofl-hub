@@ -18,7 +18,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from shared.economy import discounted_cost, suit_bonus
+from shared.economy import discounted_cost, user_bonus
 from shared.economy import (
     ARMOR_DAYS,
     MAX_CARTS,
@@ -177,7 +177,7 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
             raise WorkshopError(e.key, **e.kwargs) from e
 
     cost = recipe_cost(recipe_id, armor_now, user["res_capacity"], team_mult,
-                       suit_bonus(user["suit"], user["suit_level"], "en"))
+                       user_bonus(user, "en"))
     if cost is None:
         raise WorkshopError("ws.err_storage_max" if effect == "storage" else "ws.err_unknown")
     coins = recipe_coins(recipe_id)

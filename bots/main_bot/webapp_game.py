@@ -27,7 +27,7 @@ from shared.analytics import referral_reward_text
 from shared.analytics import track
 from shared.daily_goals import GoalsError, all_done, chest_coins, claim_chest, claimed_today, goal_progress, goals_for
 from shared.database import db
-from shared.economy import suit_bonus
+from shared.economy import user_bonus
 from shared.economy import (
     SQUAD_CREATE_COST,
     SQUAD_MAX_MEMBERS,
@@ -327,7 +327,7 @@ async def handle_workshop(request: web.Request) -> web.Response:
         stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
         user = await conn.fetchrow(
             "SELECT farm_armor_level, armor_until, has_shuttle, balance, res_capacity, created_at, team_id, "
-            "drones_guard, drones_attack, drones_spy, suit, suit_level FROM users WHERE user_id = $1", ctx.user_id)
+            "drones_guard, drones_attack, drones_spy, suit, suit_level, art_bonus FROM users WHERE user_id = $1", ctx.user_id)
         tools_level = (await tech_levels(conn, ctx.user_id))["tools"]
         team_mult = team_cost_multiplier(await conn.fetchval(
             "SELECT max_members FROM teams WHERE team_id = $1", user["team_id"])) if user["team_id"] else 1
@@ -350,7 +350,7 @@ async def handle_workshop(request: web.Request) -> web.Response:
                                                     created_at=user["created_at"], now=now, disabled=disabled,
                                                     week_done=week_done, tools_level=tools_level,
                                                     team_mult=team_mult, in_team=user["team_id"] is not None,
-                                                    discount=suit_bonus(user["suit"], user["suit_level"], "en"),
+                                                    discount=user_bonus(user, "en"),
                                                     drones={k: user[f"drones_{k}"] for k in ("guard", "attack", "spy")}))
 
 
@@ -575,8 +575,8 @@ async def handle_tech(request: web.Request) -> web.Response:
     async with db.pool.acquire() as conn:
         state = await get_tech(conn, ctx.user_id)
         stock = await get_resources(conn, ctx.user_id, ALL_KINDS)
-        suit = await conn.fetchrow("SELECT suit, suit_level FROM users WHERE user_id = $1", ctx.user_id)
-    cut = suit_bonus(suit["suit"], suit["suit_level"], "sc") if suit else 0
+        suit = await conn.fetchrow("SELECT suit, suit_level, art_bonus FROM users WHERE user_id = $1", ctx.user_id)
+    cut = user_bonus(suit, "sc")
     payload = build_tech_payload(state, stock, utcnow(), cut)
     payload["suit_cut"] = cut
     payload["res_names"] = resource_labels(ctx.lang)

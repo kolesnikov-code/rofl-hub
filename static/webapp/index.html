@@ -364,9 +364,34 @@
   .ps-gender { display: flex; gap: 6px; flex: 0 0 auto; }
   .ps-gender .chip { cursor: pointer; font-weight: 800; padding: 6px 12px; background: #0d1326; color: var(--text); }
   .ps-gender .chip.on { background: linear-gradient(90deg, var(--neon), #00b3ff); color: #04121c; border-color: transparent; }
-  .ps-figure { display: flex; gap: 12px; align-items: center; }
-  .ps-avatar { width: 38%; max-width: 170px; flex: 0 0 auto; filter: drop-shadow(0 0 10px rgba(0,255,225,.25)); }
-  .ps-slots { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .ps-figure { display: grid; grid-template-columns: 1fr minmax(110px, 170px) 1fr; gap: 8px; align-items: center; }
+  .ps-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .ps-mid { display: flex; flex-direction: column; align-items: center; }
+  .ps-avatar { width: 100%; filter: drop-shadow(0 0 10px rgba(0,255,225,.25)); }
+  .ps-belt-t { font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: .5px; }
+  .ps-belt { display: flex; gap: 6px; margin-top: 4px; }
+  .ps-win { width: 40px; height: 46px; border-radius: 10px; border: 1px dashed rgba(138,147,184,.45); background: rgba(13,19,38,.8);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); padding: 0; cursor: default; }
+  .ps-win small { font-size: 8px; }
+  .ps-win.on { border: 1px solid var(--sc); box-shadow: 0 0 10px var(--sc); cursor: pointer; color: var(--text); }
+  .ps-win span { font-size: 18px; }
+  .ps-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin: 8px 0; padding: 6px; border-radius: 10px;
+    background: repeating-linear-gradient(0deg, #0a0f1e 0 2px, #0d1326 2px 4px); border: 1px solid rgba(138,147,184,.3); }
+  .ps-cell { aspect-ratio: 1; position: relative; border-radius: 6px; border: 1px solid rgba(138,147,184,.22); background: rgba(20,26,46,.9);
+    display: flex; align-items: center; justify-content: center; font-size: 22px; padding: 0; color: var(--text); }
+  button.ps-cell { cursor: pointer; border-color: var(--sc); box-shadow: inset 0 -3px 0 var(--sc); }
+  .ps-cell.art { border-radius: 50%; }
+  .ps-cell.glow { box-shadow: inset 0 -3px 0 var(--sc), 0 0 9px var(--sc); }
+  .ps-cell.on { outline: 2px solid var(--neon); outline-offset: 1px; }
+  .ps-cell.empty { border-style: dashed; opacity: .45; }
+  .ps-cell .lv { position: absolute; left: 3px; top: 1px; font-size: 9px; font-style: normal; color: var(--sc); font-weight: 800; }
+  .ps-cell .qt { position: absolute; right: 3px; bottom: 1px; font-size: 10px; font-style: normal; font-weight: 800; }
+  .ps-pick { padding: 10px; border-radius: 12px; border: 1px solid var(--sc); background: rgba(13,19,38,.7); font-size: 13px; }
+  .ps-pick .ps-sb { margin-top: 6px; flex-wrap: wrap; }
+  .gift-card { border-color: rgba(255,217,61,.55); box-shadow: 0 0 22px rgba(255,217,61,.18); }
+  .gift-card h2 { color: var(--accent); }
+  .gift-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid rgba(255,217,61,.15); font-size: 13px; }
+  .gift-row .mini { margin-top: 0; background: linear-gradient(90deg, var(--accent), #ff9d3d); }
   .ps-slot, .ps-item { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 12px;
     background: rgba(13,19,38,.7); border: 1px solid rgba(138,147,184,.25); font-size: 13px; }
   .ps-slot.on, .ps-item { border-color: var(--sc, rgba(0,255,225,.3)); box-shadow: inset 3px 0 0 var(--sc, transparent); }
@@ -383,7 +408,7 @@
   .ps-sell { padding: 10px; border-radius: 12px; border: 1px solid rgba(0,255,225,.3); margin: 8px 0; }
   .ps-sell input { width: 100%; margin: 4px 0 6px; padding: 9px; border-radius: 10px; border: 1px solid rgba(0,255,225,.3);
     background: #0d1326; color: var(--text); font-size: 15px; }
-  @media (max-width: 380px) { .ps-figure { flex-direction: column; } .ps-avatar { width: 55%; } .ps-slots { width: 100%; } }
+  @media (max-width: 560px) { .ps-figure { grid-template-columns: 1fr; } .ps-mid { grid-row: 1; } .ps-avatar { width: 46%; } }
   .sub2 { color: var(--accent); font-weight: 800; font-size: 13px; margin: 12px 0 4px; letter-spacing: .5px; }
   .rules { padding-left: 18px; color: var(--text); font-size: 13px; line-height: 1.45; }
   .rules li { margin-bottom: 6px; }
@@ -611,7 +636,7 @@
 
   const I18N = {
     ru: {
-      tab_persona: "🧍 Персонаж", ps_title: "🧍 ПЕРСОНАЖ", ps_hint: "Надень полный костюм — 5 деталей одного костюма: бонус работает, пока костюм на тебе.", ps_m: "М", ps_f: "Ж", ps_slot_head: "Шлем", ps_slot_body: "Куртка", ps_slot_hands: "Перчатки", ps_slot_legs: "Штаны", ps_slot_feet: "Ботинки", ps_suit_el: "⚡ Электрик", ps_suit_mn: "⛏ Шахтёр", ps_suit_ml: "🪖 Военный", ps_suit_st: "🥷 Маскировка", ps_suit_sc: "🔬 Учёный", ps_suit_en: "🔧 Инженер", ps_suit_exo: "💠 Нано-экзо-броня", ps_eff_el: "электричество в играх — в {p}% побед", ps_eff_mn: "раз в сутки +{p}% к монетам, добытым фермой", ps_eff_ml: "+{p}% трофея в налётах и добычи в экспедициях, поход на {p}% быстрее", ps_eff_st: "{p}% шанс не попасть в разведку налётчиков", ps_eff_sc: "перерыв между уровнями технологий на {p}% короче", ps_eff_en: "ресурсы для рецептов мастерской на {p}% дешевле", ps_active: "Надет костюм: {s}, {n} уровень", ps_none: "Полный костюм не надет — бонусов пока нет.", ps_level: "{n} ур.", ps_empty: "пусто", ps_off: "Снять", ps_wear: "Надеть", ps_sell: "Продать", ps_bag: "🎒 СУМКА", ps_bagEmpty: "Сумка пуста. Детали костюмов выпадают в событиях: в экспедициях, битвах за рудники и сезонных раздачах.", ps_season: "Деталей в этом сезоне: {got} из {cap}", ps_suits: "📖 КОСТЮМЫ И БОНУСЫ", ps_lvl2: "на 2-м уровне", ps_upg_el: "Перемотать жилы медью, вшить заземление и вставить свежую батарейку — костюм начинает ловить искры.", ps_upg_mn: "Прошить швы стальной нитью и подбить налокотники камнем — костюм держит удар породы.", ps_upg_ml: "Наварить пластины, прокалить их в огне и закалить — броне не страшна засада.", ps_upg_st: "Пропитать ткань водородным гелем и нашить кору-хамелеон — костюм тает на фоне.", ps_upg_sc: "Вплести кристаллические сенсоры и подать ток — костюм сам подсказывает формулы.", ps_upg_en: "Перебрать крепления на точные детали и встроить батарейку — костюм бережёт каждую гайку.", ps_upgAsk: "Улучшить «{part}» до 2-го уровня? Уйдёт: {cost} и {c} 🪙.", ps_upgDone: "⬆️ Деталь улучшена до 2-го уровня!", ps_exoTitle: "💠 НАНО-ЭКЗО-БРОНЯ", ps_exoText: "Сплав всех шести костюмов 2-го уровня (30 деталей): все бонусы сразу. Сплавленные детали исчезают навсегда.", ps_exoHave: "Деталей 2-го уровня", ps_exoGo: "💠 Сплавить броню", ps_exoAsk: "Сплавить 30 деталей в нано-экзо-броню? Это навсегда.", ps_exoDone: "💠 Нано-экзо-броня готова и надета!", ps_market: "🏷 РЫНОК ДЕТАЛЕЙ", ps_marketHint: "Детали 1-го уровня продаются за монеты. Цена — не меньше {min} 🪙, комиссия {fee}% сгорает.", ps_marketEmpty: "Сейчас никто не продаёт детали.", ps_buy: "Купить за {p} 🪙", ps_bought: "🧥 Деталь в сумке!", ps_myLots: "Мои лоты", ps_cancel: "Снять", ps_sellTitle: "Продать", ps_price: "Цена за штуку, 🪙", ps_qty: "Сколько штук", ps_sellGo: "Выставить", ps_listed: "🏷 Лот выставлен на рынок деталей", raid_note_suit: "🪖 Костюм военного: трофей больше",
+      tab_persona: "🧍 Персонаж", ps_title: "🧍 ПЕРСОНАЖ", ps_hint: "Надень полный костюм — 5 деталей одного костюма: бонус работает, пока костюм на тебе.", ps_m: "М", ps_f: "Ж", ps_slot_head: "Шлем", ps_slot_body: "Куртка", ps_slot_hands: "Перчатки", ps_slot_legs: "Штаны", ps_slot_feet: "Ботинки", ps_suit_el: "⚡ Электрик", ps_suit_mn: "⛏ Шахтёр", ps_suit_ml: "🪖 Военный", ps_suit_st: "🥷 Маскировка", ps_suit_sc: "🔬 Учёный", ps_suit_en: "🔧 Инженер", ps_suit_exo: "💠 Нано-экзо-броня", ps_eff_el: "электричество в играх — в {p}% побед", ps_eff_mn: "раз в сутки +{p}% к монетам, добытым фермой", ps_eff_ml: "+{p}% трофея в налётах и добычи в экспедициях, поход на {p}% быстрее", ps_eff_st: "{p}% шанс не попасть в разведку налётчиков", ps_eff_sc: "перерыв между уровнями технологий на {p}% короче", ps_eff_en: "ресурсы для рецептов мастерской на {p}% дешевле", ps_active: "Надет костюм: {s}, {n} уровень", ps_none: "Полный костюм не надет — бонусов пока нет.", ps_level: "{n} ур.", ps_empty: "пусто", ps_off: "Снять", ps_wear: "Надеть", ps_sell: "Продать", ps_bag: "🎒 СУМКА", ps_bagEmpty: "Сумка пуста. Детали костюмов выпадают в событиях: в экспедициях, битвах за рудники и сезонных раздачах.", ps_season: "Деталей в этом сезоне: {got} из {cap}", ps_suits: "📖 КОСТЮМЫ И БОНУСЫ", ps_lvl2: "на 2-м уровне", ps_upg_el: "Перемотать жилы медью, вшить заземление и вставить свежую батарейку — костюм начинает ловить искры.", ps_upg_mn: "Прошить швы стальной нитью и подбить налокотники камнем — костюм держит удар породы.", ps_upg_ml: "Наварить пластины, прокалить их в огне и закалить — броне не страшна засада.", ps_upg_st: "Пропитать ткань водородным гелем и нашить кору-хамелеон — костюм тает на фоне.", ps_upg_sc: "Вплести кристаллические сенсоры и подать ток — костюм сам подсказывает формулы.", ps_upg_en: "Перебрать крепления на точные детали и встроить батарейку — костюм бережёт каждую гайку.", ps_upgAsk: "Улучшить «{part}» до 2-го уровня? Уйдёт: {cost} и {c} 🪙.", ps_upgDone: "⬆️ Деталь улучшена до 2-го уровня!", ps_exoTitle: "💠 НАНО-ЭКЗО-БРОНЯ", ps_exoText: "Сплав всех шести костюмов 2-го уровня (30 деталей): все бонусы сразу. Сплавленные детали исчезают навсегда.", ps_exoHave: "Деталей 2-го уровня", ps_exoGo: "💠 Сплавить броню", ps_exoAsk: "Сплавить 30 деталей в нано-экзо-броню? Это навсегда.", ps_exoDone: "💠 Нано-экзо-броня готова и надета!", ps_market: "🏷 РЫНОК ДЕТАЛЕЙ И АРТЕФАКТОВ", ps_marketHint: "Детали 1-го уровня — от {min} 🪙, артефакты — от {amin} 🪙. Комиссия {fee}% сгорает.", ps_marketEmpty: "Сейчас никто не продаёт детали.", ps_buy: "Купить за {p} 🪙", ps_bought: "🧥 Деталь в сумке!", ps_myLots: "Мои лоты", ps_cancel: "Снять", ps_sellTitle: "Продать", ps_price: "Цена за штуку, 🪙 (от {min})", ps_qty: "Сколько штук", ps_sellGo: "Выставить", ps_listed: "🏷 Лот выставлен на рынок деталей", raid_note_suit: "🪖 Костюм военного: трофей больше", ps_belt: "ПОЯС", ps_pickHint: "Нажми на ячейку сумки — увидишь, что это и что с ним можно сделать.", ps_artGives: "На поясе: {e}. Складывается с костюмом.", ps_partOf: "Полный костюм: {e}.", ps_upgrade: "Улучшить", ps_seasonArt: "артефактов: {got} из {cap}", ps_arts: "💠 АРТЕФАКТЫ", ps_artsText: "Камни для трёх окошек пояса. Каждый усиливает своё направление и работает вместе с костюмом. Бесплатно — один за сезон (подарки и походы), остальные — на рынке.", ps_art_el: "Искровик", ps_art_mn: "Рудный коралл", ps_art_ml: "Ядро гнева", ps_art_st: "Туманник", ps_art_sc: "Шар озарения", ps_art_en: "Шестерня мастера", gf_title: "🎁 ПОДАРКИ ОТ РАЗРАБОТЧИКА", gf_hint: "Подарки ждут здесь до срока — заглядывай почаще.", gf_default: "Подарок", gf_claim: "Забрать подарок", gf_done: "🎁 Подарок получен!", gf_gear: "🧥 деталь костюма ×{n}", gf_art: "💠 артефакт ×{n}", map_finishN: "⏱ Итоги раньше, если до цели доберутся {n} игроков — решает скорость", map_gear: "🧥 Каждому дошедшему — деталь костюма", map_art: "💠 каждому дошедшему — артефакт",
       tab_history: "📜 История", hist_title: "📜 ИСТОРИЯ ЗА {d} ДНЕЙ", hist_coins: "🪙 Монеты", hist_res: "📦 Ресурсы", hist_market: "📈 Биржа", hist_gifts: "🎁 Награды", hist_in: "Пришло", hist_out: "Ушло", hist_topIn: "Откуда пришли", hist_topOut: "Куда ушли", hist_empty: "За это время здесь пусто.", hist_bought: "Куплено", hist_sold: "Продано", hist_hint: "Хранится 30 дней: монеты, ресурсы, сделки на бирже, награды и подарки.",
       mk_floorAny: "Не дешевле {p} 🪙 за 1 {x} — и в продаже, и в заявке",
       mk_sellTitleAny: "💰 ПРОДАТЬ: {x}", mk_bidTitleAny: "🙋 КУПИТЬ: {x}", mk_qtyAny: "Количество, {x}", mk_limitsAny: "До {q} {x} в ордере, до {o} открытых ордеров", mk_boughtAny: "Куплено {q} {x} за {t} 🪙", mk_cancelledAny: "Ордер снят — товар или замороженные монеты вернулись",
@@ -840,7 +865,7 @@
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
-      tab_persona: "🧍 Character", ps_title: "🧍 CHARACTER", ps_hint: "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.", ps_m: "M", ps_f: "F", ps_slot_head: "Helmet", ps_slot_body: "Jacket", ps_slot_hands: "Gloves", ps_slot_legs: "Trousers", ps_slot_feet: "Boots", ps_suit_el: "⚡ Electrician", ps_suit_mn: "⛏ Miner", ps_suit_ml: "🪖 Soldier", ps_suit_st: "🥷 Stealth", ps_suit_sc: "🔬 Scientist", ps_suit_en: "🔧 Engineer", ps_suit_exo: "💠 Nano exo-armour", ps_eff_el: "electricity drops in {p}% of game wins", ps_eff_mn: "once a day +{p}% of the coins your farm mined", ps_eff_ml: "+{p}% raid loot and expedition haul, trips {p}% faster", ps_eff_st: "{p}% chance to stay off raiders' scouting lists", ps_eff_sc: "{p}% shorter wait between technology levels", ps_eff_en: "workshop recipes need {p}% fewer resources", ps_active: "Suit on: {s}, level {n}", ps_none: "No full suit on — no bonuses yet.", ps_level: "lvl {n}", ps_empty: "empty", ps_off: "Take off", ps_wear: "Wear", ps_sell: "Sell", ps_bag: "🎒 BAG", ps_bagEmpty: "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.", ps_season: "Parts this season: {got} of {cap}", ps_suits: "📖 SUITS AND BONUSES", ps_lvl2: "at level 2", ps_upg_el: "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.", ps_upg_mn: "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.", ps_upg_ml: "Weld on plates, fire and temper them — this armour shrugs off an ambush.", ps_upg_st: "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.", ps_upg_sc: "Weave in crystal sensors and run a current — the suit whispers formulas.", ps_upg_en: "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.", ps_upgAsk: "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.", ps_upgDone: "⬆️ Part upgraded to level 2!", ps_exoTitle: "💠 NANO EXO-ARMOUR", ps_exoText: "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.", ps_exoHave: "Level-2 parts", ps_exoGo: "💠 Fuse the armour", ps_exoAsk: "Fuse 30 parts into nano exo-armour? This is permanent.", ps_exoDone: "💠 Nano exo-armour is ready and on!", ps_market: "🏷 PARTS MARKET", ps_marketHint: "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.", ps_marketEmpty: "Nobody is selling parts right now.", ps_buy: "Buy for {p} 🪙", ps_bought: "🧥 The part is in your bag!", ps_myLots: "My lots", ps_cancel: "Withdraw", ps_sellTitle: "Sell", ps_price: "Price per part, 🪙", ps_qty: "How many", ps_sellGo: "List it", ps_listed: "🏷 Listed on the parts market", raid_note_suit: "🪖 Soldier suit: bigger loot",
+      tab_persona: "🧍 Character", ps_title: "🧍 CHARACTER", ps_hint: "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.", ps_m: "M", ps_f: "F", ps_slot_head: "Helmet", ps_slot_body: "Jacket", ps_slot_hands: "Gloves", ps_slot_legs: "Trousers", ps_slot_feet: "Boots", ps_suit_el: "⚡ Electrician", ps_suit_mn: "⛏ Miner", ps_suit_ml: "🪖 Soldier", ps_suit_st: "🥷 Stealth", ps_suit_sc: "🔬 Scientist", ps_suit_en: "🔧 Engineer", ps_suit_exo: "💠 Nano exo-armour", ps_eff_el: "electricity drops in {p}% of game wins", ps_eff_mn: "once a day +{p}% of the coins your farm mined", ps_eff_ml: "+{p}% raid loot and expedition haul, trips {p}% faster", ps_eff_st: "{p}% chance to stay off raiders' scouting lists", ps_eff_sc: "{p}% shorter wait between technology levels", ps_eff_en: "workshop recipes need {p}% fewer resources", ps_active: "Suit on: {s}, level {n}", ps_none: "No full suit on — no bonuses yet.", ps_level: "lvl {n}", ps_empty: "empty", ps_off: "Take off", ps_wear: "Wear", ps_sell: "Sell", ps_bag: "🎒 BAG", ps_bagEmpty: "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.", ps_season: "Parts this season: {got} of {cap}", ps_suits: "📖 SUITS AND BONUSES", ps_lvl2: "at level 2", ps_upg_el: "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.", ps_upg_mn: "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.", ps_upg_ml: "Weld on plates, fire and temper them — this armour shrugs off an ambush.", ps_upg_st: "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.", ps_upg_sc: "Weave in crystal sensors and run a current — the suit whispers formulas.", ps_upg_en: "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.", ps_upgAsk: "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.", ps_upgDone: "⬆️ Part upgraded to level 2!", ps_exoTitle: "💠 NANO EXO-ARMOUR", ps_exoText: "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.", ps_exoHave: "Level-2 parts", ps_exoGo: "💠 Fuse the armour", ps_exoAsk: "Fuse 30 parts into nano exo-armour? This is permanent.", ps_exoDone: "💠 Nano exo-armour is ready and on!", ps_market: "🏷 PARTS & ARTIFACTS MARKET", ps_marketHint: "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.", ps_marketEmpty: "Nobody is selling parts right now.", ps_buy: "Buy for {p} 🪙", ps_bought: "🧥 The part is in your bag!", ps_myLots: "My lots", ps_cancel: "Withdraw", ps_sellTitle: "Sell", ps_price: "Price per item, 🪙 (from {min})", ps_qty: "How many", ps_sellGo: "List it", ps_listed: "🏷 Listed on the parts market", raid_note_suit: "🪖 Soldier suit: bigger loot", ps_belt: "BELT", ps_pickHint: "Tap a bag cell to see what it is and what you can do with it.", ps_artGives: "On the belt: {e}. Stacks with your suit.", ps_partOf: "Full suit: {e}.", ps_upgrade: "Upgrade", ps_seasonArt: "artifacts: {got} of {cap}", ps_arts: "💠 ARTIFACTS", ps_artsText: "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.", ps_art_el: "Sparkstone", ps_art_mn: "Ore coral", ps_art_ml: "Wrath core", ps_art_st: "Mistling", ps_art_sc: "Insight orb", ps_art_en: "Master gear", gf_title: "🎁 GIFTS FROM THE DEVELOPER", gf_hint: "Gifts wait here until they expire — check in often.", gf_default: "Gift", gf_claim: "Claim gift", gf_done: "🎁 Gift received!", gf_gear: "🧥 suit part ×{n}", gf_art: "💠 artifact ×{n}", map_finishN: "⏱ Results come early once {n} players reach the target — speed decides", map_gear: "🧥 Every player who arrives gets a suit part", map_art: "💠 every player who arrives gets an artifact",
       tab_history: "📜 History", hist_title: "📜 HISTORY FOR {d} DAYS", hist_coins: "🪙 Coins", hist_res: "📦 Resources", hist_market: "📈 Market", hist_gifts: "🎁 Rewards", hist_in: "In", hist_out: "Out", hist_topIn: "Where they came from", hist_topOut: "Where they went", hist_empty: "Nothing here for this period.", hist_bought: "Bought", hist_sold: "Sold", hist_hint: "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
       mk_floorAny: "At least {p} 🪙 per 1 {x} — for sales and buy orders",
       mk_sellTitleAny: "💰 SELL: {x}", mk_bidTitleAny: "🙋 BUY: {x}", mk_qtyAny: "Amount, {x}", mk_limitsAny: "Up to {q} {x} per order, up to {o} open orders", mk_boughtAny: "Bought {q} {x} for {t} 🪙", mk_cancelledAny: "Order cancelled — your goods or frozen coins are back",
@@ -1072,6 +1097,30 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -1121,15 +1170,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -1947,6 +1996,30 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -1996,15 +2069,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -2822,6 +2895,30 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -2871,15 +2968,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -3697,6 +3794,30 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -3746,15 +3867,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -4572,6 +4693,30 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -4621,15 +4766,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -5447,6 +5592,30 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -5496,15 +5665,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -6322,6 +6491,30 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -6371,15 +6564,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -7197,6 +7390,30 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -7246,15 +7463,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -8072,6 +8289,30 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -8121,15 +8362,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -8947,6 +9188,30 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -8996,15 +9261,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -9822,6 +10087,30 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -9871,15 +10160,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -10697,6 +10986,30 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "map_art": "💠 every player who arrives gets an artifact",
+    "map_gear": "🧥 Every player who arrives gets a suit part",
+    "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
+    "gf_art": "💠 artifact ×{n}",
+    "gf_gear": "🧥 suit part ×{n}",
+    "gf_done": "🎁 Gift received!",
+    "gf_claim": "Claim gift",
+    "gf_default": "Gift",
+    "gf_hint": "Gifts wait here until they expire — check in often.",
+    "gf_title": "🎁 GIFTS FROM THE DEVELOPER",
+    "ps_art_en": "Master gear",
+    "ps_art_sc": "Insight orb",
+    "ps_art_st": "Mistling",
+    "ps_art_ml": "Wrath core",
+    "ps_art_mn": "Ore coral",
+    "ps_art_el": "Sparkstone",
+    "ps_artsText": "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.",
+    "ps_arts": "💠 ARTIFACTS",
+    "ps_seasonArt": "artifacts: {got} of {cap}",
+    "ps_upgrade": "Upgrade",
+    "ps_partOf": "Full suit: {e}.",
+    "ps_artGives": "On the belt: {e}. Stacks with your suit.",
+    "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
+    "ps_belt": "BELT",
     "tab_persona": "🧍 Character",
     "ps_title": "🧍 CHARACTER",
     "ps_hint": "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.",
@@ -10746,15 +11059,15 @@
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
-    "ps_market": "🏷 PARTS MARKET",
-    "ps_marketHint": "Level-1 parts sell for coins. Price at least {min} 🪙, the {fee}% fee is burned.",
+    "ps_market": "🏷 PARTS & ARTIFACTS MARKET",
+    "ps_marketHint": "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.",
     "ps_marketEmpty": "Nobody is selling parts right now.",
     "ps_buy": "Buy for {p} 🪙",
     "ps_bought": "🧥 The part is in your bag!",
     "ps_myLots": "My lots",
     "ps_cancel": "Withdraw",
     "ps_sellTitle": "Sell",
-    "ps_price": "Price per part, 🪙",
+    "ps_price": "Price per item, 🪙 (from {min})",
     "ps_qty": "How many",
     "ps_sellGo": "List it",
     "ps_listed": "🏷 Listed on the parts market",
@@ -11946,9 +12259,11 @@
         (me.has_shuttle ? '<div class="hint">' + L.shuttle + '</div>' : ''));
     // 🎯 Ежедневные цели живут в паспорте (решение владельца 26.10); раздел выключен — карточки нет
     // 📣 События — все анонсы внутри игры (каналов нет, решение владельца 26.10); оба запроса летят одновременно
+    const giftsReq = api("/api/gifts").catch(() => null);   // 🎁 подарки от разработчика — первыми
     const goalsReq = (me.features || {}).goals !== false ? api("/api/goals").catch(() => null) : Promise.resolve(null);
     const newsReq = api("/api/news").catch(() => null);
     const achReq = api("/api/card").catch(() => null);
+    try { const gf = await giftsReq; if (gf && gf.gifts && gf.gifts.length) { box.insertAdjacentHTML("afterbegin", giftsCard(gf.gifts)); bindGifts(box); } } catch (e) {}
     try { const g = await goalsReq; if (g) { box.insertAdjacentHTML("beforeend", goalsCard(g)); bindGoals(box); } } catch (e) {}
     try { const c = await achReq; if (c && c.ok) { box.insertAdjacentHTML("beforeend", achCard(c)); bindAch(box, c); } } catch (e) {}
     try { const n = await newsReq; if (n) { box.insertAdjacentHTML("beforeend", newsCard(n)); bindNews(box); } } catch (e) {}
@@ -13086,6 +13401,9 @@
     return '<div class="card exp-target' + (mapPick === t.id ? ' picked' : '') + '" id="tg' + t.id + '"><h2>' + esc(t.icon) + ' ' + esc(t.title) + '</h2>' +
       (t.descr ? '<div class="hint">' + esc(t.descr) + '</div>' : '') +
       row(t.scope_label, '<span data-key="map_resolve" data-countdown="' + t.resolve_at + '"></span>') +
+      (t.finish_count ? '<div class="hint">' + fmt(L.map_finishN, { n: num(t.finish_count) }) + '</div>' : '') +
+      (t.give_gear || t.give_artifact ? '<div class="hint status-ok">' + (t.give_gear ? L.map_gear : '') + (t.give_gear && t.give_artifact ? ' · ' : '') +
+        (t.give_artifact ? L.map_art : '') + '</div>' : '') +
       row(fmt(L.map_squads, { n: t.squads }), fmt(L.map_forks, { n: t.forks })) + opts + prizes +
       (t.reward_all ? '<div class="hint">' + fmt(L.map_rewardAll, { r: esc(t.reward_all) }) + '</div>' : '') + actions + '</div>';
   }
@@ -13984,12 +14302,19 @@
 
   // ================= 🧍 Персонаж и костюмы (владелец 30.10) =================
   // Бонус даёт только полный комплект одного костюма; детали выпадают в событиях, одинаковые добираются на бирже.
+  // Сумка — сетка ячеек; под аватаром — пояс из трёх окошек для артефактов (рисунок и названия — свои).
   const SLOT_ICON = { head: "⛑", body: "🦺", hands: "🧤", legs: "👖", feet: "🥾" };
   const SUIT_COLOR = { el: "#ffd23f", mn: "#d68a3a", ml: "#6fae4f", st: "#7a7fa8", sc: "#3fd0ea", en: "#ff8a4c", exo: "#b77bff" };
-  ["el", "mn", "ml", "st", "sc", "en"].forEach(s => Object.keys(SLOT_ICON).forEach(p => { A_ICON["g_" + s + "_" + p] = SLOT_ICON[p]; }));
-  let psData = null, psSell = null;
+  const ART_ICON = { el: "🔆", mn: "🪸", ml: "🔴", st: "🌫", sc: "🔮", en: "⚙️" };
+  ["el", "mn", "ml", "st", "sc", "en"].forEach(s => {
+    Object.keys(SLOT_ICON).forEach(p => { A_ICON["g_" + s + "_" + p] = SLOT_ICON[p]; });
+    A_ICON["a_" + s] = ART_ICON[s];
+  });
+  let psData = null, psSell = null, psPick = null;
+  const BAG_CELLS = 24;   // сетка сумки — не меньше 24 ячеек, как рюкзак
   const suitName = s => L["ps_suit_" + s] || s;
   const partName = (s, p) => SLOT_ICON[p] + " " + L["ps_slot_" + p] + " · " + suitName(s);
+  const artName = k => ART_ICON[k] + " " + L["ps_art_" + k];
   // Аватар: нейтральная фигура; М — атлет (шире плечи), Ж — стройнее (уже плечи, талия); надетое — цветом костюма
   function avatarSvg(gender, worn) {
     const D = { m: [24, 96, 38, 82, 36, 84], f: [32, 88, 44, 76, 34, 86], n: [28, 92, 40, 80, 36, 84] }[gender || "n"];
@@ -14001,117 +14326,174 @@
     const torso = 'M' + sL + ',62 L' + sR + ',62 L' + wR + ',112 L' + hR + ',128 L' + hL + ',128 L' + wL + ',112 Z';
     return '<svg class="ps-avatar" viewBox="0 0 120 230" aria-hidden="true"><defs><filter id="psGlow"><feGaussianBlur stdDeviation="2.2" result="b"/>' +
       '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' +
-      // руки
       '<path d="M' + sL + ',64 L' + (sL - 10) + ',112 L' + (sL - 8) + ',140" fill="none" stroke="' + fill("body", skin) + '" stroke-width="' + (gender === "f" ? 9 : 12) + '" stroke-linecap="round"' + glow("body") + '/>' +
       '<path d="M' + sR + ',64 L' + (sR + 10) + ',112 L' + (sR + 8) + ',140" fill="none" stroke="' + fill("body", skin) + '" stroke-width="' + (gender === "f" ? 9 : 12) + '" stroke-linecap="round"' + glow("body") + '/>' +
-      // кисти / перчатки
       '<circle cx="' + (sL - 8) + '" cy="146" r="' + (col("hands") ? 8 : 6) + '" fill="' + fill("hands", skin) + '" ' + line + glow("hands") + '/>' +
       '<circle cx="' + (sR + 8) + '" cy="146" r="' + (col("hands") ? 8 : 6) + '" fill="' + fill("hands", skin) + '" ' + line + glow("hands") + '/>' +
-      // ноги / штаны
-      '<path d="M' + (hL + 2) + ',126 L' + (hL + 6) + ',204 L' + 57 + ',204 L59,132 Z" fill="' + fill("legs", skin) + '" ' + line + glow("legs") + '/>' +
-      '<path d="M' + (hR - 2) + ',126 L' + (hR - 6) + ',204 L' + 63 + ',204 L61,132 Z" fill="' + fill("legs", skin) + '" ' + line + glow("legs") + '/>' +
-      // ботинки
+      '<path d="M' + (hL + 2) + ',126 L' + (hL + 6) + ',204 L57,204 L59,132 Z" fill="' + fill("legs", skin) + '" ' + line + glow("legs") + '/>' +
+      '<path d="M' + (hR - 2) + ',126 L' + (hR - 6) + ',204 L63,204 L61,132 Z" fill="' + fill("legs", skin) + '" ' + line + glow("legs") + '/>' +
       '<rect x="' + (hL + 2) + '" y="200" width="' + (57 - hL) + '" height="' + (col("feet") ? 14 : 8) + '" rx="4" fill="' + fill("feet", skin) + '" ' + line + glow("feet") + '/>' +
       '<rect x="61" y="200" width="' + (hR - 63) + '" height="' + (col("feet") ? 14 : 8) + '" rx="4" fill="' + fill("feet", skin) + '" ' + line + glow("feet") + '/>' +
-      // торс / куртка
       '<path d="' + torso + '" fill="' + fill("body", skin) + '" ' + line + glow("body") + '/>' +
       (col("body") ? '<path d="M60,64 L60,124" stroke="rgba(0,0,0,.35)" stroke-width="2"/>' : '') +
-      // шея и голова
       '<rect x="54" y="44" width="12" height="20" rx="4" fill="' + skin + '"/>' +
       '<ellipse cx="60" cy="30" rx="' + (gender === "f" ? 14 : 15) + '" ry="17" fill="' + skin + '" ' + line + '/>' +
       (gender === "f" ? '<path d="M45,30 Q44,6 60,8 Q76,6 75,30 L77,52 L71,40 L71,24 Q60,16 49,24 L49,40 L43,52 Z" fill="#3a4478" opacity=".9"/>' : '') +
-      // шлем
       (col("head") ? '<path d="M42,32 Q42,8 60,8 Q78,8 78,32 L74,34 L74,28 L46,28 L46,34 Z" fill="' + col("head") + '" ' + line + glow("head") + '/>' +
         '<rect x="47" y="27" width="26" height="7" rx="3" fill="rgba(0,255,225,.55)"/>' : '') +
       '</svg>';
   }
   const effText = (line, pct) => fmt(L["ps_eff_" + line], { p: pct });
+  // Ячейки сумки: детали (по уровню) и артефакты; пустые ячейки добивают сетку
+  function bagCells(d) {
+    const cells = d.bag.map(b => ({ key: "g:" + b.suit + ":" + b.slot + ":" + b.level, icon: SLOT_ICON[b.slot], color: SUIT_COLOR[b.suit],
+      qty: b.qty, lvl: b.level, glow: b.level >= 2 }))
+      .concat(d.arts.map(a => ({ key: "a:" + a.kind, icon: ART_ICON[a.kind], color: SUIT_COLOR[a.kind], qty: a.qty, art: true })));
+    const n = Math.max(BAG_CELLS, Math.ceil(cells.length / 6) * 6);
+    let html = "";
+    for (let i = 0; i < n; i++) {
+      const c = cells[i];
+      html += c ? '<button class="ps-cell' + (psPick === c.key ? ' on' : '') + (c.art ? ' art' : '') + (c.glow ? ' glow' : '') + '" style="--sc:' + c.color +
+        '" data-pick="' + c.key + '"><span>' + c.icon + '</span>' + (c.lvl ? '<i class="lv">' + c.lvl + '</i>' : '') +
+        (c.qty > 1 ? '<i class="qt">×' + c.qty + '</i>' : '') + '</button>' : '<span class="ps-cell empty"></span>';
+    }
+    return '<div class="ps-grid">' + html + '</div>';
+  }
+  // Панель выбранной ячейки: название, что даёт, действия
+  function pickPanel(d) {
+    if (!psPick) return '<div class="hint">' + L.ps_pickHint + '</div>';
+    const p = psPick.split(":");
+    if (p[0] === "a") {
+      const a = d.arts.find(x => x.kind === p[1]);
+      if (!a) { psPick = null; return '<div class="hint">' + L.ps_pickHint + '</div>'; }
+      return '<div class="ps-pick" style="--sc:' + SUIT_COLOR[p[1]] + '"><b>' + artName(p[1]) + (a.qty > 1 ? ' ×' + a.qty : '') + '</b>' +
+        '<div class="hint">' + fmt(L.ps_artGives, { e: effText(p[1], d.art_bonus[p[1]]) }) + '</div>' +
+        '<div class="ps-sb"><button class="mini" data-art="' + p[1] + '">' + L.ps_wear + '</button>' +
+        '<button class="mini ghost" data-sell="a:' + p[1] + '">' + L.ps_sell + '</button></div></div>';
+    }
+    const [, s, slot, lvl] = p, level = Number(lvl);
+    const b = d.bag.find(x => x.suit === s && x.slot === slot && x.level === level);
+    if (!b) { psPick = null; return '<div class="hint">' + L.ps_pickHint + '</div>'; }
+    const canUp = s !== d.exo_key && level < 2;
+    return '<div class="ps-pick" style="--sc:' + SUIT_COLOR[s] + '"><b>' + partName(s, slot) + ' · ' + fmt(L.ps_level, { n: level }) + (b.qty > 1 ? ' ×' + b.qty : '') + '</b>' +
+      (s !== d.exo_key ? '<div class="hint">' + fmt(L.ps_partOf, { e: effText(s, d.bonus[s][level]) }) + '</div>' : '') +
+      '<div class="ps-sb"><button class="mini" data-wear="' + s + ':' + slot + ':' + level + '">' + L.ps_wear + '</button>' +
+      (canUp ? '<button class="mini ghost" data-up="' + s + ':' + slot + '">⬆️ ' + L.ps_upgrade + '</button>' : '') +
+      (canUp ? '<button class="mini ghost" data-sell="g:' + s + ':' + slot + '">' + L.ps_sell + '</button>' : '') + '</div></div>';
+  }
   async function viewPersona(box) {
     const d = psData = await api("/api/gear");
     const worn = d.worn || {}, cur = d.active || {};
     const genderChips = '<div class="ps-gender">' + ["m", "f"].map(g =>
       '<button class="chip' + (d.gender === g ? ' on' : '') + '" data-g="' + g + '">' + L["ps_" + g] + '</button>').join("") + '</div>';
-    const slots = d.slots.map(p => {
+    const slotHtml = p => {
       const w = worn[p];
       return '<div class="ps-slot' + (w ? ' on' : '') + '" style="' + (w ? '--sc:' + SUIT_COLOR[w.suit] : '') + '">' +
         '<span class="ps-si">' + SLOT_ICON[p] + '</span><span class="ps-sn"><b>' + L["ps_slot_" + p] + '</b><br><small>' +
         (w ? suitName(w.suit) + ' · ' + fmt(L.ps_level, { n: w.level }) : L.ps_empty) + '</small></span>' +
         (w ? '<span class="ps-sb">' + (w.suit !== d.exo_key && w.level < 2 ? '<button class="mini" data-up="' + w.suit + ':' + p + '">⬆️</button>' : '') +
           '<button class="mini ghost" data-off="' + p + '">' + L.ps_off + '</button></span>' : '') + '</div>';
-    }).join("");
-    const activeLine = cur.suit
-      ? '<div class="ps-active" style="--sc:' + SUIT_COLOR[cur.suit] + '"><b>' + fmt(L.ps_active, { s: suitName(cur.suit), n: cur.level }) + '</b>' +
-        Object.entries(cur.effects).map(([line, pct]) => '<div>• ' + effText(line, pct) + '</div>').join("") + '</div>'
-      : '<div class="hint">' + L.ps_none + '</div>';
+    };
+    const belt = '<div class="ps-belt-t">' + L.ps_belt + '</div><div class="ps-belt">' + d.belt_slots.map(s => {
+      const k = d.belt[s];
+      return k ? '<button class="ps-win on" style="--sc:' + SUIT_COLOR[k] + '" data-off="' + s + '" title="' + esc(L["ps_art_" + k]) + '"><span>' + ART_ICON[k] + '</span>' +
+        '<small>' + L.ps_off + '</small></button>' : '<span class="ps-win"><small>' + L.ps_empty + '</small></span>';
+    }).join("") + '</div>';
+    const effects = Object.entries(cur.effects || {});
+    const activeLine = (cur.suit ? '<b>' + fmt(L.ps_active, { s: suitName(cur.suit), n: cur.level }) + '</b>' : '<div class="hint">' + L.ps_none + '</div>') +
+      (effects.length ? effects.map(([line, pct]) => '<div>• ' + effText(line, pct) + '</div>').join("") : '');
     const head = '<div class="ps-head"><div class="hint">' + L.ps_hint + '</div>' + genderChips + '</div>';
-    const figure = '<div class="ps-figure">' + avatarSvg(d.gender, worn) + '<div class="ps-slots">' + slots + '</div></div>';
-    // 🎒 сумка
-    const bagRows = d.bag.map(b => '<div class="ps-item" style="--sc:' + SUIT_COLOR[b.suit] + '">' +
-      '<span>' + partName(b.suit, b.slot) + ' · ' + fmt(L.ps_level, { n: b.level }) + (b.qty > 1 ? ' <b>×' + b.qty + '</b>' : '') + '</span>' +
-      '<span class="ps-sb"><button class="mini" data-wear="' + b.suit + ':' + b.slot + ':' + b.level + '">' + L.ps_wear + '</button>' +
-      (b.suit !== d.exo_key && b.level < 2 ? '<button class="mini ghost" data-up="' + b.suit + ':' + b.slot + '">⬆️</button>' +
-        '<button class="mini ghost" data-sell="' + b.suit + ':' + b.slot + '">' + L.ps_sell + '</button>' : '') + '</span></div>');
-    const bag = '<div class="hint">' + fmt(L.ps_season, { got: d.season.got, cap: d.season.cap }) + '</div>' +
-      pager("ps-bag", bagRows, 10, '<div class="hint">' + L.ps_bagEmpty + '</div>');
-    // 📖 костюмы и бонусы + цена прокачки
+    const figure = '<div class="ps-figure"><div class="ps-col">' + ["head", "body", "hands"].map(slotHtml).join("") + '</div>' +
+      '<div class="ps-mid">' + avatarSvg(d.gender, worn) + belt + '</div>' +
+      '<div class="ps-col">' + ["legs", "feet"].map(slotHtml).join("") + '</div></div>';
+    const bag = '<div class="hint">' + fmt(L.ps_season, { got: d.season.got, cap: d.season.cap }) + ' · ' +
+      fmt(L.ps_seasonArt, { got: d.season.arts, cap: d.season.arts_cap }) + '</div>' +
+      bagCells(d) + '<div id="psPickBox">' + pickPanel(d) + '</div>' +
+      (d.bag.length || d.arts.length ? '' : '<div class="hint">' + L.ps_bagEmpty + '</div>');
+    // 📖 костюмы, артефакты и цена прокачки
     const suits = d.suits.map(s => '<div class="ps-suit" style="--sc:' + SUIT_COLOR[s] + '"><b>' + suitName(s) + '</b>' +
       '<div class="hint">' + effText(s, d.bonus[s][1]) + ' · ' + L.ps_lvl2 + ': ' + d.bonus[s][2] + '%</div>' +
       '<div class="hint"><i>' + L["ps_upg_" + s] + '</i></div>' +
       '<div class="hint">⬆️ ' + bundle(d.upgrade[s].cost) + ' · ' + num(d.upgrade[s].coins) + ' 🪙</div></div>').join("");
+    const arts = '<div class="hint">' + L.ps_artsText + '</div>' + d.suits.map(k => '<div class="ps-suit" style="--sc:' + SUIT_COLOR[k] + '"><b>' + artName(k) + '</b>' +
+      '<div class="hint">+ ' + effText(k, d.art_bonus[k]) + '</div></div>').join("");
     const exo = '<div class="hint">' + L.ps_exoText + '</div>' + row(L.ps_exoHave, d.exo.have + ' / ' + d.exo.need) +
       '<div class="hint">' + bundle(d.exo.cost) + ' · ' + num(d.exo.coins) + ' 🪙</div>' +
       '<button class="btn" id="psExo"' + (d.exo.have < d.exo.need ? ' disabled' : '') + '>' + L.ps_exoGo + '</button>';
-    // 🏷 рынок деталей
+    // 🏷 рынок деталей и артефактов
     const mk = d.market;
-    const asks = mk.asks.map(o => '<div class="ps-item" style="--sc:' + SUIT_COLOR[o.suit] + '"><span>' + partName(o.suit, o.slot) +
+    const lotName = o => o.art ? artName(o.art) : partName(o.suit, o.slot);
+    const lotColor = o => SUIT_COLOR[o.art || o.suit];
+    const asks = mk.asks.map(o => '<div class="ps-item" style="--sc:' + lotColor(o) + '"><span>' + lotName(o) +
       (o.qty > 1 ? ' ×' + o.qty : '') + '</span><button class="mini" data-buy="' + o.id + '">' + fmt(L.ps_buy, { p: num(o.price) }) + '</button></div>');
-    const mine = mk.mine.map(o => '<div class="ps-item"><span>' + partName(o.suit, o.slot) + ' ×' + o.qty + ' · ' + num(o.price) + ' 🪙</span>' +
+    const mine = mk.mine.map(o => '<div class="ps-item"><span>' + lotName(o) + ' ×' + o.qty + ' · ' + num(o.price) + ' 🪙</span>' +
       '<button class="mini ghost" data-cancel="' + o.id + '">' + L.ps_cancel + '</button></div>').join("");
     let sellForm = "";
     if (psSell) {
-      const [s, p] = psSell.split(":");
-      const own = d.bag.find(b => b.suit === s && b.slot === p && b.level === 1);
-      sellForm = '<div class="ps-sell"><b>' + L.ps_sellTitle + ': ' + partName(s, p) + '</b>' +
-        '<label class="hint">' + L.ps_price + '</label><input id="psPrice" type="number" min="' + mk.min_price + '" value="' + mk.min_price + '">' +
+      const p = psSell.split(":"), isArt = p[0] === "a";
+      const own = isArt ? d.arts.find(a => a.kind === p[1]) : d.bag.find(b => b.suit === p[1] && b.slot === p[2] && b.level === 1);
+      const min = isArt ? mk.art_min_price : mk.min_price;
+      sellForm = '<div class="ps-sell"><b>' + L.ps_sellTitle + ': ' + (isArt ? artName(p[1]) : partName(p[1], p[2])) + '</b>' +
+        '<label class="hint">' + fmt(L.ps_price, { min: num(min) }) + '</label><input id="psPrice" type="number" min="' + min + '" value="' + min + '">' +
         '<label class="hint">' + L.ps_qty + '</label><input id="psQty" type="number" min="1" max="' + Math.min(mk.max_qty, own ? own.qty : 1) + '" value="1">' +
         '<div class="two"><button class="btn" id="psSellGo">' + L.ps_sellGo + '</button><button class="btn ghost" id="psSellX">✕</button></div></div>';
     }
-    box.innerHTML = card(L.ps_title, head + figure + activeLine) +
+    box.innerHTML = card(L.ps_title, head + figure + '<div class="ps-active"' + (cur.suit ? ' style="--sc:' + SUIT_COLOR[cur.suit] + '"' : '') + '>' + activeLine + '</div>') +
       card(L.ps_bag, bag) +
-      card(L.ps_market, '<div class="hint">' + fmt(L.ps_marketHint, { min: num(mk.min_price), fee: mk.fee }) + '</div>' + sellForm +
+      card(L.ps_market, '<div class="hint">' + fmt(L.ps_marketHint, { min: num(mk.min_price), amin: num(mk.art_min_price), fee: mk.fee }) + '</div>' + sellForm +
         (mine ? '<div class="sub2">' + L.ps_myLots + '</div>' + mine : '') +
         pager("ps-asks", asks, 10, '<div class="hint">' + L.ps_marketEmpty + '</div>'), "psMarket") +
-      card(L.ps_suits, suits) +
-      card(L.ps_exoTitle, exo);
+      card(L.ps_suits, suits) + card(L.ps_arts, arts) + card(L.ps_exoTitle, exo);
     const redraw = () => go("persona");
     const done = text => async () => { if (text) notify(text, true); redraw(); };
-    box.querySelectorAll("[data-g]").forEach(b => { b.onclick = () => act(b, "/api/gear/gender", { gender: b.dataset.g }, done(null)); });
-    // делегирование: кнопки внутри листаемых списков перерисовываются пейджером
+    // делегирование: кнопки внутри листаемых списков и ячейки сумки перерисовываются
     box.onclick = e => {
       const b = e.target.closest("button");
       if (!b || b.disabled) return;
-      if (b.dataset.wear) { const [s, p, l] = b.dataset.wear.split(":"); act(b, "/api/gear/equip", { suit: s, slot: p, level: Number(l) }, done(null)); }
+      if (b.dataset.g) act(b, "/api/gear/gender", { gender: b.dataset.g }, done(null));
+      else if (b.dataset.pick) { psPick = psPick === b.dataset.pick ? null : b.dataset.pick;
+        box.querySelectorAll("[data-pick]").forEach(x => x.classList.toggle("on", x.dataset.pick === psPick));
+        document.getElementById("psPickBox").innerHTML = pickPanel(d); }
+      else if (b.dataset.wear) { const [s, p, l] = b.dataset.wear.split(":"); psPick = null; act(b, "/api/gear/equip", { suit: s, slot: p, level: Number(l) }, done(null)); }
+      else if (b.dataset.art) { psPick = null; act(b, "/api/gear/art", { kind: b.dataset.art }, done(null)); }
       else if (b.dataset.off) act(b, "/api/gear/unequip", { slot: b.dataset.off }, done(null));
       else if (b.dataset.up) {
         const [s, p] = b.dataset.up.split(":"), u = d.upgrade[s];
-        askConfirm(fmt(L.ps_upgAsk, { part: partName(s, p).replace(/<[^>]+>/g, ""), cost: bundle(u.cost).replace(/<[^>]+>/g, ""), c: num(u.coins) }),
+        askConfirm(fmt(L.ps_upgAsk, { part: partName(s, p), cost: bundle(u.cost), c: num(u.coins) }),
           () => act(b, "/api/gear/upgrade", { suit: s, slot: p }, done(L.ps_upgDone)));
       }
       else if (b.dataset.sell) { psSell = b.dataset.sell; redraw(); }
       else if (b.dataset.buy) act(b, "/api/market/fill", { order_id: Number(b.dataset.buy), qty: 1 }, done(L.ps_bought));
       else if (b.dataset.cancel) act(b, "/api/market/cancel", { order_id: Number(b.dataset.cancel) }, done(null));
+      else if (b.id === "psExo") askConfirm(L.ps_exoAsk, () => act(b, "/api/gear/exo", {}, done(L.ps_exoDone)));
+      else if (b.id === "psSellX") { psSell = null; redraw(); }
+      else if (b.id === "psSellGo") {
+        const p = psSell.split(":");
+        const asset = p[0] === "a" ? "a_" + p[1] : "g_" + p[1] + "_" + p[2];
+        act(b, "/api/market/order", { asset: asset, side: "sell", qty: Number(document.getElementById("psQty").value) || 1,
+          price: Number(document.getElementById("psPrice").value) || 0 }, async () => { psSell = null; psPick = null; notify(L.ps_listed, true); redraw(); });
+      }
     };
-    const exoBtn = document.getElementById("psExo");
-    if (exoBtn) exoBtn.onclick = e => { e.stopPropagation(); askConfirm(L.ps_exoAsk, () => act(exoBtn, "/api/gear/exo", {}, done(L.ps_exoDone))); };
-    const sx = document.getElementById("psSellX");
-    if (sx) sx.onclick = e => { e.stopPropagation(); psSell = null; redraw(); };
-    const sg = document.getElementById("psSellGo");
-    if (sg) sg.onclick = e => {
-      e.stopPropagation();
-      const [s, p] = psSell.split(":");
-      act(sg, "/api/market/order", { asset: "g_" + s + "_" + p, side: "sell", qty: Number(document.getElementById("psQty").value) || 1,
-        price: Number(document.getElementById("psPrice").value) || 0 }, async () => { psSell = null; notify(L.ps_listed, true); redraw(); });
-    };
+  }
+  // 🎁 Подарки от разработчика — плашка в паспорте (без рассылок: игрок сам забирает кнопкой)
+  const giftLabel = r => r.kind === "coins" ? num(r.amount) + " 🪙" : r.kind === "resource" ? r.qty + " " + (RES_ICON[r.res] || "")
+    : r.kind === "cutlets" ? r.qty + " 🥩" : r.kind === "gear" ? fmt(L.gf_gear, { n: r.qty }) : r.kind === "artifact" ? fmt(L.gf_art, { n: r.qty })
+    : r.kind === "bdrone" ? "🤖 ×" + (r.qty || 1) : "🎁";
+  function giftsCard(gifts) {
+    if (!gifts || !gifts.length) return "";
+    return '<div class="card gift-card"><h2>' + L.gf_title + '</h2><div class="hint">' + L.gf_hint + '</div>' +
+      gifts.map(g => '<div class="gift-row"><span><b>' + (g.title ? esc(g.title) : L.gf_default) + '</b><br><small>' +
+        g.rewards.map(giftLabel).join(" + ") + '</small></span><button class="mini" data-gift="' + g.id + '">' + L.gf_claim + '</button></div>').join("") +
+      '</div>';
+  }
+  function bindGifts(root) {
+    root.querySelectorAll("[data-gift]").forEach(b => { b.onclick = () => act(b, "/api/gifts/claim", { id: Number(b.dataset.gift) }, async r => {
+      const got = r.got || {};
+      const extra = (got.gear || []).map(x => partName(x.suit, x.slot)).concat((got.artifacts || []).map(artName));
+      notify(L.gf_done + (extra.length ? "\n" + extra.join("\n") : ""), true);
+      await refreshMe().catch(() => {});
+      go(current);
+    }); });
   }
 
   const VIEWS = { passport: viewPassport, persona: viewPersona, games: viewGames, farm: viewFarm, storage: viewStorage, workshop: viewWorkshop,

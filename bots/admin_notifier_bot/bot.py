@@ -654,6 +654,14 @@ _manual_pinged: set[int] = set()
 async def check_finished_battles(bot: Bot) -> None:
     """Вызывается демоном: закрывает битвы, аукционы и экспедиции, чьё время вышло."""
     from shared.battles import is_manual
+    try:   # ⏱ «итоги раньше, если наберётся N» — переводим часы, итоги подведут шаги ниже
+        from shared.autofinish import autofinish_step
+        from shared.economy import utcnow
+        async with db.pool.acquire() as conn:
+            for line in await autofinish_step(conn, utcnow()):
+                await _admin_note(bot, "⏱ Досрочные итоги: " + html.escape(line))
+    except Exception:
+        logger.exception("[AUTOFINISH] сбой")
     try:
         await auction_daemon_step(bot)
     except Exception:

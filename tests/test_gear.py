@@ -194,3 +194,56 @@ def test_persona_view_does_not_shadow_the_act_helper():
     body = html[html.index("async function viewPersona(box)"):html.index("const VIEWS = {")]
     assert not re.search(r"[\s,]act\s*=", body)
     assert "act(b, \"/api/gear/equip\"" in body
+
+
+# ---------------------------------------------------------------- 💠 артефакты, 🎁 подарки, ⏱ итоги «по N» (30.10, вечер)
+def test_artifacts_add_to_suit_and_fit_columns():
+    assert economy.ARTIFACT_SLOTS == ("a1", "a2", "a3") and economy.ARTIFACT_SEASON_CAP == 1
+    for k in economy.ARTIFACT_KINDS:
+        assert len(economy.art_code(k)) == 3 and economy.art_kind(economy.art_code(k)) == k
+        assert economy.parse_art_asset(economy.art_asset(k)) == k
+    assert economy.art_bonus_total(["el", "el", "mn"]) == {"el": 20, "mn": 2}
+    assert economy.gear_bonus("el", 1, {"el": 10}, "el") == 60 and economy.gear_bonus(None, None, {"st": 10}, "st") == 10
+    assert economy.energy_chance_percent(None, None, {"el": 20}) == 45
+    assert economy.energy_chance_percent("el", 2, {"el": 99}) == 95          # потолок шанса
+    assert market_min_price("a_el") == economy.ARTIFACT_MIN_PRICE
+    from shared.market import bag_item
+    assert bag_item("a_sc") == ("asc", "art") and bag_item("g_mn_head") == ("mn", "head") and bag_item("metal") is None
+    from shared.gear import belt_bonus, full_set
+    worn = {p: {"suit": "mn", "level": 1} for p in GEAR_SLOTS}
+    worn["a1"] = {"suit": "aml", "level": 1}
+    assert full_set(worn) == ("mn", 1) and belt_bonus(worn) == {"ml": 5}    # пояс не ломает комплект
+
+
+def test_gifts_show_limited_items_only_while_season_cap_left():
+    from shared.gifts import worth_claiming
+    gear_only = [{"kind": "gear", "qty": 5}, {"kind": "artifact", "qty": 1}]
+    assert worth_claiming(gear_only, {"gear": 1, "artifact": 0})
+    assert not worth_claiming(gear_only, {"gear": 0, "artifact": 0})        # старожил, добравший лимит, не видит
+    assert worth_claiming([{"kind": "coins", "amount": 10}], {"gear": 0, "artifact": 0})
+
+
+def test_finish_counts_and_faster_trips():
+    assert economy.FINISH_COUNTS == (10, 100, 1000, 10000)
+    assert economy.finish_count_ok("100") == 100 and economy.finish_count_ok(50) is None and economy.finish_count_ok(None) is None
+    near, far = economy.exp_travel_minutes(20, "solo"), economy.exp_travel_minutes(180, "solo")
+    assert 10 <= near < far <= 30                                            # соло 10–30 мин
+    assert 30 <= economy.exp_travel_minutes(20, "team") < economy.exp_travel_minutes(180, "team") <= 120
+    from bots.main_bot.webapp_admin import end_time
+    at = datetime(2026, 11, 1, tzinfo=timezone.utc)
+    assert end_time({"hours": 2}, at, 48, "x") == (at + timedelta(hours=2), None)
+    assert end_time({"ends_at": "2026-11-01T05:00:00+00:00", "hours": 2}, at, 48, "x")[0] == at + timedelta(hours=5)
+    assert end_time({"ends_at": "2026-11-01T00:05:00"}, at, 48, "x")[0] is None    # слишком скоро
+    assert end_time({"hours": 0}, at, 48, "ошибка") == (None, "ошибка")
+
+
+def test_owner_panel_has_gift_all_ends_and_drop_toggles():
+    html = (ROOT / "static" / "webapp" / "admin.html").read_text(encoding="utf-8")
+    for needle in ('"/api/admin/gift_all"', "ВЫДАВАТЬ ДЕТАЛИ КОСТЮМОВ", "give_artifact", "endsBlock(\"t\"", "endsBlock(\"f\"",
+                   "endsBlock(\"v\"", "endsBlock(\"l\"", '["artifact", "💠 Артефакт (случайный)"]'):
+        assert needle in html, needle
+    app = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert '"/api/gifts/claim"' in app and "giftsCard(" in app and '"/api/gear/art"' in app
+    for lang in ("ru", "en") + tuple(PACK_CODES):
+        for key in ("gift.err_gone", "gift.err_limit", "gift.err_taken"):
+            assert t(lang, key) != key, (lang, key)

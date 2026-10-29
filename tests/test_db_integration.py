@@ -3598,3 +3598,94 @@ async def test_miner_suit_pays_once_a_day_only_for_mining_after_wearing(conn):
     assert await gear.pay_miner_bonus(conn, 3103, day) == 99               # 5% от 1999, вниз
     assert await gear.pay_miner_bonus(conn, 3103, day) == 0                # второй раз за те же сутки — нет
     assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 3103") == 99
+
+
+# ---------------------------------------------------------------- 🎁 подарки, 💠 артефакты, ⏱ досрочные итоги (30.10, вечер)
+async def test_gift_to_all_respects_season_caps_for_veterans_and_newcomers(conn):
+    from datetime import timedelta as _td
+    from shared import gifts
+    from shared.economy import utcnow
+    now = utcnow()
+    await _mk_user(conn, 3201, 0)
+    first = await gifts.create_campaign(conn, "Старт", [{"kind": "artifact", "qty": 1}, {"kind": "gear", "qty": 5}],
+                                        now + _td(days=5))
+    assert [g["id"] for g in await gifts.pending(conn, 3201, now)] == [first]
+    async with conn.transaction():
+        got = await gifts.claim(conn, 3201, first, now)
+    assert len(got["gear"]) == 5 and len(got["artifacts"]) == 1
+    with pytest.raises(gifts.GiftError):
+        await gifts.claim(conn, 3201, first, now)                      # второй раз — нет
+    # вторая раздача в конце месяца: старожил лимит добрал — не видит её; новичок — видит и получает
+    second = await gifts.create_campaign(conn, "", [{"kind": "artifact", "qty": 1}], now + _td(days=5))
+    await _mk_user(conn, 3202, 0)
+    assert await gifts.pending(conn, 3201, now) == []
+    with pytest.raises(gifts.GiftError):
+        await gifts.claim(conn, 3201, second, now)
+    assert [g["id"] for g in await gifts.pending(conn, 3202, now)] == [first, second]
+    async with conn.transaction():
+        await gifts.claim(conn, 3202, second, now)
+    assert [g["id"] for g in await gifts.pending(conn, 3202, now)] == [first]      # детали ещё можно, артефакт — уже нет
+    coins = await gifts.create_campaign(conn, "", [{"kind": "coins", "amount": 100}], now + _td(days=1))
+    async with conn.transaction():
+        await gifts.claim(conn, 3201, coins, now)                     # монеты лимита не знают
+    assert await conn.fetchval("SELECT balance FROM users WHERE user_id = 3201") == 100
+    assert await gifts.cancel(conn, coins) and not await gifts.cancel(conn, coins)
+
+
+async def test_artifacts_belt_adds_to_suit_and_trades_on_market(conn):
+    from shared import gear
+    from shared.economy import user_bonus, utcnow
+    from shared.market import fill_order, place_order
+    now = utcnow()
+    await _mk_user(conn, 3203, 50_000)
+    await _mk_user(conn, 3204, 50_000)
+    assert await gear.drop_artifacts(conn, 3203, 3, "T", now) and await gear.drop_artifacts(conn, 3203, 1, "T2", now) == []
+    for _ in range(2):
+        await gear.change_gear(conn, 3203, "ael", "art", 1, 1, "test")
+    await gear.equip_artifact(conn, 3203, "el", None, now)
+    await gear.equip_artifact(conn, 3203, "el", None, now)
+    row = await conn.fetchrow("SELECT suit, suit_level, art_bonus FROM users WHERE user_id = 3203")
+    assert user_bonus(row, "el") == 20                                   # два камня искры на поясе
+    await gear.unequip(conn, 3203, "a1", now)
+    row = await conn.fetchrow("SELECT suit, suit_level, art_bonus FROM users WHERE user_id = 3203")
+    assert user_bonus(row, "el") == 10
+    order = await place_order(conn, 3203, "a_el", "sell", 1, 1000)
+    deal = await fill_order(conn, 3204, order, 1)
+    assert deal["fee"] == 100 and await gear.have(conn, 3204, "ael", "art") == 1
+
+
+async def test_autofinish_by_count_for_expedition_battle_and_auction(conn):
+    from datetime import timedelta as _td
+    from shared.autofinish import autofinish_step
+    from shared.economy import utcnow
+    from shared.expeditions import finalize_target
+    now = utcnow()
+    tid = await _exp_target(conn, "solo", now, hours=48)
+    await conn.execute("UPDATE expedition_targets SET finish_count = 10, give_gear = TRUE WHERE id = $1", tid)
+    for i in range(10):
+        uid = 3300 + i
+        await _mk_user(conn, uid, 0)
+        eid = await conn.fetchval(
+            "INSERT INTO expeditions (target_id, mode, user_id, ox, oy, cargo, status, departed_at, arrive_at, planned_minutes) "
+            "VALUES ($1, 'solo', $2, 0, 0, 100, 'marching', $3, $4, 20) RETURNING id",
+            tid, uid, now - _td(minutes=30), now - _td(minutes=1 if i < 9 else -5))
+        await conn.execute("INSERT INTO expedition_members (expedition_id, user_id) VALUES ($1, $2)", eid, uid)
+    assert await autofinish_step(conn, now) == []                       # дошли 9 из 10
+    await conn.execute("UPDATE expeditions SET arrive_at = $1 WHERE user_id = 3309", now - _td(seconds=1))
+    assert len(await autofinish_step(conn, now)) == 1
+    target = await conn.fetchrow("SELECT * FROM expedition_targets WHERE id = $1", tid)
+    assert target["resolve_at"] == now
+    res = await finalize_target(conn, target, now)
+    assert res["arrived"] == 10
+    assert await conn.fetchval("SELECT COUNT(*) FROM gear_ledger WHERE reason = 'drop' AND ref LIKE $1", f"E{tid}_GEAR_%") == 10
+    assert all(any(r["kind"] == "gear" for r in n["rewards"]) for n in res["notices"])
+    # аукцион: 2 игрока со ставками при пороге 10 — рано
+    aid = await conn.fetchval("INSERT INTO auctions (item_title, current_price, min_step, ends_at, finish_count) "
+                              "VALUES ('Лот', 100, 10, $1, 10) RETURNING auction_id", now + _td(days=1))
+    for uid in (3300, 3301):
+        await conn.execute("INSERT INTO ledger (user_id, delta, reason, ref) VALUES ($1, -10, 'auction_bid', $2)", uid, str(aid))
+    assert await autofinish_step(conn, now) == []
+    for uid in range(3302, 3310):
+        await conn.execute("INSERT INTO ledger (user_id, delta, reason, ref) VALUES ($1, -10, 'auction_bid', $2)", uid, str(aid))
+    assert any("аукцион" in x for x in await autofinish_step(conn, now))
+    assert await conn.fetchval("SELECT ends_at FROM auctions WHERE auction_id = $1", aid) == now

@@ -43,7 +43,7 @@ from shared.economy import (
 )
 from shared.ledger import InsufficientFunds, change_balance
 from shared.locales import resolve_lang, t
-from shared.economy import GAME_MILESTONES, energy_chance_percent
+from shared.economy import GAME_MILESTONES, art_of, energy_chance_percent
 from shared.resources import RESOURCE_ICONS, change_resource, game_resource_gain, resource_capacity
 
 router = Router()
@@ -133,7 +133,7 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             user = await conn.fetchrow(
-                "SELECT balance, unlimit_until, suit, suit_level FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+                "SELECT balance, unlimit_until, suit, suit_level, art_bonus FROM users WHERE user_id = $1 FOR UPDATE", user_id)
             if not user:
                 return False, t(lang, "common.no_profile"), 0, None
 
@@ -184,7 +184,7 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                         status += "\n" + t(lang, "games.resource_gain", icon=RESOURCE_ICONS[kind_m], qty=1,
                                             name=t(lang, f"res.{kind_m}"), total=stock_m)
                 # ⚡ Электричество иногда «выпадает» в любой победе (27.10); 🧥 костюм электрика — чаще (30.10)
-                if random.randrange(100) < energy_chance_percent(user["suit"], user["suit_level"]):
+                if random.randrange(100) < energy_chance_percent(user["suit"], user["suit_level"], art_of(user)):
                     await change_resource(conn, user_id, "energy", 1, f"game_win:{game_type}",
                                           cap=await resource_capacity(conn, user_id))
                     status += "\n" + t(lang, "games.energy_gain")

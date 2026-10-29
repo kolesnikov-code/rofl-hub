@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from shared.economy import suit_bonus, tech_cooldown_cut
+from shared.economy import tech_cooldown_cut, user_bonus
 from shared.economy import (HORSE_PRICES, MAX_HORSES, SHUTTLE_CHARGE_DAYS, TECH_ORDER, TECHS, TOOL_COSTS,
                             extend_expiry, science_gate_ok, tech_cooldown_days, tech_cost, tech_tool_required)
 from shared.ledger import InsufficientFunds, change_balance
@@ -80,7 +80,7 @@ async def upgrade_tech(conn, user_id: int, tech: str, now: datetime) -> int:
     """Следующий уровень технологии. Возвращает новый уровень."""
     if tech not in TECHS:
         raise TechError("tech.err_unknown")
-    user = await conn.fetchrow("SELECT suit, suit_level FROM users WHERE user_id = $1 FOR UPDATE", user_id)
+    user = await conn.fetchrow("SELECT suit, suit_level, art_bonus FROM users WHERE user_id = $1 FOR UPDATE", user_id)
     state = await get_tech(conn, user_id)
     level = state[tech]["level"]
     if level >= TECHS[tech]["max"]:
@@ -91,7 +91,7 @@ async def upgrade_tech(conn, user_id: int, tech: str, now: datetime) -> int:
     if state["tools"]["level"] < need_tool:
         raise TechError("tech.err_tool", tool=need_tool)
     ready = next_tech_at(tech, level, state[tech]["updated_at"],
-                         suit_bonus(user["suit"], user["suit_level"], "sc") if user else 0)
+                         user_bonus(user, "sc"))
     if ready is not None and ready > now:
         raise TechError("tech.err_cooldown", hours=max(1, -(-int((ready - now).total_seconds()) // 3600)))
     await _spend(conn, user_id, tech_cost(tech, level + 1), f"tech:{tech}:{level + 1}")
