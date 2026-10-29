@@ -34,7 +34,8 @@ async def conn():
                         "team_stations, team_donations, market_trades, resource_swaps, weekly_crafts, team_help, user_items, team_banners, user_tech, user_badges, "
                         "season_results, battle_entries, battle_entry_log, reward_grants, expedition_targets, expeditions, "
                         "expedition_members, expedition_votes, expedition_log, expedition_peeks, daily_case_runs, "
-                        "user_gear, user_equip, gear_ledger RESTART IDENTITY")
+                        "user_gear, user_equip, gear_ledger, gift_campaigns, gift_claims, user_skins, gear_stats, "
+                        "season_pass RESTART IDENTITY")
         await c.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
                         "captured_until = NULL, last_paid_at = NULL")
         await c.execute("DELETE FROM feature_flags WHERE key LIKE 'wsr:%'")
@@ -2446,7 +2447,7 @@ async def test_expedition_too_far_for_the_deadline(conn):
     from shared.expeditions import ExpError, start_solo
     from shared.resources import get_resources, grant_bundle
     now = utcnow()
-    tid = await _exp_target(conn, "solo", now, hours=0.3)
+    tid = await _exp_target(conn, "solo", now, hours=0.05)   # 3 минуты: соло-поход не короче 10 минут
     await _mk_user(conn, 1705, 0)
     await grant_bundle(conn, 1705, {"hydrogen": 20}, "test")
     with pytest.raises(ExpError) as e:
@@ -3238,7 +3239,7 @@ async def test_app_new_games_math_flags_code_memory_and_milestones(conn, global_
         await client.close()
 
 
-async def test_app_quests_play_to_win_reward_once_and_stale_scene(conn, global_db):
+async def test_app_quests_play_to_win_reward_once_and_stale_scene(conn, global_db, monkeypatch):
     """🗺 27.10: квесты в приложении — тот же движок, что в чате: награда только за первую победу."""
     import time as _t
     from aiohttp.test_utils import TestClient, TestServer
@@ -3248,6 +3249,8 @@ async def test_app_quests_play_to_win_reward_once_and_stale_scene(conn, global_d
     from shared.webapp_auth import sign_init_data
     from tests.test_minigames import _win_path
     token = "123456:TEST"
+    from shared import quest_engine as qe
+    monkeypatch.setattr(qe, "daily_rotation", lambda pool, day: pool)    # квест точно среди «квестов дня»
     await _mk_user(conn, 1850, 1000)
     await conn.execute("DELETE FROM quest_progress WHERE user_id = 1850")
     await set_flag("quest:golden_cutlet", True)
@@ -3451,7 +3454,7 @@ async def test_social_wave_squad_invite_duel_case_card_mode(conn, global_db):
         await client.close()
 
 
-async def test_quest_input_timer_and_annoyed_character(conn, global_db):
+async def test_quest_input_timer_and_annoyed_character(conn, global_db, monkeypatch):
     """🔐 27.10, вечер: код набирают руками (сверяет сервер), ⏱ таймер считает сервер, с 3-го захода персонаж ворчит."""
     import time as _t
     from aiohttp.test_utils import TestClient, TestServer
@@ -3460,6 +3463,8 @@ async def test_quest_input_timer_and_annoyed_character(conn, global_db):
     from shared.webapp_auth import sign_init_data
     token = "123456:TEST"
     from datetime import datetime, timezone
+    from shared import quest_engine as qe
+    monkeypatch.setattr(qe, "daily_rotation", lambda pool, day: pool)    # квест точно среди «квестов дня»
     await _mk_user(conn, 1950, 1000, unlimit_until=datetime(2099, 1, 1, tzinfo=timezone.utc))
     await conn.execute("DELETE FROM quest_progress WHERE user_id = 1950")
     for qid in ("locked_safe", "forty_candles"):
@@ -3689,3 +3694,69 @@ async def test_autofinish_by_count_for_expedition_battle_and_auction(conn):
         await conn.execute("INSERT INTO ledger (user_id, delta, reason, ref) VALUES ($1, -10, 'auction_bid', $2)", uid, str(aid))
     assert any("аукцион" in x for x in await autofinish_step(conn, now))
     assert await conn.fetchval("SELECT ends_at FROM auctions WHERE auction_id = $1", aid) == now
+
+
+async def test_skins_edition_collection_temper_market_trophies_and_pass(conn):
+    from shared import season_pass as sp
+    from shared import skins as sk
+    from shared.economy import utcnow
+    from shared.market import fill_order, place_order
+    from shared.trophies import record
+    now = utcnow()
+    await _mk_user(conn, 3401, 100_000)
+    await _mk_user(conn, 3402, 100_000)
+    # 1) тираж: номера по порядку, сверх тиража — нельзя
+    a = await sk.grant(conn, 3401, "aur_title", "stars", now)
+    b = await sk.grant(conn, 3402, "aur_title", "stars", now)
+    assert (a["serial"], b["serial"]) == (1, 2)
+    sk.SKINS["aur_title"]["edition"], old = 2, sk.SKINS["aur_title"]["edition"]
+    try:
+        with pytest.raises(sk.SkinError):
+            await sk.grant(conn, 3401, "aur_title", "stars", now)
+    finally:
+        sk.SKINS["aur_title"]["edition"] = old
+    # 2) коллекция «Северного сияния» целиком — бесплатный титул-награда, один раз
+    for sid in ("aur_suit", "aur_frame", "aur_marker", "aur_bag"):
+        await sk.grant(conn, 3401, sid, "stars", now)
+    assert await conn.fetchval("SELECT COUNT(*) FROM user_skins WHERE user_id = 3401 AND skin_id = 'aur_keeper'") == 1
+    # 3) надет один скин на цель; трофеи и боевой опыт — только надетому, деталь костюма и пропуск — тоже
+    await sk.equip(conn, 3401, a["id"])
+    await conn.execute("INSERT INTO user_gear (user_id, suit, slot, level, qty) VALUES (3401, 'ml', 'head', 1, 0) ON CONFLICT DO NOTHING")
+    await conn.execute("INSERT INTO user_equip (user_id, slot, suit, level) VALUES (3401, 'head', 'ml', 1)")
+    await record(conn, 3401, "raid_win", 2)
+    await record(conn, 3401, "unknown_event", 5)                      # чужое событие игнорируется
+    row = await conn.fetchrow("SELECT xp, stats FROM user_skins WHERE id = $1", a["id"])
+    assert row["xp"] == sk.SKIN_EVENT_XP["raid_win"] * 2 and sk._stats(row["stats"]) == {"raid_win": 2}
+    assert await conn.fetchval("SELECT xp FROM user_skins WHERE user_id = 3401 AND skin_id = 'aur_suit'") == 0
+    from shared.trophies import gear_history
+    assert (await gear_history(conn, 3401)) == {"ml:head:1": {"raid_win": 2}}
+    assert (await sp.state(conn, 3401, sp.current_season(now)))["xp"] == sp.PASS_XP["raid_win"] * 2
+    # 4) закалка: поглощённый исчезает, опыт и слияния растут; надетый поглотить нельзя
+    with pytest.raises(sk.SkinError):
+        await sk.absorb(conn, 3401, (await conn.fetchval("SELECT id FROM user_skins WHERE skin_id = 'aur_marker'")), a["id"])
+    food = await conn.fetchval("SELECT id FROM user_skins WHERE skin_id = 'aur_bag'")
+    res = await sk.absorb(conn, 3401, a["id"], food)
+    assert res["xp"] == 6 + sk.SKIN_MERGE_XP["rare"] and await conn.fetchval("SELECT merged FROM user_skins WHERE id = $1", a["id"]) == 1
+    assert await conn.fetchval("SELECT 1 FROM user_skins WHERE id = $1", food) is None
+    # 5) рынок: экземпляр уходит в эскроу и переходит покупателю целиком (с номером и историей), комиссия сгорает
+    await sk.unequip(conn, 3401, a["id"])
+    oid = await place_order(conn, 3401, sk.skin_asset(a["id"]), "sell", 1, sk.SKIN_MIN_PRICE["rare"])
+    assert await conn.fetchval("SELECT user_id FROM user_skins WHERE id = $1", a["id"]) == sk.ESCROW_OWNER
+    await fill_order(conn, 3402, oid, 1)
+    row = await conn.fetchrow("SELECT user_id, serial, stats FROM user_skins WHERE id = $1", a["id"])
+    assert row["user_id"] == 3402 and row["serial"] == 1 and sk._stats(row["stats"]) == {"raid_win": 2}
+    # 6) пропуск: бесплатные награды забираются один раз, платные — после покупки, в том числе за пройденные уровни
+    season = sp.active_season(now)
+    await conn.execute("INSERT INTO season_pass (user_id, season, xp) VALUES (3401, $1, 520) "
+                       "ON CONFLICT (user_id, season) DO UPDATE SET xp = 520", season)
+    got = await sp.claim(conn, 3401, season, now)
+    assert len(got) >= 5 and all(r["kind"] != "skin" for r in got)
+    with pytest.raises(sp.PassError):
+        await sp.claim(conn, 3401, season, now)
+    order = build_order(sp.pass_sku(season))
+    await deliver_order(conn, 3401, order, "charge_pass_3401", now)
+    with pytest.raises(sp.PassError):
+        await sp.activate_premium(conn, 3401, season)
+    await sp.claim(conn, 3401, season, now)
+    assert await conn.fetchval("SELECT 1 FROM user_skins WHERE user_id = 3401 AND skin_id = $1",
+                               sp.pass_skin_ids(season)["marker"]) == 1        # 5-й уровень платной дорожки

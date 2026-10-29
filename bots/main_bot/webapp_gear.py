@@ -12,6 +12,12 @@ POST /api/gear/exo        — сплав нано-экзо-брони
 POST /api/gear/art        — {"kind", "slot"?} артефакт из сумки на пояс (снять — /api/gear/unequip со слотом a1…a3)
 GET  /api/gifts           — 🎁 подарки от разработчика на плашке паспорта (shared/gifts.py)
 POST /api/gifts/claim     — {"id"} забрать подарок
+GET  /api/skins           — ✨ Гараж: свои скины (номер тиража, закалка, история), витрина за ★ с остатком тиража,
+                            коллекции сезона, рынок скинов, зал славы
+POST /api/skins/equip|unequip — {"id"} экземпляра; /api/skins/absorb — {"id", "fodder"} закалка
+GET  /api/pass            — 🎟 пропуск сезона: уровень, опыт, обе дорожки наград, что продаётся
+POST /api/pass/claim      — забрать все открытые награды
+GET  /api/gear/history    — 🏆 трофейная история деталей костюма
 """
 from __future__ import annotations
 
@@ -54,6 +60,7 @@ def _lots(rows) -> list[dict]:
 
 
 async def gear_state(conn, user_id: int) -> dict:
+    from shared.trophies import gear_history
     user = await conn.fetchrow("SELECT gender, suit, suit_level, art_bonus, balance FROM users WHERE user_id = $1", user_id)
     worn = await gear.equipped(conn, user_id)
     belt = {s: art_kind(worn.pop(s)["suit"]) for s in ARTIFACT_SLOTS if s in worn}
@@ -86,6 +93,7 @@ async def gear_state(conn, user_id: int) -> dict:
         "market": {"asks": _lots(asks), "mine": _lots(mine), "min_price": GEAR_MIN_PRICE, "art_min_price": ARTIFACT_MIN_PRICE,
                    "max_price": MARKET_MAX_PRICE,
                    "max_qty": GEAR_MARKET_MAX_QTY, "fee": MARKET_FEE_PERCENT},
+        "history": await gear_history(conn, user_id),   # 🏆 что пережила каждая деталь
     }
 
 
@@ -168,6 +176,144 @@ async def handle_gift_claim(request: web.Request) -> web.Response:
     return web.json_response({"ok": True, "got": got, "gifts": left})
 
 
+# ---------------------------------------------------------------- ✨ Гараж: скины
+async def skins_state(conn, user_id: int, lang: str) -> dict:
+    from shared import skins as sk
+    now = utcnow()
+    mine = await sk.owned(conn, user_id)
+    counts = {r["skin_id"]: r["n"] for r in await conn.fetch(
+        "SELECT skin_id, COUNT(*) AS n FROM user_skins GROUP BY skin_id")}
+    shop = [{"id": sid, "sku": sk.skin_sku(sid), "stars": s["stars"], "edition": s.get("edition"),
+             "left": (s["edition"] - counts.get(sid, 0)) if s.get("edition") else None,
+             "until": s["until"].isoformat() if s.get("until") else None}
+            for sid, s in sk.SKINS.items() if sk.for_sale(sid, now)]
+    sets = {}
+    have_ids = {m["skin_id"] for m in mine}
+    for set_id, reward in sk.SET_REWARDS.items():
+        need = [sid for sid, s in sk.SKINS.items() if s["set"] == set_id]
+        sets[set_id] = {"need": need, "have": [x for x in need if x in have_ids], "reward": reward}
+    lots = await conn.fetch(
+        "SELECT o.id, o.price, o.asset, o.seller_id, u.skin_id, u.serial, u.xp, u.merged, u.stats FROM market_orders o "
+        "JOIN user_skins u ON u.id::text = substr(o.asset, 3) "
+        "WHERE o.status = 'open' AND o.side = 'sell' AND o.qty > 0 AND o.asset LIKE 's\\_%' AND o.team_id IS NULL "
+        "ORDER BY o.price, o.created_at LIMIT 100")
+    user = await conn.fetchrow("SELECT gender, suit, created_at FROM users WHERE user_id = $1", user_id)
+    from shared.seasons import user_badges
+    exo = await conn.fetchval("SELECT 1 FROM user_equip WHERE user_id = $1 AND suit = 'exo' LIMIT 1", user_id)
+    stats = await conn.fetchrow("SELECT games_won, quiz_level FROM game_stats WHERE user_id = $1", user_id)
+    best_cargo = await conn.fetchval("SELECT MAX(cargo) FROM expeditions WHERE user_id = $1 AND status = 'done'", user_id)
+    duels_won = await conn.fetchval("SELECT COUNT(*) FROM ledger WHERE user_id = $1 AND reason = 'duel_win'", user_id)
+    return {
+        "ok": True, "catalog": sk.public_catalog(lang), "mine": mine, "shop": shop, "sets": sets,
+        "rarity_color": sk.RARITY_COLOR, "levels": [list(x) for x in sk.SKIN_LEVELS], "merge_xp": sk.SKIN_MERGE_XP,
+        "event_xp": sk.SKIN_EVENT_XP, "stages": [list(x) for x in sk.SKIN_STAGES],
+        "min_price": sk.SKIN_MIN_PRICE, "gender": user["gender"],
+        "lots": [{"id": r["id"], "price": r["price"], "skin": r["skin_id"], "serial": r["serial"],
+                  "level": sk.skin_level(r["xp"], r["merged"]), "stage": sk.skin_stage(sk.skin_level(r["xp"], r["merged"])),
+                  "stats": sk._stats(r["stats"]), "own": r["seller_id"] == user_id}
+                 for r in lots],
+        "glory": {"badges": await user_badges(conn, user_id), "exo": bool(exo),
+                  "games_won": (stats["games_won"] if stats else 0) or 0, "quiz_level": (stats["quiz_level"] if stats else 0) or 0,
+                  "best_cargo": best_cargo or 0, "duels_won": duels_won or 0,
+                  "days": max(0, (now - user["created_at"]).days)},
+    }
+
+
+async def handle_skins(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    async with db.pool.acquire() as conn:
+        return web.json_response(await skins_state(conn, ctx.user_id, ctx.lang))
+
+
+async def _skin_act(request: web.Request, action) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    from shared.skins import SkinError
+    data = await _json(request)
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                extra = await action(conn, ctx.user_id, data)
+            out = await skins_state(conn, ctx.user_id, ctx.lang)
+    except SkinError as e:
+        return fail(t(ctx.lang, e.key, **e.kwargs))
+    if isinstance(extra, dict):
+        out["result"] = extra
+    return web.json_response(out)
+
+
+async def handle_skin_equip(request: web.Request) -> web.Response:
+    from shared.skins import equip
+    return await _skin_act(request, lambda conn, uid, d: equip(conn, uid, _int(d.get("id"))))
+
+
+async def handle_skin_unequip(request: web.Request) -> web.Response:
+    from shared.skins import unequip
+    return await _skin_act(request, lambda conn, uid, d: unequip(conn, uid, _int(d.get("id"))))
+
+
+async def handle_skin_absorb(request: web.Request) -> web.Response:
+    from shared.skins import absorb
+    return await _skin_act(request, lambda conn, uid, d: absorb(conn, uid, _int(d.get("id")), _int(d.get("fodder"))))
+
+
+# ---------------------------------------------------------------- 🎟 пропуск сезона
+async def pass_payload(conn, user_id: int, lang: str) -> dict:
+    from shared import season_pass as sp
+    from shared.prizes import rewards_label
+    now = utcnow()
+    season = sp.active_season(now)
+    st = await sp.state(conn, user_id, season)
+    sale = sp.sale_season(now)
+    sale_st = st if sale == season else await sp.state(conn, user_id, sale)
+    end = sp.season_end(season)
+    levels = [{"level": n, "free": sp.rewards(season, "free", n), "paid": sp.rewards(season, "paid", n),
+               "free_label": rewards_label(sp.rewards(season, "free", n)), "paid_label": rewards_label(sp.rewards(season, "paid", n))}
+              for n in range(1, sp.PASS_LEVELS + 1)]
+    return {"ok": True, **st, "levels": levels, "per_level": sp.PASS_XP_PER_LEVEL, "max": sp.PASS_LEVELS,
+            "ends_at": end.isoformat(), "xp_table": sp.PASS_XP, "stars": sp.PASS_STARS,
+            "theme": sp.PASS_THEMES[int(season[5:7])][0 if lang == "ru" else 1],
+            "sale": {"season": sale, "sku": sp.pass_sku(sale), "owned": sale_st["premium"]},
+            "skins": sp.pass_skin_ids(season)}
+
+
+async def handle_pass(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    async with db.pool.acquire() as conn:
+        return web.json_response(await pass_payload(conn, ctx.user_id, ctx.lang))
+
+
+async def handle_pass_claim(request: web.Request) -> web.Response:
+    ctx = await _ctx(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    from shared import season_pass as sp
+    from shared.prizes import rewards_label
+    try:
+        async with db.pool.acquire() as conn:
+            async with conn.transaction():
+                got = await sp.claim(conn, ctx.user_id, sp.active_season(utcnow()), utcnow())
+            out = await pass_payload(conn, ctx.user_id, ctx.lang)
+    except sp.PassError as e:
+        return fail(t(ctx.lang, e.key))
+    out["got"] = rewards_label(got)
+    return web.json_response(out)
+
+
+async def handle_gear_history(request: web.Request) -> web.Response:
+    ctx = await _guard(request)
+    if isinstance(ctx, web.Response):
+        return ctx
+    from shared.trophies import gear_history
+    async with db.pool.acquire() as conn:
+        return web.json_response({"ok": True, "history": await gear_history(conn, ctx.user_id)})
+
+
 def register_gear_routes(app: web.Application) -> None:
     app.router.add_get("/api/gear", handle_gear)
     app.router.add_post("/api/gear/gender", handle_gender)
@@ -178,3 +324,10 @@ def register_gear_routes(app: web.Application) -> None:
     app.router.add_post("/api/gear/art", handle_art)
     app.router.add_get("/api/gifts", handle_gifts)
     app.router.add_post("/api/gifts/claim", handle_gift_claim)
+    app.router.add_get("/api/skins", handle_skins)
+    app.router.add_post("/api/skins/equip", handle_skin_equip)
+    app.router.add_post("/api/skins/unequip", handle_skin_unequip)
+    app.router.add_post("/api/skins/absorb", handle_skin_absorb)
+    app.router.add_get("/api/pass", handle_pass)
+    app.router.add_post("/api/pass/claim", handle_pass_claim)
+    app.router.add_get("/api/gear/history", handle_gear_history)

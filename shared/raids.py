@@ -307,6 +307,9 @@ async def execute_raid(conn, attacker_id: int, defender_id: int, move: str, now:
         """INSERT INTO raids (attacker_id, defender_id, attack_move, stance, result, loot, is_revenge, created_at)
            VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8) RETURNING id""",
         attacker_id, defender_id, move, stance, result, json.dumps(loot), is_revenge, now)
+    from shared.trophies import record   # 🏆 налёт — атакующему, оборона — цели
+    await record(conn, attacker_id, "raid_win" if result == "win" else "raid")
+    await record(conn, defender_id, "raid_def")
     if is_revenge:
         await conn.execute("UPDATE raids SET revenged = TRUE WHERE id = $1", revenge_of)
     else:

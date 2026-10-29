@@ -176,6 +176,8 @@ async def claim_chest(conn, user_id: int, goals: list[Goal], day: date) -> dict:
     coins = chest_coins(streak)
     kind = chest_resource_kind(user_id, day)
     await change_balance(conn, user_id, coins, "daily_chest", day.isoformat())
+    from shared.trophies import record
+    await record(conn, user_id, "chest")
     await change_resource(conn, user_id, kind, DAILY_CHEST_RESOURCE, "daily_chest", day.isoformat(),
                           cap=await resource_capacity(conn, user_id))
     # Особый бонус сундука (27.10): древесина / камень / электричество по дню; 7-й день серии — корова

@@ -120,6 +120,7 @@
     if (r.kind === "bdrone") return DRONE_NAME[r.drone] + (r.qty > 1 ? " ×" + r.qty : "");
     if (r.kind === "gear") return "🧥 Детали костюмов ×" + r.qty;
     if (r.kind === "artifact") return "💠 Артефакт ×" + r.qty;
+    if (r.kind === "skin") { const sk = (meta.skins || []).find(x => x.id === r.skin); return "✨ " + (sk ? sk.name : r.skin); }
     return "🎁 " + r.text;
   }
 
@@ -139,7 +140,7 @@
         list.map((r, i) => '<div class="rw"><span>' + esc(rewardLabel(r)) + '</span><button class="mini" data-del="' + i + '">✕</button></div>').join("") +
         '<div class="grid2" style="margin-top:8px"><select class="rk">' +
         [["coins", "🪙 Монеты"], ["resource", "📦 Ресурс"], ["cutlets", "🥩 Котлеты"], ["item", "🧪 Изделие на склад"],
-         ["robot", "🤖 Робот на срок"], ["boost", "⚡ Буст / Безлимит / Щит"], ["bdrone", "🤖 Боевой дрон (навсегда)"], ["gear", "🧥 Детали костюмов (случайные)"], ["artifact", "💠 Артефакт (случайный)"], ["text", "🎁 Ручной приз (текст)"]]
+         ["robot", "🤖 Робот на срок"], ["boost", "⚡ Буст / Безлимит / Щит"], ["bdrone", "🤖 Боевой дрон (навсегда)"], ["gear", "🧥 Детали костюмов (случайные)"], ["artifact", "💠 Артефакт (случайный)"], ["skin", "✨ Скин (экземпляр с номером)"], ["text", "🎁 Ручной приз (текст)"]]
           .map(([k, t]) => '<option value="' + k + '"' + (k === kind ? " selected" : "") + '>' + t + '</option>').join("") +
         '</select><div class="rp"></div></div><button class="mini" style="margin-top:8px" data-add="1">➕ Добавить и выбрать ещё</button>';
       params();
@@ -170,6 +171,8 @@
         bdrone: '<select class="rs">' + opts(DRONE_NAME) + '</select><input class="rq" type="number" min="1" value="1" style="margin-top:6px">',
         gear: '<input class="rq" type="number" min="1" max="5" value="1" placeholder="деталей (1–5)"><div class="hint">Костюм и слот — случайные; за сезон игроку не больше 5 деталей (лишнее не выдаётся).</div>',
         artifact: '<input class="rq" type="number" min="1" max="1" value="1"><div class="hint">Вид — случайный; за сезон игроку не больше 1 бесплатного артефакта.</div>',
+        skin: '<select class="rs">' + (meta.skins || []).map(x => '<option value="' + x.id + '">' + esc(x.name + " · " + x.rarity + (x.edition ? " · тираж " + x.minted + "/" + x.edition : "")) + '</option>').join("") +
+              '</select><div class="hint">Мифический — только так (аукцион, подарок, приз). Кончился тираж — не выдаётся.</div>',
         text: '<input class="rt" placeholder="например: Telegram Premium на 3 месяца">',
       }[k];
     }
@@ -184,6 +187,7 @@
       if (k === "bdrone") return { kind: k, drone: q(".rs").value, qty: Math.max(1, Number(q(".rq").value) || 1) };
       if (k === "gear") return { kind: k, qty: Math.min(5, Math.max(1, Number(q(".rq").value) || 1)) };
       if (k === "artifact") return { kind: k, qty: 1 };
+      if (k === "skin") return { kind: k, skin: q(".rs").value };
       const t = q(".rt").value.trim(); return t ? { kind: "text", text: t } : null;
     }
     BUILDERS.push({ host, list, read });

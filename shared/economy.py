@@ -242,6 +242,8 @@ def market_min_price(asset: str) -> int:
         return GEAR_MIN_PRICE   # 🧥 деталь костюма (30.10)
     if asset.startswith("a_"):
         return ARTIFACT_MIN_PRICE   # 💠 артефакт (30.10)
+    if asset.startswith("s_"):
+        return 300                  # ✨ скин: точный пол — по редкости экземпляра (shared/skins.SKIN_MIN_PRICE)
     return MARKET_MIN_PRICES.get(asset, MARKET_MIN_PRICE)
 
 
@@ -776,6 +778,8 @@ def market_limits(shuttle: bool, asset: str = "cutlet") -> tuple[int, int]:
         qty = SHUTTLE_MARKET_MAX_QTY if shuttle else MARKET_MAX_QTY
     elif asset.startswith("g_") or asset.startswith("a_"):
         qty = GEAR_MARKET_MAX_QTY
+    elif asset.startswith("s_"):
+        qty = 1                     # ✨ скин — единственный экземпляр
     else:
         qty = SHUTTLE_RESOURCE_MAX_QTY if shuttle else MARKET_RESOURCE_MAX_QTY
     return qty, (SHUTTLE_MARKET_MAX_OPEN_ORDERS if shuttle else MARKET_MAX_OPEN_ORDERS)

@@ -195,6 +195,8 @@ async def craft(conn, user_id: int, recipe_id: str, now: datetime, to_storage: b
             raise WorkshopError("ws.err_coins", need=coins, have=user["balance"]) from e
 
     result = CraftResult(recipe_id=recipe_id, effect=effect, cost=cost, stock=stock)
+    from shared.trophies import record
+    await record(conn, user_id, "craft")   # 🏆 «сколько изделий собрано в этом костюме»
     if recipe.get("week_limit"):
         await conn.execute("INSERT INTO weekly_crafts (user_id, recipe_id, created_at) VALUES ($1, $2, $3)",
                            user_id, f"ws:{recipe_id}", now)

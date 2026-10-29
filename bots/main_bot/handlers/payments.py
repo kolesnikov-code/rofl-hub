@@ -51,6 +51,15 @@ async def _precheck_deliverable(conn, user_id: int, order: dict) -> str | None:
             return "Мега-Клан можно купить только капитану уже созданной команды. Сначала /create_team."
         if team["max_members"] >= order["max_members"]:
             return "Твоя команда уже имеет статус Мега-Клана."
+    if order["type"] == "season_pass":   # 🎟 уже куплен — денег не берём
+        if await conn.fetchval("SELECT premium FROM season_pass WHERE user_id = $1 AND season = $2",
+                               user_id, order["season"]):
+            return "Пропуск этого сезона у тебя уже есть."
+    if order["type"] == "skin":   # ✨ тираж кончился — денег не берём
+        from shared.skins import SKINS, minted
+        edition = SKINS[order["skin"]].get("edition")
+        if edition and await minted(conn, order["skin"]) >= edition:
+            return "Тираж этого скина закончился."
     if order["type"] == "intern_upgrade":
         has_intern = await conn.fetchval(
             "SELECT 1 FROM miners WHERE user_id = $1 AND kind = 'intern' LIMIT 1", user_id)

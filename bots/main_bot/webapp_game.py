@@ -1006,7 +1006,7 @@ async def handle_market(request: web.Request) -> web.Response:
                   "bids": stats["bids"], "best_bid": stats["best_bid"]},
         "asks": [slim(o) for o in asks], "bids": [slim(o) for o in bids],
         "my": [{"id": o["id"], "qty": o["qty"], "price": o["price"], "asset": o["asset"], "side": o["side"],
-                "team": o["team"]} for o in mine],
+                "team": o["team"]} for o in mine if o["asset"] in MARKET_ASSETS],   # детали и скины — в «Персонаже»
         "scope": "team" if team_scope else "public",
         "team": ({"name": html.unescape(team["team_name"]), "fee": team_market_fee_percent(team["max_members"]),
                   "is_clan": team["max_members"] >= MEGA_CLAN_MAX_MEMBERS} if team else None),
@@ -1223,6 +1223,8 @@ async def handle_team(request: web.Request) -> web.Response:
         feed = await recent_donations(conn, user["team_id"])
         # Состав виден только своим (как в чате) — @username или имя, 🧠 уровень, звание
         members = await team_members(conn, user["team_id"], team["captain_id"])
+        from shared.skins import looks
+        sk = await looks(conn, [m["user_id"] for m in members])
         now = utcnow()
         help_rows = await open_requests(conn, user["team_id"])
         given = await given_today(conn, ctx.user_id, now)
@@ -1236,7 +1238,8 @@ async def handle_team(request: web.Request) -> web.Response:
                  "roster": [{"name": ("@" + m["username"]) if m.get("username")
                              else ((m.get("display_name") or "").strip() or "#" + str(m["user_id"])[-4:]),
                              "level": m["quiz_level"], "rank": rank_label(ctx.lang, m["created_at"], now),
-                             "captain": m["user_id"] == team["captain_id"], "me": m["user_id"] == ctx.user_id}
+                             "captain": m["user_id"] == team["captain_id"], "me": m["user_id"] == ctx.user_id,
+                             "sk": sk.get(m["user_id"], {})}
                             for m in members]},
         "station": {
             "enabled": station_on, "level": level, "max": STATION_MAX_LEVEL,

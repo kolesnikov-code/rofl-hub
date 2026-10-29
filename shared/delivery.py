@@ -125,7 +125,31 @@ async def _deliver_intern_upgrade(conn, user_id: int, order: dict, now: datetime
     return t(lang, "dlv.intern_upgrade")
 
 
+async def _deliver_skin(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
+    """✨ Скин за ★: экземпляр с номером тиража. Тираж кончился после оплаты — DeliveryError → авто-возврат Stars."""
+    from shared.skins import SKINS, SkinError, grant
+    try:
+        got = await grant(conn, user_id, order["skin"], "stars", now)
+    except SkinError as e:
+        raise DeliveryError(t(lang, e.key)) from e
+    edition = SKINS[order["skin"]].get("edition")
+    title = order["title"] if lang == "ru" else order.get("title_en", order["title"])
+    return t(lang, "skin.delivered", name=title, serial=got["serial"], edition=edition or "∞")
+
+
+async def _deliver_season_pass(conn, user_id: int, order: dict, now: datetime, lang: str) -> str:
+    """🎟 Платная дорожка пропуска сезона: сразу открываются все уже пройденные уровни."""
+    from shared.season_pass import PassError, activate_premium
+    try:
+        await activate_premium(conn, user_id, order["season"])
+    except PassError as e:
+        raise DeliveryError(t(lang, e.key)) from e
+    return t(lang, "pass.delivered", season=f"{order['season'][5:7]}.{order['season'][:4]}")
+
+
 DELIVERY_HANDLERS: dict[str, Handler] = {
+    "skin": _deliver_skin,
+    "season_pass": _deliver_season_pass,
     "intern_upgrade": _deliver_intern_upgrade,
     "cutlets": _deliver_cutlets,
     "miner": _deliver_miner,

@@ -258,6 +258,8 @@ async def _move(conn, user_id: int, quest: dict, prog, target_key: str, new_flag
                                "quest_reward", qid, cap=await resource_capacity(conn, user_id))
             await conn.execute("UPDATE quest_progress SET completed_at = NOW() WHERE user_id = $1 AND quest_id = $2",
                                user_id, qid)
+            from shared.trophies import record
+            await record(conn, user_id, "quest")   # 🏆 раскрытое дело
             outcome = "win_first"
         else:
             outcome = "win_repeat"

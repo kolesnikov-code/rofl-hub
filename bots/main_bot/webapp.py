@@ -234,6 +234,8 @@ async def handle_me(request: web.Request) -> web.Response:
                 "SELECT alias FROM vip_aliases WHERE user_id = $1 ORDER BY created_at", user_id)]
             resources = await get_resources(conn, user_id, ALL_KINDS)
             badges = await user_badges(conn, user_id)
+            from shared.skins import looks
+            my_looks = (await looks(conn, [user_id])).get(user_id, {})   # ✨ свои скины — рамка и титул в паспорте
             station_level = 0
             if user["team_id"] is not None:
                 station_level = await conn.fetchval(
@@ -245,6 +247,9 @@ async def handle_me(request: web.Request) -> web.Response:
     from shared.feature_flags import all_feature_flags
     payload["features"] = await all_feature_flags()
     payload["badges"] = badges   # 🏅 значки сезонов: [{season, place}]
+    from shared.skins import public_catalog
+    payload["sk"] = my_looks
+    payload["skin_catalog"] = public_catalog(resolve_lang(user["lang"]))
     from bots.main_bot.config import ADMIN_IDS
     payload["is_owner"] = user["user_id"] in ADMIN_IDS   # владельцу — галерея атмосфер квестов
     payload["days_in_game"] = max(0, (now - user["created_at"]).days)
@@ -402,13 +407,15 @@ async def handle_top(request: web.Request) -> web.Response:
             me_place = await season_place(conn, viewer_id, now)
             teams = await season_teams(conn, now)
             start, end = season_bounds(now)
+            from shared.skins import looks
+            sk = await looks(conn, [r["user_id"] for r in rows])
             return web.json_response({
                 "mode": "season", "season": season_key(now), "ends_at": end.isoformat(),
                 "me": me_place,
                 "top": [{"name": (f"@{r['username']}" if r["username"] else (r["display_name"] or f"ID {r['user_id']}")),
                          "earned": int(r["earned"]), "quiz_level": r["quiz_level"],
                          "rank": rank_label(viewer_lang, r["created_at"], now),
-                         "me": r["user_id"] == viewer_id} for r in rows],
+                         "me": r["user_id"] == viewer_id, "sk": sk.get(r["user_id"], {})} for r in rows],
                 "teams": [{"name": html.unescape(x["name"]), "points": x["points"]} for x in teams],
             })
         rows = await conn.fetch(
@@ -422,12 +429,15 @@ async def handle_top(request: web.Request) -> web.Response:
             ORDER BY u.balance DESC, u.user_id ASC
             LIMIT 100
             """)
+        from shared.skins import looks
+        sk = await looks(conn, [r["user_id"] for r in rows])
     top = [{
         "name": (f"@{r['username']}" if r["username"] else (r["display_name"] or f"ID {r['user_id']}")),
         "balance": r["balance"],
         "quiz_level": r["quiz_level"],
         "vip": r["vip"],
         "rank": rank_label(viewer_lang, r["created_at"], now),
+        "sk": sk.get(r["user_id"], {}), "me": r["user_id"] == viewer_id,
     } for r in rows]
     return web.json_response({"top": top})
 

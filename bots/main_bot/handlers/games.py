@@ -156,6 +156,8 @@ async def _payout_in_tx(user_id: int, is_win: bool, game_type: str, is_draw: boo
                 new_balance = await change_balance(conn, user_id, reward, f"game_win:{game_type}")
                 status = t(lang, "games.win", reward=reward)
                 info.update(reward=reward, wins=wins_today + 1)
+                from shared.trophies import record
+                await record(conn, user_id, "game_win")   # 🏆 история скинов и деталей + опыт пропуска сезона
                 # Ресурс игры за победу (волна 22.10): КНБ → металл, Б/М → водород,
                 # викторина → кристаллы, сейф → детали
                 gain = game_resource_gain(game_type)

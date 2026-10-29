@@ -73,6 +73,8 @@ async def upgrade_tools(conn, user_id: int, now: datetime) -> int:
         raise TechError("tech.err_max")
     await _spend(conn, user_id, TOOL_COSTS[level + 1], f"tools:{level + 1}")
     await _set_level(conn, user_id, "tools", level + 1, now)
+    from shared.trophies import record
+    await record(conn, user_id, "tech")
     return level + 1
 
 
@@ -96,6 +98,8 @@ async def upgrade_tech(conn, user_id: int, tech: str, now: datetime) -> int:
         raise TechError("tech.err_cooldown", hours=max(1, -(-int((ready - now).total_seconds()) // 3600)))
     await _spend(conn, user_id, tech_cost(tech, level + 1), f"tech:{tech}:{level + 1}")
     await _set_level(conn, user_id, tech, level + 1, now)
+    from shared.trophies import record
+    await record(conn, user_id, "tech")   # 🏆 открытие в Лаборатории
     return level + 1
 
 

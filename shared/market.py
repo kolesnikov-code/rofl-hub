@@ -57,6 +57,11 @@ logger = logging.getLogger(__name__)
 SIDES = ("sell", "buy")
 
 
+def skin_item(asset: str) -> int | None:
+    from shared.skins import parse_skin_asset
+    return parse_skin_asset(asset)
+
+
 def bag_item(asset: str) -> tuple[str, str] | None:
     """Товар из сумки персонажа: деталь костюма 1 ур. (костюм, слот) или артефакт (a<вид>, 'art')."""
     gear = parse_gear_asset(asset)
@@ -82,7 +87,7 @@ class MarketError(Exception):
 # Проверки
 # ============================================================================
 def validate_order(qty: int, price: int, shuttle: bool = False, asset: str = "cutlet") -> None:
-    if asset not in MARKET_ASSETS and bag_item(asset) is None:
+    if asset not in MARKET_ASSETS and bag_item(asset) is None and skin_item(asset) is None:
         raise MarketError("mk.err_asset")
     max_qty, _ = market_limits(shuttle, asset)
     if qty <= 0 or qty > max_qty:
@@ -125,6 +130,13 @@ async def _lock_users(conn, ids: list[int]) -> dict:
 
 async def _take_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref: str) -> None:
     """Списывает товар у игрока (в эскроу ордера или продавцу-тейкеру). MarketError при нехватке."""
+    if skin_item(asset) is not None:   # ✨ экземпляр скина — в эскроу биржи (владелец 0)
+        from shared.skins import SkinError, to_escrow
+        try:
+            await to_escrow(conn, user_id, skin_item(asset))
+        except SkinError as e:
+            raise MarketError("mk.err_no_resource", have=0) from e
+        return
     gear = bag_item(asset)
     if gear is not None:   # 🧥 деталь костюма 1-го уровня или 💠 артефакт из сумки персонажа (30.10)
         from shared.gear import GearError, change_gear, have
@@ -149,7 +161,7 @@ async def _take_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref
 
 async def _ensure_room(conn, user_id: int, asset: str, qty: int, key: str = "mk.err_storage_full") -> None:
     """Ресурс купят/получат только если он влезет на склад (котлеты и детали костюмов склад не ограничивает)."""
-    if asset == "cutlet" or bag_item(asset) is not None:
+    if asset == "cutlet" or bag_item(asset) is not None or skin_item(asset) is not None:
         return
     room = await free_space(conn, user_id, asset)
     if room < qty:
@@ -158,7 +170,11 @@ async def _ensure_room(conn, user_id: int, asset: str, qty: int, key: str = "mk.
 
 async def _newbie_price_guard(conn, buyer_id: int, asset: str, price: int) -> None:
     """Новый аккаунт платит не дороже N× минимальной цены (аудит 2.3: перелив монет фейк → основной)."""
-    cap = market_min_price(asset) * MARKET_NEWBIE_PRICE_MULT
+    floor = market_min_price(asset)
+    if (inst := skin_item(asset)) is not None:   # ✨ скин: от пола его редкости
+        from shared.skins import SKIN_MIN_PRICE, instance_rarity
+        floor = SKIN_MIN_PRICE.get(await instance_rarity(conn, inst), floor)
+    cap = floor * MARKET_NEWBIE_PRICE_MULT
     if price <= cap:
         return
     from shared.economy import TRANSFER_SENDER_MIN_BONUS_CLAIMS, TRANSFER_SENDER_MIN_QUIZ_LEVEL
@@ -170,7 +186,10 @@ async def _newbie_price_guard(conn, buyer_id: int, asset: str, price: int) -> No
 
 async def _give_asset(conn, user_id: int, asset: str, qty: int, reason: str, ref: str) -> None:
     gear = bag_item(asset)
-    if gear is not None:
+    if skin_item(asset) is not None:
+        from shared.skins import from_escrow
+        await from_escrow(conn, user_id, skin_item(asset))
+    elif gear is not None:
         from shared.gear import change_gear
         await change_gear(conn, user_id, gear[0], gear[1], 1, qty, reason, ref)
     elif asset == "cutlet":
@@ -196,6 +215,14 @@ async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price
         raise MarketError("common.no_profile")
     team_id = await _team_scope(conn, user_id, team_only)
     validate_order(qty, price, shuttle=bool(user["has_shuttle"]), asset=asset)
+    if skin_item(asset) is not None:   # ✨ скин: только продажа своего экземпляра, пол цены — по редкости
+        from shared.skins import SKIN_MIN_PRICE, SKINS
+        owner = await conn.fetchrow("SELECT user_id, skin_id FROM user_skins WHERE id = $1", skin_item(asset))
+        if side != "sell" or owner is None or owner["user_id"] != user_id:
+            raise MarketError("mk.err_asset")
+        floor = SKIN_MIN_PRICE[SKINS[owner["skin_id"]]["rarity"]]
+        if price < floor:
+            raise MarketError("mk.err_price", min=floor, max=MARKET_MAX_PRICE)
     # Лоты везут лошади и телеги (27.10); заряженный Шаттл — свой большой лимит
     max_orders = market_lots(user["horses"], user["carts"], bool(user["has_shuttle"]))
     open_orders = await conn.fetchval(
@@ -204,7 +231,9 @@ async def place_order(conn, user_id: int, asset: str, side: str, qty: int, price
         raise MarketError("mk.err_too_many", max=max_orders)
     # Проверяем запас ДО создания ордера: отказ не оставляет следов даже вне транзакции
     if side == "sell":
-        if bag_item(asset) is not None:
+        if skin_item(asset) is not None:
+            have = 1
+        elif bag_item(asset) is not None:
             from shared.gear import have as gear_have
             have = await gear_have(conn, user_id, *bag_item(asset))
         else:

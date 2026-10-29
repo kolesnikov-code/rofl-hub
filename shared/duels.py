@@ -236,6 +236,10 @@ async def _resolve_round(conn, duel) -> MoveResult:
     premium = await has_premium(conn, winner_id)
     payout, burned = duel_payout(duel["stake"], premium)
     await change_balance(conn, winner_id, payout, "duel_win", str(duel["duel_id"]))
+    from shared.trophies import record   # 🏆 «пережил дуэль» — оба, победа — победителю
+    await record(conn, winner_id, "duel")
+    await record(conn, winner_id, "duel_win")
+    await record(conn, loser_id, "duel")
     await conn.execute(
         "UPDATE duels SET status = 'finished', winner_id = $2, finished_at = NOW() WHERE duel_id = $1",
         duel["duel_id"], winner_id)

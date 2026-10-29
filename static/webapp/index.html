@@ -409,6 +409,119 @@
   .ps-sell input { width: 100%; margin: 4px 0 6px; padding: 9px; border-radius: 10px; border: 1px solid rgba(0,255,225,.3);
     background: #0d1326; color: var(--text); font-size: 15px; }
   @media (max-width: 560px) { .ps-figure { grid-template-columns: 1fr; } .ps-mid { grid-row: 1; } .ps-avatar { width: 46%; } }
+  /* ✨ Скины (30.10): рамка имени, титул, аватар в рамке, превью, Гараж */
+  .sk-plate { font-weight: 700; }
+  .sk-plate.framed { display: inline-block; padding: 1px 8px; border-radius: 999px; border: 1.5px solid transparent;
+    background: linear-gradient(#0d1326, #0d1326) padding-box, linear-gradient(90deg, var(--k1), var(--k2), var(--k1)) border-box;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--k1) 45%, transparent); }
+  .sk-plate.framed.hot { box-shadow: 0 0 14px var(--k1), 0 0 4px var(--k2) inset; }
+  .sk-title { display: inline-block; font-size: 10px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase;
+    background: linear-gradient(90deg, var(--k1), var(--k2), var(--k1)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sk-title.big { font-size: 15px; }
+  .sk-lv { color: #ffd23f; font-size: 9px; margin-left: 3px; -webkit-text-fill-color: #ffd23f; }
+  .fx-aurora.framed, .fx-shimmer.framed { background-size: 100% 100%, 300% 100%; animation: skShift2 5s linear infinite; }
+  .sk-title.fx-aurora, .sk-title.fx-shimmer { background-size: 300% 100%; animation: skShift 5s linear infinite; }
+  .fx-pulse.framed, .ps-ava-wrap.fx-pulse { animation: skPulse 2.4s ease-in-out infinite; }
+  .fx-flame.framed, .ps-ava-wrap.fx-flame { animation: skFlame 1.3s ease-in-out infinite alternate; }
+  @keyframes skShift { to { background-position: 300% 0; } }
+  @keyframes skShift2 { to { background-position: 0 0, 300% 0; } }
+  @keyframes skPulse { 50% { box-shadow: 0 0 18px var(--k1); } }
+  @keyframes skFlame { to { box-shadow: 0 0 22px var(--k2), 0 0 8px var(--k1) inset; } }
+  .ps-ava-wrap { width: 100%; display: flex; justify-content: center; border-radius: 22px; padding: 4px; }
+  .ps-ava-wrap.framed { border: 2px solid var(--k1); box-shadow: 0 0 16px color-mix(in srgb, var(--k1) 55%, transparent); }
+  .gr-name { text-align: center; margin: 6px 0 2px; font-size: 14px; }
+  .gr-name.pass { text-align: left; margin: 0 0 6px; }
+  .ps-grid.skinned { background: linear-gradient(135deg, var(--k1), var(--k2)); }
+  .ps-grid.skinned.fx-aurora { background-size: 300% 300%; animation: skShift 9s linear infinite; }
+  .gr-show { text-align: center; }
+  .gr-show .ps-ava-wrap { width: 52%; margin: 0 auto; }
+  .gr-skin { display: flex; gap: 10px; align-items: center; padding: 8px; margin-bottom: 8px; border-radius: 14px;
+    border: 1px solid var(--rc); background: linear-gradient(135deg, color-mix(in srgb, var(--rc) 14%, #0d1326), #0d1326); }
+  .gr-skin.on { box-shadow: 0 0 14px color-mix(in srgb, var(--rc) 55%, transparent); }
+  .gr-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+  .gr-info small { color: var(--muted); font-size: 11px; }
+  .gr-info .mini { align-self: flex-start; }
+  .sk-prev { width: 64px; height: 84px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 10px;
+    background: rgba(4,8,20,.7); overflow: hidden; }
+  .sk-prev .ps-avatar { width: 46px; }
+  .sk-prev .sk-plate { font-size: 9px; }
+  .sk-prev .sk-title.big { font-size: 10px; text-align: center; }
+  .sk-mk { font-size: 30px; filter: drop-shadow(0 0 8px var(--k1)); }
+  .sk-bag { display: grid; grid-template-columns: repeat(4, 10px); gap: 2px; padding: 4px; border-radius: 6px; background: linear-gradient(135deg, var(--k1), var(--k2)); }
+  .sk-bag i { width: 10px; height: 10px; border-radius: 2px; background: rgba(255,255,255,.12); }
+  .sk-chip { display: inline-block; margin: 2px 4px 2px 0; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    border: 1px solid var(--rc); color: var(--rc); }
+  .sk-chip.miss { opacity: .35; border-style: dashed; }
+  .gr-set { padding: 6px 0; }
+  .wsq .wmk { font-size: 4.2px; text-anchor: middle; }
+  /* ✨ Ступени прокачки скинов (30.10): заводской → закалённый → боевой → ветеран → прославленный → бессмертный */
+  .sk-plate.framed.st-tempered { box-shadow: 0 0 12px var(--k1); }
+  .sk-plate.framed.st-combat { border-width: 2px; box-shadow: 0 0 12px var(--k1); animation: stGlow 1.8s ease-in-out infinite alternate; }
+  .sk-plate.framed.st-veteran { border-width: 2px; background-size: 100% 100%, 300% 100%; text-shadow: 0 0 6px var(--k1);
+    animation: skShift2 2.5s linear infinite, stGlow 1.4s ease-in-out infinite alternate; }
+  .sk-plate.framed.st-legend { border-width: 2px; outline: 1px solid #ffd23f; outline-offset: 2px; background-size: 100% 100%, 300% 100%;
+    text-shadow: 0 0 8px #ffd23f; animation: skShift2 1.8s linear infinite, stGlow 1.1s ease-in-out infinite alternate; }
+  .sk-plate.framed.st-immortal { border-width: 2px; outline: 1px solid #fff; outline-offset: 2px; background-size: 100% 100%, 300% 100%;
+    text-shadow: 0 0 10px #fff; animation: skShift2 1.3s linear infinite, stHue 6s linear infinite, stGlow .9s ease-in-out infinite alternate; }
+  .sk-title.st-combat, .sk-title.st-veteran { filter: drop-shadow(0 0 4px var(--k1)); }
+  .sk-title.st-legend { filter: drop-shadow(0 0 6px #ffd23f); }
+  .sk-title.st-immortal { filter: drop-shadow(0 0 7px #fff); animation: skShift 1.6s linear infinite, stHue 6s linear infinite; background-size: 300% 100%; }
+  .ps-ava-wrap.st-tempered, .sk-prev.st-tempered { box-shadow: 0 0 18px color-mix(in srgb, var(--k1) 60%, transparent); }
+  .ps-ava-wrap.st-combat, .ps-ava-wrap.st-veteran, .ps-ava-wrap.st-legend, .ps-ava-wrap.st-immortal,
+  .sk-prev.st-combat, .sk-prev.st-veteran, .sk-prev.st-legend, .sk-prev.st-immortal { position: relative; overflow: hidden; isolation: isolate; }
+  .ps-ava-wrap.st-combat::before, .ps-ava-wrap.st-veteran::before, .ps-ava-wrap.st-legend::before, .ps-ava-wrap.st-immortal::before,
+  .sk-prev.st-combat::before, .sk-prev.st-veteran::before, .sk-prev.st-legend::before, .sk-prev.st-immortal::before {
+    content: ""; position: absolute; inset: -60%; z-index: -2; animation: stSpin 4s linear infinite;
+    background: conic-gradient(from 0deg, transparent 0 55%, var(--k1) 72%, var(--k2) 88%, transparent 100%); }
+  .ps-ava-wrap.st-combat::after, .ps-ava-wrap.st-veteran::after, .ps-ava-wrap.st-legend::after, .ps-ava-wrap.st-immortal::after,
+  .sk-prev.st-combat::after, .sk-prev.st-veteran::after, .sk-prev.st-legend::after, .sk-prev.st-immortal::after {
+    content: ""; position: absolute; inset: 3px; z-index: -1; border-radius: inherit; background: #0b1022; }
+  .ps-ava-wrap.st-veteran::before, .sk-prev.st-veteran::before { animation-duration: 3.2s; }
+  .ps-ava-wrap.st-legend::before, .sk-prev.st-legend::before { animation-duration: 2.6s;
+    background: conic-gradient(from 0deg, var(--k1), #ffd23f, var(--k2), #ffd23f, var(--k1)); }
+  .ps-ava-wrap.st-immortal::before, .sk-prev.st-immortal::before { animation-duration: 2s;
+    background: conic-gradient(from 0deg, #ff3d6e, #ffd23f, #2bffb1, #3fa9ff, #b77bff, #ff3d6e); }
+  .ps-ava-wrap.st-legend, .sk-prev.st-legend { box-shadow: 0 0 26px color-mix(in srgb, #ffd23f 55%, transparent); }
+  .ps-ava-wrap.st-immortal, .sk-prev.st-immortal { animation: stFire 1.1s ease-in-out infinite alternate; }
+  .ps-ava-wrap > svg { position: relative; z-index: 2; }
+  .sk-prev > :not(i) { position: relative; z-index: 2; }
+  .st-sparks { position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit; opacity: .85; mix-blend-mode: screen;
+    background-image: radial-gradient(circle, #fff 0 1px, transparent 1.6px), radial-gradient(circle, var(--k1) 0 1.2px, transparent 2px),
+      radial-gradient(circle, var(--k2) 0 1px, transparent 1.8px);
+    background-size: 37px 53px, 59px 71px, 23px 41px; animation: stRise 3.5s linear infinite; }
+  .st-crown { position: absolute; top: 2px; left: 50%; z-index: 4; font-style: normal; font-size: 20px; line-height: 1;
+    transform: translateX(-50%); filter: drop-shadow(0 0 6px #ffd23f); animation: stFloat 2.4s ease-in-out infinite; }
+  .sk-prev .st-crown { font-size: 12px; }
+  .st-name { font-weight: 800; }
+  .st-c-tempered { color: #ff9f43; } .st-c-combat { color: #ff5f5f; } .st-c-veteran { color: #3fa9ff; }
+  .st-c-legend { color: #ffd23f; } .st-c-immortal { color: #fff; text-shadow: 0 0 6px #ff3d6e, 0 0 10px #3fa9ff; }
+  .gr-bar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; margin: 3px 0 1px; }
+  .gr-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--rc, #00ffe1), #ffd23f); }
+  .trs { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 11px; color: var(--muted); }
+  .trs .tr { white-space: nowrap; }
+  .tr-list { margin-top: 6px; font-size: 12px; }
+  .tr-list div { display: flex; justify-content: space-between; gap: 8px; }
+  @keyframes stSpin { to { transform: rotate(360deg); } }
+  @keyframes stGlow { from { box-shadow: 0 0 8px var(--k1); } to { box-shadow: 0 0 20px var(--k2), 0 0 6px var(--k1) inset; } }
+  @keyframes stHue { to { filter: hue-rotate(360deg); } }
+  @keyframes stRise { to { background-position: 0 -53px, 0 -142px, 0 -82px; } }
+  @keyframes stFloat { 50% { transform: translateX(-50%) translateY(-3px); } }
+  @keyframes stFire { from { box-shadow: 0 0 18px #ff8a00, 0 0 36px color-mix(in srgb, var(--k1) 50%, transparent); }
+    to { box-shadow: 0 0 30px #ffd23f, 0 0 60px color-mix(in srgb, var(--k2) 60%, transparent); } }
+  /* 🎉 Новая ступень — торжественный экран */
+  .st-up { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    background: radial-gradient(circle, rgba(10,14,34,.9), rgba(4,6,16,.97)); animation: stUpIn .35s ease-out; pointer-events: auto; }
+  .st-up::before { content: ""; position: absolute; width: 160vmax; height: 160vmax; z-index: -1; animation: stSpin 9s linear infinite;
+    background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--k1) 16%, transparent) 0 6deg, transparent 6deg 18deg); }
+  .st-up .st-ic { font-size: 74px; filter: drop-shadow(0 0 22px var(--k1)); animation: stPop .7s cubic-bezier(.2, 1.6, .4, 1); }
+  .st-up b { font-size: 28px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;
+    background: linear-gradient(90deg, var(--k1), #fff, var(--k2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .st-up small { color: #fff; opacity: .85; font-size: 14px; }
+  @keyframes stUpIn { from { opacity: 0; } }
+  @keyframes stPop { from { transform: scale(.2) rotate(-25deg); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .fx-aurora, .fx-shimmer, .fx-pulse, .fx-flame, .st-combat, .st-veteran, .st-legend, .st-immortal,
+    .st-combat::before, .st-veteran::before, .st-legend::before, .st-immortal::before, .st-sparks, .st-crown,
+    .st-up, .st-up::before, .st-up .st-ic { animation: none !important; } }
   .sub2 { color: var(--accent); font-weight: 800; font-size: 13px; margin: 12px 0 4px; letter-spacing: .5px; }
   .rules { padding-left: 18px; color: var(--text); font-size: 13px; line-height: 1.45; }
   .rules li { margin-bottom: 6px; }
@@ -636,7 +749,7 @@
 
   const I18N = {
     ru: {
-      tab_persona: "🧍 Персонаж", ps_title: "🧍 ПЕРСОНАЖ", ps_hint: "Надень полный костюм — 5 деталей одного костюма: бонус работает, пока костюм на тебе.", ps_m: "М", ps_f: "Ж", ps_slot_head: "Шлем", ps_slot_body: "Куртка", ps_slot_hands: "Перчатки", ps_slot_legs: "Штаны", ps_slot_feet: "Ботинки", ps_suit_el: "⚡ Электрик", ps_suit_mn: "⛏ Шахтёр", ps_suit_ml: "🪖 Военный", ps_suit_st: "🥷 Маскировка", ps_suit_sc: "🔬 Учёный", ps_suit_en: "🔧 Инженер", ps_suit_exo: "💠 Нано-экзо-броня", ps_eff_el: "электричество в играх — в {p}% побед", ps_eff_mn: "раз в сутки +{p}% к монетам, добытым фермой", ps_eff_ml: "+{p}% трофея в налётах и добычи в экспедициях, поход на {p}% быстрее", ps_eff_st: "{p}% шанс не попасть в разведку налётчиков", ps_eff_sc: "перерыв между уровнями технологий на {p}% короче", ps_eff_en: "ресурсы для рецептов мастерской на {p}% дешевле", ps_active: "Надет костюм: {s}, {n} уровень", ps_none: "Полный костюм не надет — бонусов пока нет.", ps_level: "{n} ур.", ps_empty: "пусто", ps_off: "Снять", ps_wear: "Надеть", ps_sell: "Продать", ps_bag: "🎒 СУМКА", ps_bagEmpty: "Сумка пуста. Детали костюмов выпадают в событиях: в экспедициях, битвах за рудники и сезонных раздачах.", ps_season: "Деталей в этом сезоне: {got} из {cap}", ps_suits: "📖 КОСТЮМЫ И БОНУСЫ", ps_lvl2: "на 2-м уровне", ps_upg_el: "Перемотать жилы медью, вшить заземление и вставить свежую батарейку — костюм начинает ловить искры.", ps_upg_mn: "Прошить швы стальной нитью и подбить налокотники камнем — костюм держит удар породы.", ps_upg_ml: "Наварить пластины, прокалить их в огне и закалить — броне не страшна засада.", ps_upg_st: "Пропитать ткань водородным гелем и нашить кору-хамелеон — костюм тает на фоне.", ps_upg_sc: "Вплести кристаллические сенсоры и подать ток — костюм сам подсказывает формулы.", ps_upg_en: "Перебрать крепления на точные детали и встроить батарейку — костюм бережёт каждую гайку.", ps_upgAsk: "Улучшить «{part}» до 2-го уровня? Уйдёт: {cost} и {c} 🪙.", ps_upgDone: "⬆️ Деталь улучшена до 2-го уровня!", ps_exoTitle: "💠 НАНО-ЭКЗО-БРОНЯ", ps_exoText: "Сплав всех шести костюмов 2-го уровня (30 деталей): все бонусы сразу. Сплавленные детали исчезают навсегда.", ps_exoHave: "Деталей 2-го уровня", ps_exoGo: "💠 Сплавить броню", ps_exoAsk: "Сплавить 30 деталей в нано-экзо-броню? Это навсегда.", ps_exoDone: "💠 Нано-экзо-броня готова и надета!", ps_market: "🏷 РЫНОК ДЕТАЛЕЙ И АРТЕФАКТОВ", ps_marketHint: "Детали 1-го уровня — от {min} 🪙, артефакты — от {amin} 🪙. Комиссия {fee}% сгорает.", ps_marketEmpty: "Сейчас никто не продаёт детали.", ps_buy: "Купить за {p} 🪙", ps_bought: "🧥 Деталь в сумке!", ps_myLots: "Мои лоты", ps_cancel: "Снять", ps_sellTitle: "Продать", ps_price: "Цена за штуку, 🪙 (от {min})", ps_qty: "Сколько штук", ps_sellGo: "Выставить", ps_listed: "🏷 Лот выставлен на рынок деталей", raid_note_suit: "🪖 Костюм военного: трофей больше", ps_belt: "ПОЯС", ps_pickHint: "Нажми на ячейку сумки — увидишь, что это и что с ним можно сделать.", ps_artGives: "На поясе: {e}. Складывается с костюмом.", ps_partOf: "Полный костюм: {e}.", ps_upgrade: "Улучшить", ps_seasonArt: "артефактов: {got} из {cap}", ps_arts: "💠 АРТЕФАКТЫ", ps_artsText: "Камни для трёх окошек пояса. Каждый усиливает своё направление и работает вместе с костюмом. Бесплатно — один за сезон (подарки и походы), остальные — на рынке.", ps_art_el: "Искровик", ps_art_mn: "Рудный коралл", ps_art_ml: "Ядро гнева", ps_art_st: "Туманник", ps_art_sc: "Шар озарения", ps_art_en: "Шестерня мастера", gf_title: "🎁 ПОДАРКИ ОТ РАЗРАБОТЧИКА", gf_hint: "Подарки ждут здесь до срока — заглядывай почаще.", gf_default: "Подарок", gf_claim: "Забрать подарок", gf_done: "🎁 Подарок получен!", gf_gear: "🧥 деталь костюма ×{n}", gf_art: "💠 артефакт ×{n}", map_finishN: "⏱ Итоги раньше, если до цели доберутся {n} игроков — решает скорость", map_gear: "🧥 Каждому дошедшему — деталь костюма", map_art: "💠 каждому дошедшему — артефакт",
+      tab_persona: "🧍 Персонаж", ps_title: "🧍 ПЕРСОНАЖ", ps_hint: "Надень полный костюм — 5 деталей одного костюма: бонус работает, пока костюм на тебе.", ps_m: "М", ps_f: "Ж", ps_slot_head: "Шлем", ps_slot_body: "Куртка", ps_slot_hands: "Перчатки", ps_slot_legs: "Штаны", ps_slot_feet: "Ботинки", ps_suit_el: "⚡ Электрик", ps_suit_mn: "⛏ Шахтёр", ps_suit_ml: "🪖 Военный", ps_suit_st: "🥷 Маскировка", ps_suit_sc: "🔬 Учёный", ps_suit_en: "🔧 Инженер", ps_suit_exo: "💠 Нано-экзо-броня", ps_eff_el: "электричество в играх — в {p}% побед", ps_eff_mn: "раз в сутки +{p}% к монетам, добытым фермой", ps_eff_ml: "+{p}% трофея в налётах и добычи в экспедициях, поход на {p}% быстрее", ps_eff_st: "{p}% шанс не попасть в разведку налётчиков", ps_eff_sc: "перерыв между уровнями технологий на {p}% короче", ps_eff_en: "ресурсы для рецептов мастерской на {p}% дешевле", ps_active: "Надет костюм: {s}, {n} уровень", ps_none: "Полный костюм не надет — бонусов пока нет.", ps_level: "{n} ур.", ps_empty: "пусто", ps_off: "Снять", ps_wear: "Надеть", ps_sell: "Продать", ps_bag: "🎒 СУМКА", ps_bagEmpty: "Сумка пуста. Детали костюмов выпадают в событиях: в экспедициях, битвах за рудники и сезонных раздачах.", ps_season: "Деталей в этом сезоне: {got} из {cap}", ps_suits: "📖 КОСТЮМЫ И БОНУСЫ", ps_lvl2: "на 2-м уровне", ps_upg_el: "Перемотать жилы медью, вшить заземление и вставить свежую батарейку — костюм начинает ловить искры.", ps_upg_mn: "Прошить швы стальной нитью и подбить налокотники камнем — костюм держит удар породы.", ps_upg_ml: "Наварить пластины, прокалить их в огне и закалить — броне не страшна засада.", ps_upg_st: "Пропитать ткань водородным гелем и нашить кору-хамелеон — костюм тает на фоне.", ps_upg_sc: "Вплести кристаллические сенсоры и подать ток — костюм сам подсказывает формулы.", ps_upg_en: "Перебрать крепления на точные детали и встроить батарейку — костюм бережёт каждую гайку.", ps_upgAsk: "Улучшить «{part}» до 2-го уровня? Уйдёт: {cost} и {c} 🪙.", ps_upgDone: "⬆️ Деталь улучшена до 2-го уровня!", ps_exoTitle: "💠 НАНО-ЭКЗО-БРОНЯ", ps_exoText: "Сплав всех шести костюмов 2-го уровня (30 деталей): все бонусы сразу. Сплавленные детали исчезают навсегда.", ps_exoHave: "Деталей 2-го уровня", ps_exoGo: "💠 Сплавить броню", ps_exoAsk: "Сплавить 30 деталей в нано-экзо-броню? Это навсегда.", ps_exoDone: "💠 Нано-экзо-броня готова и надета!", ps_market: "🏷 РЫНОК ДЕТАЛЕЙ И АРТЕФАКТОВ", ps_marketHint: "Детали 1-го уровня — от {min} 🪙, артефакты — от {amin} 🪙. Комиссия {fee}% сгорает.", ps_marketEmpty: "Сейчас никто не продаёт детали.", ps_buy: "Купить за {p} 🪙", ps_bought: "🧥 Деталь в сумке!", ps_myLots: "Мои лоты", ps_cancel: "Снять", ps_sellTitle: "Продать", ps_price: "Цена за штуку, 🪙 (от {min})", ps_qty: "Сколько штук", ps_sellGo: "Выставить", ps_listed: "🏷 Лот выставлен на рынок деталей", raid_note_suit: "🪖 Костюм военного: трофей больше", ps_belt: "ПОЯС", ps_pickHint: "Нажми на ячейку сумки — увидишь, что это и что с ним можно сделать.", ps_artGives: "На поясе: {e}. Складывается с костюмом.", ps_partOf: "Полный костюм: {e}.", ps_upgrade: "Улучшить", ps_seasonArt: "артефактов: {got} из {cap}", ps_arts: "💠 АРТЕФАКТЫ", ps_artsText: "Камни для трёх окошек пояса. Каждый усиливает своё направление и работает вместе с костюмом. Бесплатно — один за сезон (подарки и походы), остальные — на рынке.", ps_art_el: "Искровик", ps_art_mn: "Рудный коралл", ps_art_ml: "Ядро гнева", ps_art_st: "Туманник", ps_art_sc: "Шар озарения", ps_art_en: "Шестерня мастера", gf_title: "🎁 ПОДАРКИ ОТ РАЗРАБОТЧИКА", gf_hint: "Подарки ждут здесь до срока — заглядывай почаще.", gf_default: "Подарок", gf_claim: "Забрать подарок", gf_done: "🎁 Подарок получен!", gf_gear: "🧥 деталь костюма ×{n}", gf_art: "💠 артефакт ×{n}", map_finishN: "⏱ Итоги раньше, если до цели доберутся {n} игроков — решает скорость", map_gear: "🧥 Каждому дошедшему — деталь костюма", map_art: "💠 каждому дошедшему — артефакт", gr_tabChar: "🧍 Персонаж", gr_tabGarage: "🏆 Гараж", gr_title: "🏆 ГАРАЖ", gr_showHint: "Так тебя видят другие: рамка и титул — в ТОПе и в команде, костюм — на аватаре, маркер — на карте походов.", gr_brag: "📸 Похвастаться", gr_bragText: "Зацени мой образ в ROFL HUB — сможешь круче?", gr_mine: "✨ МОИ СКИНЫ", gr_mineEmpty: "Скинов пока нет. Они продаются ниже, выпадают в событиях и переходят из рук в руки на рынке.", gr_serial: "№{n} из {of}", gr_serialInf: "№{n}", gr_hist: "История: {h}", gr_temper: "Закалить", gr_t_suit: "костюм", gr_t_frame: "рамка", gr_t_title: "титул", gr_t_marker: "маркер на карте", gr_t_bag: "сумка", gr_r_common: "Обычный", gr_r_rare: "Редкий", gr_r_epic: "Эпический", gr_r_legendary: "Легендарный", gr_r_mythic: "Мифический", gr_shop: "🛍 СКИНЫ ЗА ★", gr_shopHint: "Скин не даёт силы — только вид и статус. Сезонные — тиражом с номером и только до конца сезона: потом не купить никогда.", gr_left: "Осталось {n} из {of}", gr_noLimit: "Без тиража", gr_until: "В продаже до {d}", gr_buy: "Купить · {p} ★", gr_paid: "✨ Оплачено! Скин появится в Гараже через пару секунд.", gr_sets: "🧩 КОЛЛЕКЦИИ", gr_set_aurora: "🌌 Северное сияние", gr_setReward: "Весь набор — награда: {r} (купить нельзя)", gr_market: "🏷 РЫНОК СКИНОВ", gr_marketHint: "Экземпляры с номером и историей. Чем выше закалка и меньше номер, тем дороже. Комиссия сгорает.", gr_marketEmpty: "Сейчас никто не продаёт скины.", gr_bought: "✨ Скин твой — смотри в «Мои скины».", gr_glory: "🏛 ЗАЛ СЛАВЫ", gr_gWins: "побед в играх", gr_gQuiz: "уровень интеллекта", gr_gDuels: "побед в дуэлях", gr_gCargo: "лучший груз похода", gr_gDays: "дней в игре", gr_gExo: "💠 Собрана нано-экзо-броня", gr_temperTitle: "Закалка", gr_temperHint: "Скин поглощает другой твой скин — тот исчезает навсегда, а часть его опыта и слияний переходит. Чем выше ступень, тем больше нужно и боевого опыта, и слияний: одной игрой или одним слиянием не дойти.", gr_feed: "Поглотить", gr_noFood: "Нужен ещё один твой скин (не надетый).", gr_feedAsk: "Скин исчезнет навсегда и станет опытом закалки. Продолжить?", gr_fed: "🔥 Закалка! Уровень скина: {n}", gr_tabPass: "🎟 Пропуск", gr_stages: "🪜 СТУПЕНИ ПРОКАЧКИ", gr_st_factory: "Заводской", gr_st_tempered: "Закалённый", gr_st_combat: "Боевой", gr_st_veteran: "Ветеран", gr_st_legend: "Прославленный", gr_st_immortal: "Бессмертный", gr_lvl: "Ур. {n} · {s}", gr_from: "с {n} ур.", gr_next: "До {n} ур.: {w}", gr_nXp: "ещё {xp} опыта", gr_nM: "слияний: {m}", gr_max: "♾️ Высшая ступень — дальше только слава", gr_xpHint: "Боевой опыт идёт, пока скин надет: победа в игре +1, налёт +2…3, победа в дуэли +3, поход +5, квест +5, открытие в лаборатории +10. Высокие ступени требуют ещё и слияний.", gr_feedTo: "→ {n} ур. · {s}", gr_feedSame: "уровень тот же, опыт копится", gr_stUp: "Новая ступень! Скин теперь {n} уровня", gr_toShop: "🛍 В магазин скинов", gr_toGarage: "🏎 Мой гараж", tr_game_win: "Побед в играх", tr_duel: "Дуэлей", tr_duel_win: "Побед в дуэлях", tr_raid: "Налётов", tr_raid_win: "Удачных налётов", tr_raid_def: "Налётов выдержано", tr_expedition: "Походов", tr_craft: "Изделий", tr_tech: "Открытий", tr_quest: "Квестов", tr_chest: "Сундуков", ps_noHist: "Деталь ещё ничего не пережила — надень её, и она запомнит каждую победу.", shopSkins: "✨ СКИНЫ", pass_title: "🎟 ПРОПУСК СЕЗОНА", pass_ends: "До конца сезона: {n} дн.", pass_level: "Уровень {n} из {max}", pass_xp: "Опыт уровня: {x} / {need}", pass_maxed: "Все уровни пройдены 🏁", pass_how: "Опыт пропуска идёт за всё: победы, дуэли, налёты, походы, изделия, открытия, квесты и сундук.", pass_claim: "🎁 Забрать награды", pass_got: "Получено: {r}", pass_buy: "🎟 Премиум-пропуск — {p} ★", pass_buyNext: "🎟 Пропуск следующего сезона — {p} ★", pass_buyHint: "Открывает правую дорожку, в том числе уже пройденные уровни. Эксклюзивные скины сезона не продаются нигде — только здесь и только в этом месяце.", pass_owned: "✅ Премиум-пропуск активен", pass_skins: "✨ ЭКСКЛЮЗИВ СЕЗОНА", pass_skinsHint: "Эти скины есть только в премиум-пропуске: кончился месяц — больше не получить.", pass_atLvl: "на {n} уровне", pass_tracks: "🛤 НАГРАДЫ ПО УРОВНЯМ", pass_free: "Бесплатно", pass_paid: "Премиум", pass_shopHint: "больше монет, котлеты и 4 эксклюзивных скина сезона",
       tab_history: "📜 История", hist_title: "📜 ИСТОРИЯ ЗА {d} ДНЕЙ", hist_coins: "🪙 Монеты", hist_res: "📦 Ресурсы", hist_market: "📈 Биржа", hist_gifts: "🎁 Награды", hist_in: "Пришло", hist_out: "Ушло", hist_topIn: "Откуда пришли", hist_topOut: "Куда ушли", hist_empty: "За это время здесь пусто.", hist_bought: "Куплено", hist_sold: "Продано", hist_hint: "Хранится 30 дней: монеты, ресурсы, сделки на бирже, награды и подарки.",
       mk_floorAny: "Не дешевле {p} 🪙 за 1 {x} — и в продаже, и в заявке",
       mk_sellTitleAny: "💰 ПРОДАТЬ: {x}", mk_bidTitleAny: "🙋 КУПИТЬ: {x}", mk_qtyAny: "Количество, {x}", mk_limitsAny: "До {q} {x} в ордере, до {o} открытых ордеров", mk_boughtAny: "Куплено {q} {x} за {t} 🪙", mk_cancelledAny: "Ордер снят — товар или замороженные монеты вернулись",
@@ -865,7 +978,7 @@
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
-      tab_persona: "🧍 Character", ps_title: "🧍 CHARACTER", ps_hint: "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.", ps_m: "M", ps_f: "F", ps_slot_head: "Helmet", ps_slot_body: "Jacket", ps_slot_hands: "Gloves", ps_slot_legs: "Trousers", ps_slot_feet: "Boots", ps_suit_el: "⚡ Electrician", ps_suit_mn: "⛏ Miner", ps_suit_ml: "🪖 Soldier", ps_suit_st: "🥷 Stealth", ps_suit_sc: "🔬 Scientist", ps_suit_en: "🔧 Engineer", ps_suit_exo: "💠 Nano exo-armour", ps_eff_el: "electricity drops in {p}% of game wins", ps_eff_mn: "once a day +{p}% of the coins your farm mined", ps_eff_ml: "+{p}% raid loot and expedition haul, trips {p}% faster", ps_eff_st: "{p}% chance to stay off raiders' scouting lists", ps_eff_sc: "{p}% shorter wait between technology levels", ps_eff_en: "workshop recipes need {p}% fewer resources", ps_active: "Suit on: {s}, level {n}", ps_none: "No full suit on — no bonuses yet.", ps_level: "lvl {n}", ps_empty: "empty", ps_off: "Take off", ps_wear: "Wear", ps_sell: "Sell", ps_bag: "🎒 BAG", ps_bagEmpty: "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.", ps_season: "Parts this season: {got} of {cap}", ps_suits: "📖 SUITS AND BONUSES", ps_lvl2: "at level 2", ps_upg_el: "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.", ps_upg_mn: "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.", ps_upg_ml: "Weld on plates, fire and temper them — this armour shrugs off an ambush.", ps_upg_st: "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.", ps_upg_sc: "Weave in crystal sensors and run a current — the suit whispers formulas.", ps_upg_en: "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.", ps_upgAsk: "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.", ps_upgDone: "⬆️ Part upgraded to level 2!", ps_exoTitle: "💠 NANO EXO-ARMOUR", ps_exoText: "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.", ps_exoHave: "Level-2 parts", ps_exoGo: "💠 Fuse the armour", ps_exoAsk: "Fuse 30 parts into nano exo-armour? This is permanent.", ps_exoDone: "💠 Nano exo-armour is ready and on!", ps_market: "🏷 PARTS & ARTIFACTS MARKET", ps_marketHint: "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.", ps_marketEmpty: "Nobody is selling parts right now.", ps_buy: "Buy for {p} 🪙", ps_bought: "🧥 The part is in your bag!", ps_myLots: "My lots", ps_cancel: "Withdraw", ps_sellTitle: "Sell", ps_price: "Price per item, 🪙 (from {min})", ps_qty: "How many", ps_sellGo: "List it", ps_listed: "🏷 Listed on the parts market", raid_note_suit: "🪖 Soldier suit: bigger loot", ps_belt: "BELT", ps_pickHint: "Tap a bag cell to see what it is and what you can do with it.", ps_artGives: "On the belt: {e}. Stacks with your suit.", ps_partOf: "Full suit: {e}.", ps_upgrade: "Upgrade", ps_seasonArt: "artifacts: {got} of {cap}", ps_arts: "💠 ARTIFACTS", ps_artsText: "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.", ps_art_el: "Sparkstone", ps_art_mn: "Ore coral", ps_art_ml: "Wrath core", ps_art_st: "Mistling", ps_art_sc: "Insight orb", ps_art_en: "Master gear", gf_title: "🎁 GIFTS FROM THE DEVELOPER", gf_hint: "Gifts wait here until they expire — check in often.", gf_default: "Gift", gf_claim: "Claim gift", gf_done: "🎁 Gift received!", gf_gear: "🧥 suit part ×{n}", gf_art: "💠 artifact ×{n}", map_finishN: "⏱ Results come early once {n} players reach the target — speed decides", map_gear: "🧥 Every player who arrives gets a suit part", map_art: "💠 every player who arrives gets an artifact",
+      tab_persona: "🧍 Character", ps_title: "🧍 CHARACTER", ps_hint: "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.", ps_m: "M", ps_f: "F", ps_slot_head: "Helmet", ps_slot_body: "Jacket", ps_slot_hands: "Gloves", ps_slot_legs: "Trousers", ps_slot_feet: "Boots", ps_suit_el: "⚡ Electrician", ps_suit_mn: "⛏ Miner", ps_suit_ml: "🪖 Soldier", ps_suit_st: "🥷 Stealth", ps_suit_sc: "🔬 Scientist", ps_suit_en: "🔧 Engineer", ps_suit_exo: "💠 Nano exo-armour", ps_eff_el: "electricity drops in {p}% of game wins", ps_eff_mn: "once a day +{p}% of the coins your farm mined", ps_eff_ml: "+{p}% raid loot and expedition haul, trips {p}% faster", ps_eff_st: "{p}% chance to stay off raiders' scouting lists", ps_eff_sc: "{p}% shorter wait between technology levels", ps_eff_en: "workshop recipes need {p}% fewer resources", ps_active: "Suit on: {s}, level {n}", ps_none: "No full suit on — no bonuses yet.", ps_level: "lvl {n}", ps_empty: "empty", ps_off: "Take off", ps_wear: "Wear", ps_sell: "Sell", ps_bag: "🎒 BAG", ps_bagEmpty: "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.", ps_season: "Parts this season: {got} of {cap}", ps_suits: "📖 SUITS AND BONUSES", ps_lvl2: "at level 2", ps_upg_el: "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.", ps_upg_mn: "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.", ps_upg_ml: "Weld on plates, fire and temper them — this armour shrugs off an ambush.", ps_upg_st: "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.", ps_upg_sc: "Weave in crystal sensors and run a current — the suit whispers formulas.", ps_upg_en: "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.", ps_upgAsk: "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.", ps_upgDone: "⬆️ Part upgraded to level 2!", ps_exoTitle: "💠 NANO EXO-ARMOUR", ps_exoText: "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.", ps_exoHave: "Level-2 parts", ps_exoGo: "💠 Fuse the armour", ps_exoAsk: "Fuse 30 parts into nano exo-armour? This is permanent.", ps_exoDone: "💠 Nano exo-armour is ready and on!", ps_market: "🏷 PARTS & ARTIFACTS MARKET", ps_marketHint: "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.", ps_marketEmpty: "Nobody is selling parts right now.", ps_buy: "Buy for {p} 🪙", ps_bought: "🧥 The part is in your bag!", ps_myLots: "My lots", ps_cancel: "Withdraw", ps_sellTitle: "Sell", ps_price: "Price per item, 🪙 (from {min})", ps_qty: "How many", ps_sellGo: "List it", ps_listed: "🏷 Listed on the parts market", raid_note_suit: "🪖 Soldier suit: bigger loot", ps_belt: "BELT", ps_pickHint: "Tap a bag cell to see what it is and what you can do with it.", ps_artGives: "On the belt: {e}. Stacks with your suit.", ps_partOf: "Full suit: {e}.", ps_upgrade: "Upgrade", ps_seasonArt: "artifacts: {got} of {cap}", ps_arts: "💠 ARTIFACTS", ps_artsText: "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.", ps_art_el: "Sparkstone", ps_art_mn: "Ore coral", ps_art_ml: "Wrath core", ps_art_st: "Mistling", ps_art_sc: "Insight orb", ps_art_en: "Master gear", gf_title: "🎁 GIFTS FROM THE DEVELOPER", gf_hint: "Gifts wait here until they expire — check in often.", gf_default: "Gift", gf_claim: "Claim gift", gf_done: "🎁 Gift received!", gf_gear: "🧥 suit part ×{n}", gf_art: "💠 artifact ×{n}", map_finishN: "⏱ Results come early once {n} players reach the target — speed decides", map_gear: "🧥 Every player who arrives gets a suit part", map_art: "💠 every player who arrives gets an artifact", gr_tabChar: "🧍 Character", gr_tabGarage: "🏆 Garage", gr_title: "🏆 GARAGE", gr_showHint: "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.", gr_brag: "📸 Show off", gr_bragText: "Check out my look in ROFL HUB — can you top it?", gr_mine: "✨ MY SKINS", gr_mineEmpty: "No skins yet. They're sold below, drop in events and change hands on the market.", gr_serial: "#{n} of {of}", gr_serialInf: "#{n}", gr_hist: "History: {h}", gr_temper: "Temper", gr_t_suit: "suit", gr_t_frame: "frame", gr_t_title: "title", gr_t_marker: "map marker", gr_t_bag: "bag", gr_r_common: "Common", gr_r_rare: "Rare", gr_r_epic: "Epic", gr_r_legendary: "Legendary", gr_r_mythic: "Mythic", gr_shop: "🛍 SKINS FOR ★", gr_shopHint: "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.", gr_left: "{n} of {of} left", gr_noLimit: "No edition limit", gr_until: "On sale until {d}", gr_buy: "Buy · {p} ★", gr_paid: "✨ Paid! The skin will appear in the Garage in a couple of seconds.", gr_sets: "🧩 COLLECTIONS", gr_set_aurora: "🌌 Northern Lights", gr_setReward: "Full set reward: {r} (can't be bought)", gr_market: "🏷 SKIN MARKET", gr_marketHint: "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.", gr_marketEmpty: "Nobody is selling skins right now.", gr_bought: "✨ The skin is yours — see My skins.", gr_glory: "🏛 HALL OF FAME", gr_gWins: "game wins", gr_gQuiz: "intellect level", gr_gDuels: "duel wins", gr_gCargo: "best expedition cargo", gr_gDays: "days in the game", gr_gExo: "💠 Nano exo-armour assembled", gr_temperTitle: "Tempering", gr_temperHint: "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.", gr_feed: "Absorb", gr_noFood: "You need another skin of yours (not worn).", gr_feedAsk: "This skin will vanish for good and become tempering XP. Continue?", gr_fed: "🔥 Tempered! Skin level: {n}", gr_tabPass: "🎟 Pass", gr_stages: "🪜 UPGRADE STAGES", gr_st_factory: "Factory", gr_st_tempered: "Tempered", gr_st_combat: "Battle-worn", gr_st_veteran: "Veteran", gr_st_legend: "Famed", gr_st_immortal: "Immortal", gr_lvl: "Lv. {n} · {s}", gr_from: "from Lv. {n}", gr_next: "To Lv. {n}: {w}", gr_nXp: "{xp} more XP", gr_nM: "merges: {m}", gr_max: "♾️ Top stage — only glory beyond", gr_xpHint: "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.", gr_feedTo: "→ Lv. {n} · {s}", gr_feedSame: "same level, XP adds up", gr_stUp: "New stage! The skin is now level {n}", gr_toShop: "🛍 To the skin shop", gr_toGarage: "🏎 My garage", tr_game_win: "Game wins", tr_duel: "Duels", tr_duel_win: "Duel wins", tr_raid: "Raids", tr_raid_win: "Successful raids", tr_raid_def: "Raids endured", tr_expedition: "Expeditions", tr_craft: "Items crafted", tr_tech: "Discoveries", tr_quest: "Quests", tr_chest: "Chests", ps_noHist: "This part hasn't lived through anything yet — wear it and it will remember every win.", shopSkins: "✨ SKINS", pass_title: "🎟 SEASON PASS", pass_ends: "Season ends in {n} d", pass_level: "Level {n} of {max}", pass_xp: "Level XP: {x} / {need}", pass_maxed: "All levels done 🏁", pass_how: "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.", pass_claim: "🎁 Claim rewards", pass_got: "Received: {r}", pass_buy: "🎟 Premium pass — {p} ★", pass_buyNext: "🎟 Next season's pass — {p} ★", pass_buyHint: "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.", pass_owned: "✅ Premium pass active", pass_skins: "✨ SEASON EXCLUSIVES", pass_skinsHint: "These skins exist only in the premium pass: once the month ends, they're gone for good.", pass_atLvl: "at level {n}", pass_tracks: "🛤 REWARDS BY LEVEL", pass_free: "Free", pass_paid: "Premium", pass_shopHint: "more coins, cutlets and 4 exclusive season skins",
       tab_history: "📜 History", hist_title: "📜 HISTORY FOR {d} DAYS", hist_coins: "🪙 Coins", hist_res: "📦 Resources", hist_market: "📈 Market", hist_gifts: "🎁 Rewards", hist_in: "In", hist_out: "Out", hist_topIn: "Where they came from", hist_topOut: "Where they went", hist_empty: "Nothing here for this period.", hist_bought: "Bought", hist_sold: "Sold", hist_hint: "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
       mk_floorAny: "At least {p} 🪙 per 1 {x} — for sales and buy orders",
       mk_sellTitleAny: "💰 SELL: {x}", mk_bidTitleAny: "🙋 BUY: {x}", mk_qtyAny: "Amount, {x}", mk_limitsAny: "Up to {q} {x} per order, up to {o} open orders", mk_boughtAny: "Bought {q} {x} for {t} 🪙", mk_cancelledAny: "Order cancelled — your goods or frozen coins are back",
@@ -1097,6 +1210,107 @@
   // I18N_EXTRA_START — 12 языков, автогенерация scripts/gen_miniapp_i18n.py, не редактировать руками
   const I18N_EXTRA = {
   "ar": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -1996,6 +2210,107 @@
     "loading": "⏳ جارٍ التحميل…"
   },
   "bn": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -2895,6 +3210,107 @@
     "loading": "⏳ লোড হচ্ছে…"
   },
   "de": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -3794,6 +4210,107 @@
     "loading": "⏳ Lädt…"
   },
   "es": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -4693,6 +5210,107 @@
     "loading": "⏳ Cargando…"
   },
   "fr": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -5592,6 +6210,107 @@
     "st_cap": "📦 Stock : jusqu'à {c} de chaque ressource — le surplus de récolte est perdu"
   },
   "hi": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -6491,6 +7210,107 @@
     "loading": "⏳ लोड हो रहा है…"
   },
   "id": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -7390,6 +8210,107 @@
     "loading": "⏳ Memuat…"
   },
   "it": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -8289,6 +9210,107 @@
     "loading": "⏳ Caricamento…"
   },
   "pl": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -9188,6 +10210,107 @@
     "loading": "⏳ Ładowanie…"
   },
   "pt": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -10087,6 +11210,107 @@
     "loading": "⏳ Carregando…"
   },
   "uz": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -10986,6 +12210,107 @@
     "loading": "⏳ Yuklanmoqda…"
   },
   "zh": {
+    "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
+    "pass_paid": "Premium",
+    "pass_free": "Free",
+    "pass_tracks": "🛤 REWARDS BY LEVEL",
+    "pass_atLvl": "at level {n}",
+    "pass_skinsHint": "These skins exist only in the premium pass: once the month ends, they're gone for good.",
+    "pass_skins": "✨ SEASON EXCLUSIVES",
+    "pass_owned": "✅ Premium pass active",
+    "pass_buyHint": "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.",
+    "pass_buyNext": "🎟 Next season's pass — {p} ★",
+    "pass_buy": "🎟 Premium pass — {p} ★",
+    "pass_got": "Received: {r}",
+    "pass_claim": "🎁 Claim rewards",
+    "pass_how": "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.",
+    "pass_maxed": "All levels done 🏁",
+    "pass_xp": "Level XP: {x} / {need}",
+    "pass_level": "Level {n} of {max}",
+    "pass_ends": "Season ends in {n} d",
+    "pass_title": "🎟 SEASON PASS",
+    "shopSkins": "✨ SKINS",
+    "ps_noHist": "This part hasn't lived through anything yet — wear it and it will remember every win.",
+    "tr_chest": "Chests",
+    "tr_quest": "Quests",
+    "tr_tech": "Discoveries",
+    "tr_craft": "Items crafted",
+    "tr_expedition": "Expeditions",
+    "tr_raid_def": "Raids endured",
+    "tr_raid_win": "Successful raids",
+    "tr_raid": "Raids",
+    "tr_duel_win": "Duel wins",
+    "tr_duel": "Duels",
+    "tr_game_win": "Game wins",
+    "gr_toGarage": "🏎 My garage",
+    "gr_toShop": "🛍 To the skin shop",
+    "gr_stUp": "New stage! The skin is now level {n}",
+    "gr_feedSame": "same level, XP adds up",
+    "gr_feedTo": "→ Lv. {n} · {s}",
+    "gr_xpHint": "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.",
+    "gr_max": "♾️ Top stage — only glory beyond",
+    "gr_nM": "merges: {m}",
+    "gr_nXp": "{xp} more XP",
+    "gr_next": "To Lv. {n}: {w}",
+    "gr_from": "from Lv. {n}",
+    "gr_lvl": "Lv. {n} · {s}",
+    "gr_st_immortal": "Immortal",
+    "gr_st_legend": "Famed",
+    "gr_st_veteran": "Veteran",
+    "gr_st_combat": "Battle-worn",
+    "gr_st_tempered": "Tempered",
+    "gr_st_factory": "Factory",
+    "gr_stages": "🪜 UPGRADE STAGES",
+    "gr_tabPass": "🎟 Pass",
+    "gr_fed": "🔥 Tempered! Skin level: {n}",
+    "gr_feedAsk": "This skin will vanish for good and become tempering XP. Continue?",
+    "gr_noFood": "You need another skin of yours (not worn).",
+    "gr_feed": "Absorb",
+    "gr_temperHint": "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.",
+    "gr_temperTitle": "Tempering",
+    "gr_gExo": "💠 Nano exo-armour assembled",
+    "gr_gDays": "days in the game",
+    "gr_gCargo": "best expedition cargo",
+    "gr_gDuels": "duel wins",
+    "gr_gQuiz": "intellect level",
+    "gr_gWins": "game wins",
+    "gr_glory": "🏛 HALL OF FAME",
+    "gr_bought": "✨ The skin is yours — see My skins.",
+    "gr_marketEmpty": "Nobody is selling skins right now.",
+    "gr_marketHint": "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.",
+    "gr_market": "🏷 SKIN MARKET",
+    "gr_setReward": "Full set reward: {r} (can't be bought)",
+    "gr_set_aurora": "🌌 Northern Lights",
+    "gr_sets": "🧩 COLLECTIONS",
+    "gr_paid": "✨ Paid! The skin will appear in the Garage in a couple of seconds.",
+    "gr_buy": "Buy · {p} ★",
+    "gr_until": "On sale until {d}",
+    "gr_noLimit": "No edition limit",
+    "gr_left": "{n} of {of} left",
+    "gr_shopHint": "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.",
+    "gr_shop": "🛍 SKINS FOR ★",
+    "gr_r_mythic": "Mythic",
+    "gr_r_legendary": "Legendary",
+    "gr_r_epic": "Epic",
+    "gr_r_rare": "Rare",
+    "gr_r_common": "Common",
+    "gr_t_bag": "bag",
+    "gr_t_marker": "map marker",
+    "gr_t_title": "title",
+    "gr_t_frame": "frame",
+    "gr_t_suit": "suit",
+    "gr_temper": "Temper",
+    "gr_hist": "History: {h}",
+    "gr_serialInf": "#{n}",
+    "gr_serial": "#{n} of {of}",
+    "gr_mineEmpty": "No skins yet. They're sold below, drop in events and change hands on the market.",
+    "gr_mine": "✨ MY SKINS",
+    "gr_bragText": "Check out my look in ROFL HUB — can you top it?",
+    "gr_brag": "📸 Show off",
+    "gr_showHint": "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.",
+    "gr_title": "🏆 GARAGE",
+    "gr_tabGarage": "🏆 Garage",
+    "gr_tabChar": "🧍 Character",
     "map_art": "💠 every player who arrives gets an artifact",
     "map_gear": "🧥 Every player who arrives gets a suit part",
     "map_finishN": "⏱ Results come early once {n} players reach the target — speed decides",
@@ -12247,6 +13572,7 @@
       '<div class="res"><div class="ri">' + RES_ICON[k] + '</div><div class="rn">' + num(r[k]) + '</div>' +
       '<div class="rs">' + L["res_" + k + "_src"] + '</div></div>').join("");
     box.innerHTML = card(L.passport,
+      '<div class="gr-name pass">' + plate(me.display_name || "", me.sk) + '</div>' +
       '<div class="balance">' + num(me.balance) + ' <small>🪙</small></div>' +
       (vip ? '<div>' + vip + '</div>' : '') + (badges ? '<div class="hint">' + L.badges + '</div><div>' + badges + '</div>' : '') +
       (me.rank ? row(L.rank, esc(me.rank)) : '') +
@@ -13029,7 +14355,7 @@
       '<button class="btn ghost danger-text" id="tmLeave">' + L.tm_leave + '</button>';
     const roster = pager("tmroster", tm.roster.map(m =>
       '<div class="top-row' + (m.me ? ' me' : '') + '"><span class="brain">🧠' + m.level + '</span>' +
-      '<span class="nm">' + (m.captain ? '👑 ' : '') + esc(m.name) + (m.rank ? ' <span class="rank">' + esc(m.rank) + '</span>' : '') +
+      '<span class="nm">' + (m.captain ? '👑 ' : '') + plate(m.name, m.sk) + (m.rank ? ' <span class="rank">' + esc(m.rank) + '</span>' : '') +
       '</span></div>'), 10, "");
     let stHtml;
     if (!st.enabled) stHtml = '<div class="hint">' + L.st_off + '</div>';
@@ -13177,18 +14503,41 @@
   // каждый товар ЭТОЙ категории. Игровые первыми: Безлимит в приложении востребован больше всего.
   let shopCat = "games";
   async function viewShop(box) {
+    const sw = '<div class="doc-switch">' + [["games", L.shopGames], ["farm", L.shopFarm], ["skins", L.shopSkins]].map(c =>
+      '<button class="idx' + (shopCat === c[0] ? ' on' : '') + '" data-cat="' + c[0] + '">' + c[1] + '</button>').join("") + '</div>';
+    if (shopCat === "skins") return viewShopSkins(box, sw);
     const shop = await api("/api/shop");
     const btn = item => '<button class="shop-item" data-sku="' + esc(item.sku) + '">' + esc(item.label) + '</button>';
     const info = (shop.info || []).filter(i => !i.cat || i.cat === shopCat)
       .map(i => '<div class="info-item"><b>' + esc(i.title) + '</b><span>' + esc(i.text) + '</span></div>').join("");
-    box.innerHTML = '<div class="span-all"><div class="doc-switch">' +
-      [["games", L.shopGames], ["farm", L.shopFarm]].map(c => '<button class="idx' + (shopCat === c[0] ? ' on' : '') +
-        '" data-cat="' + c[0] + '">' + c[1] + '</button>').join("") + '</div>' +
+    box.innerHTML = '<div class="span-all">' + sw +
       card(shopCat === "farm" ? L.shopFarm : L.shopGames, '<div class="hint">' + L.shopHint + '</div>' + shop[shopCat].map(btn).join("")) +
       card(L.shop_info, info + '<button class="btn ghost" id="shopInfo">FAQ ↗</button>') + '</div>';
     box.querySelectorAll("[data-cat]").forEach(b => { b.onclick = () => { shopCat = b.dataset.cat; go("shop"); }; });
     box.querySelectorAll(".shop-item").forEach(b => { b.onclick = () => buy(b.dataset.sku, b); });
     document.getElementById("shopInfo").onclick = () => { docSection = "shop-items"; infoDoc = "faq"; go("info"); };
+  }
+  // ✨ Магазин скинов — отдельная категория: только вид и статус, никакой силы. Пропуск сезона — первым
+  async function viewShopSkins(box, sw) {
+    const [d, p] = await Promise.all([api("/api/skins"), api("/api/pass").catch(() => null)]);
+    Object.assign(me.skin_catalog = me.skin_catalog || {}, d.catalog);
+    const C = d.catalog, T = { suit: L.gr_t_suit, frame: L.gr_t_frame, title: L.gr_t_title, marker: L.gr_t_marker, bag: L.gr_t_bag };
+    const passCard = p ? card(L.pass_title, '<b>🎟 ' + esc(p.theme) + '</b><div class="hint">' + L.pass_shopHint + '</div>' + passStrip(p) +
+      (p.premium ? '<div class="hint status-ok">' + L.pass_owned + '</div>'
+        : '<button class="btn" data-skbuy="seasonpass_' + p.season.replace("-", "") + '">' + fmt(L.pass_buy, { p: p.stars }) + '</button>')) : '';
+    const items = d.shop.map(x => {
+      const s = C[x.id];
+      return '<div class="gr-skin" style="--rc:' + RAR_COLOR[s.rarity] + '">' + skinPreview(x.id, 1) +
+        '<div class="gr-info"><b>' + esc(s.name) + '</b><small>' + L["gr_r_" + s.rarity] + ' · ' + T[s.target] + '</small>' +
+        (x.edition ? '<small class="' + (x.left < x.edition * .2 ? 'status-bad' : '') + '">' + fmt(L.gr_left, { n: num(x.left), of: num(x.edition) }) + '</small>' : '<small>' + L.gr_noLimit + '</small>') +
+        (x.until ? '<small>' + fmt(L.gr_until, { d: new Date(x.until).toLocaleDateString(me.lang === "ru" ? "ru-RU" : "en-GB") }) + '</small>' : '') +
+        '<button class="mini" data-skbuy="' + x.sku + '"' + (x.left === 0 ? ' disabled' : '') + '>' + fmt(L.gr_buy, { p: x.stars }) + '</button></div></div>';
+    });
+    box.innerHTML = '<div class="span-all">' + sw + passCard + card(L.gr_shop, '<div class="hint">' + L.gr_shopHint + '</div>' + items.join("")) +
+      '<button class="btn ghost" id="shopGarage">' + L.gr_toGarage + '</button></div>';
+    box.querySelectorAll("[data-cat]").forEach(b => { b.onclick = () => { shopCat = b.dataset.cat; go("shop"); }; });
+    box.querySelectorAll("[data-skbuy]").forEach(b => { b.onclick = () => buySku(b, b.dataset.skbuy, () => go("shop")); });
+    document.getElementById("shopGarage").onclick = () => { psTab = "garage"; go("persona"); };
   }
   async function buy(sku, btn) {
     if (!tg || !tg.openInvoice) return notify(L.oldClient, false);
@@ -13239,7 +14588,7 @@
       const left = Math.max(0, (new Date(top.ends_at).getTime() - Date.now()) / 1000);
       const players = pager("stop", top.top.map((p, i) =>
         '<div class="top-row' + (p.me ? ' me' : '') + '"><span class="place">' + (["🥇", "🥈", "🥉"][i] || (i + 1) + ".") + '</span>' +
-        '<span class="nm">' + esc(p.name) + (p.rank ? ' <span class="rank">' + esc(p.rank) + '</span>' : '') + '</span>' +
+        '<span class="nm">' + plate(p.name, p.sk) + (p.rank ? ' <span class="rank">' + esc(p.rank) + '</span>' : '') + '</span>' +
         '<span class="brain">🧠' + p.quiz_level + '</span><span class="bal">' + num(p.earned) + '</span></div>'), 10, '<div class="hint">' + L.top_empty + '</div>');
       const teams = top.teams.length ? top.teams.map((x, i) => '<div class="lead-row"><b>' + (["🥇", "🥈", "🥉"][i] || (i + 1) + ".") + ' ' + esc(x.name) +
         '</b><span>' + x.points + '</span></div>').join("") : '<div class="hint">' + L.top_noTeams + '</div>';
@@ -13251,7 +14600,7 @@
     } else {
       box.innerHTML = sw + card(L.top, pager("top", top.top.map((p, i) =>
         '<div class="top-row"><span class="place">' + (["🥇", "🥈", "🥉"][i] || (i + 1) + ".") + '</span>' +
-        '<span class="nm">' + esc(p.name) + (p.vip ? ' <span class="vip">💎</span>' : '') +
+        '<span class="nm">' + plate(p.name, p.sk) + (p.vip ? ' <span class="vip">💎</span>' : '') +
         (p.rank ? ' <span class="rank">' + esc(p.rank) + '</span>' : '') + '</span>' +
         '<span class="brain">🧠' + p.quiz_level + '</span>' +
         '<span class="bal">' + num(p.balance) + '</span></div>'), 10, '<div class="hint">—</div>'));
@@ -13351,7 +14700,8 @@
       if (!T[s.target_id]) return;
       const label = s.mine ? L.map_you : (s.symbol || "") + (s.name ? " " + s.name.slice(0, 10) : "");
       g += '<g class="wsq ' + s.mode + (s.mine ? ' mine' : '') + (s.status === "gathering" ? ' wait' : '') + '" data-sq="' + s.id + '">' +
-        '<circle r="' + (s.mode === "solo" ? 1.3 : s.mode === "clan" ? 2.3 : 1.8) + '"/>' +
+        (skMarker(s.marker) ? '<text class="wmk" y="1.6">' + skMarker(s.marker) + '</text>' :
+          '<circle r="' + (s.mode === "solo" ? 1.3 : s.mode === "clan" ? 2.3 : 1.8) + '"/>') +
         (label.trim() ? '<text y="-2.6">' + esc(label.trim()) + '</text>' : '') + '</g>';
     });
     return g + '</svg>';
@@ -14315,32 +15665,76 @@
   const suitName = s => L["ps_suit_" + s] || s;
   const partName = (s, p) => SLOT_ICON[p] + " " + L["ps_slot_" + p] + " · " + suitName(s);
   const artName = k => ART_ICON[k] + " " + L["ps_art_" + k];
-  // Аватар: нейтральная фигура; М — атлет (шире плечи), Ж — стройнее (уже плечи, талия); надетое — цветом костюма
-  function avatarSvg(gender, worn) {
-    const D = { m: [24, 96, 38, 82, 36, 84], f: [32, 88, 44, 76, 34, 86], n: [28, 92, 40, 80, 36, 84] }[gender || "n"];
-    const [sL, sR, wL, wR, hL, hR] = D;
-    const col = slot => worn[slot] ? SUIT_COLOR[worn[slot].suit] : null;
-    const glow = slot => worn[slot] && worn[slot].level >= 2 ? ' filter="url(#psGlow)"' : '';
-    const fill = (slot, base) => col(slot) || base;
-    const skin = "#2b3560", line = 'stroke="rgba(0,255,225,.55)" stroke-width="1.4"';
-    const torso = 'M' + sL + ',62 L' + sR + ',62 L' + wR + ',112 L' + hR + ',128 L' + hL + ',128 L' + wL + ',112 Z';
-    return '<svg class="ps-avatar" viewBox="0 0 120 230" aria-hidden="true"><defs><filter id="psGlow"><feGaussianBlur stdDeviation="2.2" result="b"/>' +
-      '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' +
-      '<path d="M' + sL + ',64 L' + (sL - 10) + ',112 L' + (sL - 8) + ',140" fill="none" stroke="' + fill("body", skin) + '" stroke-width="' + (gender === "f" ? 9 : 12) + '" stroke-linecap="round"' + glow("body") + '/>' +
-      '<path d="M' + sR + ',64 L' + (sR + 10) + ',112 L' + (sR + 8) + ',140" fill="none" stroke="' + fill("body", skin) + '" stroke-width="' + (gender === "f" ? 9 : 12) + '" stroke-linecap="round"' + glow("body") + '/>' +
-      '<circle cx="' + (sL - 8) + '" cy="146" r="' + (col("hands") ? 8 : 6) + '" fill="' + fill("hands", skin) + '" ' + line + glow("hands") + '/>' +
-      '<circle cx="' + (sR + 8) + '" cy="146" r="' + (col("hands") ? 8 : 6) + '" fill="' + fill("hands", skin) + '" ' + line + glow("hands") + '/>' +
-      '<path d="M' + (hL + 2) + ',126 L' + (hL + 6) + ',204 L57,204 L59,132 Z" fill="' + fill("legs", skin) + '" ' + line + glow("legs") + '/>' +
-      '<path d="M' + (hR - 2) + ',126 L' + (hR - 6) + ',204 L63,204 L61,132 Z" fill="' + fill("legs", skin) + '" ' + line + glow("legs") + '/>' +
-      '<rect x="' + (hL + 2) + '" y="200" width="' + (57 - hL) + '" height="' + (col("feet") ? 14 : 8) + '" rx="4" fill="' + fill("feet", skin) + '" ' + line + glow("feet") + '/>' +
-      '<rect x="61" y="200" width="' + (hR - 63) + '" height="' + (col("feet") ? 14 : 8) + '" rx="4" fill="' + fill("feet", skin) + '" ' + line + glow("feet") + '/>' +
-      '<path d="' + torso + '" fill="' + fill("body", skin) + '" ' + line + glow("body") + '/>' +
-      (col("body") ? '<path d="M60,64 L60,124" stroke="rgba(0,0,0,.35)" stroke-width="2"/>' : '') +
-      '<rect x="54" y="44" width="12" height="20" rx="4" fill="' + skin + '"/>' +
-      '<ellipse cx="60" cy="30" rx="' + (gender === "f" ? 14 : 15) + '" ry="17" fill="' + skin + '" ' + line + '/>' +
-      (gender === "f" ? '<path d="M45,30 Q44,6 60,8 Q76,6 75,30 L77,52 L71,40 L71,24 Q60,16 49,24 L49,40 L43,52 Z" fill="#3a4478" opacity=".9"/>' : '') +
-      (col("head") ? '<path d="M42,32 Q42,8 60,8 Q78,8 78,32 L74,34 L74,28 L46,28 L46,34 Z" fill="' + col("head") + '" ' + line + glow("head") + '/>' +
-        '<rect x="47" y="27" width="26" height="7" rx="3" fill="rgba(0,255,225,.55)"/>' : '') +
+  // Аватар: человеческая фигура; надетое — цветом костюма, скин костюма — градиентом с эффектом
+  function avatarSvg(gender, worn, look, skLvl) {
+    // Фигура в пропорциях человека (владелец 30.10: «никаких шишек вместо кистей»): плечи, руки с локтем, ладони с
+    // пальцами и большим пальцем, талия и бёдра, колени, ботинки. М — атлет, Ж — стройнее, без выбора — нейтральная.
+    const G = { m: { sh: 27, ch: 22, wa: 16, hi: 18, arm: 9.5, fa: 7.5, hr: 10 },
+                f: { sh: 21.5, ch: 18, wa: 12.5, hi: 19.5, arm: 7, fa: 5.8, hr: 9.4 },
+                n: { sh: 24, ch: 20, wa: 14.5, hi: 18, arm: 8.2, fa: 6.6, hr: 9.8 } }[gender || "n"];
+    const X = 60, base = "#2b3560", line = 'stroke="rgba(0,255,225,.55)" stroke-width="1.1" stroke-linejoin="round"';
+    const col = slot => look ? "url(#psSk)" : (worn[slot] ? SUIT_COLOR[worn[slot].suit] : null);
+    const glow = slot => (look ? (skLvl || 1) >= 2 : worn[slot] && worn[slot].level >= 2) ? ' filter="url(#psGlow)"' : '';
+    const fill = slot => col(slot) || base;
+    const P = (d, slot, extra) => '<path d="' + d + '" fill="' + fill(slot) + '" ' + line + glow(slot) + (extra || '') + '/>';
+    const m = x => 2 * X - x;   // зеркало для правой стороны
+    const spin = look && look.fx !== "none" ? '<animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="360 .5 .5" dur="' +
+      (look.fx === "flame" ? 3 : 7) + 's" repeatCount="indefinite"/>' : '';
+    // рука: плечо → локоть → запястье (side = -1 левая, 1 правая)
+    const arm = side => {
+      const sx = X + side * (G.sh - 2), ex = X + side * (G.sh + 3), wx = X + side * (G.sh + 4.5);
+      return 'M' + (sx + side * G.arm * .55) + ',51 Q' + (ex + side * G.arm * .55) + ',70 ' + (ex + side * G.arm * .5) + ',92 ' +
+        'L' + (wx + side * G.fa * .5) + ',125 L' + (wx - side * G.fa * .5) + ',125 L' + (ex - side * G.arm * .5) + ',92 ' +
+        'Q' + (X + side * (G.ch - 1)) + ',76 ' + (X + side * (G.ch - 1.5)) + ',66 Z';
+    };
+    // ладонь с пальцами и большим пальцем (к телу)
+    const hand = side => {
+      const wx = X + side * (G.sh + 4.5), t = -side;
+      return 'M' + (wx - 3.4) + ',124 C' + (wx - 4.8) + ',130 ' + (wx - 4.4) + ',137 ' + (wx - 2.6) + ',141 ' +
+        'C' + (wx - 1.2) + ',143.2 ' + (wx + 1.6) + ',143.2 ' + (wx + 2.8) + ',141 C' + (wx + 4.2) + ',137 ' + (wx + 4) + ',130 ' + (wx + 3.4) + ',124 Z ' +
+        'M' + (wx + t * 3) + ',127 C' + (wx + t * 6.2) + ',129 ' + (wx + t * 6.6) + ',133 ' + (wx + t * 5) + ',135.2 C' + (wx + t * 4) + ',135.8 ' +
+        (wx + t * 3.2) + ',134 ' + (wx + t * 3) + ',132 Z';
+    };
+    const fingers = side => { const wx = X + side * (G.sh + 4.5);
+      return '<path d="M' + (wx - 1.3) + ',136.5 L' + (wx - 1.4) + ',141.5 M' + (wx + .2) + ',137 L' + (wx + .2) + ',142.6 M' + (wx + 1.7) + ',136.5 L' + (wx + 1.8) + ',141.5" ' +
+        'stroke="rgba(0,0,0,.35)" stroke-width=".7" fill="none"/>'; };
+    const leg = 'M' + (X - G.hi) + ',120 C' + (X - G.hi - 1) + ',145 ' + (X - 14) + ',162 ' + (X - 13) + ',172 L' + (X - 12) + ',208 L' + (X - 4) + ',208 ' +
+      'L' + (X - 4) + ',172 C' + (X - 3) + ',150 ' + (X - 1) + ',136 ' + (X - 1) + ',128 Z';
+    const legR = 'M' + m(X - G.hi) + ',120 C' + m(X - G.hi - 1) + ',145 ' + m(X - 14) + ',162 ' + m(X - 13) + ',172 L' + m(X - 12) + ',208 L' + m(X - 4) + ',208 ' +
+      'L' + m(X - 4) + ',172 C' + m(X - 3) + ',150 ' + m(X - 1) + ',136 ' + m(X - 1) + ',128 Z';
+    const boot = side => { const a = x => side < 0 ? x : m(x);
+      return 'M' + a(X - 13) + ',204 L' + a(X - 3.5) + ',204 L' + a(X - 3) + ',222 C' + a(X - 3) + ',226 ' + a(X - 5) + ',229 ' + a(X - 8) + ',229 ' +
+        'L' + a(X - 19) + ',229 C' + a(X - 21.5) + ',229 ' + a(X - 21.5) + ',225 ' + a(X - 18) + ',223.5 L' + a(X - 13.5) + ',221 Z'; };
+    const torso = 'M' + (X - G.sh + 3) + ',50 C' + (X - G.sh) + ',52 ' + (X - G.sh - 1) + ',60 ' + (X - G.ch) + ',74 L' + (X - G.wa) + ',104 L' + (X - G.hi) + ',122 ' +
+      'L' + (X + G.hi) + ',122 L' + (X + G.wa) + ',104 L' + (X + G.ch) + ',74 C' + (X + G.sh + 1) + ',60 ' + (X + G.sh) + ',52 ' + (X + G.sh - 3) + ',50 ' +
+      'Q' + X + ',45 ' + (X - G.sh + 3) + ',50 Z';
+    const hr = G.hr;
+    const hair = gender === "f"
+      ? '<path d="M' + (X - hr - 1.5) + ',22 Q' + X + ',4 ' + (X + hr + 1.5) + ',22 L' + (X + hr + 3) + ',46 Q' + X + ',50 ' + (X - hr - 3) + ',46 Z" fill="#3a4478"/>'
+      : '<path d="M' + (X - hr) + ',21 Q' + X + ',7 ' + (X + hr) + ',21 Q' + X + ',14 ' + (X - hr) + ',21 Z" fill="#3a4478"/>';
+    return '<svg class="ps-avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 236" aria-hidden="true"><defs><filter id="psGlow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="140" height="256"><feGaussianBlur stdDeviation="' +
+      (look ? 1.4 + (skLvl || 1) * .25 : 2) + '" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+      (look ? '<linearGradient id="psSk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + look.c1 + '"/><stop offset="1" stop-color="' + look.c2 + '"/>' + spin + '</linearGradient>' : '') +
+      '</defs>' +
+      (gender === "f" ? hair : '') +
+      P(leg, "legs") + P(legR, "legs") +
+      (col("legs") ? '<path d="M' + (X - 13.5) + ',168 h8 v6 h-8 Z M' + m(X - 5.5) + ',168 h8 v6 h-8 Z" fill="rgba(0,0,0,.28)"/>' : '<path d="M' + (X - 12) + ',172 q4,2 8,0 M' + m(X - 4) + ',172 q4,2 8,0" stroke="rgba(0,255,225,.25)" fill="none" stroke-width=".8"/>') +
+      P(boot(-1), "feet") + P(boot(1), "feet") +
+      P(arm(-1), "body") + P(arm(1), "body") +
+      P(torso, "body") +
+      (col("body") ? '<path d="M' + X + ',52 L' + X + ',120" stroke="rgba(0,0,0,.35)" stroke-width="1.6"/>' +
+        '<rect x="' + (X - G.wa - 1) + '" y="101" width="' + (2 * G.wa + 2) + '" height="5" rx="1.5" fill="rgba(0,0,0,.35)"/>' : '') +
+      (gender === "f" ? '<path d="M' + (X - 9) + ',72 q4.5,5 9,0 q4.5,5 9,0" stroke="rgba(0,255,225,.3)" fill="none" stroke-width=".8"/>' : '') +
+      P(hand(-1), "hands") + P(hand(1), "hands") + fingers(-1) + fingers(1) +
+      (col("hands") ? '<path d="M' + (X - G.sh - 4.5 - 4) + ',121 h8 v4 h-8 Z M' + m(X - G.sh - 4.5 + 4) + ',121 h8 v4 h-8 Z" fill="' + fill("hands") + '" ' + line + '/>' : '') +
+      '<path d="M' + (X - 4.2) + ',33 L' + (X - 4.6) + ',48 L' + (X + 4.6) + ',48 L' + (X + 4.2) + ',33 Z" fill="' + base + '"/>' +
+      '<path d="M' + (X - hr) + ',22 C' + (X - hr) + ',8 ' + (X + hr) + ',8 ' + (X + hr) + ',22 C' + (X + hr) + ',30 ' + (X + hr - 3) + ',36 ' + X + ',37.5 ' +
+        'C' + (X - hr + 3) + ',36 ' + (X - hr) + ',30 ' + (X - hr) + ',22 Z" fill="' + base + '" ' + line + '/>' +
+      '<circle cx="' + (X - 3.6) + '" cy="23" r=".9" fill="rgba(0,255,225,.75)"/><circle cx="' + (X + 3.6) + '" cy="23" r=".9" fill="rgba(0,255,225,.75)"/>' +
+      (gender !== "f" ? hair : '<path d="M' + (X - hr - .5) + ',20 Q' + X + ',6 ' + (X + hr + .5) + ',20 Q' + (X + 2) + ',13 ' + (X - hr - .5) + ',20 Z" fill="#3a4478"/>') +
+      (col("head") ? P('M' + (X - hr - 2) + ',25 C' + (X - hr - 2) + ',6 ' + (X + hr + 2) + ',6 ' + (X + hr + 2) + ',25 L' + (X + hr) + ',27 L' + (X + hr) + ',21 ' +
+          'L' + (X - hr) + ',21 L' + (X - hr) + ',27 Z', "head") +
+        '<rect x="' + (X - hr + 1) + '" y="19.5" width="' + (2 * hr - 2) + '" height="6" rx="2.5" fill="rgba(0,255,225,.5)"/>' : '') +
       '</svg>';
   }
   const effText = (line, pct) => fmt(L["ps_eff_" + line], { p: pct });
@@ -14357,7 +15751,8 @@
         '" data-pick="' + c.key + '"><span>' + c.icon + '</span>' + (c.lvl ? '<i class="lv">' + c.lvl + '</i>' : '') +
         (c.qty > 1 ? '<i class="qt">×' + c.qty + '</i>' : '') + '</button>' : '<span class="ps-cell empty"></span>';
     }
-    return '<div class="ps-grid">' + html + '</div>';
+    const bs = me.sk && me.sk.bag && SKC()[me.sk.bag.skin];
+    return '<div class="ps-grid' + (bs ? ' skinned fx-' + bs.look.fx : '') + '"' + (bs ? ' style="' + skVars(bs.look) + '"' : '') + '>' + html + '</div>';
   }
   // Панель выбранной ячейки: название, что даёт, действия
   function pickPanel(d) {
@@ -14377,12 +15772,17 @@
     const canUp = s !== d.exo_key && level < 2;
     return '<div class="ps-pick" style="--sc:' + SUIT_COLOR[s] + '"><b>' + partName(s, slot) + ' · ' + fmt(L.ps_level, { n: level }) + (b.qty > 1 ? ' ×' + b.qty : '') + '</b>' +
       (s !== d.exo_key ? '<div class="hint">' + fmt(L.ps_partOf, { e: effText(s, d.bonus[s][level]) }) + '</div>' : '') +
+      (trophyList((d.history || {})[s + ":" + slot + ":" + level]) || '<div class="hint">' + L.ps_noHist + '</div>') +
       '<div class="ps-sb"><button class="mini" data-wear="' + s + ':' + slot + ':' + level + '">' + L.ps_wear + '</button>' +
       (canUp ? '<button class="mini ghost" data-up="' + s + ':' + slot + '">⬆️ ' + L.ps_upgrade + '</button>' : '') +
       (canUp ? '<button class="mini ghost" data-sell="g:' + s + ':' + slot + '">' + L.ps_sell + '</button>' : '') + '</div></div>';
   }
   async function viewPersona(box) {
+    if (psTab === "garage") return viewGarage(box);
+    if (psTab === "pass") return viewPass(box);
     const d = psData = await api("/api/gear");
+    const msk = me.sk || {}, C = SKC();
+    const skSuit = msk.suit && C[msk.suit.skin], skFrame = msk.frame && C[msk.frame.skin], skBag = msk.bag && C[msk.bag.skin];
     const worn = d.worn || {}, cur = d.active || {};
     const genderChips = '<div class="ps-gender">' + ["m", "f"].map(g =>
       '<button class="chip' + (d.gender === g ? ' on' : '') + '" data-g="' + g + '">' + L["ps_" + g] + '</button>').join("") + '</div>';
@@ -14390,7 +15790,8 @@
       const w = worn[p];
       return '<div class="ps-slot' + (w ? ' on' : '') + '" style="' + (w ? '--sc:' + SUIT_COLOR[w.suit] : '') + '">' +
         '<span class="ps-si">' + SLOT_ICON[p] + '</span><span class="ps-sn"><b>' + L["ps_slot_" + p] + '</b><br><small>' +
-        (w ? suitName(w.suit) + ' · ' + fmt(L.ps_level, { n: w.level }) : L.ps_empty) + '</small></span>' +
+        (w ? suitName(w.suit) + ' · ' + fmt(L.ps_level, { n: w.level }) : L.ps_empty) + '</small>' +
+        (w && d.history ? '<small class="trs">' + trophies(d.history[w.suit + ":" + p + ":" + w.level]) + '</small>' : '') + '</span>' +
         (w ? '<span class="ps-sb">' + (w.suit !== d.exo_key && w.level < 2 ? '<button class="mini" data-up="' + w.suit + ':' + p + '">⬆️</button>' : '') +
           '<button class="mini ghost" data-off="' + p + '">' + L.ps_off + '</button></span>' : '') + '</div>';
     };
@@ -14404,7 +15805,9 @@
       (effects.length ? effects.map(([line, pct]) => '<div>• ' + effText(line, pct) + '</div>').join("") : '');
     const head = '<div class="ps-head"><div class="hint">' + L.ps_hint + '</div>' + genderChips + '</div>';
     const figure = '<div class="ps-figure"><div class="ps-col">' + ["head", "body", "hands"].map(slotHtml).join("") + '</div>' +
-      '<div class="ps-mid">' + avatarSvg(d.gender, worn) + belt + '</div>' +
+      '<div class="ps-mid">' + avaWrap(skFrame ? { look: skFrame.look, level: msk.frame.level } : null, skSuit ? { look: skSuit.look, level: msk.suit.level } : null,
+        avatarSvg(d.gender, worn, skSuit ? skSuit.look : null, msk.suit ? msk.suit.level : 1)) +
+      '<div class="gr-name">' + plate(me.display_name || "", msk) + '</div>' + belt + '</div>' +
       '<div class="ps-col">' + ["legs", "feet"].map(slotHtml).join("") + '</div></div>';
     const bag = '<div class="hint">' + fmt(L.ps_season, { got: d.season.got, cap: d.season.cap }) + ' · ' +
       fmt(L.ps_seasonArt, { got: d.season.arts, cap: d.season.arts_cap }) + '</div>' +
@@ -14438,7 +15841,7 @@
         '<label class="hint">' + L.ps_qty + '</label><input id="psQty" type="number" min="1" max="' + Math.min(mk.max_qty, own ? own.qty : 1) + '" value="1">' +
         '<div class="two"><button class="btn" id="psSellGo">' + L.ps_sellGo + '</button><button class="btn ghost" id="psSellX">✕</button></div></div>';
     }
-    box.innerHTML = card(L.ps_title, head + figure + '<div class="ps-active"' + (cur.suit ? ' style="--sc:' + SUIT_COLOR[cur.suit] + '"' : '') + '>' + activeLine + '</div>') +
+    box.innerHTML = psSwitch() + card(L.ps_title, head + figure + '<div class="ps-active"' + (cur.suit ? ' style="--sc:' + SUIT_COLOR[cur.suit] + '"' : '') + '>' + activeLine + '</div>') +
       card(L.ps_bag, bag) +
       card(L.ps_market, '<div class="hint">' + fmt(L.ps_marketHint, { min: num(mk.min_price), amin: num(mk.art_min_price), fee: mk.fee }) + '</div>' + sellForm +
         (mine ? '<div class="sub2">' + L.ps_myLots + '</div>' + mine : '') +
@@ -14450,7 +15853,8 @@
     box.onclick = e => {
       const b = e.target.closest("button");
       if (!b || b.disabled) return;
-      if (b.dataset.g) act(b, "/api/gear/gender", { gender: b.dataset.g }, done(null));
+      if (b.dataset.pstab) { psTab = b.dataset.pstab; go("persona"); }
+      else if (b.dataset.g) act(b, "/api/gear/gender", { gender: b.dataset.g }, async () => { await refreshMe().catch(() => {}); redraw(); });
       else if (b.dataset.pick) { psPick = psPick === b.dataset.pick ? null : b.dataset.pick;
         box.querySelectorAll("[data-pick]").forEach(x => x.classList.toggle("on", x.dataset.pick === psPick));
         document.getElementById("psPickBox").innerHTML = pickPanel(d); }
@@ -14494,6 +15898,284 @@
       await refreshMe().catch(() => {});
       go(current);
     }); });
+  }
+
+  // ================= ✨ Скины: видно всем — рамка и титул (паспорт, ТОП, команда), костюм (аватар), маркер (карта) =================
+  const SKC = () => (me && me.skin_catalog) || {};
+  const RAR_COLOR = { common: "#b0b8d0", rare: "#3fa9ff", epic: "#b77bff", legendary: "#ffb43a", mythic: "#ff3d6e" };
+  // Ступени прокачки (зеркало shared/skins.SKIN_STAGES): каждая следующая — эффект пафоснее
+  const SK_STAGES = [[1, "factory"], [2, "tempered"], [4, "combat"], [6, "veteran"], [8, "legend"], [10, "immortal"]];
+  const ST_ICON = { factory: "", tempered: "🔥", combat: "⚔️", veteran: "🎖", legend: "👑", immortal: "♾️" };
+  const skStage = lvl => SK_STAGES.filter(x => (lvl || 1) >= x[0]).pop()[1];
+  const skStars = lvl => lvl > 1 ? '<span class="sk-lv">' + ST_ICON[skStage(lvl)] + lvl + '</span>' : '';
+  const stCls = lvl => ' st-' + skStage(lvl);
+  // искры (ветеран и выше) и корона (прославленный, бессмертный) — внутрь блока аватара или превью
+  const stDeco = lvl => { const st = skStage(lvl);
+    return (["veteran", "legend", "immortal"].includes(st) ? '<i class="st-sparks"></i>' : '') +
+      (st === "legend" || st === "immortal" ? '<i class="st-crown">' + (st === "immortal" ? "♾️" : "👑") + '</i>' : ''); };
+  const skVars = lk => '--k1:' + lk.c1 + ';--k2:' + lk.c2;
+  // 🏆 Трофеи: что пережила вещь (скин или деталь костюма) — значки по убыванию
+  const TR_ICON = { game_win: "🏆", duel: "⚔️", duel_win: "🥇", raid: "🚀", raid_win: "💰", raid_def: "🛡", expedition: "🗺",
+                    craft: "🛠", tech: "🔬", quest: "📜", chest: "🎁" };
+  const trSorted = st => Object.entries(st || {}).filter(([k, v]) => v > 0 && TR_ICON[k]).sort((a, b) => b[1] - a[1]);
+  const trophies = st => trSorted(st).map(([k, v]) => '<span class="tr" title="' + esc(L["tr_" + k]) + '">' + TR_ICON[k] + ' ' + num(v) + '</span>').join("");
+  const trophyList = st => { const t = trSorted(st);
+    return t.length ? '<div class="tr-list">' + t.map(([k, v]) => '<div><span>' + TR_ICON[k] + ' ' + L["tr_" + k] + '</span><b>' + num(v) + '</b></div>').join("") + '</div>' : ''; };
+  // Имя с рамкой и титулом — так игрока видят другие
+  function plate(name, sk) {
+    sk = sk || {};
+    const f = sk.frame && SKC()[sk.frame.skin], ti = sk.title && SKC()[sk.title.skin];
+    return '<span class="sk-plate' + (f ? ' framed fx-' + f.look.fx + stCls(sk.frame.level) : '') + '"' +
+      (f ? ' style="' + skVars(f.look) + '"' : '') + '>' + esc(name) + (f ? skStars(sk.frame.level) : '') + '</span>' +
+      (ti ? ' <span class="sk-title fx-' + ti.look.fx + stCls(sk.title.level) + '" style="' + skVars(ti.look) + '">' + esc(ti.text || ti.name) + skStars(sk.title.level) + '</span>' : '');
+  }
+  // Блок аватара: цвета — от рамки (или костюма), ступень — старшая из двух
+  function avaWrap(frame, suit, inner) {   // frame/suit: {look, level} или null
+    const lk = (frame || suit || {}).look, lvl = Math.max(frame ? frame.level : 1, suit ? suit.level : 1);
+    return '<div class="ps-ava-wrap' + (frame ? ' framed fx-' + frame.look.fx : '') + (lk ? stCls(lvl) : '') + '"' + (lk ? ' style="' + skVars(lk) + '"' : '') + '>' +
+      inner + (lk ? stDeco(lvl) : '') + '</div>';
+  }
+  const skMarker = id => { const s = id && SKC()[id]; return s && s.look.emoji ? s.look.emoji : null; };
+  let psTab = "char", grSell = null, grFeed = null;
+  function psSwitch() {
+    return '<div class="doc-switch">' + [["char", L.gr_tabChar], ["garage", L.gr_tabGarage], ["pass", L.gr_tabPass]].map(([k, t]) =>
+      '<button class="idx' + (psTab === k ? ' on' : '') + '" data-pstab="' + k + '">' + t + '</button>').join("") + '</div>';
+  }
+  function bindPsSwitch(box) {
+    box.querySelectorAll("[data-pstab]").forEach(b => { b.onclick = e => { e.stopPropagation(); psTab = b.dataset.pstab; go("persona"); }; });
+  }
+  function skinChip(id, lvl) {
+    const s = SKC()[id] || {};
+    return '<span class="sk-chip" style="--rc:' + RAR_COLOR[s.rarity] + '">' + esc(s.name || id) + skStars(lvl || 1) + '</span>';
+  }
+  // Превью скина: костюм — мини-аватар, рамка — кольцо, титул — надпись, маркер — точка, сумка — ячейки; ступень — эффектом
+  function skinPreview(id, lvl) {
+    const s = SKC()[id];
+    if (!s) return "";
+    const lk = s.look, open = '<div class="sk-prev fx-' + lk.fx + stCls(lvl) + '" style="' + skVars(lk) + '">', close = stDeco(lvl) + '</div>';
+    if (s.target === "suit") return open + avatarSvg(me.gender || null, {}, lk, lvl) + close;
+    if (s.target === "frame") return open + '<span class="sk-plate framed fx-' + lk.fx + stCls(lvl) + '" style="' + skVars(lk) + '">' + esc(me.display_name || "ROFL") + '</span>' + close;
+    if (s.target === "title") return open + '<span class="sk-title big fx-' + lk.fx + stCls(lvl) + '" style="' + skVars(lk) + '">' + esc(s.text || s.name) + '</span>' + close;
+    if (s.target === "marker") return open + '<span class="sk-mk" style="' + skVars(lk) + '">' + esc(lk.emoji || "📍") + '</span>' + close;
+    return open + '<div class="sk-bag" style="' + skVars(lk) + '">' + "<i></i>".repeat(8) + '</div>' + close;
+  }
+  // 🎉 Новая ступень: торжественный экран на 2,6 с (тап — закрыть)
+  function stageUp(level, look) {
+    const st = skStage(level), el = document.createElement("div");
+    el.className = "st-up";
+    el.setAttribute("style", skVars(look || { c1: "#00ffe1", c2: "#ff4d8d" }));
+    el.innerHTML = '<div class="st-ic">' + (ST_ICON[st] || "✨") + '</div><b>' + L["gr_st_" + st] + '</b><small>' + fmt(L.gr_stUp, { n: level }) + '</small>';
+    el.onclick = () => el.remove();
+    document.body.appendChild(el);
+    try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred("success"); } catch (e) {}
+    setTimeout(() => el.remove(), 2600);
+  }
+  // Уровень по опыту и слияниям (зеркало shared/skins.skin_level)
+  function skLevelOf(levels, xp, merged) {
+    let l = 1;
+    for (let i = 0; i < levels.length; i++) { if (xp >= levels[i][0] && merged >= levels[i][1]) l = i + 1; else break; }
+    return l;
+  }
+  // Прогресс до следующего уровня: полоска опыта + чего не хватает (опыт и/или слияния)
+  function skProgress(d, m) {
+    if (!m.next) return '<small class="st-c-immortal">' + L.gr_max + '</small>';
+    const need = d.levels[m.level][0], prev = d.levels[m.level - 1][0];
+    const pct = need > prev ? Math.max(0, Math.min(100, Math.round((m.xp - prev) / (need - prev) * 100))) : 100;
+    const w = [m.next.xp > 0 ? fmt(L.gr_nXp, { xp: num(m.next.xp) }) : "", m.next.merged > 0 ? fmt(L.gr_nM, { m: m.next.merged }) : ""].filter(Boolean).join(" + ");
+    return '<div class="gr-bar"><i style="width:' + pct + '%"></i></div><small>' + fmt(L.gr_next, { n: m.next.level, w: w }) + '</small>';
+  }
+  async function viewGarage(box) {
+    const d = await api("/api/skins");
+    Object.assign(me.skin_catalog = me.skin_catalog || {}, d.catalog);
+    const C = d.catalog, T = { suit: L.gr_t_suit, frame: L.gr_t_frame, title: L.gr_t_title, marker: L.gr_t_marker, bag: L.gr_t_bag };
+    // 🪪 витрина: как меня видят другие
+    const worn = {};
+    d.mine.filter(m => m.equipped).forEach(m => { worn[m.target] = { skin: m.skin_id, level: m.level, serial: m.serial }; });
+    const lookOf = w => w && C[w.skin] ? { look: C[w.skin].look, level: w.level } : null;
+    const show = '<div class="gr-show">' +
+      avaWrap(lookOf(worn.frame), lookOf(worn.suit), avatarSvg(d.gender, {}, worn.suit && C[worn.suit.skin] ? C[worn.suit.skin].look : null, worn.suit ? worn.suit.level : 1)) +
+      '<div class="gr-name">' + plate(me.display_name || "ROFL", worn) + '</div>' +
+      '<div class="hint">' + L.gr_showHint + '</div>' +
+      '<button class="btn" id="grBrag">' + L.gr_brag + '</button><div id="grOut"></div></div>';
+    // мои скины: ступень, прогресс, трофеи
+    const mineHtml = d.mine.map(m => {
+      const s = C[m.skin_id] || {}, ed = s.edition ? fmt(L.gr_serial, { n: m.serial, of: s.edition }) : fmt(L.gr_serialInf, { n: m.serial });
+      const tr = trophies(m.stats);
+      return '<div class="gr-skin' + (m.equipped ? ' on' : '') + '" style="--rc:' + RAR_COLOR[s.rarity] + '">' + skinPreview(m.skin_id, m.level) +
+        '<div class="gr-info"><b>' + esc(s.name) + skStars(m.level) + '</b><small>' + L["gr_r_" + s.rarity] + ' · ' + T[s.target] + ' · ' + ed + '</small>' +
+        '<small class="st-name st-c-' + m.stage + '">' + fmt(L.gr_lvl, { n: m.level, s: L["gr_st_" + m.stage] }) + '</small>' + skProgress(d, m) +
+        (tr ? '<small class="trs">' + tr + '</small>' : '') +
+        '<div class="ps-sb">' + (m.equipped ? '<button class="mini ghost" data-skoff="' + m.id + '">' + L.ps_off + '</button>'
+          : '<button class="mini" data-skon="' + m.id + '">' + L.ps_wear + '</button>') +
+        (m.next ? '<button class="mini ghost" data-skfeed="' + m.id + '">🔥 ' + L.gr_temper + '</button>' : '') +
+        (!m.equipped ? '<button class="mini ghost" data-sksell="' + m.id + '">' + L.ps_sell + '</button>' : '') + '</div>' +
+        (grFeed === m.id ? feedPanel(d, m) : '') + (grSell === m.id ? sellPanel(d, m) : '') + '</div></div>';
+    });
+    // ступени: лестница от заводского до бессмертного
+    const ladder = '<div class="trs">' + d.stages.map(([lv, st]) => '<span class="st-name st-c-' + st + '">' + (ST_ICON[st] || "▫️") + ' ' + L["gr_st_" + st] +
+      ' · ' + fmt(L.gr_from, { n: lv }) + '</span>').join("") + '</div><div class="hint">' + L.gr_xpHint + '</div>';
+    // коллекции
+    const setsHtml = Object.entries(d.sets).map(([sid, st]) => '<div class="gr-set"><b>' + L["gr_set_" + sid] + ' · ' + st.have.length + '/' + st.need.length + '</b>' +
+      '<div>' + st.need.map(id => '<span class="sk-chip' + (st.have.includes(id) ? '' : ' miss') + '" style="--rc:' + RAR_COLOR[C[id].rarity] + '">' + esc(C[id].name) + '</span>').join("") + '</div>' +
+      '<div class="hint">' + fmt(L.gr_setReward, { r: esc(C[st.reward].name) }) + '</div></div>').join("");
+    // рынок скинов: у каждого лота видна ступень и что он пережил
+    const lotsHtml = d.lots.map(o => { const s = C[o.skin] || {}, tr = trophies(o.stats);
+      return '<div class="ps-item" style="--sc:' + RAR_COLOR[s.rarity] + '"><span>' + esc(s.name) + skStars(o.level) + '<br><small class="hint">№' + o.serial +
+        ' · ' + L["gr_st_" + o.stage] + '</small>' + (tr ? '<small class="trs">' + tr + '</small>' : '') + '</span>' +
+        (o.own ? '<button class="mini ghost" data-cancel="' + o.id + '">' + L.ps_cancel + '</button>' : '<button class="mini" data-buy="' + o.id + '">' + fmt(L.ps_buy, { p: num(o.price) }) + '</button>') + '</div>'; });
+    // 🏛 зал славы
+    const gl = d.glory;
+    const glory = '<div class="res-grid">' + [["🏆", gl.games_won, L.gr_gWins], ["🧠", gl.quiz_level, L.gr_gQuiz], ["⚔️", gl.duels_won, L.gr_gDuels],
+      ["📦", gl.best_cargo, L.gr_gCargo], ["📅", gl.days, L.gr_gDays]].map(a => '<div class="res"><div class="ri">' + a[0] + '</div><div class="rn">' + num(a[1]) +
+      '</div><div class="rs">' + a[2] + '</div></div>').join("") + '</div>' +
+      (gl.badges.length ? '<div>' + gl.badges.map(b => '<span class="vip">' + (["🥇", "🥈", "🥉"][b.place - 1] || "🏅") + ' ' + esc(b.season) + '</span>').join(" ") + '</div>' : '') +
+      (gl.exo ? '<div class="hint status-ok">' + L.gr_gExo + '</div>' : '');
+    box.innerHTML = psSwitch() + card(L.gr_title, show) +
+      card(L.gr_mine, pager("gr-mine", mineHtml, 6, '<div class="hint">' + L.gr_mineEmpty + '</div>')) +
+      card(L.gr_stages, ladder) +
+      card(L.gr_shop, '<div class="hint">' + L.gr_shopHint + '</div><button class="btn" id="grToShop">' + L.gr_toShop + '</button>') +
+      card(L.gr_sets, setsHtml) +
+      card(L.gr_market, '<div class="hint">' + L.gr_marketHint + '</div>' + pager("gr-lots", lotsHtml, 8, '<div class="hint">' + L.gr_marketEmpty + '</div>')) +
+      card(L.gr_glory, glory);
+    bindPsSwitch(box);
+    const redraw = async () => { await refreshMe().catch(() => {}); go("persona"); };
+    box.onclick = async e => {
+      const b = e.target.closest("button");
+      if (!b || b.disabled) return;
+      const id = k => Number(b.dataset[k]);
+      if (b.dataset.skon) act(b, "/api/skins/equip", { id: id("skon") }, redraw);
+      else if (b.dataset.skoff) act(b, "/api/skins/unequip", { id: id("skoff") }, redraw);
+      else if (b.dataset.skfeed) { grFeed = grFeed === id("skfeed") ? null : id("skfeed"); grSell = null; go("persona"); }
+      else if (b.dataset.sksell) { grSell = grSell === id("sksell") ? null : id("sksell"); grFeed = null; go("persona"); }
+      else if (b.dataset.food) askConfirm(L.gr_feedAsk, () => act(b, "/api/skins/absorb", { id: grFeed, fodder: id("food") }, async r => {
+        const main = d.mine.find(x => x.id === grFeed), res = r.result || {};
+        grFeed = null;
+        if (res.up) stageUp(res.level, main && C[main.skin_id] ? C[main.skin_id].look : null);
+        else notify(fmt(L.gr_fed, { n: res.level || "" }), true);
+        redraw(); }));
+      else if (b.dataset.buy) act(b, "/api/market/fill", { order_id: id("buy"), qty: 1 }, async () => { notify(L.gr_bought, true); redraw(); });
+      else if (b.dataset.cancel) act(b, "/api/market/cancel", { order_id: id("cancel") }, redraw);
+      else if (b.id === "grSellGo") act(b, "/api/market/order", { asset: "s_" + grSell, side: "sell", qty: 1, price: Number(document.getElementById("grPrice").value) || 0 },
+        async () => { grSell = null; notify(L.ps_listed, true); redraw(); });
+      else if (b.id === "grToShop") { shopCat = "skins"; go("shop"); }
+      else if (b.id === "grBrag") brag(box, d, worn);
+    };
+  }
+  // 🔥 Закалка: кого поглотить — сколько опыта даст и до какого уровня поднимет
+  function feedPanel(d, m) {
+    const food = d.mine.filter(x => x.id !== m.id && !x.equipped);
+    return '<div class="ps-pick"><b>🔥 ' + L.gr_temperTitle + '</b><div class="hint">' + L.gr_temperHint + '</div>' +
+      (food.length ? food.map(f => { const s = SKC()[f.skin_id] || {}, gain = (d.merge_xp[s.rarity] || 0) + Math.floor(f.xp / 2);
+        const to = skLevelOf(d.levels, m.xp + gain, m.merged + 1 + Math.floor(f.merged / 2));
+        return '<div class="ps-item" style="--sc:' + RAR_COLOR[s.rarity] + '"><span>' + esc(s.name) + ' №' + f.serial + ' · +' + num(gain) + '<br><small class="' +
+          (to > m.level ? 'st-name st-c-' + skStage(to) + '">' + fmt(L.gr_feedTo, { n: to, s: L["gr_st_" + skStage(to)] }) : 'hint">' + L.gr_feedSame) + '</small></span>' +
+          '<button class="mini" data-food="' + f.id + '">' + L.gr_feed + '</button></div>'; }).join("") : '<div class="hint">' + L.gr_noFood + '</div>') + '</div>';
+  }
+  // 🎟 Пропуск сезона: уровень, опыт, две дорожки наград, кнопки «забрать» и «купить»
+  async function viewPass(box) {
+    const d = await api("/api/pass");
+    const days = Math.max(0, Math.ceil((new Date(d.ends_at).getTime() - Date.now()) / 86400000));
+    const inLvl = d.level >= d.max ? d.per_level : d.xp - d.level * d.per_level;
+    const ready = d.levels.some(l => l.level <= d.level && (!d.claimed_free.includes(l.level) || (d.premium && !d.claimed_paid.includes(l.level))));
+    const curSku = "seasonpass_" + d.season.replace("-", ""), next = d.sale.season !== d.season;
+    const buyBtn = (sku, text) => '<button class="btn" data-passbuy="' + sku + '">' + fmt(text, { p: d.stars }) + '</button>';
+    const buy = (d.premium ? '<div class="hint status-ok">' + L.pass_owned + '</div>' : buyBtn(curSku, L.pass_buy) + '<div class="hint">' + L.pass_buyHint + '</div>') +
+      (next && !d.sale.owned ? buyBtn(d.sale.sku, L.pass_buyNext) : '');
+    const head = '<b>🎟 ' + esc(d.theme) + '</b><div class="hint">' + fmt(L.pass_ends, { n: days }) + '</div>' +
+      '<div class="sub2">' + fmt(L.pass_level, { n: d.level, max: d.max }) + '</div>' +
+      '<div class="gr-bar"><i style="width:' + Math.round(Math.max(0, inLvl) / d.per_level * 100) + '%"></i></div>' +
+      '<div class="hint">' + (d.level >= d.max ? L.pass_maxed : fmt(L.pass_xp, { x: Math.max(0, inLvl), need: d.per_level })) + '</div>' +
+      '<div class="hint">' + L.pass_how + '</div>' +
+      '<button class="btn" id="passClaim"' + (ready ? '' : ' disabled') + '>' + L.pass_claim + '</button>' + buy;
+    const rows = d.levels.map(l => {
+      const open = l.level <= d.level, hasSkin = l.paid.some(r => r.kind === "skin");
+      const cell = (label, got, locked) => '<span class="v' + (got ? ' status-ok' : locked ? ' hint' : open ? ' st-c-legend' : ' hint') + '">' +
+        (got ? '✅ ' : locked ? '🔒 ' : '') + esc(label) + '</span>';
+      return '<div class="row"><span class="k">' + (hasSkin ? '✨ ' : '') + l.level + '</span>' + cell(l.free_label, d.claimed_free.includes(l.level), false) +
+        cell(l.paid_label, d.claimed_paid.includes(l.level), !d.premium) + '</div>';
+    });
+    box.innerHTML = psSwitch() + card(L.pass_title, head) + card(L.pass_skins, passStrip(d)) +
+      card(L.pass_tracks, '<div class="row"><span class="k">#</span><span class="v">' + L.pass_free + '</span><span class="v">' + L.pass_paid + '</span></div>' +
+        pager("pass-rows", rows, 10, ''));
+    bindPsSwitch(box);
+    box.onclick = e => {
+      const b = e.target.closest("button");
+      if (!b || b.disabled) return;
+      if (b.id === "passClaim") act(b, "/api/pass/claim", {}, async r => { notify(fmt(L.pass_got, { r: r.got }), true); await refreshMe().catch(() => {}); go("persona"); });
+      else if (b.dataset.passbuy) buySku(b, b.dataset.passbuy, () => go("persona"));
+    };
+  }
+  // Эксклюзивные скины пропуска — с уровнем, на котором открываются
+  function passStrip(d) {
+    const at = { marker: 5, frame: 10, title: 20, suit: 30 };
+    return '<div class="hint">' + L.pass_skinsHint + '</div>' + ["marker", "frame", "title", "suit"].map(t => { const id = d.skins[t], s = SKC()[id];
+      return s ? '<div class="gr-skin" style="--rc:' + RAR_COLOR[s.rarity] + '">' + skinPreview(id, 1) + '<div class="gr-info"><b>' + esc(s.name) + '</b><small>' +
+        L["gr_r_" + s.rarity] + ' · ' + fmt(L.pass_atLvl, { n: at[t] }) + '</small></div></div>' : ''; }).join("");
+  }
+  function sellPanel(d, m) {
+    const s = SKC()[m.skin_id] || {}, min = d.min_price[s.rarity];
+    return '<div class="ps-sell"><label class="hint">' + fmt(L.ps_price, { min: num(min) }) + '</label>' +
+      '<input id="grPrice" type="number" min="' + min + '" value="' + min + '"><button class="btn" id="grSellGo">' + L.ps_sellGo + '</button></div>';
+  }
+  // Покупка за ★ через обычный платёжный контур (инвойс → pre_checkout → доставка)
+  async function buySku(btn, sku, after) {
+    btn.disabled = true;
+    try {
+      const r = await post("/api/invoice", { sku: sku });
+      if (!r.link) { notify(r.error || L.error, false); btn.disabled = false; return; }
+      tg.openInvoice(r.link, status => { btn.disabled = false; if (status === "paid") { notify(L.gr_paid, true); setTimeout(after, 1500); } });
+    } catch (e) { apiError(e); btn.disabled = false; }
+  }
+  // 📸 «Похвастаться»: карточка 1080×1920 с аватаром в скинах — в истории, другу или в галерею
+  async function brag(box, d, worn) {
+    const btn = document.getElementById("grBrag");
+    btn.disabled = true;
+    let c = {};
+    try { c = await api("/api/card"); } catch (e) {}
+    const W = 1080, H = 1920, cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    const x = cv.getContext("2d"), F = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+    const C = d.catalog, frame = worn.frame && C[worn.frame.skin], title = worn.title && C[worn.title.skin];
+    const suit = worn.suit && C[worn.suit.skin];
+    const g = x.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, "#07081a"); g.addColorStop(.5, suit ? suit.look.c2 + "55" : "#1a0b3a"); g.addColorStop(1, "#04121f");
+    x.fillStyle = "#07081a"; x.fillRect(0, 0, W, H); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.textAlign = "center";
+    x.shadowColor = "#ff4d8d"; x.shadowBlur = 40; x.fillStyle = "#ff6fa5"; x.font = "900 100px " + F; x.fillText("ROFL HUB", W / 2, 170);
+    const svg = avatarSvg(d.gender, {}, suit ? suit.look : null, worn.suit ? worn.suit.level : 1).replace('<svg ', '<svg width="480" height="920" ');
+    try {
+      const img = new Image();
+      await new Promise((ok, bad) => { img.onload = ok; img.onerror = bad; img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg); });
+      if (frame) { x.shadowColor = frame.look.c1; x.shadowBlur = 60; x.strokeStyle = frame.look.c1; x.lineWidth = 14; rr(x, 250, 260, 580, 1000, 80); x.stroke(); }
+      const top = Math.max(1, ...Object.values(worn).map(w => w.level || 1));
+      if (top >= 4) {   // ⚔️ боевой и выше — искры вокруг фигуры (детерминированно: карточка одинакова при повторе)
+        for (let i = 0; i < 18 * Math.min(5, top - 2); i++) {
+          const a = i * 2.39996, r = 330 + (i * 37) % 160;
+          x.fillStyle = i % 3 ? (suit ? suit.look.c1 : "#00ffe1") : "#ffd23f"; x.shadowColor = x.fillStyle; x.shadowBlur = 18;
+          x.beginPath(); x.arc(540 + Math.cos(a) * r * .75, 760 + Math.sin(a) * r * 1.25, 3 + i % 4, 0, 7); x.fill();
+        }
+      }
+      x.shadowColor = suit ? suit.look.c1 : "#00ffe1"; x.shadowBlur = 50; x.drawImage(img, 300, 300, 480, 920);
+      if (top >= 8) { x.shadowColor = "#ffd23f"; x.shadowBlur = 30; x.font = "120px " + F; x.fillText(top >= 10 ? "♾️" : "👑", W / 2, 300); }
+    } catch (e) {}
+    x.shadowBlur = 0; x.fillStyle = frame ? frame.look.c1 : "#ffffff"; x.font = "800 76px " + F; x.fillText(clip(me.display_name || c.name || "", 20), W / 2, 1370);
+    if (title) { x.fillStyle = title.look.c1; x.font = "700 52px " + F; x.fillText(clip(title.text || title.name, 26), W / 2, 1450); }
+    let y = 1540;
+    Object.values(worn).slice(0, 4).forEach(w => { const s = C[w.skin]; if (!s) return;
+      x.fillStyle = RAR_COLOR[s.rarity]; x.font = "600 40px " + F;
+      x.fillText("✨ " + clip(s.name, 28) + (s.edition ? "  №" + w.serial + "/" + s.edition : "") + (w.level > 1 ? "  " + ST_ICON[skStage(w.level)] + w.level : ""), W / 2, y); y += 58; });
+    x.fillStyle = "#00ffe1"; x.font = "500 36px " + F; x.fillText(String(c.link || "").replace(/^https:\/\//, ""), W / 2, 1860);
+    const img = cv.toDataURL("image/jpeg", .9);
+    let url = null;
+    try { const r = await post("/api/card/upload", { image: img }); if (r.ok) url = r.url; } catch (e) {}
+    const text = L.gr_bragText, canStory = url && tg && tg.shareToStory;
+    const out = document.getElementById("grOut");
+    out.innerHTML = '<img class="ach-img" src="' + img + '" alt="">' + (canStory ? '<button class="btn" id="grStory">' + L.ac_story + '</button>' : '') +
+      '<button class="btn ghost" id="grSend">' + L.ac_send + '</button>';
+    btn.style.display = "none";
+    const st = document.getElementById("grStory");
+    if (st) st.onclick = e => { e.stopPropagation(); try { tg.shareToStory(url, { text: clip(text + " " + (c.link || ""), 200) }); } catch (er) { notify(L.oldClient, false); } };
+    document.getElementById("grSend").onclick = e => { e.stopPropagation(); shareLink(c.link || "", text); };
   }
 
   const VIEWS = { passport: viewPassport, persona: viewPersona, games: viewGames, farm: viewFarm, storage: viewStorage, workshop: viewWorkshop,

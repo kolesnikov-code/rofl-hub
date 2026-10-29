@@ -86,17 +86,18 @@ def test_normalize_rewards_accepts_every_kind_and_rejects_garbage():
         {"kind": "bdrone", "drone": "spy", "qty": 2},                         # 28.10: боевой дрон
         {"kind": "gear", "qty": 3},                                           # 30.10: детали костюмов
         {"kind": "artifact", "qty": 1},                                       # 30.10: артефакт
+        {"kind": "skin", "skin": "aur_frame"},                                # 30.10: скин
         {"kind": "text", "text": "Telegram Premium на 3 месяца"},
     ]
     out = normalize_rewards(good)
     assert [r["kind"] for r in out] == ["coins", "resource", "cutlets", "item", "item", "robot", "boost", "bdrone", "gear",
-                                        "artifact", "text"]
+                                        "artifact", "skin", "text"]
     assert out[0]["amount"] == 1000 and out[4] == {"kind": "item", "effect": "economizer", "hours": 0, "qty": 3}
     assert {r["kind"] for r in out} == set(REWARD_KINDS)
     for bad in ({"kind": "coins", "amount": 0}, {"kind": "coins", "amount": -5}, {"kind": "resource", "res": "gold", "qty": 1},
                 {"kind": "item", "effect": "shield", "hours": 0}, {"kind": "robot", "robot": "intern", "hours": 5},
                 {"kind": "boost", "boost": "nitrogen", "hours": 999999}, {"kind": "text", "text": "  "}, "x", None,
-                {"kind": "station_drone"}, {"kind": "bdrone", "drone": "laser"}, {"kind": "gear", "qty": 6}, {"kind": "artifact", "qty": 2}):
+                {"kind": "station_drone"}, {"kind": "bdrone", "drone": "laser"}, {"kind": "gear", "qty": 6}, {"kind": "artifact", "qty": 2}, {"kind": "skin", "skin": "nope"}):
         assert normalize_reward(bad) is None, bad
 
 

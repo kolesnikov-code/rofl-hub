@@ -131,6 +131,10 @@ async def purge_account(conn, user_id: int, now: datetime) -> bool:
     await conn.execute("DELETE FROM user_badges WHERE user_id = $1", user_id)
     await conn.execute("DELETE FROM user_gear WHERE user_id = $1", user_id)       # 🧍 сумка и надетые костюмы
     await conn.execute("DELETE FROM user_equip WHERE user_id = $1", user_id)
+    await conn.execute("DELETE FROM gear_stats WHERE user_id = $1", user_id)
+    await conn.execute("DELETE FROM season_pass WHERE user_id = $1", user_id)
+    # ✨ скины: снятые с продажи возвращаются владельцу лотами выше (_close_market), потом сгорают вместе с аккаунтом
+    await conn.execute("DELETE FROM user_skins WHERE user_id = $1", user_id)
     await conn.execute("UPDATE users SET suit = NULL, suit_level = NULL, suit_since = NULL, gender = NULL "
                        "WHERE user_id = $1", user_id)
     await conn.execute(

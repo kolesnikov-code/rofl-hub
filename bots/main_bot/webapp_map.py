@@ -171,13 +171,17 @@ async def handle_map(request: web.Request) -> web.Response:
             "reward_all": rewards_label(reward_all) if reward_all else "", "options": options,
         })
     out_squads = []
+    from shared.skins import looks
+    async with db.pool.acquire() as conn:
+        sk = await looks(conn, [s["user_id"] for s in squads if s["mode"] == "solo" and s["user_id"]])
     for s in squads:
         mine = s["id"] in my_ids
         name = html.unescape(s["team_name"] or "") if s["mode"] != "solo" else ""
         out_squads.append({"id": s["id"], "target_id": s["target_id"], "mode": s["mode"], "status": s["status"],
                            "ox": s["ox"], "oy": s["oy"], "departed_at": _iso(s["departed_at"]),
                            "arrive_at": _iso(s["arrive_at"]), "name": name,
-                           "symbol": html.unescape(s["school_num"] or "") if s["mode"] != "solo" else "", "mine": mine})
+                           "symbol": html.unescape(s["school_num"] or "") if s["mode"] != "solo" else "", "mine": mine,
+                           "marker": (sk.get(s["user_id"], {}).get("marker") or {}).get("skin") if s["mode"] == "solo" else None})
     my = []
     for s in my_rows:
         exp = dict(s)

@@ -204,9 +204,42 @@ def normalize_sku(payload: str) -> str:
     return sku
 
 
+def skin_item(sku: str) -> dict | None:
+    """✨ Скины продаются вне витрины CATALOG (Магазин → «✨ Скины»): skin_<id> → заказ, пока скин в продаже."""
+    from shared.economy import utcnow
+    from shared.skins import SKINS, for_sale, skin_name
+    sid = sku[5:] if sku.startswith("skin_") else None
+    if sid not in SKINS:
+        return None
+    if not for_sale(sid, utcnow()):
+        raise CatalogError("Этот скин больше не продаётся.")
+    s = SKINS[sid]
+    return {"sku": sku, "type": "skin", "skin": sid, "stars": s["stars"], "category": CATEGORY_GAMES,
+            "title": "✨ " + skin_name(sid, "ru"), "title_en": "✨ " + skin_name(sid, "en"),
+            "button": f"✨ {skin_name(sid, 'ru')} | {s['stars']} ★", "button_en": f"✨ {skin_name(sid, 'en')} | {s['stars']} ★"}
+
+
+def pass_item(sku: str) -> dict | None:
+    """🎟 Пропуск сезона: seasonpass_ГГГГММ — текущего месяца или (в последнюю неделю) следующего."""
+    from shared.economy import utcnow
+    from shared.season_pass import PASS_STARS, can_buy, season_of_sku
+    season = season_of_sku(sku)
+    if season is None:
+        return None
+    if not can_buy(season, utcnow()):
+        raise CatalogError("Этот пропуск сейчас не продаётся.")
+    label = f"{season[5:7]}.{season[:4]}"
+    return {"sku": sku, "type": "season_pass", "season": season, "stars": PASS_STARS, "category": CATEGORY_GAMES,
+            "title": f"🎟 Пропуск сезона {label}", "title_en": f"🎟 Season pass {label}",
+            "button": f"🎟 Пропуск сезона | {PASS_STARS} ★", "button_en": f"🎟 Season pass | {PASS_STARS} ★"}
+
+
 def get_item(sku: str) -> dict:
     item = CATALOG.get(sku)
     if item is None:
+        skin = skin_item(sku) or pass_item(sku)
+        if skin is not None:
+            return skin
         raise CatalogError(f"Неизвестный товар: {sku}")
     return {"sku": sku, **item}
 

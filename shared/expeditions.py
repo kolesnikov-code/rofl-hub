@@ -513,6 +513,9 @@ async def finalize_target(conn, target, now: datetime) -> dict:
             *([exp["id"]] if exp["mode"] == "solo" else [exp["id"], exp["team_id"], deadline]))]
         if exp["mode"] == "solo":
             solo_arrived += [(u, place) for u in members]
+            from shared.trophies import record
+            for u in members:
+                await record(conn, u, "expedition")   # 🏆 история: дошедший поход
         given = 0
         is_prize_place = place <= (target["places"] or 0)
         rewards = prizes.get(place, []) if is_prize_place else []

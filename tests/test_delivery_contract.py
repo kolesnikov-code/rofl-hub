@@ -11,7 +11,24 @@ def test_every_catalog_type_has_delivery_handler():
 
 def test_no_orphan_handlers():
     types_in_catalog = {item["type"] for item in CATALOG.values()}
-    assert set(DELIVERY_HANDLERS) == types_in_catalog
+    # ✨ скины продаются вне витрины CATALOG — из Гаража (catalog.skin_item), обработчик «skin» свой
+    assert set(DELIVERY_HANDLERS) == types_in_catalog | {"skin", "season_pass"}   # 🎟 пропуск — тоже из Магазина «Скины»
+
+
+def test_every_skin_for_sale_builds_an_order():
+    from bots.main_bot.catalog import CatalogError, build_order
+    from shared.economy import utcnow
+    from shared.skins import SKINS, for_sale, skin_sku
+    for sid, s in SKINS.items():
+        if for_sale(sid, utcnow()):
+            order = build_order(skin_sku(sid))
+            assert order["type"] == "skin" and order["stars"] == s["stars"] and order["skin"] == sid
+        else:
+            try:
+                build_order(skin_sku(sid))
+                raise AssertionError(sid)
+            except CatalogError:
+                pass
 
 
 def test_expiring_items_declare_duration():

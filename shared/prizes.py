@@ -11,6 +11,7 @@
 - bdrone    {drone, qty}             — боевой дрон guard/attack/spy (навсегда, 28.10);
 - gear      {qty}                    — случайные детали костюмов 1-го уровня (30.10; не больше сезонного лимита игрока);
 - artifact  {qty}                    — случайные артефакты для пояса персонажа (30.10; тоже с сезонным лимитом);
+- skin      {skin}                   — экземпляр скина с номером тиража (30.10; кончился тираж — не выдаётся);
 - text      {text}                   — ручной приз (вручает владелец: телефон, Premium…) — только в посте.
 Выдача идемпотентна: ключ ref (битва/место/игрок) пишется в reward_grants, повтор — пропуск.
 Всё — внутри транзакции вызывающего; для ферменных наград сначала закрывается прошлое время фермы.
@@ -25,7 +26,7 @@ from shared.economy import ALL_KINDS, ITEM_COLUMNS, ITEM_EFFECTS, ONE_SHOT_COLUM
 
 logger = logging.getLogger(__name__)
 
-REWARD_KINDS = ("coins", "resource", "cutlets", "item", "robot", "boost", "bdrone", "gear", "artifact", "text")
+REWARD_KINDS = ("coins", "resource", "cutlets", "item", "robot", "boost", "bdrone", "gear", "artifact", "skin", "text")
 DRONE_ICONS = {"guard": "🛡🤖", "attack": "⚔️🤖", "spy": "🛰🤖"}
 ROBOT_KINDS = ("junior", "premium")
 BOOST_COLUMNS = {"nitrogen": "boost_nitrogen_until", "nuclear": "boost_nuclear_until", "drone": "drone_until",
@@ -82,6 +83,9 @@ def normalize_reward(r: dict) -> dict | None:
         from shared.economy import ARTIFACT_SEASON_CAP
         qty = max(1, _int(r.get("qty")) or 1)
         return {"kind": "artifact", "qty": qty} if qty <= ARTIFACT_SEASON_CAP else None
+    if kind == "skin":
+        from shared.skins import SKINS
+        return {"kind": "skin", "skin": r.get("skin")} if r.get("skin") in SKINS else None
     if kind == "text":
         text = str(r.get("text") or "").strip()[:200]
         return {"kind": "text", "text": text} if text else None
@@ -125,6 +129,9 @@ def reward_label(r: dict) -> str:
         return f"🧥 ×{r['qty']}"
     if k == "artifact":
         return f"💠 ×{r['qty']}"
+    if k == "skin":
+        from shared.skins import SKINS
+        return "✨ " + SKINS.get(r["skin"], {}).get("name", r["skin"])
     return "🎁 " + r.get("text", "")
 
 
@@ -185,6 +192,13 @@ async def grant(conn, user_id: int, rewards: list[dict], ref: str, now: datetime
         elif k == "artifact":
             from shared.gear import drop_artifacts
             await drop_artifacts(conn, user_id, r["qty"], ref, now)
+        elif k == "skin":
+            from shared.skins import SkinError, grant as grant_skin
+            try:
+                async with conn.transaction():   # кончился тираж — остальная награда всё равно выдаётся
+                    await grant_skin(conn, user_id, r["skin"], ref[:32], now)
+            except SkinError:
+                logger.warning("[PRIZE] скин %s игроку %s не выдан: тираж кончился", r["skin"], user_id)
         elif k == "boost":
             column = BOOST_COLUMNS[r["boost"]]
             current = await conn.fetchval(f"SELECT {column} FROM users WHERE user_id = $1", user_id)

@@ -193,11 +193,17 @@ async def handle_admin_meta(request: web.Request) -> web.Response:
     from shared.prizes import BOOST_COLUMNS, ROBOT_KINDS
     from shared.titles import admin_options
     now = utcnow()
+    from shared.skins import SKINS
     async with db.pool.acquire() as conn:
         mines = await list_mines(conn)
         free = set(await free_mine_ids(conn, now))
+        minted = {r["skin_id"]: r["n"] for r in await conn.fetch("SELECT skin_id, COUNT(*) AS n FROM user_skins GROUP BY skin_id")}
     flags = await all_feature_flags()
+    # ✨ скины для конструктора наград: тираж и сколько уже выпущено
+    skins = [{"id": k, "name": v["name"], "rarity": v["rarity"], "edition": v.get("edition"), "minted": minted.get(k, 0)}
+             for k, v in SKINS.items()]
     return web.json_response({
+        "skins": skins,
         "nominations": [{"key": k, "title": v["title"], "unit": v["unit"], "manual": False} for k, v in BATTLE_NOMINATIONS.items()]
         + [{"key": k, "title": v, "unit": "", "manual": True} for k, v in MANUAL_NOMINATIONS.items()],
         "resources": [{"key": k, "name": v} for k, v in resource_labels("ru").items() if k in ALL_KINDS],

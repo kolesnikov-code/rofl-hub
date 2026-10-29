@@ -991,6 +991,47 @@ SCHEMA_STATEMENTS: list[str] = [
         PRIMARY KEY (campaign_id, user_id)
     );
     """,
+    # --- 30.10 ✨ скины (shared/skins.py): экземпляр с номером тиража, закалка, история; user_id = 0 — эскроу биржи ---
+    """
+    CREATE TABLE IF NOT EXISTS user_skins (
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        skin_id VARCHAR(32) NOT NULL,
+        target VARCHAR(8) NOT NULL,
+        serial INT NOT NULL,
+        xp INT NOT NULL DEFAULT 0,
+        merged INT NOT NULL DEFAULT 0,
+        equipped BOOLEAN NOT NULL DEFAULT FALSE,
+        stats JSONB NOT NULL DEFAULT '{}'::jsonb,
+        source VARCHAR(32) NOT NULL DEFAULT '',
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (skin_id, serial)
+    );
+    """,
+    "CREATE INDEX IF NOT EXISTS user_skins_user_idx ON user_skins (user_id);",
+    "CREATE UNIQUE INDEX IF NOT EXISTS user_skins_equipped_uq ON user_skins (user_id, target) WHERE equipped;",
+    # 🏆 трофейная история деталей костюма (shared/trophies.py) и 🎟 пропуск сезона (shared/season_pass.py)
+    """
+    CREATE TABLE IF NOT EXISTS gear_stats (
+        user_id BIGINT NOT NULL,
+        suit VARCHAR(3) NOT NULL,
+        slot VARCHAR(5) NOT NULL,
+        level SMALLINT NOT NULL,
+        stats JSONB NOT NULL DEFAULT '{}'::jsonb,
+        PRIMARY KEY (user_id, suit, slot, level)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS season_pass (
+        user_id BIGINT NOT NULL,
+        season VARCHAR(7) NOT NULL,
+        xp INT NOT NULL DEFAULT 0,
+        premium BOOLEAN NOT NULL DEFAULT FALSE,
+        claimed_free INT[] NOT NULL DEFAULT '{}',
+        claimed_paid INT[] NOT NULL DEFAULT '{}',
+        PRIMARY KEY (user_id, season)
+    );
+    """,
 ]
 
 

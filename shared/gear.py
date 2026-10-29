@@ -220,6 +220,8 @@ async def upgrade(conn, user_id: int, suit: str, slot: str, now: datetime) -> tu
         await _spend(conn, user_id, GEAR_UPGRADE_COST[suit], GEAR_UPGRADE_COINS, "gear_upgrade", ref)
         await change_gear(conn, user_id, suit, slot, 1, -1, "gear_upgrade", ref)
         await change_gear(conn, user_id, suit, slot, GEAR_MAX_LEVEL, 1, "gear_upgrade", ref)
+        from shared.trophies import move_gear_history
+        await move_gear_history(conn, user_id, suit, slot, 1, GEAR_MAX_LEVEL)
         return await _refresh_suit(conn, user_id, now)
     worn = await conn.fetchrow("SELECT suit, level FROM user_equip WHERE user_id = $1 AND slot = $2", user_id, slot)
     if not worn or worn["suit"] != suit:
@@ -228,6 +230,8 @@ async def upgrade(conn, user_id: int, suit: str, slot: str, now: datetime) -> tu
         raise GearError("gear.err_max")
     await _spend(conn, user_id, GEAR_UPGRADE_COST[suit], GEAR_UPGRADE_COINS, "gear_upgrade", ref)
     await conn.execute("UPDATE user_equip SET level = $3 WHERE user_id = $1 AND slot = $2", user_id, slot, GEAR_MAX_LEVEL)
+    from shared.trophies import move_gear_history
+    await move_gear_history(conn, user_id, suit, slot, 1, GEAR_MAX_LEVEL)
     await conn.execute(
         "INSERT INTO gear_ledger (user_id, suit, slot, level, delta, reason, ref) VALUES ($1, $2, $3, $4, 0, $5, $6)",
         user_id, suit, slot, GEAR_MAX_LEVEL, "gear_upgrade_worn", ref)
