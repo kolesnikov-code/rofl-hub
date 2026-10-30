@@ -133,4 +133,11 @@ async def grant_unlimit(conn, who: str, days: int) -> dict | None:
     days = max(0, min(int(days), UNLIMIT_MAX_DAYS))
     until = extend_expiry(row["unlimit_until"], utcnow(), days) if days else None
     await conn.execute("UPDATE users SET unlimit_until = $2 WHERE user_id = $1", uid, until)
+    # 🎟 подарок на месяц и больше = месячный безлимит и для пропуска (300 опыта за игры в сутки); 0 — снимает и это
+    from shared.economy import UNLIMIT_MONTH_DAYS
+    if not days:
+        await conn.execute("UPDATE users SET pass_boost_until = NULL WHERE user_id = $1", uid)
+    elif days >= UNLIMIT_MONTH_DAYS:
+        await conn.execute("UPDATE users SET pass_boost_until = GREATEST(COALESCE(pass_boost_until, $2), $2) "
+                           "WHERE user_id = $1", uid, until)
     return {"user_id": uid, "until": until, "lang": row["lang"]}

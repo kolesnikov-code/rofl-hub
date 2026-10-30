@@ -159,10 +159,13 @@ async def add_xp(conn, user_id: int, event: str, n: int = 1) -> None:
 
 
 async def has_monthly_unlimit(conn, user_id: int, now: datetime) -> bool:
-    """Безлимит действует и куплен месячным тарифом за ★ в последние 30 дней (без возвратов и тест-чеков)."""
-    until = await conn.fetchval("SELECT unlimit_until FROM users WHERE user_id = $1", user_id)
-    if not until or until <= now:
+    """Безлимит действует и куплен месячным тарифом за ★ в последние 30 дней (без возвратов и тест-чеков)
+    или подарен владельцем на 30+ дней (/unlimit, users.pass_boost_until)."""
+    row = await conn.fetchrow("SELECT unlimit_until, pass_boost_until FROM users WHERE user_id = $1", user_id)
+    if not row or not row["unlimit_until"] or row["unlimit_until"] <= now:
         return False
+    if row["pass_boost_until"] and row["pass_boost_until"] > now:
+        return True
     return bool(await conn.fetchval(
         "SELECT 1 FROM star_payments WHERE user_id = $1 AND item_payload = $2 AND stars_amount > 0 AND refunded_at IS NULL "
         "AND telegram_charge_id NOT LIKE 'TEST%' AND created_at >= $3 LIMIT 1",

@@ -1043,6 +1043,8 @@ SCHEMA_STATEMENTS: list[str] = [
     """,
     # 🤝 Костюм за 10 активных друзей (один раз, на выбор): какой костюм забран
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS ref_suit VARCHAR(3)",
+    # 🎟 подарок владельца /unlimit на 30+ дней — до этого срока лимит опыта пропуска как у месячного безлимита
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS pass_boost_until TIMESTAMP WITH TIME ZONE",
     "ALTER TABLE season_pass ADD COLUMN IF NOT EXISTS game_day DATE",
     "ALTER TABLE season_pass ADD COLUMN IF NOT EXISTS game_xp INT NOT NULL DEFAULT 0",
     # 🎟 Опыт, набранный до первого пропуска (2026-10), — в первый пропуск 2026-11, который и виден на экране.

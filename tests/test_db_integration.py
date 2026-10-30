@@ -3859,3 +3859,13 @@ async def test_abuse_feed_catches_twink_farm_ref_suit_and_pass_game_cap(conn):
     await conn.execute("UPDATE star_payments SET refunded_at = NULL WHERE telegram_charge_id = 'ch_month'")
     await conn.execute("UPDATE users SET unlimit_until = $1 WHERE user_id = 4202", now - timedelta(hours=1))
     assert await sp.game_xp_cap(conn, 4202, now) == sp.PASS_GAME_XP_DAILY            # безлимит кончился
+    # подарок владельца /unlimit: 30+ дней — как месячный, 7 дней — нет, 0 — снимает
+    from shared.rewards import grant_unlimit
+    await _mk_user(conn, 4203, 0)
+    await conn.execute("UPDATE users SET username = 'gift30' WHERE user_id = 4203")
+    await grant_unlimit(conn, "@gift30", 7)
+    assert await sp.game_xp_cap(conn, 4203, now) == sp.PASS_GAME_XP_DAILY
+    await grant_unlimit(conn, "@gift30", 30)
+    assert await sp.game_xp_cap(conn, 4203, now) == sp.PASS_GAME_XP_DAILY_MONTHLY
+    await grant_unlimit(conn, "@gift30", 0)
+    assert await sp.game_xp_cap(conn, 4203, now) == sp.PASS_GAME_XP_DAILY
