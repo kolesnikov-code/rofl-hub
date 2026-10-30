@@ -132,7 +132,7 @@ async def add_xp(conn, user_id: int, event: str, n: int = 1) -> None:
     gain = PASS_XP.get(event, 0) * n
     if gain <= 0:
         return
-    season = current_season(utcnow())
+    season = active_season(utcnow())   # до PASS_FIRST опыт копится в первый пропуск — тот, что виден на экране
     await conn.execute(
         "INSERT INTO season_pass (user_id, season, xp) VALUES ($1, $2, $3) "
         "ON CONFLICT (user_id, season) DO UPDATE SET xp = season_pass.xp + EXCLUDED.xp", user_id, season, gain)

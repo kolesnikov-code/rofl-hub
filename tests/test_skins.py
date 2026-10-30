@@ -133,3 +133,16 @@ def test_pass_texts_in_every_language():
         for key in ("pass.err_nothing", "pass.err_owned"):
             assert t(lang, key) != key, (lang, key)
         assert "11.2026" in t(lang, "pass.delivered", season="11.2026")
+
+
+def test_pass_xp_goes_to_the_season_shown_on_screen(monkeypatch):
+    """30–31.10 экран показывает ноябрьский пропуск — опыт должен капать туда же, а не в «октябрь»."""
+    import asyncio
+    monkeypatch.setattr(sp, "utcnow", lambda: datetime(2026, 10, 30, 12, tzinfo=timezone.utc))
+    calls = []
+
+    class Conn:
+        async def execute(self, sql, *args):
+            calls.append(args)
+    asyncio.run(sp.add_xp(Conn(), 1, "game_win"))
+    assert calls and calls[0][1] == sp.PASS_FIRST == sp.active_season(datetime(2026, 10, 30, tzinfo=timezone.utc))

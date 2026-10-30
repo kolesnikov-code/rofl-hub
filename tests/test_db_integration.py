@@ -3730,7 +3730,7 @@ async def test_skins_edition_collection_temper_market_trophies_and_pass(conn):
     assert await conn.fetchval("SELECT xp FROM user_skins WHERE user_id = 3401 AND skin_id = 'aur_suit'") == 0
     from shared.trophies import gear_history
     assert (await gear_history(conn, 3401)) == {"ml:head:1": {"raid_win": 2}}
-    assert (await sp.state(conn, 3401, sp.current_season(now)))["xp"] == sp.PASS_XP["raid_win"] * 2
+    assert (await sp.state(conn, 3401, sp.active_season(now)))["xp"] == sp.PASS_XP["raid_win"] * 2
     # 4) закалка: поглощённый исчезает, опыт и слияния растут; надетый поглотить нельзя
     with pytest.raises(sk.SkinError):
         await sk.absorb(conn, 3401, (await conn.fetchval("SELECT id FROM user_skins WHERE skin_id = 'aur_marker'")), a["id"])

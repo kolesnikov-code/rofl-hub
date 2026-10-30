@@ -1032,6 +1032,14 @@ SCHEMA_STATEMENTS: list[str] = [
         PRIMARY KEY (user_id, season)
     );
     """,
+    # 🎟 Опыт, набранный до первого пропуска (2026-10), — в первый пропуск 2026-11, который и виден на экране.
+    # Идемпотентно: после переноса октябрьских строк нет, а add_xp туда больше не пишет (active_season).
+    """
+    WITH moved AS (DELETE FROM season_pass WHERE season < '2026-11' RETURNING user_id, xp)
+    INSERT INTO season_pass (user_id, season, xp)
+    SELECT user_id, '2026-11', SUM(xp) FROM moved GROUP BY user_id
+    ON CONFLICT (user_id, season) DO UPDATE SET xp = season_pass.xp + EXCLUDED.xp;
+    """,
 ]
 
 
