@@ -1134,6 +1134,7 @@ STRINGS: dict[str, str] = {
 
 MINIAPP: dict[str, str] = {
     # TODO(перевод 30.10): персонаж и костюмы — пока по-английски
+    "pass_gameCapUp": "With the 30-day unlimited pass — up to {cap} a day.",
     "ref_suitLocked": "🔒 Unlocks at {n} active friends",
     "ref_suitTaken": "✅ Reward claimed: {s}",
     "ref_suitDone": "🧥 The suit is in your bag! Put it on in the Character tab.",

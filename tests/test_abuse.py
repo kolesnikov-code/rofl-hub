@@ -83,10 +83,14 @@ def test_team_help_giver_threshold_is_the_active_account():
 
 
 def test_pass_game_xp_daily_cap():
-    assert sp.PASS_GAME_XP_DAILY == 200 and sp.PASS_DAILY_CAPPED == ("game_win",)
-    # 30 уровней × 100 опыта: одними играми — не быстрее 15 дней
-    assert sp.PASS_LEVELS * sp.PASS_XP_PER_LEVEL / sp.PASS_GAME_XP_DAILY == 15
-    assert "pass_gameCap:" in APP
+    assert (sp.PASS_GAME_XP_DAILY, sp.PASS_GAME_XP_DAILY_MONTHLY) == (150, 300) and sp.PASS_DAILY_CAPPED == ("game_win",)
+    # 30 уровней × 100 опыта: одними играми — 20 дней, с безлимитом на 30 дней — 10 (владелец 30.10)
+    assert sp.PASS_LEVELS * sp.PASS_XP_PER_LEVEL / sp.PASS_GAME_XP_DAILY == 20
+    assert sp.PASS_LEVELS * sp.PASS_XP_PER_LEVEL / sp.PASS_GAME_XP_DAILY_MONTHLY == 10
+    assert sp.PASS_MONTHLY_SKU == "unlimit_30d"          # суточный безлимит лимит опыта не поднимает
+    from bots.main_bot.catalog import CATALOG
+    assert CATALOG[sp.PASS_MONTHLY_SKU]["hours"] == 30 * 24
+    assert "pass_gameCap:" in APP and "pass_gameCapUp:" in APP
 
 
 def test_referral_suit_task_texts_and_wiring():

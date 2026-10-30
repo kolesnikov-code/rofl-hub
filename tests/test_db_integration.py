@@ -3831,7 +3831,7 @@ async def test_abuse_feed_catches_twink_farm_ref_suit_and_pass_game_cap(conn):
     assert e.value.key == "gear.err_ref_taken"
     assert (await gear.referral_suit_state(conn, 4100))["taken"] == "mn"
 
-    # 🎟 лимит опыта за игры
+    # 🎟 лимит опыта за игры: 150 в сутки, с безлимитом на 30 дней — 300; суточный безлимит не поднимает
     await _mk_user(conn, 4200, 0)
     for _ in range(50):
         await sp.add_xp(conn, 4200, "game_win")
@@ -3842,3 +3842,20 @@ async def test_abuse_feed_catches_twink_farm_ref_suit_and_pass_game_cap(conn):
     await conn.execute("UPDATE season_pass SET game_day = game_day - 1 WHERE user_id = 4200")   # новый день — снова можно
     await sp.add_xp(conn, 4200, "game_win")
     assert (await sp.state(conn, 4200, sp.active_season(now)))["game_xp_today"] == sp.PASS_XP["game_win"]
+
+    await _mk_user(conn, 4201, 0, unlimit_until=now + timedelta(hours=20))
+    await conn.execute("INSERT INTO star_payments (user_id, telegram_charge_id, item_payload, stars_amount) "
+                       "VALUES (4201, 'ch_day', 'unlimit_24h', 15)")
+    assert await sp.game_xp_cap(conn, 4201, now) == sp.PASS_GAME_XP_DAILY            # суточный — без бонуса
+    await _mk_user(conn, 4202, 0, unlimit_until=now + timedelta(days=29))
+    await conn.execute("INSERT INTO star_payments (user_id, telegram_charge_id, item_payload, stars_amount) "
+                       "VALUES (4202, 'ch_month', 'unlimit_30d', 249)")
+    for _ in range(80):
+        await sp.add_xp(conn, 4202, "game_win")
+    st = await sp.state(conn, 4202, sp.active_season(now))
+    assert st["xp"] == st["game_xp_cap"] == sp.PASS_GAME_XP_DAILY_MONTHLY
+    await conn.execute("UPDATE star_payments SET refunded_at = NOW() WHERE telegram_charge_id = 'ch_month'")
+    assert await sp.game_xp_cap(conn, 4202, now) == sp.PASS_GAME_XP_DAILY            # возврат Stars — бонус пропал
+    await conn.execute("UPDATE star_payments SET refunded_at = NULL WHERE telegram_charge_id = 'ch_month'")
+    await conn.execute("UPDATE users SET unlimit_until = $1 WHERE user_id = 4202", now - timedelta(hours=1))
+    assert await sp.game_xp_cap(conn, 4202, now) == sp.PASS_GAME_XP_DAILY            # безлимит кончился

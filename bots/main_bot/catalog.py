@@ -172,9 +172,11 @@ SHOP_INFO: list[dict[str, str]] = [
      "title_en": "♾ Eternal Miner · 999 ★",
      "text_en": "Turns your free Intern Bot into an eternal Miner Bot: 5 🪙 per hour forever. Needs 3 active friends."},
     {"cat": "games", "title": "⚡ Безлимит · 24 ч за 15 ★ / 30 дней за 249 ★",
-     "text": "Снимает суточный лимит побед: каждая победа приносит монеты и ресурс игры без ограничений.",
+     "text": "Снимает суточный лимит побед: каждая победа приносит монеты и ресурс игры без ограничений. "
+             "Безлимит на 30 дней ещё и удваивает опыт пропуска сезона за игры: до 300 в сутки вместо 150.",
      "title_en": "⚡ Unlimited · 24h for 15 ★ / 30 days for 249 ★",
-     "text_en": "Removes the daily win limit: every win brings coins and the game's resource without caps."},
+     "text_en": "Removes the daily win limit: every win brings coins and the game's resource without caps. "
+                "The 30-day pass also doubles season-pass XP from games: up to 300 a day instead of 150."},
     {"cat": "games", "title": "💰 Паки монет · 5 000 – 100 000 🪙",
      "text": "Монеты сразу на баланс: дуэли с большими ставками, биржа, своя команда, Шаттл. Чем больше пак, тем выгоднее курс.",
      "title_en": "💰 Coin packs · 5,000 – 100,000 🪙",

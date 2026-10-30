@@ -21,9 +21,12 @@ PASS_FIRST = "2026-11"         # первый сезон с эксклюзивн
 PASS_EARLY_DAYS = 7            # за неделю до сезона пропуск следующего месяца уже можно купить
 PASS_XP = {"game_win": 5, "duel": 5, "duel_win": 10, "raid": 8, "raid_win": 12, "raid_def": 4, "expedition": 30,
            "craft": 10, "tech": 40, "quest": 40, "chest": 30}
-# Опыт за победы в играх — не больше PASS_GAME_XP_DAILY в сутки UTC (владелец 30.10: «15 дней фигачить, 15 — играть
-# неспеша»): гриндер дойдёт до 30-го уровня примерно за 2 недели, а не за 4 дня. Остальные события не ограничены.
-PASS_GAME_XP_DAILY = 200
+# Опыт за победы в играх — не больше PASS_GAME_XP_DAILY в сутки UTC (владелец 30.10: «больше вовлечённости»): одними играми
+# 30-й уровень — за 20 дней; с купленным безлимитом на 30 дней — PASS_GAME_XP_DAILY_MONTHLY (за 10 дней). Суточный безлимит
+# лимит опыта не поднимает (решение владельца). Остальные события не ограничены.
+PASS_GAME_XP_DAILY = 150
+PASS_GAME_XP_DAILY_MONTHLY = 300
+PASS_MONTHLY_SKU = "unlimit_30d"
 PASS_DAILY_CAPPED = ("game_win",)
 
 # Темы сезонов по месяцам: название, цвета и эффект эксклюзивных скинов пропуска (никогда не продаются)
@@ -148,11 +151,26 @@ async def add_xp(conn, user_id: int, event: str, n: int = 1) -> None:
     row = await conn.fetchrow("SELECT game_day, game_xp FROM season_pass WHERE user_id = $1 AND season = $2 FOR UPDATE",
                               user_id, season)
     used = game_xp_today(row, now)
-    gain = min(gain, PASS_GAME_XP_DAILY - used)
+    gain = min(gain, await game_xp_cap(conn, user_id, now) - used)
     if gain <= 0:
         return
     await conn.execute("UPDATE season_pass SET xp = xp + $3, game_day = $4, game_xp = $5 WHERE user_id = $1 AND season = $2",
                        user_id, season, gain, today, used + gain)
+
+
+async def has_monthly_unlimit(conn, user_id: int, now: datetime) -> bool:
+    """Безлимит действует и куплен месячным тарифом за ★ в последние 30 дней (без возвратов и тест-чеков)."""
+    until = await conn.fetchval("SELECT unlimit_until FROM users WHERE user_id = $1", user_id)
+    if not until or until <= now:
+        return False
+    return bool(await conn.fetchval(
+        "SELECT 1 FROM star_payments WHERE user_id = $1 AND item_payload = $2 AND stars_amount > 0 AND refunded_at IS NULL "
+        "AND telegram_charge_id NOT LIKE 'TEST%' AND created_at >= $3 LIMIT 1",
+        user_id, PASS_MONTHLY_SKU, now - timedelta(days=30)))
+
+
+async def game_xp_cap(conn, user_id: int, now: datetime) -> int:
+    return PASS_GAME_XP_DAILY_MONTHLY if await has_monthly_unlimit(conn, user_id, now) else PASS_GAME_XP_DAILY
 
 
 def game_xp_today(row, now: datetime) -> int:
@@ -165,7 +183,8 @@ async def state(conn, user_id: int, season: str) -> dict:
                               "WHERE user_id = $1 AND season = $2", user_id, season)
     xp = row["xp"] if row else 0
     return {"season": season, "xp": xp, "level": pass_level(xp), "premium": bool(row and row["premium"]),
-            "game_xp_today": game_xp_today(row, utcnow()), "game_xp_cap": PASS_GAME_XP_DAILY,
+            "game_xp_today": game_xp_today(row, utcnow()), "game_xp_cap": await game_xp_cap(conn, user_id, utcnow()),
+            "game_xp_cap_monthly": PASS_GAME_XP_DAILY_MONTHLY,
             "claimed_free": list(row["claimed_free"]) if row else [], "claimed_paid": list(row["claimed_paid"]) if row else []}
 
 
