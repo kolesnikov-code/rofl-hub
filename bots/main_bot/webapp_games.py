@@ -225,7 +225,7 @@ async def handle_quiz_next(request: web.Request) -> web.Response:
     ctx = await _guard(request, "quiz")
     if isinstance(ctx, web.Response):
         return ctx
-    question = await _next_question(ctx.user_id)
+    question = await _next_question(ctx.user_id, ctx.lang)
     if question is None:
         return fail(t(ctx.lang, "quiz.empty"))
     state = quiz_round_state(question)

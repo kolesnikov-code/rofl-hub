@@ -22,7 +22,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from bots.main_bot.guards import feature_enabled
-from bots.main_bot.utils.questions_loader import get_question_by_id, get_random_question, pick_unseen
+from bots.main_bot.utils.questions_loader import get_question_by_id, get_random_question, has_lang, pick_unseen
 from shared.analytics import notify_referrer_qualified, qualify_referral_if_due, track
 from shared.database import db
 from shared.economy import (
@@ -385,6 +385,8 @@ def _quiz_round(question: dict, lang: str) -> tuple[str, types.InlineKeyboardMar
     ])
     text = t(lang, "quiz.round",
              category=str(question["category"]).upper(), question=question["q"])
+    if lang != "ru" and has_lang(lang):
+        text = text.split("\n\n<i>🌐")[0]   # вопросы уже на языке игрока — приписка «пока на русском» не нужна
     return text, kb, correct_idx
 
 
@@ -438,12 +440,13 @@ async def _quiz_timeout_watchdog(message: types.Message, state: FSMContext, toke
         logger.exception("[QUIZ_TIMER] сбой вотчдога user=%s", user_id)
 
 
-async def _next_question(user_id: int) -> dict | None:
-    """Сначала вопросы, которых игрок ещё не видел; прошёл всю базу — новый круг. Сбой БД — просто случайный."""
+async def _next_question(user_id: int, lang: str = "ru") -> dict | None:
+    """Сначала вопросы, которых игрок ещё не видел; прошёл всю базу — новый круг. Сбой БД — просто случайный.
+    Вопросы — на языке игрока, если есть перевод (questions_<lang>.csv), иначе русская база."""
     try:
         async with db.pool.acquire() as conn:
             seen = {r["qkey"] for r in await conn.fetch("SELECT qkey FROM quiz_seen WHERE user_id = $1", user_id)}
-            question, lap_done = pick_unseen(seen)
+            question, lap_done = pick_unseen(seen, lang)
             if question is None:
                 return None
             if lap_done:
@@ -453,12 +456,12 @@ async def _next_question(user_id: int) -> dict | None:
             return question
     except Exception:
         logger.exception("[QUIZ] не удалось учесть просмотренные вопросы user=%s", user_id)
-        return get_random_question()
+        return get_random_question(lang)
 
 
 async def _start_quiz(target: types.Message, state: FSMContext, user_id: int, edit: bool,
                       lang: str = "ru") -> None:
-    question = await _next_question(user_id)
+    question = await _next_question(user_id, lang)
     if question is None:
         await target.answer(t(lang, "quiz.empty"))
         return
@@ -466,7 +469,7 @@ async def _start_quiz(target: types.Message, state: FSMContext, user_id: int, ed
     text, kb, correct_idx = _quiz_round(question, lang)
     token = random.getrandbits(62)
     await state.set_state(SoloGameStates.waiting_for_quiz)
-    await state.update_data(quiz_qid=question["id"], quiz_correct=correct_idx, quiz_token=token)
+    await state.update_data(quiz_qid=question["id"], quiz_correct=correct_idx, quiz_token=token, quiz_lang=lang)
     if edit:
         sent = await _safe_edit(target, text, kb)
     else:
@@ -506,7 +509,7 @@ async def process_quiz_answer(callback: types.CallbackQuery, state: FSMContext, 
         await _safe_edit(callback.message, text, _retry_kb(user_lang, "quiz", t(user_lang, "quiz.btn_new")))
         return
 
-    question = get_question_by_id(qid)
+    question = get_question_by_id(qid, data.get("quiz_lang") or user_lang)
     if is_win:
         # text = games.win (+ games.level_up при повышении уровня)
         head = text
