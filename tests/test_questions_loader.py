@@ -1,4 +1,5 @@
 import csv
+import html
 import io
 from pathlib import Path
 
@@ -118,7 +119,8 @@ def test_translated_banks_are_valid_and_match_the_russian_size():
         assert len(set(texts)) == len(texts), f"{lang}: повторы"
         for q in qs:
             assert len(set(q["options"])) == 4 and q["correct"] in q["options"], q["q"]
-            assert all(len(o) <= 40 for o in q["options"]), q["q"]
+            assert all(len(html.unescape(o)) <= 40 for o in q["options"]), q["q"]
+            assert "&#x27;" not in q["q"] + "".join(q["options"]), q["q"]   # апостроф на кнопках — как есть
             assert "рофл" not in q["q"].lower() and "rofl" not in q["q"].lower().replace("rofl hub", ""), q["q"]
         for i in range(4):
             assert all(len(f"quiz_check:{q['id']}:{i}".encode()) <= 64 for q in qs)

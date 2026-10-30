@@ -47,15 +47,16 @@ def parse_questions(rows, *, source: str = "csv") -> list[dict]:
         if not q or not correct or any(not w for w in wrong):
             logger.warning("[QUIZ_CSV] строка %s пропущена: пустое поле (%s)", idx, source)
             continue
-        options = [html.escape(correct)] + [html.escape(w) for w in wrong]
+        # quote=False: апостроф в «o'zbek» не превращается в &#x27; (варианты — это ещё и текст кнопок)
+        options = [html.escape(correct, quote=False)] + [html.escape(w, quote=False) for w in wrong]
         if len(set(options)) != 4:
             logger.warning("[QUIZ_CSV] строка %s пропущена: повторяющиеся варианты", idx)
             continue
         result.append({
             "id": idx,
             "key": question_key(q),
-            "category": html.escape((row.get("category") or "Общая").strip()),
-            "q": html.escape(q),
+            "category": html.escape((row.get("category") or "Общая").strip(), quote=False),
+            "q": html.escape(q, quote=False),
             "correct": options[0],
             "options": options,
         })
