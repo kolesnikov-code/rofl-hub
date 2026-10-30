@@ -21,6 +21,10 @@ PASS_FIRST = "2026-11"         # первый сезон с эксклюзивн
 PASS_EARLY_DAYS = 7            # за неделю до сезона пропуск следующего месяца уже можно купить
 PASS_XP = {"game_win": 5, "duel": 5, "duel_win": 10, "raid": 8, "raid_win": 12, "raid_def": 4, "expedition": 30,
            "craft": 10, "tech": 40, "quest": 40, "chest": 30}
+# Опыт за победы в играх — не больше PASS_GAME_XP_DAILY в сутки UTC (владелец 30.10: «15 дней фигачить, 15 — играть
+# неспеша»): гриндер дойдёт до 30-го уровня примерно за 2 недели, а не за 4 дня. Остальные события не ограничены.
+PASS_GAME_XP_DAILY = 200
+PASS_DAILY_CAPPED = ("game_win",)
 
 # Темы сезонов по месяцам: название, цвета и эффект эксклюзивных скинов пропуска (никогда не продаются)
 PASS_THEMES = {
@@ -132,17 +136,36 @@ async def add_xp(conn, user_id: int, event: str, n: int = 1) -> None:
     gain = PASS_XP.get(event, 0) * n
     if gain <= 0:
         return
-    season = active_season(utcnow())   # до PASS_FIRST опыт копится в первый пропуск — тот, что виден на экране
-    await conn.execute(
-        "INSERT INTO season_pass (user_id, season, xp) VALUES ($1, $2, $3) "
-        "ON CONFLICT (user_id, season) DO UPDATE SET xp = season_pass.xp + EXCLUDED.xp", user_id, season, gain)
+    now = utcnow()
+    season = active_season(now)   # до PASS_FIRST опыт копится в первый пропуск — тот, что виден на экране
+    if event not in PASS_DAILY_CAPPED:
+        await conn.execute(
+            "INSERT INTO season_pass (user_id, season, xp) VALUES ($1, $2, $3) "
+            "ON CONFLICT (user_id, season) DO UPDATE SET xp = season_pass.xp + EXCLUDED.xp", user_id, season, gain)
+        return
+    today = now.date()
+    await conn.execute("INSERT INTO season_pass (user_id, season) VALUES ($1, $2) ON CONFLICT DO NOTHING", user_id, season)
+    row = await conn.fetchrow("SELECT game_day, game_xp FROM season_pass WHERE user_id = $1 AND season = $2 FOR UPDATE",
+                              user_id, season)
+    used = game_xp_today(row, now)
+    gain = min(gain, PASS_GAME_XP_DAILY - used)
+    if gain <= 0:
+        return
+    await conn.execute("UPDATE season_pass SET xp = xp + $3, game_day = $4, game_xp = $5 WHERE user_id = $1 AND season = $2",
+                       user_id, season, gain, today, used + gain)
+
+
+def game_xp_today(row, now: datetime) -> int:
+    """Сколько опыта за победы в играх уже набрано сегодня (UTC)."""
+    return row["game_xp"] if row and row["game_day"] == now.date() else 0
 
 
 async def state(conn, user_id: int, season: str) -> dict:
-    row = await conn.fetchrow("SELECT xp, premium, claimed_free, claimed_paid FROM season_pass "
+    row = await conn.fetchrow("SELECT xp, premium, claimed_free, claimed_paid, game_day, game_xp FROM season_pass "
                               "WHERE user_id = $1 AND season = $2", user_id, season)
     xp = row["xp"] if row else 0
     return {"season": season, "xp": xp, "level": pass_level(xp), "premium": bool(row and row["premium"]),
+            "game_xp_today": game_xp_today(row, utcnow()), "game_xp_cap": PASS_GAME_XP_DAILY,
             "claimed_free": list(row["claimed_free"]) if row else [], "claimed_paid": list(row["claimed_paid"]) if row else []}
 
 

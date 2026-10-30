@@ -221,8 +221,8 @@ def test_storage_tab_shield_timer_and_giver_threshold():
     """Склад после фермы (серые пустые плашки, «лава» у заполненных), щит с таймером, порог дарения 7/10."""
     from shared.economy import (ITEM_COLUMNS, ITEM_EFFECTS, TEAM_HELP_GIVER_MIN_BONUS_CLAIMS,
                                 TEAM_HELP_GIVER_MIN_QUIZ_LEVEL, TRANSFER_SENDER_MIN_QUIZ_LEVEL)
-    assert (TEAM_HELP_GIVER_MIN_QUIZ_LEVEL, TEAM_HELP_GIVER_MIN_BONUS_CLAIMS) == (7, 10)
-    assert TEAM_HELP_GIVER_MIN_QUIZ_LEVEL > TRANSFER_SENDER_MIN_QUIZ_LEVEL
+    assert (TEAM_HELP_GIVER_MIN_QUIZ_LEVEL, TEAM_HELP_GIVER_MIN_BONUS_CLAIMS) == (3, 3)   # владелец 30.10
+    assert TEAM_HELP_GIVER_MIN_QUIZ_LEVEL == TRANSFER_SENDER_MIN_QUIZ_LEVEL
     assert set(ITEM_COLUMNS) <= set(ITEM_EFFECTS)
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     assert '"farm", "storage"' in html

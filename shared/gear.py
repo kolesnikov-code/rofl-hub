@@ -42,6 +42,7 @@ from shared.economy import (
     GEAR_SUITS,
     GEAR_UPGRADE_COINS,
     GEAR_UPGRADE_COST,
+    SUIT_BONUS,
     miner_bonus,
     season_bounds,
 )
@@ -308,6 +309,31 @@ async def drop_random(conn, user_id: int, qty: int, ref: str, now: datetime,
         await change_gear(conn, user_id, suit, slot, 1, 1, "drop", ref)
         out.append((suit, slot))
     return out
+
+
+async def referral_suit_state(conn, user_id: int) -> dict:
+    """🤝 Задание «Друзья»: сколько активных друзей и забран ли костюм."""
+    from shared.economy import REFERRAL_SUIT_FRIENDS
+    friends = await conn.fetchval("SELECT COUNT(*) FROM users WHERE referred_by = $1 AND qualified_at IS NOT NULL", user_id) or 0
+    taken = await conn.fetchval("SELECT ref_suit FROM users WHERE user_id = $1", user_id)
+    return {"need": REFERRAL_SUIT_FRIENDS, "friends": int(friends), "taken": taken,
+            "pct": {k: SUIT_BONUS[k][1] for k in GEAR_SUITS}}
+
+
+async def claim_referral_suit(conn, user_id: int, suit: str) -> None:
+    """Полный костюм (5 деталей 1 ур.) на выбор за REFERRAL_SUIT_FRIENDS активных друзей — один раз.
+    Награда, а не «выпадение»: сезонный лимит деталей не тратит (reason 'ref_suit')."""
+    if suit not in GEAR_SUITS:
+        raise GearError("gear.err_unknown")
+    st = await referral_suit_state(conn, user_id)
+    if st["friends"] < st["need"]:
+        raise GearError("gear.err_ref_need", n=st["need"], have=st["friends"])
+    taken = await conn.fetchval("UPDATE users SET ref_suit = $2 WHERE user_id = $1 AND ref_suit IS NULL RETURNING ref_suit",
+                                user_id, suit)
+    if taken is None:
+        raise GearError("gear.err_ref_taken")
+    for slot in GEAR_SLOTS:
+        await change_gear(conn, user_id, suit, slot, 1, 1, "ref_suit", "friends")
 
 
 # ============================================================================

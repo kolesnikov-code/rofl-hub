@@ -1,6 +1,6 @@
 """
 🎛 Пульт владельца — Mini App (решение 27.10): битвы и акции, призы, подарки, VIP-аукционы, тумблеры,
-квесты (ротация до 10 + эпики) и ⚡ Безлимит игроку по @username.
+квесты (ротация до 10 + эпики), ⚡ Безлимит игроку по @username и 🕵️ проверка на абуз (shared/abuse.py).
 
 Открывается из ГЛАВНОГО бота командой /admin (initData подписан его токеном), доступ — только ID из
 переменной ADMIN_ID. Пульт лишь пишет в базу: игроки видят битвы, цели и лоты в приложении (Паспорт → События,
@@ -665,6 +665,59 @@ async def handle_admin_unlimit(request: web.Request) -> web.Response:
     return web.json_response({"ok": True, "until": until})
 
 
+# ---------------------------------------------------------------- 🕵️ проверка на абуз (shared/abuse.py)
+async def handle_admin_abuse(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared import abuse
+    async with db.pool.acquire() as conn:
+        cards = await abuse.feed(conn, utcnow(), use_cache=request.query.get("fresh") != "1")
+    return web.json_response({"ok": True, "cards": cards, "window_days": abuse.ABUSE_WINDOW_DAYS})
+
+
+async def handle_admin_abuse_user(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared import abuse
+    async with db.pool.acquire() as conn:
+        d = await abuse.detail(conn, _int(request.query.get("id")), utcnow())
+    if d is None:
+        return _fail("Игрок не найден", 404)
+    return web.json_response({"ok": True, **d})
+
+
+async def handle_admin_abuse_review(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared import abuse
+    data = await _body(request)
+    try:
+        async with db.pool.acquire() as conn:
+            score = await abuse.review(conn, _int(data.get("id")), str(data.get("note") or ""), utcnow())
+    except KeyError:
+        return _fail("Игрок не найден", 404)
+    return web.json_response({"ok": True, "score": score})
+
+
+async def handle_admin_abuse_block(request: web.Request) -> web.Response:
+    uid = _admin(request)
+    if isinstance(uid, web.Response):
+        return uid
+    from shared import abuse
+    from shared.db_admin import set_user_blocked
+    data = await _body(request)
+    target = _int(data.get("id"))
+    if target in admin_ids():
+        return _fail("Себя заблокировать нельзя")
+    async with db.pool.acquire() as conn:
+        ok = await set_user_blocked(conn, target, bool(data.get("blocked")))
+    abuse.invalidate()
+    return web.json_response({"ok": ok}) if ok else _fail("Игрок не найден", 404)
+
+
 def register_admin_routes(app: web.Application) -> None:
     app.router.add_get("/admin", handle_admin_page)
     app.router.add_get("/api/admin/meta", handle_admin_meta)
@@ -685,3 +738,7 @@ def register_admin_routes(app: web.Application) -> None:
     app.router.add_get("/api/admin/targets", handle_admin_targets)
     app.router.add_post("/api/admin/target", handle_admin_target_create)
     app.router.add_post("/api/admin/target/close", handle_admin_target_close)
+    app.router.add_get("/api/admin/abuse", handle_admin_abuse)
+    app.router.add_get("/api/admin/abuse/user", handle_admin_abuse_user)
+    app.router.add_post("/api/admin/abuse/review", handle_admin_abuse_review)
+    app.router.add_post("/api/admin/abuse/block", handle_admin_abuse_block)

@@ -434,9 +434,12 @@ async def handle_referral(request: web.Request) -> web.Response:
                  AND ((u.created_at >= $2 AND u.created_at < $3) OR (u.qualified_at >= $2 AND u.qualified_at < $3))
                GROUP BY r.user_id
                ORDER BY qualified DESC, invited DESC, r.user_id ASC LIMIT $1""", REFERRAL_TOP_LIMIT, start, end)
+        from shared.gear import referral_suit_state
+        suit_task = await referral_suit_state(conn, ctx.user_id)
     username = await _bot_name(request)
     link = f"https://t.me/{username}?start={ctx.user_id}" if username else ""
     return web.json_response({
+        "suit_task": suit_task,
         "link": link,
         "share_text": plain(t(ctx.lang, "ref.share_text")),
         "invited": int(stats["invited"]), "qualified": int(stats["qualified"]),

@@ -119,6 +119,11 @@ async def _act(request: web.Request, action) -> web.Response:
         return fail(t(ctx.lang, e.key, **e.kwargs))
 
 
+async def handle_ref_suit(request: web.Request) -> web.Response:
+    """🤝 Полный костюм на выбор за активных друзей (вкладка «Друзья»)."""
+    return await _act(request, lambda conn, uid, d: gear.claim_referral_suit(conn, uid, str(d.get("suit") or "")))
+
+
 async def handle_gender(request: web.Request) -> web.Response:
     return await _act(request, lambda conn, uid, d: gear.set_gender(conn, uid, str(d.get("gender") or "")))
 
@@ -317,6 +322,7 @@ async def handle_gear_history(request: web.Request) -> web.Response:
 def register_gear_routes(app: web.Application) -> None:
     app.router.add_get("/api/gear", handle_gear)
     app.router.add_post("/api/gear/gender", handle_gender)
+    app.router.add_post("/api/gear/ref_suit", handle_ref_suit)
     app.router.add_post("/api/gear/equip", handle_equip)
     app.router.add_post("/api/gear/unequip", handle_unequip)
     app.router.add_post("/api/gear/upgrade", handle_upgrade)

@@ -60,6 +60,32 @@
   .grid2 { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
   .grid3 { display: grid; gap: 8px; grid-template-columns: 1fr 1fr 1fr; }
   .status { font-size: 12px; font-weight: 700; }
+  /* 🕵️ проверка на абуз */
+  .ab { display: block; width: 100%; text-align: left; cursor: pointer; color: var(--text); border-left: 5px solid var(--muted); }
+  .ab.red { border-left-color: #ff3b5c; box-shadow: 0 0 18px rgba(255,59,92,.18); } .ab.orange { border-left-color: #ff9a3c; }
+  .ab.yellow { border-left-color: #ffd93d; } .ab.green { border-left-color: #37e85f; } .ab.cleared { opacity: .6; }
+  .ab-head { display: flex; align-items: center; gap: 10px; }
+  .ab-score { min-width: 54px; text-align: center; font-weight: 900; font-size: 20px; border-radius: 12px; padding: 6px 4px; background: #0d1326; }
+  .ab-score small { display: block; font-size: 10px; font-weight: 400; color: var(--muted); }
+  .red .ab-score, .ab-score.red { color: #ff6b81; } .orange .ab-score, .ab-score.orange { color: #ffb36b; }
+  .yellow .ab-score, .ab-score.yellow { color: #ffe27a; } .green .ab-score, .ab-score.green { color: #6dff8f; }
+  .ab-name { font-weight: 800; font-size: 15px; word-break: break-word; }
+  .badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .bdg { font-size: 11px; padding: 2px 7px; border-radius: 999px; background: rgba(138,147,184,.15); color: var(--muted); }
+  .bdg.bad { background: rgba(255,85,85,.18); color: #ffb3b3; } .bdg.ok { background: rgba(55,232,95,.15); color: #9dffb4; }
+  .ab ul { margin: 8px 0 0 18px; color: #c9d0f0; font-size: 13px; line-height: 1.45; }
+  .sig { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed rgba(138,147,184,.15); }
+  .sig b { min-width: 42px; text-align: center; border-radius: 8px; padding: 3px 0; background: rgba(255,85,85,.15); color: #ffb3b3; }
+  .uid { color: var(--neon); cursor: pointer; text-decoration: underline dotted; }
+  .tbl { width: 100%; min-width: 460px; border-collapse: collapse; font-size: 12px; }
+  .lnk { padding: 8px 0; border-bottom: 1px dashed rgba(138,147,184,.15); word-break: break-word; }
+  .tbl th { text-align: left; color: var(--muted); font-weight: 600; padding: 5px 4px; border-bottom: 1px solid rgba(138,147,184,.25); }
+  .tbl td { padding: 5px 4px; border-bottom: 1px dashed rgba(138,147,184,.12); vertical-align: top; word-break: break-word; }
+  .tbl .p { color: var(--ok); } .tbl .m { color: var(--bad); }
+  .scroll { overflow-x: auto; }
+  .pg { display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .kv div { background: #0d1326; border-radius: 10px; padding: 8px 10px; } .kv small { display: block; color: var(--muted); font-size: 11px; }
   @media (min-width: 900px) { .cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; align-items: start; } }
 </style>
 </head>
@@ -584,8 +610,164 @@
     });
   }
 
+  // ---------------- 🕵️ Проверка на абуз: лента подозрительных → полная картина игрока по категориям
+  const LVL = { red: "🔴 жёстко", orange: "🟠 подозрительно", yellow: "🟡 присмотреться", green: "🟢 чисто" };
+  const REASON = { mining: "⛏ ферма", transfer_in: "💸 перевод от", transfer_out: "💸 перевод для", market_buy: "📈 покупка на бирже",
+    market_sell: "📈 продажа на бирже", market_bid: "📈 заявка (эскроу)", market_bid_refund: "📈 возврат заявки", duel_stake: "🥊 ставка дуэли",
+    duel_win: "🥊 выигрыш дуэли", duel_refund: "🥊 возврат ставки", quest_reward: "🗝 квест", quest_hint: "🗝 подсказка",
+    daily_chest: "🎁 сундук", daily_case: "🕵️ дело дня", referral_qualified: "🤝 за друга", admin_gift: "🎁 подарок пульта",
+    quiz_level_up: "🧠 уровень интеллекта", quiz_hint: "🧠 подсказка", team_help_give: "🤝 подарил(а) тиммейту",
+    team_help_get: "🤝 получил(а) от тиммейта", raid_loot: "⚔️ трофей налёта", raid_loss: "⚔️ потеря в налёте", craft: "🛠 мастерская",
+    drop: "🧥 выпало", ref_suit: "🧥 костюм за друзей", gear_upgrade: "🧥 прокачка", suit_miner: "⛏ бонус шахтёра" };
+  const reasonLabel = r => { const k = String(r || ""); return k.startsWith("game_win:") ? "🕹 победа: " + k.slice(9) : (REASON[k] || k); };
+  const sgn = n => '<span class="' + (n >= 0 ? "p" : "m") + '">' + (n > 0 ? "+" : "") + num(n) + '</span>';
+  let abWindow = 30, abFilter = "all", abPage = 0, abQuery = "", abUser = null, abCat = "why", abCatPage = 0, abData = null;
+
+  async function viewAbuse(app, fresh) {
+    if (abUser) return viewAbuseUser(app);
+    const d = abData && !fresh ? abData : (abData = await api("/api/admin/abuse" + (fresh ? "?fresh=1" : "")));
+    const counts = { red: 0, orange: 0, yellow: 0, green: 0 };
+    d.cards.forEach(c => { if (!c.blocked && !c.cleared) counts[c.level]++; });
+    const q = abQuery.trim().toLowerCase();
+    const list = d.cards.filter(c => (abFilter === "all" ? true : abFilter === "blocked" ? c.blocked : abFilter === "cleared" ? c.cleared && !c.blocked
+      : c.level === abFilter && !c.blocked && !c.cleared) && (!q || c.name.toLowerCase().includes(q) || String(c.id).includes(q)));
+    const per = 20, pages = Math.max(1, Math.ceil(list.length / per)); abPage = Math.min(abPage, pages - 1);
+    const chip = (k, t) => '<button class="chip' + (abFilter === k ? ' on' : '') + '" data-abf="' + k + '">' + t + '</button>';
+    app.innerHTML =
+      '<div class="card"><h2>🕵️ Проверка на абуз</h2><div class="hint">Алгоритм сам ищет фермы твинков, слив ресурсов и монет в один аккаунт, ' +
+      'подставные налёты и дуэли, торговлю «в одни руки», накрутку рефералов и «круглосуточных» ботов — за последние ' + d.window_days +
+      ' дней. Сверху — самые жёсткие. Нажми на карточку — откроется полная картина игрока. Сам алгоритм никого не наказывает: решаешь ты.</div>' +
+      '<div class="chips" style="margin-top:10px">' + chip("all", "Все · " + d.cards.length) + chip("red", "🔴 " + counts.red) +
+      chip("orange", "🟠 " + counts.orange) + chip("yellow", "🟡 " + counts.yellow) + chip("green", "🟢 " + counts.green) +
+      chip("cleared", "✅ проверены") + chip("blocked", "⛔ заблокированы") + '</div>' +
+      '<div class="grid2" style="margin-top:8px"><input id="abQ" placeholder="Поиск: @username или ID" value="' + esc(abQuery) + '">' +
+      '<button class="mini" id="abFresh">🔄 Пересчитать</button></div></div>' +
+      (list.length ? list.slice(abPage * per, abPage * per + per).map(abCard).join("") : '<div class="card hint">Никого не нашлось — и это хорошая новость.</div>') +
+      (pages > 1 ? '<div class="pg">' + Array.from({ length: pages }, (_, i) => '<button class="chip' + (i === abPage ? ' on' : '') +
+        '" data-abp="' + i + '">' + (i + 1) + '</button>').join("") + '</div>' : '');
+    app.querySelectorAll("[data-abf]").forEach(b => { b.onclick = () => { abFilter = b.dataset.abf; abPage = 0; viewAbuse(app); }; });
+    app.querySelectorAll("[data-abp]").forEach(b => { b.onclick = () => { abPage = Number(b.dataset.abp); viewAbuse(app); window.scrollTo(0, 0); }; });
+    $("abQ").onchange = () => { abQuery = $("abQ").value; abPage = 0; viewAbuse(app); };
+    $("abFresh").onclick = () => viewAbuse(app, true);
+    bindUid(app);
+  }
+  function abCard(c) {
+    return '<div class="card ab ' + c.level + (c.cleared ? ' cleared' : '') + '" data-uid="' + c.id + '"><div class="ab-head">' +
+      '<div class="ab-score">' + c.score + '<small>баллов</small></div><div style="flex:1"><div class="ab-name">' + esc(c.name) + '</div>' +
+      '<div class="badges"><span class="bdg">' + LVL[c.level] + '</span>' + (c.blocked ? '<span class="bdg bad">⛔ заблокирован</span>' : '') +
+      (c.reviewed ? '<span class="bdg ok">✅ проверен (' + c.reviewed.score + ')</span>' : '') +
+      (c.links ? '<span class="bdg">🔗 связей: ' + c.links + '</span>' : '') + '<span class="bdg">🗓 ' + c.age_days + ' дн.</span>' +
+      '<span class="bdg">🧠 ' + c.quiz + '</span></div></div></div>' +
+      (c.reasons.length ? '<ul>' + c.reasons.map(r => '<li>' + esc(r) + '</li>').join("") + (c.signals > 3 ? '<li class="hint">…и ещё ' + (c.signals - 3) + '</li>' : '') + '</ul>'
+        : '<div class="hint">Подозрительного не найдено.</div>') + '</div>';
+  }
+  function bindUid(host) {
+    host.querySelectorAll("[data-uid]").forEach(el => { el.onclick = e => {
+      e.stopPropagation(); abUser = Number(el.dataset.uid); abCat = "why"; abCatPage = 0; go(); window.scrollTo(0, 0); }; });
+  }
+  const who = (d, id) => id ? '<span class="uid" data-uid="' + id + '">' + esc(d.names[String(id)] || "#" + id) + '</span>' : "—";
+  function tbl(head, rows) {
+    const per = 50, pages = Math.max(1, Math.ceil(rows.length / per)); abCatPage = Math.min(abCatPage, pages - 1);
+    if (!rows.length) return '<div class="hint">За ' + abWindow + ' дней — пусто.</div>';
+    return '<div class="scroll"><table class="tbl"><tr>' + head.map(h => '<th>' + h + '</th>').join("") + '</tr>' +
+      rows.slice(abCatPage * per, abCatPage * per + per).map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join("") + '</tr>').join("") +
+      '</table></div>' + (pages > 1 ? '<div class="pg">' + Array.from({ length: pages }, (_, i) => '<button class="chip' + (i === abCatPage ? ' on' : '') +
+      '" data-acp="' + i + '">' + (i + 1) + '</button>').join("") + '</div>' : '');
+  }
+  const AB_CATS = [["why", "🚩 Почему"], ["links", "🔗 Связи"], ["coins", "🪙 Монеты"], ["res", "📦 Ресурсы"], ["gifts", "🤝 Подарки в команде"],
+    ["transfers", "💸 Переводы"], ["market", "📈 Биржа и обмен"], ["raids", "⚔️ Налёты"], ["duels", "🥊 Дуэли"], ["games", "🕹 Игры"],
+    ["exp", "🗺 Походы"], ["pay", "⭐ Покупки"], ["refs", "👥 Рефералы"], ["gear", "🧥 Вещи и награды"]];
+  function abSection(d) {
+    const res = k => (RES_ICON[k] || "") + " " + esc(k);
+    switch (abCat) {
+      case "why": return d.signals.length ? d.signals.map(s => '<div class="sig"><b>+' + s.points + '</b><div>' + esc(s.text) +
+          (s.links.length ? '<div class="badges">' + s.links.slice(0, 12).map(id => who(d, id)).join(" ") + '</div>' : '') + '</div></div>').join("") +
+          '<div class="hint">Баллы — сумма сигналов. 60+ — жёсткий случай, 30+ — подозрительно, 10+ — присмотреться.</div>'
+        : '<div class="hint">Алгоритм не нашёл ничего подозрительного за ' + d.window_days + ' дней.</div>';
+      case "links": return '<div class="hint">Все, с кем игрок обменивался ценностями. 🤝 — его реферал, ⬆️ — пригласивший, 🏆 — тиммейт.</div>' +
+        (d.links.length ? d.links.map(l => '<div class="lnk"><div>' + who(d, l.id) + (l.blocked ? " ⛔" : "") + (l.referral ? " 🤝" : "") +
+          (l.referrer ? " ⬆️" : "") + (l.same_team ? " 🏆" : "") + '</div><div class="badges">' + [
+            [l.res_in, "📦 получил(а) " + num(l.res_in)], [l.res_out, "📦 отдал(а) " + num(l.res_out)],
+            [l.coins_in, "🪙 получил(а) " + num(l.coins_in)], [l.coins_out, "🪙 отдал(а) " + num(l.coins_out)],
+            [l.trades, "📈 сделок " + l.trades], [l.swaps, "🔁 обменов " + l.swaps],
+            [l.duels, "🥊 дуэлей " + l.duels + ", его побед " + l.duel_wins],
+            [l.raids_won, "⚔️ ограбил(а) " + l.raids_won], [l.raids_lost, "🛡 ограблен(а) " + l.raids_lost]]
+            .filter(x => x[0]).map(x => '<span class="bdg">' + x[1] + '</span>').join("") + '</div></div>').join("")
+          : '<div class="hint">Ни с кем не обменивался(ась) ценностями.</div>');
+      case "coins": return '<h3>Итого по источникам</h3>' + tbl(["Источник", "Сумма", "Операций"], d.coin_sum.map(r => [esc(reasonLabel(r.reason)), sgn(r.total), r.n])) +
+        '<h3>Журнал</h3>' + tbl(["Когда", "🪙", "За что", "Ссылка"], d.coins.map(r => [dt(r.created_at), sgn(r.delta), esc(reasonLabel(r.reason)), esc(r.ref || "")]));
+      case "res": return '<h3>Итого по ресурсам и источникам</h3>' + tbl(["Ресурс", "Источник", "Сумма", "Операций"],
+          d.res_sum.map(r => [res(r.kind), esc(reasonLabel(r.reason)), sgn(r.total), r.n])) +
+        '<h3>Журнал</h3>' + tbl(["Когда", "Ресурс", "Кол-во", "За что", "Ссылка"], d.resources.map(r => [dt(r.created_at), res(r.kind), sgn(r.delta), esc(reasonLabel(r.reason)), esc(r.ref || "")]));
+      case "gifts": return tbl(["Когда", "Куда", "Ресурс", "Кол-во", "Кто"], d.gifts.map(r => [dt(r.created_at), r.dir === "in" ? "⬅️ получил(а)" : "➡️ отдал(а)",
+          res(r.kind), num(r.qty), who(d, r.cp)]));
+      case "transfers": return tbl(["Когда", "Куда", "🪙", "Кто"], d.transfers.map(r => [dt(r.created_at), r.reason === "transfer_in" ? "⬅️ получил(а)" : "➡️ отправил(а)",
+          sgn(r.delta), /^\d+$/.test(r.ref || "") ? who(d, Number(r.ref)) : esc(r.ref || "")]));
+      case "market": return '<h3>Сделки</h3>' + tbl(["Когда", "Роль", "Товар", "Кол-во", "Цена", "Сумма", "С кем"], d.market.map(r => {
+          const buy = r.buyer_id === d.id; return [dt(r.created_at), buy ? "🛒 купил(а)" : "🏷 продал(а)", esc(r.asset), r.qty, num(r.price), num(r.qty * r.price),
+            who(d, buy ? r.seller_id : r.buyer_id)]; })) +
+        '<h3>Обмены ресурсами</h3>' + tbl(["Когда", "Отдаёт", "Хочет", "Статус", "Автор", "Принял"], d.swaps.map(r => [dt(r.created_at), r.give_qty + " " + res(r.give_kind),
+          r.want_qty + " " + res(r.want_kind), esc(r.status), who(d, r.maker_id), who(d, r.taker_id)]));
+      case "raids": return tbl(["Когда", "Роль", "Соперник", "Итог", "Трофей", ""], d.raids.map(r => {
+          const att = r.attacker_id === d.id; return [dt(r.created_at), att ? "⚔️ напал(а)" : "🛡 цель", who(d, att ? r.defender_id : r.attacker_id),
+            r.result === "win" ? (att ? "✅ победа" : "❌ ограбили") : r.result === "lose" ? (att ? "❌ провал" : "✅ отбился(ась)") : "🤝 ничья",
+            esc(r.loot === "{}" ? "" : r.loot), r.is_revenge ? "реванш" : ""]; }));
+      case "duels": return tbl(["Когда", "Стол", "Соперник", "Итог", "Статус"], d.duels.map(r => {
+          const cp = r.player1 === d.id ? r.player2 : r.player1; return [dt(r.created_at), num(r.stake) + " 🪙", who(d, cp),
+            !r.winner_id ? "—" : r.winner_id === d.id ? "✅ победа" : "❌ поражение", esc(r.status)]; }));
+      case "games": return '<h3>Победы по дням</h3>' + tbl(["День", "Игра", "Побед", "🪙"], d.games.map(r => [esc(r.day), esc(r.game), r.wins, num(r.coins)])) +
+        '<h3>Раунды в приложении</h3>' + tbl(["День", "Игра", "Раундов"], d.rounds.map(r => [esc(r.day), esc(r.game), r.n])) +
+        '<h3>Сколько разных часов в сутки активен(а)</h3><div class="hint">18+ часов в сутки — похоже на бота или общий аккаунт.</div>' +
+        tbl(["День", "Часов"], d.hours.map(r => [esc(r.day), r.hours >= 18 ? '<b class="bad">' + r.hours + '</b>' : r.hours]));
+      case "exp": return tbl(["Когда", "Цель", "Формат", "Статус", "Груз", "Вышел", "Прибытие"], d.expeditions.map(r => [dt(r.created_at), esc(r.title || "—"),
+          esc(r.mode), esc(r.status), r.cargo, dt(r.departed_at), dt(r.arrive_at)]));
+      case "pay": return tbl(["Когда", "Товар", "★", "Возврат"], d.payments.map(r => [dt(r.created_at), esc(r.item_payload), r.stars_amount,
+          r.refunded_at ? '<span class="bad">' + dt(r.refunded_at) + '</span>' : ""])) + '<div class="hint">Покупки — за всё время.</div>';
+      case "refs": return '<div class="hint">🔻 — пропал(а) сразу после квалификации, 🍼 — отдаёт ресурсы/монеты пригласившему.</div>' +
+        tbl(["Друг", "Пришёл", "Активен с", "Последний вход", "🧠", ""], d.referrals.map(r => [who(d, r.id) + (r.blocked ? " ⛔" : ""), dt(r.created_at),
+          dt(r.qualified_at), dt(r.last_seen_at), r.quiz, (r.abandoned ? "🔻" : "") + (r.feeds ? "🍼" : "")]));
+      case "gear": return '<h3>Детали и артефакты</h3>' + tbl(["Когда", "Вещь", "Ур.", "Кол-во", "Откуда"], d.gear.map(r => [dt(r.created_at),
+          esc(r.suit + " / " + r.slot), r.level, sgn(r.delta), esc(reasonLabel(r.reason)) + (r.ref ? " · " + esc(r.ref) : "")])) +
+        '<h3>Награды битв, походов и подарков</h3>' + tbl(["Когда", "Ключ", "Что"], d.grants.map(r => [dt(r.created_at), esc(r.ref), esc(r.payload)]));
+    }
+    return "";
+  }
+  async function viewAbuseUser(app) {
+    const d = await api("/api/admin/abuse/user?id=" + abUser);
+    abWindow = d.window_days;
+    const P = d.profile;
+    d.names[String(d.id)] = d.name;
+    app.innerHTML = '<button class="mini" id="abBack">⬅️ К ленте</button>' +
+      '<div class="card" style="margin-top:10px"><div class="ab-head"><div class="ab-score ' + d.level + '">' + d.score + '<small>баллов</small></div>' +
+      '<div style="flex:1"><div class="ab-name">' + esc(d.name) + '</div><div class="badges"><span class="bdg">' + LVL[d.level] + '</span>' +
+      (P.blocked ? '<span class="bdg bad">⛔ заблокирован</span>' : '') + (P.thin ? '<span class="bdg">🐣 молодой/слабый аккаунт</span>' : '') +
+      (d.reviewed ? '<span class="bdg ok">✅ проверен ' + dt(d.reviewed.at) + ' (' + d.reviewed.score + ')' + (d.reviewed.note ? ': ' + esc(d.reviewed.note) : '') + '</span>' : '') +
+      '</div></div></div><div class="kv" style="margin-top:10px">' +
+      [["Аккаунт создан", dt(P.created_at)], ["Последний вход", dt(P.last_seen_at)], ["Баланс", num(P.balance) + " 🪙"], ["Интеллект", "🧠 " + P.quiz],
+       ["Ежедневных котлет", P.bonus_claims], ["Активный с", dt(P.qualified_at)], ["Команда", esc(P.team || "—")],
+       ["Пригласил(а)", P.referrer_id ? who(d, P.referrer_id) : "—"]].map(([k, v]) => '<div><small>' + k + '</small>' + v + '</div>').join("") + '</div>' +
+      '<div class="grid2"><button class="btn ghost" id="abOk">✅ Проверен — опустить в ленте</button>' +
+      '<button class="btn warn" id="abBlock">' + (P.blocked ? "↩️ Разблокировать" : "⛔ Заблокировать") + '</button></div></div>' +
+      '<div class="chips" style="margin-bottom:12px">' + AB_CATS.map(([k, t]) => '<button class="chip' + (abCat === k ? ' on' : '') + '" data-abc="' + k + '">' + t + '</button>').join("") + '</div>' +
+      '<div class="card"><h2>' + AB_CATS.find(c => c[0] === abCat)[1] + ' · ' + d.window_days + ' дней</h2>' + abSection(d) + '</div>';
+    $("abBack").onclick = () => { abUser = null; go(); };
+    app.querySelectorAll("[data-abc]").forEach(b => { b.onclick = () => { abCat = b.dataset.abc; abCatPage = 0; viewAbuseUser(app); }; });
+    app.querySelectorAll("[data-acp]").forEach(b => { b.onclick = () => { abCatPage = Number(b.dataset.acp); viewAbuseUser(app); }; });
+    $("abOk").onclick = () => {
+      const note = prompt("Заметка к проверке (необязательно):", d.reviewed ? d.reviewed.note : "") ;
+      if (note === null) return;
+      act($("abOk"), "/api/admin/abuse/review", { id: d.id, note: note }, () => { abData = null; say("✅ Отмечен как проверенный"); viewAbuseUser(app); });
+    };
+    $("abBlock").onclick = () => {
+      if (!confirm(P.blocked ? "Разблокировать игрока?" : "Заблокировать игрока? Бот перестанет ему отвечать, приложение закроется.")) return;
+      act($("abBlock"), "/api/admin/abuse/block", { id: d.id, blocked: !P.blocked }, () => { abData = null; viewAbuseUser(app); });
+    };
+    bindUid(app);
+  }
+
   const TABS = { battles: ["⚔️ Битвы и акции", viewBattles], exp: ["🗺 Экспедиции", viewExp], gift: ["🎁 Подарки", viewGift],
-                 quests: ["🗺 Квесты", viewQuests], vip: ["🔨 Аукционы", viewVip], flags: ["🎛 Тумблеры", viewFlags] };
+                 quests: ["🗺 Квесты", viewQuests], vip: ["🔨 Аукционы", viewVip], abuse: ["🕵️ Проверка", viewAbuse],
+                 flags: ["🎛 Тумблеры", viewFlags] };
   async function go() {
     $("tabs").innerHTML = Object.entries(TABS).map(([k, [t]]) => '<button class="tab' + (tab === k ? ' on' : '') + '" data-tab="' + k + '">' + t + '</button>').join("");
     $("tabs").querySelectorAll("[data-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.tab; go(); }; });

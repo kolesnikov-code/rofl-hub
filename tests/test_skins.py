@@ -144,5 +144,5 @@ def test_pass_xp_goes_to_the_season_shown_on_screen(monkeypatch):
     class Conn:
         async def execute(self, sql, *args):
             calls.append(args)
-    asyncio.run(sp.add_xp(Conn(), 1, "game_win"))
+    asyncio.run(sp.add_xp(Conn(), 1, "quest"))
     assert calls and calls[0][1] == sp.PASS_FIRST == sp.active_season(datetime(2026, 10, 30, tzinfo=timezone.utc))

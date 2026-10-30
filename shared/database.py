@@ -1032,6 +1032,19 @@ SCHEMA_STATEMENTS: list[str] = [
         PRIMARY KEY (user_id, season)
     );
     """,
+    # 🕵️ Проверка на абуз (shared/abuse.py): отметка владельца «проверен» с баллами на момент проверки
+    """
+    CREATE TABLE IF NOT EXISTS abuse_reviews (
+        user_id BIGINT PRIMARY KEY,
+        score INT NOT NULL DEFAULT 0,
+        note VARCHAR(300) NOT NULL DEFAULT '',
+        reviewed_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    """,
+    # 🤝 Костюм за 10 активных друзей (один раз, на выбор): какой костюм забран
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS ref_suit VARCHAR(3)",
+    "ALTER TABLE season_pass ADD COLUMN IF NOT EXISTS game_day DATE",
+    "ALTER TABLE season_pass ADD COLUMN IF NOT EXISTS game_xp INT NOT NULL DEFAULT 0",
     # 🎟 Опыт, набранный до первого пропуска (2026-10), — в первый пропуск 2026-11, который и виден на экране.
     # Идемпотентно: после переноса октябрьских строк нет, а add_xp туда больше не пишет (active_season).
     """

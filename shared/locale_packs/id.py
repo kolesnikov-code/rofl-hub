@@ -105,6 +105,8 @@ STRINGS = {
     "hist.shuttle_charge": "🚀 Shuttle charge",
     "hist.team_help_give": "🤝 Help for a teammate",
     "hist.team_help_get": "🤝 Help from a teammate",
+    "gear.err_ref_taken": "The friends suit has already been claimed — one per account.",
+    "gear.err_ref_need": "🔒 You need {n} active friends, you have {have}.",
     "pass.delivered": "🎟 Premium pass for season {season} is active! Rewards are in the app: «Character» → «Pass».",
     "pass.err_owned": "You already have this season's pass.",
     "pass.err_nothing": "Nothing to claim yet — earn some pass XP.",
@@ -1133,6 +1135,15 @@ STRINGS = {
 
 MINIAPP = {
     # TODO(перевод 30.10): персонаж и костюмы — пока по-английски
+    "ref_suitLocked": "🔒 Unlocks at {n} active friends",
+    "ref_suitTaken": "✅ Reward claimed: {s}",
+    "ref_suitDone": "🧥 The suit is in your bag! Put it on in the Character tab.",
+    "ref_suitAsk": "Claim the full “{s}” suit? You can choose only once.",
+    "ref_suitPick": "Pick a suit — it goes straight into your bag.",
+    "ref_suitProgress": "Active friends: {have} of {n}",
+    "ref_suitHint": "Invite {n} friends who become active (intellect level {l} and {c} daily cutlets) — and claim a full suit of your choice: all 5 parts at once. One reward per account.",
+    "ref_suitTitle": "🧥 TASK: {n} ACTIVE FRIENDS",
+    "pass_gameCap": "Pass XP from game wins today: {x} / {cap}. Expeditions, raids, duels, quests and the chest have no limit.",
     "pass_shopHint": "more coins, cutlets and 4 exclusive season skins",
     "pass_paid": "Premium",
     "pass_free": "Free",

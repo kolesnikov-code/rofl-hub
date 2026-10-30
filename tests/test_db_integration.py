@@ -35,7 +35,7 @@ async def conn():
                         "season_results, battle_entries, battle_entry_log, reward_grants, expedition_targets, expeditions, "
                         "expedition_members, expedition_votes, expedition_log, expedition_peeks, daily_case_runs, "
                         "user_gear, user_equip, gear_ledger, gift_campaigns, gift_claims, user_skins, gear_stats, "
-                        "season_pass RESTART IDENTITY")
+                        "season_pass, abuse_reviews RESTART IDENTITY")
         await c.execute("UPDATE mines SET team_id = NULL, battle_id = NULL, captured_at = NULL, "
                         "captured_until = NULL, last_paid_at = NULL")
         await c.execute("DELETE FROM feature_flags WHERE key LIKE 'wsr:%'")
@@ -1582,10 +1582,9 @@ async def test_team_help_rules(conn):
     await _mk_user(conn, 1311, 0, team_id=tid)              # ещё не активный
     await _mk_user(conn, 1312, 0, team_id=tid)
     await _mk_user(conn, 1313, 0)                           # чужой
-    await _make_active(conn, 1311)                          # активный, но для дарения мало
-    for uid in (1312, 1313):                                # прокачанные: 7 уровень + 10 котлет
-        await conn.execute("UPDATE users SET bonus_claims = 10 WHERE user_id = $1", uid)
-        await conn.execute("INSERT INTO game_stats (user_id, quiz_level) VALUES ($1, 7)", uid)
+    await conn.execute("UPDATE users SET bonus_claims = 2 WHERE user_id = 1311")   # до порога активного (3 + 3) не дотянул
+    for uid in (1312, 1313):                                # активные (владелец 30.10: дарить — с порога активного друга)
+        await _make_active(conn, uid)
     for uid in (1311, 1312, 1313):
         await grant_bundle(conn, uid, {"crystal": 300}, "test")
 
@@ -3760,3 +3759,86 @@ async def test_skins_edition_collection_temper_market_trophies_and_pass(conn):
     await sp.claim(conn, 3401, season, now)
     assert await conn.fetchval("SELECT 1 FROM user_skins WHERE user_id = 3401 AND skin_id = $1",
                                sp.pass_skin_ids(season)["marker"]) == 1        # 5-й уровень платной дорожки
+
+
+async def test_abuse_feed_catches_twink_farm_ref_suit_and_pass_game_cap(conn):
+    """🕵️ Четыре «своих» реферала дарят ресурсы и монеты пригласившему — он первый в ленте и красный;
+    карточка показывает подарки и связи; «Проверен» опускает его вниз. 🧥 Костюм за 10 активных друзей — один раз.
+    🎟 Опыт пропуска за победы — не больше 200 в сутки, остальное без лимита."""
+    from datetime import timedelta
+    from shared import abuse
+    from shared import gear
+    from shared import season_pass as sp
+    from shared.economy import utcnow
+    from shared.ledger import change_balance
+    from shared.resources import grant_bundle
+    from shared.team_help import give_help, request_help
+    now = utcnow()
+    tid = await conn.fetchval("INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Farm', 4001, 5) RETURNING team_id")
+    await _mk_user(conn, 4001, 0, team_id=tid)
+    for uid in range(4002, 4006):
+        await _mk_user(conn, uid, 2000, team_id=tid, referred_by=4001, created_at=now - timedelta(days=2))
+        await _make_active(conn, uid)
+        await grant_bundle(conn, uid, {"crystal": 100}, "test")
+    await _mk_user(conn, 4009, 0)                                   # честный игрок без сигналов
+    await conn.execute("INSERT INTO daily_activity (user_id, day) VALUES (4009, $1)", now.date())
+    hid = await request_help(conn, 4001, "crystal", 200)
+    for uid in range(4002, 4006):
+        await give_help(conn, uid, hid, 40, now)
+        await change_balance(conn, uid, -900, "transfer_out", "4001")
+        await change_balance(conn, 4001, 900, "transfer_in", str(uid))
+
+    cards = await abuse.feed(conn, now, use_cache=False)
+    boss = cards[0]
+    assert boss["id"] == 4001 and boss["level"] == "red" and boss["links"] == 4
+    assert any("рефералы" in r for r in boss["reasons"])
+    twink = next(c for c in cards if c["id"] == 4002)
+    assert twink["score"] > 0 and any("Кормит того, кто пригласил" in r for r in twink["reasons"])
+    assert next(c for c in cards if c["id"] == 4009)["score"] == 0          # чистый активный — в хвосте ленты
+    assert [c["id"] for c in cards].index(4009) > [c["id"] for c in cards].index(4002)
+
+    d = await abuse.detail(conn, 4001, now)
+    assert {s["code"] for s in d["signals"]} >= {"funnel", "coin_funnel", "ref_feeders"}
+    assert len(d["gifts"]) == 4 and {g["dir"] for g in d["gifts"]} == {"in"}
+    link = next(x for x in d["links"] if x["id"] == 4002)
+    assert link["referral"] and link["same_team"] and link["res_in"] == 40 and link["coins_in"] == 900
+    assert "4002" in d["names"] and any(r["reason"] == "transfer_in" for r in d["coin_sum"])
+    assert {r["id"] for r in d["referrals"]} == {4002, 4003, 4004, 4005}
+    assert await abuse.detail(conn, 999999, now) is None
+
+    score = await abuse.review(conn, 4001, "семья, проверено", now)
+    assert score == boss["score"]
+    cards = await abuse.feed(conn, now, use_cache=False)
+    me = next(c for c in cards if c["id"] == 4001)
+    assert me["cleared"] and me["reviewed"]["note"] == "семья, проверено"
+    assert [c["id"] for c in cards].index(4001) > [c["id"] for c in cards].index(4002)
+
+    # 🧥 костюм за друзей
+    await _mk_user(conn, 4100, 0)
+    for uid in range(4101, 4111):
+        await _mk_user(conn, uid, 0, referred_by=4100, qualified_at=now)
+    with pytest.raises(gear.GearError) as e:
+        await gear.claim_referral_suit(conn, 4001, "mn")              # 4 активных друга из 10
+    assert e.value.key == "gear.err_ref_need" and e.value.kwargs == {"n": 10, "have": 0}
+    with pytest.raises(gear.GearError):
+        await gear.claim_referral_suit(conn, 4100, "xx")
+    await gear.claim_referral_suit(conn, 4100, "mn")
+    rows = await conn.fetch("SELECT slot, qty FROM user_gear WHERE user_id = 4100 AND suit = 'mn' AND level = 1")
+    assert sorted(r["slot"] for r in rows) == sorted(gear.GEAR_SLOTS) and all(r["qty"] == 1 for r in rows)
+    assert await gear.season_drops(conn, 4100, now) == 0           # награда не съедает сезонный лимит деталей
+    with pytest.raises(gear.GearError) as e:
+        await gear.claim_referral_suit(conn, 4100, "el")
+    assert e.value.key == "gear.err_ref_taken"
+    assert (await gear.referral_suit_state(conn, 4100))["taken"] == "mn"
+
+    # 🎟 лимит опыта за игры
+    await _mk_user(conn, 4200, 0)
+    for _ in range(50):
+        await sp.add_xp(conn, 4200, "game_win")
+    st = await sp.state(conn, 4200, sp.active_season(now))
+    assert st["xp"] == sp.PASS_GAME_XP_DAILY and st["game_xp_today"] == sp.PASS_GAME_XP_DAILY
+    await sp.add_xp(conn, 4200, "quest")
+    assert (await sp.state(conn, 4200, sp.active_season(now)))["xp"] == sp.PASS_GAME_XP_DAILY + sp.PASS_XP["quest"]
+    await conn.execute("UPDATE season_pass SET game_day = game_day - 1 WHERE user_id = 4200")   # новый день — снова можно
+    await sp.add_xp(conn, 4200, "game_win")
+    assert (await sp.state(conn, 4200, sp.active_season(now)))["game_xp_today"] == sp.PASS_XP["game_win"]
