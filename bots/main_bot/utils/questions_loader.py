@@ -3,6 +3,9 @@
 
 Формат строки: category;question;correct_answer;option_1;option_2;option_3
 Тексты экранируются для HTML один раз при загрузке.
+
+Языки (30.10): data/questions.csv — русская база, data/questions_<код>.csv — переводы (тот же формат).
+Есть файл для языка игрока — вопросы на его языке, нет — русская база (has_lang подскажет, нужна ли приписка).
 """
 from __future__ import annotations
 
@@ -20,6 +23,8 @@ DEFAULT_CSV_PATH = PROJECT_ROOT / "data" / "questions.csv"
 
 _questions: list[dict] = []
 _by_id: dict[int, dict] = {}
+# переводы: код языка → (вопросы, по id); None — файла нет, работаем на русской базе
+_lang_banks: dict[str, tuple[list[dict], dict[int, dict]] | None] = {}
 
 FALLBACK_QUESTIONS = [
     {"id": 1, "category": "Экономика ROFL HUB", "q": "Сколько монет в час приносит Кибер-Бурильщик?",
@@ -42,15 +47,16 @@ def parse_questions(rows, *, source: str = "csv") -> list[dict]:
         if not q or not correct or any(not w for w in wrong):
             logger.warning("[QUIZ_CSV] строка %s пропущена: пустое поле (%s)", idx, source)
             continue
-        options = [html.escape(correct)] + [html.escape(w) for w in wrong]
+        # quote=False: апостроф в «o'zbek» не превращается в &#x27; (варианты — это ещё и текст кнопок)
+        options = [html.escape(correct, quote=False)] + [html.escape(w, quote=False) for w in wrong]
         if len(set(options)) != 4:
             logger.warning("[QUIZ_CSV] строка %s пропущена: повторяющиеся варианты", idx)
             continue
         result.append({
             "id": idx,
             "key": question_key(q),
-            "category": html.escape((row.get("category") or "Общая").strip()),
-            "q": html.escape(q),
+            "category": html.escape((row.get("category") or "Общая").strip(), quote=False),
+            "q": html.escape(q, quote=False),
             "correct": options[0],
             "options": options,
         })
@@ -81,25 +87,75 @@ def load_questions_from_csv(path: Path | str | None = None) -> int:
     return len(loaded)
 
 
-def get_random_question() -> dict | None:
-    if not _questions:
-        load_questions_from_csv()
-    return random.choice(_questions) if _questions else None
+def lang_csv_path(lang: str) -> Path:
+    return PROJECT_ROOT / "data" / f"questions_{lang}.csv"
 
 
-def pick_unseen(seen: set[str]) -> tuple[dict | None, bool]:
-    """Случайный вопрос, которого игрок ещё не видел. (вопрос, база_пройдена): если видел все — круг заново."""
+def _lang_bank(lang: str | None) -> tuple[list[dict], dict[int, dict]] | None:
+    """Переведённая база языка (лениво, один раз). Битый/пустой файл — None: игра идёт на русской базе."""
+    if not lang or lang == "ru":
+        return None
+    if lang not in _lang_banks:
+        bank = None
+        path = lang_csv_path(lang)
+        if path.exists():
+            try:
+                with open(path, encoding="utf-8-sig", newline="") as f:
+                    qs = parse_questions(csv.DictReader(f, delimiter=";"), source=str(path))
+                if qs:
+                    bank = (qs, {q["id"]: q for q in qs})
+                    logger.info("[QUIZ_CSV] %s: загружено вопросов: %s", lang, len(qs))
+            except Exception:
+                logger.exception("[QUIZ_CSV] ошибка чтения %s", path)
+        _lang_banks[lang] = bank
+    return _lang_banks[lang]
+
+
+def has_lang(lang: str | None) -> bool:
+    """Есть ли вопросы на языке игрока (иначе — английская база и приписка «пока на английском»)."""
+    return lang == "ru" or _lang_bank(lang) is not None
+
+
+FALLBACK_LANG = "en"   # нет своей базы — английская: она понятнее не-русскому игроку, чем русская
+
+
+def _bank_for(lang: str | None) -> tuple[list[dict], dict[int, dict]] | None:
+    """База для игрока: своя → английская (для всех, кроме ru) → None (русская)."""
+    if not lang or lang == "ru":
+        return None
+    return _lang_bank(lang) or _lang_bank(FALLBACK_LANG)
+
+
+def _pool(lang: str | None) -> list[dict]:
+    bank = _bank_for(lang)
+    if bank:
+        return bank[0]
     if not _questions:
         load_questions_from_csv()
-    if not _questions:
+    return _questions
+
+
+def get_random_question(lang: str | None = "ru") -> dict | None:
+    pool = _pool(lang)
+    return random.choice(pool) if pool else None
+
+
+def pick_unseen(seen: set[str], lang: str | None = "ru") -> tuple[dict | None, bool]:
+    """Случайный вопрос, которого игрок ещё не видел. (вопрос, база_пройдена): если видел все — круг заново.
+    Ключ — по тексту, поэтому у каждого языка свой круг «невиданных»."""
+    pool = _pool(lang)
+    if not pool:
         return None, False
-    fresh = [q for q in _questions if q["key"] not in seen]
+    fresh = [q for q in pool if q["key"] not in seen]
     if fresh:
         return random.choice(fresh), False
-    return random.choice(_questions), True
+    return random.choice(pool), True
 
 
-def get_question_by_id(qid: int) -> dict | None:
+def get_question_by_id(qid: int, lang: str | None = "ru") -> dict | None:
+    bank = _bank_for(lang)
+    if bank:
+        return bank[1].get(qid)
     if not _by_id:
         load_questions_from_csv()
     return _by_id.get(qid)
