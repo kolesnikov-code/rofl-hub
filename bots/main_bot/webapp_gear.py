@@ -1,13 +1,13 @@
 """
-🧍 Вкладка «Персонаж» (решение владельца 30.10): аватар М/Ж, 5 слотов, сумка деталей костюмов, прокачка до 2-го
-уровня, сплав нано-экзо-брони и рынок деталей. Механика — shared/gear.py; торговля деталями идёт через общую биржу
+🧍 Вкладка «Персонаж» (решение владельца 30.10): аватар М/Ж, 5 слотов, сумка деталей костюмов, прокачка по трём
+уровням (Базовый → Улучшенный → Легендарный, 31.10), сплав нано-экзо-брони и рынок деталей. Механика — shared/gear.py; торговля деталями идёт через общую биржу
 (/api/market/order|fill|cancel, товар g_<костюм>_<слот>, пол цены GEAR_MIN_PRICE, комиссия сгорает).
 
 GET  /api/gear            — всё для вкладки (надето, сумка, бонусы, цены прокачки, экзо, лимит сезона, лоты деталей)
 POST /api/gear/gender     — {"gender": "m"|"f"}
 POST /api/gear/equip      — {"suit", "slot", "level"}
 POST /api/gear/unequip    — {"slot"}
-POST /api/gear/upgrade    — {"suit", "slot"}
+POST /api/gear/upgrade    — {"suit", "slot", "level"} (level — текущий уровень детали)
 POST /api/gear/exo        — сплав нано-экзо-брони
 POST /api/gear/art        — {"kind", "slot"?} артефакт из сумки на пояс (снять — /api/gear/unequip со слотом a1…a3)
 GET  /api/gifts           — 🎁 подарки от разработчика на плашке паспорта (shared/gifts.py)
@@ -30,10 +30,11 @@ from shared.economy import (
     ARTIFACT_BONUS, ARTIFACT_MIN_PRICE, ARTIFACT_SEASON_CAP, ARTIFACT_SLOTS, art_kind, art_of, parse_art_asset,
     user_bonus,
     GEAR_EXO, GEAR_EXO_COINS, GEAR_EXO_COST, GEAR_MARKET_MAX_QTY, GEAR_MIN_PRICE, GEAR_SEASON_CAP, GEAR_SLOTS,
-    GEAR_SUITS, GEAR_UPGRADE_COINS, GEAR_UPGRADE_COST, MARKET_FEE_PERCENT, MARKET_MAX_PRICE, SUIT_BONUS,
+    GEAR_LEVEL_KEYS, GEAR_MAX_LEVEL, GEAR_SUITS, MARKET_FEE_PERCENT, MARKET_MAX_PRICE, SUIT_BONUS,
     parse_gear_asset, utcnow,
 )
 from shared.locales import t
+from shared.tech import tech_levels
 
 GEAR_MARKET_LIST = 100     # лучших лотов деталей во вкладке
 
@@ -86,7 +87,10 @@ async def gear_state(conn, user_id: int) -> dict:
                    "effects": {line: user_bonus(user, line) for line in GEAR_SUITS if user_bonus(user, line)},
                    "belt": art_of(user)},
         "bonus": SUIT_BONUS,
-        "upgrade": {s: {"cost": GEAR_UPGRADE_COST[s], "coins": GEAR_UPGRADE_COINS} for s in GEAR_SUITS},
+        # прокачка: что нужно для каждого следующего уровня; опыт детали — сумма её трофейной истории (history)
+        "max_level": GEAR_MAX_LEVEL, "level_keys": GEAR_LEVEL_KEYS,
+        "upgrade": {s: {lv: gear.upgrade_need(s, lv) for lv in range(2, GEAR_MAX_LEVEL + 1)} for s in GEAR_SUITS},
+        "tech": await tech_levels(conn, user_id),
         "exo": {**await gear.exo_ready(conn, user_id), "cost": GEAR_EXO_COST, "coins": GEAR_EXO_COINS},
         "season": {"got": await gear.season_drops(conn, user_id, now), "cap": GEAR_SEASON_CAP,
                    "arts": await gear.season_drops(conn, user_id, now, artifacts=True), "arts_cap": ARTIFACT_SEASON_CAP},
@@ -139,7 +143,8 @@ async def handle_unequip(request: web.Request) -> web.Response:
 
 async def handle_upgrade(request: web.Request) -> web.Response:
     return await _act(request, lambda conn, uid, d: gear.upgrade(
-        conn, uid, str(d.get("suit") or ""), str(d.get("slot") or ""), utcnow()))
+        conn, uid, str(d.get("suit") or ""), str(d.get("slot") or ""), utcnow(),
+        _int(d.get("level"), 0) or None))
 
 
 async def handle_exo(request: web.Request) -> web.Response:

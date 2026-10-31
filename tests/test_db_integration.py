@@ -3562,16 +3562,23 @@ async def test_gear_season_cap_full_set_upgrade_market_and_exo(conn):
     assert await gear.have(conn, 3101, "mn", "head") == 1                  # снятая деталь — в сумке
     with pytest.raises(gear.GearError):
         await gear.equip(conn, 3101, "el", "head", 2, now)                 # такой детали нет
-    # 3) прокачка надетой детали: ресурсы и монеты сгорают, уровень костюма — по слабой детали
+    # 3) прокачка надетой детали: нужен опыт детали; ресурсы и монеты сгорают, уровень костюма — по слабой детали
+    from shared.trophies import record
     await gear.equip(conn, 3101, "mn", "head", 1, now)
     for kind, qty in (("metal", 150), ("stone", 80)):
         await change_resource(conn, 3101, kind, qty, "test")
+    with pytest.raises(gear.GearError) as e:
+        await gear.upgrade(conn, 3101, "mn", "body", now)                  # деталь ещё ничего не пережила
+    assert e.value.key == "gear.err_xp"
+    await record(conn, 3101, "game_win", 25)                               # 25 побед в надетом костюме
     await gear.upgrade(conn, 3101, "mn", "body", now)
     assert await conn.fetchval("SELECT level FROM user_equip WHERE user_id = 3101 AND slot = 'body'") == 2
     assert await conn.fetchval("SELECT suit_level FROM users WHERE user_id = 3101") == 1
     assert await conn.fetchval("SELECT delta FROM ledger WHERE user_id = 3101 AND reason = 'gear_upgrade'") == -300
-    with pytest.raises(gear.GearError):
-        await gear.upgrade(conn, 3101, "mn", "body", now)                  # уже 2-й уровень
+    with pytest.raises(gear.GearError) as e:
+        await gear.upgrade(conn, 3101, "mn", "body", now)                  # на Легендарный: опыта 25 из 100
+    assert e.value.key == "gear.err_xp"
+    assert await gear.part_xp(conn, 3101, "mn", "body", 2) == 25           # история переехала на новый уровень
     # 4) биржа деталей: пол 500, комиссия 10% сгорает, деталь переходит покупателю
     await gear.change_gear(conn, 3101, "el", "hands", 1, 1, "test")
     before = await gear.have(conn, 3101, "el", "hands")                  # случайные детали шага 1 могли совпасть
@@ -3594,6 +3601,39 @@ async def test_gear_season_cap_full_set_upgrade_market_and_exo(conn):
     assert await conn.fetchval("SELECT suit FROM users WHERE user_id = 3102") == "exo"
     assert await conn.fetchval("SELECT COALESCE(SUM(qty), 0) FROM user_gear WHERE user_id = 3102 AND level = 2") == 0
     assert await gear.have(conn, 3102, "el", "hands") == 1                 # детали 1-го уровня не тронуты
+
+
+async def test_gear_legendary_needs_xp_tech_and_rare_resources(conn):
+    """Владелец 31.10: Базовый → Улучшенный → Легендарный; на Легендарный — 100 опыта, технология и 🔋🔥."""
+    from shared import gear
+    from shared.economy import GEAR_UPGRADE_COINS, GEAR_UPGRADE_COST, SUIT_BONUS, utcnow
+    from shared.resources import change_resource
+    from shared.trophies import record
+    now = utcnow()
+    await _mk_user(conn, 3150, 100_000)
+    for p in ("head", "body", "hands", "legs", "feet"):
+        await gear.change_gear(conn, 3150, "ml", p, 2, 1, "test")
+        await gear.equip(conn, 3150, "ml", p, 2, now)
+    await record(conn, 3150, "raid", 100)                                  # 100 налётов пережиты в костюме
+    for kind, qty in GEAR_UPGRADE_COST[3]["ml"].items():
+        await change_resource(conn, 3150, kind, qty, "test")
+    with pytest.raises(gear.GearError) as e:
+        await gear.upgrade(conn, 3150, "ml", "head", now, level=2)         # без ⚔️ нападения 2 ур. — нельзя
+    assert e.value.key == "gear.err_tech"
+    await conn.execute("INSERT INTO user_tech (user_id, tech, level) VALUES (3150, 'attack', 2)")
+    suit, level = await gear.upgrade(conn, 3150, "ml", "head", now, level=2)
+    assert await conn.fetchval("SELECT level FROM user_equip WHERE user_id = 3150 AND slot = 'head'") == 3
+    assert (suit, level) == ("ml", 2)                                      # уровень костюма — по слабой детали
+    assert await conn.fetchval("SELECT delta FROM ledger WHERE user_id = 3150 AND reason = 'gear_upgrade'") == -GEAR_UPGRADE_COINS[3]
+    assert await conn.fetchval("SELECT qty FROM user_resources WHERE user_id = 3150 AND kind = 'battery'") == 0
+    with pytest.raises(gear.GearError) as e:
+        await gear.upgrade(conn, 3150, "ml", "head", now, level=3)         # выше Легендарного некуда
+    assert e.value.key == "gear.err_max"
+    await conn.execute("UPDATE user_equip SET level = 3 WHERE user_id = 3150")
+    await conn.execute("UPDATE users SET suit = 'ml', suit_level = 3 WHERE user_id = 3150")
+    from shared.economy import user_bonus
+    row = await conn.fetchrow("SELECT suit, suit_level, art_bonus FROM users WHERE user_id = 3150")
+    assert user_bonus(row, "ml") == SUIT_BONUS["ml"][3]
 
 
 async def test_miner_suit_pays_once_a_day_only_for_mining_after_wearing(conn):

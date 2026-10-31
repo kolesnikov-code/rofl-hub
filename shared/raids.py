@@ -122,7 +122,8 @@ async def find_targets(conn, attacker_id: int, attacker_team: int | None, now: d
           AND (u.raid_camo_until IS NULL OR u.raid_camo_until <= $3::timestamptz)
           AND (tm.dome_until IS NULL OR tm.dome_until <= $3::timestamptz)
           -- 🥷 костюм маскировки (и экзо-броня): с шансом цель не попадает в разведку (30.10)
-          AND NOT (random() * 100 < (CASE WHEN u.suit = 'exo' OR (u.suit = 'st' AND u.suit_level >= 2) THEN $10::int
+          AND NOT (random() * 100 < (CASE WHEN u.suit = 'st' AND u.suit_level >= 3 THEN $11::int
+                                          WHEN u.suit = 'exo' OR (u.suit = 'st' AND u.suit_level >= 2) THEN $10::int
                                           WHEN u.suit = 'st' THEN $9::int ELSE 0 END)
                                     + COALESCE((u.art_bonus->>'st')::int, 0))
           AND NOT EXISTS (SELECT 1 FROM raids x WHERE x.defender_id = u.user_id
@@ -131,7 +132,7 @@ async def find_targets(conn, attacker_id: int, attacker_team: int | None, now: d
         ORDER BY random() LIMIT $8::int
         """,
         attacker_id, attacker_team, now, RAID_TARGET_ACTIVE_DAYS, RAID_NEWBIE_SHIELD_DAYS,
-        RAID_VICTIM_COOLDOWN_HOURS, RAID_MIN_TARGET_RESOURCES, limit, SUIT_BONUS["st"][1], SUIT_BONUS["st"][2])
+        RAID_VICTIM_COOLDOWN_HOURS, RAID_MIN_TARGET_RESOURCES, limit, SUIT_BONUS["st"][1], SUIT_BONUS["st"][2], SUIT_BONUS["st"][3])
     return [dict(r) for r in rows]
 
 

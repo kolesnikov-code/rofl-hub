@@ -36,12 +36,16 @@ from shared.economy import (
     GEAR_EXO,
     GEAR_EXO_COINS,
     GEAR_EXO_COST,
+    GEAR_EXO_LEVEL,
     GEAR_MAX_LEVEL,
     GEAR_SEASON_CAP,
     GEAR_SLOTS,
     GEAR_SUITS,
     GEAR_UPGRADE_COINS,
     GEAR_UPGRADE_COST,
+    GEAR_UPGRADE_TECH,
+    GEAR_UPGRADE_XP,
+    TECHS,
     SUIT_BONUS,
     miner_bonus,
     season_bounds,
@@ -210,48 +214,85 @@ async def _spend(conn, user_id: int, cost: dict[str, int], coins: int, reason: s
         raise GearError("gear.err_coins", need=coins) from e
 
 
-async def upgrade(conn, user_id: int, suit: str, slot: str, now: datetime) -> tuple[str | None, int]:
-    """Прокачка детали 1 → 2: сначала из сумки, иначе — надетую. Ресурсы и монеты сгорают."""
+def upgrade_need(suit: str, to_level: int) -> dict:
+    """Что нужно для прокачки детали костюма suit на уровень to_level: ресурсы, монеты, опыт детали, технология."""
+    tech = GEAR_UPGRADE_TECH.get(to_level, {}).get(suit)
+    return {"cost": GEAR_UPGRADE_COST[to_level][suit], "coins": GEAR_UPGRADE_COINS[to_level],
+            "xp": GEAR_UPGRADE_XP[to_level],
+            "tech": {"id": tech[0], "level": tech[1], "icon": TECHS[tech[0]]["icon"]} if tech else None}
+
+
+def stats_xp(stats) -> int:
+    """Опыт детали — сумма всех пережитых событий из её трофейной истории."""
+    if isinstance(stats, str):
+        stats = json.loads(stats)
+    return sum(int(v) for v in (stats or {}).values())
+
+
+async def part_xp(conn, user_id: int, suit: str, slot: str, level: int) -> int:
+    return stats_xp(await conn.fetchval("SELECT stats FROM gear_stats WHERE user_id = $1 AND suit = $2 AND slot = $3 "
+                                        "AND level = $4", user_id, suit, slot, level))
+
+
+async def upgrade(conn, user_id: int, suit: str, slot: str, now: datetime, level: int | None = None) -> tuple[str | None, int]:
+    """
+    Прокачка детали на следующий уровень (Базовый → Улучшенный → Легендарный). level — текущий уровень детали;
+    без него — самая слабая неполная из сумки, иначе надетая. Сначала из сумки, иначе — надетую.
+    Нужен опыт детали (GEAR_UPGRADE_XP), на Легендарный — технология (GEAR_UPGRADE_TECH); ресурсы и монеты сгорают.
+    """
     _check(suit, slot)
     if suit == GEAR_EXO:
         raise GearError("gear.err_max")
     await _lock(conn, user_id)
-    ref = f"{suit}:{slot}"
-    if await have(conn, user_id, suit, slot, 1) > 0:
-        await _spend(conn, user_id, GEAR_UPGRADE_COST[suit], GEAR_UPGRADE_COINS, "gear_upgrade", ref)
-        await change_gear(conn, user_id, suit, slot, 1, -1, "gear_upgrade", ref)
-        await change_gear(conn, user_id, suit, slot, GEAR_MAX_LEVEL, 1, "gear_upgrade", ref)
-        from shared.trophies import move_gear_history
-        await move_gear_history(conn, user_id, suit, slot, 1, GEAR_MAX_LEVEL)
-        return await _refresh_suit(conn, user_id, now)
     worn = await conn.fetchrow("SELECT suit, level FROM user_equip WHERE user_id = $1 AND slot = $2", user_id, slot)
-    if not worn or worn["suit"] != suit:
+    worn_level = worn["level"] if worn and worn["suit"] == suit else None
+    if level is None:
+        level = await conn.fetchval("SELECT MIN(level) FROM user_gear WHERE user_id = $1 AND suit = $2 AND slot = $3 "
+                                    "AND qty > 0 AND level < $4", user_id, suit, slot, GEAR_MAX_LEVEL) or worn_level
+    if not level:
         raise GearError("gear.err_none")
-    if worn["level"] >= GEAR_MAX_LEVEL:
+    from_bag = await have(conn, user_id, suit, slot, level) > 0
+    if not from_bag and worn_level != level:
+        raise GearError("gear.err_none")
+    if level >= GEAR_MAX_LEVEL:
         raise GearError("gear.err_max")
-    await _spend(conn, user_id, GEAR_UPGRADE_COST[suit], GEAR_UPGRADE_COINS, "gear_upgrade", ref)
-    await conn.execute("UPDATE user_equip SET level = $3 WHERE user_id = $1 AND slot = $2", user_id, slot, GEAR_MAX_LEVEL)
+    to = level + 1
+    need = upgrade_need(suit, to)
+    xp = await part_xp(conn, user_id, suit, slot, level)
+    if xp < need["xp"]:
+        raise GearError("gear.err_xp", have=xp, need=need["xp"])
+    if need["tech"]:
+        from shared.tech import tech_levels
+        if (await tech_levels(conn, user_id)).get(need["tech"]["id"], 0) < need["tech"]["level"]:
+            raise GearError("gear.err_tech", icon=TECHS[need["tech"]["id"]]["icon"], n=need["tech"]["level"])
+    ref = f"{suit}:{slot}:{to}"
+    await _spend(conn, user_id, need["cost"], need["coins"], "gear_upgrade", ref)
     from shared.trophies import move_gear_history
-    await move_gear_history(conn, user_id, suit, slot, 1, GEAR_MAX_LEVEL)
-    await conn.execute(
-        "INSERT INTO gear_ledger (user_id, suit, slot, level, delta, reason, ref) VALUES ($1, $2, $3, $4, 0, $5, $6)",
-        user_id, suit, slot, GEAR_MAX_LEVEL, "gear_upgrade_worn", ref)
+    if from_bag:
+        await change_gear(conn, user_id, suit, slot, level, -1, "gear_upgrade", ref)
+        await change_gear(conn, user_id, suit, slot, to, 1, "gear_upgrade", ref)
+    else:
+        await conn.execute("UPDATE user_equip SET level = $3 WHERE user_id = $1 AND slot = $2", user_id, slot, to)
+        await conn.execute(
+            "INSERT INTO gear_ledger (user_id, suit, slot, level, delta, reason, ref) VALUES ($1, $2, $3, $4, 0, $5, $6)",
+            user_id, suit, slot, to, "gear_upgrade_worn", ref)
+    await move_gear_history(conn, user_id, suit, slot, level, to)
     return await _refresh_suit(conn, user_id, now)
 
 
 async def exo_ready(conn, user_id: int) -> dict:
-    """Сколько из 30 деталей 2-го уровня есть (в сумке или надето) — для сплава нано-экзо-брони."""
+    """Сколько из 30 деталей Улучшенного уровня есть (в сумке или надето) — для сплава нано-экзо-брони."""
     rows = await conn.fetch(
         """SELECT suit, slot FROM user_gear WHERE user_id = $1 AND level = $2 AND qty > 0 AND suit = ANY($3::text[])
            UNION SELECT suit, slot FROM user_equip WHERE user_id = $1 AND level = $2 AND suit = ANY($3::text[])""",
-        user_id, GEAR_MAX_LEVEL, list(GEAR_SUITS))
+        user_id, GEAR_EXO_LEVEL, list(GEAR_SUITS))
     got = {(r["suit"], r["slot"]) for r in rows}
     return {"have": len(got), "need": len(GEAR_SUITS) * len(GEAR_SLOTS),
             "missing": [f"{s}:{p}" for s in GEAR_SUITS for p in GEAR_SLOTS if (s, p) not in got]}
 
 
 async def merge_exo(conn, user_id: int, now: datetime) -> tuple[str | None, int]:
-    """Сплав: по одной детали 2-го уровня каждого костюма и слота (30 шт.) + цена → 5 деталей экзо-брони (надеваются)."""
+    """Сплав: по одной детали Улучшенного уровня каждого костюма и слота (30 шт.) + цена → 5 деталей экзо-брони (надеваются)."""
     await _lock(conn, user_id)
     state = await exo_ready(conn, user_id)
     if state["missing"]:
@@ -263,13 +304,13 @@ async def merge_exo(conn, user_id: int, now: datetime) -> tuple[str | None, int]
         await change_gear(conn, user_id, row["suit"], row["slot"], row["level"], 1, "unequip")
     for suit in GEAR_SUITS:
         for slot in GEAR_SLOTS:
-            await change_gear(conn, user_id, suit, slot, GEAR_MAX_LEVEL, -1, "gear_exo", "exo")
+            await change_gear(conn, user_id, suit, slot, GEAR_EXO_LEVEL, -1, "gear_exo", "exo")
     for slot in GEAR_SLOTS:
         await conn.execute("INSERT INTO user_equip (user_id, slot, suit, level) VALUES ($1, $2, $3, $4)",
-                           user_id, slot, GEAR_EXO, GEAR_MAX_LEVEL)
+                           user_id, slot, GEAR_EXO, GEAR_EXO_LEVEL)
         await conn.execute(
             "INSERT INTO gear_ledger (user_id, suit, slot, level, delta, reason, ref) VALUES ($1, $2, $3, $4, 1, $5, $6)",
-            user_id, GEAR_EXO, slot, GEAR_MAX_LEVEL, "gear_exo", "exo")
+            user_id, GEAR_EXO, slot, GEAR_EXO_LEVEL, "gear_exo", "exo")
     logger.info("[GEAR] %s сплавил(а) нано-экзо-броню", user_id)
     return await _refresh_suit(conn, user_id, now)
 
