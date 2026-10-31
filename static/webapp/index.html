@@ -3780,7 +3780,11 @@
   const GEAR_UI = { el: "#ffe100", mn: "#22e04a", ml: "#2f7bff", st: "#ff3344", sc: "#b44dff", en: "#ff8a00", exo: "#ff4fd8" };
   // Костюмы с собственным рисунком (владелец 31.10: «попроще, но своё») — цвет каждой детали; остальные пока красятся SUIT_COLOR
   const SUIT_PAINT = { sc: { head: "#e9f1ff", body: "#e9f1ff", hands: "#39cde6", legs: "#26355f", feet: "#e9f1ff" },
-                       el: { head: "#ffd23f", body: "#2b3048", hands: "#ffd23f", legs: "#2b3048", feet: "#1f2336" } };
+                       el: { head: "#ffd23f", body: "#2b3048", hands: "#ffd23f", legs: "#2b3048", feet: "#1f2336" },
+                       mn: { head: "#e7a52b", body: "#6b4f33", hands: "#8a6a44", legs: "#2b3a56", feet: "#33261a" },
+                       ml: { head: "#556332", body: "#5a6a3a", hands: "#2b3122", legs: "#4e5c33", feet: "#1d2016" },
+                       st: { head: "url(#psCamo)", body: "url(#psCamo)", hands: "#39432a", legs: "url(#psCamo)", feet: "#6e6044" },
+                       en: { head: "#ff8a2a", body: "#2f4f86", hands: "#e2b33c", legs: "#2f4f86", feet: "#4a3a2a" } };
   const ART_ICON = { el: "🔆", mn: "🪸", ml: "🔴", st: "🌫", sc: "🔮", en: "⚙️" };
   ["el", "mn", "ml", "st", "sc", "en"].forEach(s => {
     Object.keys(SLOT_ICON).forEach(p => { A_ICON["g_" + s + "_" + p] = SLOT_ICON[p]; });
@@ -3937,10 +3941,253 @@
       return '<path d="M' + a(13.2) + ',221.4 L' + a(18) + ',223.5 C' + a(21.5) + ',225 ' + a(21.5) + ',229 ' + a(19) + ',229 L' + a(13.2) + ',229 Z" fill="' + EL + '"/>' +
         '<path d="M' + a(19.5) + ',228.6 L' + a(5) + ',228.6" stroke="rgba(0,0,0,.45)" stroke-width="1.4"/>' +
         '<path d="M' + a(12.8) + ',206 L' + a(3.8) + ',206" stroke="' + EL + '" stroke-width="1.2"/>'; }).join("");
+    // ===== Уровни деталей (владелец 31.10: «чем выше уровень — тем круче и богаче»): у КАЖДОЙ детали свой уровень, 1 — Базовый
+    // (рабочая форма со смыслом), 2 — Улучшенный (снаряжение и знаки отличия), 3 — Легендарный (золото, свечение, анимация).
+    const lv = slot => (worn[slot] && worn[slot].level) || 1;
+    const GOLD = "#ffcf5a", SILVER = "#d9dde8";
+    const ln = (d, c, w, ex) => '<path d="' + d + '" stroke="' + c + '" stroke-width="' + (w || 1) + '" fill="none" stroke-linecap="round" stroke-linejoin="round"' + (ex || '') + '/>';
+    const sh = (d, f, ex) => '<path d="' + d + '" fill="' + f + '"' + (ex || '') + '/>';
+    const rc = (x, y, w, h, f, ex) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + f + '"' + (ex || '') + '/>';
+    const ci = (x, y, r, f, ex) => '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (ex || '') + '/>';
+    const GL = ' filter="url(#psGlow)"';
+    const ciA = (x, y, r, f, ex, inner) => '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (ex || '') + '>' + inner + '</circle>';
+    const star5 = (x, y, r, f, ex) => { let d = '';
+      for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? r * .45 : r;
+        d += (i ? 'L' : 'M') + (x + q * Math.cos(a)).toFixed(2) + ',' + (y + q * Math.sin(a)).toFixed(2); }
+      return sh(d + 'Z', f, ex); };
+    const pulse = (a, b, dur) => '<animate attributeName="opacity" values="' + a + ';' + b + ';' + a + '" dur="' + dur + 's" repeatCount="indefinite"/>';
+    const flash = (dur, at) => '<animate attributeName="opacity" values="0;0;1;.3;1;0;0" keyTimes="0;' + at + ';' + (at + .02) + ';' + (at + .04) + ';' +
+      (at + .06) + ';' + (at + .1) + ';1" dur="' + dur + 's" repeatCount="indefinite"/>';
+    const gearIcon = (x, y, r, c, ex) => '<g' + (ex || '') + '>' + ci(x, y, r * .62, "none", ' stroke="' + c + '" stroke-width="' + (r * .42).toFixed(2) + '"') +
+      [0, 1, 2, 3, 4, 5, 6, 7].map(i => { const a = i * Math.PI / 4;
+        return ln('M' + (x + Math.cos(a) * r * .8).toFixed(2) + ',' + (y + Math.sin(a) * r * .8).toFixed(2) + ' L' + (x + Math.cos(a) * r * 1.18).toFixed(2) + ',' +
+          (y + Math.sin(a) * r * 1.18).toFixed(2), c, r * .36); }).join("") + '</g>';
+    // погон / наплечник: полоса от ворота к краю плеча (s = -1 — левое плечо на экране)
+    const shoulder = (s, f, th, ex) => { const a = sd(s);
+      return sh('M' + a(G.sh - 11) + ',46.6 L' + a(G.sh + 1.2) + ',52.2 L' + a(G.sh + .6) + ',' + (52.2 + th) + ' L' + a(G.sh - 11.4) + ',' + (46.6 + th) + ' Z', f, ex); };
+    const pocket = (x, y, w, h, c, flap) => rc(x, y, w, h, "rgba(0,0,0,.22)", ' rx="1" stroke="' + c + '" stroke-width=".6"') +
+      (flap ? ln('M' + x + ',' + (y + 2.6) + ' h' + w, c, .6) + ci(x + w / 2, y + 1.5, .6, c) : '');
+    const beltBar = (f, buckle) => rc(X - G.wa - 1.2, 101.5, 2 * G.wa + 2.4, 5.2, f, ' rx="1.2"') + (buckle || '');
+    const cuffs = (f, c, y) => [-1, 1].map(s => { const w = wristX(s), yy = y || 116.5;
+      return rc(w - 4.5 * hk, yy, 9 * hk, 6.5, f, ' rx="1.3" ' + line) + ln('M' + (w - 4.5 * hk) + ',' + (yy + 1.5) + ' h' + 9 * hk, c, .7); }).join("");
+    const knuckles = (c, w) => [-1, 1].map(s => { const x = wristX(s); return ln('M' + (x - 2.9 * hk) + ',134.5 h' + 5.8 * hk, c, w || 1.4); }).join("");
+    const lacing = (s, c) => { const a = sd(s);
+      return ln('M' + a(4.6) + ',208.5 L' + a(11.8) + ',210.5 M' + a(4.6) + ',212.5 L' + a(11.8) + ',214.5 M' + a(4.6) + ',216.5 L' + a(11.8) + ',218.5', c || "rgba(255,255,255,.5)", .7); };
+    const sole = (s, c, w) => { const a = sd(s); return ln('M' + a(19.6) + ',228.5 L' + a(3.8) + ',228.5', c, w || 1.6); };
+    const toeCap = (s, f, ex) => { const a = sd(s);
+      return sh('M' + a(13.2) + ',221.4 L' + a(18) + ',223.5 C' + a(21.5) + ',225 ' + a(21.5) + ',229 ' + a(19) + ',229 L' + a(13.2) + ',229 Z', f, ex); };
+    const thighPocket = (s, c, f) => { const a = sd(s), x = s < 0 ? a(G.hi - .6) : a(G.hi - 6.8);
+      return rc(x, 137.5, 6.2, 11, f || "rgba(0,0,0,.25)", ' rx="1" stroke="' + c + '" stroke-width=".6"') + ln('M' + x + ',140.5 h6.2', c, .6); };
+    const kneePad = (s, f, c) => { const a = sd(s), d = (4.6 + G.hi - G.kn) / 2;
+      return '<ellipse cx="' + a(d) + '" cy="170" rx="' + ((G.hi - G.kn - 4.6) / 2 + .3) + '" ry="4.4" fill="' + f + '" stroke="' + c + '" stroke-width=".7"/>'; };
+    const legStripe = (s, c, w) => { const a = sd(s), h = G.hi, k = G.kn;
+      return ln('M' + a(h - 1.3) + ',122 C' + a(h - .4) + ',140 ' + a(h - 1.4) + ',152 ' + a(h - k - 1.1) + ',170 C' + a(h - k - .2) + ',182 ' + a(h - k - .6) + ',193 ' + a(h - k - 4.4) + ',204', c, w || 1); };
+    const hardHat = brim => P('M' + (X - hr - 1.8) + ',20 C' + (X - hr - 1.8) + ',3.5 ' + (X + hr + 1.8) + ',3.5 ' + (X + hr + 1.8) + ',20 Z', "head") +
+      sh('M' + (X - hr - 4.5) + ',20.5 Q' + X + ',18 ' + (X + hr + 4.5) + ',20.5 L' + (X + hr + 4) + ',22.6 Q' + X + ',20.4 ' + (X - hr - 4) + ',22.6 Z', brim, ' ' + line);
+    const skinOverlay = (d, dur) => '<path d="' + d + '" fill="url(#psDigi)" opacity="0"><animate attributeName="opacity" values="0;0;.6;.15;.5;0;0" ' +
+      'keyTimes="0;.55;.6;.66;.72;.8;1" dur="' + dur + 's" repeatCount="indefinite"/></path>';
+
+    // ⛏ ШАХТЁР. Каска с налобным фонарём; брезентовая куртка и комбинезон с нагрудником; кирки, угольная пыль, кристаллы руды
+    const MN_BIB = "#2b3a56", MN_LEATHER = "#3a2a1b";
+    const pickaxes = (x, y, k, head) => ln('M' + (x - 3.4 * k) + ',' + (y + 3.4 * k) + ' L' + (x + 3 * k) + ',' + (y - 3 * k) + ' M' + (x + 3.4 * k) + ',' + (y + 3.4 * k) +
+        ' L' + (x - 3 * k) + ',' + (y - 3 * k), "#a07a4c", 1.1 * k) +
+      ln('M' + (x + .6 * k) + ',' + (y - 5.2 * k) + ' Q' + (x + 3.6 * k) + ',' + (y - 3.6 * k) + ' ' + (x + 5.2 * k) + ',' + (y - .6 * k), head, 1.3 * k) +
+      ln('M' + (x - 5.2 * k) + ',' + (y - .6 * k) + ' Q' + (x - 3.6 * k) + ',' + (y - 3.6 * k) + ' ' + (x - .6 * k) + ',' + (y - 5.2 * k), head, 1.3 * k);
+    const crystal = (x, y, k, c) => sh('M' + x + ',' + (y - 3.2 * k) + ' L' + (x + 1.3 * k) + ',' + y + ' L' + x + ',' + (y + 1.5 * k) + ' L' + (x - 1.3 * k) + ',' + y + ' Z', c, GL);
+    const mnHead = () => { const l = lv("head");
+      return hardHat("#b97a1c") + ln('M' + X + ',5.5 L' + X + ',18.6', "rgba(0,0,0,.2)", 2.4) +
+        (l >= 2 ? ln('M' + (X - hr - 1.6) + ',15.5 Q' + X + ',18.6 ' + (X + hr + 1.6) + ',15.5', MN_LEATHER, 1.2) : '') +   // ремень фонаря
+        rc(X - 3.8, 10.4, 7.6, 6.4, "#2a2016", ' rx="1.6" stroke="#c9ccd8" stroke-width=".5"') +
+        ci(X, 13.6, l >= 2 ? 4.6 : 3.4, "rgba(255,246,200,.22)", '') + ci(X, 13.6, 2.2, "#fff6c8", GL) +
+        (l >= 2 ? ciA(X, 13.6, 6.5, "rgba(255,246,200,.12)", '', pulse(.4, 1, 3)) : '') +
+        '<ellipse cx="' + (X - 4.5) + '" cy="30.5" rx="2.2" ry="1.1" fill="rgba(0,0,0,.28)"/>' +   // угольная пыль на щеке
+        (l >= 3 ? ln('M' + (X - hr) + ',17.6 Q' + X + ',15.4 ' + (X + hr) + ',17.6', GOLD, .9) + crystal(X + hr - 1.5, 10.5, .9, "#5ff2c8") + crystal(X - hr + 1.5, 11, .8, "#b48bff") : '');
+    };
+    const mnBody = () => { const l = lv("body");
+      const strap = s => { const a = sd(s); return sh('M' + a(G.sh - 9.5) + ',47.4 L' + a(G.sh - 6) + ',48.8 L' + a(7.8) + ',71.5 L' + a(4.6) + ',71.5 Z', MN_BIB); };
+      const rivet = (x, y) => ci(x, y, .95, l >= 3 ? GOLD : "#c9ccd8", l >= 3 ? GL : '');
+      return strap(-1) + strap(1) +
+        sh('M' + (X - 8.6) + ',70 L' + (X + 8.6) + ',70 L' + (X + G.wa - .4) + ',101 L' + (X - G.wa + .4) + ',101 Z', MN_BIB) +
+        rivet(X - 6.2, 72.6) + rivet(X + 6.2, 72.6) +
+        pocket(X - 4.6, 76.5, 9.2, 7.5, "#8fa6c8", false) + ln('M' + (X + 2.2) + ',76.5 L' + (X + 3) + ',72.6', "#e7d9a8", .9) +   // карандаш в кармане
+        '<ellipse cx="' + (X - G.ch * .62) + '" cy="88" rx="3.4" ry="1.9" fill="rgba(0,0,0,.25)"/><ellipse cx="' + (X + G.ch * .55) + '" cy="61" rx="2.6" ry="1.4" fill="rgba(0,0,0,.22)"/>' +
+        beltBar(MN_LEATHER, rc(X - 2.5, 101.2, 5, 5.8, "none", ' rx="1" stroke="#c9ccd8" stroke-width="1"')) +
+        rc(X + G.wa - 4.5, 106.2, 6.5, 8.5, MN_LEATHER, ' rx="1.2"') +   // сумка для образцов
+        (l >= 2 ? shoulder(-1, MN_LEATHER, 3.2) + shoulder(1, MN_LEATHER, 3.2) + pickaxes(X, 91, .95, "#c9ccd8") +
+          [-1, 1].map(s => ci(sd(s)(G.sh - 4), 50.6, .6, "#c9ccd8")).join("") : '') +
+        (l >= 3 ? pickaxes(X, 91, .95, GOLD).replace(/stroke="#a07a4c"/g, 'stroke="' + GOLD + '"') +
+          crystal(X - 2.6, 75.6, 1, "#5ff2c8") + crystal(X, 74.4, 1.1, "#b48bff") + crystal(X + 2.6, 75.8, .9, "#5fd0ff") : '');
+    };
+    const mnHands = () => { const l = lv("hands");
+      return cuffs("#6e4f2f", "#3a2a1b") + (l >= 2 ? knuckles(MN_LEATHER, 1.6) : '') +
+        (l >= 3 ? [-1, 1].map(s => [-1.8, 0, 1.8].map(d => ci(wristX(s) + d * hk, 134.4, .45, GOLD)).join("")).join("") : ''); };
+    const mnLegs = () => { const l = lv("legs");
+      return [-1, 1].map(s => thighPocket(s, "#8fa6c8") + (l >= 2 ? kneePad(s, MN_LEATHER, "#8a6a44") : '') +
+        (l >= 3 ? legStripe(s, GOLD, .7) : '')).join("") +
+        (l >= 2 ? ln('M' + sd(1)(G.hi - 3) + ',146 L' + sd(1)(G.hi - 3) + ',160', "#a07a4c", 1.4) + rc(sd(1)(G.hi - 5.2), 143.4, 4.4, 2.6, "#c9ccd8", ' rx=".6"') : ''); };  // молоток в петле
+    const mnFeet = () => { const l = lv("feet");
+      return [-1, 1].map(s => toeCap(s, l >= 3 ? GOLD : SILVER, l >= 3 ? GL : '') + sole(s, "rgba(0,0,0,.5)") + lacing(s, "#a07a4c") +
+        (l >= 2 ? ln('M' + sd(s)(13) + ',205 L' + sd(s)(3.6) + ',205', "#8a6a44", 2) : '')).join(""); };
+
+    // 🪖 ВОЕННЫЙ. Каска с ремешком; китель с нагрудными карманами и пуговицами; погоны растут со званием:
+    // 1 — полоска, 2 — звёзды и орденская планка, 3 — золотые эполеты с бахромой, медали и аксельбант
+    const ML_DK = "#3d4826";
+    const mlHead = () => { const l = lv("head");
+      return P('M' + (X - hr - 3) + ',24 C' + (X - hr - 3.4) + ',2.5 ' + (X + hr + 3.4) + ',2.5 ' + (X + hr + 3) + ',24 Q' + X + ',20.5 ' + (X - hr - 3) + ',24 Z', "head") +
+        ln('M' + (X - hr - 2) + ',24 L' + (X - hr + 1) + ',33 Q' + X + ',36 ' + (X + hr - 1) + ',33 L' + (X + hr + 2) + ',24', "#2b3122", .8) +
+        ln('M' + (X - hr - 2.6) + ',21 Q' + X + ',18 ' + (X + hr + 2.6) + ',21', "rgba(0,0,0,.3)", 1.2) +
+        (l >= 2 ? ln('M' + (X - hr) + ',12 Q' + X + ',6.5 ' + (X + hr) + ',12 M' + (X - hr - 2) + ',17.5 Q' + X + ',11.5 ' + (X + hr + 2) + ',17.5 M' + (X - 5) + ',4.6 L' + (X - 8.5) + ',21.5 M' +
+          (X + 5) + ',4.6 L' + (X + 8.5) + ',21.5 M' + X + ',3.4 L' + X + ',8.5', "rgba(0,0,0,.38)", .6) + star5(X, 14.2, 2.4, SILVER) : '') +
+        (l >= 3 ? star5(X, 14.2, 3, GOLD, GL) + ln('M' + (X - 6.2) + ',18.5 Q' + (X - 6.8) + ',12 ' + (X - 3.6) + ',9.6 M' + (X + 6.2) + ',18.5 Q' + (X + 6.8) + ',12 ' + (X + 3.6) + ',9.6', GOLD, .8) +
+          [-1, 1].map(s => [0, 1, 2].map(i => '<ellipse cx="' + (X + s * (5.9 - i * .7)) + '" cy="' + (16.6 - i * 2.6) + '" rx=".6" ry="1.1" fill="' + GOLD + '"/>').join("")).join("") : '');
+    };
+    const mlBody = () => { const l = lv("body"), mid = G.sh - 4.9;
+      const board = s => { const a = sd(s);
+        return shoulder(s, l >= 3 ? GOLD : ML_DK, 3.6, ' stroke="' + (l >= 3 ? "#fff1b8" : "#22281a") + '" stroke-width=".5"' + (l >= 3 ? GL : '')) +
+          (l === 1 ? ln('M' + a(mid) + ',49.4 L' + a(mid + .5) + ',53', SILVER, .8) : '') +
+          (l === 2 ? star5(a(mid - 3), 49.5, 1.05, SILVER) + star5(a(mid + 2.6), 52.4, 1.05, SILVER) : '') +
+          (l >= 3 ? star5(a(mid), 51.1, 1.4, "#fffbe8") + [0, 1, 2, 3, 4].map(i => ln('M' + a(G.sh + .9 - i * 1.15) + ',' + (55.8 - i * .52) + ' l0,3.2', GOLD, .55)).join("") : ''); };
+      const buttons = [56, 66, 76, 86, 96].map(y => ci(X + 1.7, y, .85, l >= 3 ? GOLD : "#c9ccd8")).join("");
+      return board(-1) + board(1) + ln('M' + X + ',47 L' + X + ',101', "rgba(0,0,0,.35)", 1) + buttons +
+        pocket(X - G.ch + 3.6, 62, G.ch - 7.2, 8, "#22281a", true) + pocket(X + 3.6, 62, G.ch - 7.2, 8, "#22281a", true) +
+        ln('M' + sd(-1)(G.sh - 7) + ',48.4 L' + sd(1)(G.wa) + ',102', "#2b2a1c", 1.8) +   // портупея через плечо
+        beltBar("#2b2a1c", rc(X - 3, 101, 6, 6.2, "none", ' rx="1" stroke="' + (l >= 3 ? GOLD : "#c9ccd8") + '" stroke-width="1.1"') + star5(X, 104.1, 1.4, l >= 3 ? GOLD : "#c9ccd8")) +
+        (l >= 2 ? [["#d8423a", "#f2c94c"], ["#2f7bff", "#ffffff"], ["#22a05a", "#f2c94c"]].map((c, i) =>
+          rc(X - G.ch + 3.6 + i * 3.7, 58, 3.5, 2.5, c[0], ' stroke="' + c[1] + '" stroke-width=".35"')).join("") : '') +
+        (l >= 3 ? [0, 1].map(i => { const x = X - G.ch + 5.6 + i * 5.6;
+            return rc(x - 1.4, 70.6, 2.8, 4.2, i ? "#2f7bff" : "#d8423a") + star5(x, 77.6, 2.3, GOLD, GL); }).join("") +
+          ln('M' + sd(1)(G.sh - 4) + ',52 C' + sd(1)(G.ch - 1) + ',62 ' + (X + 6) + ',66 ' + (X + 1.7) + ',66 M' + sd(1)(G.sh - 4) + ',53.6 C' + sd(1)(G.ch - 2) + ',67 ' +
+            (X + 7) + ',72 ' + (X + 1.7) + ',76', GOLD, .8) : '');
+    };
+    const mlHands = () => { const l = lv("hands");
+      return cuffs("#22281a", "#55603a") + knuckles("#3d4826", 1.6) +
+        (l >= 2 ? '<rect x="' + (wristX(-1) - 2.6) + '" y="111.5" width="5.2" height="4.6" rx="1.4" fill="#151829" stroke="' + SILVER + '" stroke-width=".6"/>' +
+          ln('M' + wristX(-1) + ',112.6 L' + wristX(-1) + ',113.8 L' + (wristX(-1) + 1) + ',114.2', "#7dff9b", .5) : '') +   // командирские часы
+        (l >= 3 ? [-1, 1].map(s => ln('M' + (wristX(s) - 4.5 * hk) + ',121 h' + 9 * hk, GOLD, 1)).join("") : ''); };
+    const mlLegs = () => { const l = lv("legs");
+      return [-1, 1].map(s => thighPocket(s, "#22281a") + (l >= 2 ? ln('M' + sd(s)(4.8) + ',165 L' + sd(s)(G.hi - G.kn) + ',165 M' + sd(s)(4.8) + ',176 L' + sd(s)(G.hi - G.kn + .4) + ',176', "#22281a", 1.4) : '') +
+        (l >= 3 ? legStripe(s, GOLD, 1.6) : '')).join(""); };   // 3 ур. — генеральские лампасы
+    const mlFeet = () => { const l = lv("feet");
+      return [-1, 1].map(s => sole(s, "rgba(0,0,0,.6)", 1.8) + lacing(s) +
+        (l >= 2 ? ln('M' + sd(s)(13.2) + ',206 L' + sd(s)(3.6) + ',206 M' + sd(s)(13.4) + ',214 L' + sd(s)(3.4) + ',214', "#3d4826", 1.6) : '') +
+        (l >= 3 ? ln('M' + sd(s)(16.5) + ',224 q2,.6 3,2.2', "#ffffff", .8, ' opacity=".8"') + rc(sd(s)(9.2) - 1.4, 212.8, 2.8, 2.4, GOLD, ' rx=".5"') : '')).join(""); };
+
+    // 🥷 МАСКИРОВКА. Камуфляж «лес» (хаки, как у военных и охотников): 1 — панама и разгрузка, 2 — балаклава и «леший»
+    // (пучки травы и листьев), 3 — прибор ночного видения и оптический камуфляж (фигура на миг «рассыпается» в пиксели)
+    const ST_WEB = "#2a3120", GRASS = "#7f9a4a", LEAF = "#a39467";
+    const tufts = (pts, k) => pts.map(([x, y], i) => ln('M' + x + ',' + y + ' l' + (-1.6 + i % 3 * 1.6) * k + ',' + (-4.5 * k) + ' M' + (x + .8) + ',' + y + ' l' + (.8 + i % 2) * k + ',' + (-3.6 * k),
+      i % 2 ? GRASS : LEAF, .9)).join("");
+    const stHead = () => { const l = lv("head");
+      if (l === 1) return P('M' + (X - hr - 6.5) + ',20.5 Q' + X + ',16.5 ' + (X + hr + 6.5) + ',20.5 L' + (X + hr + 5.5) + ',23 Q' + X + ',19.4 ' + (X - hr - 5.5) + ',23 Z', "head") +
+        P('M' + (X - hr + .4) + ',19.8 C' + (X - hr + .4) + ',5.8 ' + (X + hr - .4) + ',5.8 ' + (X + hr - .4) + ',19.8 Z', "head") +
+        ln('M' + (X - hr + .4) + ',17.4 Q' + X + ',15.8 ' + (X + hr - .4) + ',17.4', ST_WEB, 1.4);
+      return P(headD, "head") + rc(X - hr + 1.4, 20, 2 * hr - 2.8, 5.2, "#141a2e", ' rx="2.4"') +
+        ci(X - 3.6, 22.6, .9, "rgba(0,255,225,.75)") + ci(X + 3.6, 22.6, .9, "rgba(0,255,225,.75)") +
+        tufts([[X - 7, 11], [X - 4, 9], [X - 1, 8.4], [X + 2, 8.4], [X + 5, 9.2], [X + 7.5, 11]], 1) +
+        (l >= 3 ? rc(X - 3.4, 12.2, 6.8, 3.8, "#1d2216", ' rx="1"') + [-1, 1].map(s =>
+          rc(X + s * 3.7 - 2.4, 17.8, 4.8, 6.8, "#1d2216", ' rx="1.5" stroke="#0b0f08" stroke-width=".5"') +
+          ciA(X + s * 3.7, 23.6, 1.9, "#57ff7a", GL, pulse(.65, 1, 2.2))).join("") : '');
+    };
+    const stBody = () => { const l = lv("body");
+      return ln('M' + sd(-1)(G.sh - 6) + ',49 L' + sd(1)(G.wa - .5) + ',101 M' + sd(1)(G.sh - 6) + ',49 L' + sd(-1)(G.wa - .5) + ',101', ST_WEB, 2.4) +
+        rc(X - 3.2, 72, 6.4, 7.5, ST_WEB, ' rx="1.2"') + rc(X - 3.2, 72, 6.4, 2.4, "#3a4426", ' rx="1"') +
+        ln('M' + sd(-1)(G.ch - 2) + ',62 L' + sd(-1)(G.ch - 7) + ',78', "#1b2015", 2.2) + ln('M' + sd(-1)(G.ch - 2.2) + ',61 l1,-2.4', SILVER, 1.1) +   // нож в ножнах
+        beltBar(ST_WEB, rc(X - 2.4, 101.4, 4.8, 5.4, "#4a5536", ' rx="1"')) +
+        (l >= 2 ? [-1, 1].map(s => { const a = sd(s);
+            return tufts([[a(G.sh - 9), 49], [a(G.sh - 6), 50.3], [a(G.sh - 3), 51.6], [a(G.sh), 53.2]], -1) +
+              ln('M' + a(G.sh - 7.5) + ',48.6 l.6,8 M' + a(G.sh - 1.5) + ',52.4 l1.8,8', LEAF, 1); }).join("") : '') +
+        (l >= 3 ? skinOverlay(torso, 7) + skinOverlay(arm(-1), 7) + skinOverlay(arm(1), 7) : '');
+    };
+    const stHands = () => { const l = lv("hands");
+      return cuffs(ST_WEB, "#4a5536") + [-1, 1].map(s => { const w = wristX(s);
+          return sh('M' + (w - 3 * hk) + ',137 L' + (w + 3 * hk) + ',137 L' + (w + 2.6 * hk) + ',142 L' + (w - 2.6 * hk) + ',142 Z', "#9a7b5b"); }).join("") +   // пальцы без перчаток — для курка
+        (l >= 2 ? ln('M' + (wristX(1) - 3 * hk) + ',112 L' + (wristX(1) + 3 * hk) + ',112', "#1b2015", 3) : '') +
+        (l >= 3 ? ciA(wristX(1), 112, 1, "#57ff7a", GL, pulse(.4, 1, 1.6)) : ''); };
+    const stLegs = () => { const l = lv("legs");
+      return [-1, 1].map(s => thighPocket(s, ST_WEB, "#3a4426")).join("") +
+        ln('M' + sd(1)(G.hi - 2) + ',150 L' + sd(1)(G.hi - 3.5) + ',163', "#1b2015", 2.2) +
+        (l >= 2 ? [-1, 1].map(s => tufts([[sd(s)(G.hi - G.kn - 1), 172], [sd(s)(8), 174], [sd(s)(G.hi - G.kn - 4), 190]], -1)).join("") : '') +
+        (l >= 3 ? skinOverlay(leg(-1), 7) + skinOverlay(leg(1), 7) : ''); };
+    const stFeet = () => { const l = lv("feet");
+      return [-1, 1].map(s => sole(s, "#3a3220", 1.8) + lacing(s, "#3a3220") +
+        (l >= 2 ? ln('M' + sd(s)(13.4) + ',207 L' + sd(s)(3.6) + ',209 M' + sd(s)(13.4) + ',211 L' + sd(s)(3.6) + ',213', "#5b6b3a", 1.4) : '') +
+        (l >= 3 ? sole(s, "#57ff7a", .8).replace('/>', ' opacity=".7"/>') : '')).join(""); };
+
+    // 🔧 ИНЖЕНЕР. Каска с рёбрами и шестерёнкой; комбинезон с карманом под карандаши и линейку; пояс с инструментами —
+    // 2: сварочные очки, наколенники, ещё инструменты и рулетка; 3: голографический визор, наручный голо-экран, золотая шестерня
+    const EN_BELT = "#5a3d24", EN_OR = "#ff8a2a";
+    const wrench = (x, y, len, c, ang) => '<g transform="rotate(' + ang + ' ' + x + ' ' + y + ')">' + ln('M' + x + ',' + y + ' L' + x + ',' + (y + len), c, 1.3) +
+      '<path d="M' + (x - 1.7) + ',' + (y - 1.9) + ' A2.1,2.1 0 1 0 ' + (x + 1.7) + ',' + (y - 1.9) + '" stroke="' + c + '" stroke-width="1.3" fill="none"/></g>';
+    const enHead = () => { const l = lv("head");
+      return hardHat("#d8691b") + ln('M' + (X - 4) + ',6 L' + (X - 5) + ',18.6 M' + X + ',5 L' + X + ',18.6 M' + (X + 4) + ',6 L' + (X + 5) + ',18.6', "rgba(0,0,0,.22)", 1.2) +
+        gearIcon(X, 12.2, 2.2, l >= 3 ? GOLD : "#ffffff", l >= 3 ? GL : '') +
+        (l >= 2 ? ln('M' + (X - hr - 1.6) + ',17.8 L' + (X + hr + 1.6) + ',17.8', "#1d2236", 1.2) + [-1, 1].map(s =>
+          ci(X + s * 3.8, 17.6, 2.6, "#1a2a33", ' stroke="' + SILVER + '" stroke-width=".7"') + ci(X + s * 3.8 - .8, 16.8, .6, "rgba(255,255,255,.7)")).join("") : '') +
+        (l >= 3 ? '<rect x="' + (X - hr) + '" y="20.4" width="' + 2 * hr + '" height="5.4" rx="2.6" fill="rgba(80,220,255,.28)" stroke="#5fd0ff" stroke-width=".6"' + GL + '/>' +
+          '<rect x="' + (X - hr + .4) + '" y="20.8" width="1.2" height="4.6" fill="rgba(160,240,255,.8)"><animate attributeName="x" values="' + (X - hr + .4) + ';' +
+          (X + hr - 1.6) + ';' + (X - hr + .4) + '" dur="3.2s" repeatCount="indefinite"/></rect>' : '');
+    };
+    const enBody = () => { const l = lv("body"), pl = X - G.wa - 1.6, pr = X + G.wa - 5.4;
+      const tools = l >= 3 ? "#5fd0ff" : SILVER;
+      return ln('M' + X + ',46 L' + X + ',101', "#1b2a4a", 1.4) + rc(X - 1, 51, 2, 3, EN_OR, ' rx=".5"') +
+        '<path d="M' + (X - half(84) + .4) + ',84 L' + (X + half(84) - .4) + ',84 L' + (X + half(87.4) - .4) + ',87.4 L' + (X - half(87.4) + .4) + ',87.4 Z" fill="' + EN_OR + '"/>' +
+        ln('M' + (X - half(85.7) + .4) + ',85.7 L' + (X + half(85.7) - .4) + ',85.7', "rgba(255,255,255,.7)", .6) +   // светоотражающая полоса
+        pocket(X - G.ch + 3.4, 59, G.ch - 6.6, 8.4, "#9fb6dd", false) +
+        ln('M' + (X - G.ch + 5) + ',59 L' + (X - G.ch + 5.2) + ',55.6 M' + (X - G.ch + 7) + ',59 L' + (X - G.ch + 7.4) + ',56.2', "#ffd23f", 1) +   // карандаши
+        rc(X - G.ch + 8.6, 54.4, 1.6, 4.8, "#e8ecf2", ' rx=".3"') +   // линейка
+        beltBar(EN_BELT, rc(X - 2.5, 101.2, 5, 5.8, "none", ' rx="1" stroke="#c9ccd8" stroke-width="1"')) +
+        ln('M' + (pl + 1.5) + ',106 L' + (pl + 1.2) + ',99.5', tools, 1) + rc(pl + .6, 98.4, 1.6, 2.6, "#d8423a", ' rx=".5"') +   // отвёртка
+        ln('M' + (pl + 4) + ',106 L' + (pl + 3.6) + ',100 M' + (pl + 5.4) + ',106 L' + (pl + 5.8) + ',100', "#ffd23f", 1.1) +   // пассатижи
+        rc(pl, 105.8, 7.2, 9.6, EN_BELT, ' rx="1.3" stroke="#8a5f3a" stroke-width=".6"') +
+        wrench(pr + 3.4, 99.6, 8, tools, 8) + rc(pr, 105.8, 7, 9.6, EN_BELT, ' rx="1.3" stroke="#8a5f3a" stroke-width=".6"') +
+        (l >= 2 ? rc(X + 4, 102.2, 4.6, 4.2, "#ffd23f", ' rx="1" stroke="#7a5a12" stroke-width=".5"') + ci(X + 6.3, 104.3, 1, "#7a5a12") +   // рулетка
+          gearIcon(sd(1)(G.sh + .5), 62, 2.1, "#9fb6dd") + rc(X + 3.2, 60, 8, 3.4, "#e8ecf2", ' rx=".6"') + ln('M' + (X + 4) + ',61.7 h6', "#2f4f86", .7) : '') +   // нашивка и бейдж
+        (l >= 3 ? gearIcon(X - G.ch * .5, 76, 3.2, GOLD, GL + ' opacity=".95"') : '');
+    };
+    const enHands = () => { const l = lv("hands");
+      return cuffs("#b88a2c", "#7a5a12") + (l >= 2 ? knuckles("#7a5a12", 1.8) : '') +
+        (l >= 3 ? '<g' + GL + '><rect x="' + (wristX(-1) - 3.2) + '" y="108.5" width="6.4" height="5" rx="1" fill="rgba(80,220,255,.35)" stroke="#5fd0ff" stroke-width=".5">' + pulse(.6, 1, 2.4) + '</rect>' +
+          ln('M' + (wristX(-1) - 2) + ',112 v-1.2 M' + (wristX(-1) - .6) + ',112 v-2.2 M' + (wristX(-1) + .8) + ',112 v-1.6 M' + (wristX(-1) + 2.1) + ',112 v-2.6', "#bff3ff", .55) + '</g>' : ''); };
+    const enLegs = () => { const l = lv("legs");
+      return [-1, 1].map(s => thighPocket(s, "#9fb6dd") + (l >= 2 ? kneePad(s, EN_OR, "#a24f12") : '') + (l >= 3 ? legStripe(s, GOLD, .8) : '')).join("") +
+        ln('M' + sd(-1)(G.hi - 3) + ',137 L' + sd(-1)(G.hi - 3) + ',151', "#ffd23f", 1.2) + ln('M' + sd(-1)(G.hi - 4.5) + ',138 L' + sd(-1)(G.hi - 4.5) + ',148', "#ffd23f", .5); };  // складной метр
+    const enFeet = () => { const l = lv("feet");
+      return [-1, 1].map(s => toeCap(s, l >= 3 ? GOLD : SILVER, l >= 3 ? GL : '') + sole(s, "rgba(0,0,0,.55)") + lacing(s, l >= 2 ? EN_OR : null)).join(""); };
+
+    // Ярусы уже нарисованных костюмов: ⚡ электрик и 🔬 учёный тоже богатеют с уровнем
+    const TIER = {
+      el: { head: l => (l >= 2 ? [-1, 1].map(s => '<ellipse cx="' + (X + s * (hr + 1.7)) + '" cy="25" rx="2.1" ry="3.6" fill="#1f2336" stroke="' + EL + '" stroke-width=".7"/>').join("") : '') +   // наушники
+                  (l >= 3 ? ln('M' + (X - hr - 1) + ',16.5 Q' + X + ',13.6 ' + (X + hr + 1) + ',16.5', GOLD, 1) + '<g opacity="0">' + flash(5, .45) + bolt(X - hr - 4.5, 1.5, .42) + bolt(X + hr + 5.5, 5, .38) + '</g>' : ''),
+            body: l => (l >= 2 ? rc(X - G.wa - 2.4, 106.4, 6.2, 8.8, "#151829", ' rx="1.2" stroke="' + EL + '" stroke-width=".6"') + rc(X - G.wa - 1.6, 107.5, 4.6, 2.6, "#7dff9b") +   // мультиметр
+                        ci(X - G.wa + .7, 112.5, 1.2, "none", ' stroke="' + EL + '" stroke-width=".6"') + ln('M' + (X - G.wa - 1) + ',115 q-2,5 1,9 M' + (X - G.wa + 2.2) + ',115 q2,4 -.5,8', "#d8423a", .6) : '') +
+                  (l >= 3 ? bolt(X - G.ch * .5, 55, 1.05).replace('fill="' + EL + '"', 'fill="' + GOLD + '"') + '<g opacity="0">' + flash(4, .3) +
+                    [-1, 1].map(s => bolt(sd(s)(G.sh + 2), 44, .4)).join("") + '</g>' : ''),
+            hands: l => (l >= 3 ? [-1, 1].map(s => ln('M' + (wristX(s) - 4.6 * hk) + ',117.2 h' + 9.2 * hk, GOLD, 1)).join("") : ''),
+            legs: l => (l >= 2 ? [-1, 1].map(s => band(3.6, G.hi - G.kn + .4, 178, 180.6, s)).join("") : '') + (l >= 3 ? [-1, 1].map(s => legStripe(s, GOLD, .7)).join("") : ''),
+            feet: l => (l >= 3 ? [-1, 1].map(s => toeCap(s, GOLD, GL)).join("") : '') },
+      sc: { head: l => (l >= 2 ? ciA(X, 5.6, 1.4, SC, GL, pulse(.5, 1, 2)) : '') +
+                  (l >= 3 ? '<ellipse cx="' + X + '" cy="4" rx="' + (hr + 4) + '" ry="2.2" fill="none" stroke="' + GOLD + '" stroke-width=".7" opacity=".8"' + GL + '/>' +
+                    ciA(X + hr + 4, 4, .9, GOLD, '', '<animateMotion dur="3.4s" repeatCount="indefinite" path="M0,0 A' + (hr + 4) + ',2.2 0 1,1 ' + (-2 * (hr + 4)) + ',0 A' + (hr + 4) + ',2.2 0 1,1 ' + 2 * (hr + 4) + ',0"/>') : ''),
+            body: l => (l >= 2 ? ln('M' + (X + G.ch * .3) + ',72 L' + (X + G.ch * .3) + ',67.5 M' + (X + G.ch * .3 + 1.5) + ',72 L' + (X + G.ch * .3 + 1.5) + ',66.8 M' + (X + G.ch * .3 + 3) + ',72 L' +
+                          (X + G.ch * .3 + 3) + ',67.8', "#d8423a", .9) +
+                        rc(X - G.ch * .62, 66, 5.6, 7, "#e9f1ff", ' rx=".8" stroke="' + SC + '" stroke-width=".5"') + rc(X - G.ch * .62 + 1, 67.2, 3.6, 2.6, "#7a88b8") : '') +   // ручки и бейдж
+                  (l >= 3 ? '<g transform="translate(' + sd(1)(G.sh + 7) + ',46)"' + GL + '>' + [0, 60, 120].map(r =>
+                      '<ellipse rx="4.6" ry="1.6" fill="none" stroke="' + GOLD + '" stroke-width=".6" transform="rotate(' + r + ')"><animateTransform attributeName="transform" type="rotate" from="' + r + '" to="' +
+                      (r + 360) + '" dur="6s" repeatCount="indefinite"/></ellipse>').join("") + ci(0, 0, 1.1, GOLD) + '</g>' : ''),
+            legs: l => (l >= 3 ? [-1, 1].map(s => legStripe(s, GOLD, .5)).join("") : ''),
+            feet: l => (l >= 2 ? [-1, 1].map(s => sole(s, SC, .8)).join("") : '') + (l >= 3 ? [-1, 1].map(s => toeCap(s, GOLD, GL)).join("") : '') },
+    };
     // Рисунки костюмов по деталям; деталь без рисунка — просто цвет костюма
     const SUIT_DECO = { sc: { head: () => scHead(), body: () => scBody(), legs: () => scLegs(), feet: () => scFeet() },
-                        el: { head: elHead, body: elBody, hands: elHands, legs: elLegs, feet: elFeet } };
-    const deco = slot => { const f = !look && worn[slot] && (SUIT_DECO[worn[slot].suit] || {})[slot]; return f ? f() : ''; };
+                        el: { head: elHead, body: elBody, hands: elHands, legs: elLegs, feet: elFeet },
+                        mn: { head: mnHead, body: mnBody, hands: mnHands, legs: mnLegs, feet: mnFeet },
+                        ml: { head: mlHead, body: mlBody, hands: mlHands, legs: mlLegs, feet: mlFeet },
+                        st: { head: stHead, body: stBody, hands: stHands, legs: stLegs, feet: stFeet },
+                        en: { head: enHead, body: enBody, hands: enHands, legs: enLegs, feet: enFeet } };
+    // рисунок детали + надбавка за её уровень (TIER); деталь без рисунка — просто цвет костюма
+    const deco = slot => { if (look || !worn[slot]) return '';
+      const s = worn[slot].suit, f = (SUIT_DECO[s] || {})[slot], t = (TIER[s] || {})[slot];
+      return (f ? f() : '') + (t ? t(lv(slot)) : ''); };
     // 🏆 Легендарные детали: рядом мерцают золотые искры (по две на деталь, вразнобой)
     const SPARK_AT = { head: [[X + hr + 3, 9], [X - hr - 3, 30]], body: [[X + G.sh + 3, 58], [X - G.ch + 4, 96]],
       hands: [[wristX(-1) - 6, 138], [wristX(1) + 6, 130]], legs: [[X - G.hi - 2, 150], [X + G.hi - 2, 186]], feet: [[X - 23, 222], [X + 23, 214]] };
@@ -3959,6 +4206,12 @@
       '<filter id="psLeg" filterUnits="userSpaceOnUse" x="-10" y="-10" width="140" height="256"><feMorphology in="SourceAlpha" operator="dilate" radius=".7" result="d"/>' +
       '<feFlood flood-color="#ffcf5a"/><feComposite in2="d" operator="in" result="g"/><feGaussianBlur in="g" stdDeviation="1.8" result="b"/>' +
       '<feMerge><feMergeNode in="b"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+      // 🥷 камуфляж «лес» (хаки) и «цифра» оптического камуфляжа
+      '<pattern id="psCamo" patternUnits="userSpaceOnUse" width="22" height="22"><rect width="22" height="22" fill="#6b7a45"/>' +
+      '<path d="M1,3 q5,-3 8,2 t6,1 q2,4 -3,5 t-7,-1 q-6,-2 -4,-7z" fill="#3f4b28"/><path d="M13,12 q4,-2 7,1 q2,3 -2,5 q-4,2 -6,-1 q-2,-3 1,-5z" fill="#a69a6a"/>' +
+      '<path d="M0,14 q3,-1 5,2 q1,3 -2,3 q-4,0 -3,-5z" fill="#2f3820"/><path d="M16,1 q3,0 4,3 q0,3 -3,2 q-3,-1 -1,-5z" fill="#8c9a5a"/>' +
+      '<path d="M7,17 q2,-2 4,0 q1,2 -1,3 q-3,1 -3,-3z" fill="#4f5a30"/></pattern>' +
+      '<pattern id="psDigi" patternUnits="userSpaceOnUse" width="6" height="6"><rect width="3" height="3" fill="#9fd8ff"/><rect x="3" y="3" width="3" height="3" fill="#5f7fa8"/></pattern>' +
       '</defs>' +
       (gender === "f" ? hair : '') +
       [leg(-1), leg(1), boot(-1), boot(1), neck, arm(-1), arm(1), torso, hand(-1), hand(1), headD].map(d =>

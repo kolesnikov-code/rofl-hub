@@ -179,3 +179,12 @@ def test_tabs_render_from_memory_and_revalidate():
     assert "prefetchMain()" in HTML and "b.onpointerdown = () => { prefetchTab(b.dataset.tab); };" in HTML
     assert "revalidate(tab, nav, Array.from(vc.used))" in HTML and "go(tab, { quiet: true })" in HTML
     assert "loadPack(guess);" in HTML and "await loadPack(me.lang);" in HTML
+
+
+def test_every_suit_has_its_own_drawing_and_level_tiers():
+    """Владелец 31.10: у каждого из 6 костюмов свой рисунок всех 5 деталей, и он богатеет с уровнем 1 → 3."""
+    for s in ("el", "mn", "ml", "st", "sc", "en"):
+        assert f"\n                        {s}: {{" in HTML or f"const SUIT_DECO = {{ {s}:" in HTML, s
+    for name in ("mnHead", "mlBody", "stHead", "enBody", "mlFeet", "stLegs", "enHands"):
+        assert f"const {name} = () =>" in HTML, name
+    assert "const TIER = {" in HTML and 'id="psCamo"' in HTML and "t(lv(slot))" in HTML
