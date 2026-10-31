@@ -174,13 +174,12 @@ RU: dict[str, str] = {
         "💸 Получить игровую валюту за победы или запустить ферму и добывать её круглосуточно\n"
         "🤼 Создать команду и залететь в ТОП рейтинга\n"
         "🏆 Прокачать команду до клана и бороться в международном рейтинге\n"
-        "💰 Вместе со своей бандой сорвать куш в миллион монет\n"
-        "👑 Купить публикацию на главной странице в соцсетях или на сайте, чтобы продвинуть себя или свой блог\n\n"
+        "💰 Вместе со своей бандой побеждать в битвах и забирать призы\n"
+        "👑 Выиграть на аукционе VIP ID или публикацию в соцсетях экосистемы\n\n"
         "<b>Этот чат-бот умеет:</b>\n"
         "📱 Открывать игровое приложение, где живёт вся игра\n"
         "⚡ Начислять монеты в играх, битвах команд и кланов, за достижения, активность и рефералов\n"
         "🔄 Переводить игровые монеты другому игроку ROFL HUB\n"
-        "💎 Продавать публикации на сайте и VIP-места для персон и блогеров\n"
         "🚀 Продавать ускорители, Безлимит, скины и многое другое…\n\n"
         "<i>Жми «ПРОДОЛЖИТЬ», и я расскажу подробнее 👇</i>"
     ),
@@ -198,7 +197,7 @@ RU: dict[str, str] = {
     "start.intro3": (
         "<b>СНАЧАЛА НУЖНО ПОНЯТЬ, ПОЧЕМУ ТАК ВАЖНЫ ИГРОВЫЕ МОНЕТЫ?</b>\n\n"
         "Монеты — основа всей торговли, состязаний и покупок в <b>ROFL HUB</b>. "
-        "Это почти единственная игровая валюта в мире, которую можно добывать бесплатно!\n"
+        "И их можно добывать бесплатно!\n"
         "..................................................\n"
         "<b>Сделать это можно разными способами:</b>\n"
         "• Приглашать друзей по реферальной ссылке\n"
@@ -226,7 +225,7 @@ RU: dict[str, str] = {
         "• Командные и клановые битвы за призы\n"
         "• Страница в Instagram — rofl_hub_global\n"
         "• Сайт rofl-hub.com для общения и продвижения без регистрации\n"
-        "• Тысячи игроков по всему миру, среди которых могут быть твои новые друзья!\n"
+        "• Игроки по всему миру, среди которых могут быть твои новые друзья!\n"
         "..................................................\n"
         "<b>Как и обещал, это завершающее сообщение. Дальше только в бой! Полезные команды:</b>\n\n"
         "/app — открыть игру\n"
@@ -1270,18 +1269,17 @@ EN: dict[str, str] = {
         "👋 <b>Hi! I'm ROFL HUB BOT — the main bot of the ROFL HUB gaming ecosystem. "
         "A new-generation hub of games and knowledge!</b>\n\n"
         "<b>Here you can:</b>\n"
-        "🎮 Play chat-bot games against the bot and other players\n"
+        "🎮 Play against the bot and real opponents\n"
         "💸 Earn game currency for wins, or launch a farm that mines it around the clock\n"
         "🤼 Create a team and storm the leaderboard\n"
         "🏆 Upgrade your team into a clan and fight in the international rating\n"
-        "💰 Win a million-coin jackpot together with your crew\n"
-        "👑 Buy a feature post on our social pages or website to promote yourself or your blog\n\n"
+        "💰 Win battles and grab prizes together with your crew\n"
+        "👑 Win a VIP ID or a post on the ecosystem's social pages at an auction\n\n"
         "<b>This chat-bot can:</b>\n"
-        "🎮 Show the list of all ROFL HUB games, channels and websites\n"
+        "📱 Open the game app, where the whole game lives\n"
         "⚡ Award coins for games, team and clan battles, achievements, activity and referrals\n"
         "🔄 Transfer game coins to another ROFL HUB player\n"
-        "💎 Sell website publications and VIP spots for creators and bloggers\n"
-        "🚀 Sell boosters, titles, statuses and much more...\n\n"
+        "🚀 Sell boosters, Unlimited, skins and much more…\n\n"
         "<i>Press “CONTINUE” and I'll tell you more 👇</i>"
     ),
     "start.intro2": (
@@ -1298,39 +1296,39 @@ EN: dict[str, str] = {
     "start.intro3": (
         "<b>FIRST, WHY DO GAME COINS MATTER SO MUCH?</b>\n\n"
         "Coins power all trading, contests and purchases in <b>ROFL HUB</b>. "
-        "It's almost the only game currency in the world you can mine for free!\n"
+        "And you can earn them for free!\n"
         "..................................................\n"
         "<b>There are many ways to earn them:</b>\n"
-        "- Invite friends with your referral link\n"
-        "- Win games against the bot\n"
-        "- Win duels against other players\n"
-        "- Join team and clan battles\n"
-        "- Claim daily login bonuses and quests\n"
-        "- Get a robot that mines coins 24/7 (Miner Bot / Cyber-Driller)\n"
+        "• Invite friends with your referral link\n"
+        "• Win games against the bot\n"
+        "• Win duels against other players\n"
+        "• Join team and clan battles\n"
+        "• Complete daily goals and open the chest\n"
+        "• Get a robot that mines coins 24/7 (Intern Bot / Miner Bot / Cyber-Driller)\n"
         "..................................................\n"
-        "<b>If you own a level-two robot (the Cyber-Driller) — it must be fed every day. "
-        "That's where the cyber-cutlet comes in: fuel for automatic mining, "
-        "given out for free every day! Your job is simple — drop by and feed your robot.</b>\n\n"
+        "<b>If you own a Cyber-Driller — it must be fed every day. "
+        "That's where the cyber-cutlet comes in: fuel for automatic mining. "
+        "You can claim one cutlet on the farm for free once a day! Your job is simple — drop by and feed your robot.</b>\n\n"
         "Miss a feeding — the robot powers down and mining stops.\n\n"
-        "The Miner Bot (level one) needs no fuel. "
-        "Important! Every robot is bought for 30 days — then buy it again or get a Master Drone. "
-        "You'll figure it out as you go:) Let's not get distracted.\n\n"
+        "The Intern Bot and the Miner Bot need no fuel. "
+        "The Intern is free and lasts forever, while the Miner and the Driller are bought for 30 days (the Master Drone pauses wear). "
+        "You'll figure it out as you go :) Let's not get distracted.\n\n"
         "A little more about <b>ROFL HUB</b>, so you understand how everything works here.\n\n"
-        "🛑 <b>This is the last message of our introduction. After this — straight to battle:)</b>"
+        "🛑 <b>One more message — and then to battle!</b>"
     ),
     "start.intro4": (
         "<b>THE SHORT VERSION. ROFL HUB IS:</b>\n"
-        "- Chat-bot games for every taste\n"
-        "- Create your own team (up to 50 players)\n"
-        "- Upgrade it into a clan (up to 1000 players)\n"
-        "- Team and clan battles for prizes\n"
-        "- Instagram page — rofl_hub_global\n"
-        "- Website rofl-hub.com for chatting and promotion without sign-up\n"
-        "- Thousands of players worldwide — your new friends may be among them!\n"
+        "• Games and quests for every taste — all in one app\n"
+        "• A squad (up to 5 players) or a team (up to 50 players)\n"
+        "• Upgrade your team into a clan (up to 1000 players)\n"
+        "• Team and clan battles for prizes\n"
+        "• Instagram page — rofl_hub_global\n"
+        "• Website rofl-hub.com for chatting and promotion without sign-up\n"
+        "• Players worldwide — your new friends may be among them!\n"
         "..................................................\n"
         "<b>As promised, this is the final message. Now — to battle! Useful commands:</b>\n\n"
-        "/menu — quick control of all features\n"
-        "/games — list of all games\n"
+        "/app — open the game\n"
+        "/menu — what else the chat can do\n"
         "/faq — frequently asked questions\n"
         "/rules — user agreement\n"
     ),
@@ -1340,16 +1338,16 @@ EN: dict[str, str] = {
         "📱 <b>ROFL HUB ECOSYSTEM — MAIN MENU</b>\n"
         "..................................................\n"
         "👤 <b>PROFILE & PASSPORT:</b>\n"
-        "• /start — Begin the intro and register an account\n"
+        "• /start — begin the intro and register an account\n"
         "• /profile — Your passport, balance and team in real time\n"
-        "• /my_stats — Your historical stats for the last 30 days\n\n"
+        "• /my_stats — your all-time game stats\n\n"
         "🚜 <b>CYBER-FARM & AUTOMATION:</b>\n"
         "• /farm — Fuel hub: refueling and robot mining speed\n"
         "• /shop — Marketplace: miners, cutlets and hub upgrades\n\n"
         "🕹️ <b>GAME ROOM:</b>\n"
         "• /games — Inline hub of all games against the bot\n"
         "• /quiz — Speed quiz: 30 seconds per answer, levels and bonuses\n"
-        "• /duel — 1-on-1 DUELS with real players: tables 10/100/1000\n"
+        "• /duel — 1-on-1 duels with real players: tables 10/100/1000 🪙\n"
         "• /quests — QUESTS: detectives, comedies and puzzles with rewards\n"
         "• /rps, /high_low, /safe — Quick games for coins\n\n"
         "👥 <b>CREW MANAGEMENT:</b>\n"
@@ -1357,26 +1355,25 @@ EN: dict[str, str] = {
         "• /my_team — Crew dashboard and the TEAMMATE LIST with 🧠 levels\n"
         "• /all_teams — Roulette of random teams\n\n"
         "💸 <b>MONEY & FRIENDS:</b>\n"
-        "• /invite — Your referral link: +500 🪙 per active friend\n"
+        "• /invite — your referral link: a reward for every active friend\n"
         "• /transfer — Send coins to another player\n\n"
         "📚 <b>GUIDE & RULES:</b>\n"
         "• /faq — The full ecosystem guide (opens in the Mini App)\n"
         "• /rules — User agreement\n"
         "• /delete_account — Delete account\n"
         "..................................................\n"
-        "<i>⚙️ Use the permanent two-column game panel at the bottom of the screen for instant navigation!</i>"
+        "<i>⚙️ The buttons at the bottom of the screen take you to any section.</i>"
     ),
     "menu.games_hub": (
         "🕹️ <b>WELCOME TO THE ROFL HUB GAME ZONE!</b>\n"
         "..................................................\n"
-        "Fight the bot in quick duels or take the intellectual sprint test "
-        "to win big — or lose it all!\n\n"
-        "💸 A win pays: <b>+2 🪙</b> (Cyber-Safe: <b>+5</b>)\n"
-        "💀 A loss costs: <b>-1 🪙</b>, a draw costs nothing\n"
-        "🧠 The Quiz has a 30-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 🪙</b>, "
-        "each next level is 10 answers longer — but the reward grows by 100!\n"
+        "Take on the bot in quick games, test your knowledge in the quiz or challenge a real opponent to a duel!\n\n"
+        "💸 A win pays: <b>+2 🪙</b> (Cyber-Safe: <b>+5 🪙</b>)\n"
+        "💀 A loss costs: <b>−1 🪙</b>, a draw costs nothing\n"
+        "🧠 The quiz has a 30-second timer and intellect levels: level 1 is 10 correct answers and <b>+100 🪙</b>, "
+        "each next level is 10 answers longer — but the reward grows by 100 🪙!\n"
         "..................................................\n"
-        "👇 <b>TAP A BUTTON BELOW TO START A ROUND RIGHT NOW:</b>"
+        "👇 <b>Pick a game:</b>"
     ),
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 RPS",
@@ -1384,23 +1381,22 @@ EN: dict[str, str] = {
     "menu.btn_safe": "🔐 Cyber-Safe",
     "menu.btn_duel": "⚔️ 1-on-1 DUELS",
     "app.open": (
-        "🎮 <b>ROFL HUB MINI APP</b>\n\n"
-        "Your passport, farm, team and the richest players — on one neon screen. "
-        "You can claim the daily cutlet right from there!\n\n"
+        "🎮 <b>ROFL HUB</b>\n\n"
+        "The whole game in one app: passport, farm, games, quests, market, team and much more.\n\n"
         "👇 Tap the button:"
     ),
-    "app.btn": "🎮 OPEN THE MINI APP",
-    "app.unavailable": "⚙️ The Mini App is still connecting to the ecosystem servers. Check back soon!",
+    "app.btn": "🎮 OPEN THE APP",
+    "app.unavailable": "⚙️ The app is still connecting to the ecosystem servers. Check back soon!",
     "faq.teaser": (
         "📚 <b>ROFL HUB ECOSYSTEM GUIDE</b>\n"
         "..................................................\n"
         "The short version:\n"
-        "🚜 Robots mine coins around the clock: Miner Bot — 5/h fuel-free, "
-        "Cyber-Driller — 10/h, and EVERY Driller eats its own cyber-cutlet per day. "
-        "All robots live 30 days (the Master Drone pauses wear).\n"
+        "🚜 Robots mine coins around the clock: Intern Bot — 1 🪙/h, free and forever, Miner Bot — 5 🪙/h fuel-free, "
+        "Cyber-Driller — 10 🪙/h, and EVERY Driller eats its own cyber-cutlet once a day. "
+        "The Miner and the Driller live 30 days (the Master Drone pauses wear).\n"
         "🧠 Quiz: 30 seconds per answer, intellect levels with growing rewards.\n"
         "⚔️ Duels against real players at 10/100/1000 🪙 tables.\n"
-        "🏆 Teams up to 50 fighters (Mega-Clan — up to 1000) and Battle events with prizes for everyone.\n"
+        "🏆 Squads up to 5 fighters, teams up to 50 (Mega-Clan — up to 1000) and battle events with prizes.\n"
         "..................................................\n"
         "👇 <b>The full guide with every mechanic — one tap away:</b>"
     ),
@@ -1509,29 +1505,29 @@ EN: dict[str, str] = {
     "profile.caption": (
         "📋 <b>YOUR ROFL HUB PROFILE</b>\n"
         "..................................................\n"
-        "🆔 Your Passport ID: <code>{user_id}</code>\n"
+        "🆔 Passport ID: <code>{user_id}</code>\n"
         "{vip}"
         "💰 Coins right now: <b>{balance} 🪙</b>\n"
-        "🏆 Your status: <b>{team}</b>\n"
+        "🏆 Team: <b>{team}</b>\n"
         "🧠 Intellect level: <b>{level}</b> · to level {next_level}: "
         "<b>{left}</b> correct answers in /quiz (reward: +{reward} 🪙)\n"
         "..................................................\n"
-        "<i>The app has it all — market, storage, workshop, lab, goals, mines, teams and much more!</i>"
+        "<i>Everything else is in the app — market, storage, workshop, lab, goals, mines, teams and much more!</i>"
     ),
     "profile.no_team": "No team",
     "profile.team_label": "Team",
     "profile.clan_label": "Clan",
-    "profile.btn_farm": "🚜 My Cyber-Farm",
+    "profile.btn_farm": "🚜 My farm",
     "profile.btn_shop": "🏪 Shop",
     "profile.stats": (
-        "📊 <b>GAME ACHIEVEMENT STATS (30 DAYS)</b>\n"
+        "📊 <b>GAME STATS</b>\n"
         "..................................................\n"
-        "🧠 Game intellect level: <b>{level}</b> (total correct answers: {total})\n"
-        "🎮 Duel rounds played: <b>{played}</b>\n"
-        "🏆 Victories won: <code>{won}</code>\n"
-        "👥 Active friends invited: <b>{refs}</b>\n"
+        "🧠 Intellect level: <b>{level}</b> (total correct answers: {total})\n"
+        "🎮 Rounds played: <b>{played}</b>\n"
+        "🏆 Wins: <b>{won}</b>\n"
+        "👥 Friends invited: <b>{refs}</b>\n"
         "..................................................\n"
-        "<i>Stats keep your historical achievements even if the coins you won were already spent in the market!</i>"
+        "<i>Your stats keep your achievements even if the coins you won are already spent.</i>"
     ),
     "img.passport": "PASSPORT ID: {user_id}",
     "img.owner": "LEADER: @{username}",
@@ -1758,7 +1754,7 @@ EN: dict[str, str] = {
         "Together with the account, these will be gone <b>for good</b>:\n"
         "• coins, cutlets, resources and every farm robot;\n"
         "• boosts, Unlimited and everything bought with Stars — <b>Stars are not refunded</b>;\n"
-        "• VIP ID, quiz and quest progress;\n"
+        "• VIP ID, suit parts, skins, the season pass, quiz and quest progress;\n"
         "• your team spot (captaincy passes to the team veteran).\n"
         "Open market orders are cancelled right away, the goods return to your storage.\n\n"
         "⏳ First the account is frozen for <b>{days} days</b> — you can change your mind with one tap. "
@@ -1956,7 +1952,7 @@ EN: dict[str, str] = {
     "app.goto_workshop": "🔧 The <b>workshop</b> lives in the game app: resources, recipes and one-tap crafting.",
     "app.goto_raids": "🏴‍☠️ <b>Raids</b> live in the game app: scouting, defense stance and revenge.",
     "app.goto_station": "🛰 The <b>team station</b> lives in the game app: progress, donations and a bonus for the whole team.",
-    "app.goto_market": "📈 The <b>cutlet market</b> is easier in the game app: offers, selling and your orders on one screen.",
+    "app.goto_market": "📈 The <b>market</b> lives in the game app: cutlets, resources, suit parts, bids and swaps.",
     "mk.err_asset": "❌ There's no such item on the market.",
     "mk.err_no_resource": "❌ Not enough of that resource: you only have {have}.",
     "mk.bid_filled_notify": "🙋 <b>Market: buy order filled!</b> Order #{id}: you bought <b>+{qty} {icon}</b> at {price} 🪙.",
