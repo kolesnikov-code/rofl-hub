@@ -2746,7 +2746,7 @@
           (x.wait ? '<div class="lockline">' + fmt(L.lab_wait, { t: dur(x.wait) }) + '</div>' : '') +
           '<button class="btn ghost" data-tech="' + x.key + '"' + (x.affordable ? '' : ' disabled') + '>' + fmt(L.lab_up, { l: x.next }) + '</button>' +
           (x.gate_ok === false ? '<div class="hint status-bad">' + fmt(L.lab_sciGate, { l: x.next }) + '</div>' : '') +
-          '<div class="hint">' + fmt(L.lab_cooldown, { d: x.cooldown_days }) + '</div>';
+          '<div class="hint">' + fmt(L.lab_cooldown, { d: x.cooldown_days }) + (d.suit_cut ? ' (🔬 −' + d.suit_cut + '%)' : '') + '</div>';
       }
       return '<div class="card ' + (x.level ? '' : 'dim') + '"><h2>' + x.icon + ' ' + L["tech_" + x.key] + '</h2>' + body + '</div>';
     }).join("");

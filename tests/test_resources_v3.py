@@ -209,6 +209,10 @@ def test_build_tech_payload():
     assert [x["key"] for x in p["techs"]] == list(TECH_ORDER)
     assert by["comm"]["next"] == 2 and by["comm"]["wait"] > 0 and not by["comm"]["affordable"]   # 30 дней
     assert by["comm"]["cooldown_days"] == 30
+    # 🔬 костюм учёного (−20%) виден в цифре перерыва, а не только в расчёте (жалоба владельца 31.10)
+    sc = {x["key"]: x for x in build_tech_payload(_state(tools=1, comm=1, scout=1, attack=1), rich, NOW, 20)["techs"]}
+    assert sc["comm"]["cooldown_days"] == 24 and sc["defense"]["cooldown_days"] == 24
+    assert {x["key"]: x for x in build_tech_payload(_state(tools=1), rich, NOW, 25)["techs"]}["comm"]["cooldown_days"] == 22.5
     assert by["defense"]["level"] == 0 and by["defense"]["affordable"]        # 1 уровень — сразу
     assert not by["science"]["gate_ok"] and not by["science"]["affordable"]   # оборона ещё 0
     ready = build_tech_payload(_state(tools=2, comm=1, scout=1, attack=1, defense=1), rich, NOW)

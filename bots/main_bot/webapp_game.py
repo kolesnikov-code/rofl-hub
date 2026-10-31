@@ -96,6 +96,7 @@ from shared.economy import (
     raid_candidates,
     tech_cost,
     tech_tool_required,
+    tech_cooldown_cut,
     tech_cooldown_days,
     science_gate_ok,
     RAID_ATTACK_BONUS_PER_LEVEL,
@@ -544,6 +545,11 @@ def _raid_err(e: RaidError, lang: str) -> str:
     return e.localized(lang)
 
 
+def _days(value: float) -> float | int:
+    """24.0 → 24, 22.5 → 22.5: дни перерыва без лишних нулей."""
+    return int(value) if float(value).is_integer() else round(value, 1)
+
+
 def build_tech_payload(state: dict, stock: dict, now, cut_pct: int = 0) -> dict:
     """Чистый сборщик витрины Лаборатории (юнит-тесты без aiohttp)."""
     tools = state["tools"]["level"]
@@ -559,7 +565,9 @@ def build_tech_payload(state: dict, stock: dict, now, cut_pct: int = 0) -> dict:
         gate = not (key == "science" and nxt) or science_gate_ok(levels, nxt)
         techs.append({"key": key, "icon": TECHS[key]["icon"], "level": level, "max": TECHS[key]["max"],
                       "next": nxt, "cost": cost, "tool": tool, "tool_ok": tools >= tool, "wait": wait,
-                      "gate_ok": gate, "cooldown_days": tech_cooldown_days(key, nxt) if nxt else 0,
+                      "gate_ok": gate,
+                      # 🔬 костюм/артефакт учёного уже в цифре (раньше показывалось 30 дн., хотя перерыв считался короче)
+                      "cooldown_days": _days(tech_cooldown_cut(tech_cooldown_days(key, nxt), cut_pct)) if nxt else 0,
                       "affordable": bool(nxt) and gate and tools >= tool and not wait and can_afford(stock, cost)})
     nxt_tool = tools + 1 if tools < len(TOOL_COSTS) else None
     return {
