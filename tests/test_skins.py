@@ -130,11 +130,17 @@ def test_avatar_is_one_silhouette_and_scientist_suit_is_drawn():
     assert "[leg(-1), leg(1), boot(-1), boot(1), neck, arm(-1), arm(1), torso, hand(-1), hand(1), headD].map(" in body
     assert "q4.5,5 9,0" not in body                          # линии груди больше нет
     assert "kn:" in body                                     # колено/икра/лодыжка от параметра фигуры
+    # рисунки костюмов — общая карта SUIT_DECO; деталь без рисунка красится цветом костюма
+    for slot in ("head", "body", "hands", "legs", "feet"):
+        assert 'deco("' + slot + '")' in body, slot
     # учёный: халат, шлем с визором-дисплеем (моргает), штаны с лампасом, ботинки
-    assert re.search(r"const SUIT_PAINT = \{ sc: \{ head: .*body: .*hands: .*legs: .*feet: ", HTML)
-    for part in ('sc("body") ? scBody()', 'sc("head") ? scHead()', 'sc("legs") ? scLegs()', 'sc("feet") ? scFeet()'):
-        assert part in body, part
+    assert "sc: { head: () => scHead(), body: () => scBody(), legs: () => scLegs(), feet: () => scFeet() }" in body
     assert 'attributeName="height"' in body                  # моргание на визоре
+    # электрик: каска с фонарём, куртка со светоотражающими полосами, краги с искрой, полосы на голенях, жёлтые носы
+    assert "el: { head: elHead, body: elBody, hands: elHands, legs: elLegs, feet: elFeet }" in body
+    paint = re.search(r"const SUIT_PAINT = (\{.*?\} \});", HTML, re.S).group(1)
+    for suit in ("sc", "el"):
+        assert re.search(suit + r": \{ head: .*?, body: .*?, hands: .*?, legs: .*?, feet: .*? \}", paint), suit
 
 
 def test_shop_has_separate_skins_category_and_persona_has_pass_tab():

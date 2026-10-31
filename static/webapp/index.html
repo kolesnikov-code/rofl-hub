@@ -15803,7 +15803,8 @@
   const SLOT_ICON = { head: "⛑", body: "🦺", hands: "🧤", legs: "👖", feet: "🥾" };
   const SUIT_COLOR = { el: "#ffd23f", mn: "#d68a3a", ml: "#6fae4f", st: "#7a7fa8", sc: "#3fd0ea", en: "#ff8a4c", exo: "#b77bff" };
   // Костюмы с собственным рисунком (владелец 31.10: «попроще, но своё») — цвет каждой детали; остальные пока красятся SUIT_COLOR
-  const SUIT_PAINT = { sc: { head: "#e9f1ff", body: "#e9f1ff", hands: "#39cde6", legs: "#26355f", feet: "#e9f1ff" } };
+  const SUIT_PAINT = { sc: { head: "#e9f1ff", body: "#e9f1ff", hands: "#39cde6", legs: "#26355f", feet: "#e9f1ff" },
+                       el: { head: "#ffd23f", body: "#2b3048", hands: "#ffd23f", legs: "#2b3048", feet: "#1f2336" } };
   const ART_ICON = { el: "🔆", mn: "🪸", ml: "🔴", st: "🌫", sc: "🔮", en: "⚙️" };
   ["el", "mn", "ml", "st", "sc", "en"].forEach(s => {
     Object.keys(SLOT_ICON).forEach(p => { A_ICON["g_" + s + "_" + p] = SLOT_ICON[p]; });
@@ -15824,6 +15825,8 @@
     const X = 60, base = "#2b3560", line = 'stroke="rgba(0,255,225,.55)" stroke-width="1.1" stroke-linejoin="round"';
     const col = slot => look ? "url(#psSk)" : (worn[slot] ? (SUIT_PAINT[worn[slot].suit] || {})[slot] || SUIT_COLOR[worn[slot].suit] : null);
     const sc = slot => !look && worn[slot] && worn[slot].suit === "sc";   // 🔬 учёный: свой рисунок поверх фигуры
+    const EL = SUIT_COLOR.el, bolt = (x, y, k) => '<path d="M' + (x + k) + ',' + y + ' L' + (x - 2.5 * k) + ',' + (y + 6 * k) + ' h' + 3 * k + ' L' + (x - k) + ',' + (y + 12 * k) +
+      ' L' + (x + 3.5 * k) + ',' + (y + 4.5 * k) + ' h' + (-3 * k) + ' Z" fill="' + EL + '" filter="url(#psGlow)"/>';
     const SC = SUIT_COLOR.sc, coat = SUIT_PAINT.sc.body, trim = (d, w) => '<path d="' + d + '" stroke="' + SC + '" stroke-width="' + (w || 1.2) +
       '" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
     const glow = slot => (look ? (skLvl || 1) >= 2 : worn[slot] && worn[slot].level >= 2) ? ' filter="url(#psGlow)"' : '';
@@ -15910,6 +15913,55 @@
     const scFeet = () => [-1, 1].map(s => { const a = x => s < 0 ? x : m(x);
       return trim('M' + a(X - 19.5) + ',228.4 L' + a(X - 7.5) + ',228.4', 1.8) + trim('M' + a(X - 12.8) + ',206 L' + a(X - 3.8) + ',206', 1.2) +
         '<circle cx="' + a(X - 8.2) + '" cy="214" r=".8" fill="' + SC + '"/><circle cx="' + a(X - 8) + '" cy="218.5" r=".8" fill="' + SC + '"/>'; }).join("");
+    // ⚡ Электрик. Куртка: молния-застёжка, светоотражающие полосы (жёлтая с серебряной серединой) на груди, поясе и рукавах,
+    // знак-молния на груди, монтажный пояс с пряжкой и подсумком
+    const half = y => y <= 67 ? G.ch : y >= 101 ? G.wa : G.ch + (G.wa - G.ch) * (y - 67) / 34;   // полуширина туловища на высоте y
+    const band = (d1, d2, y1, y2, s) => { const a = sd(s);
+      return '<path d="M' + a(d1) + ',' + y1 + ' L' + a(d2) + ',' + y1 + ' L' + a(d2) + ',' + y2 + ' L' + a(d1) + ',' + y2 + ' Z" fill="' + EL + '"/>' +
+        '<path d="M' + a(d1) + ',' + (y1 + y2) / 2 + ' L' + a(d2) + ',' + (y1 + y2) / 2 + '" stroke="rgba(255,255,255,.75)" stroke-width=".7"/>'; };
+    const hv = (y1, y2) => '<path d="M' + (X - half(y1) + .4) + ',' + y1 + ' L' + (X + half(y1) - .4) + ',' + y1 + ' L' + (X + half(y2) - .4) + ',' + y2 + ' L' + (X - half(y2) + .4) + ',' + y2 +
+      ' Z" fill="' + EL + '"/><path d="M' + (X - half(y1) + .4) + ',' + (y1 + y2) / 2 + ' L' + (X + half(y1) - .4) + ',' + (y1 + y2) / 2 + '" stroke="rgba(255,255,255,.75)" stroke-width=".7"/>';
+    const elBody = () => {
+      const S = G.sh, A = G.arm, F = G.fa;
+      const sleeve = s => { const a = sd(s), t1 = (103 - 92) / 32, t2 = (107 - 92) / 32;
+        const o = t => S + 2.5 + A * .42 + (1.5 + F * .45 - A * .42) * t + .5, i = t => S + 2.5 - A * .4 + (1.5 - F * .45 + A * .4) * t - .5;
+        return '<path d="M' + a(i(t1)) + ',103 L' + a(o(t1)) + ',103 L' + a(o(t2)) + ',107 L' + a(i(t2)) + ',107 Z" fill="' + EL + '"/>'; };
+      const pouch = X + G.wa - 3.5;
+      return hv(74, 78.5) + hv(91, 95) + sleeve(-1) + sleeve(1) +
+        '<path d="M' + X + ',46 L' + X + ',103" stroke="#151829" stroke-width="1.4"/><rect x="' + (X - 1) + '" y="52" width="2" height="3" rx=".5" fill="' + EL + '"/>' +
+        bolt(X - G.ch * .5, 55, .9) +
+        '<rect x="' + (X - G.wa - 1.2) + '" y="102.5" width="' + (2 * G.wa + 2.4) + '" height="5" rx="1.2" fill="#151829"/>' +
+        '<rect x="' + (X - 2.6) + '" y="102.2" width="5.2" height="5.6" rx="1" fill="none" stroke="' + EL + '" stroke-width="1.1"/>' +
+        '<rect x="' + pouch + '" y="106.5" width="7.5" height="9.5" rx="1.4" fill="#3a3324" stroke="' + EL + '" stroke-width=".7"/>' +
+        '<path d="M' + (pouch + 2) + ',106.5 L' + (pouch + 1.4) + ',100.5 M' + (pouch + 5.2) + ',106.5 L' + (pouch + 6) + ',101" stroke="#c9ccd8" stroke-width="1.1" stroke-linecap="round"/>';
+    };
+    // Каска с налобным фонарём и защитные очки
+    const elHead = () =>
+      P('M' + (X - hr - 1.8) + ',20 C' + (X - hr - 1.8) + ',3.5 ' + (X + hr + 1.8) + ',3.5 ' + (X + hr + 1.8) + ',20 Z', "head") +
+      '<path d="M' + (X - hr - 4.5) + ',20.5 Q' + X + ',18 ' + (X + hr + 4.5) + ',20.5 L' + (X + hr + 4) + ',22.6 Q' + X + ',20.4 ' + (X - hr - 4) + ',22.6 Z" fill="' + EL + '" ' + line + '/>' +
+      '<path d="M' + X + ',5.5 L' + X + ',18.6" stroke="rgba(0,0,0,.22)" stroke-width="2.4"/>' +
+      '<rect x="' + (X - 2.4) + '" y="12" width="4.8" height="3.6" rx="1" fill="#151829"/>' +
+      '<circle cx="' + X + '" cy="13.8" r="1.25" fill="#fff8d0" filter="url(#psGlow)"><animate attributeName="opacity" values=".75;1;.75" dur="2.6s" repeatCount="indefinite"/></circle>' +
+      '<rect x="' + (X - hr + .6) + '" y="21.8" width="' + (2 * hr - 1.2) + '" height="4.6" rx="2.2" fill="#141826" stroke="' + EL + '" stroke-width=".6"/>' +
+      '<path d="M' + (X - 5.4) + ',23 l1.6,-.6 M' + (X + 2) + ',23 l1.6,-.6" stroke="rgba(255,230,140,.85)" stroke-width=".7" stroke-linecap="round"/>';
+    // Диэлектрические перчатки-краги; между пальцами правой руки изредка проскакивает искра
+    const elHands = () => [-1, 1].map(s => { const w = wristX(s);
+      return '<rect x="' + (w - 4.6 * hk) + '" y="116" width="' + 9.2 * hk + '" height="7.5" rx="1.4" fill="#1f2336" ' + line + '/>' +
+        '<path d="M' + (w - 4.6 * hk) + ',117.2 h' + 9.2 * hk + '" stroke="' + EL + '" stroke-width=".9"/>'; }).join("") +
+      '<g opacity="0"><animate attributeName="opacity" values="0;0;1;.2;1;0;0" keyTimes="0;.7;.72;.74;.76;.8;1" dur="7s" repeatCount="indefinite"/>' +
+      bolt(wristX(1) + 2.5, 140, .55) + '</g>';
+    // Штаны: светоотражающие полосы на голенях, накладной карман на бедре; ботинки с жёлтыми носами
+    const elLegs = () => [-1, 1].map(s => { const a = sd(s), h = G.hi, k = G.kn;
+      return band(3.6, h - k + .4, 186, 189.5, s) +
+        '<rect x="' + (s < 0 ? a(h - .8) : a(h - 6.3)) + '" y="139" width="5.5" height="10" rx="1" fill="rgba(0,0,0,.22)" stroke="' + EL + '" stroke-width=".6"/>'; }).join("");
+    const elFeet = () => [-1, 1].map(s => { const a = sd(s);
+      return '<path d="M' + a(13.2) + ',221.4 L' + a(18) + ',223.5 C' + a(21.5) + ',225 ' + a(21.5) + ',229 ' + a(19) + ',229 L' + a(13.2) + ',229 Z" fill="' + EL + '"/>' +
+        '<path d="M' + a(19.5) + ',228.6 L' + a(5) + ',228.6" stroke="rgba(0,0,0,.45)" stroke-width="1.4"/>' +
+        '<path d="M' + a(12.8) + ',206 L' + a(3.8) + ',206" stroke="' + EL + '" stroke-width="1.2"/>'; }).join("");
+    // Рисунки костюмов по деталям; деталь без рисунка — просто цвет костюма
+    const SUIT_DECO = { sc: { head: () => scHead(), body: () => scBody(), legs: () => scLegs(), feet: () => scFeet() },
+                        el: { head: elHead, body: elBody, hands: elHands, legs: elLegs, feet: elFeet } };
+    const deco = slot => { const f = !look && worn[slot] && (SUIT_DECO[worn[slot].suit] || {})[slot]; return f ? f() : ''; };
     // Контур всей фигуры рисуется одним проходом под заливками — стыки рук, ног и туловища закрываются, шва нет
     const OL = "rgba(0,255,225,.55)", F = (d, slot) => '<path d="' + d + '" fill="' + (slot ? fill(slot) : base) + '"' + (slot ? glow(slot) : '') + '/>';
     const neck = 'M' + (X - hr * .42) + ',33 L' + (X - hr * .46) + ',48 L' + (X + hr * .46) + ',48 L' + (X + hr * .42) + ',33 Z';
@@ -15925,20 +15977,20 @@
       F(leg(-1), "legs") + F(leg(1), "legs") +
       [-1, 1].map(s => col("legs") ? '<rect x="' + (s < 0 ? X - G.hi + G.kn + .8 : X + 5) + '" y="167" width="' + (G.hi - G.kn - 5.8) + '" height="6" rx="1.5" fill="rgba(0,0,0,.28)"/>'
         : '<path d="M' + sd(s)(G.hi - G.kn - .8) + ',173 Q' + sd(s)((G.hi - G.kn + 4) / 2) + ',175 ' + sd(s)(5) + ',173" stroke="rgba(0,255,225,.25)" fill="none" stroke-width=".8"/>').join("") +
-      (sc("legs") ? scLegs() : '') +
-      F(boot(-1), "feet") + F(boot(1), "feet") + (sc("feet") ? scFeet() : '') +
+      deco("legs") +
+      F(boot(-1), "feet") + F(boot(1), "feet") + deco("feet") +
       F(neck) + F(arm(-1), "body") + F(arm(1), "body") + F(torso, "body") +
-      (sc("body") ? scBody() : col("body") ? '<path d="M' + X + ',52 L' + X + ',120" stroke="rgba(0,0,0,.35)" stroke-width="1.6"/>' +
-        '<rect x="' + (X - G.wa - 1) + '" y="101" width="' + (2 * G.wa + 2) + '" height="5" rx="1.5" fill="rgba(0,0,0,.35)"/>' : '') +
+      (deco("body") || (col("body") ? '<path d="M' + X + ',52 L' + X + ',120" stroke="rgba(0,0,0,.35)" stroke-width="1.6"/>' +
+        '<rect x="' + (X - G.wa - 1) + '" y="101" width="' + (2 * G.wa + 2) + '" height="5" rx="1.5" fill="rgba(0,0,0,.35)"/>' : '')) +
       F(hand(-1), "hands") + F(hand(1), "hands") + fingers(-1) + fingers(1) +
-      (col("hands") ? [-1, 1].map(s => '<rect x="' + (wristX(s) - 3.8 * hk) + '" y="120.5" width="' + 7.6 * hk + '" height="4" rx="1" fill="' +
-        (sc("hands") ? coat : fill("hands")) + '" ' + line + '/>').join("") : '') +
+      (deco("hands") || (col("hands") ? [-1, 1].map(s => '<rect x="' + (wristX(s) - 3.8 * hk) + '" y="120.5" width="' + 7.6 * hk + '" height="4" rx="1" fill="' +
+        (sc("hands") ? coat : fill("hands")) + '" ' + line + '/>').join("") : '')) +
       F(headD) +
       '<circle cx="' + (X - 3.6) + '" cy="23" r=".9" fill="rgba(0,255,225,.75)"/><circle cx="' + (X + 3.6) + '" cy="23" r=".9" fill="rgba(0,255,225,.75)"/>' +
       (gender !== "f" ? hair : '<path d="M' + (X - hr - .5) + ',20 Q' + X + ',6 ' + (X + hr + .5) + ',20 Q' + (X + 2) + ',13 ' + (X - hr - .5) + ',20 Z" fill="#3a4478"/>') +
-      (sc("head") ? scHead() : col("head") ? P('M' + (X - hr - 2) + ',25 C' + (X - hr - 2) + ',6 ' + (X + hr + 2) + ',6 ' + (X + hr + 2) + ',25 L' + (X + hr) + ',27 L' + (X + hr) + ',21 ' +
+      (deco("head") || (col("head") ? P('M' + (X - hr - 2) + ',25 C' + (X - hr - 2) + ',6 ' + (X + hr + 2) + ',6 ' + (X + hr + 2) + ',25 L' + (X + hr) + ',27 L' + (X + hr) + ',21 ' +
           'L' + (X - hr) + ',21 L' + (X - hr) + ',27 Z', "head") +
-        '<rect x="' + (X - hr + 1) + '" y="19.5" width="' + (2 * hr - 2) + '" height="6" rx="2.5" fill="rgba(0,255,225,.5)"/>' : '') +
+        '<rect x="' + (X - hr + 1) + '" y="19.5" width="' + (2 * hr - 2) + '" height="6" rx="2.5" fill="rgba(0,255,225,.5)"/>' : '')) +
       '</svg>';
   }
   const effText = (line, pct) => fmt(L["ps_eff_" + line], { p: pct });
