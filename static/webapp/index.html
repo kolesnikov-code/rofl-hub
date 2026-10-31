@@ -4383,7 +4383,22 @@
       const b = e.target.closest("button");
       if (!b || b.disabled) return;
       if (b.dataset.pstab) { psTab = b.dataset.pstab; go("persona"); }
-      else if (b.dataset.g) act(b, "/api/gear/gender", { gender: b.dataset.g }, async () => { await refreshMe().catch(() => {}); redraw(); });
+      else if (b.dataset.g) {
+        // М/Ж — мгновенно на месте (31.10: раньше ждали сервер и перерисовывали всю вкладку); сохраняем фоном, сбой — назад
+        const g = b.dataset.g, prev = d.gender;
+        if (g === prev) return;
+        const swap = to => {
+          d.gender = to;
+          if (me) me.gender = to;
+          box.querySelectorAll("[data-g]").forEach(x => x.classList.toggle("on", x.dataset.g === to));
+          const ava = box.querySelector(".ps-avatar");
+          if (ava) ava.outerHTML = avatarSvg(to, worn, skSuit ? skSuit.look : null, msk.suit ? msk.suit.level : 1);
+        };
+        swap(g);
+        try { tg.HapticFeedback.selectionChanged(); } catch (e) {}   // старые клиенты Telegram — без вибрации
+        post("/api/gear/gender", { gender: g }).then(r => { if (r && r.ok === false) { swap(prev); notify(r.message || L.error, false); } })
+          .catch(e => { swap(prev); apiError(e); });
+      }
       else if (b.dataset.pick) { psPick = psPick === b.dataset.pick ? null : b.dataset.pick;
         box.querySelectorAll("[data-pick]").forEach(x => x.classList.toggle("on", x.dataset.pick === psPick));
         document.getElementById("psPickBox").innerHTML = pickPanel(d); }

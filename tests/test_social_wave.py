@@ -188,3 +188,9 @@ def test_every_suit_has_its_own_drawing_and_level_tiers():
     for name in ("mnHead", "mlBody", "stHead", "enBody", "mlFeet", "stLegs", "enHands"):
         assert f"const {name} = () =>" in HTML, name
     assert "const TIER = {" in HTML and 'id="psCamo"' in HTML and "t(lv(slot))" in HTML
+
+
+def test_gender_switch_is_instant_without_reloading_the_tab():
+    """31.10: М/Ж меняет аватар на месте, сохранение — фоном (откат при ошибке); вкладка не перерисовывается."""
+    assert 'post("/api/gear/gender", { gender: g })' in HTML and 'ava.outerHTML = avatarSvg(to' in HTML
+    assert 'act(b, "/api/gear/gender"' not in HTML
