@@ -145,7 +145,7 @@ RU: dict[str, str] = {
     "rn.all": "🏁 <b>Итоги «{title}»</b>: спасибо за участие!",
     "rn.got": "🎁 Начислено: <b>{r}</b>",
     "rn.manual": "🎁 Приз: <b>{r}</b> — администрация свяжется с тобой для вручения.",
-    "rn.mine": "⛏ Рудник №{mine} теперь у вашей команды на {hours} ч — ресурс капает каждому бойцу каждый час.",
+    "rn.mine": "⛏ Рудник №{mine} теперь у вашей команды на {hours} ч — бойцам с 📡 связью ресурс капает каждый час.",
     "rn.where": "Всё уже на складе и балансе — загляни в игровое приложение.",
     "auc.err_none": "🚨 Лот не найден.",
     "auc.err_closed": "🚨 Лот уже закрыт.",
@@ -624,12 +624,12 @@ RU: dict[str, str] = {
     ),
 
     # ---------------- команды: ошибки (общие для чата и приложения) ----------------
-    "team.err_len": "❌ Длина текста должна быть от 1 до {max} символов!",
+    "team.err_len": "❌ Длина текста должна быть от 1 до {max} знаков!",
     "team.err_link": "🚨 Ошибка безопасности! Ссылки, юзернеймы и телефоны строго запрещены!",
     "team.err_badword": "❌ Обнаружены нецензурные выражения! Соблюдай правила хаба.",
-    "team.err_already": "⚠️ Ты уже состоишь в команде или клане! Сначала выйди из неё.",
-    "team.err_money": "❌ Недостаточно монет! Создание команды стоит {cost} 🪙, у тебя {balance} 🪙.",
-    "team.err_captain": "⚠️ Ты уже являешься капитаном другой команды!",
+    "team.err_already": "⚠️ Ты уже в команде! Сначала выйди из текущей.",
+    "team.err_money": "❌ Недостаточно монет! Нужно {cost} 🪙, у тебя {balance} 🪙.",
+    "team.err_captain": "⚠️ Ты уже капитан другой команды!",
     "team.err_taken": "⚠️ Название «{name}» уже занято! Придумай уникальное.",
     "team.err_gone": "❌ Эта команда больше не существует.",
     "team.err_full": "📦 В этой команде закончились места!",
@@ -683,7 +683,7 @@ RU: dict[str, str] = {
         "Ферма, игры и викторина ждут!"
     ),
     "tr.err_not_active": (
-        "🔒 Отправлять монеты можно после {level} уровня интеллекта и {claims} ежедневных котлет — "
+        "🔒 Отправлять монеты можно с {level} уровня интеллекта и после {claims} забранных ежедневных котлет — "
         "так экосистема защищена от фейковых аккаунтов."
     ),
 
@@ -699,7 +699,7 @@ RU: dict[str, str] = {
         "📌 Минимальная сумма: <b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ Получатель не найден. Проверь ID Паспорта или @username — игрок должен быть зарегистрирован в боте.",
-    "tr.self": "🤨 Перевести монеты самому себе нельзя — это была бы вечная экономика!",
+    "tr.self": "🤨 Перевести монеты самому себе нельзя — вечный двигатель пока не изобрели даже на ферме!",
     "tr.blocked": "🚫 Этот игрок заблокирован — переводы ему недоступны.",
     "tr.min": "❌ Минимальная сумма перевода — {min} 🪙.",
     "tr.insufficient": "❌ Недостаточно монет! Твой баланс: <b>{balance} 🪙</b>.",
@@ -707,7 +707,7 @@ RU: dict[str, str] = {
     "tr.confirm": (
         "🔄 <b>ПОДТВЕРДИ ПЕРЕВОД:</b>\n\n"
         "👤 Получатель: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Сумма списания: <b>{amount} 🪙</b>{fee_line}\n"
+        "💸 Спишется: <b>{amount} 🪙</b>{fee_line}\n"
         "💰 Адресат получит: <b>{received} 🪙</b>\n\n"
         "<i>Переводы отменить нельзя — проверь получателя!</i>"
     ),
@@ -953,9 +953,9 @@ RU: dict[str, str] = {
     "exp.err_closed": "Эта цель уже закрыта.",
     "exp.err_scope": "Эта цель не для такого отряда — посмотри зачёт.",
     "exp.err_already": "Ты уже идёшь к этой цели.",
-    "exp.err_busy": "У тебя уже есть активная соло-вылазка — дождись её итогов.",
+    "exp.err_busy": "У тебя уже есть активный соло-поход — дождись его итогов.",
     "exp.err_team_busy": "Твоя команда уже собирается или идёт к другой цели.",
-    "exp.err_late": "Не успеть: путь длиннее, чем осталось до итогов.",
+    "exp.err_late": "Не успеешь: путь длиннее, чем осталось до итогов.",
     "exp.err_hydrogen": "Нужно 💧 {need}, у тебя {have}.",
     "exp.err_no_team": "Командный поход — сначала вступи в команду.",
     "exp.err_no_cutlets_needed": "Котлеты в провиант берёт только Мега-Клан.",
@@ -966,21 +966,21 @@ RU: dict[str, str] = {
     "exp.err_cutlet": "Нет 🥩 котлет на складе.",
     "exp.err_not_member": "Это не твой отряд.",
     "exp.err_no_fork": "Сейчас нет развилки для голосования.",
-    "exp.err_no_peeks": "Разведки развилок закончились: их столько, сколько у лидера отряда 🛰 шпионов и уровней 🔭 разведки.",
+    "exp.err_no_peeks": "Разведки развилок закончились: их столько, сколько у лидера отряда 🛰 Дронов-шпионов или уровней 🔭 разведки — что меньше.",
     "exp.err_peeked": "Эта развилка уже разведана.",
     "ws.recipe_drone_guard": "Собрать Дрона-защитника",
     "ws.recipe_drone_attack": "Собрать Атакующего дрона",
     "ws.recipe_drone_spy": "Собрать Дрона-шпиона",
-    "nom.farm_mined": "больше всех нафармить монет фермой",
-    "nom.coins_earned": "больше всех заработать монет",
+    "nom.farm_mined": "добыть больше всех монет на ферме",
+    "nom.coins_earned": "заработать больше всех монет",
     "nom.duel_wins": "больше всех побед в дуэлях",
     "nom.duels_played": "больше всех сыгранных дуэлей",
     "nom.quiz_wins": "больше всех верных ответов в викторине",
     "nom.rps_wins": "больше всех побед в КНБ",
     "nom.safe_wins": "больше всех вскрытых Кибер-Сейфов",
     "nom.game_wins_total": "больше всех побед в играх против бота",
-    "nom.referrals": "больше всех привести активных друзей",
-    "nom.stars_spent": "больше всех поддержать экосистему (Stars)",
+    "nom.referrals": "привести больше всех активных друзей",
+    "nom.stars_spent": "сильнее всех поддержать экосистему (Stars)",
     "nom.insta_reels": "чей рилс в Instagram залетит лучше",
     "nom.youtube_shorts": "чьё видео в YouTube Shorts залетит лучше",
     "nom.tiktok": "чьё видео в TikTok залетит лучше",
@@ -1023,7 +1023,7 @@ RU: dict[str, str] = {
     "raid.shield_on": "Щит активен до {until} UTC",
     "raid.shield_newbie": "Защита новичка (первые {days} дня)",
     "raid.shield_off": "Щита нет — собери в /workshop",
-    "raid.stance_random": "случайная (выбери в меню!)",
+    "raid.stance_random": "случайная (выбери ниже)",
     "raid.btn_scout": "🔭 РАЗВЕДКА: найти цели",
     "raid.btn_revenge": "⚔️ Реванш: {name}",
     "raid.btn_stance": "✊ Стойка обороны",
@@ -1032,18 +1032,18 @@ RU: dict[str, str] = {
     "raid.btn_back": "← Назад",
     "raid.btn_open": "🏴‍☠️ Открыть налёты",
     "raid.btn_again": "🏴‍☠️ К налётам",
-    "raid.stance_pick": "✊ <b>Стойка обороны</b>\nЕё увидит только исход чужого налёта: атакующий жест против твоей стойки. Меняй иногда — предсказуемых грабят.",
+    "raid.stance_pick": "✊ <b>Стойка обороны</b>\nСтойку никто не видит: она раскроется только в исходе чужого налёта — жест налётчика против твоей стойки. Меняй её иногда — предсказуемых грабят чаще.",
     "raid.stance_saved": "Стойка: {stance}",
     "raid.scout": "🔭 <b>Разведка нашла цели.</b> Вылет спишет {fuel} 💧. Выбирай:",
     "raid.btn_target": "🎯 {name} · ресурсов ≈{total}",
-    "raid.no_targets": "🔭 Разведка никого не нашла: подходящих целей сейчас нет (щиты, кулдауны, новички). Загляни позже.",
+    "raid.no_targets": "🔭 Разведка никого не нашла: подходящих целей сейчас нет (щиты, перезарядки, новички). Загляни позже.",
     "raid.pick_move": "✊ <b>Твой жест?</b> Он сыграет против стойки обороны цели. Вылет: −{fuel} 💧.",
     "raid.pick_move_revenge": "⚔️ <b>Реванш! Твой жест?</b> Вылет бесплатный и без перезарядки.",
     "raid.result_win": "🏴‍☠️ <b>НАЛЁТ УДАЛСЯ!</b>\n{move} против {stance} у {name}.\nТрофеи: <b>{loot}</b>",
     "raid.result_draw": "😐 <b>Ничья.</b> {move} против {stance} у {name}. Корабль вернулся пустым, топливо сгорело.",
     "raid.result_lose": "💥 <b>ОБОРОНА ВЫСТОЯЛА.</b> {move} против {stance} у {name}.\nЦели досталось: <b>{loot}</b>",
-    "raid.result_footer": "<i>Ресурсы — в /workshop. Щит защитит от ответки.</i>",
-    "raid.victim_lost": "🚨 <b>На тебя налетели!</b> {name}: {move} против твоей стойки {stance}.\nПотеряно: <b>{loot}</b>\n\n⚔️ Реванш бесплатно в течение {hours} ч. Щит — в /workshop.",
+    "raid.result_footer": "<i>Ресурсы пригодятся в /workshop. Щит защитит от ответного налёта.</i>",
+    "raid.victim_lost": "🚨 <b>На тебя совершён налёт!</b> {name}: {move} против твоей стойки {stance}.\nПотеряно: <b>{loot}</b>\n\n⚔️ Реванш бесплатно в течение {hours} ч. Щит — в /workshop.",
     "raid.victim_draw": "🛡 <b>Налёт отбит вничью.</b> {name}: {move} против твоей стойки {stance}. Ничего не потеряно.",
     "raid.victim_held": "🛡 <b>Оборона выстояла!</b> {name}: {move} против твоей стойки {stance}.\nТрофей обороны: <b>{loot}</b>",
     "raid.err_stance": "❌ Неизвестный жест.",
@@ -1053,8 +1053,8 @@ RU: dict[str, str] = {
     "raid.err_shielded": "🛡 У цели щит. Выбери другую.",
     "raid.err_revenge_gone": "❌ Окно реванша закрыто.",
     "raid.err_cooldown": "⏳ Перезарядка: ещё {minutes} мин.",
-    "raid.err_victim_cooldown": "⏳ Эту цель уже грабили недавно (пауза {hours} ч).",
-    "raid.err_fuel": "💧 Не хватает водорода: нужно {need}, есть {have}. Он добывается в Больше/Меньше.",
+    "raid.err_victim_cooldown": "⏳ На эту цель недавно уже налетали (пауза {hours} ч).",
+    "raid.err_fuel": "💧 Не хватает водорода: нужно {need}, есть {have}. Его дают победы в Больше-Меньше и Мемори, а ещё рудники и биржа.",
 
     # ---------------- ежедневные цели ----------------
     "goal.header": (
@@ -1115,22 +1115,22 @@ RU: dict[str, str] = {
     "st.err_resources": "🔒 Не хватает ресурса: есть {have}.",
 
     # ---------------- команды/кланы (основные поверхности) ----------------
-    "clan.no_team": "⚠️ <b>У тебя пока нет созданной команды!</b>\n\nТы можешь зарегистрировать личную банду прямо сейчас, нажав на кнопку ниже.",
-    "clan.btn_create": "🏆 Создать команду за 100к",
+    "clan.no_team": "⚠️ <b>Ты пока не в команде!</b>\n\nСоздай свою прямо сейчас — кнопка ниже.",
+    "clan.btn_create": "🏆 Создать команду за 100 000 🪙",
     "clan.btn_members": "👥 СПИСОК ТИММЕЙТОВ",
-    "clan.btn_leave": "🚪 Покинуть команду / Бросить банду",
-    "clan.btn_dashboard": "🏆 Дашборд команды",
-    "clan.status_clan": "👑 СТАТУС: КЛАН ИМПЕРИИ",
+    "clan.btn_leave": "🚪 Выйти из команды",
+    "clan.btn_dashboard": "🏆 Моя команда",
+    "clan.status_clan": "👑 СТАТУС: МЕГА-КЛАН",
     "clan.status_team": "👥 СТАТУС: ОБЫЧНАЯ КОМАНДА",
     "clan.dashboard": (
-        "🏆 <b>ИНФОРМАЦИОННЫЙ ДАШБОРД ТВОЕЙ КОМАНДЫ</b>\n"
+        "🏆 <b>ТВОЯ КОМАНДА</b>\n"
         "..................................................\n"
         "📌 Название: <b>{name}</b>\n"
         "⚡ {status}\n"
-        "👤 Капитан банды: 🧠{captain_level} · <b>{captain}</b>\n"
+        "👤 Капитан: 🧠{captain_level} · <b>{captain}</b>\n"
         "💬 Девиз: <i>«{motto}»</i>\n"
-        "🔮 Символ эмблемы: {symbol}\n\n"
-        "👥 Состав участников: <b>{members} / {max_members} чел.</b>\n"
+        "🔮 Эмблема: {symbol}\n\n"
+        "👥 Состав: <b>{members} / {max_members}</b>\n"
         "..................................................\n"
         "👇 <b>НАВИГАЦИЯ:</b>"
     ),
@@ -1145,15 +1145,15 @@ RU: dict[str, str] = {
         "\n..................................................\n"
         "📄 Страница <b>{page} / {pages}</b> · Всего бойцов: <b>{members}</b>\n"
         "<i>Кликай по @username тиммейта, чтобы написать ему, собрать свой чат "
-        "и позвать банду на командные состязания!</i>"
+        "и позвать команду на командные состязания!</i>"
     ),
     "clan.btn_prev": "⬅️ Назад",
     "clan.btn_next": "Вперёд ➡️",
     "clan.join_ok": (
-        "🎉 <b>ПОЗДРАВЛЯЕМ, ТЫ В ИГРЕ!</b>\n\nТы успешно вступил(а) в команду <b>{name}</b>!\n"
+        "🎉 <b>ПОЗДРАВЛЯЕМ, ТЫ В ИГРЕ!</b>\n\nТы в команде <b>{name}</b>!\n"
         "📍 Пиши команду /my_team, чтобы проверить состав!"
     ),
-    "clan.leave_ok": "🚪 Ты успешно покинул команду <b>{name}</b>. Теперь ты вольная птица!",
+    "clan.leave_ok": "🚪 Ты больше не в команде <b>{name}</b>. Теперь ты вольная птица!",
 }
 
 EN: dict[str, str] = {
@@ -1244,7 +1244,7 @@ EN: dict[str, str] = {
     "rn.all": "🏁 <b>Results of “{title}”</b>: thanks for taking part!",
     "rn.got": "🎁 Credited: <b>{r}</b>",
     "rn.manual": "🎁 Prize: <b>{r}</b> — the team will contact you to hand it over.",
-    "rn.mine": "⛏ Mine #{mine} belongs to your team for {hours} h — every member gets its resource each hour.",
+    "rn.mine": "⛏ Mine #{mine} belongs to your team for {hours} h — members with 📡 comms get its resource each hour.",
     "rn.where": "Everything is already in your storage and balance — check the game app.",
     "auc.err_none": "🚨 Lot not found.",
     "auc.err_closed": "🚨 This lot is already closed.",
@@ -1728,8 +1728,8 @@ EN: dict[str, str] = {
     "team.err_len": "❌ The text must be 1 to {max} characters long!",
     "team.err_link": "🚨 Security check! Links, usernames and phone numbers are strictly forbidden!",
     "team.err_badword": "❌ Profanity detected! Please follow the hub rules.",
-    "team.err_already": "⚠️ You're already in a team or clan! Leave it first.",
-    "team.err_money": "❌ Not enough coins! Creating a team costs {cost} 🪙, you have {balance} 🪙.",
+    "team.err_already": "⚠️ You're already in a team! Leave your current one first.",
+    "team.err_money": "❌ Not enough coins! You need {cost} 🪙, you have {balance} 🪙.",
     "team.err_captain": "⚠️ You're already the captain of another team!",
     "team.err_taken": "⚠️ The name “{name}” is already taken! Come up with a unique one.",
     "team.err_gone": "❌ This team no longer exists.",
@@ -1784,7 +1784,7 @@ EN: dict[str, str] = {
         "The farm, games and quiz are waiting!"
     ),
     "tr.err_not_active": (
-        "🔒 You can send coins after reaching intellect level {level} and claiming {claims} daily cutlets — "
+        "🔒 You can send coins from intellect level {level} and claiming {claims} daily cutlets — "
         "this protects the ecosystem from fake accounts."
     ),
 
@@ -1800,7 +1800,7 @@ EN: dict[str, str] = {
         "📌 Minimum amount: <b>{min} 🪙</b>"
     ),
     "tr.not_found": "❌ Recipient not found. Check the Passport ID or @username — the player must be registered in the bot.",
-    "tr.self": "🤨 You can't transfer coins to yourself — that would be a perpetual economy!",
+    "tr.self": "🤨 You can't transfer coins to yourself — nobody has invented a perpetual motion machine yet, not even on the farm!",
     "tr.blocked": "🚫 This player is blocked — transfers to them are unavailable.",
     "tr.min": "❌ The minimum transfer is {min} 🪙.",
     "tr.insufficient": "❌ Not enough coins! Your balance: <b>{balance} 🪙</b>.",
@@ -1808,7 +1808,7 @@ EN: dict[str, str] = {
     "tr.confirm": (
         "🔄 <b>CONFIRM THE TRANSFER:</b>\n\n"
         "👤 Recipient: <b>{recipient}</b> (ID <code>{recipient_id}</code>)\n"
-        "💸 Amount to send: <b>{amount} 🪙</b>{fee_line}\n"
+        "💸 Will be charged: <b>{amount} 🪙</b>{fee_line}\n"
         "💰 The recipient gets: <b>{received} 🪙</b>\n\n"
         "<i>Transfers cannot be undone — double-check the recipient!</i>"
     ),
@@ -2056,7 +2056,7 @@ EN: dict[str, str] = {
     "exp.err_already": "You're already heading to this target.",
     "exp.err_busy": "You already have an active solo run — wait for its results.",
     "exp.err_team_busy": "Your team is already gathering or marching to another target.",
-    "exp.err_late": "Too late: the trip is longer than the time left.",
+    "exp.err_late": "You won't make it: the trip is longer than the time left.",
     "exp.err_hydrogen": "You need 💧 {need}, you have {have}.",
     "exp.err_no_team": "A team expedition — join a team first.",
     "exp.err_no_cutlets_needed": "Only a Mega-Clan takes cutlets as provisions.",
@@ -2067,7 +2067,7 @@ EN: dict[str, str] = {
     "exp.err_cutlet": "No 🥩 cutlets in storage.",
     "exp.err_not_member": "This isn't your squad.",
     "exp.err_no_fork": "There's no fork to vote on right now.",
-    "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 spies and 🔭 Scouting levels.",
+    "exp.err_no_peeks": "No fork scouting left: a squad gets as many as its leader has 🛰 Spy drones or 🔭 Scouting levels — whichever is lower.",
     "exp.err_peeked": "This fork is already scouted.",
     "ws.recipe_drone_guard": "Build a Guard drone",
     "ws.recipe_drone_attack": "Build an Attack drone",
@@ -2124,7 +2124,7 @@ EN: dict[str, str] = {
     "raid.shield_on": "Shield active until {until} UTC",
     "raid.shield_newbie": "Rookie protection (first {days} days)",
     "raid.shield_off": "No shield — build one in /workshop",
-    "raid.stance_random": "random (pick one in the menu!)",
+    "raid.stance_random": "random (pick one below)",
     "raid.btn_scout": "🔭 SCOUT: find targets",
     "raid.btn_revenge": "⚔️ Revenge: {name}",
     "raid.btn_stance": "✊ Defense stance",
@@ -2133,7 +2133,7 @@ EN: dict[str, str] = {
     "raid.btn_back": "← Back",
     "raid.btn_open": "🏴‍☠️ Open raids",
     "raid.btn_again": "🏴‍☠️ Back to raids",
-    "raid.stance_pick": "✊ <b>Defense stance</b>\nOnly the outcome of someone's raid reveals it: their gesture vs your stance. Change it now and then — predictable players get robbed.",
+    "raid.stance_pick": "✊ <b>Defense stance</b>\nNobody sees your stance: only the outcome of someone's raid reveals it — their gesture vs your stance. Change it now and then — predictable players get robbed more often.",
     "raid.stance_saved": "Stance: {stance}",
     "raid.scout": "🔭 <b>Scouting found targets.</b> A sortie costs {fuel} 💧. Pick one:",
     "raid.btn_target": "🎯 {name} · resources ≈{total}",
@@ -2143,7 +2143,7 @@ EN: dict[str, str] = {
     "raid.result_win": "🏴‍☠️ <b>RAID SUCCESSFUL!</b>\n{move} vs {stance} at {name}.\nLoot: <b>{loot}</b>",
     "raid.result_draw": "😐 <b>Draw.</b> {move} vs {stance} at {name}. The ship came back empty, fuel burned.",
     "raid.result_lose": "💥 <b>THE DEFENSE HELD.</b> {move} vs {stance} at {name}.\nThe target took: <b>{loot}</b>",
-    "raid.result_footer": "<i>Resources are in /workshop. A shield protects you from payback.</i>",
+    "raid.result_footer": "<i>Resources come in handy in /workshop. A shield protects you from a revenge raid.</i>",
     "raid.victim_lost": "🚨 <b>You've been raided!</b> {name}: {move} vs your stance {stance}.\nLost: <b>{loot}</b>\n\n⚔️ Free revenge within {hours} h. Shield — in /workshop.",
     "raid.victim_draw": "🛡 <b>Raid ended in a draw.</b> {name}: {move} vs your stance {stance}. Nothing lost.",
     "raid.victim_held": "🛡 <b>Your defense held!</b> {name}: {move} vs your stance {stance}.\nDefense trophy: <b>{loot}</b>",
@@ -2154,8 +2154,8 @@ EN: dict[str, str] = {
     "raid.err_shielded": "🛡 The target has a shield. Pick another.",
     "raid.err_revenge_gone": "❌ The revenge window is closed.",
     "raid.err_cooldown": "⏳ Recharging: {minutes} min left.",
-    "raid.err_victim_cooldown": "⏳ This target was raided recently ({hours} h pause).",
-    "raid.err_fuel": "💧 Not enough hydrogen: need {need}, have {have}. It's mined in High/Low.",
+    "raid.err_victim_cooldown": "⏳ Someone raided this target recently ({hours} h pause).",
+    "raid.err_fuel": "💧 Not enough hydrogen: need {need}, have {have}. It comes from wins in High-Low and Memory, plus mines and the market.",
 
     # ---------------- daily goals ----------------
     "goal.header": (
@@ -2216,21 +2216,21 @@ EN: dict[str, str] = {
     "st.err_resources": "🔒 Not enough of that resource: you have {have}.",
 
     # ---------------- teams/clans (main surfaces) ----------------
-    "clan.no_team": "⚠️ <b>You don't have a team yet!</b>\n\nYou can register your own crew right now by tapping the button below.",
-    "clan.btn_create": "🏆 Create a Team for 100k",
+    "clan.no_team": "⚠️ <b>You're not in a team yet!</b>\n\nCreate your own right now — the button is below.",
+    "clan.btn_create": "🏆 Create a team for 100,000 🪙",
     "clan.btn_members": "👥 TEAMMATE LIST",
-    "clan.btn_leave": "🚪 Leave the team / Quit the crew",
-    "clan.btn_dashboard": "🏆 Team dashboard",
-    "clan.status_clan": "👑 STATUS: EMPIRE CLAN",
+    "clan.btn_leave": "🚪 Leave the team",
+    "clan.btn_dashboard": "🏆 My team",
+    "clan.status_clan": "👑 STATUS: MEGA-CLAN",
     "clan.status_team": "👥 STATUS: REGULAR TEAM",
     "clan.dashboard": (
-        "🏆 <b>YOUR TEAM'S DASHBOARD</b>\n"
+        "🏆 <b>YOUR TEAM</b>\n"
         "..................................................\n"
         "📌 Name: <b>{name}</b>\n"
         "⚡ {status}\n"
-        "👤 Crew captain: 🧠{captain_level} · <b>{captain}</b>\n"
+        "👤 Captain: 🧠{captain_level} · <b>{captain}</b>\n"
         "💬 Motto: <i>“{motto}”</i>\n"
-        "🔮 Emblem symbol: {symbol}\n\n"
+        "🔮 Emblem: {symbol}\n\n"
         "👥 Members: <b>{members} / {max_members}</b>\n"
         "..................................................\n"
         "👇 <b>NAVIGATION:</b>"
@@ -2246,7 +2246,7 @@ EN: dict[str, str] = {
         "\n..................................................\n"
         "📄 Page <b>{page} / {pages}</b> · Total fighters: <b>{members}</b>\n"
         "<i>Tap a teammate's @username to message them, build your own chat "
-        "and call the crew to team battles!</i>"
+        "and call the team to team battles!</i>"
     ),
     "clan.btn_prev": "⬅️ Back",
     "clan.btn_next": "Next ➡️",

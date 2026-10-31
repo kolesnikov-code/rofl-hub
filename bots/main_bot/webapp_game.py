@@ -94,6 +94,7 @@ from shared.economy import (
     TOOL_COSTS,
     market_lots,
     raid_candidates,
+    drone_spy_targets,
     tech_cost,
     tech_tool_required,
     tech_cooldown_cut,
@@ -863,7 +864,7 @@ async def handle_raids(request: web.Request) -> web.Response:
         "res_names": resource_labels(ctx.lang),
         "cooldown_left": attack_cooldown_left(user["last_raid_at"], now, tech["comm"]),
         "tech": {k: tech[k] for k in ("comm", "scout", "attack", "defense")}, "batteries": batteries,
-        "candidates": raid_candidates(tech["scout"]),
+        "candidates": raid_candidates(tech["scout"]) + drone_spy_targets(user["drones_spy"]),
         "meds": iso(user["meds_until"]),
         "shield": {
             "active": shield_active(user, now, team_fx["dome"]),
