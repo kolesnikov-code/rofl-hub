@@ -175,6 +175,7 @@ def test_hindi_shows_a_goat_instead_of_a_cow():
 def test_tabs_render_from_memory_and_revalidate():
     """⚡ 31.10: повторный вход во вкладку — из памяти, свежее фоном; POST стирает память; игры — всегда живые."""
     assert "const GET_CACHE = new Map()" in HTML and 'const NO_CACHE_TABS = ["games"]' in HTML
-    assert "if (!isGet) GET_CACHE.clear();" in HTML
+    assert "if (!isGet) { GET_CACHE.clear(); cacheGen++; }" in HTML and "gen === cacheGen" in HTML
+    assert "prefetchMain()" in HTML and "b.onpointerdown = () => { prefetchTab(b.dataset.tab); };" in HTML
     assert "revalidate(tab, nav, Array.from(vc.used))" in HTML and "go(tab, { quiet: true })" in HTML
     assert "loadPack(guess);" in HTML and "await loadPack(me.lang);" in HTML

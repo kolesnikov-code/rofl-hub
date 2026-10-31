@@ -1272,15 +1272,18 @@
   const CACHE_TTL_MS = 5 * 60 * 1000;      // старше — не показываем, ждём сервер
   const NO_CACHE_TABS = ["games"];         // раунды игр и дуэли — только живые данные
   let viewCache = null;                    // пока рисуется вкладка: { used: Set путей, отданных из памяти }
-  let navSeq = 0;
+  let navSeq = 0, cacheGen = 0;
+  const IN_FLIGHT = new Map();             // путь → обещание предзагрузки (вкладка ждёт его, а не дублирует запрос)
   async function api(path, opts) {
     opts = opts || {};
     const isGet = !opts.method || opts.method === "GET", vc = viewCache;
-    if (!isGet) GET_CACHE.clear();
+    if (!isGet) { GET_CACHE.clear(); cacheGen++; }
     else if (vc && !opts.fresh) {
+      if (IN_FLIGHT.has(path)) await IN_FLIGHT.get(path);
       const hit = GET_CACHE.get(path);
       if (hit && Date.now() - hit.at < CACHE_TTL_MS) { vc.used.add(path); return JSON.parse(hit.raw); }
     }
+    const gen = cacheGen;
     const res = await fetch(path, Object.assign({
       headers: { "X-Telegram-Init-Data": initData, "Content-Type": "application/json" }
     }, opts));
@@ -1288,11 +1291,15 @@
     let body = {};
     try { body = JSON.parse(raw); } catch (e) {}
     if (!res.ok) throw { status: res.status, body: body };
-    if (isGet && (vc || opts.fresh)) GET_CACHE.set(path, { raw: raw, at: Date.now() });
+    // ответ, ушедший ДО действия игрока, в память не кладём — он уже устарел
+    if (isGet && (vc || opts.fresh) && gen === cacheGen) GET_CACHE.set(path, { raw: raw, at: Date.now() });
     return body;
   }
   // Фоном: свежие ответы для путей, показанных из памяти; изменилось — тихо перерисовать (если игрок не ушёл и не печатает)
+  const REVALIDATE_AFTER_MS = 20 * 1000;   // ответ моложе — свежий (только что предзагружен), не перепрашиваем
   async function revalidate(tab, nav, paths) {
+    paths = paths.filter(p => Date.now() - ((GET_CACHE.get(p) || {}).at || 0) >= REVALIDATE_AFTER_MS);
+    if (!paths.length) return;
     const before = paths.map(p => (GET_CACHE.get(p) || {}).raw);
     try { await Promise.all(paths.map(p => api(p, { fresh: true }))); } catch (e) { return; }
     if (nav !== navSeq || current !== tab) return;
@@ -1434,11 +1441,44 @@
     document.getElementById("tabs").innerHTML = list.map(t =>
       '<button class="tab' + (t === current ? ' on' : '') + '" data-tab="' + t + '">' + L["tab_" + t] + '</button>').join("") +
       (locked ? '<button class="tab lock" id="tabLock">' + '🌐 +' + locked + '</button>' : '');
-    document.querySelectorAll(".tab[data-tab]").forEach(b => { b.onclick = () => go(b.dataset.tab); });
+    document.querySelectorAll(".tab[data-tab]").forEach(b => {
+      b.onclick = () => go(b.dataset.tab);
+      b.onpointerdown = () => { prefetchTab(b.dataset.tab); };
+    });
     const lk = document.getElementById("tabLock");
     if (lk) lk.onclick = lockInfo;
     const on = document.querySelector(".tab.on");
     if (on && on.scrollIntoView) on.scrollIntoView({ inline: "center", block: "nearest" });
+  }
+  // 🚀 ПРЕДЗАГРУЗКА (31.10): после открытия приложения данные главных вкладок тихо грузятся в память по 2 запроса
+  // за раз — первый заход во вкладку тоже мгновенный. Пути — ровно те, что запрашивает вкладка (иначе промах — просто
+  // обычная загрузка). Нажатие на вкладку (pointerdown) начинает загрузку раньше, чем отпущен палец.
+  const PREFETCH = {
+    passport: () => ["/api/gifts", "/api/goals", "/api/news", "/api/card"],
+    storage: () => ["/api/storage"],
+    workshop: () => ["/api/workshop"],
+    market: () => ["/api/market?asset=" + mkAsset + "&scope=" + mkScope],
+    team: () => ["/api/team"],
+    shop: () => shopCat === "skins" ? [] : ["/api/shop"],
+    top: () => topMode === "events" ? [] : ["/api/top" + (topMode === "rich" ? "?mode=rich" : "")],
+    persona: () => ["/api/gear"],
+    friends: () => ["/api/referral"].concat((me.features || {}).transfers === false ? [] : ["/api/transfer"]),
+    history: () => ["/api/history?tab=" + histTab],
+  };
+  const PREFETCH_ORDER = ["passport", "storage", "workshop", "market", "team", "shop", "top", "persona", "friends"];
+  function prefetchTab(tab) {
+    if (!PREFETCH[tab] || NO_CACHE_TABS.indexOf(tab) >= 0) return Promise.resolve();
+    const fresh = p => { const h = GET_CACHE.get(p); return h && Date.now() - h.at < CACHE_TTL_MS; };
+    return Promise.all(PREFETCH[tab]().filter(p => !fresh(p) && !IN_FLIGHT.has(p)).map(p => {
+      const job = api(p, { fresh: true }).catch(() => {}).then(() => { IN_FLIGHT.delete(p); });
+      IN_FLIGHT.set(p, job);
+      return job;
+    }));
+  }
+  async function prefetchMain() {
+    const queue = PREFETCH_ORDER.filter(t => t !== current && visibleTabs().indexOf(t) >= 0);
+    const worker = async () => { while (queue.length) await prefetchTab(queue.shift()); };
+    await Promise.all([worker(), worker()]);
   }
   async function go(tab, opt) {
     const quiet = !!(opt && opt.quiet);   // тихая перерисовка свежими данными: без «Загрузка…», прокрутка на месте
@@ -4485,6 +4525,7 @@
       try { fxGal = new URLSearchParams(location.search).get("fx") === "gallery"; } catch (e) {}
       if (fxGal && me.is_owner) { current = "games"; renderTabs(); gameScreen = "quests"; return questFxGallery(document.getElementById("app")); }
       await go(current);
+      setTimeout(() => { prefetchMain().catch(() => {}); }, 600);   // после первой вкладки, не мешая ей
       const next = () => { if (!me.app_mode) chooseMode(checkUnlocks); else checkUnlocks(); };
       const code = inviteCode();
       if (code) offerDuel(code, next); else next();
