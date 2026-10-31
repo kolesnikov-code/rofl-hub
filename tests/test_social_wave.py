@@ -127,13 +127,38 @@ def test_new_app_texts_are_in_ru_and_en():
         assert len(re.findall(r"[\s,{]" + key + r':\s*"', HTML)) >= 2, key   # ru и en (паки — test_app_wave)
 
 
-def test_generated_i18n_block_is_valid_json():
-    """«\n» в переводах (cs_shareText) раньше превращался генератором в настоящий перевод строки — и приложение не грузилось."""
+def test_generated_i18n_packs_are_valid_json_and_up_to_date():
+    """12 переводов — отдельные файлы static/webapp/i18n/<код>.json (31.10: index.html без них в 2,7 раза легче).
+    «\n» в переводах (cs_shareText) раньше превращался генератором в настоящий перевод строки — и приложение не грузилось.
+    Файлы совпадают с паками: забыли `python -m scripts.gen_miniapp_i18n` после правки MINIAPP — тест красный."""
     import json
-    start = HTML.index("const I18N_EXTRA = ") + len("const I18N_EXTRA = ")
-    end = HTML.index("// I18N_EXTRA_END")
-    packs = json.loads(HTML[start:end].rstrip().rstrip(";"))
-    assert len(packs) == 12 and "\n" in packs["de"]["cs_shareText"]
+    from shared.locales import MINIAPP_PACKS
+    folder = ROOT / "static" / "webapp" / "i18n"
+    codes = sorted(c for c, p in MINIAPP_PACKS.items() if p)
+    assert len(codes) == 12 and f"const I18N_PACKS = {json.dumps(codes)};" in HTML and "const I18N_VER = " in HTML
+    for code in codes:
+        assert json.loads((folder / f"{code}.json").read_text(encoding="utf-8")) == MINIAPP_PACKS[code], code
+    assert "\n" in json.loads((folder / "de.json").read_text(encoding="utf-8"))["cs_shareText"]
+    assert "const I18N_EXTRA = " not in HTML and len(HTML.encode()) < 700_000
+
+
+def test_pages_are_gzipped_once_and_revalidated_with_etag():
+    """Страница жмётся один раз и отдаётся 304 при повторном открытии; перевод — только существующий язык."""
+    import gzip
+    from types import SimpleNamespace
+    from bots.main_bot import webapp
+    req = SimpleNamespace(headers={"Accept-Encoding": "gzip, br"}, query={})
+    first = webapp._page("index.html", req)
+    assert first.headers["Content-Encoding"] == "gzip" and gzip.decompress(first.body) == (ROOT / "static/webapp/index.html").read_bytes()
+    again = webapp._page("index.html", SimpleNamespace(headers={"If-None-Match": first.headers["ETag"]}, query={}))
+    assert again.status == 304 and not again.body
+    plain = webapp._cached_file(SimpleNamespace(headers={}, query={}), "i18n/de.json", "application/json")
+    assert "Content-Encoding" not in plain.headers and json_ok(plain.body)
+
+
+def json_ok(raw: bytes) -> bool:
+    import json
+    return bool(json.loads(raw))
 
 
 def test_hindi_shows_a_goat_instead_of_a_cow():
@@ -144,4 +169,12 @@ def test_hindi_shows_a_goat_instead_of_a_cow():
     assert localize_icons("bn", "🐄") == "🐄" and localize_icons("ru", "🐄") == "🐄"
     assert "🐄" not in t("hi", "games.resource_gain", icon="🐄", qty=1, name="x", total=5) and "🐐" in t("hi", "games.resource_gain", icon="🐄", qty=1, name="x", total=5)
     assert "गाय" not in format_bundle("hi", {"cow": 1})
-    assert 'const ICON_SWAPS = { hi: [["🐄", "🐐"]] };' in HTML and "JSON.parse(swapIcons(raw))" in HTML
+    assert 'const ICON_SWAPS = { hi: [["🐄", "🐐"]] };' in HTML and "const raw = swapIcons(await res.text()" in HTML
+
+
+def test_tabs_render_from_memory_and_revalidate():
+    """⚡ 31.10: повторный вход во вкладку — из памяти, свежее фоном; POST стирает память; игры — всегда живые."""
+    assert "const GET_CACHE = new Map()" in HTML and 'const NO_CACHE_TABS = ["games"]' in HTML
+    assert "if (!isGet) GET_CACHE.clear();" in HTML
+    assert "revalidate(tab, nav, Array.from(vc.used))" in HTML and "go(tab, { quiet: true })" in HTML
+    assert "loadPack(guess);" in HTML and "await loadPack(me.lang);" in HTML

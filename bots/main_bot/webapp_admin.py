@@ -178,8 +178,8 @@ def vip_candidates(taken: set[str], limit: int = 10, offset: int = 0) -> list[st
 
 # ---------------------------------------------------------------- страница и справочники
 async def handle_admin_page(request: web.Request) -> web.Response:
-    from bots.main_bot.webapp import WEBAPP_DIR
-    return web.FileResponse(WEBAPP_DIR / "admin.html")
+    from bots.main_bot.webapp import _page
+    return _page("admin.html", request)
 
 
 async def handle_admin_meta(request: web.Request) -> web.Response:

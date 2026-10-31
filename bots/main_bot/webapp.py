@@ -8,6 +8,7 @@
 """
 from __future__ import annotations
 
+import gzip
 import logging
 import time
 from datetime import datetime, timedelta
@@ -42,30 +43,50 @@ logger = logging.getLogger(__name__)
 WEBAPP_DIR = Path(__file__).resolve().parents[2] / "static" / "webapp"
 SLOW_REQUEST_MS = 700        # запросы API дольше — в лог (видно, какая вкладка тормозит на сервере)
 COMPRESS_MIN_BYTES = 1024    # меньше — сжимать нет смысла
-_PAGE_CACHE: dict[str, tuple[float, bytes]] = {}
+_PAGE_CACHE: dict[str, tuple[float, bytes, bytes, str]] = {}   # имя → (mtime, тело, gzip-тело, ETag)
+IMMUTABLE = "public, max-age=31536000, immutable"   # файлы с версией в адресе (?v=…): браузер не спрашивает повторно
 
 
-def _page(name: str) -> web.Response:
-    """Страница из static/webapp из памяти (перечитывается при смене файла) — так её можно сжать gzip."""
+def _cached_file(request: web.Request | None, name: str, content_type: str,
+                 cache_control: str = "no-cache") -> web.Response:
+    """
+    Файл из static/webapp: в памяти, сжатый gzip ОДИН раз (на смену файла), с ETag.
+    Повторное открытие приложения — ответ 304 без тела (телефон берёт страницу из своего кэша);
+    раньше 1,2 МБ index.html жались на каждое открытие в том же процессе, где живёт бот.
+    """
     path = WEBAPP_DIR / name
     mtime = path.stat().st_mtime
     cached = _PAGE_CACHE.get(name)
     if not cached or cached[0] != mtime:
-        cached = (mtime, path.read_bytes())
+        body = path.read_bytes()
+        cached = (mtime, body, gzip.compress(body, 6), '"%x-%x"' % (int(mtime * 1000), len(body)))
         _PAGE_CACHE[name] = cached
-    return web.Response(body=cached[1], content_type="text/html", charset="utf-8")
+    _, body, packed, etag = cached
+    headers = {"Cache-Control": cache_control, "ETag": etag, "Vary": "Accept-Encoding"}
+    if request is not None and request.headers.get("If-None-Match") == etag:
+        return web.Response(status=304, headers=headers)
+    if request is not None and "gzip" in request.headers.get("Accept-Encoding", ""):
+        headers["Content-Encoding"] = "gzip"
+        body = packed
+    return web.Response(body=body, content_type=content_type, charset="utf-8", headers=headers)
+
+
+def _page(name: str, request: web.Request | None = None) -> web.Response:
+    return _cached_file(request, name, "text/html")
 
 
 async def handle_fx_js(request: web.Request) -> web.Response:
     """✨ Движок атмосферы квестов — грузится приложением только при входе в квест (index.html не тяжелеет)."""
-    path = WEBAPP_DIR / "fx.js"
-    mtime = path.stat().st_mtime
-    cached = _PAGE_CACHE.get("fx.js")
-    if not cached or cached[0] != mtime:
-        cached = (mtime, path.read_bytes())
-        _PAGE_CACHE["fx.js"] = cached
-    return web.Response(body=cached[1], content_type="application/javascript", charset="utf-8",
-                        headers={"Cache-Control": "no-cache"})
+    return _cached_file(request, "fx.js", "application/javascript")
+
+
+async def handle_i18n(request: web.Request) -> web.Response:
+    """Перевод приложения на один язык (12 паков, scripts/gen_miniapp_i18n.py) — игрок качает только свой, один раз."""
+    code = request.match_info["code"]
+    if not code.isalpha() or not (WEBAPP_DIR / "i18n" / f"{code}.json").exists():
+        return web.json_response({}, status=404)
+    return _cached_file(request, f"i18n/{code}.json", "application/json",
+                        IMMUTABLE if request.query.get("v") else "no-cache")
 
 
 @web.middleware
@@ -77,6 +98,7 @@ async def speed_middleware(request: web.Request, handler):
     try:
         response.headers["Server-Timing"] = f"app;dur={ms:.0f}"
         if (isinstance(response, web.Response) and not isinstance(response, web.FileResponse)
+                and "Content-Encoding" not in response.headers   # уже сжато заранее (_cached_file)
                 and len(response.body or b"") >= COMPRESS_MIN_BYTES
                 and "gzip" in request.headers.get("Accept-Encoding", "")):
             response.enable_compression()
@@ -190,21 +212,21 @@ def _unauthorized() -> web.Response:
 
 
 async def handle_index(request: web.Request) -> web.Response:
-    return _page("index.html")
+    return _page("index.html", request)
 
 
 async def handle_faq(request: web.Request) -> web.Response:
     """Полный справочник экосистемы — публичная страница без авторизации."""
-    return _page("faq.html")
+    return _page("faq.html", request)
 
 async def handle_guide(request: web.Request) -> web.Response:
     """🧭 «Как играть»: каждый раздел приложения по порядку вкладок — публичная страница без авторизации."""
-    return _page("guide.html")
+    return _page("guide.html", request)
 
 
 async def handle_rules(request: web.Request) -> web.Response:
     """Пользовательское соглашение — публичная страница без авторизации."""
-    return _page("rules.html")
+    return _page("rules.html", request)
 
 
 async def handle_me(request: web.Request) -> web.Response:
@@ -449,6 +471,7 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app.router.add_get("/", handle_index)
     app.router.add_get("/faq", handle_faq)
     app.router.add_get("/fx.js", handle_fx_js)
+    app.router.add_get("/i18n/{code}.json", handle_i18n)
     app.router.add_get("/rules", handle_rules)
     app.router.add_get("/guide", handle_guide)   # 🧭 «Как играть» — третья подвкладка «Инфо»
     app.router.add_get("/api/me", handle_me)
