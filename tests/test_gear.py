@@ -29,7 +29,8 @@ def test_six_suits_five_slots_and_one_suit_per_season():
     assert GEAR_SEASON_CAP == len(GEAR_SLOTS)          # за сезон — ровно один костюм деталей
     assert set(SUIT_BONUS) == set(GEAR_SUITS)
     for line, lv in SUIT_BONUS.items():
-        assert 0 < lv[1] < lv[2], line                 # 2-й уровень всегда сильнее
+        assert 0 < lv[1] < lv[2] < lv[3], line         # каждый следующий уровень чуть сильнее
+        assert set(lv) == {1, 2, 3}
 
 
 def test_suit_bonus_only_for_its_own_line_exo_gives_all_at_level_two():
@@ -37,7 +38,7 @@ def test_suit_bonus_only_for_its_own_line_exo_gives_all_at_level_two():
     assert suit_bonus("el", 2, "mn") == 0                # костюм электрика не помогает шахте
     assert suit_bonus(None, None, "el") == 0 and suit_bonus("mn", 0, "mn") == 0
     for line in GEAR_SUITS:
-        assert suit_bonus(GEAR_EXO, 2, line) == SUIT_BONUS[line][2]
+        assert suit_bonus(GEAR_EXO, 2, line) == SUIT_BONUS[line][economy.GEAR_EXO_LEVEL]
     assert energy_chance_percent(None, None) == economy.ENERGY_WIN_CHANCE_PERCENT == 25
     assert energy_chance_percent("el", 1) == 50          # «энергия в 2 раза чаще» — слово владельца
 
@@ -85,10 +86,50 @@ def test_full_set_needs_five_parts_of_one_suit():
 
 
 def test_upgrade_and_exo_recipes_use_real_resources_and_burn_coins():
-    for suit, cost in economy.GEAR_UPGRADE_COST.items():
-        assert cost and set(cost) <= set(economy.ALL_KINDS), suit
-    assert economy.GEAR_UPGRADE_COINS > 0 and economy.GEAR_EXO_COINS > 0
+    assert set(economy.GEAR_UPGRADE_COST) == {2, 3}
+    for to, by_suit in economy.GEAR_UPGRADE_COST.items():
+        assert set(by_suit) == set(GEAR_SUITS), to
+        for suit, cost in by_suit.items():
+            assert cost and set(cost) <= set(economy.ALL_KINDS), (to, suit)
+    assert 0 < economy.GEAR_UPGRADE_COINS[2] < economy.GEAR_UPGRADE_COINS[3] and economy.GEAR_EXO_COINS > 0
     assert set(economy.GEAR_EXO_COST) <= set(economy.ALL_KINDS)
+
+
+def test_three_levels_basic_improved_legendary_each_is_real_work():
+    """Владелец 31.10: ровно 3 уровня; прокачка — ресурсы + опыт детали + (на Легендарный) технология."""
+    from shared.gear import stats_xp, upgrade_need
+    assert economy.GEAR_MAX_LEVEL == 3
+    assert economy.GEAR_LEVEL_KEYS == {1: "basic", 2: "improved", 3: "legendary"}
+    assert 0 < economy.GEAR_UPGRADE_XP[2] < economy.GEAR_UPGRADE_XP[3]
+    for suit in GEAR_SUITS:
+        assert upgrade_need(suit, 2)["tech"] is None                     # Улучшенный — без технологий
+        tech = upgrade_need(suit, 3)["tech"]                             # Легендарный — технология Лаборатории
+        assert tech and tech["id"] in economy.TECHS and 1 <= tech["level"] <= economy.TECHS[tech["id"]]["max"]
+        assert tech["icon"] == economy.TECHS[tech["id"]]["icon"]
+        legendary = upgrade_need(suit, 3)["cost"]
+        assert legendary["battery"] >= 3 and legendary["fire"] >= 20     # труднодобываемое сырьё
+    assert economy.GEAR_EXO_LEVEL == 2                                   # экзо — из Улучшенных деталей
+    assert suit_bonus(GEAR_EXO, 2, "el") == SUIT_BONUS["el"][2] != suit_bonus("el", 3, "el")
+    assert stats_xp({"game_win": 12, "raid": 3}) == 15 and stats_xp('{"duel": 2}') == 2 and stats_xp(None) == 0
+
+
+def test_legendary_stealth_is_checked_in_raid_targeting():
+    src = (ROOT / "shared/raids.py").read_text(encoding="utf-8")
+    assert "u.suit_level >= 3 THEN $11::int" in src and 'SUIT_BONUS["st"][3]' in src
+
+
+def test_three_level_texts_everywhere():
+    html = (ROOT / "static/webapp/index.html").read_text(encoding="utf-8")
+    for key in ("ps_lvlName_1", "ps_lvlName_2", "ps_lvlName_3", "ps_xp", "ps_xpNeed", "ps_xpHint", "ps_needTech",
+                "ps_needTitle", "ps_maxLvl"):
+        assert html.count(key + ": ") >= 2, key                          # ru и en в index.html
+    assert 'ps_lvlName_2: "Улучшенный"' in html and 'ps_lvlName_3: "Легендарный"' in html
+    assert "ps_lvl2" not in html                                         # «на 2-м уровне» больше нет
+    assert 'level: from }' in html and 'filter="url(#psLeg)"' in html     # прокачка шлёт уровень; легендарное — золото
+    for lang in ("ru", "en", *PACK_CODES):
+        for key in ("gear.err_xp", "gear.err_tech"):
+            assert t(lang, key) != key, (lang, key)
+        assert "{need}" not in t(lang, "gear.err_xp", have=3, need=25)
 
 
 def test_workshop_engineer_discount_and_scientist_cooldown():

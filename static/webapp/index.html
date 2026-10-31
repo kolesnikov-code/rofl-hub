@@ -382,6 +382,13 @@
   button.ps-cell { cursor: pointer; border-color: var(--sc); box-shadow: inset 0 -3px 0 var(--sc); }
   .ps-cell.art { border-radius: 50%; }
   .ps-cell.glow { box-shadow: inset 0 -3px 0 var(--sc), 0 0 9px var(--sc); }
+  /* 🏆 Легендарная деталь — золотая кайма поверх цвета костюма */
+  .ps-cell.leg { border-color: #ffcf5a; box-shadow: inset 0 -3px 0 var(--sc), 0 0 0 1px #ffcf5a, 0 0 12px rgba(255,207,90,.75); }
+  .ps-need { margin: 6px 0; padding: 6px 8px; border-radius: 8px; background: rgba(20,26,46,.6); border: 1px dashed rgba(138,147,184,.3); }
+  .ps-xp { position: relative; height: 16px; margin: 4px 0; border-radius: 8px; background: rgba(138,147,184,.18); overflow: hidden; }
+  .ps-xp i { position: absolute; inset: 0 auto 0 0; background: var(--sc, var(--neon)); opacity: .55; border-radius: 8px; }
+  .ps-xp.full i { background: #ffcf5a; opacity: .7; }
+  .ps-xp span { position: relative; display: block; text-align: center; font-size: 11px; line-height: 16px; }
   .ps-cell.on { outline: 2px solid var(--neon); outline-offset: 1px; }
   .ps-cell.empty { border-style: dashed; opacity: .45; }
   .ps-cell .lv { position: absolute; left: 3px; top: 1px; font-size: 9px; font-style: normal; color: var(--sc); font-weight: 800; }
@@ -757,7 +764,7 @@
 
   const I18N = {
     ru: {
-      tab_persona: "🧍 Персонаж", ps_title: "🧍 ПЕРСОНАЖ", ps_hint: "Надень полный костюм — 5 деталей одного костюма: бонус работает, пока костюм на тебе.", ps_m: "М", ps_f: "Ж", ps_slot_head: "Шлем", ps_slot_body: "Куртка", ps_slot_hands: "Перчатки", ps_slot_legs: "Штаны", ps_slot_feet: "Ботинки", ps_suit_el: "⚡ Электрик", ps_suit_mn: "⛏ Шахтёр", ps_suit_ml: "🪖 Военный", ps_suit_st: "🥷 Маскировка", ps_suit_sc: "🔬 Учёный", ps_suit_en: "🔧 Инженер", ps_suit_exo: "💠 Нано-экзо-броня", ps_eff_el: "электричество в играх — в {p}% побед", ps_eff_mn: "раз в сутки +{p}% к монетам, добытым фермой", ps_eff_ml: "+{p}% трофея в налётах и добычи в экспедициях, поход на {p}% быстрее", ps_eff_st: "{p}% шанс не попасть в разведку налётчиков", ps_eff_sc: "перерыв между уровнями технологий на {p}% короче", ps_eff_en: "ресурсы для рецептов мастерской на {p}% дешевле", ps_active: "Надет костюм: {s}, {n} уровень", ps_none: "Полный костюм не надет — бонусов пока нет.", ps_level: "{n} ур.", ps_empty: "пусто", ps_off: "Снять", ps_wear: "Надеть", ps_sell: "Продать", ps_bag: "🎒 СУМКА", ps_bagEmpty: "Сумка пуста. Детали костюмов выпадают в событиях: в экспедициях, битвах за рудники и сезонных раздачах.", ps_season: "Деталей в этом сезоне: {got} из {cap}", ps_suits: "📖 КОСТЮМЫ И БОНУСЫ", ps_lvl2: "на 2-м уровне", ps_upg_el: "Перемотать жилы медью, вшить заземление и вставить свежую батарейку — костюм начинает ловить искры.", ps_upg_mn: "Прошить швы стальной нитью и подбить налокотники камнем — костюм держит удар породы.", ps_upg_ml: "Наварить пластины, прокалить их в огне и закалить — броне не страшна засада.", ps_upg_st: "Пропитать ткань водородным гелем и нашить кору-хамелеон — костюм тает на фоне.", ps_upg_sc: "Вплести кристаллические сенсоры и подать ток — костюм сам подсказывает формулы.", ps_upg_en: "Перебрать крепления на точные детали и встроить батарейку — костюм бережёт каждую гайку.", ps_upgAsk: "Улучшить «{part}» до 2-го уровня? Уйдёт: {cost} и {c} 🪙.", ps_upgDone: "⬆️ Деталь улучшена до 2-го уровня!", ps_exoTitle: "💠 НАНО-ЭКЗО-БРОНЯ", ps_exoText: "Сплав всех шести костюмов 2-го уровня (30 деталей): все бонусы сразу. Сплавленные детали исчезают навсегда.", ps_exoHave: "Деталей 2-го уровня", ps_exoGo: "💠 Сплавить броню", ps_exoAsk: "Сплавить 30 деталей в нано-экзо-броню? Это навсегда.", ps_exoDone: "💠 Нано-экзо-броня готова и надета!", ps_market: "🏷 РЫНОК ДЕТАЛЕЙ И АРТЕФАКТОВ", ps_marketHint: "Детали 1-го уровня — от {min} 🪙, артефакты — от {amin} 🪙. Комиссия {fee}% сгорает.", ps_marketEmpty: "Сейчас никто не продаёт детали.", ps_buy: "Купить за {p} 🪙", ps_bought: "🧥 Деталь в сумке!", ps_myLots: "Мои лоты", ps_cancel: "Снять", ps_sellTitle: "Продать", ps_price: "Цена за штуку, 🪙 (от {min})", ps_qty: "Сколько штук", ps_sellGo: "Выставить", ps_listed: "🏷 Лот выставлен на рынок деталей", raid_note_suit: "🪖 Костюм военного: трофей больше", ps_belt: "ПОЯС", ps_pickHint: "Нажми на ячейку сумки — увидишь, что это и что с ним можно сделать.", ps_artGives: "На поясе: {e}. Складывается с костюмом.", ps_partOf: "Полный костюм: {e}.", ps_upgrade: "Улучшить", ps_seasonArt: "артефактов: {got} из {cap}", ps_arts: "💠 АРТЕФАКТЫ", ps_artsText: "Камни для трёх окошек пояса. Каждый усиливает своё направление и работает вместе с костюмом. Бесплатно — один за сезон (подарки и походы), остальные — на рынке.", ps_art_el: "Искровик", ps_art_mn: "Рудный коралл", ps_art_ml: "Ядро гнева", ps_art_st: "Туманник", ps_art_sc: "Шар озарения", ps_art_en: "Шестерня мастера", gf_title: "🎁 ПОДАРКИ ОТ РАЗРАБОТЧИКА", gf_hint: "Подарки ждут здесь до срока — заглядывай почаще.", gf_default: "Подарок", gf_claim: "Забрать подарок", gf_done: "🎁 Подарок получен!", gf_gear: "🧥 деталь костюма ×{n}", gf_art: "💠 артефакт ×{n}", map_finishN: "⏱ Итоги раньше, если до цели доберутся {n} игроков — решает скорость", map_gear: "🧥 Каждому дошедшему — деталь костюма", map_art: "💠 каждому дошедшему — артефакт", gr_tabChar: "🧍 Персонаж", gr_tabGarage: "🏆 Гараж", gr_title: "🏆 ГАРАЖ", gr_showHint: "Так тебя видят другие: рамка и титул — в ТОПе и в команде, костюм — на аватаре, маркер — на карте походов.", gr_brag: "📸 Похвастаться", gr_bragText: "Зацени мой образ в ROFL HUB — сможешь круче?", gr_mine: "✨ МОИ СКИНЫ", gr_mineEmpty: "Скинов пока нет. Они продаются ниже, выпадают в событиях и переходят из рук в руки на рынке.", gr_serial: "№{n} из {of}", gr_serialInf: "№{n}", gr_hist: "История: {h}", gr_temper: "Закалить", gr_t_suit: "костюм", gr_t_frame: "рамка", gr_t_title: "титул", gr_t_marker: "маркер на карте", gr_t_bag: "сумка", gr_r_common: "Обычный", gr_r_rare: "Редкий", gr_r_epic: "Эпический", gr_r_legendary: "Легендарный", gr_r_mythic: "Мифический", gr_shop: "🛍 СКИНЫ ЗА ★", gr_shopHint: "Скин не даёт силы — только вид и статус. Сезонные — тиражом с номером и только до конца сезона: потом не купить никогда.", gr_left: "Осталось {n} из {of}", gr_noLimit: "Без тиража", gr_until: "В продаже до {d}", gr_buy: "Купить · {p} ★", gr_paid: "✨ Оплачено! Скин появится в Гараже через пару секунд.", gr_sets: "🧩 КОЛЛЕКЦИИ", gr_set_aurora: "🌌 Северное сияние", gr_setReward: "Весь набор — награда: {r} (купить нельзя)", gr_market: "🏷 РЫНОК СКИНОВ", gr_marketHint: "Экземпляры с номером и историей. Чем выше закалка и меньше номер, тем дороже. Комиссия сгорает.", gr_marketEmpty: "Сейчас никто не продаёт скины.", gr_bought: "✨ Скин твой — смотри в «Мои скины».", gr_glory: "🏛 ЗАЛ СЛАВЫ", gr_gWins: "побед в играх", gr_gQuiz: "уровень интеллекта", gr_gDuels: "побед в дуэлях", gr_gCargo: "лучший груз похода", gr_gDays: "дней в игре", gr_gExo: "💠 Собрана нано-экзо-броня", gr_temperTitle: "Закалка", gr_temperHint: "Скин поглощает другой твой скин — тот исчезает навсегда, а часть его опыта и слияний переходит. Чем выше ступень, тем больше нужно и боевого опыта, и слияний: одной игрой или одним слиянием не дойти.", gr_feed: "Поглотить", gr_noFood: "Нужен ещё один твой скин (не надетый).", gr_feedAsk: "Скин исчезнет навсегда и станет опытом закалки. Продолжить?", gr_fed: "🔥 Закалка! Уровень скина: {n}", gr_tabPass: "🎟 Пропуск", gr_stages: "🪜 СТУПЕНИ ПРОКАЧКИ", gr_st_factory: "Заводской", gr_st_tempered: "Закалённый", gr_st_combat: "Боевой", gr_st_veteran: "Ветеран", gr_st_legend: "Прославленный", gr_st_immortal: "Бессмертный", gr_lvl: "Ур. {n} · {s}", gr_from: "с {n} ур.", gr_next: "До {n} ур.: {w}", gr_nXp: "ещё {xp} опыта", gr_nM: "слияний: {m}", gr_max: "♾️ Высшая ступень — дальше только слава", gr_xpHint: "Боевой опыт идёт, пока скин надет: победа в игре +1, налёт +2…3, победа в дуэли +3, поход +5, квест +5, открытие в лаборатории +10. Высокие ступени требуют ещё и слияний.", gr_feedTo: "→ {n} ур. · {s}", gr_feedSame: "уровень тот же, опыт копится", gr_stUp: "Новая ступень! Скин теперь {n} уровня", gr_toShop: "🛍 В магазин скинов", gr_toGarage: "🏎 Мой гараж", tr_game_win: "Побед в играх", tr_duel: "Дуэлей", tr_duel_win: "Побед в дуэлях", tr_raid: "Налётов", tr_raid_win: "Удачных налётов", tr_raid_def: "Налётов выдержано", tr_expedition: "Походов", tr_craft: "Изделий", tr_tech: "Открытий", tr_quest: "Квестов", tr_chest: "Сундуков", ps_noHist: "Деталь ещё ничего не пережила — надень её, и она запомнит каждую победу.", shopSkins: "✨ СКИНЫ", pass_title: "🎟 ПРОПУСК СЕЗОНА", pass_ends: "До конца сезона: {n} дн.", pass_level: "Уровень {n} из {max}", pass_xp: "Опыт уровня: {x} / {need}", pass_maxed: "Все уровни пройдены 🏁", pass_how: "Опыт пропуска идёт за всё: победы, дуэли, налёты, походы, изделия, открытия, квесты и сундук.", pass_claim: "🎁 Забрать награды", pass_got: "Получено: {r}", pass_buy: "🎟 Премиум-пропуск — {p} ★", pass_buyNext: "🎟 Пропуск следующего сезона — {p} ★", pass_buyHint: "Открывает правую дорожку, в том числе уже пройденные уровни. Эксклюзивные скины сезона не продаются нигде — только здесь и только в этом месяце.", pass_owned: "✅ Премиум-пропуск активен", pass_skins: "✨ ЭКСКЛЮЗИВ СЕЗОНА", pass_skinsHint: "Эти скины есть только в премиум-пропуске: кончился месяц — больше не получить.", pass_atLvl: "на {n} уровне", pass_tracks: "🛤 НАГРАДЫ ПО УРОВНЯМ", pass_free: "Бесплатно", pass_paid: "Премиум", pass_shopHint: "больше монет, котлеты и 4 эксклюзивных скина сезона", pass_gameCap: "Опыт за победы в играх сегодня: {x} / {cap}. Походы, налёты, дуэли, квесты и сундук — без лимита.", pass_gameCapUp: "С безлимитом на 30 дней — до {cap} в сутки.", ref_suitTitle: "🧥 ЗАДАНИЕ: {n} АКТИВНЫХ ДРУЗЕЙ", ref_suitHint: "Пригласи {n} друзей, которые станут активными ({l} уровень интеллекта и {c} ежедневные котлеты), — и забери полный костюм на выбор: все 5 деталей сразу. Награда одна на аккаунт.", ref_suitProgress: "Активных друзей: {have} из {n}", ref_suitPick: "Выбери костюм — он сразу ляжет в сумку.", ref_suitAsk: "Забрать полный костюм «{s}»? Выбрать можно только один раз.", ref_suitDone: "🧥 Костюм в сумке! Надень его во вкладке «Персонаж».", ref_suitTaken: "✅ Награда получена: {s}", ref_suitLocked: "🔒 Откроется на {n} активных друзьях",
+      tab_persona: "🧍 Персонаж", ps_title: "🧍 ПЕРСОНАЖ", ps_hint: "Надень полный костюм — 5 деталей одного костюма: бонус работает, пока костюм на тебе.", ps_m: "М", ps_f: "Ж", ps_slot_head: "Шлем", ps_slot_body: "Куртка", ps_slot_hands: "Перчатки", ps_slot_legs: "Штаны", ps_slot_feet: "Ботинки", ps_suit_el: "⚡ Электрик", ps_suit_mn: "⛏ Шахтёр", ps_suit_ml: "🪖 Военный", ps_suit_st: "🥷 Маскировка", ps_suit_sc: "🔬 Учёный", ps_suit_en: "🔧 Инженер", ps_suit_exo: "💠 Нано-экзо-броня", ps_eff_el: "электричество в играх — в {p}% побед", ps_eff_mn: "раз в сутки +{p}% к монетам, добытым фермой", ps_eff_ml: "+{p}% трофея в налётах и добычи в экспедициях, поход на {p}% быстрее", ps_eff_st: "{p}% шанс не попасть в разведку налётчиков", ps_eff_sc: "перерыв между уровнями технологий на {p}% короче", ps_eff_en: "ресурсы для рецептов мастерской на {p}% дешевле", ps_active: "Надет костюм: {s} · {n}", ps_none: "Полный костюм не надет — бонусов пока нет.", ps_level: "{n} ур.", ps_empty: "пусто", ps_off: "Снять", ps_wear: "Надеть", ps_sell: "Продать", ps_bag: "🎒 СУМКА", ps_bagEmpty: "Сумка пуста. Детали костюмов выпадают в событиях: в экспедициях, битвах за рудники и сезонных раздачах.", ps_season: "Деталей в этом сезоне: {got} из {cap}", ps_suits: "📖 КОСТЮМЫ И БОНУСЫ", ps_upg_el: "Перемотать жилы медью, вшить заземление и вставить свежую батарейку — костюм начинает ловить искры.", ps_upg_mn: "Прошить швы стальной нитью и подбить налокотники камнем — костюм держит удар породы.", ps_upg_ml: "Наварить пластины, прокалить их в огне и закалить — броне не страшна засада.", ps_upg_st: "Пропитать ткань водородным гелем и нашить кору-хамелеон — костюм тает на фоне.", ps_upg_sc: "Вплести кристаллические сенсоры и подать ток — костюм сам подсказывает формулы.", ps_upg_en: "Перебрать крепления на точные детали и встроить батарейку — костюм бережёт каждую гайку.", ps_upgAsk: "Улучшить «{part}» до уровня «{lv}»? Уйдёт: {cost} и {c} 🪙.", ps_lvlName_1: "Базовый", ps_lvlName_2: "Улучшенный", ps_lvlName_3: "Легендарный", ps_xp: "Опыт детали: {x} / {need}", ps_xpHint: "Опыт — события, которые деталь пережила надетой: победы в играх, дуэли, налёты, походы, изделия, открытия, квесты.", ps_needTech: "технология {t} {n} ур. в Лаборатории", ps_xpNeed: "опыт {n}", ps_needTitle: "До уровня «{lv}»:", ps_maxLvl: "🏆 Легендарный — выше некуда", ps_upgDone: "⬆️ Деталь улучшена: {lv}!", ps_exoTitle: "💠 НАНО-ЭКЗО-БРОНЯ", ps_exoText: "Сплав всех шести костюмов Улучшенного уровня (30 деталей): все бонусы сразу. Сплавленные детали исчезают навсегда.", ps_exoHave: "Деталей Улучшенного уровня", ps_exoGo: "💠 Сплавить броню", ps_exoAsk: "Сплавить 30 деталей в нано-экзо-броню? Это навсегда.", ps_exoDone: "💠 Нано-экзо-броня готова и надета!", ps_market: "🏷 РЫНОК ДЕТАЛЕЙ И АРТЕФАКТОВ", ps_marketHint: "Детали 1-го уровня — от {min} 🪙, артефакты — от {amin} 🪙. Комиссия {fee}% сгорает.", ps_marketEmpty: "Сейчас никто не продаёт детали.", ps_buy: "Купить за {p} 🪙", ps_bought: "🧥 Деталь в сумке!", ps_myLots: "Мои лоты", ps_cancel: "Снять", ps_sellTitle: "Продать", ps_price: "Цена за штуку, 🪙 (от {min})", ps_qty: "Сколько штук", ps_sellGo: "Выставить", ps_listed: "🏷 Лот выставлен на рынок деталей", raid_note_suit: "🪖 Костюм военного: трофей больше", ps_belt: "ПОЯС", ps_pickHint: "Нажми на ячейку сумки — увидишь, что это и что с ним можно сделать.", ps_artGives: "На поясе: {e}. Складывается с костюмом.", ps_partOf: "Полный костюм: {e}.", ps_upgrade: "Улучшить", ps_seasonArt: "артефактов: {got} из {cap}", ps_arts: "💠 АРТЕФАКТЫ", ps_artsText: "Камни для трёх окошек пояса. Каждый усиливает своё направление и работает вместе с костюмом. Бесплатно — один за сезон (подарки и походы), остальные — на рынке.", ps_art_el: "Искровик", ps_art_mn: "Рудный коралл", ps_art_ml: "Ядро гнева", ps_art_st: "Туманник", ps_art_sc: "Шар озарения", ps_art_en: "Шестерня мастера", gf_title: "🎁 ПОДАРКИ ОТ РАЗРАБОТЧИКА", gf_hint: "Подарки ждут здесь до срока — заглядывай почаще.", gf_default: "Подарок", gf_claim: "Забрать подарок", gf_done: "🎁 Подарок получен!", gf_gear: "🧥 деталь костюма ×{n}", gf_art: "💠 артефакт ×{n}", map_finishN: "⏱ Итоги раньше, если до цели доберутся {n} игроков — решает скорость", map_gear: "🧥 Каждому дошедшему — деталь костюма", map_art: "💠 каждому дошедшему — артефакт", gr_tabChar: "🧍 Персонаж", gr_tabGarage: "🏆 Гараж", gr_title: "🏆 ГАРАЖ", gr_showHint: "Так тебя видят другие: рамка и титул — в ТОПе и в команде, костюм — на аватаре, маркер — на карте походов.", gr_brag: "📸 Похвастаться", gr_bragText: "Зацени мой образ в ROFL HUB — сможешь круче?", gr_mine: "✨ МОИ СКИНЫ", gr_mineEmpty: "Скинов пока нет. Они продаются ниже, выпадают в событиях и переходят из рук в руки на рынке.", gr_serial: "№{n} из {of}", gr_serialInf: "№{n}", gr_hist: "История: {h}", gr_temper: "Закалить", gr_t_suit: "костюм", gr_t_frame: "рамка", gr_t_title: "титул", gr_t_marker: "маркер на карте", gr_t_bag: "сумка", gr_r_common: "Обычный", gr_r_rare: "Редкий", gr_r_epic: "Эпический", gr_r_legendary: "Легендарный", gr_r_mythic: "Мифический", gr_shop: "🛍 СКИНЫ ЗА ★", gr_shopHint: "Скин не даёт силы — только вид и статус. Сезонные — тиражом с номером и только до конца сезона: потом не купить никогда.", gr_left: "Осталось {n} из {of}", gr_noLimit: "Без тиража", gr_until: "В продаже до {d}", gr_buy: "Купить · {p} ★", gr_paid: "✨ Оплачено! Скин появится в Гараже через пару секунд.", gr_sets: "🧩 КОЛЛЕКЦИИ", gr_set_aurora: "🌌 Северное сияние", gr_setReward: "Весь набор — награда: {r} (купить нельзя)", gr_market: "🏷 РЫНОК СКИНОВ", gr_marketHint: "Экземпляры с номером и историей. Чем выше закалка и меньше номер, тем дороже. Комиссия сгорает.", gr_marketEmpty: "Сейчас никто не продаёт скины.", gr_bought: "✨ Скин твой — смотри в «Мои скины».", gr_glory: "🏛 ЗАЛ СЛАВЫ", gr_gWins: "побед в играх", gr_gQuiz: "уровень интеллекта", gr_gDuels: "побед в дуэлях", gr_gCargo: "лучший груз похода", gr_gDays: "дней в игре", gr_gExo: "💠 Собрана нано-экзо-броня", gr_temperTitle: "Закалка", gr_temperHint: "Скин поглощает другой твой скин — тот исчезает навсегда, а часть его опыта и слияний переходит. Чем выше ступень, тем больше нужно и боевого опыта, и слияний: одной игрой или одним слиянием не дойти.", gr_feed: "Поглотить", gr_noFood: "Нужен ещё один твой скин (не надетый).", gr_feedAsk: "Скин исчезнет навсегда и станет опытом закалки. Продолжить?", gr_fed: "🔥 Закалка! Уровень скина: {n}", gr_tabPass: "🎟 Пропуск", gr_stages: "🪜 СТУПЕНИ ПРОКАЧКИ", gr_st_factory: "Заводской", gr_st_tempered: "Закалённый", gr_st_combat: "Боевой", gr_st_veteran: "Ветеран", gr_st_legend: "Прославленный", gr_st_immortal: "Бессмертный", gr_lvl: "Ур. {n} · {s}", gr_from: "с {n} ур.", gr_next: "До {n} ур.: {w}", gr_nXp: "ещё {xp} опыта", gr_nM: "слияний: {m}", gr_max: "♾️ Высшая ступень — дальше только слава", gr_xpHint: "Боевой опыт идёт, пока скин надет: победа в игре +1, налёт +2…3, победа в дуэли +3, поход +5, квест +5, открытие в лаборатории +10. Высокие ступени требуют ещё и слияний.", gr_feedTo: "→ {n} ур. · {s}", gr_feedSame: "уровень тот же, опыт копится", gr_stUp: "Новая ступень! Скин теперь {n} уровня", gr_toShop: "🛍 В магазин скинов", gr_toGarage: "🏎 Мой гараж", tr_game_win: "Побед в играх", tr_duel: "Дуэлей", tr_duel_win: "Побед в дуэлях", tr_raid: "Налётов", tr_raid_win: "Удачных налётов", tr_raid_def: "Налётов выдержано", tr_expedition: "Походов", tr_craft: "Изделий", tr_tech: "Открытий", tr_quest: "Квестов", tr_chest: "Сундуков", ps_noHist: "Деталь ещё ничего не пережила — надень её, и она запомнит каждую победу.", shopSkins: "✨ СКИНЫ", pass_title: "🎟 ПРОПУСК СЕЗОНА", pass_ends: "До конца сезона: {n} дн.", pass_level: "Уровень {n} из {max}", pass_xp: "Опыт уровня: {x} / {need}", pass_maxed: "Все уровни пройдены 🏁", pass_how: "Опыт пропуска идёт за всё: победы, дуэли, налёты, походы, изделия, открытия, квесты и сундук.", pass_claim: "🎁 Забрать награды", pass_got: "Получено: {r}", pass_buy: "🎟 Премиум-пропуск — {p} ★", pass_buyNext: "🎟 Пропуск следующего сезона — {p} ★", pass_buyHint: "Открывает правую дорожку, в том числе уже пройденные уровни. Эксклюзивные скины сезона не продаются нигде — только здесь и только в этом месяце.", pass_owned: "✅ Премиум-пропуск активен", pass_skins: "✨ ЭКСКЛЮЗИВ СЕЗОНА", pass_skinsHint: "Эти скины есть только в премиум-пропуске: кончился месяц — больше не получить.", pass_atLvl: "на {n} уровне", pass_tracks: "🛤 НАГРАДЫ ПО УРОВНЯМ", pass_free: "Бесплатно", pass_paid: "Премиум", pass_shopHint: "больше монет, котлеты и 4 эксклюзивных скина сезона", pass_gameCap: "Опыт за победы в играх сегодня: {x} / {cap}. Походы, налёты, дуэли, квесты и сундук — без лимита.", pass_gameCapUp: "С безлимитом на 30 дней — до {cap} в сутки.", ref_suitTitle: "🧥 ЗАДАНИЕ: {n} АКТИВНЫХ ДРУЗЕЙ", ref_suitHint: "Пригласи {n} друзей, которые станут активными ({l} уровень интеллекта и {c} ежедневные котлеты), — и забери полный костюм на выбор: все 5 деталей сразу. Награда одна на аккаунт.", ref_suitProgress: "Активных друзей: {have} из {n}", ref_suitPick: "Выбери костюм — он сразу ляжет в сумку.", ref_suitAsk: "Забрать полный костюм «{s}»? Выбрать можно только один раз.", ref_suitDone: "🧥 Костюм в сумке! Надень его во вкладке «Персонаж».", ref_suitTaken: "✅ Награда получена: {s}", ref_suitLocked: "🔒 Откроется на {n} активных друзьях",
       tab_history: "📜 История", hist_title: "📜 ИСТОРИЯ ЗА {d} ДНЕЙ", hist_coins: "🪙 Монеты", hist_res: "📦 Ресурсы", hist_market: "📈 Биржа", hist_gifts: "🎁 Награды", hist_in: "Пришло", hist_out: "Ушло", hist_topIn: "Откуда пришли", hist_topOut: "Куда ушли", hist_empty: "За это время здесь пусто.", hist_bought: "Куплено", hist_sold: "Продано", hist_hint: "Хранится 30 дней: монеты, ресурсы, сделки на бирже, награды и подарки.",
       mk_floorAny: "Не дешевле {p} 🪙 за 1 {x} — и в продаже, и в заявке",
       mk_sellTitleAny: "💰 ПРОДАТЬ: {x}", mk_bidTitleAny: "🙋 КУПИТЬ: {x}", mk_qtyAny: "Количество, {x}", mk_limitsAny: "До {q} {x} в ордере, до {o} открытых ордеров", mk_boughtAny: "Куплено {q} {x} за {t} 🪙", mk_cancelledAny: "Ордер снят — товар или замороженные монеты вернулись",
@@ -986,7 +993,7 @@
       featureOff: "⚙️ Раздел на техобслуживании", done: "Готово!", loading: "⏳ Загрузка…"
     },
     en: {
-      tab_persona: "🧍 Character", ps_title: "🧍 CHARACTER", ps_hint: "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.", ps_m: "M", ps_f: "F", ps_slot_head: "Helmet", ps_slot_body: "Jacket", ps_slot_hands: "Gloves", ps_slot_legs: "Trousers", ps_slot_feet: "Boots", ps_suit_el: "⚡ Electrician", ps_suit_mn: "⛏ Miner", ps_suit_ml: "🪖 Soldier", ps_suit_st: "🥷 Stealth", ps_suit_sc: "🔬 Scientist", ps_suit_en: "🔧 Engineer", ps_suit_exo: "💠 Nano exo-armour", ps_eff_el: "electricity drops in {p}% of game wins", ps_eff_mn: "once a day +{p}% of the coins your farm mined", ps_eff_ml: "+{p}% raid loot and expedition haul, trips {p}% faster", ps_eff_st: "{p}% chance to stay off raiders' scouting lists", ps_eff_sc: "{p}% shorter wait between technology levels", ps_eff_en: "workshop recipes need {p}% fewer resources", ps_active: "Suit on: {s}, level {n}", ps_none: "No full suit on — no bonuses yet.", ps_level: "lvl {n}", ps_empty: "empty", ps_off: "Take off", ps_wear: "Wear", ps_sell: "Sell", ps_bag: "🎒 BAG", ps_bagEmpty: "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.", ps_season: "Parts this season: {got} of {cap}", ps_suits: "📖 SUITS AND BONUSES", ps_lvl2: "at level 2", ps_upg_el: "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.", ps_upg_mn: "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.", ps_upg_ml: "Weld on plates, fire and temper them — this armour shrugs off an ambush.", ps_upg_st: "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.", ps_upg_sc: "Weave in crystal sensors and run a current — the suit whispers formulas.", ps_upg_en: "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.", ps_upgAsk: "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.", ps_upgDone: "⬆️ Part upgraded to level 2!", ps_exoTitle: "💠 NANO EXO-ARMOUR", ps_exoText: "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.", ps_exoHave: "Level-2 parts", ps_exoGo: "💠 Fuse the armour", ps_exoAsk: "Fuse 30 parts into nano exo-armour? This is permanent.", ps_exoDone: "💠 Nano exo-armour is ready and on!", ps_market: "🏷 PARTS & ARTIFACTS MARKET", ps_marketHint: "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.", ps_marketEmpty: "Nobody is selling parts right now.", ps_buy: "Buy for {p} 🪙", ps_bought: "🧥 The part is in your bag!", ps_myLots: "My lots", ps_cancel: "Withdraw", ps_sellTitle: "Sell", ps_price: "Price per item, 🪙 (from {min})", ps_qty: "How many", ps_sellGo: "List it", ps_listed: "🏷 Listed on the parts market", raid_note_suit: "🪖 Soldier suit: bigger loot", ps_belt: "BELT", ps_pickHint: "Tap a bag cell to see what it is and what you can do with it.", ps_artGives: "On the belt: {e}. Stacks with your suit.", ps_partOf: "Full suit: {e}.", ps_upgrade: "Upgrade", ps_seasonArt: "artifacts: {got} of {cap}", ps_arts: "💠 ARTIFACTS", ps_artsText: "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.", ps_art_el: "Sparkstone", ps_art_mn: "Ore coral", ps_art_ml: "Wrath core", ps_art_st: "Mistling", ps_art_sc: "Insight orb", ps_art_en: "Master gear", gf_title: "🎁 GIFTS FROM THE DEVELOPER", gf_hint: "Gifts wait here until they expire — check in often.", gf_default: "Gift", gf_claim: "Claim gift", gf_done: "🎁 Gift received!", gf_gear: "🧥 suit part ×{n}", gf_art: "💠 artifact ×{n}", map_finishN: "⏱ Results come early once {n} players reach the target — speed decides", map_gear: "🧥 Every player who arrives gets a suit part", map_art: "💠 every player who arrives gets an artifact", gr_tabChar: "🧍 Character", gr_tabGarage: "🏆 Garage", gr_title: "🏆 GARAGE", gr_showHint: "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.", gr_brag: "📸 Show off", gr_bragText: "Check out my look in ROFL HUB — can you top it?", gr_mine: "✨ MY SKINS", gr_mineEmpty: "No skins yet. They're sold below, drop in events and change hands on the market.", gr_serial: "#{n} of {of}", gr_serialInf: "#{n}", gr_hist: "History: {h}", gr_temper: "Temper", gr_t_suit: "suit", gr_t_frame: "frame", gr_t_title: "title", gr_t_marker: "map marker", gr_t_bag: "bag", gr_r_common: "Common", gr_r_rare: "Rare", gr_r_epic: "Epic", gr_r_legendary: "Legendary", gr_r_mythic: "Mythic", gr_shop: "🛍 SKINS FOR ★", gr_shopHint: "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.", gr_left: "{n} of {of} left", gr_noLimit: "No edition limit", gr_until: "On sale until {d}", gr_buy: "Buy · {p} ★", gr_paid: "✨ Paid! The skin will appear in the Garage in a couple of seconds.", gr_sets: "🧩 COLLECTIONS", gr_set_aurora: "🌌 Northern Lights", gr_setReward: "Full set reward: {r} (can't be bought)", gr_market: "🏷 SKIN MARKET", gr_marketHint: "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.", gr_marketEmpty: "Nobody is selling skins right now.", gr_bought: "✨ The skin is yours — see My skins.", gr_glory: "🏛 HALL OF FAME", gr_gWins: "game wins", gr_gQuiz: "intellect level", gr_gDuels: "duel wins", gr_gCargo: "best expedition cargo", gr_gDays: "days in the game", gr_gExo: "💠 Nano exo-armour assembled", gr_temperTitle: "Tempering", gr_temperHint: "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.", gr_feed: "Absorb", gr_noFood: "You need another skin of yours (not worn).", gr_feedAsk: "This skin will vanish for good and become tempering XP. Continue?", gr_fed: "🔥 Tempered! Skin level: {n}", gr_tabPass: "🎟 Pass", gr_stages: "🪜 UPGRADE STAGES", gr_st_factory: "Factory", gr_st_tempered: "Tempered", gr_st_combat: "Battle-worn", gr_st_veteran: "Veteran", gr_st_legend: "Famed", gr_st_immortal: "Immortal", gr_lvl: "Lv. {n} · {s}", gr_from: "from Lv. {n}", gr_next: "To Lv. {n}: {w}", gr_nXp: "{xp} more XP", gr_nM: "merges: {m}", gr_max: "♾️ Top stage — only glory beyond", gr_xpHint: "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.", gr_feedTo: "→ Lv. {n} · {s}", gr_feedSame: "same level, XP adds up", gr_stUp: "New stage! The skin is now level {n}", gr_toShop: "🛍 To the skin shop", gr_toGarage: "🏎 My garage", tr_game_win: "Game wins", tr_duel: "Duels", tr_duel_win: "Duel wins", tr_raid: "Raids", tr_raid_win: "Successful raids", tr_raid_def: "Raids endured", tr_expedition: "Expeditions", tr_craft: "Items crafted", tr_tech: "Discoveries", tr_quest: "Quests", tr_chest: "Chests", ps_noHist: "This part hasn't lived through anything yet — wear it and it will remember every win.", shopSkins: "✨ SKINS", pass_title: "🎟 SEASON PASS", pass_ends: "Season ends in {n} d", pass_level: "Level {n} of {max}", pass_xp: "Level XP: {x} / {need}", pass_maxed: "All levels done 🏁", pass_how: "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.", pass_claim: "🎁 Claim rewards", pass_got: "Received: {r}", pass_buy: "🎟 Premium pass — {p} ★", pass_buyNext: "🎟 Next season's pass — {p} ★", pass_buyHint: "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.", pass_owned: "✅ Premium pass active", pass_skins: "✨ SEASON EXCLUSIVES", pass_skinsHint: "These skins exist only in the premium pass: once the month ends, they're gone for good.", pass_atLvl: "at level {n}", pass_tracks: "🛤 REWARDS BY LEVEL", pass_free: "Free", pass_paid: "Premium", pass_shopHint: "more coins, cutlets and 4 exclusive season skins", pass_gameCap: "Pass XP from game wins today: {x} / {cap}. Expeditions, raids, duels, quests and the chest have no limit.", pass_gameCapUp: "With the 30-day unlimited pass — up to {cap} a day.", ref_suitTitle: "🧥 TASK: {n} ACTIVE FRIENDS", ref_suitHint: "Invite {n} friends who become active (intellect level {l} and {c} daily cutlets) — and claim a full suit of your choice: all 5 parts at once. One reward per account.", ref_suitProgress: "Active friends: {have} of {n}", ref_suitPick: "Pick a suit — it goes straight into your bag.", ref_suitAsk: "Claim the full “{s}” suit? You can choose only once.", ref_suitDone: "🧥 The suit is in your bag! Put it on in the Character tab.", ref_suitTaken: "✅ Reward claimed: {s}", ref_suitLocked: "🔒 Unlocks at {n} active friends",
+      tab_persona: "🧍 Character", ps_title: "🧍 CHARACTER", ps_hint: "Wear a full suit — 5 parts of the same suit: the bonus works while you wear it.", ps_m: "M", ps_f: "F", ps_slot_head: "Helmet", ps_slot_body: "Jacket", ps_slot_hands: "Gloves", ps_slot_legs: "Trousers", ps_slot_feet: "Boots", ps_suit_el: "⚡ Electrician", ps_suit_mn: "⛏ Miner", ps_suit_ml: "🪖 Soldier", ps_suit_st: "🥷 Stealth", ps_suit_sc: "🔬 Scientist", ps_suit_en: "🔧 Engineer", ps_suit_exo: "💠 Nano exo-armour", ps_eff_el: "electricity drops in {p}% of game wins", ps_eff_mn: "once a day +{p}% of the coins your farm mined", ps_eff_ml: "+{p}% raid loot and expedition haul, trips {p}% faster", ps_eff_st: "{p}% chance to stay off raiders' scouting lists", ps_eff_sc: "{p}% shorter wait between technology levels", ps_eff_en: "workshop recipes need {p}% fewer resources", ps_active: "Suit on: {s} · {n}", ps_none: "No full suit on — no bonuses yet.", ps_level: "lvl {n}", ps_empty: "empty", ps_off: "Take off", ps_wear: "Wear", ps_sell: "Sell", ps_bag: "🎒 BAG", ps_bagEmpty: "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.", ps_season: "Parts this season: {got} of {cap}", ps_suits: "📖 SUITS AND BONUSES", ps_upg_el: "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.", ps_upg_mn: "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.", ps_upg_ml: "Weld on plates, fire and temper them — this armour shrugs off an ambush.", ps_upg_st: "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.", ps_upg_sc: "Weave in crystal sensors and run a current — the suit whispers formulas.", ps_upg_en: "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.", ps_upgAsk: "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.", ps_lvlName_1: "Basic", ps_lvlName_2: "Improved", ps_lvlName_3: "Legendary", ps_xp: "Part XP: {x} / {need}", ps_xpHint: "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.", ps_needTech: "{t} tech level {n} in the Lab", ps_xpNeed: "XP {n}", ps_needTitle: "To {lv}:", ps_maxLvl: "🏆 Legendary — as high as it gets", ps_upgDone: "⬆️ Part upgraded: {lv}!", ps_exoTitle: "💠 NANO EXO-ARMOUR", ps_exoText: "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.", ps_exoHave: "Improved parts", ps_exoGo: "💠 Fuse the armour", ps_exoAsk: "Fuse 30 parts into nano exo-armour? This is permanent.", ps_exoDone: "💠 Nano exo-armour is ready and on!", ps_market: "🏷 PARTS & ARTIFACTS MARKET", ps_marketHint: "Level-1 parts from {min} 🪙, artifacts from {amin} 🪙. The {fee}% fee is burned.", ps_marketEmpty: "Nobody is selling parts right now.", ps_buy: "Buy for {p} 🪙", ps_bought: "🧥 The part is in your bag!", ps_myLots: "My lots", ps_cancel: "Withdraw", ps_sellTitle: "Sell", ps_price: "Price per item, 🪙 (from {min})", ps_qty: "How many", ps_sellGo: "List it", ps_listed: "🏷 Listed on the parts market", raid_note_suit: "🪖 Soldier suit: bigger loot", ps_belt: "BELT", ps_pickHint: "Tap a bag cell to see what it is and what you can do with it.", ps_artGives: "On the belt: {e}. Stacks with your suit.", ps_partOf: "Full suit: {e}.", ps_upgrade: "Upgrade", ps_seasonArt: "artifacts: {got} of {cap}", ps_arts: "💠 ARTIFACTS", ps_artsText: "Stones for the three belt windows. Each boosts its own line and works together with your suit. One free per season (gifts and expeditions), the rest on the market.", ps_art_el: "Sparkstone", ps_art_mn: "Ore coral", ps_art_ml: "Wrath core", ps_art_st: "Mistling", ps_art_sc: "Insight orb", ps_art_en: "Master gear", gf_title: "🎁 GIFTS FROM THE DEVELOPER", gf_hint: "Gifts wait here until they expire — check in often.", gf_default: "Gift", gf_claim: "Claim gift", gf_done: "🎁 Gift received!", gf_gear: "🧥 suit part ×{n}", gf_art: "💠 artifact ×{n}", map_finishN: "⏱ Results come early once {n} players reach the target — speed decides", map_gear: "🧥 Every player who arrives gets a suit part", map_art: "💠 every player who arrives gets an artifact", gr_tabChar: "🧍 Character", gr_tabGarage: "🏆 Garage", gr_title: "🏆 GARAGE", gr_showHint: "This is how others see you: frame and title in the TOP and your team, suit on the avatar, marker on the expedition map.", gr_brag: "📸 Show off", gr_bragText: "Check out my look in ROFL HUB — can you top it?", gr_mine: "✨ MY SKINS", gr_mineEmpty: "No skins yet. They're sold below, drop in events and change hands on the market.", gr_serial: "#{n} of {of}", gr_serialInf: "#{n}", gr_hist: "History: {h}", gr_temper: "Temper", gr_t_suit: "suit", gr_t_frame: "frame", gr_t_title: "title", gr_t_marker: "map marker", gr_t_bag: "bag", gr_r_common: "Common", gr_r_rare: "Rare", gr_r_epic: "Epic", gr_r_legendary: "Legendary", gr_r_mythic: "Mythic", gr_shop: "🛍 SKINS FOR ★", gr_shopHint: "A skin gives no power — only looks and status. Seasonal skins are numbered editions sold only until the season ends: after that, never again.", gr_left: "{n} of {of} left", gr_noLimit: "No edition limit", gr_until: "On sale until {d}", gr_buy: "Buy · {p} ★", gr_paid: "✨ Paid! The skin will appear in the Garage in a couple of seconds.", gr_sets: "🧩 COLLECTIONS", gr_set_aurora: "🌌 Northern Lights", gr_setReward: "Full set reward: {r} (can't be bought)", gr_market: "🏷 SKIN MARKET", gr_marketHint: "Numbered copies with history. Higher tempering and lower numbers cost more. The fee is burned.", gr_marketEmpty: "Nobody is selling skins right now.", gr_bought: "✨ The skin is yours — see My skins.", gr_glory: "🏛 HALL OF FAME", gr_gWins: "game wins", gr_gQuiz: "intellect level", gr_gDuels: "duel wins", gr_gCargo: "best expedition cargo", gr_gDays: "days in the game", gr_gExo: "💠 Nano exo-armour assembled", gr_temperTitle: "Tempering", gr_temperHint: "A skin absorbs another skin of yours — that one is gone for good, and part of its XP and merges carries over. Higher stages need both battle XP and merges: one game or one merge won't get you there.", gr_feed: "Absorb", gr_noFood: "You need another skin of yours (not worn).", gr_feedAsk: "This skin will vanish for good and become tempering XP. Continue?", gr_fed: "🔥 Tempered! Skin level: {n}", gr_tabPass: "🎟 Pass", gr_stages: "🪜 UPGRADE STAGES", gr_st_factory: "Factory", gr_st_tempered: "Tempered", gr_st_combat: "Battle-worn", gr_st_veteran: "Veteran", gr_st_legend: "Famed", gr_st_immortal: "Immortal", gr_lvl: "Lv. {n} · {s}", gr_from: "from Lv. {n}", gr_next: "To Lv. {n}: {w}", gr_nXp: "{xp} more XP", gr_nM: "merges: {m}", gr_max: "♾️ Top stage — only glory beyond", gr_xpHint: "Battle XP flows while the skin is worn: game win +1, raid +2…3, duel win +3, expedition +5, quest +5, lab discovery +10. Higher stages also need merges.", gr_feedTo: "→ Lv. {n} · {s}", gr_feedSame: "same level, XP adds up", gr_stUp: "New stage! The skin is now level {n}", gr_toShop: "🛍 To the skin shop", gr_toGarage: "🏎 My garage", tr_game_win: "Game wins", tr_duel: "Duels", tr_duel_win: "Duel wins", tr_raid: "Raids", tr_raid_win: "Successful raids", tr_raid_def: "Raids endured", tr_expedition: "Expeditions", tr_craft: "Items crafted", tr_tech: "Discoveries", tr_quest: "Quests", tr_chest: "Chests", ps_noHist: "This part hasn't lived through anything yet — wear it and it will remember every win.", shopSkins: "✨ SKINS", pass_title: "🎟 SEASON PASS", pass_ends: "Season ends in {n} d", pass_level: "Level {n} of {max}", pass_xp: "Level XP: {x} / {need}", pass_maxed: "All levels done 🏁", pass_how: "Pass XP comes from everything: wins, duels, raids, expeditions, crafts, discoveries, quests and the chest.", pass_claim: "🎁 Claim rewards", pass_got: "Received: {r}", pass_buy: "🎟 Premium pass — {p} ★", pass_buyNext: "🎟 Next season's pass — {p} ★", pass_buyHint: "Unlocks the right track, including levels you've already passed. The season's exclusive skins are sold nowhere else — only here and only this month.", pass_owned: "✅ Premium pass active", pass_skins: "✨ SEASON EXCLUSIVES", pass_skinsHint: "These skins exist only in the premium pass: once the month ends, they're gone for good.", pass_atLvl: "at level {n}", pass_tracks: "🛤 REWARDS BY LEVEL", pass_free: "Free", pass_paid: "Premium", pass_shopHint: "more coins, cutlets and 4 exclusive season skins", pass_gameCap: "Pass XP from game wins today: {x} / {cap}. Expeditions, raids, duels, quests and the chest have no limit.", pass_gameCapUp: "With the 30-day unlimited pass — up to {cap} a day.", ref_suitTitle: "🧥 TASK: {n} ACTIVE FRIENDS", ref_suitHint: "Invite {n} friends who become active (intellect level {l} and {c} daily cutlets) — and claim a full suit of your choice: all 5 parts at once. One reward per account.", ref_suitProgress: "Active friends: {have} of {n}", ref_suitPick: "Pick a suit — it goes straight into your bag.", ref_suitAsk: "Claim the full “{s}” suit? You can choose only once.", ref_suitDone: "🧥 The suit is in your bag! Put it on in the Character tab.", ref_suitTaken: "✅ Reward claimed: {s}", ref_suitLocked: "🔒 Unlocks at {n} active friends",
       tab_history: "📜 History", hist_title: "📜 HISTORY FOR {d} DAYS", hist_coins: "🪙 Coins", hist_res: "📦 Resources", hist_market: "📈 Market", hist_gifts: "🎁 Rewards", hist_in: "In", hist_out: "Out", hist_topIn: "Where they came from", hist_topOut: "Where they went", hist_empty: "Nothing here for this period.", hist_bought: "Bought", hist_sold: "Sold", hist_hint: "Kept for 30 days: coins, resources, market deals, rewards and gifts.",
       mk_floorAny: "At least {p} 🪙 per 1 {x} — for sales and buy orders",
       mk_sellTitleAny: "💰 SELL: {x}", mk_bidTitleAny: "🙋 BUY: {x}", mk_qtyAny: "Amount, {x}", mk_limitsAny: "Up to {q} {x} per order, up to {o} open orders", mk_boughtAny: "Bought {q} {x} for {t} 🪙", mk_cancelledAny: "Order cancelled — your goods or frozen coins are back",
@@ -1376,7 +1383,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -1387,18 +1394,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -2386,7 +2401,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -2397,18 +2412,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -3396,7 +3419,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -3407,18 +3430,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -4406,7 +4437,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -4417,18 +4448,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -5416,7 +5455,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -5427,18 +5466,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -6426,7 +6473,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -6437,18 +6484,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -7436,7 +7491,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -7447,18 +7502,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -8446,7 +8509,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -8457,18 +8520,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -9456,7 +9527,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -9467,18 +9538,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -10466,7 +10545,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -10477,18 +10556,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -11476,7 +11563,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -11487,18 +11574,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -12486,7 +12581,7 @@
     "ps_eff_st": "{p}% chance to stay off raiders' scouting lists",
     "ps_eff_sc": "{p}% shorter wait between technology levels",
     "ps_eff_en": "workshop recipes need {p}% fewer resources",
-    "ps_active": "Suit on: {s}, level {n}",
+    "ps_active": "Suit on: {s} · {n}",
     "ps_none": "No full suit on — no bonuses yet.",
     "ps_level": "lvl {n}",
     "ps_empty": "empty",
@@ -12497,18 +12592,26 @@
     "ps_bagEmpty": "Your bag is empty. Suit parts drop in events: expeditions, mine battles and seasonal giveaways.",
     "ps_season": "Parts this season: {got} of {cap}",
     "ps_suits": "📖 SUITS AND BONUSES",
-    "ps_lvl2": "at level 2",
     "ps_upg_el": "Rewind the wiring with copper, sew in grounding and fit a fresh battery — the suit starts catching sparks.",
     "ps_upg_mn": "Stitch the seams with steel thread and pad the elbows with stone — the suit takes a rockfall.",
     "ps_upg_ml": "Weld on plates, fire and temper them — this armour shrugs off an ambush.",
     "ps_upg_st": "Soak the fabric in hydrogen gel and sew on chameleon bark — the suit melts into the background.",
     "ps_upg_sc": "Weave in crystal sensors and run a current — the suit whispers formulas.",
     "ps_upg_en": "Swap the fasteners for precision parts and build in a battery — the suit saves every bolt.",
-    "ps_upgAsk": "Upgrade “{part}” to level 2? Costs: {cost} and {c} 🪙.",
-    "ps_upgDone": "⬆️ Part upgraded to level 2!",
+    "ps_upgAsk": "Upgrade “{part}” to {lv}? Costs: {cost} and {c} 🪙.",
+    "ps_lvlName_1": "Basic",
+    "ps_lvlName_2": "Improved",
+    "ps_lvlName_3": "Legendary",
+    "ps_xp": "Part XP: {x} / {need}",
+    "ps_xpHint": "XP is what the part lived through while worn: game wins, duels, raids, expeditions, crafts, discoveries, quests.",
+    "ps_needTech": "{t} tech level {n} in the Lab",
+    "ps_xpNeed": "XP {n}",
+    "ps_needTitle": "To {lv}:",
+    "ps_maxLvl": "🏆 Legendary — as high as it gets",
+    "ps_upgDone": "⬆️ Part upgraded: {lv}!",
     "ps_exoTitle": "💠 NANO EXO-ARMOUR",
-    "ps_exoText": "A fusion of all six level-2 suits (30 parts): every bonus at once. Fused parts are gone for good.",
-    "ps_exoHave": "Level-2 parts",
+    "ps_exoText": "A fusion of all six Improved suits (30 parts): every bonus at once. Fused parts are gone for good.",
+    "ps_exoHave": "Improved parts",
     "ps_exoGo": "💠 Fuse the armour",
     "ps_exoAsk": "Fuse 30 parts into nano exo-armour? This is permanent.",
     "ps_exoDone": "💠 Nano exo-armour is ready and on!",
@@ -15829,7 +15932,10 @@
       ' L' + (x + 3.5 * k) + ',' + (y + 4.5 * k) + ' h' + (-3 * k) + ' Z" fill="' + EL + '" filter="url(#psGlow)"/>';
     const SC = SUIT_COLOR.sc, coat = SUIT_PAINT.sc.body, trim = (d, w) => '<path d="' + d + '" stroke="' + SC + '" stroke-width="' + (w || 1.2) +
       '" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
-    const glow = slot => (look ? (skLvl || 1) >= 2 : worn[slot] && worn[slot].level >= 2) ? ' filter="url(#psGlow)"' : '';
+    // 2 ур. (Улучшенный) — неоновое свечение, 3 ур. (Легендарный) — золотая кайма; скин — своё свечение по уровню скина
+    const legend = slot => !look && worn[slot] && worn[slot].level >= 3;
+    const glow = slot => legend(slot) ? ' filter="url(#psLeg)"' :
+      (look ? (skLvl || 1) >= 2 : worn[slot] && worn[slot].level >= 2) ? ' filter="url(#psGlow)"' : '';
     const fill = slot => col(slot) || base;
     const P = (d, slot, extra) => '<path d="' + d + '" fill="' + fill(slot) + '" ' + line + glow(slot) + (extra || '') + '/>';
     const m = x => 2 * X - x;   // зеркало для правой стороны
@@ -15962,6 +16068,13 @@
     const SUIT_DECO = { sc: { head: () => scHead(), body: () => scBody(), legs: () => scLegs(), feet: () => scFeet() },
                         el: { head: elHead, body: elBody, hands: elHands, legs: elLegs, feet: elFeet } };
     const deco = slot => { const f = !look && worn[slot] && (SUIT_DECO[worn[slot].suit] || {})[slot]; return f ? f() : ''; };
+    // 🏆 Легендарные детали: рядом мерцают золотые искры (по две на деталь, вразнобой)
+    const SPARK_AT = { head: [[X + hr + 3, 9], [X - hr - 3, 30]], body: [[X + G.sh + 3, 58], [X - G.ch + 4, 96]],
+      hands: [[wristX(-1) - 6, 138], [wristX(1) + 6, 130]], legs: [[X - G.hi - 2, 150], [X + G.hi - 2, 186]], feet: [[X - 23, 222], [X + 23, 214]] };
+    const star = (x, y, delay) => '<path d="M' + x + ',' + (y - 2.6) + ' L' + (x + .7) + ',' + (y - .7) + ' L' + (x + 2.6) + ',' + y + ' L' + (x + .7) + ',' + (y + .7) +
+      ' L' + x + ',' + (y + 2.6) + ' L' + (x - .7) + ',' + (y + .7) + ' L' + (x - 2.6) + ',' + y + ' L' + (x - .7) + ',' + (y - .7) + ' Z" fill="#ffe9a8" opacity="0">' +
+      '<animate attributeName="opacity" values="0;1;0" dur="2.4s" begin="' + delay + 's" repeatCount="indefinite"/></path>';
+    const sparkles = Object.keys(SPARK_AT).filter(legend).map((slot, i) => SPARK_AT[slot].map((pt, j) => star(pt[0], pt[1], (i * .7 + j * 1.2) % 2.4)).join("")).join("");
     // Контур всей фигуры рисуется одним проходом под заливками — стыки рук, ног и туловища закрываются, шва нет
     const OL = "rgba(0,255,225,.55)", F = (d, slot) => '<path d="' + d + '" fill="' + (slot ? fill(slot) : base) + '"' + (slot ? glow(slot) : '') + '/>';
     const neck = 'M' + (X - hr * .42) + ',33 L' + (X - hr * .46) + ',48 L' + (X + hr * .46) + ',48 L' + (X + hr * .42) + ',33 Z';
@@ -15970,6 +16083,9 @@
     return '<svg class="ps-avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 236" aria-hidden="true"><defs><filter id="psGlow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="140" height="256"><feGaussianBlur stdDeviation="' +
       (look ? 1.4 + (skLvl || 1) * .25 : 2) + '" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
       (look ? '<linearGradient id="psSk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + look.c1 + '"/><stop offset="1" stop-color="' + look.c2 + '"/>' + spin + '</linearGradient>' : '') +
+      '<filter id="psLeg" filterUnits="userSpaceOnUse" x="-10" y="-10" width="140" height="256"><feMorphology in="SourceAlpha" operator="dilate" radius=".7" result="d"/>' +
+      '<feFlood flood-color="#ffcf5a"/><feComposite in2="d" operator="in" result="g"/><feGaussianBlur in="g" stdDeviation="1.8" result="b"/>' +
+      '<feMerge><feMergeNode in="b"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
       '</defs>' +
       (gender === "f" ? hair : '') +
       [leg(-1), leg(1), boot(-1), boot(1), neck, arm(-1), arm(1), torso, hand(-1), hand(1), headD].map(d =>
@@ -15991,19 +16107,35 @@
       (deco("head") || (col("head") ? P('M' + (X - hr - 2) + ',25 C' + (X - hr - 2) + ',6 ' + (X + hr + 2) + ',6 ' + (X + hr + 2) + ',25 L' + (X + hr) + ',27 L' + (X + hr) + ',21 ' +
           'L' + (X - hr) + ',21 L' + (X - hr) + ',27 Z', "head") +
         '<rect x="' + (X - hr + 1) + '" y="19.5" width="' + (2 * hr - 2) + '" height="6" rx="2.5" fill="rgba(0,255,225,.5)"/>' : '')) +
+      sparkles +
       '</svg>';
   }
   const effText = (line, pct) => fmt(L["ps_eff_" + line], { p: pct });
+  // Уровни деталей (владелец 31.10): Базовый → Улучшенный → Легендарный; опыт детали — всё, что она пережила надетой
+  const lvlName = n => L["ps_lvlName_" + n] || fmt(L.ps_level, { n: n });
+  const partXp = (d, s, slot, lv) => Object.values((d.history || {})[s + ":" + slot + ":" + lv] || {}).reduce((a, v) => a + (Number(v) || 0), 0);
+  const techNeed = (d, tech) => (((d.tech || {})[tech.id] || 0) >= tech.level ? "✅ " : "🔒 ") +
+    fmt(L.ps_needTech, { t: tech.icon + " " + (L["tech_" + tech.id] || tech.id), n: tech.level });
+  // Что нужно для следующего уровня детали: шкала опыта, ресурсы и монеты, технология
+  function upNeed(d, s, slot, lv) {
+    if (s === d.exo_key) return "";
+    if (lv >= d.max_level) return '<div class="hint">' + L.ps_maxLvl + '</div>';
+    const u = d.upgrade[s][lv + 1], xp = partXp(d, s, slot, lv);
+    return '<div class="ps-need"><div class="hint"><b>' + fmt(L.ps_needTitle, { lv: lvlName(lv + 1) }) + '</b></div>' +
+      '<div class="ps-xp' + (xp >= u.xp ? ' full' : '') + '"><i style="width:' + Math.min(100, xp / u.xp * 100) + '%"></i><span>' +
+      fmt(L.ps_xp, { x: Math.min(xp, u.xp), need: u.xp }) + '</span></div>' +
+      '<div class="hint">' + bundle(u.cost) + ' · ' + num(u.coins) + ' 🪙' + (u.tech ? ' · ' + techNeed(d, u.tech) : '') + '</div></div>';
+  }
   // Ячейки сумки: детали (по уровню) и артефакты; пустые ячейки добивают сетку
   function bagCells(d) {
     const cells = d.bag.map(b => ({ key: "g:" + b.suit + ":" + b.slot + ":" + b.level, icon: SLOT_ICON[b.slot], color: SUIT_COLOR[b.suit],
-      qty: b.qty, lvl: b.level, glow: b.level >= 2 }))
+      qty: b.qty, lvl: b.level, glow: b.level >= 2, leg: b.level >= 3 }))
       .concat(d.arts.map(a => ({ key: "a:" + a.kind, icon: ART_ICON[a.kind], color: SUIT_COLOR[a.kind], qty: a.qty, art: true })));
     const n = Math.max(BAG_CELLS, Math.ceil(cells.length / 6) * 6);
     let html = "";
     for (let i = 0; i < n; i++) {
       const c = cells[i];
-      html += c ? '<button class="ps-cell' + (psPick === c.key ? ' on' : '') + (c.art ? ' art' : '') + (c.glow ? ' glow' : '') + '" style="--sc:' + c.color +
+      html += c ? '<button class="ps-cell' + (psPick === c.key ? ' on' : '') + (c.art ? ' art' : '') + (c.glow ? ' glow' : '') + (c.leg ? ' leg' : '') + '" style="--sc:' + c.color +
         '" data-pick="' + c.key + '"><span>' + c.icon + '</span>' + (c.lvl ? '<i class="lv">' + c.lvl + '</i>' : '') +
         (c.qty > 1 ? '<i class="qt">×' + c.qty + '</i>' : '') + '</button>' : '<span class="ps-cell empty"></span>';
     }
@@ -16025,13 +16157,14 @@
     const [, s, slot, lvl] = p, level = Number(lvl);
     const b = d.bag.find(x => x.suit === s && x.slot === slot && x.level === level);
     if (!b) { psPick = null; return '<div class="hint">' + L.ps_pickHint + '</div>'; }
-    const canUp = s !== d.exo_key && level < 2;
-    return '<div class="ps-pick" style="--sc:' + SUIT_COLOR[s] + '"><b>' + partName(s, slot) + ' · ' + fmt(L.ps_level, { n: level }) + (b.qty > 1 ? ' ×' + b.qty : '') + '</b>' +
+    const canUp = s !== d.exo_key && level < d.max_level, canSell = s !== d.exo_key && level === 1;   // на рынке — только Базовые
+    return '<div class="ps-pick" style="--sc:' + SUIT_COLOR[s] + '"><b>' + partName(s, slot) + ' · ' + lvlName(level) + (b.qty > 1 ? ' ×' + b.qty : '') + '</b>' +
       (s !== d.exo_key ? '<div class="hint">' + fmt(L.ps_partOf, { e: effText(s, d.bonus[s][level]) }) + '</div>' : '') +
       (trophyList((d.history || {})[s + ":" + slot + ":" + level]) || '<div class="hint">' + L.ps_noHist + '</div>') +
+      upNeed(d, s, slot, level) +
       '<div class="ps-sb"><button class="mini" data-wear="' + s + ':' + slot + ':' + level + '">' + L.ps_wear + '</button>' +
-      (canUp ? '<button class="mini ghost" data-up="' + s + ':' + slot + '">⬆️ ' + L.ps_upgrade + '</button>' : '') +
-      (canUp ? '<button class="mini ghost" data-sell="g:' + s + ':' + slot + '">' + L.ps_sell + '</button>' : '') + '</div></div>';
+      (canUp ? '<button class="mini ghost" data-up="' + s + ':' + slot + ':' + level + '">⬆️ ' + L.ps_upgrade + '</button>' : '') +
+      (canSell ? '<button class="mini ghost" data-sell="g:' + s + ':' + slot + '">' + L.ps_sell + '</button>' : '') + '</div></div>';
   }
   async function viewPersona(box) {
     if (psTab === "garage") return viewGarage(box);
@@ -16046,9 +16179,11 @@
       const w = worn[p];
       return '<div class="ps-slot' + (w ? ' on' : '') + '" style="' + (w ? '--sc:' + SUIT_COLOR[w.suit] : '') + '">' +
         '<span class="ps-si">' + SLOT_ICON[p] + '</span><span class="ps-sn"><b>' + L["ps_slot_" + p] + '</b><br><small>' +
-        (w ? suitName(w.suit) + ' · ' + fmt(L.ps_level, { n: w.level }) : L.ps_empty) + '</small>' +
-        (w && d.history ? '<small class="trs">' + trophies(d.history[w.suit + ":" + p + ":" + w.level]) + '</small>' : '') + '</span>' +
-        (w ? '<span class="ps-sb">' + (w.suit !== d.exo_key && w.level < 2 ? '<button class="mini" data-up="' + w.suit + ':' + p + '">⬆️</button>' : '') +
+        (w ? suitName(w.suit) + ' · ' + lvlName(w.level) : L.ps_empty) + '</small>' +
+        (w && d.history ? '<small class="trs">' + trophies(d.history[w.suit + ":" + p + ":" + w.level]) + '</small>' : '') +
+        (w && w.suit !== d.exo_key && w.level < d.max_level ? '<small class="trs">' + fmt(L.ps_xp, { x: Math.min(partXp(d, w.suit, p, w.level),
+          d.upgrade[w.suit][w.level + 1].xp), need: d.upgrade[w.suit][w.level + 1].xp }) + '</small>' : '') + '</span>' +
+        (w ? '<span class="ps-sb">' + (w.suit !== d.exo_key && w.level < d.max_level ? '<button class="mini" data-up="' + w.suit + ':' + p + ':' + w.level + '">⬆️</button>' : '') +
           '<button class="mini ghost" data-off="' + p + '">' + L.ps_off + '</button></span>' : '') + '</div>';
     };
     const belt = '<div class="ps-belt-t">' + L.ps_belt + '</div><div class="ps-belt">' + d.belt_slots.map(s => {
@@ -16057,7 +16192,7 @@
         '<small>' + L.ps_off + '</small></button>' : '<span class="ps-win"><small>' + L.ps_empty + '</small></span>';
     }).join("") + '</div>';
     const effects = Object.entries(cur.effects || {});
-    const activeLine = (cur.suit ? '<b>' + fmt(L.ps_active, { s: suitName(cur.suit), n: cur.level }) + '</b>' : '<div class="hint">' + L.ps_none + '</div>') +
+    const activeLine = (cur.suit ? '<b>' + fmt(L.ps_active, { s: suitName(cur.suit), n: lvlName(cur.level) }) + '</b>' : '<div class="hint">' + L.ps_none + '</div>') +
       (effects.length ? effects.map(([line, pct]) => '<div>• ' + effText(line, pct) + '</div>').join("") : '');
     const head = '<div class="ps-head"><div class="hint">' + L.ps_hint + '</div>' + genderChips + '</div>';
     const figure = '<div class="ps-figure"><div class="ps-col">' + ["head", "body", "hands"].map(slotHtml).join("") + '</div>' +
@@ -16071,9 +16206,12 @@
       (d.bag.length || d.arts.length ? '' : '<div class="hint">' + L.ps_bagEmpty + '</div>');
     // 📖 костюмы, артефакты и цена прокачки
     const suits = d.suits.map(s => '<div class="ps-suit" style="--sc:' + SUIT_COLOR[s] + '"><b>' + suitName(s) + '</b>' +
-      '<div class="hint">' + effText(s, d.bonus[s][1]) + ' · ' + L.ps_lvl2 + ': ' + d.bonus[s][2] + '%</div>' +
+      '<div class="hint">' + effText(s, d.bonus[s][1]) + '</div>' +
+      '<div class="hint">' + Object.keys(d.bonus[s]).map(n => lvlName(n) + ' ' + d.bonus[s][n] + '%').join(' → ') + '</div>' +
       '<div class="hint"><i>' + L["ps_upg_" + s] + '</i></div>' +
-      '<div class="hint">⬆️ ' + bundle(d.upgrade[s].cost) + ' · ' + num(d.upgrade[s].coins) + ' 🪙</div></div>').join("");
+      Object.keys(d.upgrade[s]).map(n => { const u = d.upgrade[s][n];
+        return '<div class="hint">⬆️ <b>' + lvlName(n) + '</b>: ' + bundle(u.cost) + ' · ' + num(u.coins) + ' 🪙 · ' + fmt(L.ps_xpNeed, { n: u.xp }) +
+          (u.tech ? ' · ' + techNeed(d, u.tech) : '') + '</div>'; }).join("") + '</div>').join("") + '<div class="hint">🏆 ' + L.ps_xpHint + '</div>';
     const arts = '<div class="hint">' + L.ps_artsText + '</div>' + d.suits.map(k => '<div class="ps-suit" style="--sc:' + SUIT_COLOR[k] + '"><b>' + artName(k) + '</b>' +
       '<div class="hint">+ ' + effText(k, d.art_bonus[k]) + '</div></div>').join("");
     const exo = '<div class="hint">' + L.ps_exoText + '</div>' + row(L.ps_exoHave, d.exo.have + ' / ' + d.exo.need) +
@@ -16118,9 +16256,9 @@
       else if (b.dataset.art) { psPick = null; act(b, "/api/gear/art", { kind: b.dataset.art }, done(null)); }
       else if (b.dataset.off) act(b, "/api/gear/unequip", { slot: b.dataset.off }, done(null));
       else if (b.dataset.up) {
-        const [s, p] = b.dataset.up.split(":"), u = d.upgrade[s];
-        askConfirm(fmt(L.ps_upgAsk, { part: partName(s, p), cost: bundle(u.cost), c: num(u.coins) }),
-          () => act(b, "/api/gear/upgrade", { suit: s, slot: p }, done(L.ps_upgDone)));
+        const [s, p, lv] = b.dataset.up.split(":"), from = Number(lv), u = d.upgrade[s][from + 1], to = lvlName(from + 1);
+        askConfirm(fmt(L.ps_upgAsk, { part: partName(s, p), lv: to, cost: bundle(u.cost), c: num(u.coins) }),
+          () => act(b, "/api/gear/upgrade", { suit: s, slot: p, level: from }, done(fmt(L.ps_upgDone, { lv: to }))));
       }
       else if (b.dataset.sell) { psSell = b.dataset.sell; redraw(); }
       else if (b.dataset.buy) act(b, "/api/market/fill", { order_id: Number(b.dataset.buy), qty: 1 }, done(L.ps_bought));
