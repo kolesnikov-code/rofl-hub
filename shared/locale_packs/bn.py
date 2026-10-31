@@ -1269,6 +1269,8 @@ MINIAPP = {
     "ps_seasonArt": "artifacts: {got} of {cap}",
     "ps_upgrade": "Upgrade",
     "ps_partOf": "Full suit: {e}.",
+    "ps_artsActive": "💠 বেল্টে আর্টিফ্যাক্ট:",
+    "ps_sellHow": "যন্ত্রাংশ বা আর্টিফ্যাক্ট বিক্রি করতে ওপরের ব্যাগে সেটিতে চাপুন → «বিক্রি»। শুধু বেসিক স্তরের যন্ত্রাংশ বিক্রিতে দেওয়া যায়।",
     "ps_artGives": "On the belt: {e}. Stacks with your suit.",
     "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
     "ps_belt": "BELT",

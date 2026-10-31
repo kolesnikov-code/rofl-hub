@@ -1269,6 +1269,8 @@ MINIAPP = {
     "ps_seasonArt": "artifacts: {got} of {cap}",
     "ps_upgrade": "Upgrade",
     "ps_partOf": "Full suit: {e}.",
+    "ps_artsActive": "💠 Artefak di sabuk:",
+    "ps_sellHow": "Untuk menjual bagian atau artefak, ketuk di tas di atas → «Jual». Hanya bagian tingkat Dasar yang bisa dijual.",
     "ps_artGives": "On the belt: {e}. Stacks with your suit.",
     "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
     "ps_belt": "BELT",

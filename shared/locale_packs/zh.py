@@ -1264,6 +1264,8 @@ MINIAPP = {
     "ps_seasonArt": "artifacts: {got} of {cap}",
     "ps_upgrade": "Upgrade",
     "ps_partOf": "Full suit: {e}.",
+    "ps_artsActive": "💠 腰带上的神器：",
+    "ps_sellHow": "出售部件或神器：在上方背包中点击它 →「出售」。只有基础级部件可以上架。",
     "ps_artGives": "On the belt: {e}. Stacks with your suit.",
     "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
     "ps_belt": "BELT",

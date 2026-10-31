@@ -1268,6 +1268,8 @@ MINIAPP = {
     "ps_seasonArt": "artifacts: {got} of {cap}",
     "ps_upgrade": "Upgrade",
     "ps_partOf": "Full suit: {e}.",
+    "ps_artsActive": "💠 Artefacts à la ceinture :",
+    "ps_sellHow": "Pour vendre une pièce ou un artefact, touche-le dans le sac ci-dessus → « Vendre ». Seules les pièces de niveau Basique peuvent être mises en vente.",
     "ps_artGives": "On the belt: {e}. Stacks with your suit.",
     "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
     "ps_belt": "BELT",

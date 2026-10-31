@@ -1266,6 +1266,8 @@ MINIAPP: dict[str, str] = {
     "ps_seasonArt": "artifacts: {got} of {cap}",
     "ps_upgrade": "Upgrade",
     "ps_partOf": "Full suit: {e}.",
+    "ps_artsActive": "💠 Artefakty na pasie:",
+    "ps_sellHow": "Aby sprzedać część lub artefakt, dotknij go w torbie powyżej → „Sprzedaj”. Wystawić można tylko części poziomu Podstawowego.",
     "ps_artGives": "On the belt: {e}. Stacks with your suit.",
     "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
     "ps_belt": "BELT",

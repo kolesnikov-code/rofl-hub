@@ -1273,6 +1273,8 @@ MINIAPP: dict[str, str] = {
     "ps_seasonArt": "artifacts: {got} of {cap}",
     "ps_upgrade": "Upgrade",
     "ps_partOf": "Full suit: {e}.",
+    "ps_artsActive": "💠 बेल्ट पर आर्टिफ़ैक्ट:",
+    "ps_sellHow": "पुर्ज़ा या आर्टिफ़ैक्ट बेचने के लिए ऊपर बैग में उस पर टैप करें → «बेचें»। सिर्फ़ बेसिक स्तर के पुर्ज़े बिक्री पर रखे जा सकते हैं।",
     "ps_artGives": "On the belt: {e}. Stacks with your suit.",
     "ps_pickHint": "Tap a bag cell to see what it is and what you can do with it.",
     "ps_belt": "BELT",
