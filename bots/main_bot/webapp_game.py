@@ -558,7 +558,7 @@ def build_tech_payload(state: dict, stock: dict, now, cut_pct: int = 0) -> dict:
     for key in TECH_ORDER:
         level = state[key]["level"]
         nxt = level + 1 if level < TECHS[key]["max"] else None
-        ready = next_tech_at(key, level, state[key]["updated_at"], cut_pct)
+        ready = next_tech_at(key, level, state[key]["updated_at"], max(cut_pct, state[key].get("cut", 0)))
         cost = tech_cost(key, nxt) if nxt else {}
         tool = tech_tool_required(key, nxt) if nxt else 0
         wait = int((ready - now).total_seconds()) if ready and ready > now else 0

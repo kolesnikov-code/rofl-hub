@@ -572,6 +572,8 @@ SCHEMA_STATEMENTS: list[str] = [
     );
     """,
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS horses INT NOT NULL DEFAULT 0;",
+    # 31.10, решение владельца: бонус костюма закрепляется В МОМЕНТ действия — снял костюм, выгода остаётся
+    "ALTER TABLE user_tech ADD COLUMN IF NOT EXISTS cd_cut SMALLINT NOT NULL DEFAULT 0;",   # 🔬 перерыв короче на N%
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS carts INT NOT NULL DEFAULT 0;",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS meds_until TIMESTAMP WITH TIME ZONE;",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS shuttle_until TIMESTAMP WITH TIME ZONE;",
@@ -767,6 +769,7 @@ SCHEMA_STATEMENTS: list[str] = [
     "CREATE UNIQUE INDEX IF NOT EXISTS expeditions_solo_uq ON expeditions (target_id, user_id) WHERE mode = 'solo';",
     "CREATE UNIQUE INDEX IF NOT EXISTS expeditions_team_uq ON expeditions (target_id, team_id) WHERE mode <> 'solo';",
     "CREATE INDEX IF NOT EXISTS expeditions_target_idx ON expeditions (target_id, status);",
+    "ALTER TABLE expeditions ADD COLUMN IF NOT EXISTS suit_pct SMALLINT NOT NULL DEFAULT 0;",   # 🪖 бонус военного при выходе (31.10)
     """
     CREATE TABLE IF NOT EXISTS expedition_members (
         expedition_id BIGINT NOT NULL,

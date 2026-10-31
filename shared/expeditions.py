@@ -228,6 +228,8 @@ async def resolve_due_forks(conn, exp_id: int, now: datetime) -> dict | None:
         option, count = decide([(v["option"], v["created_at"]) for v in votes], len(event["options"]))
         if effects is None:
             effects = await squad_effects(conn, exp["mode"], exp["user_id"], exp["team_id"])
+            # 🪖 бонус военного, бывший при выходе, остаётся на весь поход (снял костюм в пути — не потерял)
+            effects["suit"] = max(effects.get("suit", 0), exp.get("suit_pct") or 0)
         cargo, delay = ((exp["cargo"], 0) if option == PASS_OPTION
                         else apply_option(exp["cargo"], event["options"][option], effects))
         moment = max([open_at] + [v["created_at"] for v in votes]) if early else close_at
@@ -276,7 +278,8 @@ async def _depart(conn, exp_id: int, target, mode: str, ox: float, oy: float, us
         raise ExpError("exp.err_late")
     arrive = now + timedelta(minutes=minutes)
     await conn.execute("UPDATE expeditions SET status = 'marching', departed_at = $2, planned_minutes = $3, "
-                       "arrive_at = $4 WHERE id = $1", exp_id, now, minutes, arrive)
+                       "arrive_at = $4, suit_pct = $5 WHERE id = $1", exp_id, now, minutes, arrive,
+                       int(effects.get("suit", 0)))
     logger.info("[EXP] отряд %s вышел к цели %s (%s), путь %s мин", exp_id, target["id"], mode, minutes)
     return {"expedition_id": exp_id, "departed": True, "minutes": minutes, "arrive_at": arrive.isoformat()}
 

@@ -1821,6 +1821,16 @@ async def test_lab_tools_tech_tool_gate_and_cooldown(conn):
     assert e.value.key == "tech.err_unknown"
     state = await get_tech(conn, 1400)
     assert state["attack"]["level"] == 2 and state["tools"]["level"] == 1 and state["science"]["level"] == 0
+    # 🔬 31.10: изучил в костюме учёного и снял — перерыв остаётся коротким (скидка закреплена в user_tech.cd_cut)
+    await _mk_user(conn, 1401, 0)
+    await conn.execute("INSERT INTO user_tech (user_id, tech, level) VALUES (1401, 'tools', 1)")
+    await grant_bundle(conn, 1401, {"metal": 400, "crystal": 400, "parts": 400, "energy": 400, "hydrogen": 400}, "test")
+    await conn.execute("UPDATE users SET suit = 'sc', suit_level = 1 WHERE user_id = 1401")
+    assert await upgrade_tech(conn, 1401, "defense", now) == 1
+    await conn.execute("UPDATE users SET suit = NULL, suit_level = 0 WHERE user_id = 1401")
+    assert (await get_tech(conn, 1401))["defense"]["cut"] > 0
+    cut_days = tech_cooldown_days("defense", 1) * 0.85   # раньше 30 дней, позже скидки учёного 1 ур.
+    assert await upgrade_tech(conn, 1401, "defense", now + timedelta(days=cut_days)) == 2
 
 
 async def test_horses_carts_and_market_lots(conn):

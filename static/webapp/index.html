@@ -379,7 +379,8 @@
     background: repeating-linear-gradient(0deg, #0a0f1e 0 2px, #0d1326 2px 4px); border: 1px solid rgba(138,147,184,.3); }
   .ps-cell { aspect-ratio: 1; position: relative; border-radius: 6px; border: 1px solid rgba(138,147,184,.22); background: rgba(20,26,46,.9);
     display: flex; align-items: center; justify-content: center; font-size: 22px; padding: 0; color: var(--text); }
-  button.ps-cell { cursor: pointer; border-color: var(--sc); box-shadow: inset 0 -3px 0 var(--sc); }
+  button.ps-cell { cursor: pointer; border: 2px solid var(--sc); box-shadow: inset 0 -3px 0 var(--sc);
+                   background: rgba(20,26,46,.9); background: color-mix(in srgb, var(--sc) 24%, #141a2e); }
   .ps-cell.art { border-radius: 50%; }
   .ps-cell.glow { box-shadow: inset 0 -3px 0 var(--sc), 0 0 9px var(--sc); }
   /* 🏆 Легендарная деталь — золотая кайма поверх цвета костюма */
@@ -393,7 +394,8 @@
   .ps-cell.empty { border-style: dashed; opacity: .45; }
   .ps-cell .lv { position: absolute; left: 3px; top: 1px; font-size: 9px; font-style: normal; color: var(--sc); font-weight: 800; }
   .ps-cell .qt { position: absolute; right: 3px; bottom: 1px; font-size: 10px; font-style: normal; font-weight: 800; }
-  .ps-pick { padding: 10px; border-radius: 12px; border: 1px solid var(--sc); background: rgba(13,19,38,.7); font-size: 13px; }
+  .ps-pick { padding: 10px; border-radius: 12px; border: 2px solid var(--sc); background: rgba(13,19,38,.7);
+             background: color-mix(in srgb, var(--sc) 14%, #0d1326); font-size: 13px; }
   .ps-pick .ps-sb { margin-top: 6px; flex-wrap: wrap; }
   .gift-card { border-color: rgba(255,217,61,.55); box-shadow: 0 0 22px rgba(255,217,61,.18); }
   .gift-card h2 { color: var(--accent); }
@@ -401,7 +403,8 @@
   .gift-row .mini { margin-top: 0; background: linear-gradient(90deg, var(--accent), #ff9d3d); }
   .ps-slot, .ps-item { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 12px;
     background: rgba(13,19,38,.7); border: 1px solid rgba(138,147,184,.25); font-size: 13px; }
-  .ps-slot.on, .ps-item { border-color: var(--sc, rgba(0,255,225,.3)); box-shadow: inset 3px 0 0 var(--sc, transparent); }
+  .ps-slot.on, .ps-item { border-color: var(--sc, rgba(0,255,225,.3)); box-shadow: inset 4px 0 0 var(--sc, transparent); }
+  .ps-slot.on { border-width: 2px; background: color-mix(in srgb, var(--sc) 14%, #0d1326); }
   .ps-item { justify-content: space-between; margin-bottom: 6px; }
   .ps-si { font-size: 20px; flex: 0 0 auto; }
   .ps-sn { flex: 1 1 auto; min-width: 0; }
@@ -3771,6 +3774,9 @@
   // Сумка — сетка ячеек; под аватаром — пояс из трёх окошек для артефактов (рисунок и названия — свои).
   const SLOT_ICON = { head: "⛑", body: "🦺", hands: "🧤", legs: "👖", feet: "🥾" };
   const SUIT_COLOR = { el: "#ffd23f", mn: "#d68a3a", ml: "#6fae4f", st: "#7a7fa8", sc: "#3fd0ea", en: "#ff8a4c", exo: "#b77bff" };
+  // Рамки и подсветка карточек деталей (владелец 31.10: «с болезнью глаз сложно отличать цвета») — шесть чистых, далёких
+  // друг от друга цветов: жёлтый, красный, зелёный, фиолетовый, синий, оранжевый. Рисунок аватара красится SUIT_COLOR.
+  const GEAR_UI = { el: "#ffe100", mn: "#ff3344", ml: "#22e04a", st: "#b44dff", sc: "#2f7bff", en: "#ff8a00", exo: "#ff4fd8" };
   // Костюмы с собственным рисунком (владелец 31.10: «попроще, но своё») — цвет каждой детали; остальные пока красятся SUIT_COLOR
   const SUIT_PAINT = { sc: { head: "#e9f1ff", body: "#e9f1ff", hands: "#39cde6", legs: "#26355f", feet: "#e9f1ff" },
                        el: { head: "#ffd23f", body: "#2b3048", hands: "#ffd23f", legs: "#2b3048", feet: "#1f2336" } };
@@ -3994,9 +4000,9 @@
   }
   // Ячейки сумки: детали (по уровню) и артефакты; пустые ячейки добивают сетку
   function bagCells(d) {
-    const cells = d.bag.map(b => ({ key: "g:" + b.suit + ":" + b.slot + ":" + b.level, icon: SLOT_ICON[b.slot], color: SUIT_COLOR[b.suit],
+    const cells = d.bag.map(b => ({ key: "g:" + b.suit + ":" + b.slot + ":" + b.level, icon: SLOT_ICON[b.slot], color: GEAR_UI[b.suit],
       qty: b.qty, lvl: b.level, glow: b.level >= 2, leg: b.level >= 3 }))
-      .concat(d.arts.map(a => ({ key: "a:" + a.kind, icon: ART_ICON[a.kind], color: SUIT_COLOR[a.kind], qty: a.qty, art: true })));
+      .concat(d.arts.map(a => ({ key: "a:" + a.kind, icon: ART_ICON[a.kind], color: GEAR_UI[a.kind], qty: a.qty, art: true })));
     const n = Math.max(BAG_CELLS, Math.ceil(cells.length / 6) * 6);
     let html = "";
     for (let i = 0; i < n; i++) {
@@ -4015,7 +4021,7 @@
     if (p[0] === "a") {
       const a = d.arts.find(x => x.kind === p[1]);
       if (!a) { psPick = null; return '<div class="hint">' + L.ps_pickHint + '</div>'; }
-      return '<div class="ps-pick" style="--sc:' + SUIT_COLOR[p[1]] + '"><b>' + artName(p[1]) + (a.qty > 1 ? ' ×' + a.qty : '') + '</b>' +
+      return '<div class="ps-pick" style="--sc:' + GEAR_UI[p[1]] + '"><b>' + artName(p[1]) + (a.qty > 1 ? ' ×' + a.qty : '') + '</b>' +
         '<div class="hint">' + fmt(L.ps_artGives, { e: effText(p[1], d.art_bonus[p[1]]) }) + '</div>' +
         '<div class="ps-sb"><button class="mini" data-art="' + p[1] + '">' + L.ps_wear + '</button>' +
         '<button class="mini ghost" data-sell="a:' + p[1] + '">' + L.ps_sell + '</button></div></div>';
@@ -4024,7 +4030,7 @@
     const b = d.bag.find(x => x.suit === s && x.slot === slot && x.level === level);
     if (!b) { psPick = null; return '<div class="hint">' + L.ps_pickHint + '</div>'; }
     const canUp = s !== d.exo_key && level < d.max_level, canSell = s !== d.exo_key && level === 1;   // на рынке — только Базовые
-    return '<div class="ps-pick" style="--sc:' + SUIT_COLOR[s] + '"><b>' + partName(s, slot) + ' · ' + lvlName(level) + (b.qty > 1 ? ' ×' + b.qty : '') + '</b>' +
+    return '<div class="ps-pick" style="--sc:' + GEAR_UI[s] + '"><b>' + partName(s, slot) + ' · ' + lvlName(level) + (b.qty > 1 ? ' ×' + b.qty : '') + '</b>' +
       (s !== d.exo_key ? '<div class="hint">' + fmt(L.ps_partOf, { e: effText(s, d.bonus[s][level]) }) + '</div>' : '') +
       (trophyList((d.history || {})[s + ":" + slot + ":" + level]) || '<div class="hint">' + L.ps_noHist + '</div>') +
       upNeed(d, s, slot, level) +
@@ -4043,7 +4049,7 @@
       '<button class="chip' + (d.gender === g ? ' on' : '') + '" data-g="' + g + '">' + L["ps_" + g] + '</button>').join("") + '</div>';
     const slotHtml = p => {
       const w = worn[p];
-      return '<div class="ps-slot' + (w ? ' on' : '') + '" style="' + (w ? '--sc:' + SUIT_COLOR[w.suit] : '') + '">' +
+      return '<div class="ps-slot' + (w ? ' on' : '') + '" style="' + (w ? '--sc:' + GEAR_UI[w.suit] : '') + '">' +
         '<span class="ps-si">' + SLOT_ICON[p] + '</span><span class="ps-sn"><b>' + L["ps_slot_" + p] + '</b><br><small>' +
         (w ? suitName(w.suit) + ' · ' + lvlName(w.level) : L.ps_empty) + '</small>' +
         (w && d.history ? '<small class="trs">' + trophies(d.history[w.suit + ":" + p + ":" + w.level]) + '</small>' : '') +
@@ -4054,7 +4060,7 @@
     };
     const belt = '<div class="ps-belt-t">' + L.ps_belt + '</div><div class="ps-belt">' + d.belt_slots.map(s => {
       const k = d.belt[s];
-      return k ? '<button class="ps-win on" style="--sc:' + SUIT_COLOR[k] + '" data-off="' + s + '" title="' + esc(L["ps_art_" + k]) + '"><span>' + ART_ICON[k] + '</span>' +
+      return k ? '<button class="ps-win on" style="--sc:' + GEAR_UI[k] + '" data-off="' + s + '" title="' + esc(L["ps_art_" + k]) + '"><span>' + ART_ICON[k] + '</span>' +
         '<small>' + L.ps_off + '</small></button>' : '<span class="ps-win"><small>' + L.ps_empty + '</small></span>';
     }).join("") + '</div>';
     const effects = Object.entries(cur.effects || {});
@@ -4071,14 +4077,14 @@
       bagCells(d) + '<div id="psPickBox">' + pickPanel(d) + '</div>' +
       (d.bag.length || d.arts.length ? '' : '<div class="hint">' + L.ps_bagEmpty + '</div>');
     // 📖 костюмы, артефакты и цена прокачки
-    const suits = d.suits.map(s => '<div class="ps-suit" style="--sc:' + SUIT_COLOR[s] + '"><b>' + suitName(s) + '</b>' +
+    const suits = d.suits.map(s => '<div class="ps-suit" style="--sc:' + GEAR_UI[s] + '"><b>' + suitName(s) + '</b>' +
       '<div class="hint">' + effText(s, d.bonus[s][1]) + '</div>' +
       '<div class="hint">' + Object.keys(d.bonus[s]).map(n => lvlName(n) + ' ' + d.bonus[s][n] + '%').join(' → ') + '</div>' +
       '<div class="hint"><i>' + L["ps_upg_" + s] + '</i></div>' +
       Object.keys(d.upgrade[s]).map(n => { const u = d.upgrade[s][n];
         return '<div class="hint">⬆️ <b>' + lvlName(n) + '</b>: ' + bundle(u.cost) + ' · ' + num(u.coins) + ' 🪙 · ' + fmt(L.ps_xpNeed, { n: u.xp }) +
           (u.tech ? ' · ' + techNeed(d, u.tech) : '') + '</div>'; }).join("") + '</div>').join("") + '<div class="hint">🏆 ' + L.ps_xpHint + '</div>';
-    const arts = '<div class="hint">' + L.ps_artsText + '</div>' + d.suits.map(k => '<div class="ps-suit" style="--sc:' + SUIT_COLOR[k] + '"><b>' + artName(k) + '</b>' +
+    const arts = '<div class="hint">' + L.ps_artsText + '</div>' + d.suits.map(k => '<div class="ps-suit" style="--sc:' + GEAR_UI[k] + '"><b>' + artName(k) + '</b>' +
       '<div class="hint">+ ' + effText(k, d.art_bonus[k]) + '</div></div>').join("");
     const exo = '<div class="hint">' + L.ps_exoText + '</div>' + row(L.ps_exoHave, d.exo.have + ' / ' + d.exo.need) +
       '<div class="hint">' + bundle(d.exo.cost) + ' · ' + num(d.exo.coins) + ' 🪙</div>' +
@@ -4086,7 +4092,7 @@
     // 🏷 рынок деталей и артефактов
     const mk = d.market;
     const lotName = o => o.art ? artName(o.art) : partName(o.suit, o.slot);
-    const lotColor = o => SUIT_COLOR[o.art || o.suit];
+    const lotColor = o => GEAR_UI[o.art || o.suit];
     const asks = mk.asks.map(o => '<div class="ps-item" style="--sc:' + lotColor(o) + '"><span>' + lotName(o) +
       (o.qty > 1 ? ' ×' + o.qty : '') + '</span><button class="mini" data-buy="' + o.id + '">' + fmt(L.ps_buy, { p: num(o.price) }) + '</button></div>');
     const mine = mk.mine.map(o => '<div class="ps-item"><span>' + lotName(o) + ' ×' + o.qty + ' · ' + num(o.price) + ' 🪙</span>' +
@@ -4101,7 +4107,7 @@
         '<label class="hint">' + L.ps_qty + '</label><input id="psQty" type="number" min="1" max="' + Math.min(mk.max_qty, own ? own.qty : 1) + '" value="1">' +
         '<div class="two"><button class="btn" id="psSellGo">' + L.ps_sellGo + '</button><button class="btn ghost" id="psSellX">✕</button></div></div>';
     }
-    box.innerHTML = psSwitch() + card(L.ps_title, head + figure + '<div class="ps-active"' + (cur.suit ? ' style="--sc:' + SUIT_COLOR[cur.suit] + '"' : '') + '>' + activeLine + '</div>') +
+    box.innerHTML = psSwitch() + card(L.ps_title, head + figure + '<div class="ps-active"' + (cur.suit ? ' style="--sc:' + GEAR_UI[cur.suit] + '"' : '') + '>' + activeLine + '</div>') +
       card(L.ps_bag, bag) +
       card(L.ps_market, '<div class="hint">' + fmt(L.ps_marketHint, { min: num(mk.min_price), amin: num(mk.art_min_price), fee: mk.fee }) + '</div>' + sellForm +
         (mine ? '<div class="sub2">' + L.ps_myLots + '</div>' + mine : '') +

@@ -32,11 +32,12 @@ class TechError(Exception):
 
 
 async def get_tech(conn, user_id: int) -> dict[str, dict]:
-    """{tech: {"level", "updated_at"}} для всех технологий и инструментов (нули тоже)."""
-    rows = await conn.fetch("SELECT tech, level, updated_at FROM user_tech WHERE user_id = $1", user_id)
-    out = {k: {"level": 0, "updated_at": None} for k in (*TECH_ORDER, "tools")}
+    """{tech: {"level", "updated_at", "cut"}} для всех технологий и инструментов (нули тоже).
+    cut — скидка перерыва 🔬, закреплённая в момент изучения уровня (костюм потом можно снять)."""
+    rows = await conn.fetch("SELECT tech, level, updated_at, cd_cut FROM user_tech WHERE user_id = $1", user_id)
+    out = {k: {"level": 0, "updated_at": None, "cut": 0} for k in (*TECH_ORDER, "tools")}
     for r in rows:
-        out[r["tech"]] = {"level": r["level"], "updated_at": r["updated_at"]}
+        out[r["tech"]] = {"level": r["level"], "updated_at": r["updated_at"], "cut": r["cd_cut"] or 0}
     return out
 
 
@@ -58,11 +59,12 @@ async def _spend(conn, user_id: int, cost: dict, reason: str) -> None:
         raise TechError("ws.err_resources", need=e.need, have=e.have, kind=RESOURCE_ICONS[e.kind]) from e
 
 
-async def _set_level(conn, user_id: int, tech: str, level: int, now: datetime) -> None:
+async def _set_level(conn, user_id: int, tech: str, level: int, now: datetime, cut: int = 0) -> None:
     await conn.execute(
-        """INSERT INTO user_tech (user_id, tech, level, updated_at) VALUES ($1, $2, $3, $4)
-           ON CONFLICT (user_id, tech) DO UPDATE SET level = EXCLUDED.level, updated_at = EXCLUDED.updated_at""",
-        user_id, tech, level, now)
+        """INSERT INTO user_tech (user_id, tech, level, updated_at, cd_cut) VALUES ($1, $2, $3, $4, $5)
+           ON CONFLICT (user_id, tech) DO UPDATE SET level = EXCLUDED.level, updated_at = EXCLUDED.updated_at,
+                                                     cd_cut = EXCLUDED.cd_cut""",
+        user_id, tech, level, now, cut)
 
 
 async def upgrade_tools(conn, user_id: int, now: datetime) -> int:
@@ -92,12 +94,13 @@ async def upgrade_tech(conn, user_id: int, tech: str, now: datetime) -> int:
     need_tool = tech_tool_required(tech, level + 1)
     if state["tools"]["level"] < need_tool:
         raise TechError("tech.err_tool", tool=need_tool)
-    ready = next_tech_at(tech, level, state[tech]["updated_at"],
-                         user_bonus(user, "sc"))
+    cut = user_bonus(user, "sc")
+    # перерыв — по лучшей скидке: закреплённой при прошлом изучении или костюму, надетому сейчас
+    ready = next_tech_at(tech, level, state[tech]["updated_at"], max(cut, state[tech]["cut"]))
     if ready is not None and ready > now:
         raise TechError("tech.err_cooldown", hours=max(1, -(-int((ready - now).total_seconds()) // 3600)))
     await _spend(conn, user_id, tech_cost(tech, level + 1), f"tech:{tech}:{level + 1}")
-    await _set_level(conn, user_id, tech, level + 1, now)
+    await _set_level(conn, user_id, tech, level + 1, now, cut)
     from shared.trophies import record
     await record(conn, user_id, "tech")   # 🏆 открытие в Лаборатории
     return level + 1
