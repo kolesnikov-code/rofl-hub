@@ -16,6 +16,7 @@ from typing import Awaitable, Callable
 from shared.economy import (
     INTERN_UPGRADE_REFERRALS,
     MINER_LICENSE_DAYS,
+    TEAM_MAX_MEMBERS,
     extend_expiry,
     extend_expiry_hours,
     permanent_expiry,
@@ -98,6 +99,8 @@ async def _deliver_clan_upgrade(conn, user_id: int, order: dict, now: datetime, 
         raise DeliveryError(t(lang, "dlv.err_no_team"))
     if team["max_members"] >= order["max_members"]:
         raise DeliveryError(t(lang, "dlv.err_mega"))
+    if team["max_members"] < TEAM_MAX_MEMBERS:   # отряд сначала расширяется до команды за монеты (сжигание против инфляции)
+        raise DeliveryError(t(lang, "dlv.err_need_team"))
     await conn.execute("UPDATE teams SET max_members = $1 WHERE team_id = $2",
                        order["max_members"], team["team_id"])
     return t(lang, "dlv.clan", max=order["max_members"])

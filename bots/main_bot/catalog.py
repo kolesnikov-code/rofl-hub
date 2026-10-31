@@ -182,9 +182,9 @@ SHOP_INFO: list[dict[str, str]] = [
      "title_en": "💰 Coin packs · 5,000 – 100,000 🪙",
      "text_en": "Coins straight to your balance: high-stake duels, the market, your own team, the Shuttle. Bigger pack — better rate."},
     {"cat": "games", "title": "🏆 Мега-Клан · 2499 ★",
-     "text": "Расширяет команду до 1000 мест: больше бойцов в битвах и быстрее растёт станция команды. Покупает капитан.",
+     "text": "Расширяет команду до 1000 мест: больше бойцов в битвах и быстрее растёт станция команды. Покупает капитан команды (отряд сначала расширяется до команды за монеты).",
      "title_en": "🏆 Mega-Clan · 2499 ★",
-     "text_en": "Expands your team to 1000 seats: more fighters in battles and a faster-growing team station. Bought by the captain."},
+     "text_en": "Expands your team to 1000 seats: more fighters in battles and a faster-growing team station. Bought by the team captain (a squad first expands into a team for coins)."},
 ]
 
 

@@ -27,7 +27,7 @@ from shared.analytics import track
 from shared.database import db
 from shared.feature_flags import get_flag
 from shared.delivery import DeliveryError, already_delivered, deliver_order, qualified_referrals_count
-from shared.economy import INTERN_UPGRADE_REFERRALS
+from shared.economy import INTERN_UPGRADE_REFERRALS, TEAM_MAX_MEMBERS
 from shared.farm_logic import apply_lazy_farm
 from shared.locales import t
 
@@ -43,32 +43,33 @@ async def _load_order_for_user(conn, user_id: int, payload: str) -> dict:
     return build_order(payload, current_capacity=row["fridge_capacity"])
 
 
-async def _precheck_deliverable(conn, user_id: int, order: dict) -> str | None:
-    """Возвращает текст ошибки, если товар сейчас нельзя выдать, иначе None."""
+async def _precheck_deliverable(conn, user_id: int, order: dict, lang: str = "ru") -> str | None:
+    """Возвращает текст ошибки (на языке игрока), если товар сейчас нельзя выдать, иначе None."""
     if order["type"] == "clan_upgrade":
         team = await conn.fetchrow("SELECT max_members FROM teams WHERE captain_id = $1", user_id)
         if not team:
-            return "Мега-Клан можно купить только капитану уже созданной команды. Сначала /create_team."
+            return t(lang, "dlv.err_no_team")
         if team["max_members"] >= order["max_members"]:
-            return "Твоя команда уже имеет статус Мега-Клана."
+            return t(lang, "dlv.err_mega")
+        if team["max_members"] < TEAM_MAX_MEMBERS:   # отряд — сначала до команды за монеты
+            return t(lang, "dlv.err_need_team")
     if order["type"] == "season_pass":   # 🎟 уже куплен — денег не берём
         if await conn.fetchval("SELECT premium FROM season_pass WHERE user_id = $1 AND season = $2",
                                user_id, order["season"]):
-            return "Пропуск этого сезона у тебя уже есть."
+            return t(lang, "dlv.err_pass_owned")
     if order["type"] == "skin":   # ✨ тираж кончился — денег не берём
         from shared.skins import SKINS, minted
         edition = SKINS[order["skin"]].get("edition")
         if edition and await minted(conn, order["skin"]) >= edition:
-            return "Тираж этого скина закончился."
+            return t(lang, "dlv.err_skin_sold")
     if order["type"] == "intern_upgrade":
         has_intern = await conn.fetchval(
             "SELECT 1 FROM miners WHERE user_id = $1 AND kind = 'intern' LIMIT 1", user_id)
         if not has_intern:
-            return "Сначала активируй Робота Стажёра в /farm — апгрейдить пока некого."
+            return t(lang, "dlv.err_no_intern")
         have = await qualified_referrals_count(conn, user_id)
         if have < INTERN_UPGRADE_REFERRALS:
-            return (f"Для вечного Майнера нужно {INTERN_UPGRADE_REFERRALS} активных друга "
-                    f"(у тебя {have}). Условия и ссылка — в /invite.")
+            return t(lang, "dlv.err_intern_refs", need=INTERN_UPGRADE_REFERRALS, have=have)
     return None
 
 
@@ -107,7 +108,7 @@ async def process_shop_purchase_intent(callback: types.CallbackQuery, bot: Bot, 
         except CatalogError as e:
             await callback.answer(str(e), show_alert=True)
             return
-        problem = await _precheck_deliverable(conn, user_id, order)
+        problem = await _precheck_deliverable(conn, user_id, order, user_lang)
 
     if problem:
         await callback.answer(problem, show_alert=True)
@@ -150,18 +151,18 @@ async def cmd_paysupport(message: types.Message, user_lang: str = "ru"):
 # 2. Pre-checkout: последняя проверка перед списанием Stars
 # ============================================================================
 @router.pre_checkout_query()
-async def process_pre_checkout_query(pre_checkout_query: PreCheckoutQuery):
+async def process_pre_checkout_query(pre_checkout_query: PreCheckoutQuery, user_lang: str = "ru"):
     user_id = pre_checkout_query.from_user.id
     payload = pre_checkout_query.invoice_payload
 
     if not await get_flag("shop"):   # магазин выключен с пульта — не берём деньги
-        await pre_checkout_query.answer(ok=False, error_message=t("ru", "common.feature_off"))
+        await pre_checkout_query.answer(ok=False, error_message=t(user_lang, "common.feature_off"))
         return
 
     try:
         async with db.pool.acquire() as conn:
             order = await _load_order_for_user(conn, user_id, payload)
-            problem = await _precheck_deliverable(conn, user_id, order)
+            problem = await _precheck_deliverable(conn, user_id, order, user_lang)
     except CatalogError as e:
         await pre_checkout_query.answer(ok=False, error_message=str(e))
         return
