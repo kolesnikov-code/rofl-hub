@@ -201,4 +201,17 @@ def test_app_has_no_control_characters():
     import re
     bad = [(i, hex(ord(c))) for i, c in enumerate(HTML) if ord(c) < 32 and c not in "\n\r\t"]
     assert not bad, bad[:5]
-    assert "Holo)" + chr(92) + "b/g" in HTML
+    assert "Heat)" + chr(92) + "b/g" in HTML
+
+
+def test_immortal_skin_fire_has_unique_ids_and_artifacts_have_epic_names():
+    """01.11: огонь 10 ур. — три слоя языков, марево и угольки; все его id уникальны на аватар.
+    Артефакты переименованы по слову владельца."""
+    import re
+    assert "const skinFire = () =>" in HTML and 'id="psHeat"' in HTML and 'mask="url(#psFireK)"' in HTML
+    rx = re.search(r"replace\(/ps\(([^)]*)\)", HTML).group(1).split("|")
+    for i in ("psFire", "psFireM", "psFireC", "psFireF", "psFireK", "psHeat"):
+        assert i[2:] in rx, i
+    for name in ("Сердце грозы", "Камень изобилия", "Багровый закат", "Тень призрака", "Шар озарения", "Механический воин"):
+        assert name in HTML, name
+    assert "Искровик" not in HTML and "Туманник" not in HTML

@@ -1138,7 +1138,7 @@ ARTIFACT_BAG_SLOT = "art"                       # в сумке артефакт
 ARTIFACT_BONUS = {"el": 10, "mn": 2, "ml": 5, "st": 10, "sc": 10, "en": 5}
 ARTIFACT_SEASON_CAP = 1
 ARTIFACT_MIN_PRICE = 1000
-ARTIFACT_ICONS = {"el": "🔆", "mn": "🪸", "ml": "🔴", "st": "🌫", "sc": "🔮", "en": "⚙️"}
+ARTIFACT_ICONS = {"el": "🌩", "mn": "🍀", "ml": "🌇", "st": "👻", "sc": "🔮", "en": "🤖"}
 
 
 def art_code(kind: str) -> str:
