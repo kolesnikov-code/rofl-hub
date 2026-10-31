@@ -81,6 +81,9 @@ RU: dict[str, str] = {
     "hist.admin_gift": "🎁 Подарок администрации",
     "hist.prize": "🏆 Приз",
     "hist.daily_chest": "🎁 Сундук ежедневных целей",
+    "hist.daily_case": "🕵️ Дело дня",
+    "hist.squad_create": "🛡 Создание отряда",
+    "hist.squad_upgrade": "🛡 Расширение отряда до команды",
     "hist.quest_reward": "🗺 Награда за квест",
     "hist.quest_hint": "🗺 Подсказка в квесте",
     "hist.quiz_hint": "🧠 Подсказка в викторине",
@@ -116,7 +119,7 @@ RU: dict[str, str] = {
     "pass.delivered": "🎟 Премиум-пропуск сезона {season} активен! Награды — в приложении: «Персонаж» → «Пропуск».",
     "pass.err_owned": "Пропуск этого сезона у тебя уже есть.",
     "pass.err_nothing": "Пока нечего забирать — набери опыт пропуска.",
-    "skin.delivered": "✨ Скин «{name}» твой: экземпляр №{serial} из {edition}. Надень его в «Персонаж» → «Гараж».",
+    "skin.delivered": "✨ Скин «{name}» твой: экземпляр №{serial} из {edition}. Надень его во вкладке «Персонаж» → «Гараж».",
     "skin.err_max": "✨ Скин уже закалён до предела.",
     "skin.err_equipped": "✨ Сначала сними скин, который хочешь отдать на закалку.",
     "skin.err_self": "✨ Скин не может поглотить сам себя.",
@@ -733,7 +736,7 @@ RU: dict[str, str] = {
     "shop.cat_farm": (
         "🚜 <b>МАГАЗИН · ДЛЯ ФЕРМЫ</b>\n"
         "..................................................\n"
-        "Роботы на 30 дней, топливо, холодильники, бусты и Мастер-дрон.\n"
+        "Роботы на 30 дней, топливо, холодильники, бусты, Мастер-дрон и апгрейд Робота-Стажёра.\n"
         "📦 Твой холодильник сейчас: <b>{capacity} котлет</b>\n"
         "..................................................\n"
         "👇 <b>Выбери товар:</b>"
@@ -778,16 +781,16 @@ RU: dict[str, str] = {
     "dlv.fridge": "📦 Холодильник расширен до <b>{capacity} котлет</b>.",
     "dlv.coins": "💰 Зачислено <b>+{amount} 🪙</b>.",
     "dlv.boost_nuclear": "🔋 Ядерный Разгон x5 активен до <b>{until} UTC</b>.",
-    "dlv.boost_nitrogen": "❄️ Азотное Охлаждение +40% активен до <b>{until} UTC</b>.",
+    "dlv.boost_nitrogen": "❄️ Азотное Охлаждение +40% активно до <b>{until} UTC</b>.",
     "dlv.drone": "🛸 Мастер-дрон охраняет ферму до <b>{until} UTC</b>.",
     "dlv.unlimit": "⚡ Лимиты побед сняты до <b>{until} UTC</b>.",
     "dlv.clan": "🏆 Команда получила статус <b>МЕГА-КЛАН</b>: до {max} мест.",
     "dlv.err_fridge": "У тебя уже холодильник такого или большего объёма.",
-    "dlv.err_no_team": "У тебя нет созданной команды. Сначала создай её через /create_team.",
-    "dlv.err_mega": "Твоя команда уже имеет статус Мега-Клана.",
+    "dlv.err_no_team": "Мега-Клан покупает капитан, а у тебя нет своей команды. Сначала создай её во вкладке «Команда».",
+    "dlv.err_mega": "У твоей команды уже статус Мега-Клана.",
     "dlv.intern_upgrade": "♾ Робот-Стажёр повышен до <b>ВЕЧНОГО Младшего Майнера</b>: 5 🪙 в час без срока службы!",
-    "dlv.err_no_intern": "Нет активированного Робота-Стажёра — сначала активируй его в /farm.",
-    "dlv.err_intern_refs": "Для апгрейда нужно {need} активных друга (условия — в /invite), у тебя {have}.",
+    "dlv.err_no_intern": "Нет активированного Робота-Стажёра — сначала активируй его на ферме.",
+    "dlv.err_intern_refs": "Для апгрейда нужно {need} активных друга (условия — во вкладке «Друзья»), у тебя {have}.",
     "mk.header": "📈 <b>БИРЖА КОТЛЕТ</b>\n..................................................\nОткрытых ордеров: <b>{orders}</b> · котлет на бирже: <b>{cutlets}</b> · лучшая цена: <b>{best}</b>\nКомиссия хаба: <b>{fee}%</b> с продажи (сгорает — защита от инфляции)\n🥩 У тебя на складе: <b>{inv}</b>\n\n{body}\n\n<i>Купить — нажми на ордер. Продать — команда /sell.</i>",
     "mk.empty": "Пока ни одного предложения — выстави своё: /sell количество цена",
     "mk.order_line": "🥩 #{id} · <b>{qty} шт.</b> по <b>{price}</b> 🪙",
@@ -1180,6 +1183,9 @@ EN: dict[str, str] = {
     "hist.admin_gift": "🎁 Gift from the team",
     "hist.prize": "🏆 Prize",
     "hist.daily_chest": "🎁 Daily goals chest",
+    "hist.daily_case": "🕵️ Case of the day",
+    "hist.squad_create": "🛡 Squad created",
+    "hist.squad_upgrade": "🛡 Squad expanded into a team",
     "hist.quest_reward": "🗺 Quest reward",
     "hist.quest_hint": "🗺 Quest hint",
     "hist.quiz_hint": "🧠 Quiz hint",
@@ -1215,7 +1221,7 @@ EN: dict[str, str] = {
     "pass.delivered": "🎟 Premium pass for season {season} is active! Rewards are in the app: «Character» → «Pass».",
     "pass.err_owned": "You already have this season's pass.",
     "pass.err_nothing": "Nothing to claim yet — earn some pass XP.",
-    "skin.delivered": "✨ The “{name}” skin is yours: copy #{serial} of {edition}. Wear it in Character → Garage.",
+    "skin.delivered": "✨ The “{name}” skin is yours: copy #{serial} of {edition}. Wear it in the Character tab → Garage.",
     "skin.err_max": "✨ This skin is already fully tempered.",
     "skin.err_equipped": "✨ Take off the skin you want to feed into tempering first.",
     "skin.err_self": "✨ A skin can't absorb itself.",
@@ -1834,7 +1840,7 @@ EN: dict[str, str] = {
     "shop.cat_farm": (
         "🚜 <b>SHOP · FOR THE FARM</b>\n"
         "..................................................\n"
-        "Robots for 30 days, fuel, fridges, boosts and the Master Drone.\n"
+        "Robots for 30 days, fuel, fridges, boosts, the Master Drone and the Intern Bot upgrade.\n"
         "📦 Your fridge now holds: <b>{capacity} cutlets</b>\n"
         "..................................................\n"
         "👇 <b>Pick an item:</b>"
@@ -1884,11 +1890,11 @@ EN: dict[str, str] = {
     "dlv.unlimit": "⚡ Win limits removed until <b>{until} UTC</b>.",
     "dlv.clan": "🏆 Your team received the <b>MEGA-CLAN</b> status: up to {max} seats.",
     "dlv.err_fridge": "You already own a fridge of this size or bigger.",
-    "dlv.err_no_team": "You don't have a team yet. Create one first via /create_team.",
-    "dlv.err_mega": "Your team already has the Mega-Clan status.",
+    "dlv.err_no_team": "The Mega-Clan is bought by a captain, and you don't have your own team. Create one first in the «Team» tab.",
+    "dlv.err_mega": "Your team is already a Mega-Clan.",
     "dlv.intern_upgrade": "♾ Your Intern Bot was promoted to an <b>ETERNAL Miner Bot</b>: 5 🪙 per hour, no expiry!",
-    "dlv.err_no_intern": "No activated Intern Bot — activate it in /farm first.",
-    "dlv.err_intern_refs": "The upgrade needs {need} active friends (see /invite for the rules); you have {have}.",
+    "dlv.err_no_intern": "No activated Intern Bot — activate it on the farm first.",
+    "dlv.err_intern_refs": "The upgrade needs {need} active friends (see the «Friends» tab for the rules); you have {have}.",
     "mk.header": "📈 <b>CUTLET MARKET</b>\n..................................................\nOpen orders: <b>{orders}</b> · cutlets listed: <b>{cutlets}</b> · best price: <b>{best}</b>\nHub fee: <b>{fee}%</b> per sale (burned — inflation shield)\n🥩 In your storage: <b>{inv}</b>\n\n{body}\n\n<i>Tap an order to buy. To sell, use /sell.</i>",
     "mk.empty": "No offers yet — list yours: /sell quantity price",
     "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> at <b>{price}</b> 🪙",

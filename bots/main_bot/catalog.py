@@ -71,24 +71,24 @@ CATALOG: dict[str, dict] = {
                          "button_en": "🛸 Master Drone (1 year) | 999 ★"},
     # --- Игровой безлимит ---
     "unlimit_24h": {"type": "game_unlimit", "hours": UNLIMIT_DAY_HOURS, "stars": 15, "category": CATEGORY_GAMES,
-                    "title": "⚡ Снятие лимитов на 24 часа", "button": "⚡ Безлимит 24 ч | 15 ★",
+                    "title": "⚡ Безлимит на 24 часа", "button": "⚡ Безлимит 24 ч | 15 ★",
                     "title_en": "⚡ Remove limits for 24 hours", "button_en": "⚡ Unlimited 24h | 15 ★"},
     "unlimit_30d": {"type": "game_unlimit", "hours": UNLIMIT_MONTH_DAYS * 24, "stars": 249,
                     "category": CATEGORY_GAMES,
-                    "title": "🚀 Безлимитный гейминг на 30 дней", "button": "🚀 Безлимит 30 дней | 249 ★",
+                    "title": "🚀 Безлимит на 30 дней", "button": "🚀 Безлимит 30 дней | 249 ★",
                     "title_en": "🚀 Unlimited gaming for 30 days", "button_en": "🚀 Unlimited 30 days | 249 ★"},
     # --- Казна монет ---
     "coins_5k": {"type": "coins", "coins_amount": 5_000, "stars": 149, "category": CATEGORY_GAMES,
-                 "title": "💰 Пак «Сержант»: 5 000 монет", "button": "💰 5 000 🪙 | 149 ★",
+                 "title": "💰 Пак «Сержант»: 5 000 🪙", "button": "💰 5 000 🪙 | 149 ★",
                  "title_en": "💰 “Sergeant” pack: 5,000 coins", "button_en": "💰 5,000 🪙 | 149 ★"},
     "coins_10k": {"type": "coins", "coins_amount": 10_000, "stars": 299, "category": CATEGORY_GAMES,
-                  "title": "💰 Пак «Ветеран»: 10 000 монет", "button": "💰 10 000 🪙 | 299 ★",
+                  "title": "💰 Пак «Ветеран»: 10 000 🪙", "button": "💰 10 000 🪙 | 299 ★",
                   "title_en": "💰 “Veteran” pack: 10,000 coins", "button_en": "💰 10,000 🪙 | 299 ★"},
     "coins_50k": {"type": "coins", "coins_amount": 50_000, "stars": 1299, "category": CATEGORY_GAMES,
-                  "title": "👑 Пак «Генерал»: 50 000 монет", "button": "👑 50 000 🪙 | 1299 ★",
+                  "title": "👑 Пак «Генерал»: 50 000 🪙", "button": "👑 50 000 🪙 | 1299 ★",
                   "title_en": "👑 “General” pack: 50,000 coins", "button_en": "👑 50,000 🪙 | 1299 ★"},
     "coins_100k": {"type": "coins", "coins_amount": 100_000, "stars": 2499, "category": CATEGORY_GAMES,
-                   "title": "👑 Пак «Легенда»: 100 000 монет", "button": "👑 100 000 🪙 | 2499 ★",
+                   "title": "👑 Пак «Легенда»: 100 000 🪙", "button": "👑 100 000 🪙 | 2499 ★",
                    "title_en": "👑 “Legend” pack: 100,000 coins", "button_en": "👑 100,000 🪙 | 2499 ★"},
     # --- Мега-клан ---
     "clan_upgrade": {"type": "clan_upgrade", "max_members": MEGA_CLAN_MAX_MEMBERS, "stars": 2499,
@@ -182,9 +182,9 @@ SHOP_INFO: list[dict[str, str]] = [
      "title_en": "💰 Coin packs · 5,000 – 100,000 🪙",
      "text_en": "Coins straight to your balance: high-stake duels, the market, your own team, the Shuttle. Bigger pack — better rate."},
     {"cat": "games", "title": "🏆 Мега-Клан · 2499 ★",
-     "text": "Расширяет команду с 50 до 1000 мест: больше бойцов в битвах и быстрее растёт станция команды.",
+     "text": "Расширяет команду до 1000 мест: больше бойцов в битвах и быстрее растёт станция команды. Покупает капитан.",
      "title_en": "🏆 Mega-Clan · 2499 ★",
-     "text_en": "Expands your team from 50 to 1000 seats: more fighters in battles and a faster-growing team station."},
+     "text_en": "Expands your team to 1000 seats: more fighters in battles and a faster-growing team station. Bought by the captain."},
 ]
 
 

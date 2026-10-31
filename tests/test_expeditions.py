@@ -251,7 +251,7 @@ def test_row_labels_never_wrap_values_do():
 def test_rules_mention_only_the_safe_as_random():
     rules = (ROOT / "static" / "webapp" / "rules.html").read_text(encoding="utf-8")
     assert "кубики" not in rules.lower() and "подбрасывание монеты" not in rules.lower()
-    assert "Кибер-Сейф" in rules and "28.10.2026" in rules
+    assert "Кибер-Сейф" in rules and "01.11.2026" in rules
 
 
 def test_long_prize_is_shortened_in_events_and_never_widens_the_page():

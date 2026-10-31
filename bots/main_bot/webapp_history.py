@@ -30,7 +30,7 @@ HISTORY_REASONS = (
     "horse_buy", "drone_buy", "team_create", "referral_qualified", "signup_bonus", "account_deleted",
     "raid_loot", "raid_loss", "raid_fail", "raid_defense", "raid_fuel", "exp_fuel", "exp_gear", "exp_refund",
     "station_donate", "battle_entry", "mine", "tools", "tech", "shuttle_charge", "team_help_give", "team_help_get",
-    "gear_upgrade", "gear_exo", "suit_miner",
+    "gear_upgrade", "gear_exo", "suit_miner", "daily_case", "squad_create", "squad_upgrade",
 )
 
 
