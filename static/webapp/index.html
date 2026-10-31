@@ -15802,6 +15802,8 @@
   // Сумка — сетка ячеек; под аватаром — пояс из трёх окошек для артефактов (рисунок и названия — свои).
   const SLOT_ICON = { head: "⛑", body: "🦺", hands: "🧤", legs: "👖", feet: "🥾" };
   const SUIT_COLOR = { el: "#ffd23f", mn: "#d68a3a", ml: "#6fae4f", st: "#7a7fa8", sc: "#3fd0ea", en: "#ff8a4c", exo: "#b77bff" };
+  // Костюмы с собственным рисунком (владелец 31.10: «попроще, но своё») — цвет каждой детали; остальные пока красятся SUIT_COLOR
+  const SUIT_PAINT = { sc: { head: "#e9f1ff", body: "#e9f1ff", hands: "#39cde6", legs: "#26355f", feet: "#e9f1ff" } };
   const ART_ICON = { el: "🔆", mn: "🪸", ml: "🔴", st: "🌫", sc: "🔮", en: "⚙️" };
   ["el", "mn", "ml", "st", "sc", "en"].forEach(s => {
     Object.keys(SLOT_ICON).forEach(p => { A_ICON["g_" + s + "_" + p] = SLOT_ICON[p]; });
@@ -15816,70 +15818,125 @@
   function avatarSvg(gender, worn, look, skLvl) {
     // Фигура в пропорциях человека (владелец 30.10: «никаких шишек вместо кистей»): плечи, руки с локтем, ладони с
     // пальцами и большим пальцем, талия и бёдра, колени, ботинки. М — атлет, Ж — стройнее, без выбора — нейтральная.
-    const G = { m: { sh: 27, ch: 22, wa: 16, hi: 18, arm: 9.5, fa: 7.5, hr: 10 },
-                f: { sh: 21.5, ch: 18, wa: 12.5, hi: 19.5, arm: 7, fa: 5.8, hr: 9.4 },
-                n: { sh: 24, ch: 20, wa: 14.5, hi: 18, arm: 8.2, fa: 6.6, hr: 9.8 } }[gender || "n"];
+    const G = { m: { sh: 27, ch: 22, wa: 16, hi: 18, arm: 9.5, fa: 7.5, hr: 10, kn: 4 },
+                f: { sh: 21.5, ch: 18, wa: 12.5, hi: 19.5, arm: 7, fa: 5.8, hr: 9.4, kn: 5.6 },
+                n: { sh: 24, ch: 20, wa: 14.5, hi: 18, arm: 8.2, fa: 6.6, hr: 9.8, kn: 4.6 } }[gender || "n"];
     const X = 60, base = "#2b3560", line = 'stroke="rgba(0,255,225,.55)" stroke-width="1.1" stroke-linejoin="round"';
-    const col = slot => look ? "url(#psSk)" : (worn[slot] ? SUIT_COLOR[worn[slot].suit] : null);
+    const col = slot => look ? "url(#psSk)" : (worn[slot] ? (SUIT_PAINT[worn[slot].suit] || {})[slot] || SUIT_COLOR[worn[slot].suit] : null);
+    const sc = slot => !look && worn[slot] && worn[slot].suit === "sc";   // 🔬 учёный: свой рисунок поверх фигуры
+    const SC = SUIT_COLOR.sc, coat = SUIT_PAINT.sc.body, trim = (d, w) => '<path d="' + d + '" stroke="' + SC + '" stroke-width="' + (w || 1.2) +
+      '" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
     const glow = slot => (look ? (skLvl || 1) >= 2 : worn[slot] && worn[slot].level >= 2) ? ' filter="url(#psGlow)"' : '';
     const fill = slot => col(slot) || base;
     const P = (d, slot, extra) => '<path d="' + d + '" fill="' + fill(slot) + '" ' + line + glow(slot) + (extra || '') + '/>';
     const m = x => 2 * X - x;   // зеркало для правой стороны
     const spin = look && look.fx !== "none" ? '<animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="360 .5 .5" dur="' +
       (look.fx === "flame" ? 3 : 7) + 's" repeatCount="indefinite"/>' : '';
-    // рука: плечо → локоть → запястье (side = -1 левая, 1 правая)
-    const arm = side => {
-      const sx = X + side * (G.sh - 2), ex = X + side * (G.sh + 3), wx = X + side * (G.sh + 4.5);
-      return 'M' + (sx + side * G.arm * .55) + ',51 Q' + (ex + side * G.arm * .55) + ',70 ' + (ex + side * G.arm * .5) + ',92 ' +
-        'L' + (wx + side * G.fa * .5) + ',125 L' + (wx - side * G.fa * .5) + ',125 L' + (ex - side * G.arm * .5) + ',92 ' +
-        'Q' + (X + side * (G.ch - 1)) + ',76 ' + (X + side * (G.ch - 1.5)) + ',66 Z';
-    };
-    // ладонь с пальцами и большим пальцем (к телу)
-    const hand = side => {
-      const wx = X + side * (G.sh + 4.5), t = -side;
-      return 'M' + (wx - 3.4) + ',124 C' + (wx - 4.8) + ',130 ' + (wx - 4.4) + ',137 ' + (wx - 2.6) + ',141 ' +
-        'C' + (wx - 1.2) + ',143.2 ' + (wx + 1.6) + ',143.2 ' + (wx + 2.8) + ',141 C' + (wx + 4.2) + ',137 ' + (wx + 4) + ',130 ' + (wx + 3.4) + ',124 Z ' +
-        'M' + (wx + t * 3) + ',127 C' + (wx + t * 6.2) + ',129 ' + (wx + t * 6.6) + ',133 ' + (wx + t * 5) + ',135.2 C' + (wx + t * 4) + ',135.8 ' +
-        (wx + t * 3.2) + ',134 ' + (wx + t * 3) + ',132 Z';
-    };
-    const fingers = side => { const wx = X + side * (G.sh + 4.5);
-      return '<path d="M' + (wx - 1.3) + ',136.5 L' + (wx - 1.4) + ',141.5 M' + (wx + .2) + ',137 L' + (wx + .2) + ',142.6 M' + (wx + 1.7) + ',136.5 L' + (wx + 1.8) + ',141.5" ' +
+    // Фигура — точки как «расстояние от оси X» (d) и высота (y); a(d) зеркалит на нужную сторону (s = -1 левая, 1 правая)
+    const sd = s => d => s < 0 ? X - d : X + d;
+    const wristX = s => X + s * (G.sh + 4);
+    // рука свисает чуть в сторону: дельта плеча → локоть → предплечье → запястье; верх уходит под туловище — шва нет
+    const arm = s => { const a = sd(s), A = G.arm, F = G.fa, S = G.sh;
+      return 'M' + a(S - 7) + ',51 C' + a(S - 2) + ',49.5 ' + a(S + A * .55) + ',53 ' + a(S + A * .55) + ',62 ' +
+        'C' + a(S + A * .5) + ',72 ' + a(S + 2.5 + A * .45) + ',82 ' + a(S + 2.5 + A * .42) + ',92 ' +
+        'C' + a(S + 3 + F * .7) + ',100 ' + a(S + 4 + F * .6) + ',110 ' + a(S + 4 + F * .45) + ',124 ' +
+        'L' + a(S + 4 - F * .45) + ',124 C' + a(S + 3 - F * .5) + ',110 ' + a(S + 2.5 - F * .6) + ',100 ' + a(S + 2.5 - A * .4) + ',92 ' +
+        'C' + a(S + 2 - A * .45) + ',82 ' + a(G.ch + .5) + ',74 ' + a(G.ch - 1) + ',66 L' + a(G.ch - 4) + ',58 Z'; };
+    // ладонь с большим пальцем к телу; размер — по запястью (у Ж кисть меньше)
+    const hk = G.fa / 7.5;
+    const hand = s => { const w = wristX(s), t = -s, H = (dx, y) => (w + dx * hk) + ',' + (124 + (y - 124) * (.8 + .2 * hk));
+      return 'M' + H(-3.4, 122) + ' C' + H(-4.8, 130) + ' ' + H(-4.4, 137) + ' ' + H(-2.6, 141) + ' C' + H(-1.2, 143.2) + ' ' + H(1.6, 143.2) + ' ' + H(2.8, 141) +
+        ' C' + H(4.2, 137) + ' ' + H(4, 130) + ' ' + H(3.4, 122) + ' Z M' + H(t * 3, 127) + ' C' + H(t * 6.2, 129) + ' ' + H(t * 6.6, 133) + ' ' + H(t * 5, 135.2) +
+        ' C' + H(t * 4, 135.8) + ' ' + H(t * 3.2, 134) + ' ' + H(t * 3, 132) + ' Z'; };
+    const fingers = s => { const w = wristX(s), H = (dx, y) => (w + dx * hk) + ',' + (124 + (y - 124) * (.8 + .2 * hk));
+      return '<path d="M' + H(-1.3, 136.5) + ' L' + H(-1.4, 141.5) + ' M' + H(.2, 137) + ' L' + H(.2, 142.6) + ' M' + H(1.7, 136.5) + ' L' + H(1.8, 141.5) + '" ' +
         'stroke="rgba(0,0,0,.35)" stroke-width=".7" fill="none"/>'; };
-    const leg = 'M' + (X - G.hi) + ',120 C' + (X - G.hi - 1) + ',145 ' + (X - 14) + ',162 ' + (X - 13) + ',172 L' + (X - 12) + ',208 L' + (X - 4) + ',208 ' +
-      'L' + (X - 4) + ',172 C' + (X - 3) + ',150 ' + (X - 1) + ',136 ' + (X - 1) + ',128 Z';
-    const legR = 'M' + m(X - G.hi) + ',120 C' + m(X - G.hi - 1) + ',145 ' + m(X - 14) + ',162 ' + m(X - 13) + ',172 L' + m(X - 12) + ',208 L' + m(X - 4) + ',208 ' +
-      'L' + m(X - 4) + ',172 C' + m(X - 3) + ',150 ' + m(X - 1) + ',136 ' + m(X - 1) + ',128 Z';
-    const boot = side => { const a = x => side < 0 ? x : m(x);
-      return 'M' + a(X - 13) + ',204 L' + a(X - 3.5) + ',204 L' + a(X - 3) + ',222 C' + a(X - 3) + ',226 ' + a(X - 5) + ',229 ' + a(X - 8) + ',229 ' +
-        'L' + a(X - 19) + ',229 C' + a(X - 21.5) + ',229 ' + a(X - 21.5) + ',225 ' + a(X - 18) + ',223.5 L' + a(X - 13.5) + ',221 Z'; };
-    const torso = 'M' + (X - G.sh + 3) + ',50 C' + (X - G.sh) + ',52 ' + (X - G.sh - 1) + ',60 ' + (X - G.ch) + ',74 L' + (X - G.wa) + ',104 L' + (X - G.hi) + ',122 ' +
-      'L' + (X + G.hi) + ',122 L' + (X + G.wa) + ',104 L' + (X + G.ch) + ',74 C' + (X + G.sh + 1) + ',60 ' + (X + G.sh) + ',52 ' + (X + G.sh - 3) + ',50 ' +
-      'Q' + X + ',45 ' + (X - G.sh + 3) + ',50 Z';
+    // нога: бедро → колено → икра → лодыжка; внутренняя линия сходится к паху
+    const leg = s => { const a = sd(s), h = G.hi, k = G.kn;
+      return 'M' + a(1) + ',116 L' + a(h) + ',117 C' + a(h + 1.2) + ',132 ' + a(h + .6) + ',150 ' + a(h - k) + ',170 ' +
+        'C' + a(h - k + 1.2) + ',180 ' + a(h - k + .8) + ',192 ' + a(h - k - 3.8) + ',206 L' + a(4.4) + ',206 ' +
+        'C' + a(3.4) + ',194 ' + a(3) + ',182 ' + a(4.6) + ',172 C' + a(3.6) + ',158 ' + a(1.2) + ',142 ' + a(.6) + ',131 Z'; };
+    const boot = s => { const a = sd(s);
+      return 'M' + a(13) + ',204 L' + a(3.5) + ',204 L' + a(3) + ',222 C' + a(3) + ',226 ' + a(5) + ',229 ' + a(8) + ',229 ' +
+        'L' + a(19) + ',229 C' + a(21.5) + ',229 ' + a(21.5) + ',225 ' + a(18) + ',223.5 L' + a(13.5) + ',221 Z'; };
+    // туловище: трапеция → плечо → бок → талия → бёдра → пах (без акцента на груди); правая половина — та же, в обратном порядке
+    const tl = sd(-1), tr = sd(1);
+    const torso = 'M' + tl(5.5) + ',44 C' + tl(11) + ',45.5 ' + tl(G.sh - 6) + ',48.5 ' + tl(G.sh - 2) + ',52 C' + tl(G.sh + 1) + ',55 ' + tl(G.ch + 1) + ',60 ' + tl(G.ch) + ',67 ' +
+      'C' + tl(G.ch - .5) + ',80 ' + tl(G.wa + 1) + ',92 ' + tl(G.wa) + ',101 C' + tl(G.wa - .2) + ',108 ' + tl(G.hi + .5) + ',114 ' + tl(G.hi) + ',121 Q' + tl(6) + ',128 ' + X + ',131 ' +
+      'Q' + tr(6) + ',128 ' + tr(G.hi) + ',121 C' + tr(G.hi + .5) + ',114 ' + tr(G.wa - .2) + ',108 ' + tr(G.wa) + ',101 C' + tr(G.wa + 1) + ',92 ' + tr(G.ch - .5) + ',80 ' + tr(G.ch) + ',67 ' +
+      'C' + tr(G.ch + 1) + ',60 ' + tr(G.sh + 1) + ',55 ' + tr(G.sh - 2) + ',52 C' + tr(G.sh - 6) + ',48.5 ' + tr(11) + ',45.5 ' + tr(5.5) + ',44 Z';
     const hr = G.hr;
     const hair = gender === "f"
       ? '<path d="M' + (X - hr - 1.5) + ',22 Q' + X + ',4 ' + (X + hr + 1.5) + ',22 L' + (X + hr + 3) + ',46 Q' + X + ',50 ' + (X - hr - 3) + ',46 Z" fill="#3a4478"/>'
       : '<path d="M' + (X - hr) + ',21 Q' + X + ',7 ' + (X + hr) + ',21 Q' + X + ',14 ' + (X - hr) + ',21 Z" fill="#3a4478"/>';
+    // 🔬 Учёный. Халат: тёмная рубашка, две полы до середины бедра, стойка воротника, лацканы и подол — неон, колба на груди
+    const scBody = () => {
+      const flap = s => { const a = x => s < 0 ? x : m(x);
+        return 'M' + a(X - 8) + ',46 C' + a(X - 12) + ',46.5 ' + a(X - G.sh + 6) + ',48.5 ' + a(X - G.sh + 2) + ',52 C' + a(X - G.sh - 1) + ',55 ' +
+          a(X - G.ch - 1) + ',60 ' + a(X - G.ch) + ',67 L' + a(X - G.wa - 1) + ',104 L' + a(X - G.hi - 4) + ',150 L' + a(X - 3) + ',150 L' + a(X - 4) + ',104 L' + a(X - 6) + ',60 Z'; };
+      const side = s => { const a = x => s < 0 ? x : m(x);
+        return P(flap(s), "body") + trim('M' + a(X - 8) + ',47 L' + a(X - 6) + ',60 L' + a(X - 4) + ',104 L' + a(X - 3) + ',150 L' + a(X - G.hi - 4) + ',150') +
+          '<path d="M' + a(X - 10.5) + ',42.5 L' + a(X - 4.5) + ',47.5 L' + a(X - 8) + ',57 L' + a(X - 12) + ',49 Z" fill="' + coat + '" ' + line + '/>' +
+          '<rect x="' + (s < 0 ? X - G.wa - .5 : m(X - 5)) + '" y="109" width="' + (G.wa - 4.5) + '" height="8" rx="1.2" fill="rgba(63,208,234,.1)" stroke="' + SC + '" stroke-width=".8"/>'; };
+      const cuff = s => { const wx = wristX(s);
+        return '<rect x="' + (wx - G.fa * .5 - .6) + '" y="117.5" width="' + (G.fa + 1.2) + '" height="3.6" rx="1" fill="' + SC + '"/>'; };
+      const fx = X + G.ch * .55, fy = 60;   // колба — знак костюма, на левой стороне груди
+      return '<path d="M' + (X - 7) + ',47 L' + (X + 7) + ',47 L' + (X + 5.5) + ',121 L' + (X - 5.5) + ',121 Z" fill="#16203f"/>' +
+        '<path d="M' + (X - 5.5) + ',120.5 L' + (X + 5.5) + ',120.5 L' + (X + 3) + ',131.5 L' + (X - 3) + ',131.5 Z" fill="' + fill("legs") + '"/>' +
+        side(-1) + side(1) + cuff(-1) + cuff(1) +
+        '<path d="M' + (fx - 1.6) + ',' + fy + ' v3.2 l-3.4,6.4 q-.6,1.6 1,1.6 h8 q1.6,0 1,-1.6 l-3.4,-6.4 v-3.2 Z" fill="rgba(63,208,234,.18)" stroke="' + SC +
+        '" stroke-width=".9" stroke-linejoin="round" filter="url(#psGlow)"/><path d="M' + (fx - 3.4) + ',' + (fy + 8.2) + ' h6.8" stroke="' + SC + '" stroke-width="1.6"/>';
+    };
+    // Шлем с визором-дисплеем: на визоре неоновое лицо — моргает, иногда довольно щурится «^ ^»
+    const scHead = () => {
+      const blink = (y, h) => '<animate attributeName="height" values="' + h + ';' + h + ';.4;' + h + ';' + h + '" keyTimes="0;.3;.32;.34;1" dur="9s" repeatCount="indefinite"/>' +
+        '<animate attributeName="y" values="' + y + ';' + y + ';' + (y + h / 2 - .2) + ';' + y + ';' + y + '" keyTimes="0;.3;.32;.34;1" dur="9s" repeatCount="indefinite"/>';
+      const phase = on => '<animate attributeName="opacity" values="' + (on ? '1;1;0;0;1' : '0;0;1;1;0') + '" keyTimes="0;.66;.68;.93;.95" dur="9s" repeatCount="indefinite"/>';
+      return P('M' + (X - hr - 2.5) + ',27 C' + (X - hr - 2.5) + ',4.5 ' + (X + hr + 2.5) + ',4.5 ' + (X + hr + 2.5) + ',27 L' + (X + hr + 1) + ',35.5 ' +
+          'Q' + X + ',40 ' + (X - hr - 1) + ',35.5 Z', "head") +
+        trim('M' + X + ',6.5 L' + X + ',14', 1.4) +
+        '<rect x="' + (X - hr + .4) + '" y="15.5" width="' + (2 * hr - .8) + '" height="16.5" rx="5" fill="#0a1230" stroke="' + SC + '" stroke-width=".9"/>' +
+        '<g filter="url(#psGlow)"><g>' + phase(true) +
+          '<rect x="' + (X - 4.6) + '" y="20.5" width="1.7" height="3.4" rx=".85" fill="' + SC + '">' + blink(20.5, 3.4) + '</rect>' +
+          '<rect x="' + (X + 2.9) + '" y="20.5" width="1.7" height="3.4" rx=".85" fill="' + SC + '">' + blink(20.5, 3.4) + '</rect>' +
+          trim('M' + (X - 3.6) + ',26.6 Q' + X + ',29.6 ' + (X + 3.6) + ',26.6', 1.1) + '</g>' +
+        '<g opacity="0">' + phase(false) +
+          trim('M' + (X - 5.8) + ',23.4 L' + (X - 3.8) + ',21.2 L' + (X - 1.8) + ',23.4 M' + (X + 1.8) + ',23.4 L' + (X + 3.8) + ',21.2 L' + (X + 5.8) + ',23.4', 1.1) +
+          trim('M' + (X - 4.2) + ',26 Q' + X + ',31 ' + (X + 4.2) + ',26', 1.2) + '</g></g>';
+    };
+    // Штаны с неоновым лампасом и ботинки с подсвеченной подошвой
+    const scLegs = () => [-1, 1].map(s => { const a = sd(s), h = G.hi, k = G.kn;
+      return trim('M' + a(h - 1.3) + ',124 C' + a(h - .4) + ',140 ' + a(h - 1.4) + ',152 ' + a(h - k - 1.1) + ',170 C' + a(h - k - .2) + ',182 ' + a(h - k - .6) + ',193 ' + a(h - k - 4.4) + ',204', .9); }).join("");
+    const scFeet = () => [-1, 1].map(s => { const a = x => s < 0 ? x : m(x);
+      return trim('M' + a(X - 19.5) + ',228.4 L' + a(X - 7.5) + ',228.4', 1.8) + trim('M' + a(X - 12.8) + ',206 L' + a(X - 3.8) + ',206', 1.2) +
+        '<circle cx="' + a(X - 8.2) + '" cy="214" r=".8" fill="' + SC + '"/><circle cx="' + a(X - 8) + '" cy="218.5" r=".8" fill="' + SC + '"/>'; }).join("");
+    // Контур всей фигуры рисуется одним проходом под заливками — стыки рук, ног и туловища закрываются, шва нет
+    const OL = "rgba(0,255,225,.55)", F = (d, slot) => '<path d="' + d + '" fill="' + (slot ? fill(slot) : base) + '"' + (slot ? glow(slot) : '') + '/>';
+    const neck = 'M' + (X - hr * .42) + ',33 L' + (X - hr * .46) + ',48 L' + (X + hr * .46) + ',48 L' + (X + hr * .42) + ',33 Z';
+    const headD = 'M' + (X - hr) + ',22 C' + (X - hr) + ',8 ' + (X + hr) + ',8 ' + (X + hr) + ',22 C' + (X + hr) + ',30 ' + (X + hr - 3) + ',36 ' + X + ',37.5 ' +
+      'C' + (X - hr + 3) + ',36 ' + (X - hr) + ',30 ' + (X - hr) + ',22 Z';
     return '<svg class="ps-avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 236" aria-hidden="true"><defs><filter id="psGlow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="140" height="256"><feGaussianBlur stdDeviation="' +
       (look ? 1.4 + (skLvl || 1) * .25 : 2) + '" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
       (look ? '<linearGradient id="psSk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + look.c1 + '"/><stop offset="1" stop-color="' + look.c2 + '"/>' + spin + '</linearGradient>' : '') +
       '</defs>' +
       (gender === "f" ? hair : '') +
-      P(leg, "legs") + P(legR, "legs") +
-      (col("legs") ? '<path d="M' + (X - 13.5) + ',168 h8 v6 h-8 Z M' + m(X - 5.5) + ',168 h8 v6 h-8 Z" fill="rgba(0,0,0,.28)"/>' : '<path d="M' + (X - 12) + ',172 q4,2 8,0 M' + m(X - 4) + ',172 q4,2 8,0" stroke="rgba(0,255,225,.25)" fill="none" stroke-width=".8"/>') +
-      P(boot(-1), "feet") + P(boot(1), "feet") +
-      P(arm(-1), "body") + P(arm(1), "body") +
-      P(torso, "body") +
-      (col("body") ? '<path d="M' + X + ',52 L' + X + ',120" stroke="rgba(0,0,0,.35)" stroke-width="1.6"/>' +
+      [leg(-1), leg(1), boot(-1), boot(1), neck, arm(-1), arm(1), torso, hand(-1), hand(1), headD].map(d =>
+        '<path d="' + d + '" fill="' + OL + '" stroke="' + OL + '" stroke-width="2.2" stroke-linejoin="round"/>').join("") +
+      F(leg(-1), "legs") + F(leg(1), "legs") +
+      [-1, 1].map(s => col("legs") ? '<rect x="' + (s < 0 ? X - G.hi + G.kn + .8 : X + 5) + '" y="167" width="' + (G.hi - G.kn - 5.8) + '" height="6" rx="1.5" fill="rgba(0,0,0,.28)"/>'
+        : '<path d="M' + sd(s)(G.hi - G.kn - .8) + ',173 Q' + sd(s)((G.hi - G.kn + 4) / 2) + ',175 ' + sd(s)(5) + ',173" stroke="rgba(0,255,225,.25)" fill="none" stroke-width=".8"/>').join("") +
+      (sc("legs") ? scLegs() : '') +
+      F(boot(-1), "feet") + F(boot(1), "feet") + (sc("feet") ? scFeet() : '') +
+      F(neck) + F(arm(-1), "body") + F(arm(1), "body") + F(torso, "body") +
+      (sc("body") ? scBody() : col("body") ? '<path d="M' + X + ',52 L' + X + ',120" stroke="rgba(0,0,0,.35)" stroke-width="1.6"/>' +
         '<rect x="' + (X - G.wa - 1) + '" y="101" width="' + (2 * G.wa + 2) + '" height="5" rx="1.5" fill="rgba(0,0,0,.35)"/>' : '') +
-      (gender === "f" ? '<path d="M' + (X - 9) + ',72 q4.5,5 9,0 q4.5,5 9,0" stroke="rgba(0,255,225,.3)" fill="none" stroke-width=".8"/>' : '') +
-      P(hand(-1), "hands") + P(hand(1), "hands") + fingers(-1) + fingers(1) +
-      (col("hands") ? '<path d="M' + (X - G.sh - 4.5 - 4) + ',121 h8 v4 h-8 Z M' + m(X - G.sh - 4.5 + 4) + ',121 h8 v4 h-8 Z" fill="' + fill("hands") + '" ' + line + '/>' : '') +
-      '<path d="M' + (X - 4.2) + ',33 L' + (X - 4.6) + ',48 L' + (X + 4.6) + ',48 L' + (X + 4.2) + ',33 Z" fill="' + base + '"/>' +
-      '<path d="M' + (X - hr) + ',22 C' + (X - hr) + ',8 ' + (X + hr) + ',8 ' + (X + hr) + ',22 C' + (X + hr) + ',30 ' + (X + hr - 3) + ',36 ' + X + ',37.5 ' +
-        'C' + (X - hr + 3) + ',36 ' + (X - hr) + ',30 ' + (X - hr) + ',22 Z" fill="' + base + '" ' + line + '/>' +
+      F(hand(-1), "hands") + F(hand(1), "hands") + fingers(-1) + fingers(1) +
+      (col("hands") ? [-1, 1].map(s => '<rect x="' + (wristX(s) - 3.8 * hk) + '" y="120.5" width="' + 7.6 * hk + '" height="4" rx="1" fill="' +
+        (sc("hands") ? coat : fill("hands")) + '" ' + line + '/>').join("") : '') +
+      F(headD) +
       '<circle cx="' + (X - 3.6) + '" cy="23" r=".9" fill="rgba(0,255,225,.75)"/><circle cx="' + (X + 3.6) + '" cy="23" r=".9" fill="rgba(0,255,225,.75)"/>' +
       (gender !== "f" ? hair : '<path d="M' + (X - hr - .5) + ',20 Q' + X + ',6 ' + (X + hr + .5) + ',20 Q' + (X + 2) + ',13 ' + (X - hr - .5) + ',20 Z" fill="#3a4478"/>') +
-      (col("head") ? P('M' + (X - hr - 2) + ',25 C' + (X - hr - 2) + ',6 ' + (X + hr + 2) + ',6 ' + (X + hr + 2) + ',25 L' + (X + hr) + ',27 L' + (X + hr) + ',21 ' +
+      (sc("head") ? scHead() : col("head") ? P('M' + (X - hr - 2) + ',25 C' + (X - hr - 2) + ',6 ' + (X + hr + 2) + ',6 ' + (X + hr + 2) + ',25 L' + (X + hr) + ',27 L' + (X + hr) + ',21 ' +
           'L' + (X - hr) + ',21 L' + (X - hr) + ',27 Z', "head") +
         '<rect x="' + (X - hr + 1) + '" y="19.5" width="' + (2 * hr - 2) + '" height="6" rx="2.5" fill="rgba(0,255,225,.5)"/>' : '') +
       '</svg>';

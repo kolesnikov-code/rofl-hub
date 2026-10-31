@@ -119,8 +119,22 @@ def test_pass_order_builds_only_for_the_season_on_sale():
 def test_avatar_is_drawn_with_hands_not_balls_and_no_param_shadowing():
     body = HTML[HTML.index("function avatarSvg(gender, worn, look, skLvl)"):HTML.index("const effText =")]
     assert "const look" not in body and "const skin " not in body and "const worn" not in body
-    assert "const hand = side" in body and "fingers" in body
+    assert re.search(r"const hand = \w+ =>", body) and "fingers" in body
     assert 'filterUnits="userSpaceOnUse"' in body          # свечение не обрезается прямоугольником
+
+
+def test_avatar_is_one_silhouette_and_scientist_suit_is_drawn():
+    """Владелец 31.10: руки и ноги не «отдельно от туловища», у Ж без акцента на груди; учёный — свой рисунок."""
+    body = HTML[HTML.index("function avatarSvg(gender, worn, look, skLvl)"):HTML.index("const effText =")]
+    # контур всей фигуры одним проходом под заливками — стыков рук/ног с туловищем не видно
+    assert "[leg(-1), leg(1), boot(-1), boot(1), neck, arm(-1), arm(1), torso, hand(-1), hand(1), headD].map(" in body
+    assert "q4.5,5 9,0" not in body                          # линии груди больше нет
+    assert "kn:" in body                                     # колено/икра/лодыжка от параметра фигуры
+    # учёный: халат, шлем с визором-дисплеем (моргает), штаны с лампасом, ботинки
+    assert re.search(r"const SUIT_PAINT = \{ sc: \{ head: .*body: .*hands: .*legs: .*feet: ", HTML)
+    for part in ('sc("body") ? scBody()', 'sc("head") ? scHead()', 'sc("legs") ? scLegs()', 'sc("feet") ? scFeet()'):
+        assert part in body, part
+    assert 'attributeName="height"' in body                  # моргание на визоре
 
 
 def test_shop_has_separate_skins_category_and_persona_has_pass_tab():
