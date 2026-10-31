@@ -194,3 +194,11 @@ def test_gender_switch_is_instant_without_reloading_the_tab():
     """31.10: М/Ж меняет аватар на месте, сохранение — фоном (откат при ошибке); вкладка не перерисовывается."""
     assert 'post("/api/gear/gender", { gender: g })' in HTML and 'ava.outerHTML = avatarSvg(to' in HTML
     assert 'act(b, "/api/gear/gender"' not in HTML
+
+
+def test_app_has_no_control_characters():
+    """31.10: в регулярку попал невидимый \x08 вместо \b — замена id молча не работала. Управляющих символов в коде нет."""
+    import re
+    bad = [(i, hex(ord(c))) for i, c in enumerate(HTML) if ord(c) < 32 and c not in "\n\r\t"]
+    assert not bad, bad[:5]
+    assert "Holo)" + chr(92) + "b/g" in HTML

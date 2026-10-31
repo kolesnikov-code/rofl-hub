@@ -1464,7 +1464,7 @@
     team: () => ["/api/team"],
     shop: () => shopCat === "skins" ? [] : ["/api/shop"],
     top: () => topMode === "events" ? [] : ["/api/top" + (topMode === "rich" ? "?mode=rich" : "")],
-    persona: () => ["/api/gear"],
+    persona: () => [psTab === "garage" ? "/api/skins" : psTab === "pass" ? "/api/pass" : "/api/gear"],
     friends: () => ["/api/referral"].concat((me.features || {}).transfers === false ? [] : ["/api/transfer"]),
     history: () => ["/api/history?tab=" + histTab],
   };
@@ -1482,6 +1482,14 @@
     const queue = PREFETCH_ORDER.filter(t => t !== current && visibleTabs().indexOf(t) >= 0);
     const worker = async () => { while (queue.length) await prefetchTab(queue.shift()); };
     await Promise.all([worker(), worker()]);
+  }
+  // После действия игрока: свежие данные вкладки грузятся, ПОКА НА ЭКРАНЕ ПРЕЖНЕЕ, потом вкладка тихо перерисовывается
+  // (без «Загрузка…» и прыжка прокрутки) — раньше после каждого «Надеть» вкладка пропадала и собиралась заново (31.10)
+  async function refreshTab(tab) {
+    const nav = navSeq;
+    await Promise.all((PREFETCH[tab] ? PREFETCH[tab]() : []).map(p => api(p, { fresh: true }).catch(() => {})));
+    if (nav !== navSeq || current !== tab) return;
+    return go(tab, { quiet: true });
   }
   async function go(tab, opt) {
     const quiet = !!(opt && opt.quiet);   // тихая перерисовка свежими данными: без «Загрузка…», прокрутка на месте
@@ -3796,14 +3804,22 @@
   const partName = (s, p) => SLOT_ICON[p] + " " + L["ps_slot_" + p] + " · " + suitName(s);
   const artName = k => ART_ICON[k] + " " + L["ps_art_" + k];
   // Аватар: человеческая фигура; надетое — цветом костюма, скин костюма — градиентом с эффектом
+  // У каждого аватара свои id градиентов и фильтров: несколько аватаров на странице (Гараж, магазин скинов) брали цвета
+  // первого — все скины выглядели одинаково (31.10)
+  let AVA_N = 0;
   function avatarSvg(gender, worn, look, skLvl) {
+    const uid = "_" + (++AVA_N);
+    return avatarSvgRaw(gender, worn, look, skLvl).replace(/ps(SkD|Sk|Glow|Leg|Camo|Digi|Aura|Holo)\b/g, m => m + uid);
+  }
+  function avatarSvgRaw(gender, worn, look, skLvl) {
     // Фигура в пропорциях человека (владелец 30.10: «никаких шишек вместо кистей»): плечи, руки с локтем, ладони с
     // пальцами и большим пальцем, талия и бёдра, колени, ботинки. М — атлет, Ж — стройнее, без выбора — нейтральная.
     const G = { m: { sh: 27, ch: 22, wa: 16, hi: 18, arm: 9.5, fa: 7.5, hr: 10, kn: 4 },
                 f: { sh: 21.5, ch: 18, wa: 12.5, hi: 19.5, arm: 7, fa: 5.8, hr: 9.4, kn: 5.6 },
                 n: { sh: 24, ch: 20, wa: 14.5, hi: 18, arm: 8.2, fa: 6.6, hr: 9.8, kn: 4.6 } }[gender || "n"];
     const X = 60, base = "#2b3560", line = 'stroke="rgba(0,255,225,.55)" stroke-width="1.1" stroke-linejoin="round"';
-    const col = slot => look ? "url(#psSk)" : (worn[slot] ? (SUIT_PAINT[worn[slot].suit] || {})[slot] || SUIT_COLOR[worn[slot].suit] : null);
+    // скин: куртка, шлем и перчатки — цвета скина, брюки и ботинки — тёмные (как на артах владельца)
+    const col = slot => look ? (slot === "legs" || slot === "feet" ? "url(#psSkD)" : "url(#psSk)") : (worn[slot] ? (SUIT_PAINT[worn[slot].suit] || {})[slot] || SUIT_COLOR[worn[slot].suit] : null);
     const sc = slot => !look && worn[slot] && worn[slot].suit === "sc";   // 🔬 учёный: свой рисунок поверх фигуры
     const EL = SUIT_COLOR.el, bolt = (x, y, k) => '<path d="M' + (x + k) + ',' + y + ' L' + (x - 2.5 * k) + ',' + (y + 6 * k) + ' h' + 3 * k + ' L' + (x - k) + ',' + (y + 12 * k) +
       ' L' + (x + 3.5 * k) + ',' + (y + 4.5 * k) + ' h' + (-3 * k) + ' Z" fill="' + EL + '" filter="url(#psGlow)"/>';
@@ -3816,7 +3832,7 @@
     const fill = slot => col(slot) || base;
     const P = (d, slot, extra) => '<path d="' + d + '" fill="' + fill(slot) + '" ' + line + glow(slot) + (extra || '') + '/>';
     const m = x => 2 * X - x;   // зеркало для правой стороны
-    const spin = look && look.fx !== "none" ? '<animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="360 .5 .5" dur="' +
+    const spin = look && look.fx !== "none" ? '<animateTransform attributeName="gradientTransform" type="rotate" from="0 60 70" to="360 60 70" dur="' +
       (look.fx === "flame" ? 3 : 7) + 's" repeatCount="indefinite"/>' : '';
     // Фигура — точки как «расстояние от оси X» (d) и высота (y); a(d) зеркалит на нужную сторону (s = -1 левая, 1 правая)
     const sd = s => d => s < 0 ? X - d : X + d;
@@ -4177,6 +4193,76 @@
             legs: l => (l >= 3 ? [-1, 1].map(s => legStripe(s, GOLD, .5)).join("") : ''),
             feet: l => (l >= 2 ? [-1, 1].map(s => sole(s, SC, .8)).join("") : '') + (l >= 3 ? [-1, 1].map(s => toeCap(s, GOLD, GL)).join("") : '') },
     };
+    // ✨ СКИН-КОСТЮМ (владелец 31.10: «скины должны быть такими, чтобы ими хотелось понтоваться»; образец — арты владельца
+    // «Лабораторный костюм» с шестью ступенями): техно-одежда — градиентные панели скина, тёмные вставки, высокий воротник,
+    // бронированные наплечники, неоновые канты и эмблема. Ступень закалки (уровень скина 1…10) добавляет: 2 — неоновые
+    // сегменты, 4 — акцентная отделка вторым цветом и ремни, 6 — голо-панели и парящие частицы, 8 — аура и корона-нимб,
+    // 10 — энергетическое пламя вокруг фигуры.
+    const SKD = "#0b1230";   // тёмная вставка, как у тёмных панелей на артах
+    const skStage = () => { const k = skLvl || 1; return k >= 10 ? 5 : k >= 8 ? 4 : k >= 6 ? 3 : k >= 4 ? 2 : k >= 2 ? 1 : 0; };
+    const neon = (d, w, ex) => ln(d, look.c1, w || .9, GL + (ex || ''));
+    const accent = (d, w) => ln(d, look.c2, w || .9, GL);
+    const skHead = () => { const st = skStage();
+      return P('M' + (X - hr - 2.4) + ',27 C' + (X - hr - 2.4) + ',4.5 ' + (X + hr + 2.4) + ',4.5 ' + (X + hr + 2.4) + ',27 L' + (X + hr + 1) + ',35.5 Q' + X + ',40 ' + (X - hr - 1) + ',35.5 Z', "head") +
+        rc(X - hr + .2, 16.5, 2 * hr - .4, 9, SKD, ' rx="4"') + neon('M' + (X - hr + 1.6) + ',21 L' + (X + hr - 1.6) + ',21', 1.3) +
+        [-1, 1].map(s => rc(X + s * (hr + 1.2) - 1.8, 18, 3.6, 8, SKD, ' rx="1.4"') + neon('M' + (X + s * (hr + 1.2)) + ',19.5 L' + (X + s * (hr + 1.2)) + ',24.5', .8)).join("") +
+        neon('M' + X + ',6 L' + X + ',13', .9) +
+        (st >= 2 ? accent('M' + (X - hr - 1) + ',29.5 Q' + X + ',33 ' + (X + hr + 1) + ',29.5', .8) : '') +
+        (st >= 3 ? [-1, 1].map(s => sh('M' + (X + s * (hr - 1)) + ',10 L' + (X + s * (hr + 5)) + ',2 L' + (X + s * (hr + 1.6)) + ',12 Z', look.c1, GL + ' opacity=".85"')).join("") : '') +
+        (st >= 4 ? '<ellipse cx="' + X + '" cy="1.8" rx="' + (hr + 2) + '" ry="2" fill="none" stroke="' + look.c2 + '" stroke-width="1"' + GL + '>' + pulse(.6, 1, 2.6) + '</ellipse>' : '') +
+        (st >= 5 ? [-6, -3, 0, 3, 6].map((dx, i) => '<path d="M' + (X + dx - 1.6) + ',3 Q' + (X + dx) + ',' + (-4 - i % 2 * 2) + ' ' + (X + dx + 1.6) + ',3 Z" fill="' + look.c2 + '"' + GL +
+          '><animate attributeName="opacity" values=".5;1;.5" dur="' + (1.2 + i * .2) + 's" repeatCount="indefinite"/></path>').join("") : '');
+    };
+    const skBody = () => { const st = skStage(), em = X - G.ch * .5, ey = 60;
+      const plate = s => shoulder(s, SKD, 5, ' stroke="' + look.c1 + '" stroke-width=".7"' + GL);
+      return sh('M' + (X - 7.5) + ',46 L' + (X + 7.5) + ',46 L' + (X + 5.5) + ',101 L' + (X - 5.5) + ',101 Z', SKD) +   // тёмная вставка по центру
+        [-1, 1].map(s => sh('M' + (X + s * 4) + ',39.5 L' + (X + s * 10.5) + ',43 L' + (X + s * 9) + ',51 L' + (X + s * 5.2) + ',49 Z', SKD, ' stroke="' + look.c1 + '" stroke-width=".6"')).join("") +   // воротник-стойка
+        neon('M' + (X + 1.2) + ',47 L' + (X + 1.2) + ',101', 1.1) +   // неоновая молния
+        [-1, 1].map(s => { const a = sd(s), S = G.sh, A = G.arm, F = G.fa;
+          return sh('M' + a(G.ch - .2) + ',63 L' + a(G.ch - 5.5) + ',64 L' + a(G.wa - 4) + ',100 L' + a(G.wa + .2) + ',100 Z', SKD) +   // тёмные боковые панели
+            neon('M' + a(G.ch - 5.5) + ',64 L' + a(G.wa - 4) + ',100', .6) +
+            sh('M' + a(S + 2.5 - A * .4) + ',92 L' + a(S + 2.5 + A * .42) + ',92 L' + a(S + 4 + F * .55) + ',112 L' + a(S + 2.5 - F * .55) + ',112 Z', SKD) +   // тёмные предплечья
+            neon('M' + a(S + 2.5 - A * .4) + ',92 L' + a(S + 2.5 + A * .42) + ',92', .8); }).join("") +
+        plate(-1) + plate(1) +
+        [-1, 1].map(s => { const a = sd(s); return neon('M' + a(G.ch - .6) + ',66 L' + a(G.wa + .4) + ',100', .7) + rc(a(G.sh + 2.4) - 3.6, 104, 7.2, 3.2, SKD, ' rx="1"') +
+          neon('M' + (wristX(s) - 3.8 * hk) + ',119.5 h' + 7.6 * hk, 1.4); }).join("") +   // канты по бокам, ремешки на предплечьях, светящиеся манжеты
+        sh('M' + em + ',' + (ey - 4) + ' l3.4,2 v4 l-3.4,2 l-3.4,-2 v-4 Z', "rgba(0,0,0,.35)", ' stroke="' + look.c1 + '" stroke-width=".8"' + GL) +   // эмблема-шестигранник
+        sh('M' + em + ',' + (ey - 2.2) + ' l1.6,2.2 l-1.6,2.2 l-1.6,-2.2 Z', look.c2, GL) +
+        beltBar(SKD, rc(X - 2.6, 101.2, 5.2, 5.8, "none", ' rx="1" stroke="' + look.c1 + '" stroke-width="1"' + GL)) +
+        // низ куртки: под ним уже тёмные брюки, по краю — неоновый кант
+        sh('M' + sd(-1)(G.hi + .4) + ',116 L' + sd(1)(G.hi + .4) + ',116 L' + sd(1)(G.hi) + ',121 Q' + sd(1)(6) + ',128 ' + X + ',131 Q' + sd(-1)(6) + ',128 ' + sd(-1)(G.hi) + ',121 Z', "url(#psSkD)") +
+        neon('M' + sd(-1)(G.hi + .6) + ',116 L' + sd(1)(G.hi + .6) + ',116', 1) +
+        rc(X + G.wa - 5, 106.5, 7, 7.5, SKD, ' rx="1.2" stroke="' + look.c1 + '" stroke-width=".6"') +   // карман на бедре, как на артах
+        (st >= 1 ? [-1, 1].map(s => neon('M' + (X + s * 7.5) + ',50 L' + (X + s * (G.ch - 3)) + ',58 M' + (X + s * 6.5) + ',80 L' + (X + s * (G.wa - 1)) + ',88', .7)).join("") : '') +
+        (st >= 2 ? [-1, 1].map(s => accent('M' + sd(s)(G.sh - 10) + ',48.6 L' + sd(s)(G.sh + 1) + ',54', 1)).join("") +
+          ln('M' + sd(-1)(G.sh - 5) + ',50 L' + sd(1)(G.wa - 1) + ',100', SKD, 2) + accent('M' + (X + G.wa - 5) + ',109 h7', .8) : '') +
+        (st >= 3 ? '<path d="' + torso + '" fill="url(#psHolo)" opacity=".0"><animate attributeName="opacity" values="0;.35;0" dur="3.6s" repeatCount="indefinite"/></path>' : '');
+    };
+    const skHands = () => { const st = skStage();
+      return cuffs(SKD, look.c1) + knuckles(look.c1, .9).replace(/stroke-linejoin="round"/g, 'stroke-linejoin="round"' + GL) +
+        (st >= 2 ? [-1, 1].map(s => ci(wristX(s), 118.5, .9, look.c2, GL)).join("") : ''); };
+    const skLegs = () => { const st = skStage();
+      return [-1, 1].map(s => { const a = sd(s), h = G.hi, k = G.kn, d = (4.6 + h - k) / 2;
+          return sh('M' + a(1.2) + ',122 L' + a(5) + ',122 L' + a(5.4) + ',165 L' + a(4.6) + ',204 L' + a(4.4) + ',204 L' + a(3.4) + ',165 Z', SKD) +   // тёмная внутренняя вставка
+            legStripe(s, look.c1, .8).replace('stroke-linejoin="round"', 'stroke-linejoin="round"' + GL) +
+            sh('M' + a(d - 4.2) + ',165 L' + a(d + 4.2) + ',165 L' + a(d + 3.4) + ',175 L' + a(d - 3.4) + ',175 Z', SKD, ' stroke="' + look.c1 + '" stroke-width=".7"' + GL) +   // наколенник
+            (st >= 2 ? accent('M' + a(4.8) + ',140 L' + a(h - .6) + ',140', 1.2) : ''); }).join(""); };
+    const skFeet = () => { const st = skStage();
+      return [-1, 1].map(s => sole(s, look.c1, 1.4).replace('/>', GL + '/>') + ln('M' + sd(s)(13) + ',206 L' + sd(s)(3.8) + ',206', look.c1, 1) +
+        (st >= 2 ? toeCap(s, look.c2, GL) : '')).join(""); };
+    const SKIN_DECO = { head: skHead, body: skBody, hands: skHands, legs: skLegs, feet: skFeet };
+    // фон скина: 8+ — аура, 10 — энергетическое пламя; 6+ — парящие частицы
+    const skinBack = () => { if (!look) return ''; const st = skStage(); let out = '';
+      if (st >= 4) out += '<ellipse cx="' + X + '" cy="118" rx="50" ry="112" fill="url(#psAura)">' + pulse(.55, 1, 3) + '</ellipse>';
+      if (st >= 5) out += [-30, -18, 18, 30, -8, 8].map((dx, i) => '<path d="M' + (X + dx - 4) + ',232 Q' + (X + dx - 6) + ',200 ' + (X + dx) + ',' + (180 - i * 6) + ' Q' + (X + dx + 6) + ',200 ' +
+        (X + dx + 4) + ',232 Z" fill="' + (i % 2 ? look.c1 : look.c2) + '" opacity=".35"' + GL + '><animate attributeName="opacity" values=".15;.5;.15" dur="' + (1.4 + i * .3) +
+        's" repeatCount="indefinite"/><animateTransform attributeName="transform" type="scale" values="1 1;1 1.08;1 1" dur="' + (1.4 + i * .3) + 's" repeatCount="indefinite" additive="sum"/></path>').join("");
+      return out; };
+    const skinFront = () => { if (!look || skStage() < 3) return '';
+      return [[X - 30, 150], [X + 28, 120], [X - 24, 70], [X + 26, 190], [X - 32, 205], [X + 33, 60]].map(([x, y], i) =>
+        '<path d="M' + x + ',' + (y - 1.8) + ' l1.6,1 v2 l-1.6,1 l-1.6,-1 v-2 Z" fill="' + (i % 2 ? look.c2 : look.c1) + '"' + GL + ' opacity="0">' +
+        '<animate attributeName="opacity" values="0;.9;0" dur="' + (3 + i % 3) + 's" begin="' + (i * .6) + 's" repeatCount="indefinite"/>' +
+        '<animateTransform attributeName="transform" type="translate" values="0 6;0 -10" dur="' + (3 + i % 3) + 's" begin="' + (i * .6) + 's" repeatCount="indefinite"/></path>').join(""); };
     // Рисунки костюмов по деталям; деталь без рисунка — просто цвет костюма
     const SUIT_DECO = { sc: { head: () => scHead(), body: () => scBody(), legs: () => scLegs(), feet: () => scFeet() },
                         el: { head: elHead, body: elBody, hands: elHands, legs: elLegs, feet: elFeet },
@@ -4185,7 +4271,8 @@
                         st: { head: stHead, body: stBody, hands: stHands, legs: stLegs, feet: stFeet },
                         en: { head: enHead, body: enBody, hands: enHands, legs: enLegs, feet: enFeet } };
     // рисунок детали + надбавка за её уровень (TIER); деталь без рисунка — просто цвет костюма
-    const deco = slot => { if (look || !worn[slot]) return '';
+    const deco = slot => { if (look) return SKIN_DECO[slot] ? SKIN_DECO[slot]() : '';   // скин-костюм рисуется поверх всего
+      if (!worn[slot]) return '';
       const s = worn[slot].suit, f = (SUIT_DECO[s] || {})[slot], t = (TIER[s] || {})[slot];
       return (f ? f() : '') + (t ? t(lv(slot)) : ''); };
     // 🏆 Легендарные детали: рядом мерцают золотые искры (по две на деталь, вразнобой)
@@ -4202,7 +4289,9 @@
       'C' + (X - hr + 3) + ',36 ' + (X - hr) + ',30 ' + (X - hr) + ',22 Z';
     return '<svg class="ps-avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 236" aria-hidden="true"><defs><filter id="psGlow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="140" height="256"><feGaussianBlur stdDeviation="' +
       (look ? 1.4 + (skLvl || 1) * .25 : 2) + '" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
-      (look ? '<linearGradient id="psSk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + look.c1 + '"/><stop offset="1" stop-color="' + look.c2 + '"/>' + spin + '</linearGradient>' : '') +
+      // градиент скина — один на всю фигуру (userSpaceOnUse), а не свой на каждой детали: цвет течёт от шлема к поясу
+      (look ? '<linearGradient id="psSk" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="100" y2="140"><stop offset="0" stop-color="' + look.c1 + '"/><stop offset="1" stop-color="' + look.c2 + '"/>' + spin + '</linearGradient>' +
+        '<linearGradient id="psSkD" gradientUnits="userSpaceOnUse" x1="0" y1="110" x2="0" y2="236"><stop offset="0" stop-color="#1c2650"/><stop offset="1" stop-color="#0a1028"/></linearGradient>' : '') +
       '<filter id="psLeg" filterUnits="userSpaceOnUse" x="-10" y="-10" width="140" height="256"><feMorphology in="SourceAlpha" operator="dilate" radius=".7" result="d"/>' +
       '<feFlood flood-color="#ffcf5a"/><feComposite in2="d" operator="in" result="g"/><feGaussianBlur in="g" stdDeviation="1.8" result="b"/>' +
       '<feMerge><feMergeNode in="b"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
@@ -4211,8 +4300,12 @@
       '<path d="M1,3 q5,-3 8,2 t6,1 q2,4 -3,5 t-7,-1 q-6,-2 -4,-7z" fill="#3f4b28"/><path d="M13,12 q4,-2 7,1 q2,3 -2,5 q-4,2 -6,-1 q-2,-3 1,-5z" fill="#a69a6a"/>' +
       '<path d="M0,14 q3,-1 5,2 q1,3 -2,3 q-4,0 -3,-5z" fill="#2f3820"/><path d="M16,1 q3,0 4,3 q0,3 -3,2 q-3,-1 -1,-5z" fill="#8c9a5a"/>' +
       '<path d="M7,17 q2,-2 4,0 q1,2 -1,3 q-3,1 -3,-3z" fill="#4f5a30"/></pattern>' +
+      (look ? '<radialGradient id="psAura"><stop offset="0" stop-color="' + look.c1 + '" stop-opacity=".45"/><stop offset=".6" stop-color="' + look.c2 + '" stop-opacity=".18"/>' +
+        '<stop offset="1" stop-color="' + look.c2 + '" stop-opacity="0"/></radialGradient>' +
+        '<linearGradient id="psHolo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset=".45" stop-color="#ffffff" stop-opacity=".9"/>' +
+        '<stop offset=".55" stop-color="' + look.c1 + '" stop-opacity=".9"/><stop offset="1" stop-color="' + look.c2 + '" stop-opacity="0"/></linearGradient>' : '') +
       '<pattern id="psDigi" patternUnits="userSpaceOnUse" width="6" height="6"><rect width="3" height="3" fill="#9fd8ff"/><rect x="3" y="3" width="3" height="3" fill="#5f7fa8"/></pattern>' +
-      '</defs>' +
+      '</defs>' + skinBack() +
       (gender === "f" ? hair : '') +
       [leg(-1), leg(1), boot(-1), boot(1), neck, arm(-1), arm(1), torso, hand(-1), hand(1), headD].map(d =>
         '<path d="' + d + '" fill="' + OL + '" stroke="' + OL + '" stroke-width="2.2" stroke-linejoin="round"/>').join("") +
@@ -4233,7 +4326,7 @@
       (deco("head") || (col("head") ? P('M' + (X - hr - 2) + ',25 C' + (X - hr - 2) + ',6 ' + (X + hr + 2) + ',6 ' + (X + hr + 2) + ',25 L' + (X + hr) + ',27 L' + (X + hr) + ',21 ' +
           'L' + (X - hr) + ',21 L' + (X - hr) + ',27 Z', "head") +
         '<rect x="' + (X - hr + 1) + '" y="19.5" width="' + (2 * hr - 2) + '" height="6" rx="2.5" fill="rgba(0,255,225,.5)"/>' : '')) +
-      sparkles +
+      sparkles + skinFront() +
       '</svg>';
   }
   const effText = (line, pct) => fmt(L["ps_eff_" + line], { p: pct });
@@ -4376,8 +4469,17 @@
         (mine ? '<div class="sub2">' + L.ps_myLots + '</div>' + mine : '') +
         pager("ps-asks", asks, 10, '<div class="hint">' + L.ps_marketEmpty + '</div>'), "psMarket") +
       card(L.ps_suits, suits) + card(L.ps_arts, arts) + card(L.ps_exoTitle, exo);
-    const redraw = () => go("persona");
+    const redraw = () => refreshTab("persona");
     const done = text => async () => { if (text) notify(text, true); redraw(); };
+    // надел / снял — аватар меняется сразу, сервер подтверждает фоном; не вышло — вкладка вернётся к правде сервера
+    const repaint = () => { const ava = box.querySelector(".ps-avatar");
+      if (ava) ava.outerHTML = avatarSvg(d.gender, worn, skSuit ? skSuit.look : null, msk.suit ? msk.suit.level : 1); };
+    const instant = async (btn, path, data, change) => {
+      if (change) { change(); repaint(); }
+      let ok = false;
+      await act(btn, path, data, async () => { ok = true; redraw(); });
+      if (!ok) redraw();
+    };
     // делегирование: кнопки внутри листаемых списков и ячейки сумки перерисовываются
     box.onclick = e => {
       const b = e.target.closest("button");
@@ -4402,9 +4504,11 @@
       else if (b.dataset.pick) { psPick = psPick === b.dataset.pick ? null : b.dataset.pick;
         box.querySelectorAll("[data-pick]").forEach(x => x.classList.toggle("on", x.dataset.pick === psPick));
         document.getElementById("psPickBox").innerHTML = pickPanel(d); }
-      else if (b.dataset.wear) { const [s, p, l] = b.dataset.wear.split(":"); psPick = null; act(b, "/api/gear/equip", { suit: s, slot: p, level: Number(l) }, done(null)); }
+      else if (b.dataset.wear) { const [s, p, l] = b.dataset.wear.split(":"); psPick = null;
+        instant(b, "/api/gear/equip", { suit: s, slot: p, level: Number(l) }, () => { worn[p] = { suit: s, level: Number(l) }; }); }
       else if (b.dataset.art) { psPick = null; act(b, "/api/gear/art", { kind: b.dataset.art }, done(null)); }
-      else if (b.dataset.off) act(b, "/api/gear/unequip", { slot: b.dataset.off }, done(null));
+      else if (b.dataset.off) { const p = b.dataset.off;
+        instant(b, "/api/gear/unequip", { slot: p }, worn[p] ? () => { delete worn[p]; } : null); }
       else if (b.dataset.up) {
         const [s, p, lv] = b.dataset.up.split(":"), from = Number(lv), u = d.upgrade[s][from + 1], to = lvlName(from + 1);
         askConfirm(fmt(L.ps_upgAsk, { part: partName(s, p), lv: to, cost: bundle(u.cost), c: num(u.coins) }),
@@ -4582,7 +4686,7 @@
       card(L.gr_market, '<div class="hint">' + L.gr_marketHint + '</div>' + pager("gr-lots", lotsHtml, 8, '<div class="hint">' + L.gr_marketEmpty + '</div>')) +
       card(L.gr_glory, glory);
     bindPsSwitch(box);
-    const redraw = async () => { await refreshMe().catch(() => {}); go("persona"); };
+    const redraw = async () => { await refreshMe().catch(() => {}); refreshTab("persona"); };
     box.onclick = async e => {
       const b = e.target.closest("button");
       if (!b || b.disabled) return;

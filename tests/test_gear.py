@@ -234,7 +234,7 @@ def test_persona_view_does_not_shadow_the_act_helper():
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     body = html[html.index("async function viewPersona(box)"):html.index("const VIEWS = {")]
     assert not re.search(r"[\s,]act\s*=", body)
-    assert "act(b, \"/api/gear/equip\"" in body
+    assert "instant(b, \"/api/gear/equip\"" in body and "await act(btn, path, data" in body   # 31.10: надеть — мгновенно
 
 
 # ---------------------------------------------------------------- 💠 артефакты, 🎁 подарки, ⏱ итоги «по N» (30.10, вечер)
