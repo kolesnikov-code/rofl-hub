@@ -199,7 +199,7 @@
         artifact: '<input class="rq" type="number" min="1" max="1" value="1"><div class="hint">Вид — случайный; за сезон игроку не больше 1 бесплатного артефакта.</div>',
         skin: '<select class="rs">' + (meta.skins || []).map(x => '<option value="' + x.id + '">' + esc(x.name + " · " + x.rarity + (x.edition ? " · тираж " + x.minted + "/" + x.edition : "")) + '</option>').join("") +
               '</select><div class="hint">Мифический — только так (аукцион, подарок, приз). Кончился тираж — не выдаётся.</div>',
-        text: '<input class="rt" placeholder="например: Telegram Premium на 3 месяца">',
+        text: '<input class="rt" placeholder="например: VIP-публикация в Instagram экосистемы">',
       }[k];
     }
     function read() {
