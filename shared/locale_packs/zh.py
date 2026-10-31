@@ -505,7 +505,7 @@ STRINGS = {
     "quiz.round": (
         "🧠 <b>竞答 • {category}</b>\n"
         "🤔 问题：<b>{question}</b>\n\n"
-        "<i>🌐 题目暂时为俄语——中文题库即将上线！</i>"
+        "<i>🌐 题目暂时为英语——中文题库即将上线！</i>"
     ),
     "quiz.btn_new": "🧠 新题目",
     "quiz.timeout": "⌛ <b>时间到！</b> ⌛\n正确答案：<b>{correct}</b>",

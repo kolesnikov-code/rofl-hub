@@ -112,12 +112,22 @@ def _lang_bank(lang: str | None) -> tuple[list[dict], dict[int, dict]] | None:
 
 
 def has_lang(lang: str | None) -> bool:
-    """Есть ли вопросы на языке игрока (иначе — русская база и приписка «пока на русском»)."""
+    """Есть ли вопросы на языке игрока (иначе — английская база и приписка «пока на английском»)."""
     return lang == "ru" or _lang_bank(lang) is not None
 
 
+FALLBACK_LANG = "en"   # нет своей базы — английская: она понятнее не-русскому игроку, чем русская
+
+
+def _bank_for(lang: str | None) -> tuple[list[dict], dict[int, dict]] | None:
+    """База для игрока: своя → английская (для всех, кроме ru) → None (русская)."""
+    if not lang or lang == "ru":
+        return None
+    return _lang_bank(lang) or _lang_bank(FALLBACK_LANG)
+
+
 def _pool(lang: str | None) -> list[dict]:
-    bank = _lang_bank(lang)
+    bank = _bank_for(lang)
     if bank:
         return bank[0]
     if not _questions:
@@ -143,7 +153,7 @@ def pick_unseen(seen: set[str], lang: str | None = "ru") -> tuple[dict | None, b
 
 
 def get_question_by_id(qid: int, lang: str | None = "ru") -> dict | None:
-    bank = _lang_bank(lang)
+    bank = _bank_for(lang)
     if bank:
         return bank[1].get(qid)
     if not _by_id:

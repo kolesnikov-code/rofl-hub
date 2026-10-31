@@ -98,12 +98,21 @@ def test_question_key_ignores_case_and_spaces():
 
 
 # ---------------------------------------------------------------- 30.10: вопросы на языке игрока
-def test_language_without_translation_falls_back_to_russian_base():
+def test_language_without_translation_falls_back_to_english_base():
+    """Нет своей базы — английская (понятнее не-русскому игроку); русскому — всегда русская."""
     ql.load_questions_from_csv()
     ql._lang_banks.pop("xx", None)
     assert ql.has_lang("ru") and not ql.has_lang("xx")
     q, _ = ql.pick_unseen(set(), "xx")
-    assert q is not None and ql.get_question_by_id(q["id"], "xx") is ql.get_question_by_id(q["id"])
+    assert q is not None and ql.get_question_by_id(q["id"], "xx") is ql.get_question_by_id(q["id"], "en")
+    assert q in ql._lang_bank("en")[0]
+    assert ql.get_question_by_id(q["id"], "ru") is ql.get_question_by_id(q["id"])
+
+
+def test_untranslated_languages_say_questions_are_in_english():
+    from shared.locales import t
+    for lang in ("es", "fr", "de", "it", "pt", "pl", "id", "zh", "hi", "bn", "ar"):
+        assert "🌐" in t(lang, "quiz.round", category="X", question="Y"), lang
 
 
 def test_translated_banks_are_valid_and_match_the_russian_size():

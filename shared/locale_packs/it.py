@@ -505,7 +505,7 @@ STRINGS = {
     "quiz.round": (
         "🧠 <b>QUIZ • {category}</b>\n"
         "🤔 DOMANDA: <b>{question}</b>\n\n"
-        "<i>🌐 Per ora le domande sono in russo — il pacchetto italiano è in arrivo!</i>"
+        "<i>🌐 Per ora le domande sono in inglese — il pacchetto italiano è in arrivo!</i>"
     ),
     "quiz.btn_new": "🧠 Nuova domanda",
     "quiz.timeout": "⌛ <b>TEMPO SCADUTO!</b> ⌛\nRisposta esatta: <b>{correct}</b>",

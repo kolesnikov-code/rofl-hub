@@ -505,7 +505,7 @@ STRINGS: dict[str, str] = {
     "quiz.round": (
         "🧠 <b>QUIZ • {category}</b>\n"
         "🤔 PYTANIE: <b>{question}</b>\n\n"
-        "<i>🌐 Pytania są na razie po rosyjsku — polski pakiet już wkrótce!</i>"
+        "<i>🌐 Pytania są na razie po angielsku — polski pakiet już wkrótce!</i>"
     ),
     "quiz.btn_new": "🧠 Nowe pytanie",
     "quiz.timeout": "⌛ <b>CZAS MINĄŁ!</b> ⌛\nPoprawna odpowiedź: <b>{correct}</b>",
