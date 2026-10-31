@@ -376,7 +376,7 @@ RU: dict[str, str] = {
     "farm.dashboard": (
         "🚜 <b>СТАТУС ФЕРМЫ:</b>\n"
         "..................................................\n"
-        "🤖 Активных роботов на заводе: <b>{total} шт.</b>\n"
+        "🤖 Активных роботов на ферме: <b>{total} шт.</b>\n"
         "{intern}"
         "• Младшие Майнеры ({junior_rate} 🪙/ч): <code>{junior} шт.</code>\n"
         "• Кибер-Бурильщики ({premium_rate} 🪙/ч): <code>{premium} шт.</code>\n"
@@ -385,20 +385,20 @@ RU: dict[str, str] = {
         "• Выработка в час: <b>+{speed_hour} 🪙</b>\n"
         "• Выработка в сутки: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>УСИЛЕНИЯ:</b>\n{boosts}\n\n"
-        "📋 <b>СТАТУС ИГРОВОГО ЗАВОДА:</b>\n"
+        "📋 <b>ТОПЛИВО:</b>\n"
         "{status}\n"
         "..................................................\n"
         "📦 <b>ХОЛОДИЛЬНИК:</b>\n"
         "🥩 Запас топлива: <b>{fridge} / {capacity} шт.</b>\n"
         "💼 Котлеты на складе: <code>{inv} шт.</code>\n"
         "..................................................\n"
-        "<i>💿 Важно: роботы живут 30 дней (Мастер-дрон приостанавливает износ). "
-        "КАЖДЫЙ Кибер-Бурильщик списывает СВОЮ целую котлету из холодильника на каждые "
-        "24 часа работы: 3 робота — 3 котлеты в сутки. Следи за заправкой!</i>"
+        "<i>💿 Важно: Младшие Майнеры и Кибер-Бурильщики работают 30 дней (Мастер-дрон приостанавливает износ), Робот-Стажёр и вечный Майнер — без срока. "
+        "КАЖДЫЙ Кибер-Бурильщик берёт из холодильника СВОЮ котлету на 24 часа работы "
+        "(под Ядерным Разгоном x5 — на 8 часов): 3 Бурильщика — 3 котлеты в сутки. Следи за заправкой!</i>"
     ),
     "farm.bonus_ok": "🎁 Кибер-котлета зачислена на склад! Возвращайся через 24 часа.",
     "farm.bonus_wait": "⏳ Бонус уже забран! Следующая котлета через {hours} ч {minutes} мин.",
-    "farm.no_inv_cutlets": "❌ У тебя в инвентаре нет кибер-котлет! Купи их в /shop",
+    "farm.no_inv_cutlets": "❌ На складе нет кибер-котлет! Купи их в /shop",
     "farm.fridge_full": "📦 Твой Холодильник уже полностью забит!",
 
     # ---------------- профиль ----------------
@@ -788,8 +788,8 @@ RU: dict[str, str] = {
     "dlv.intern_upgrade": "♾ Робот-Стажёр повышен до <b>ВЕЧНОГО Младшего Майнера</b>: 5 🪙 в час без срока службы!",
     "dlv.err_no_intern": "Нет активированного Робота-Стажёра — сначала активируй его в /farm.",
     "dlv.err_intern_refs": "Для апгрейда нужно {need} активных друга (условия — в /invite), у тебя {have}.",
-    "mk.header": "📈 <b>БИРЖА КОТЛЕТ</b>\n..................................................\nОткрытых ордеров: <b>{orders}</b> · котлет на бирже: <b>{cutlets}</b> · лучшая цена: <b>{best}</b>\nКомиссия хаба: <b>{fee}%</b> с продажи (сгорает — защита от инфляции)\n🥩 У тебя на складе: <b>{inv}</b> котлет\n\n{body}\n\n<i>Купить — нажми на ордер. Продать — команда /sell.</i>",
-    "mk.empty": "Пока ни одного предложения. Выстави своё первым: /sell количество цена",
+    "mk.header": "📈 <b>БИРЖА КОТЛЕТ</b>\n..................................................\nОткрытых ордеров: <b>{orders}</b> · котлет на бирже: <b>{cutlets}</b> · лучшая цена: <b>{best}</b>\nКомиссия хаба: <b>{fee}%</b> с продажи (сгорает — защита от инфляции)\n🥩 У тебя на складе: <b>{inv}</b>\n\n{body}\n\n<i>Купить — нажми на ордер. Продать — команда /sell.</i>",
+    "mk.empty": "Пока ни одного предложения — выстави своё: /sell количество цена",
     "mk.order_line": "🥩 #{id} · <b>{qty} шт.</b> по <b>{price}</b> 🪙",
     "mk.btn_order": "🛒 #{id}: {qty} шт. по {price} 🪙",
     "mk.btn_my": "📋 Мои ордера",
@@ -800,10 +800,10 @@ RU: dict[str, str] = {
     "mk.btn_qty": "{qty} шт. — {total} 🪙",
     "mk.btn_qty_all": "Все {qty} шт. — {total} 🪙",
     "mk.buy_toast": "Сделка закрыта!",
-    "mk.buy_done": "✅ Куплено <b>{qty} котлет</b> за <b>{total} 🪙</b>. Они уже на складе — заправляй Бурильщиков!",
-    "mk.sold_notify": "💰 <b>Биржа: продажа!</b> Ордер #{id}: куплено {qty} шт. по {price}. Получено <b>+{got} 🪙</b> (комиссия {fee} сгорела).",
-    "mk.sell_help": "💰 <b>КАК ПРОДАТЬ КОТЛЕТЫ</b>\n\nКоманда: <code>/sell количество цена</code>\nПример: <code>/sell 10 250</code> — 10 котлет по 250 🪙.\n\nКотлеты берутся со склада и ждут покупателя в ордере (снять можно в любой момент). До {max_qty} шт. в ордере, до {max_orders} открытых ордеров. Комиссия {fee}% сгорает при продаже. Котлета не дешевле {min} 🪙: топливо из магазина за Звёзды всегда выгоднее биржи. Ресурсы, заявки на покупку и обмен — в игровом приложении.",
-    "mk.sell_confirm": "📝 Выставить <b>{qty} котлет</b> по <b>{price}</b> 🪙?\nСумма сделки: {total} · комиссия хаба {fee} сгорит · ты получишь <b>{got} 🪙</b>.",
+    "mk.buy_done": "✅ Куплено <b>{qty} 🥩</b> за <b>{total} 🪙</b>. Котлеты уже на складе — заправляй Кибер-Бурильщиков!",
+    "mk.sold_notify": "💰 <b>Биржа: продажа!</b> Ордер #{id}: куплено {qty} шт. по {price} 🪙. Получено <b>+{got} 🪙</b> (комиссия {fee} 🪙 сгорела).",
+    "mk.sell_help": "💰 <b>КАК ПРОДАТЬ КОТЛЕТЫ</b>\n\nКоманда: <code>/sell количество цена</code>\nПример: <code>/sell 10 250</code> — 10 котлет по 250 🪙.\n\nКотлеты берутся со склада и ждут покупателя в ордере (снять можно в любой момент). До {max_qty} шт. в ордере. Открытых лотов — {max_orders}, каждая 🐎 лошадь и 🛒 телега добавляют ещё по одному. Комиссия {fee}% сгорает при продаже. Котлета не дешевле {min} 🪙: топливо из магазина за Звёзды всегда выгоднее биржи. Ресурсы, заявки на покупку и обмен — в игровом приложении.",
+    "mk.sell_confirm": "📝 Выставить <b>{qty} 🥩</b> по <b>{price}</b> 🪙?\nСумма сделки: {total} 🪙 · комиссия хаба {fee} 🪙 сгорит · ты получишь <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ ВЫСТАВИТЬ НА БИРЖУ",
     "mk.btn_cancel": "❌ Отмена",
     "mk.sell_toast": "Ордер выставлен!",
@@ -817,11 +817,11 @@ RU: dict[str, str] = {
     "mk.err_newbie_price": "🔒 Пока аккаунт новый, покупать можно не дороже {max} 🪙 за штуку. Ограничение снимется на {level} уровне интеллекта и после {claims} ежедневных котлет.",
     "mk.err_cancel_room": "📦 На складе не хватит места: свободно {free}. Освободи место — и тогда сними лот.",
     "sw.err_ratio": "⚖️ Обмен слишком неравный: ценность сторон (по минимальным ценам биржи) может отличаться не больше чем в {x} раза.",
-    "mk.order_cancelled": "↩️ Ордер #{id} снят: <b>{qty} котлет</b> вернулись на склад.",
+    "mk.order_cancelled": "↩️ Ордер #{id} снят: котлеты (<b>{qty} 🥩</b>) вернулись на склад.",
     "mk.err_qty": "❌ Количество: от 1 до {max} шт. в ордере.",
     "mk.err_price": "❌ Цена: от {min} до {max} 🪙 за штуку.",
-    "mk.err_no_cutlets": "❌ На складе только {have} котлет. Загляни в /farm — котлеты из холодильника на биржу не идут.",
-    "mk.err_too_many": "❌ Лимит: не больше {max} открытых ордеров. Сними лишний в «Мои ордера».",
+    "mk.err_no_cutlets": "❌ Котлет на складе: {have}. Загляни в /farm — котлеты из холодильника на биржу не идут.",
+    "mk.err_too_many": "❌ Лимит: открыто уже {max}. Сними лишнее в разделе «Мои ордера» или «Мои предложения».",
     "mk.err_not_found": "❌ Ордер уже закрыт или снят.",
     "mk.err_own": "🤨 Свой ордер покупать нельзя.",
     "mk.err_insufficient": "❌ Не хватает: нужно {total} 🪙.",
@@ -860,8 +860,8 @@ RU: dict[str, str] = {
     "shop.btn_info": "ℹ️ Что даёт каждый товар",
     "sw.done_notify": "🔄 <b>Обмен #{id} состоялся!</b> Отдано {give}, получено {want}.",
     "ws.err_coins": "🔒 Не хватает монет: нужно {need} 🪙, на балансе {have} 🪙.",
-    "wk.eff_nitrogen": "❄️ Азот +40% на {h} ч",
-    "wk.eff_nuclear": "☢️ Ядерный x5 на {h} ч",
+    "wk.eff_nitrogen": "❄️ Азотное Охлаждение +40% на {h} ч",
+    "wk.eff_nuclear": "☢️ Ядерный Разгон x5 на {h} ч",
     "wk.eff_drone": "🛸 Мастер-дрон на {h} ч",
     "wk.eff_shield": "🛡 Щит на {h} ч",
     "wk.eff_unlimit": "⚡ Безлимит игр на {h} ч",
@@ -871,7 +871,7 @@ RU: dict[str, str] = {
     "wk.err_limit": "🔒 Лимит этого рецепта на неделе исчерпан ({limit}). Новая неделя — с понедельника 00:00 UTC.",
     "games.resource_full": "📦 Склад {icon} полон ({cap}) — излишек пропадает. Трать, продавай или расширь склад в мастерской.",
     "mk.err_storage_full": "📦 На складе не хватит места: свободно {free}. Расширь склад в мастерской.",
-    "mk.err_buyer_full": "📦 У покупателя полон склад — сделку сейчас не провести (свободно {free}).",
+    "mk.err_buyer_full": "📦 У покупателя на складе мало места: свободно {free}. Сделку сейчас не провести.",
     "ws.recipe_storage": "Расширить склад до {cap}",
     "ws.done_storage": "📦 <b>Склад расширен:</b> до {cap} каждого ресурса. Это навсегда.",
     "ws.err_storage_max": "📦 Склад уже максимального размера.",
@@ -884,10 +884,10 @@ RU: dict[str, str] = {
         "🔧 <b>МАСТЕРСКАЯ</b>\n"
         "..................................................\n"
         "🧰 Твои ресурсы: {stock}\n"
-        "⛏ Металл — КНБ и дуэли · 💧 Водород — Больше/Меньше · "
-        "💎 Кристаллы — Викторина · ⚙️ Детали — Кибер-Сейф. Квесты дают набор.\n\n"
+        "⛏ Металл — КНБ · 💧 Водород — Больше-Меньше · "
+        "💎 Кристаллы — Викторина · ⚙️ Детали — Кибер-Сейф. За квесты — 🪨 камень.\n\n"
         "🛡 Кибер-броня: <b>уровень {armor}/{armor_max}</b> (+{armor_pct}% к добыче за уровень, на 30 дней)\n"
-        "🚀 Шаттл: <b>{shuttle}</b> — комиссия биржи {shuttle_fee}%, до {shuttle_qty} котлет в ордере\n\n"
+        "🚀 Шаттл: <b>{shuttle}</b> — с зарядом 🔋 комиссия биржи {shuttle_fee}%, до {shuttle_qty} котлет в ордере\n\n"
         "<i>✅ — хватает ресурсов, 🔒 — пока нет. Одно нажатие — и готово.</i>"
     ),
     "ws.shuttle_yes": "собран",
@@ -906,12 +906,12 @@ RU: dict[str, str] = {
     "ws.noop": "Уже на максимуме",
     "ws.toast": "Готово!",
     "ws.done_nitrogen": "❄️ <b>Азотное Охлаждение +40%</b> активно до {until} UTC.",
-    "ws.done_nuclear": "☢️ <b>Ядерный Разгон x5</b> активен до {until} UTC. Бурильщики едят ×3 котлет!",
+    "ws.done_nuclear": "☢️ <b>Ядерный Разгон x5</b> активен до {until} UTC. Котлета у Бурильщиков горит втрое быстрее!",
     "ws.done_drone": "🛸 <b>Мастер-дрон</b> бережёт роботов до {until} UTC.",
     "ws.done_shield": "🛡 <b>Щит от налётов</b> держится до {until} UTC. Ресурсы под защитой.",
     "ws.done_cutlet": "🥩 Готово: <b>+{qty} 🥩</b> кибер-котлеты на складе. Заправляй в /farm!",
     "ws.done_armor": "🛡 <b>Кибер-броня уровня {level}!</b> Добыча фермы: <b>+{percent}%</b> на 30 дней.",
-    "ws.done_shuttle": "🚀 <b>Шаттл собран!</b> Комиссия на твои продажи теперь {fee}%, в ордере до {qty} котлет. Шаттл только твой и навсегда.",
+    "ws.done_shuttle": "🚀 <b>Шаттл собран!</b> Заряди его батарейкой (1 🔋 = 30 дней) — и комиссия на твои продажи {fee}%, в ордере до {qty} котлет. Шаттл только твой и навсегда.",
     "ws.err_unknown": "❌ Такого рецепта нет.",
     "ws.err_off": "🔧 Этот рецепт сейчас недоступен.",
     "ws.err_locked": "🔒 Рецепт откроется через {hours} ч — новые рецепты открываются по одному в сутки.",
@@ -944,7 +944,7 @@ RU: dict[str, str] = {
     "tech.err_tool": "🧰 Нужен набор инструментов {tool}-го уровня — собери его в Лаборатории.",
     "tech.err_cooldown": "⏳ Следующий уровень можно изучить через {hours} ч.",
     "tech.err_science": "📚 Науку {level}-го уровня можно изучить, когда все остальные технологии изучены до {level}-го уровня.",
-    "ws.err_items_full": "📦 Склад изделий полон: не больше {max} изделий. Включи что-нибудь или расширь склад.",
+    "ws.err_items_full": "📦 Склад изделий полон: не больше {max} изделий. Используй что-нибудь из запаса или расширь склад.",
     "post.scope_team": "Командный зачёт",
     "post.scope_clan": "Зачёт кланов",
     "post.scope_teams": "Команды и кланы",
@@ -990,7 +990,7 @@ RU: dict[str, str] = {
     "bt.err_scope": "Эта битва не для твоего типа команды.",
     "bt.err_full": "✅ Заявка команды уже полная.",
     "bt.err_battery": "🔋 Нет батарейки — собери её в мастерской.",
-    "horse.err_max": "🐎 В конюшне уже {max} лошади — больше не поместится.",
+    "horse.err_max": "🐎 В конюшне уже {max} лошадей — больше не поместится.",
     "horse.err_coins": "🪙 Лошадь стоит {price} 🪙 — пока не хватает.",
     "shuttle.err_none": "🚀 Сначала собери Шаттл в мастерской.",
     "cart.err_horse": "🛒 Телеге нужна лошадь: телег не больше, чем лошадей (и не больше {max}).",
@@ -1476,7 +1476,7 @@ EN: dict[str, str] = {
     "farm.dashboard": (
         "🚜 <b>FARM STATUS:</b>\n"
         "..................................................\n"
-        "🤖 Active robots at the plant: <b>{total}</b>\n"
+        "🤖 Active robots on the farm: <b>{total}</b>\n"
         "{intern}"
         "• Miner Bots ({junior_rate} 🪙/h): <code>{junior}</code>\n"
         "• Cyber-Drillers ({premium_rate} 🪙/h): <code>{premium}</code>\n"
@@ -1485,20 +1485,20 @@ EN: dict[str, str] = {
         "• Output per hour: <b>+{speed_hour} 🪙</b>\n"
         "• Output per day: <b>+{speed_day} 🪙</b>\n\n"
         "⚡ <b>BOOSTS:</b>\n{boosts}\n\n"
-        "📋 <b>PLANT STATUS:</b>\n"
+        "📋 <b>FUEL:</b>\n"
         "{status}\n"
         "..................................................\n"
         "📦 <b>FRIDGE:</b>\n"
         "🥩 Fuel stock: <b>{fridge} / {capacity}</b>\n"
         "💼 Cutlets in storage: <code>{inv}</code>\n"
         "..................................................\n"
-        "<i>💿 Important: robots live 30 days (the Master Drone pauses wear). "
-        "EVERY Cyber-Driller burns its OWN whole cutlet from the fridge per 24 hours of work: "
-        "3 robots — 3 cutlets a day. Keep an eye on the fuel!</i>"
+        "<i>💿 Important: Miner Bots and Cyber-Drillers work for 30 days (the Master Drone pauses wear), the Intern Bot and an eternal Miner have no limit. "
+        "EVERY Cyber-Driller takes its OWN cutlet from the fridge for 24 hours of work (8 hours under Nuclear Overclock x5): "
+        "3 Drillers — 3 cutlets a day. Keep an eye on the fuel!</i>"
     ),
     "farm.bonus_ok": "🎁 A cyber-cutlet was added to your inventory! Come back in 24 hours.",
     "farm.bonus_wait": "⏳ Bonus already claimed! Next cutlet in {hours}h {minutes}m.",
-    "farm.no_inv_cutlets": "❌ No cyber-cutlets in your inventory! Buy some in /shop",
+    "farm.no_inv_cutlets": "❌ No cyber-cutlets in storage! Buy some in /shop",
     "farm.fridge_full": "📦 Your fridge is already full!",
 
     # ---------------- profile ----------------
@@ -1889,8 +1889,8 @@ EN: dict[str, str] = {
     "dlv.intern_upgrade": "♾ Your Intern Bot was promoted to an <b>ETERNAL Miner Bot</b>: 5 🪙 per hour, no expiry!",
     "dlv.err_no_intern": "No activated Intern Bot — activate it in /farm first.",
     "dlv.err_intern_refs": "The upgrade needs {need} active friends (see /invite for the rules); you have {have}.",
-    "mk.header": "📈 <b>CUTLET MARKET</b>\n..................................................\nOpen orders: <b>{orders}</b> · cutlets listed: <b>{cutlets}</b> · best price: <b>{best}</b>\nHub fee: <b>{fee}%</b> per sale (burned — inflation shield)\n🥩 In your inventory: <b>{inv}</b> cutlets\n\n{body}\n\n<i>Tap an order to buy. To sell, use /sell.</i>",
-    "mk.empty": "No offers yet. Be the first: /sell quantity price",
+    "mk.header": "📈 <b>CUTLET MARKET</b>\n..................................................\nOpen orders: <b>{orders}</b> · cutlets listed: <b>{cutlets}</b> · best price: <b>{best}</b>\nHub fee: <b>{fee}%</b> per sale (burned — inflation shield)\n🥩 In your storage: <b>{inv}</b>\n\n{body}\n\n<i>Tap an order to buy. To sell, use /sell.</i>",
+    "mk.empty": "No offers yet — list yours: /sell quantity price",
     "mk.order_line": "🥩 #{id} · <b>{qty} pcs</b> at <b>{price}</b> 🪙",
     "mk.btn_order": "🛒 #{id}: {qty} pcs at {price} 🪙",
     "mk.btn_my": "📋 My orders",
@@ -1901,10 +1901,10 @@ EN: dict[str, str] = {
     "mk.btn_qty": "{qty} pcs — {total} 🪙",
     "mk.btn_qty_all": "All {qty} pcs — {total} 🪙",
     "mk.buy_toast": "Deal closed!",
-    "mk.buy_done": "✅ Bought <b>{qty} cutlets</b> for <b>{total} 🪙</b>. They're in your inventory — fuel your Drillers!",
-    "mk.sold_notify": "💰 <b>Market: sold!</b> Order #{id}: {qty} pcs at {price}. You received <b>+{got} 🪙</b> ({fee} fee burned).",
-    "mk.sell_help": "💰 <b>HOW TO SELL CUTLETS</b>\n\nCommand: <code>/sell quantity price</code>\nExample: <code>/sell 10 250</code> — 10 cutlets at 250 🪙 each.\n\nCutlets leave your inventory and wait in the order (cancel anytime). Up to {max_qty} pcs per order, up to {max_orders} open orders. A {fee}% fee is burned on sale. A cutlet can't go below {min} 🪙: fuel from the shop for Stars is always the better deal. Resources, buy orders and swaps are in the game app.",
-    "mk.sell_confirm": "📝 List <b>{qty} cutlets</b> at <b>{price}</b> 🪙?\nDeal total: {total} · hub fee {fee} burns · you get <b>{got} 🪙</b>.",
+    "mk.buy_done": "✅ Bought <b>{qty} 🥩</b> for <b>{total} 🪙</b>. The cutlets are in your storage — fuel your Cyber-Drillers!",
+    "mk.sold_notify": "💰 <b>Market: sold!</b> Order #{id}: {qty} pcs at {price} 🪙. You received <b>+{got} 🪙</b> ({fee} 🪙 fee burned).",
+    "mk.sell_help": "💰 <b>HOW TO SELL CUTLETS</b>\n\nCommand: <code>/sell quantity price</code>\nExample: <code>/sell 10 250</code> — 10 cutlets at 250 🪙 each.\n\nCutlets leave your inventory and wait in the order (cancel anytime). Up to {max_qty} pcs per order, {max_orders} open lots, plus one more for each 🐎 horse and 🛒 cart. A {fee}% fee is burned on sale. A cutlet can't go below {min} 🪙: fuel from the shop for Stars is always the better deal. Resources, buy orders and swaps are in the game app.",
+    "mk.sell_confirm": "📝 List <b>{qty} 🥩</b> at <b>{price}</b> 🪙?\nDeal total: {total} 🪙 · hub fee {fee} 🪙 burns · you get <b>{got} 🪙</b>.",
     "mk.btn_confirm_sell": "✅ LIST ON THE MARKET",
     "mk.btn_cancel": "❌ Cancel",
     "mk.sell_toast": "Order listed!",
@@ -1918,11 +1918,11 @@ EN: dict[str, str] = {
     "mk.err_newbie_price": "🔒 While your account is new, you can buy at no more than {max} 🪙 apiece. The limit lifts at intelligence level {level} and after {claims} daily cutlets.",
     "mk.err_cancel_room": "📦 Not enough storage room: {free} free. Make room first, then withdraw the lot.",
     "sw.err_ratio": "⚖️ This swap is too uneven: the two sides (valued at the market's minimum prices) may differ by at most {x}×.",
-    "mk.order_cancelled": "↩️ Order #{id} cancelled: <b>{qty} cutlets</b> returned to your inventory.",
+    "mk.order_cancelled": "↩️ Order #{id} cancelled: cutlets (<b>{qty} 🥩</b>) returned to your storage.",
     "mk.err_qty": "❌ Quantity: 1 to {max} pcs per order.",
     "mk.err_price": "❌ Price: {min} to {max} 🪙 each.",
-    "mk.err_no_cutlets": "❌ Only {have} cutlets in your inventory. Fridge cutlets can't be listed — see /farm.",
-    "mk.err_too_many": "❌ Limit: no more than {max} open orders. Cancel one in “My orders”.",
+    "mk.err_no_cutlets": "❌ Cutlets in storage: {have}. Fridge cutlets can't be listed — see /farm.",
+    "mk.err_too_many": "❌ Limit: {max} already open. Cancel one in “My orders” or “My offers”.",
     "mk.err_not_found": "❌ This order is already closed.",
     "mk.err_own": "🤨 You can't buy your own order.",
     "mk.err_insufficient": "❌ Not enough: {total} 🪙 needed.",
@@ -1961,8 +1961,8 @@ EN: dict[str, str] = {
     "shop.btn_info": "ℹ️ What each item gives",
     "sw.done_notify": "🔄 <b>Swap #{id} completed!</b> Given {give}, received {want}.",
     "ws.err_coins": "🔒 Not enough coins: {need} 🪙 needed, you have {have} 🪙.",
-    "wk.eff_nitrogen": "❄️ Nitrogen +40% for {h} h",
-    "wk.eff_nuclear": "☢️ Nuclear x5 for {h} h",
+    "wk.eff_nitrogen": "❄️ Nitrogen Cooling +40% for {h} h",
+    "wk.eff_nuclear": "☢️ Nuclear Overclock x5 for {h} h",
     "wk.eff_drone": "🛸 Master Drone for {h} h",
     "wk.eff_shield": "🛡 Shield for {h} h",
     "wk.eff_unlimit": "⚡ Unlimited games for {h} h",
@@ -1972,7 +1972,7 @@ EN: dict[str, str] = {
     "wk.err_limit": "🔒 This recipe's weekly limit is used up ({limit}). The new week starts Monday 00:00 UTC.",
     "games.resource_full": "📦 {icon} storage is full ({cap}) — extra loot is lost. Spend, sell or expand storage in the workshop.",
     "mk.err_storage_full": "📦 Not enough storage space: {free} free. Expand storage in the workshop.",
-    "mk.err_buyer_full": "📦 The buyer's storage is full — the deal can't go through now ({free} free).",
+    "mk.err_buyer_full": "📦 The buyer is short on storage space: {free} free. The deal can't go through now.",
     "ws.recipe_storage": "Expand storage to {cap}",
     "ws.done_storage": "📦 <b>Storage expanded:</b> up to {cap} of each resource. Permanent.",
     "ws.err_storage_max": "📦 Storage is already at max size.",
@@ -1985,10 +1985,10 @@ EN: dict[str, str] = {
         "🔧 <b>WORKSHOP</b>\n"
         "..................................................\n"
         "🧰 Your resources: {stock}\n"
-        "⛏ Metal — RPS & duels · 💧 Hydrogen — High/Low · "
-        "💎 Crystals — Quiz · ⚙️ Parts — Cyber-Safe. Quests give a bundle.\n\n"
+        "⛏ Metal — RPS · 💧 Hydrogen — High-Low · "
+        "💎 Crystals — Quiz · ⚙️ Parts — Cyber-Safe. Quests give 🪨 stone.\n\n"
         "🛡 Cyber-armor: <b>level {armor}/{armor_max}</b> (+{armor_pct}% mining per level, for 30 days)\n"
-        "🚀 Shuttle: <b>{shuttle}</b> — market fee {shuttle_fee}%, up to {shuttle_qty} cutlets per order\n\n"
+        "🚀 Shuttle: <b>{shuttle}</b> — when charged 🔋, market fee {shuttle_fee}%, up to {shuttle_qty} cutlets per order\n\n"
         "<i>✅ — enough resources, 🔒 — not yet. One tap and it's done.</i>"
     ),
     "ws.shuttle_yes": "built",
@@ -2007,12 +2007,12 @@ EN: dict[str, str] = {
     "ws.noop": "Already maxed",
     "ws.toast": "Done!",
     "ws.done_nitrogen": "❄️ <b>Nitrogen Cooling +40%</b> active until {until} UTC.",
-    "ws.done_nuclear": "☢️ <b>Nuclear Overclock x5</b> active until {until} UTC. Drillers eat ×3 cutlets!",
+    "ws.done_nuclear": "☢️ <b>Nuclear Overclock x5</b> active until {until} UTC. Drillers burn their cutlet three times faster!",
     "ws.done_drone": "🛸 <b>Master Drone</b> protects your robots until {until} UTC.",
     "ws.done_shield": "🛡 <b>Raid shield</b> holds until {until} UTC. Your resources are safe.",
     "ws.done_cutlet": "🥩 Done: <b>+{qty} 🥩</b> cyber-cutlets in your inventory. Refuel in /farm!",
     "ws.done_armor": "🛡 <b>Cyber-armor level {level}!</b> Farm mining: <b>+{percent}%</b> for 30 days.",
-    "ws.done_shuttle": "🚀 <b>Shuttle built!</b> The fee on your sales is now {fee}%, up to {qty} cutlets per order. The shuttle is yours only, forever.",
+    "ws.done_shuttle": "🚀 <b>Shuttle built!</b> Charge it with a battery (1 🔋 = 30 days) and the fee on your sales is {fee}%, up to {qty} cutlets per order. The shuttle is yours only, forever.",
     "ws.err_unknown": "❌ No such recipe.",
     "ws.err_off": "🔧 This recipe isn't available right now.",
     "ws.err_locked": "🔒 This recipe unlocks in {hours} h — new recipes open one per day.",
@@ -2045,7 +2045,7 @@ EN: dict[str, str] = {
     "tech.err_tool": "🧰 You need a level-{tool} tool kit — build it in the Lab.",
     "tech.err_cooldown": "⏳ The next level can be researched in {hours} h.",
     "tech.err_science": "📚 Science level {level} opens once all other techs are at level {level}.",
-    "ws.err_items_full": "📦 Item storage is full: no more than {max} items. Use something or expand storage.",
+    "ws.err_items_full": "📦 Item storage is full: no more than {max} items. Use something from your stock or expand storage.",
     "post.scope_team": "Team ranking",
     "post.scope_clan": "Clan ranking",
     "post.scope_teams": "Teams and clans",

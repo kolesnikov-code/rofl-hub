@@ -455,7 +455,7 @@ def test_workshop_sources_cover_every_resource():
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
     for k in ALL_KINDS:
         assert f"res_{k}_src:" in html, k
-    assert 'res_metal_src: "КНБ"' in html                                # дуэли дают камень, не металл
+    assert 'res_metal_src: "КНБ, рудники"' in html                               # дуэли дают камень, не металл
 
 
 # ---------- 28.10: холодильник на ферме, старт 500, телега +1 лот, отступ в Лаборатории ----------

@@ -18,7 +18,7 @@ from shared.database import db
 from shared.economy import (
     MARKET_CUTLET_MIN_PRICE,
     MARKET_FEE_PERCENT,
-    MARKET_MAX_OPEN_ORDERS,
+    MARKET_BASE_LOTS,
     MARKET_MAX_QTY,
     MARKET_SHOWCASE_LIMIT,
     market_fee,
@@ -100,7 +100,7 @@ async def market_sell_help(callback: types.CallbackQuery, user_lang: str = "ru")
     await callback.answer()
     await callback.message.answer(
         t(user_lang, "mk.sell_help", max_qty=MARKET_MAX_QTY, fee=MARKET_FEE_PERCENT,
-          max_orders=MARKET_MAX_OPEN_ORDERS, min=MARKET_CUTLET_MIN_PRICE), parse_mode="HTML")
+          max_orders=MARKET_BASE_LOTS, min=MARKET_CUTLET_MIN_PRICE), parse_mode="HTML")
 
 
 # ============================================================================
@@ -187,7 +187,7 @@ async def cmd_sell(message: types.Message, user_lang: str = "ru"):
     if len(parts) != 3 or not (parts[1].isdigit() and parts[2].isdigit()):
         await message.answer(
             t(user_lang, "mk.sell_help", max_qty=MARKET_MAX_QTY, fee=MARKET_FEE_PERCENT,
-              max_orders=MARKET_MAX_OPEN_ORDERS, min=MARKET_CUTLET_MIN_PRICE), parse_mode="HTML")
+              max_orders=MARKET_BASE_LOTS, min=MARKET_CUTLET_MIN_PRICE), parse_mode="HTML")
         return
     qty, price = int(parts[1]), int(parts[2])
     async with db.pool.acquire() as conn:
