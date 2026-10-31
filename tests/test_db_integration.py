@@ -3543,6 +3543,13 @@ async def test_gear_season_cap_full_set_upgrade_market_and_exo(conn):
     got = await gear.drop_random(conn, 3101, 9, "T1", now, rng=_r.Random(7))
     assert len(got) == 5 and await gear.drop_random(conn, 3101, 3, "T2", now) == []
     assert await gear.season_drops(conn, 3101, now) == 5
+    # подарок владельца из пульта (capped=False) — мимо лимита и лимит не тратит
+    from shared.prizes import grant
+    assert await grant(conn, 3101, [{"kind": "gear", "qty": 3}, {"kind": "artifact", "qty": 1}], "GIFT_T_U3101", now,
+                       capped=False)
+    assert await conn.fetchval("SELECT COUNT(*) FROM gear_ledger WHERE user_id = 3101 AND reason = 'gift'") == 4
+    assert await gear.season_drops(conn, 3101, now) == 5
+    assert await gear.drop_artifacts(conn, 3101, 1, "T3", now)                     # свой лимит артефакта цел
     # 2) полный комплект шахтёра — костюм действует, сняли шлем — нет
     for p in GEAR_SLOTS:
         await gear.change_gear(conn, 3101, "mn", p, 1, 1, "test")

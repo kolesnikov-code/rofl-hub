@@ -286,27 +286,29 @@ async def season_drops(conn, user_id: int, now: datetime, artifacts: bool = Fals
 
 
 async def drop_artifacts(conn, user_id: int, qty: int, ref: str, now: datetime,
-                         rng: random.Random | None = None) -> list[str]:
-    """Случайные артефакты, не больше остатка сезонного лимита. Возвращает виды."""
+                         rng: random.Random | None = None, capped: bool = True) -> list[str]:
+    """Случайные артефакты, не больше остатка сезонного лимита. Возвращает виды.
+    capped=False — личный подарок владельца из пульта: лимит не проверяется и не тратится (reason 'gift')."""
     rng = rng or random.SystemRandom()
-    left = ARTIFACT_SEASON_CAP - await season_drops(conn, user_id, now, artifacts=True)
+    left = ARTIFACT_SEASON_CAP - await season_drops(conn, user_id, now, artifacts=True) if capped else qty
     out = []
     for _ in range(max(0, min(qty, left))):
         kind = rng.choice(ARTIFACT_KINDS)
-        await change_gear(conn, user_id, art_code(kind), ARTIFACT_BAG_SLOT, 1, 1, "drop", ref)
+        await change_gear(conn, user_id, art_code(kind), ARTIFACT_BAG_SLOT, 1, 1, "drop" if capped else "gift", ref)
         out.append(kind)
     return out
 
 
 async def drop_random(conn, user_id: int, qty: int, ref: str, now: datetime,
-                      rng: random.Random | None = None) -> list[tuple[str, str]]:
-    """Случайные детали 1-го уровня, не больше остатка сезонного лимита. Возвращает [(костюм, слот)]."""
+                      rng: random.Random | None = None, capped: bool = True) -> list[tuple[str, str]]:
+    """Случайные детали 1-го уровня, не больше остатка сезонного лимита. Возвращает [(костюм, слот)].
+    capped=False — личный подарок владельца из пульта: лимит не проверяется и не тратится (reason 'gift')."""
     rng = rng or random.SystemRandom()
-    left = GEAR_SEASON_CAP - await season_drops(conn, user_id, now)
+    left = GEAR_SEASON_CAP - await season_drops(conn, user_id, now) if capped else qty
     out = []
     for _ in range(max(0, min(qty, left))):
         suit, slot = rng.choice(GEAR_SUITS), rng.choice(GEAR_SLOTS)
-        await change_gear(conn, user_id, suit, slot, 1, 1, "drop", ref)
+        await change_gear(conn, user_id, suit, slot, 1, 1, "drop" if capped else "gift", ref)
         out.append((suit, slot))
     return out
 

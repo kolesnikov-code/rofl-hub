@@ -149,7 +149,7 @@ def _dur(hours: int) -> str:
     return f"{hours}h"
 
 
-async def grant(conn, user_id: int, rewards: list[dict], ref: str, now: datetime) -> bool:
+async def grant(conn, user_id: int, rewards: list[dict], ref: str, now: datetime, capped: bool = True) -> bool:
     """
     Выдаёт награду одному игроку (внутри транзакции вызывающего). False — уже выдано по этому ref
     (или игрока нет). Ручные призы (text) только фиксируются.
@@ -188,10 +188,10 @@ async def grant(conn, user_id: int, rewards: list[dict], ref: str, now: datetime
             await add_drone(conn, user_id, r["drone"], r.get("qty", 1))
         elif k == "gear":
             from shared.gear import drop_random
-            await drop_random(conn, user_id, r["qty"], ref, now)
+            await drop_random(conn, user_id, r["qty"], ref, now, capped=capped)
         elif k == "artifact":
             from shared.gear import drop_artifacts
-            await drop_artifacts(conn, user_id, r["qty"], ref, now)
+            await drop_artifacts(conn, user_id, r["qty"], ref, now, capped=capped)
         elif k == "skin":
             from shared.skins import SkinError, grant as grant_skin
             try:
@@ -208,16 +208,17 @@ async def grant(conn, user_id: int, rewards: list[dict], ref: str, now: datetime
 
 
 async def grant_many(pool_conn, user_ids: list[int], rewards: list[dict], ref_prefix: str, now: datetime,
-                     granted: list[int] | None = None) -> tuple[int, int]:
+                     granted: list[int] | None = None, capped: bool = True) -> tuple[int, int]:
     """
     Каждому игроку — своя транзакция (сбой одного не отменяет остальных). (выдано, сбоев).
     granted — сюда дописываются ID получивших (для личных сообщений о наградах).
+    capped=False — подарок владельца из пульта: детали костюмов и артефакты мимо сезонного лимита.
     """
     ok = bad = 0
     for uid in user_ids:
         try:
             async with pool_conn.transaction():
-                if await grant(pool_conn, uid, rewards, f"{ref_prefix}_U{uid}", now):
+                if await grant(pool_conn, uid, rewards, f"{ref_prefix}_U{uid}", now, capped=capped):
                     ok += 1
                     if granted is not None:
                         granted.append(uid)

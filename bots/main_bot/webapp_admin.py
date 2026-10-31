@@ -340,7 +340,8 @@ async def handle_admin_reward(request: web.Request) -> web.Response:
             return _fail(f"Получатели не найдены ({label})")
         if data.get("dry_run"):
             return web.json_response({"ok": True, "count": len(ids), "label": label})
-        ok, bad = await grant_many(conn, ids, rewards, f"GIFT{now:%Y%m%d%H%M%S}", now)
+        # подарок владельца — решение владельца: сезонный лимит деталей/артефактов его не касается
+        ok, bad = await grant_many(conn, ids, rewards, f"GIFT{now:%Y%m%d%H%M%S}", now, capped=False)
     return web.json_response({"ok": True, "given": ok, "failed": bad, "label": label})
 
 
