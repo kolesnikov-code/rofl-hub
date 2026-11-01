@@ -195,6 +195,12 @@
   .top-row .bal { font-weight: 800; }
   .loading { text-align: center; color: var(--muted); padding: 50px 0; font-size: 15px; }
   .hidden { display: none !important; }
+  /* 🪄 Тихая перерисовка: новый экран собирается невидимо (ширина та же — сетка и графики меряются верно) */
+  #app.app-next { height: 0 !important; overflow: hidden !important; visibility: hidden; pointer-events: none; margin: 0 !important; padding: 0 !important; }
+  body.busy::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 9999; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--neon), var(--accent), transparent); background-size: 50% 100%;
+    background-repeat: no-repeat; animation: busyRun 1s linear infinite; }
+  @keyframes busyRun { from { background-position: -50% 0; } to { background-position: 150% 0; } }
   .made-by { margin-top: 6px; }
   .made-by a { color: var(--neon); text-decoration: none; font-weight: 700; }
   .scene-btn { background: linear-gradient(90deg, var(--accent), #ff9d3d); color: #1a1200; box-shadow: 0 0 18px rgba(255,217,61,.35); }
@@ -1322,13 +1328,17 @@
     notify(L.error, false);
   }
   // Действие с сервером: блокируем кнопку, показываем итог, перерисовываем вкладку
+  // Пока onOk ждёт /api/me, данные вкладки уже грузятся параллельно (prefetchTab) — перерисовка берёт их из памяти.
   async function act(btn, path, data, onOk) {
     if (btn) btn.disabled = true;
+    busy(true);
     try {
       const res = await post(path, data);
       if (res.ok === false) { notify(res.message || L.error, false); if (btn) btn.disabled = false; return; }
+      prefetchTab(current).catch(() => {});
       await onOk(res);
     } catch (e) { apiError(e); if (btn) btn.disabled = false; }
+    finally { if (!pendingBox) busy(false); }
   }
 
   function card(title, inner, id) {
@@ -1491,19 +1501,27 @@
     if (nav !== navSeq || current !== tab) return;
     return go(tab, { quiet: true });
   }
+  // 🪄 БЕЗ «ПЕРЕЗАГРУЗКИ» (владелец 01.11: «выставил лот — жду, страница прогружается заново»): перерисовка той же
+  // вкладки (после действия, смены товара/подвкладки, свежих данных фоном) рисуется в НЕВИДИМЫЙ контейнер, пока на
+  // экране остаётся прежний, и подменяет его одним кадром — без «Загрузка…», без прыжка прокрутки; пока ждём сервер,
+  // сверху бежит тонкая полоска. Новый контейнер стоит ПЕРЕД старым — getElementById находит его элементы.
+  let shownTab = null, pendingBox = null;
+  function busy(on) { document.body.classList.toggle("busy", !!on); }
   async function go(tab, opt) {
-    const quiet = !!(opt && opt.quiet);   // тихая перерисовка свежими данными: без «Загрузка…», прокрутка на месте
+    // тихая перерисовка: та же вкладка уже на экране (игры — свои экраны, им нужен чистый лист)
+    const quiet = !!(opt && opt.quiet) || (tab === current && tab === shownTab && tab !== "games");
     if (quiet && current !== tab) return;
     current = tab;
     const nav = ++navSeq, y = window.scrollY;
     stopGameTimer();   // таймер викторины не тикает на другой вкладке
     try { localStorage.setItem("rofl_tab", tab); } catch (e) {}
+    if (pendingBox) { pendingBox.remove(); pendingBox = null; busy(false); }
     if (!quiet) { renderTabs(); window.scrollTo(0, 0); }
     // Каждое нажатие рисует в СВЕЖИЙ контейнер: медленный ответ прошлой вкладки допишет в старый, уже снятый
     // со страницы, и не перекроет новую (баг «нажал Склад — открылась Биржа»)
     const old = document.getElementById("app"), box = old.cloneNode(false);
-    old.replaceWith(box);
-    if (!quiet) box.innerHTML = '<div class="loading">' + L.loading + '</div>';
+    if (quiet) { box.classList.add("app-next"); old.before(box); pendingBox = box; busy(true); }
+    else { old.replaceWith(box); shownTab = null; box.innerHTML = '<div class="loading">' + L.loading + '</div>'; }
     box.dataset.cols = VIEW_COLS[tab] || 2;
     const vc = NO_CACHE_TABS.indexOf(tab) < 0 ? { used: new Set() } : null;
     viewCache = vc;
@@ -1517,8 +1535,15 @@
     } finally {
       if (viewCache === vc) viewCache = null;
     }
-    if (quiet) window.scrollTo(0, y);
-    else if (vc && vc.used.size && nav === navSeq) revalidate(tab, nav, Array.from(vc.used));
+    if (quiet) {
+      if (pendingBox !== box) return;            // пока рисовали, игрок ушёл дальше — этот кадр не нужен
+      pendingBox = null; busy(false);
+      if (old.isConnected) old.remove();
+      box.classList.remove("app-next");
+      window.scrollTo(0, y);
+    }
+    if (nav === navSeq) shownTab = tab;
+    if (!quiet && vc && vc.used.size && nav === navSeq) revalidate(tab, nav, Array.from(vc.used));
   }
   async function refreshMe() { me = await api("/api/me"); }
   // ================= 🧭 Окна: выбор режима и вызов на дуэль =================

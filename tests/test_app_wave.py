@@ -345,3 +345,18 @@ def test_app_api_never_tests_aiohttp_responses_for_truth():
         for line in f.read_text(encoding="utf-8").splitlines():
             if re.search(r"\bif \w+ := await ", line):
                 raise AssertionError(f"{f.name}: {line.strip()} — пиши `if (x := await ...) is not None:`")
+
+
+def test_same_tab_redraw_keeps_the_old_screen_until_the_new_one_is_ready():
+    """Владелец 01.11: «выставил лот — жду, страница прогружается заново». Перерисовка той же вкладки (после действия,
+    смены товара/подвкладки) собирается в невидимом контейнере и подменяет экран одним кадром: без «Загрузка…» и
+    без прыжка прокрутки; данные вкладки грузятся параллельно с /api/me."""
+    html = Path("static/webapp/index.html").read_text(encoding="utf-8")
+    go = html[html.index("  async function go(tab, opt) {"):html.index("  async function refreshMe()")]
+    assert 'tab === current && tab === shownTab && tab !== "games"' in go     # та же вкладка — тихо (игры — нет)
+    assert 'box.classList.add("app-next"); old.before(box)' in go            # новый контейнер ПЕРЕД старым
+    assert go.index('<div class="loading">') > go.index("if (quiet)")       # «Загрузка…» — только при смене вкладки
+    assert "window.scrollTo(0, y)" in go and "if (pendingBox !== box) return;" in go
+    assert "#app.app-next" in html and "body.busy::before" in html
+    act = html[html.index("  async function act("):html.index("  function card(")]
+    assert act.index("prefetchTab(current)") < act.index("await onOk(res)")
