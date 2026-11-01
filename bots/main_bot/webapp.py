@@ -215,13 +215,26 @@ async def handle_index(request: web.Request) -> web.Response:
     return _page("index.html", request)
 
 
+def _doc_page(base: str, request: web.Request) -> web.Response:
+    """
+    Документ на языке игрока: ?lang=<код> → static/webapp/docs/<base>.<код>.html; перевода нет — английский,
+    русским и без языка — оригинал static/webapp/<base>.html.
+    """
+    lang = request.query.get("lang", "")
+    if lang.isalpha() and lang != "ru":
+        for code in (lang, "en"):
+            if (WEBAPP_DIR / "docs" / f"{base}.{code}.html").exists():
+                return _page(f"docs/{base}.{code}.html", request)
+    return _page(f"{base}.html", request)
+
+
 async def handle_faq(request: web.Request) -> web.Response:
-    """Полный справочник экосистемы — публичная страница без авторизации."""
-    return _page("faq.html", request)
+    """Полный справочник экосистемы — публичная страница без авторизации (14 языков, ?lang=)."""
+    return _doc_page("faq", request)
 
 async def handle_guide(request: web.Request) -> web.Response:
-    """🧭 «Как играть»: каждый раздел приложения по порядку вкладок — публичная страница без авторизации."""
-    return _page("guide.html", request)
+    """🧭 «Как играть»: каждый раздел приложения по порядку вкладок — публичная страница без авторизации (?lang=)."""
+    return _doc_page("guide", request)
 
 
 async def handle_rules(request: web.Request) -> web.Response:

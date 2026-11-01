@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROFL HUB — Cara bermain</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240;
+    --neon: #00ffe1; --accent: #ffd93d; --pink: #ff4d8d;
+    --text: #e8ecff; --muted: #8a93b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  a { color: var(--accent); font-weight: 700; text-decoration: none; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 30px; line-height: 1.55;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon); text-shadow: 0 0 18px rgba(0,255,225,.45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  details {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0,255,225,.14); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 14px 16px; font-weight: 800; font-size: 15px;
+    color: var(--neon); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "▾"; float: right; color: var(--muted); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(180deg); }
+  .body { padding: 0 16px 14px; font-size: 14px; }
+  .body h4 { color: var(--accent); margin: 12px 0 4px; font-size: 14px; }
+  .body p { margin-bottom: 8px; }
+  .body ul, .body ol { margin: 0 0 8px 18px; }
+  .body li { margin-bottom: 4px; }
+  b { color: #fff; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+    background: rgba(0,255,225,.12); border: 1px solid rgba(0,255,225,.35); color: var(--neon);
+    font-weight: 700;
+  }
+  .warn { color: var(--pink); font-weight: 700; }
+  .note { color: var(--muted); font-size: 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin: 4px 0 10px; }
+  .tbl th { text-align: left; color: var(--accent); font-weight: 800; padding: 6px 4px;
+    border-bottom: 1px solid rgba(0,255,225,.25); }
+  .tbl td { padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+  .tbl td:first-child { white-space: nowrap; font-weight: 700; color: #fff; }
+  .scroll { overflow-x: auto; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="logo">🧭 CARA BERMAIN</div>
+<div class="sub">semua bagian aplikasi sesuai urutan tab — apa itu, untuk apa, dan dari mana mendapatkannya</div>
+
+<details open id="start">
+  <summary>🚀 Mulai dari mana</summary>
+  <div class="body">
+    <ol>
+      <li>🚜 Di <b>ladang</b> aktifkan <b>Robot Magang</b> gratis dan klaim 🎁 kotlet harian — koin terus terkumpul bahkan tanpamu.</li>
+      <li>🕹 Menanglah di <b>game</b>: tiap kemenangan memberi koin dan sumber daya. Mulai dari kuis dan Kasus harian.</li>
+      <li>🎯 Di <b>paspor</b> selesaikan 3 target harian dan buka peti.</li>
+      <li>🔧 Mampir ke <b>bengkel</b>: tiap hari terbuka satu resep baru — yang pertama sudah menunggu.</li>
+    </ol>
+    <p class="note">Semua tab langsung terbuka. Mau yang lebih simpel — di paspor ada mode «🧩 Game dan cerita»: yang tersisa hanya
+    paspor, game, teman, toko, TOP, riwayat, dan info, sedangkan ekonomi disembunyikan. Ladang tetap bekerja.
+    Mode bisa diganti kapan saja.</p>
+  </div>
+</details>
+
+<details id="passport">
+  <summary>📋 Paspor</summary>
+  <div class="body">
+    <p>Halaman utamamu: siapa kamu di ROFL HUB dan apa yang sebaiknya dilakukan hari ini.</p>
+    <ul>
+      <li>🪙 <b>saldo</b>, 💎 VIP ID (kalau punya), medali musim;</li>
+      <li>🎖 <b>pangkat berdasarkan masa bermain</b>: 1 hari — Pemula, seminggu — Petarung, sebulan — Legenda, 3 bulan — ROFL, setengah tahun — LMAO, setahun — KING. Tidak bisa dibeli, hanya bisa diraih dengan bermain;</li>
+      <li>🧠 <b>level kecerdasan</b> dan berapa jawaban benar lagi sampai level berikutnya;</li>
+      <li>📦 stok semua sumber daya;</li>
+      <li>🎯 <b>target hari ini</b> — 3 tugas (menang game, duel, bonus ladang, merakit di bengkel, serbuan, transaksi di bursa, setoran ke stasiun). Selesaikan ketiganya — peti: <b>+50 🪙</b>, 10 sumber daya acak, dan bonus khusus hari itu (🪵 10, 🪨 10, atau ⚡ 3). Setiap hari ke-7 rentetan berturut-turut — tambahan <b>+200 🪙</b> dan 🐄 sapi;</li>
+      <li>🏅 <b>pencapaianku</b> — kartu bergambar yang bisa dipasang di story atau dikirim ke teman;</li>
+      <li>📣 <b>event</b> — pengumuman pertempuran, ekspedisi, dan lelang; ketuk untuk membuka;</li>
+      <li>🧭 pengalih mode: seluruh ekosistem atau «🧩 Game dan cerita»;</li>
+      <li>🎁 <b>hadiah dari pengembang</b> — panel di paling atas: ketuk «Ambil hadiah». Hadiah terkumpul sampai batas waktunya. Bagian kostum dan artefak sebagai hadiah — sesuai batas musim (5 bagian dan 1 artefak), batas di-reset setiap tanggal 1.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="persona">
+  <summary>🧍 Karakter</summary>
+  <div class="body">
+    <p>Avatarmu dan kostum-kostumnya. Tombol <b>L</b> dan <b>P</b> di sudut mengganti postur: atletis atau lebih ramping.</p>
+    <ul>
+      <li>kostum punya 5 bagian: helm, jaket, sarung tangan, celana, sepatu bot. <b>Bonus hanya berlaku kalau seluruh kostum dipakai</b> — lima bagian dari satu kostum;</li>
+      <li>⚡ <b>teknisi listrik</b> — listrik di game didapat di 50% kemenangan (tanpa kostum — 25%);</li>
+      <li>⛏ <b>penambang</b> — sekali sehari +5% dari koin yang ditambang ladang dalam sehari sebelumnya, selama kostum dipakai;</li>
+      <li>🪖 <b>tentara</b> — rampasan serbuan lebih banyak, hasil ekspedisi lebih besar, dan perjalanan lebih cepat;</li>
+      <li>🥷 <b>penyamar</b> — penyerbu lebih jarang menemukanmu di pengintaian;</li>
+      <li>🔬 <b>ilmuwan</b> — level teknologi berikutnya terbuka lebih cepat;</li>
+      <li>🔧 <b>insinyur</b> — resep bengkel butuh lebih sedikit sumber daya;</li>
+      <li>bagian kostum didapat dari event (ekspedisi, pertempuran dan event, hadiah dari pengembang) — hingga 5 per musim, kelimanya berbeda. Bagian yang kamu butuhkan bisa dibeli atau dijual langsung di tab ini: tidak lebih murah dari 500 🪙, biayanya terbakar;</li>
+      <li>⬆️ tiap bagian punya tiga level: <b>Dasar → Ditingkatkan → Legendaris</b>, masing-masing sedikit memperkuat bonus. Upgrade butuh usaha: sumber daya dan koin plus <b>pengalaman bagian</b> (kemenangan, duel, serbuan, ekspedisi yang dilaluinya saat dipakai), dan untuk Legendaris — juga teknologi di Lab. Di pasar hanya dijual bagian Dasar;</li>
+      <li>💠 keenam kostum level Ditingkatkan dilebur menjadi <b>Zirah Nano-Exo</b>: semua bonus sekaligus di level Ditingkatkan. Butuh semua 30 bagian, ☢️ 1, 🔋 5, ⚡ 50, dan 3000 🪙, bagian yang dilebur hilang;</li>
+      <li>🎒 <b>tas</b> — kisi sel: ketuk barang untuk memakai, meng-upgrade, atau menjualnya;</li>
+      <li>🔒 bonus kostum dikunci pada saat aksi: melepas kostum setelah mempelajari teknologi atau berangkat ekspedisi boleh saja — potongan atau tambahan yang didapat tetap ada;</li>
+      <li>💠 <b>artefak</b> — batu untuk tiga slot sabuk di bawah avatar. Masing-masing memperkuat arahnya sendiri dan ditumpuk dengan kostum. Gratis — satu per musim, sisanya — di pasar (mulai 1000 🪙). Jenisnya: 🌩 Jantung badai (⚡), 🍀 Batu kelimpahan (⛏), 🌇 Senja merah (🪖), 👻 Bayangan hantu (🥷), 🔮 Bola pencerahan (🔬), 🤖 Prajurit mekanis (🔧).</li>
+    </ul>
+    <h4>🏆 Garasi — skin</h4>
+    <ul>
+      <li>skin tidak memberi kekuatan — hanya tampilan dan status. Semua orang bisa melihatnya: bingkai dan gelar — di TOP, di tim, dan di paspor, kostum — di avatar, penanda — di peta ekspedisi;</li>
+      <li>skin musiman punya edisi bernomor («№7 dari 500») dan masa berlaku: musim berakhir — tidak bisa dibeli lagi selamanya;</li>
+      <li>📜 <b>trofi</b>: tiap skin dan tiap bagian kostum yang dipakai mengingat apa yang telah dilaluinya — kemenangan, duel, serbuan, ekspedisi, item, penemuan. Riwayatnya ikut berpindah bersama barang, juga saat dijual;</li>
+      <li>🪜 <b>tahapan</b>: Pabrikan → 🔥 Ditempa → ⚔️ Teruji tempur → 🎖 Veteran → 👑 Termasyhur → ♾️ Abadi, 10 level. Pengalaman didapat dari event selama skin dipakai, dan level tinggi juga butuh <b>peleburan</b>: skin menyerap skin lain milikmu (yang diserap hilang, sebagian pengalamannya berpindah). Tidak bisa dicapai dengan satu game atau satu peleburan saja;</li>
+      <li>tiap tahap lebih mencolok dari sebelumnya: cahaya, bingkai berputar, percikan, mahkota;</li>
+      <li>📸 «Pamerkan» — kartu untuk story Telegram atau untuk teman;</li>
+      <li>berhasil mengumpulkan seluruh set musiman — dapat gelar hadiah gratis.</li>
+    </ul>
+    <h4>🎟 Pass musim</h4>
+    <ul>
+      <li>30 level per bulan, pengalaman — dari semua yang kamu lakukan di game: menang game +5, duel +5 (menang +10 lagi), serbuan +8…12, ekspedisi +30, item +10, misi +40, peti +30, penemuan di Lab +40;</li>
+      <li>dari kemenangan game — maksimal 150 pengalaman per hari (dengan Tanpa Batas 30 hari — 300), sisanya tanpa batas: hanya dengan game level 30 tercapai dalam 20 hari (dengan Tanpa Batas bulanan — 10 hari), dan dengan ekspedisi, misi, dan peti — lebih cepat;</li>
+      <li>jalur gratis — koin dan baterai; premium (299 ★) — lebih banyak koin, kotlet, dan 4 skin eksklusif bulan itu: penanda (level 5), bingkai (level 10), gelar (level 20), dan kostum (level 30). Tidak dijual di mana pun;</li>
+      <li>bisa dibeli di tengah bulan — semua level yang sudah dilewati langsung terbuka.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="games">
+  <summary>🕹 Game</summary>
+  <div class="body">
+    <p>Di sinilah koin dan sumber daya didapat. Menang — koin dan sumber daya game, kalah — <b>−1 🪙</b>, seri — tidak memotong apa pun dan tidak memberi apa pun.
+    Tiap game punya batas kemenangan harian sendiri, reset pukul 00:00 UTC. ⚡ <b>Tanpa Batas</b> melepas batas di semua game.
+    Setiap kemenangan punya peluang 25% untuk dapat tambahan <b>+1 ⚡</b>.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Game</th><th>Menang</th><th>Batas</th></tr>
+      <tr><td>🧠 Kuis</td><td>+2 🪙, 💎 1; setiap 10 benar — 🪨</td><td>30</td></tr>
+      <tr><td>➗ Matematika</td><td>+2 🪙; setiap 10 benar — ⚡</td><td>30</td></tr>
+      <tr><td>🏳️ Bendera dan ibu kota</td><td>+2 🪙, 💎 1</td><td>30</td></tr>
+      <tr><td>✊ Batu-Gunting-Kertas</td><td>+2 🪙, ⛏ 1</td><td>15</td></tr>
+      <tr><td>🔼 Besar/Kecil</td><td>+2 🪙, 💧 1</td><td>15</td></tr>
+      <tr><td>🔐 Brankas Siber</td><td>+5 🪙, ⚙️ 3 (kode 1 dari 4)</td><td>15</td></tr>
+      <tr><td>💻 Pembobol kode</td><td>+5 🪙, ⚙️ 2</td><td>10</td></tr>
+      <tr><td>🃏 Memori</td><td>+3 🪙, 💧 1</td><td>15</td></tr>
+    </table></div>
+    <h4>🧠 Kuis dan level kecerdasan</h4>
+    <ul>
+      <li>30 detik untuk menjawab, satu ronde — 10 pertanyaan; petunjuk 50/50 — <b>10 🪙</b>;</li>
+      <li>level N selesai dengan N×10 jawaban benar dan memberi <b>N×100 🪙</b> (level 1: 10 jawaban → +100);</li>
+      <li>di level 10, 20, 30… — satu lagi <b>Robot Magang</b> untuk ladang;</li>
+      <li>pertanyaan yang bermasalah bisa dikirim untuk dicek dengan tombol «⚠️ Laporkan pertanyaan».</li>
+    </ul>
+    <p>➗ Matematika dan 🏳️ bendera — 20 detik untuk menjawab. 💻 Pembobol kode — 4 angka berbeda dalam 10 percobaan
+    (🐂 — angka di tempat yang benar, 🐄 — ada, tapi bukan di situ). 🃏 Memori — 6 pasang dalam 12 langkah.</p>
+    <h4>🕵️ Kasus harian</h4>
+    <p>Satu kasus untuk semua pemain per hari: 4 tersangka, 4 petunjuk. Petunjuk pertama langsung terbuka, menuduh hanya boleh sekali.
+    Makin sedikit petunjuk — makin besar hadiahnya: <b>40 / 30 / 20 / 10 🪙</b> untuk 1 / 2 / 3 / 4 petunjuk.
+    Setiap hari ke-7 dalam rentetan kasus terpecahkan — <b>+50 🪙</b>.</p>
+    <h4>⚔️ Duel</h4>
+    <ul>
+      <li>batu-gunting-kertas dengan pemain <b>sungguhan</b>; meja <span class="chip">10</span> <span class="chip">100</span> <span class="chip">1000</span> 🪙;</li>
+      <li>taruhan langsung dipotong. Pemenang mengambil pot dikurangi biaya: <b>20%</b> dari pot, dengan ⚡ Tanpa Batas (harian atau bulanan) — <b>10%</b>. Biayanya terbakar;</li>
+      <li>duel tidak memberi sumber daya — hanya koin;</li>
+      <li>untuk gerakan ada 60 detik (tidak sempat — gerakan dipilih acak), seri — main ulang;</li>
+      <li>tidak ada lawan selama 30 menit — taruhan kembali;</li>
+      <li>🤝 kamu bisa menantang teman lewat link: meja menunggunya sehari, setelah itu taruhan kembali.</li>
+    </ul>
+    <h4>🗺 Misi</h4>
+    <ul>
+      <li>cerita dengan pilihan; di daftar ada 10 misi hari ini, sama untuk semua dan baru tiap hari (00:00 UTC); yang dihitung <b>3 misi baru per hari</b> (sisanya menunggu 00:00 UTC, ⚡ Tanpa Batas melepas batasnya);</li>
+      <li>untuk penyelesaian pertama: <b>20–50 🪙</b> dan 🪨 1–2; boleh dimainkan ulang sesukamu, tapi hadiahnya hanya sekali;</li>
+      <li>⭐ <b>misi epik</b> — cerita besar mulai 20 menit, terbuka dengan ⚡ Tanpa Batas; hadiahnya <b>100 🪙</b> dan 🪨 5.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="farm">
+  <summary>🚜 Ladang</summary>
+  <div class="body">
+    <p>Robot menambang koin 24 jam nonstop — bahkan saat aplikasi ditutup.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Robot</th><th>Produksi</th><th>Yang dibutuhkan</th></tr>
+      <tr><td>🤖 Robot Magang</td><td>1 🪙/jam</td><td>gratis, selamanya, tanpa bahan bakar</td></tr>
+      <tr><td>🤖 Robot Penambang</td><td>5 🪙/jam</td><td>toko, 30 hari, tanpa bahan bakar</td></tr>
+      <tr><td>⚡ Pengebor Siber</td><td>10 🪙/jam</td><td>toko, 30 hari, 1 kotlet per 24 jam</td></tr>
+    </table></div>
+    <ul>
+      <li>🎁 <b>bonus</b>: sekali tiap 24 jam — kotlet siber gratis ke gudang;</li>
+      <li>🥩 kotlet ada di <b>gudang</b>, sedangkan Pengebor makan dari <b>Kulkas</b> — pindahkan dengan tombol «Isi» (1 atau semua). Kulkas yang lebih besar (10 / 50 / 100) — di toko;</li>
+      <li>🔋 <b>Boost Nuklir x5</b> — produksi ×5, tapi kotlet Pengebor terbakar tiga kali lebih cepat: 1 kotlet untuk 8 jam;</li>
+      <li>❄️ <b>Pendingin Nitrogen +40%</b> — Robot Penambang 5→7, Pengebor 10→14 🪙/jam, bahan bakar tidak bertambah. Bersama boost — 35 dan 70 🪙/jam;</li>
+      <li>🛸 <b>Drone Master</b> — selama bekerja, robot tidak menua;</li>
+      <li>➕ bonus produksi tambahan: Zirah Siber (+10% per level, 30 hari), Stasiun Tim (+2% per level), Panji (+5%), sains (+1% per level);</li>
+      <li>♾ Robot Magang bisa diubah menjadi Robot Penambang Abadi (toko, butuh 3 teman aktif).</li>
+    </ul>
+  </div>
+</details>
+
+<details id="storage">
+  <summary>📦 Gudang</summary>
+  <div class="body">
+    <p>Semua yang kamu tambang dan rakit ada di sini.</p>
+    <ul>
+      <li>📦 <b>kapasitas</b> — berapa banyak tiap sumber daya muat: 500 → 1000 → 2000 → 3000 → 4000 → 5000 (perluasan — di bengkel). Hasil di atas kapasitas hilang, jadi kelebihannya lebih baik dipakai atau dijual;</li>
+      <li>🧰 <b>item</b> dari bengkel (jam boost, perisai, Kotak P3K, dan sebagainya) menunggu di gudang dan diaktifkan dengan tombol kapan saja kamu mau. Item muat 10% dari kapasitas (di 500 — 50 buah);</li>
+      <li>🥩 kotlet dan 🪙 koin tidak dibatasi;</li>
+      <li>🐎 <b>kuda</b>: 1 500 / 3 000 / 6 000 / 10 000 / 15 000 🪙 (maksimal 5, koinnya terbakar). Tiap kuda — +1 lot di bursa;</li>
+      <li>🚀 <b>Shuttle</b> terbang dengan baterai: 1 🔋 = 30 hari keuntungan.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="workshop">
+  <summary>🔧 Bengkel</summary>
+  <div class="body">
+    <p>Mengubah sumber daya menjadi barang berguna. Untuk pemain baru terbuka <b>satu resep per hari</b> — dari yang sederhana sampai yang legendaris
+    (yang terkunci tampak abu-abu dengan timer). Rakitan rumit butuh set perkakas dari Lab — set ini tidak habis dipakai.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Resep</th><th>Harga</th><th>Manfaat</th></tr>
+      <tr><td>1. ❄️ Nitrogen 6 jam</td><td>⛏20 💧20</td><td>Pendingin Nitrogen +40% selama 6 jam</td></tr>
+      <tr><td>2. 🔥 Api unggun</td><td>🪵10 🪨5</td><td>🔥 5 api</td></tr>
+      <tr><td>3. 🛡 Perisai 24 jam</td><td>⛏10 💎10</td><td>kamu tidak bisa dirampok lewat serbuan</td></tr>
+      <tr><td>4. 🔋 Baterai</td><td>⚡5 ⛏5 🔥1 · ⚒️</td><td>🔋 2</td></tr>
+      <tr><td>5. 🛸 Drone 24 jam</td><td>⛏25 ⚙️25</td><td>Drone Master selama sehari</td></tr>
+      <tr><td>6. ⛽ Penghemat</td><td>⚙️25</td><td>keberangkatan serbuan berikutnya tanpa hidrogen</td></tr>
+      <tr><td>7. 📦 Gudang</td><td>lihat di bawah</td><td>perluasan gudang selamanya</td></tr>
+      <tr><td>8. 🛒 Gerobak</td><td>🪵40 ⛏20 🔥2 · ⚒️</td><td>+1 lot di bursa (gerobak tidak lebih banyak dari kuda, maksimal 5)</td></tr>
+      <tr><td>9. 🔋 Nuklir 3 jam</td><td>⛏40 💧30 ⚙️10</td><td>Boost Nuklir x5 selama 3 jam</td></tr>
+      <tr><td>10. 🎭 Kamuflase 12 jam</td><td>💎20 ⚙️10</td><td>kamu tidak terlihat di pengintaian serbuan</td></tr>
+      <tr><td>11. 💊 Kotak P3K 72 jam</td><td>💎20 🔥2 ⚡3 · 🛠</td><td>tanpa «sakit» di serbuan dan di tambang</td></tr>
+      <tr><td>12. 🔥 Turbo</td><td>💧40</td><td>reset jeda serbuan, sekali sehari</td></tr>
+      <tr><td>13. 🥩 Kotlet</td><td>🐄1 🔥2</td><td>🥩 3 kotlet</td></tr>
+      <tr><td>14. 🪤 Umpan 24 jam</td><td>⛏30 ⚙️20</td><td>penyerbu yang gagal menyerahkan dua kali lipat</td></tr>
+      <tr><td>15. 🎯 Simulator 24 jam</td><td>⛏20</td><td>seri saat bertahan = penyerbu gagal</td></tr>
+      <tr><td>16. 📦 Palka</td><td>⛏40 ⚙️30</td><td>hasil serbuan berikutnya ×1,5</td></tr>
+      <tr><td>17. 🧊 Termos 24 jam</td><td>💎60 ⚙️40 · 🛠</td><td>satu kotlet cukup 32 jam, bukan 24; sekali seminggu</td></tr>
+      <tr><td>18. 🦾 Zirah Siber</td><td>lihat di bawah</td><td>+10% produksi per level selama 30 hari</td></tr>
+      <tr><td>19. 📜 Cap</td><td>💎50</td><td>penjualan berikutnya di bursa tanpa biaya; sekali seminggu</td></tr>
+      <tr><td>20. 🏳️ Panji 24 jam</td><td>⛏💧💎⚙️ masing-masing 150, 🔥10, ☢️1 · 🛠</td><td>+5% produksi untuk seluruh tim</td></tr>
+      <tr><td>21. 🛡 Kubah 12 jam</td><td>⛏💧💎⚙️ masing-masing 300, 🔥20, 🔋10, ☢️3 · 🔬</td><td>perisai anti-serbuan untuk seluruh tim</td></tr>
+      <tr><td>22. 🚀 Shuttle</td><td>⛏💧💎⚙️ masing-masing 1000 + 1000 🪙 · 🔬</td><td>selamanya: biaya bursa 5%, 16 lot, order besar (selama terisi 🔋)</td></tr>
+      <tr><td>23–25. 🤖 Drone tempur</td><td>⛏💧💎⚙️ masing-masing 1000, 🔋10, 1000 🪙 + bahan khusus · 🔬</td><td>penjaga (+🪨300), penyerang (+🔥50), mata-mata (+⚡150); atau beli seharga 100 000 🪙</td></tr>
+    </table></div>
+    <p class="note">Panji dan Kubah hanya bisa dirakit pemain dalam tim; untuk Mega-Klan harganya 5 kali lipat.</p>
+    <h4>📦 Perluasan gudang</h4>
+    <ul>
+      <li>sampai 1000: ⛏200 ⚙️200;</li>
+      <li>sampai 2000: ⛏ ⚙️ 💧 masing-masing 160;</li>
+      <li>sampai 3000: ⛏ ⚙️ 💧 💎 masing-masing 150;</li>
+      <li>sampai 4000: ⛏ ⚙️ 💧 💎 🪨 masing-masing 140;</li>
+      <li>sampai 5000: ⛏ ⚙️ 💧 💎 🪨 🪵 masing-masing 140.</li>
+    </ul>
+    <h4>🦾 Zirah Siber</h4>
+    <ul>
+      <li>level 1: ⛏100 ⚙️50;</li>
+      <li>level 2: ⛏250 💎100 ⚙️120;</li>
+      <li>level 3: ⛏500 💧200 💎200 ⚙️250.</li>
+    </ul>
+    <p class="note">Tiap rakitan menaikkan level (atau memperpanjang level ketiga) dan menghitung ulang 30 hari dari awal.</p>
+    <h4>🗓 Resep minggu ini</h4>
+    <p>Resep sementara yang sesekali diaktifkan admin — sebagai event. Tiap resep punya batas rakitan sendiri
+    per minggu (minggu dihitung dari Senin 00:00 UTC). Contohnya:</p>
+    <ul>
+      <li>❄️ Pendingin Nitrogen — dari 6 jam sampai 3 hari;</li>
+      <li>🔋 Boost Nuklir — 3–6 jam;</li>
+      <li>🛸 Drone Master — dari sehari sampai seminggu;</li>
+      <li>🛡 perisai anti-serbuan — dari 12 jam sampai seminggu;</li>
+      <li>🥩 kotlet (1–2 buah, maksimal sekali seminggu);</li>
+      <li>🎁 kombo — beberapa efek sekaligus, misalnya Nitrogen + perisai atau drone + perisai;</li>
+      <li>♻️ peleburan — satu sumber daya dasar jadi yang lain dengan kurs 2:1;</li>
+      <li>⚡ sampel Tanpa Batas — selama 1–3 jam.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="lab">
+  <summary>🔬 Lab</summary>
+  <div class="body">
+    <p>Di sini set perkakas dirakit dan teknologi dipelajari. Yang sudah dipelajari <b>tidak pernah di-reset</b>.</p>
+    <h4>🧰 Set perkakas (tidak habis dipakai, membuka rakitan rumit)</h4>
+    <ul>
+      <li>⚒️ perkakas kasar: ⛏60 🪵40 🔥5;</li>
+      <li>🛠 perkakas penyetelan halus: ⚙️120 💎60 ⚡20 🔥10;</li>
+      <li>🔬 kalibrasi: 💎250 ⚙️200 ⚡60 🔋5;</li>
+      <li>🧬 nanoteknologi: 💎500 ⚙️400 ⚡150 ☢️5.</li>
+    </ul>
+    <p class="note">Set dirakit secara berurutan.</p>
+    <h4>🧪 Teknologi (masing-masing 5 level)</h4>
+    <ul>
+      <li>📡 <b>komunikasi</b> (⛏30 ⚡10) — wajib untuk serbuan dan pendapatan tambang; tiap level setelah yang pertama — −20 menit jeda serbuan. Mulai level 2 juga 🔋 2 / 4 / 6 / 8;</li>
+      <li>🔭 <b>pengintaian</b> (💎20 ⚡10) — wajib untuk serbuan; jumlah target di pengintaian = 2 + level. Membantu mengintai persimpangan di ekspedisi;</li>
+      <li>⚔️ <b>serangan</b> (⛏40 ⚙️20 ⚡10) — wajib untuk serbuan; tiap level setelah yang pertama +8% rampasan;</li>
+      <li>🛡 <b>pertahanan</b> (💧40 ⚙️20 ⚡10) — tiap level −8% dari yang dibawa penyerbu darimu;</li>
+      <li>📚 <b>sains</b> (💎100 ⚙️100 ⚡50 ☢️3) — +1% produksi ladang dan rampasan per level.</li>
+    </ul>
+    <h4>📏 Aturan</h4>
+    <ul>
+      <li>di dalam kurung — harga level 1; berikutnya lebih mahal: level 2 ×4, level 3 ×9, level 4 ×16, level 5 ×25 (sains — ×2, ×3, ×4, ×5);</li>
+      <li>level 1 teknologi apa pun, kecuali sains, tersedia sejak hari pertama;</li>
+      <li>level berikutnya dari teknologi yang sama — <b>30 hari</b> setelah yang sebelumnya;</li>
+      <li>perkakas: level 1–2 — ⚒️, 3 — 🛠, 4 — 🔬, 5 — 🧬 (sains: 1–2 — 🛠, 3 — 🔬, 4–5 — 🧬);</li>
+      <li>sains level N terbuka saat keempat teknologi lain sudah dipelajari sampai level N.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="market">
+  <summary>📈 Bursa</summary>
+  <div class="body">
+    <p>Perdagangan antarpemain: jual kelebihan, beli yang dibutuhkan. Koin untuk barang diterima penjual.</p>
+    <ul>
+      <li>yang diperdagangkan kotlet dan semua sumber daya, termasuk ☢️ Inti; bagian kostum, artefak, dan skin dijual di tab «Karakter»;</li>
+      <li>kamu bisa memasang <b>order jual</b> (barang dititipkan di bursa) atau <b>order beli</b> (koin dititipkan);</li>
+      <li>💸 biaya dibayar penjual: <b>10%</b>, dan terbakar. Dengan Shuttle yang terisi — 5%. Bursa tim: tim 5%, Mega-Klan 2%;</li>
+      <li>📦 lot sekaligus: 2 + kuda + gerobak; dengan Shuttle yang terisi — 16;</li>
+      <li>dalam satu order — hingga 100 kotlet atau 1000 sumber daya (dengan Shuttle — 500 / 5000);</li>
+      <li>🔄 <b>tukar</b> sumber daya dengan sumber daya — tanpa koin dan biaya, hingga 5 penawaran; nilai kedua sisi berbeda paling banyak 3 kali lipat (Inti tidak bisa ditukar);</li>
+      <li>🆕 pemain baru sebelum berstatus «aktif» membeli tidak lebih mahal dari tiga kali harga minimum;</li>
+      <li>📊 grafik harga dan indeks bursa — untuk 7 hari.</li>
+    </ul>
+    <h4>💹 Harga minimum per buah</h4>
+    <p>⚙️ 10 · 💎 10 · ⛏ 20 · 💧 20 · 🪨 30 · ⚡ 50 · 🪵 70 · 🔥 170 · 🥩 200 · 🔋 300 · 🐄 1000 · ☢️ 5000 🪙</p>
+  </div>
+</details>
+
+<details id="map">
+  <summary>🗺 Peta</summary>
+  <div class="body">
+    <p>Peta dunia dengan target ekspedisi. Target dipasang admin: masing-masing punya format sendiri (solo, tim, klan, atau tim
+    dan klan bersama), jam hasil sendiri, dan hadiah sendiri.</p>
+    <ul>
+      <li>🎒 perlengkapan: solo — 💧 10; tim — 🔋 5; Mega-Klan — 🔋 25 dan 🥩 10. Petarung menyetor satu per satu, begitu lengkap — regu berangkat;</li>
+      <li>🚶 perjalanan — 10 sampai 30 menit untuk solo dan 30 menit sampai 2 jam untuk regu: makin dekat rumahmu ke target, makin cepat. Di peta terlihat titik-titik lawan merayap menuju target;</li>
+      <li>⏱ hasil — pada waktu yang ditentukan atau lebih awal, kalau jumlah pemain yang ditentukan sudah sampai di target (10, 100, 1000…): di sini kecepatan yang menentukan;</li>
+      <li>🧥 di beberapa ekspedisi solo tiap yang sampai mendapat bagian kostum acak atau 💠 artefak — meski tanpa posisi berhadiah (sesuai batas musim);</li>
+      <li>🔀 di jalan ada 1–5 <b>persimpangan</b>: yang terdekat terlihat lebih awal dengan timer. Di solo kamu yang memutuskan, di regu — voting (suara terbanyak). Tidak ada yang memilih — regu lewat tanpa hasil dan tanpa kehilangan;</li>
+      <li>📦 <b>muatan</b> — poin ekspedisi: mulai 100, persimpangan menambah atau mengurangi. Posisi di hasil — berdasarkan muatan di antara yang sampai;</li>
+      <li>🔎 pengintaian persimpangan menunjukkan akibatnya lebih dulu: sebanyak jumlah Drone Mata-mata dan level 🔭 pengintaian pemimpin regu (yang lebih kecil). Ekspedisi pertama regu tiap musim — tanpa info;</li>
+      <li>🤖 drone tempur regu (per drone): penyerang +3% hasil di persimpangan adu kekuatan, penjaga −5% kehilangan, mata-mata −2% jarak;</li>
+      <li>🏁 terlambat sampai jam hasil — tidak masuk hitungan; perlengkapan tidak terkumpul atau target dibatalkan — semuanya kembali;</li>
+      <li>satu ekspedisi solo aktif per pemain dan satu regu per tim.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="mines">
+  <summary>⛏ Tambang</summary>
+  <div class="body">
+    <p>30 tambang: masing-masing 5 untuk tiap sumber daya — ⛏ 💧 💎 ⚙️ 🪨 🪵. Tambang hanya untuk tim dan klan.</p>
+    <ul>
+      <li>⚔️ tambang didapat di <b>pertempuran</b> tambang — yang meluncurkannya admin. Tambang bebas di peta menyala;</li>
+      <li>🔋 untuk masuk hitungan, perlu pendaftaran: tim — 5 baterai, Mega-Klan — 25, petarung menyetor satu per satu;</li>
+      <li>⏳ pemenang menguasai tambang <b>sehari</b>: tiap petarung mendapat <b>1 sumber daya per jam</b>;</li>
+      <li>📡 hasil hanya untuk petarung dengan komunikasi level 1 dan yang sudah di tim minimal sehari;</li>
+      <li>💊 tanpa Kotak P3K setiap jam ke-7 «sakit» — sumber daya jam itu hilang.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="raids">
+  <summary>🏴‍☠️ Serbuan</summary>
+  <div class="body">
+    <p>Serbuan ke gudang pemain lain — keputusan lawan keputusan: gerakanmu (batu, gunting, kertas) melawan
+    <b>kuda-kuda pertahanan</b> target. Yang bisa dirampas hanya sumber daya dasar ⛏ 💧 💎 ⚙️ — koin, robot, dan kotlet tidak bisa disentuh.</p>
+    <h4>Sebelum berangkat</h4>
+    <ul>
+      <li>di Lab butuh 📡 komunikasi, 🔭 pengintaian, dan ⚔️ serangan minimal level 1;</li>
+      <li>bahan bakar — <b>5 💧</b> per keberangkatan (atau isi Penghemat);</li>
+      <li>jeda antar keberangkatan — 3 jam (komunikasi memangkasnya); satu target — maksimal sekali per 12 jam.</li>
+    </ul>
+    <h4>Hasil</h4>
+    <ul>
+      <li>✅ menang: ambil 20% tiap sumber daya dasar target, tapi maksimal 30 per sumber daya (serangan, sains, Palka, dan drone menambahnya). Tanpa 💊 Kotak P3K 15% rampasan «hilang di rumah sakit»;</li>
+      <li>❌ gagal: serahkan 10% milikmu ke target, tapi maksimal 15 per sumber daya;</li>
+      <li>🤝 seri: hanya bahan bakar yang terbakar.</li>
+    </ul>
+    <h4>Perlindungan</h4>
+    <ul>
+      <li>pasang kuda-kuda pertahananmu — kalau tidak, dipilih acak;</li>
+      <li>pemain baru terlindungi 3 hari pertama; rekan tim tidak bisa dirampok;</li>
+      <li>perisai, Kamuflase, Umpan, Simulator — dari bengkel; Kubah melindungi seluruh tim;</li>
+      <li>🛡 pertahanan di Lab dan Drone Penjaga mengurangi kerugianmu;</li>
+      <li>⚔️ kena rampok — 24 jam untuk <b>balas dendam</b> gratis (tanpa bahan bakar dan jeda).</li>
+    </ul>
+    <p class="note">Target ditampilkan dengan nama, tanpa @username dan ID. Drone (per drone): penyerang +5% rampasan, penjaga −5% (totalnya maksimal 50%), mata-mata +1 target di pengintaian (maksimal +5).</p>
+  </div>
+</details>
+
+<details id="team">
+  <summary>🏆 Tim</summary>
+  <div class="body">
+    <p>Bersama lebih kuat: pertempuran, tambang, stasiun bersama, bursa sendiri, dan gotong royong.</p>
+    <ul>
+      <li>🛡 <b>regu</b> — hingga 5 petarung seharga <b>7 500 🪙</b>; kapten bisa memperbesarnya jadi tim dengan membayar selisihnya;</li>
+      <li>🏆 <b>tim</b> — hingga 50 petarung seharga <b>100 000 🪙</b>;</li>
+      <li>👑 <b>Mega-Klan</b> — hingga 1000 petarung (dibeli di toko);</li>
+      <li>tanpa tim: rolet tim yang masih punya slot, pencarian berdasarkan nama, membuat tim sendiri.</li>
+    </ul>
+    <h4>🛰 Stasiun Tim</h4>
+    <p>Proyek bersama: petarung menyetor ⛏ 💧 💎 ⚙️. Level L selesai saat sudah tersetor L×300 dari tiap sumber daya. Tiap level —
+    <b>+2% produksi</b> untuk semua anggota (maksimal 5 level, +10%). Keluar dari tim — bonus hilang.</p>
+    <h4>🤝 Gotong royong</h4>
+    <ul>
+      <li>minta sumber daya (satu permintaan, hingga 200), rekan tim akan memberikannya;</li>
+      <li>memberi bisa mulai level kecerdasan 3 dan setelah 3 kotlet harian diklaim, hingga 100 sumber daya per hari; kotlet tidak bisa diberikan.</li>
+    </ul>
+    <h4>⚔️ Pertempuran dan event</h4>
+    <p>Event berkala dari admin: yang dihitung hasil gabungan semua petarung tim (ada juga peringkat pribadi).
+    Hadiah tim diterima mereka yang sudah di tim minimal sehari saat pertempuran berakhir.</p>
+  </div>
+</details>
+
+<details id="auctions">
+  <summary>🔨 Lelang</summary>
+  <div class="body">
+    <p>Sesekali admin memasang lot: VIP ID keren seperti ROFL-HUB-… dan hadiah lainnya.</p>
+    <ul>
+      <li>💥 tawaran langsung dipotong dan kembali kalau ada yang menawar lebih tinggi;</li>
+      <li>🏁 koin pemenang terbakar, hadiah berpindah setelah lelang selesai;</li>
+      <li>💎 VIP ID — alamat penuh: bisa dipakai untuk transfer koin, terlihat di paspor.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="friends">
+  <summary>🤝 Teman</summary>
+  <div class="body">
+    <ul>
+      <li>🔗 link undanganmu, tombol «salin» dan «bagikan»;</li>
+      <li>🎁 untuk pendaftaran teman — tidak ada apa-apa, tapi saat teman menjadi <b>aktif</b> (level kecerdasan 3 dan 3 kotlet harian diklaim), kamu mendapat satu kali <b>+500 🪙</b>, 🥩 1, dan 10 dari tiap sumber daya dasar;</li>
+      <li>🧥 <b>tugas «10 teman aktif»</b>: ajak 10 teman yang menjadi aktif — dan klaim kostum lengkap pilihanmu, semua 5 bagian sekaligus (sekali per akun, tidak memakai batas bagian musim);</li>
+      <li>🏆 peringkat TOP-20 berdasarkan teman aktif per musim;</li>
+      <li>💸 <b>transfer koin</b> ke teman lewat @username, ID, atau VIP ID: mulai 10 🪙. Mengirim bisa mulai level kecerdasan 3 dan 3 kotlet diklaim, menerima — langsung.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="shop">
+  <summary>🏪 Toko</summary>
+  <div class="body">
+    <p>Pembelian dengan Telegram Stars, pengiriman instan.</p>
+    <h4>Untuk ladang</h4>
+    <ul>
+      <li>🤖 Robot Penambang — 49 ★ · ⚡ Pengebor Siber — 99 ★ (30 hari);</li>
+      <li>🥩 kotlet: 10 pcs — 49 ★, 50 — 239 ★, 100 — 449 ★;</li>
+      <li>📦 Kulkas untuk 10 / 50 / 100 kotlet — 99 / 499 / 999 ★;</li>
+      <li>🔋 Boost Nuklir x5 — 199 ★ · ❄️ Pendingin Nitrogen +40% — 299 ★ (30 hari);</li>
+      <li>🛸 Drone Master — 999 ★ (1 tahun) · ♾ Robot Penambang Abadi — 999 ★ (butuh 3 teman aktif).</li>
+    </ul>
+    <h4>Game</h4>
+    <ul>
+      <li>⚡ Tanpa Batas: 24 jam — 15 ★, 30 hari — 249 ★ (tanpa batas kemenangan dan misi, misi epik, biaya duel 10%);</li>
+      <li>💰 koin: 5 000 — 149 ★, 10 000 — 299 ★, 50 000 — 1299 ★, 100 000 — 2499 ★;</li>
+      <li>🏆 Mega-Klan (hingga 1000 slot) — 2499 ★.</li>
+    </ul>
+    <h4>✨ Skin</h4>
+    <ul>
+      <li>kategori tersendiri: Pass musim dan skin dengan ★ — hanya tampilan, tanpa kekuatan. Jumlah edisi dan sisanya terlihat di kartu.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="top">
+  <summary>👑 TOP</summary>
+  <div class="body">
+    <ul>
+      <li>🏆 <b>Musim</b> — siapa yang paling banyak mendapat koin di game selama sebulan (ladang, kemenangan game, level kuis, duel, misi, peti, teman; tanpa bursa dan transfer). Musim = bulan kalender UTC: yang di-reset hanya tabel, koin dan robot tetap. TOP-10 mendapat medali di paspor, hadiah musim ditentukan admin;</li>
+      <li>🎯 <b>Event</b> — pertempuran dan event yang sedang berjalan: peringkat, hadiah per posisi, posisimu, dan para pemimpin;</li>
+      <li>💰 <b>Terkaya</b> — TOP-100 berdasarkan saldo.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="history">
+  <summary>📜 Riwayat</summary>
+  <div class="body">
+    <p>Semua yang terjadi pada akunmu selama 30 hari:</p>
+    <ul>
+      <li>🪙 koin — berapa yang masuk dan keluar, sumber dan pengeluaran utama;</li>
+      <li>📦 sumber daya;</li>
+      <li>📈 transaksi di bursa;</li>
+      <li>🎁 hadiah dan kado.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="info">
+  <summary>📚 Info</summary>
+  <div class="body">
+    <p>Panduan (FAQ), perjanjian pengguna, dan petunjuk ini. Pertanyaan soal pembayaran — di chat bot.</p>
+  </div>
+</details>
+
+<details id="sources">
+  <summary>🗂 Apa didapat dari mana</summary>
+  <div class="body">
+    <div class="scroll"><table class="tbl">
+      <tr><th>Apa</th><th>Dari mana</th><th>Untuk apa</th></tr>
+      <tr><td>🪙 koin</td><td>ladang, game, level kuis, Kasus harian, duel, misi, peti, teman, penjualan di bursa, toko</td><td>duel, petunjuk, tim, kuda, Shuttle, drone, upgrade bagian kostum dan Zirah Nano-Exo, bursa, lelang</td></tr>
+      <tr><td>🥩 kotlet</td><td>bonus ladang sekali sehari, toko, bursa, bengkel (dari sapi), teman aktif</td><td>bahan bakar Pengebor, perbekalan Mega-Klan di ekspedisi, bursa</td></tr>
+      <tr><td>⛏ logam</td><td>Batu-Gunting-Kertas, tambang, peti, serbuan</td><td>boost, perisai, zirah, gerobak, baterai, ⚒️, komunikasi, serangan, stasiun</td></tr>
+      <tr><td>💧 hidrogen</td><td>Besar/Kecil, Memori, tambang, peti, serbuan</td><td>bahan bakar serbuan dan ekspedisi solo, Turbo, boost, pertahanan, stasiun</td></tr>
+      <tr><td>💎 kristal</td><td>kuis, bendera, tambang, peti, serbuan</td><td>perisai, Kamuflase, Kotak P3K, Termos, Cap, pengintaian, sains, set perkakas</td></tr>
+      <tr><td>⚙️ komponen</td><td>Brankas Siber, Pembobol kode, tambang, peti, serbuan</td><td>drone, Penghemat, zirah, Palka, set perkakas, serangan, pertahanan</td></tr>
+      <tr><td>🪨 batu</td><td>kuis (setiap 10 benar), misi, tambang, peti</td><td>Api unggun, gudang, Drone Penjaga</td></tr>
+      <tr><td>🪵 kayu</td><td>tambang, peti</td><td>Api unggun, gerobak, ⚒️, gudang</td></tr>
+      <tr><td>🔥 api</td><td>Api unggun di bengkel</td><td>baterai, gerobak, Kotak P3K, kotlet, set perkakas, Panji, Kubah, Drone Penyerang</td></tr>
+      <tr><td>⚡ listrik</td><td>peluang 25% di tiap kemenangan, matematika (setiap 10 benar), peti</td><td>baterai, Kotak P3K, teknologi, set perkakas, Drone Mata-mata</td></tr>
+      <tr><td>🔋 baterai</td><td>bengkel</td><td>isi Shuttle, pendaftaran pertempuran tambang, ekspedisi tim, komunikasi, 🔬, Kubah, drone, upgrade bagian kostum, Zirah Nano-Exo</td></tr>
+      <tr><td>🐄 sapi</td><td>peti di hari ke-7 rentetan, bursa</td><td>3 kotlet di bengkel</td></tr>
+      <tr><td>☢️ Inti</td><td>hanya hadiah admin, bursa</td><td>sains, 🧬, Panji, Kubah, Zirah Nano-Exo</td></tr>
+    </table></div>
+  </div>
+</details>
+
+<footer>ROFL HUB · panduan aplikasi · detailnya — di FAQ</footer>
+
+<script>
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+  // ?s=<id раздела> — открыть нужный раздел (id = ключ вкладки: passport, games, farm… или start / sources)
+  (function () {
+    var id = new URLSearchParams(location.search).get("s");
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.BackButton && history.length > 1) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(function () { history.back(); });
+    }
+  })();
+</script>
+</body>
+</html>

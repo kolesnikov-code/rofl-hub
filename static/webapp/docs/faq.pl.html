@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROFL HUB — Poradnik</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240;
+    --neon: #00ffe1; --accent: #ffd93d; --pink: #ff4d8d;
+    --text: #e8ecff; --muted: #8a93b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  a { color: var(--accent); font-weight: 700; text-decoration: none; }   /* ссылки — золотом, читаемо */
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 30px; line-height: 1.55;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon); text-shadow: 0 0 18px rgba(0,255,225,.45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  details {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0,255,225,.14); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 14px 16px; font-weight: 800; font-size: 15px;
+    color: var(--neon); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "▾"; float: right; color: var(--muted); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(180deg); }
+  .body { padding: 0 16px 14px; font-size: 14px; }
+  .body h4 { color: var(--accent); margin: 12px 0 4px; font-size: 14px; }
+  .body p { margin-bottom: 8px; }
+  .body ul { margin: 0 0 8px 18px; }
+  .body li { margin-bottom: 4px; }
+  b { color: #fff; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+    background: rgba(0,255,225,.12); border: 1px solid rgba(0,255,225,.35); color: var(--neon);
+    font-weight: 700;
+  }
+  .warn { color: var(--pink); font-weight: 700; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="logo">📚 PORADNIK ROFL HUB</div>
+<div class="sub">jak tu wszystko działa — od kotleta po Mega-Klan</div>
+
+<details open>
+  <summary>🪙 Monety: główna waluta ekosystemu</summary>
+  <div class="body">
+    <p><b>Monety</b> to wewnętrzna waluta gry ROFL HUB. Za nie zakłada się drużyny, gra pojedynki,
+    licytuje na aukcjach i mierzy bogactwem w TOP-100.</p>
+    <h4>Jak zarabiać</h4>
+    <ul>
+      <li>🎁 <b>+500 🪙</b> od razu po rejestracji;</li>
+      <li>🚜 farma wydobywa monety <b>przez całą dobę</b>, nawet kiedy śpisz;</li>
+      <li>🕹️ zwycięstwa w grach z botem: <b>+2 🪙</b> za wygraną (Cyber-Sejf i Łamacz kodów — +5, Memory — +3);</li>
+      <li>🧠 poziomy intelektu w quizie: +100, +200, +300… 🪙 za poziom;</li>
+      <li>⚔️ pojedynki z żywymi graczami — zgarniasz pulę rywala;</li>
+      <li>🤝 <b>+500 🪙</b>, 🥩 kotlet i po 10 każdego podstawowego zasobu (⛏ 💧 💎 ⚙️) za każdego <b>aktywnego</b> znajomego
+        z twojego linku polecającego;</li>
+      <li>🛒 paczki monet w sklepie za Telegram Stars.</li>
+    </ul>
+    <p>Ekonomia jest chroniona przed inflacją: przegrane, prowizje pojedynków i giełdy oraz zwycięskie oferty na aukcjach spalają monety na zawsze.
+    Z czasem twój majątek tylko zyskuje na wartości.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🚜 Cyber-farma: roboty i kotlety</summary>
+  <div class="body">
+    <h4>🤖 Robot Stażysta — 1 🪙/godz., za darmo i na zawsze</h4>
+    <p>Pierwszy robot każdego gracza. Aktywuj go na ekranie farmy (przycisk „Aktywuj
+    Robota Stażystę”) — i zacznie wydobywać <b>1 🪙 na godzinę na zawsze</b>: bez paliwa, bez okresu służby.
+    Na <b>10, 20, 30, 40, 50…</b> poziomie intelektu w quizie czeka na ciebie kolejny Stażysta — odbierz go
+    przyciskiem „🎁 Odbierz Robota Stażystę” na farmie, w podsumowaniu rundy quizu albo w aplikacji.
+    Boosty działają też na niego: z Nuklearnym Przyspieszeniem Stażysta daje 5 🪙/godz.</p>
+    <p>♾ <b>Wieczny Górnik.</b> Stażystę można awansować na Młodszego Górnika <b>na zawsze</b> (5 🪙/godz.
+    bez wypalania się) — produkt w sklepie za 999 ★, ale pod warunkiem: co najmniej <b>3 aktywnych znajomych</b>,
+    którzy przyszli z twojego linku (czym jest „aktywny” — w sekcji o poleceniach). Tak wieczny robot
+    trafia do tych, którzy rozwijają ekosystem.</p>
+    <h4>🤖 Młodszy Górnik — 5 🪙/godz.</h4>
+    <p>Robot pierwszego poziomu. Pracuje samodzielnie, nie potrzebuje paliwa, haruje bez weekendów.</p>
+    <h4>⚡ Cyber-Wiertacz — 10 🪙/godz.</h4>
+    <p>Robot drugiego poziomu, dwa razy mocniejszy, ale żarłoczny: <b>KAŻDY Wiertacz zjada swój
+    1 cyber-kotlet na 24 godziny pracy</b>. Jeden kotlet karmi tylko jednego robota: masz
+    3 Wiertaczy — szykuj 3 kotlety na dobę, 10 Wiertaczy — 10 kotletów. Kotlet jest pobierany
+    z lodówki w całości na starcie dobowej zmiany. Zabrakło kotletów dla wszystkich — głodne
+    Wiertacze stają, dopóki ich nie nakarmisz.</p>
+    <h4>🥩 Cyber-kotlety, magazyn i Lodówka</h4>
+    <p>Kotlety leżą w <b>magazynie</b> (tam trafiają zakupy i bonusy), a roboty jedzą z
+    <b>lodówki</b>. Przekładaj kotlety przyciskami „Zatankuj” na ekranie farmy. Lodówkę można
+    powiększyć w sklepie: 10 / 50 / 100 kotletów.</p>
+    <p>🎁 Co 24 godziny wciskaj <b>„ODBIERZ BONUS”</b> na farmie w aplikacji albo w czacie bota — darmowy kotlet do magazynu!</p>
+    <h4>🔥 Okres służby robotów</h4>
+    <p>Kupiony robot żyje <b>30 dni</b> od zakupu, potem się wypala — kup nowego w sklepie
+    (sekcja „DLA FARMY”). Data najbliższego wypalenia jest widoczna na ekranie farmy. Wyjątki — Roboty Stażyści
+    i Wieczny Górnik: oni nie wypalają się nigdy.</p>
+    <h4>🛸 Mistrzowski Dron</h4>
+    <p>Legendarny pomocnik na 365 dni: dopóki dron jest na farmie, <b>zużycie robotów całkowicie zamiera</b> —
+    30 dni życia robota ubywa tylko wtedy, gdy dron jest nieaktywny. Solidna inwestycja dla dużej farmy.</p>
+    <h4>⚡ Boosty (sumują się!)</h4>
+    <ul>
+      <li>🔋 <b>Nuklearne Przyspieszenie x5</b> — wydobycie wszystkich robotów ×5 na 30 dni. Cena mocy: kotlet u Wiertacza
+      pali się trzy razy szybciej — <b>1 kotlet na 8 godzin</b> zamiast na dobę. Przyspieszenie działa z dowolną liczbą kotletów, nawet z jednym;
+      przyspieszenie się skończyło, a kotlet się nie dopalił — reszta zużywa się w zwykłym tempie, nic nie przepada;</li>
+      <li>❄️ <b>Azotowe Chłodzenie +40%</b> — Górnik 5→7, Wiertacz 10→14 🪙/godz., zużycie kotletów nie rośnie;</li>
+      <li>razem: Górnik <b>35</b>, Wiertacz <b>70</b> 🪙/godz. Farma-potwór!</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>🧠 Quiz i poziomy intelektu</summary>
+  <div class="body">
+    <p>Quiz to intelektualny sprint: <b>30 sekund na odpowiedź</b>, brak odpowiedzi na czas — przegrana.
+    Dobra odpowiedź: +2 🪙, błąd: −1. Pytania idą rundami po 10, podpowiedź 50/50 kosztuje 10 🪙, a za każde 10 dobrych odpowiedzi dostajesz 🪨 kamień.</p>
+    <h4>🏅 Poziomy intelektu</h4>
+    <p>Każdy poziom to seria dobrych odpowiedzi, licznik każdej serii startuje od zera:</p>
+    <ul>
+      <li>poziom 1: <b>10 dobrych</b> → nagroda <b>+100 🪙</b>;</li>
+      <li>poziom 2: kolejne <b>20 dobrych</b> → <b>+200 🪙</b>;</li>
+      <li>poziom 3: kolejne 30 → +300… i tak w nieskończoność — poziom 100 przyniesie <b>+10 000 🪙</b>!</li>
+    </ul>
+    <p>Twój 🧠-poziom widnieje w profilu, na liście członków drużyny i w TOP-100 — to publiczny znak
+    intelektu w ekosystemie.</p>
+    <p>Limit quizu — <span class="chip">30 zwycięstw/dobę</span>, reset o 00:00 UTC. Chcesz rozwijać się
+    szybciej — w sklepie jest zdjęcie limitów na 24 godziny albo 30 dni.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🕹️ Szybkie gry z botem</summary>
+  <div class="body">
+    <p>Trzy klasyczne gry: wygrana <b>+2 🪙</b>, przegrana <b>−1</b>, remis niczego nie zabiera i niczego nie daje.
+    Limit każdej — <span class="chip">15 zwycięstw/dobę</span> (reset o 00:00 UTC).</p>
+    <ul>
+      <li>🪨 <b>Kamień-Papier-Nożyce</b> — kamień, nożyce, papier przeciwko botowi;</li>
+      <li>📈 <b>Wyżej/Niżej</b> — zgadnij, gdzie schowa się ukryta liczba;</li>
+      <li>🔐 <b>Cyber-Sejf</b> — dobierz kod z 4 wariantów: otworzysz — wygrana <b>+5 🪙</b>, pomyłka — alarm i −1.</li>
+    </ul>
+    <p>⚡ Bezlimit ze sklepu zdejmuje limity od razu we <b>wszystkich</b> grach.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧩 Nowe gry, Sprawa dnia i questy</summary>
+  <div class="body">
+    <ul>
+      <li>➗ <b>Matematyka</b> — 20 sekund na działanie, <span class="chip">30 zwycięstw/dobę</span>; za każde 10 dobrych — ⚡ prąd;</li>
+      <li>🏳️ <b>Flagi i stolice</b> — 20 sekund na odpowiedź, <span class="chip">30 zwycięstw/dobę</span>, zasób — 💎 kryształy;</li>
+      <li>💻 <b>Łamacz kodów</b> — zgadnij 4 różne cyfry w 10 próbach: <b>+5 🪙</b> i ⚙️ 2 części, <span class="chip">10 zwycięstw/dobę</span>;</li>
+      <li>🃏 <b>Memory</b> — znajdź 6 par w najwyżej 12 ruchach: <b>+3 🪙</b> i 💧 wodór, <span class="chip">15 zwycięstw/dobę</span>.</li>
+    </ul>
+    <p>🕵️ <b>Sprawa dnia</b> — jedna sprawa dla wszystkich na dobę (UTC): 4 podejrzanych, poszlaki odkrywają się po jednej, oskarżyć można tylko raz. Im mniej poszlak potrzeba, tym większa nagroda: 40 / 30 / 20 / 10 🪙, a co 7. dzień serii rozwiązanych spraw — dodatkowo +50 🪙.</p>
+    <p>🗺 <b>Questy dnia</b> — każdego dnia wszyscy mają te same 10 questów. Bez Bezlimitu na dobę zaliczają się 3 nowe przejścia, ukończone można powtarzać do woli. Za pierwsze przejście — 20–50 🪙 i 🪨 kamień; ⭐ epiki (20+ minut) są dostępne tylko z ⚡ Bezlimitem, za nie — 100 🪙 i 🪨 5.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⚔️ Pojedynki: gracz kontra gracz</summary>
+  <div class="body">
+    <p>Pojedynek w Kamień-Papier-Nożyce z <b>żywym graczem</b> o stawkę. Trzy stoły, jak w pokerze — wybierz na swoją kieszeń:
+    <span class="chip">10 🪙</span> <span class="chip">100 🪙</span> <span class="chip">1000 🪙</span>.</p>
+    <h4>Zasady puli</h4>
+    <ul>
+      <li>stawka trafia do puli od razu, gdy siadasz do stołu;</li>
+      <li>zwycięzca zabiera <b>80% puli</b> (stawka ×1,6), <b>20% spala się na zawsze</b> — pojedynki napędzają deflację;</li>
+      <li>z ⚡ Bezlimitem prowizja zwycięzcy jest o połowę niższa — <b>10%</b> (wygrana ×1,8);</li>
+      <li>pojedynki to tylko monety: zasoby zdobywa się w innych grach;</li>
+      <li>remis — natychmiastowa powtórka gestów, pula zostaje na stole;</li>
+      <li>na gest masz <b>60 sekund</b>, za milczącego gest wybierze losowanie;</li>
+      <li>rywal nie znalazł się w 30 minut — stawka wróci automatycznie;</li>
+      <li>⚔️ <b>wyzwanie znajomego przez link</b> — prywatny stół z pominięciem kolejki, link działa 24 godziny; nowicjusz, który przyjdzie z niego, zostaje twoim poleconym.</li>
+    </ul>
+    <p>Zwycięstwa w pojedynkach liczą się dla twojej drużyny w bitwach z kategorią pojedynków — trenuj!</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Drużyny i klany</summary>
+  <div class="body">
+    <p>Drużyna to twoja ekipa do <b>50 wojowników</b>. Założenie kosztuje <b>100 000 🪙</b>: wymyśl
+    nazwę, motto i godło. Można zacząć od <b>oddziału</b>: do 5 wojowników za 7 500 🪙, a potem kapitan rozszerzy go do drużyny za 92 500 🪙 (razem — ta sama cena). W sklepie drużynę można ulepszyć do <b>Mega-Klanu na 1000 miejsc</b>. Wszystko to — w zakładce „🏆 Drużyna”.</p>
+    <h4>👥 Lista członków drużyny</h4>
+    <p>W zakładce „🏆 Drużyna” jest pełny skład: każdy wojownik z 🧠-poziomem intelektu i klikalnym
+    @username — piszcie do siebie, zakładajcie własne czaty i szykujcie się do bitew. Listę widzą
+    <b>tylko członkowie tej drużyny</b> — żadnych obcych.</p>
+    <h4>👑 Kapitaństwo</h4>
+    <p>Jeśli kapitan opuszcza ekipę, korona przechodzi na najwierniejszego weterana — tego, kto dołączył
+    najwcześniej. Drużyna bez wojowników rozwiązuje się automatycznie.</p>
+    <p>Po co dołączać? Bitwy drużyn, wspólna klasyfikacja, nagrody dla każdego wojownika drużyn na podium — samotnikom
+    to nie grozi.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏟️ Bitwy drużyn i klanów — główne wydarzenia</summary>
+  <div class="body">
+    <p>Bitwy to <b>nie codzienna rutyna, tylko wydarzenia</b>, jak mistrzostwa świata: administracja ogłasza
+    bitwę w grze (paszport → „📣 Wydarzenia”), a bitwa ma nazwę, termin i kategorię.</p>
+    <h4>Jak to działa</h4>
+    <ul>
+      <li>kategoria — co mierzymy: najwięcej wyfarmić, najwięcej zwycięstw w pojedynkach lub quizie,
+      przyprowadzić najwięcej aktywnych nowicjuszy i inne;</li>
+      <li>liczy się <b>ŁĄCZNY wynik wszystkich graczy drużyny</b> — każdy wojownik przybliża zwycięstwo,
+      zapraszaj do ekipy najaktywniejszych!</li>
+      <li>wynik liczy się wyłącznie w czasie bitwy — nabić go wstecz się nie da;</li>
+      <li>punkty i nagrody drużyny dostają wojownicy, którzy są w niej <b>co najmniej dobę</b> na koniec bitwy: przejść do liderów
+      minutę przed metą się nie uda (to samo dotyczy drużynowych wypraw i dochodu z kopalni);</li>
+      <li>bywają bitwy drużyn, klanów, drużyn i klanów razem — oraz <b>indywidualne</b> akcje: na przykład czyja rolka
+      na Instagramie, YouTube Shorts albo TikToku pójdzie lepiej lub kto przyprowadzi więcej aktywnych znajomych;</li>
+      <li>zapowiedź — w paszporcie („📣 Wydarzenia”), trwające bitwy i twoje miejsce — w zakładce TOP → „🎯 Akcje”;
+      tym, którzy dostali nagrodę, bot pisze w prywatnej wiadomości, co zostało przyznane.</li>
+    </ul>
+    <h4>⛏ Bitwy o kopalnie i 🔋 zgłoszenie</h4>
+    <p>Organizator może wystawić od razu kilka kopalni: ile kopalni — tyle miejsc nagrodzonych
+    (1. miejsce dostaje najcenniejszą). O kopalnie walczą tylko drużyny i klany, które złożyły <b>pełne zgłoszenie bateriami</b>:
+    drużyna — 5 🔋, klan — 25 🔋. Wpłaca każdy wojownik w zakładce „⛏ Kopalnie” — zrzućcie się całą drużyną!</p>
+    <h4>🎁 Nagrody</h4>
+    <p>Nagrody i liczbę nagradzanych miejsc w każdej bitwie ustala administracja. Nagrody są wyłącznie w grze:
+    monety, zasoby, przedmioty, roboty i wzmocnienia na różny czas, części strojów i artefakty. W bitwach drużynowych nagrodę dostaje <b>każdy wojownik</b> drużyny na podium.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗺 Mapa świata: wyprawy solo i wyprawy oddziałów</summary>
+  <div class="body">
+    <p>Zakładka „🗺 Mapa” w aplikacji gry to mapa świata, na której administracja od czasu do czasu wystawia
+    <b>cele wypraw</b> (do 10 naraz): solo, drużynowe i klanowe. Każdy ma własną fabułę, własne nagrody i własną <b>godzinę wyników</b>;
+    wyniki mogą zostać ogłoszone wcześniej, jeśli do celu dotrze ustalona liczba graczy.</p>
+    <h4>Jak przebiega wyprawa</h4>
+    <ul>
+      <li>wyruszasz ze swojej strony mapy i na oczach wszystkich powoli zmierzasz do celu — znacznik przesuwa się razem z upływem czasu;</li>
+      <li>na celu widać, ile zajmie droga i <b>czy zdążysz</b> na godzinę wyników: jeśli nie zdążysz — wyjść nie można, a kto spóźni się
+      przez rozwidlenia, nie bierze udziału w wynikach;</li>
+      <li>ekwipunek: solo — 💧 10 wodoru, drużyna — 🔋 5 baterii, Mega-Klan — 🔋 25 i 🥩 10 kotletów. Wojownicy wpłacają po jednym, z pełnym kompletem oddział wyrusza, a jeśli nie uzbierano go do wyników albo cel odwołano — wszystko wróci;</li>
+      <li>droga solo — 10–30 minut, oddziałem — dłużej; jednocześnie — jedna wyprawa solo na gracza i jeden oddział na drużynę.</li>
+    </ul>
+    <h4>🔀 Rozwidlenia</h4>
+    <p>Po drodze trafiają się rozwidlenia: burza, opuszczony magazyn, obcy oddział, most wiszący… Każde ma 2–3 warianty z własnymi skutkami: więcej ładunku, ryzyko strat albo skrócona droga. Najbliższe rozwidlenie widać <b>od razu</b>, z licznikiem „do rozwidlenia” — wybierz wariant z wyprzedzeniem, a zadziała, gdy dotrzesz (zmienić zdanie można do tego momentu). Brak wyboru — po dotarciu do rozwidlenia jest czas do następnego; milczenie oznacza, że oddział przechodzi obok: bez łupu, bez strat i bez opóźnienia. W oddziale drużyny decyduje głosowanie: zagłosowali wszyscy — działa od razu, w przeciwnym razie — większość.</p>
+    <h4>🔎 Zwiad rozwidleń</h4>
+    <p>Skutki wariantów można poznać wcześniej — przyciskiem „Rozpoznaj rozwidlenie”. Zwiadów w wyprawie jest tyle, ile lider oddziału (w solo — ty, w drużynie — kapitan) ma
+    <b>🛰 Dronów-szpiegów i poziomów 🔭 zwiadu — według mniejszej z tych liczb</b>: 1 szpieg i zwiad 1 — jedno rozwidlenie, 5 i 5 — wszystkie pięć.
+    <b>Pierwsza wyprawa w każdym sezonie idzie na ślepo</b> u wszystkich.</p>
+    <h4>🏁 Wyniki</h4>
+    <p>O godzinie wyników miejsca rozdziela się według <b>ładunku</b> spośród tych, którzy dotarli. Ile jest nagradzanych miejsc i co za każde — decyduje
+    organizator; pozostałym, którzy dotarli, może przyznać nagrodę „za udział”. Każdemu, kto dostał nagrodę, bot pisze w prywatnej wiadomości, co zostało przyznane.</p>
+    <h4>📦 Czym jest ładunek</h4>
+    <p>Ładunek to punkty wyprawy. Wszyscy startują ze 100, rozwidlenia dodają (łup) albo odejmują (straty) — według ładunku ustala się miejsca w wynikach.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤖 Drony bojowe</summary>
+  <div class="body">
+    <p>Trzy rodzaje osobistych towarzyszy, ekskluzywne osiągnięcie: złożyć jednego jest tak samo trudno jak Wahadłowiec,
+    albo można go kupić w warsztacie za 100 000 🪙 (monety się spalają). Liczba nie jest ograniczona, działanie
+    <b>sumuje się</b>, drony się nie zużywają i nie zajmują miejsca w magazynie.</p>
+    <ul>
+      <li>🛡 <b>Dron-obrońca</b> — najeźdźca wynosi od ciebie mniej; w wyprawie tracisz mniej ładunku;</li>
+      <li>⚔️ <b>Dron szturmowy</b> — twoje najazdy przynoszą więcej; w wyprawie więcej łupu na siłowych rozwidleniach;</li>
+      <li>🛰 <b>Dron-szpieg</b> — więcej celów w zwiadzie najazdów; w wyprawie droga jest krótsza, a razem z 🔭 zwiadem —
+      zwiad rozwidleń.</li>
+    </ul>
+    <p>Dokładne procenty — na karcie drona w warsztacie.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧍 Postać: stroje i artefakty</summary>
+  <div class="body">
+    <p>Zakładka „🧍 Postać” zaraz po paszporcie: awatar, 5 slotów (hełm, kurtka, rękawice, spodnie, buty) i torba. Bonus daje tylko <b>pełny komplet jednego stroju</b>: ⚡ elektryk — prąd częściej wypada za zwycięstwa, ⛏ górnik — raz na dobę procent do wydobycia farmy, 🪖 wojskowy — więcej trofeów i łupu, szybsze wyprawy, 🥷 kamuflaż — szansa, że nie trafisz do zwiadu najeźdźców, 🔬 naukowiec — krótsza przerwa między poziomami technologii, 🔧 inżynier — tańsze przepisy warsztatu.</p>
+    <p>Każda część ma trzy poziomy: Podstawowy, Ulepszony i Legendarny. Do ulepszania potrzeba zasobów, monet i doświadczenia części — wydarzeń, które przetrwała założona; do Legendarnego potrzebna jest jeszcze technologia z Laboratorium. Bonus utrwala się w chwili działania: zdejmujesz strój — to, co już zdobyte, nie przepada. Części wypadają w wydarzeniach (za darmo — do 5 na sezon), Podstawowe są sprzedawane na rynku w zakładce.</p>
+    <p>💠 <b>Artefakty</b> — trzy okienka pasa pod awatarem: Serce burzy, Kamień obfitości, Szkarłatny zachód, Cień ducha, Kula olśnienia i Mechaniczny wojownik. Każdy wzmacnia swoją linię bonusów i sumuje się ze strojem. Za darmo — jeden na sezon, pozostałe — na rynku.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔨 Aukcje i VIP ID</summary>
+  <div class="body">
+    <p>Od czasu do czasu administracja wystawia na aukcję <b>unikatowe przedmioty</b> — na przykład
+    legendarne <b>VIP ID</b>: <span class="chip">ROFL-HUB-777</span>.</p>
+    <h4>Uczciwe zwrotne oferty</h4>
+    <p>Oferta jest pobierana od razu, ale jeśli ktoś cię przebije — <b>cała kwota natychmiast wraca</b>.
+    Płaci tylko zwycięzca przy zamknięciu aukcji.</p>
+    <h4>💎 Co daje VIP ID</h4>
+    <p>To twój imienny identyfikator w ekosystemie: widnieje w profilu, jest widoczny w TOP-100, a działają na niego
+    przelewy — znajomi mogą wysłać monety prosto na <b>ROFL-HUB-777</b> zamiast nudnych cyfr.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📈 Giełda: kotlety i zasoby między graczami</summary>
+  <div class="body">
+    <p>Na giełdzie gracze handlują za monety kotletami, wszystkimi zasobami, a nawet ☢️ Rdzeniem.
+    Im więcej transakcji, tym więcej monet spala się w prowizji — to trzyma wartość monety.
+    Pełna giełda — zakładka „📈 Giełda” w aplikacji gry: indeks cen, wykres z 7 dni, kto sprzedaje,
+    kto kupuje, twoje zlecenia i wymiana zasobów.</p>
+    <ul>
+      <li><b>sprzedaż</b>: towar trafia do zlecenia i czeka na kupującego, zdjąć je można w każdej chwili;</li>
+      <li><b>zlecenie kupna</b>: „kupię 10 kotletów po 250” — monety są zamrażane do transakcji, zdejmiesz zlecenie — wrócą;</li>
+      <li><b>kotlet nie taniej niż 200 🪙</b>: paliwo ze sklepu za Stars zawsze jest korzystniejsze od giełdy, na giełdzie biorą je ci, którym brakuje czasu;</li>
+      <li><b>minimalne ceny za 1 sztukę</b> (i przy sprzedaży, i w zleceniu kupna): ⚙️ części i 💎 kryształy — 10 🪙, ⛏ metal
+      i 💧 wodór — 20, 🪨 kamień — 30, ⚡ prąd — 50, 🪵 drewno — 70, 🔥 ogień — 170, 🔋 baterie — 300,
+      🐄 krowa — 1 000, ☢️ Rdzeń — 5 000 🪙;</li>
+      <li>do 100 kotletów albo 1000 zasobu w zleceniu; ile zleceń można trzymać jednocześnie, decydują konie i wozy: bazowo — 2 (szczegóły — w sekcji „Stajnia”);</li>
+      <li><b>prowizję 10% płaci sprzedający</b>, i ona spala się na zawsze — to ochrona monet przed inflacją;</li>
+      <li><b>wymiana zasobów</b>: „oddam 60 metalu za 25 wodoru” — bez monet i bez prowizji; strony według minimalnych
+      cen mogą się różnić najwyżej 3 razy;</li>
+      <li>dopóki konto jest nowe (do 3 poziomu intelektu i 3 codziennych kotletów), kupować można nie drożej niż za trzykrotność minimalnej
+      ceny — tak fałszywe konta nie przepompowują monet; zdjąć własną ofertę z zasobem można, jeśli zmieści się w magazynie.</li>
+    </ul>
+    <p>Kotlety z lodówki nie trafiają na giełdę — tylko z magazynu.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧰 Zasoby i warsztat: w każdej grze zdobywasz coś innego</summary>
+  <div class="body">
+    <p>Każde zwycięstwo przynosi nie tylko monety, ale też zasób swojej gry:</p>
+    <ul>
+      <li>⛏ <b>Metal</b> — Kamień-Papier-Nożyce;</li>
+      <li>💧 <b>Wodór</b> — Wyżej/Niżej;</li>
+      <li>💎 <b>Kryształy</b> — Quiz;</li>
+      <li>⚙️ <b>Części</b> — Cyber-Sejf (po 3 za otwarcie — otwiera się rzadziej);</li>
+      <li>🗺 pierwsze przejście questa — 20–50 🪙 i 🪨 1–2 kamienie, epika — 100 🪙 i 🪨 5.</li>
+    </ul>
+    <p><b>Nowe surowce</b> — do budowli, logistyki i Laboratorium:</p>
+    <ul>
+      <li>🪨 <b>Kamień</b> — questy, seria dobrych odpowiedzi w quizie, kopalnie, skrzynia;</li>
+      <li>🪵 <b>Drewno</b> — kopalnie, skrzynia;</li>
+      <li>🔥 <b>Ogień</b> — Ognisko w warsztacie: drewno + kamień. Bez ognia nie ma ani narzędzi, ani baterii;</li>
+      <li>⚡ <b>Prąd</b> — szansa 25% za każde zwycięstwo w grze solo (w stroju elektryka — 50–70%), co 10 dobrych odpowiedzi w matematyce, skrzynia;</li>
+      <li>🔋 <b>Baterie</b> — warsztat (prąd + metal + ogień). Cenny zasób: ładowanie Wahadłowca i zgłoszenie drużyny do bitwy o kopalnie;</li>
+      <li>🐄 <b>Krowy</b> — skrzynia z każdego 7. dnia serii, giełda. Z krowy w warsztacie powstają 3 kotlety;</li>
+      <li>☢️ <b>Rdzeń</b> — najrzadszy: tylko nagrody organizatora za bitwy, wyprawy i wydarzenia. Sprzedawany na giełdzie
+      od 5 000 🪙 (nie wymienia się go zasób za zasób).</li>
+    </ul>
+    <p>W sklepie za Stars zasobów nie ma — tylko wydobycie. Między sobą gracze handlują nimi na giełdzie
+    (za monety, prowizja 10% się spala) i wymieniają zasób za zasób. Wykorzystuje się je
+    w <b>warsztacie</b> — zakładka „🔧 Warsztat” w aplikacji gry:</p>
+    <ul>
+      <li>❄️ Azotowe Chłodzenie na 6 godz., 🔋 Nuklearne Przyspieszenie na 3 godz., 🛸 Mistrzowski Dron na dobę —
+      te same wzmocnienia co w sklepie, ale krótkie i za zasoby;</li>
+      <li>🛡 <b>Tarcza przed najazdami</b> na dobę;</li>
+      <li>🥩 <b>cyber-kotlety z krowy</b> — 🐄 krowa i 🔥 2 ognie → 3 kotlety do magazynu
+      (krowa na giełdzie — od 1 000 🪙, biorą ją, gdy pilnie potrzeba paliwa na Nuklearne Przyspieszenie);</li>
+      <li>🔥 <b>Ognisko</b>, 🔋 <b>Baterie</b>, 🛒 <b>Wóz</b> (potrzebny koń), 💊 <b>Apteczka</b> na 72 godziny;</li>
+      <li>🛡 <b>Cyber-pancerz</b> — +10% do wydobycia farmy za poziom, do 3 poziomów (+30%), każde złożenie działa 30 dni;</li>
+      <li>🚀 <b>Wahadłowiec</b> — 1000 każdego zasobu + 1000 🪙, na zawsze i tylko twój: prowizja 5% zamiast 10%
+      od twoich sprzedaży, do 500 kotletów w zleceniu i do 16 otwartych zleceń. Wahadłowiec lata na baterii:
+      jedna 🔋 — 30 dni przywilejów (ładuje się w zakładce „📦 Magazyn”).</li>
+    </ul>
+    <p>Zapasy widać w profilu, w warsztacie i w paszporcie Mini App. Z Bezlimitem gier zasoby
+    zdobywa się bez dobowego ograniczenia — za każde zwycięstwo.</p>
+    <p><b>📦 Magazyn z limitem.</b> W magazynie mieści się 500 każdego zasobu — wydobycie ponad to przepada,
+    więc zasoby lepiej wydawać albo sprzedawać na giełdzie. Magazyn rozbudowuje się w warsztacie na zawsze:
+    1000 → 2000 → 3000 → 4000 → 5000 każdego zasobu; każda rozbudowa jest o 20% droższa od poprzedniej i wymaga
+    o jeden rodzaj zasobu więcej. Gotowych przedmiotów magazyn trzyma <b>łącznie 10% pojemności</b>: 500 → 50 przedmiotów
+    wszystkich rodzajów razem, 5000 → 500. Kotlety i monety nie są ograniczone limitem magazynu.</p>
+    <p><b>🔥 Przepisy tygodnia.</b> Od czasu do czasu w warsztacie pojawiają się czasowe przepisy: tarcza na tydzień,
+    kotlet za 100 metalu, przetopienie jednego zasobu w inny, zestawy combo. Każdy ma limit złożeń
+    na tydzień, a same przepisy znikają tak nagle, jak się pojawiły. Obserwuj zakładkę „🔧 Warsztat”.</p>
+    <p><b>📦 Przedmioty czekają w magazynie.</b> Godziny Azotu, Nuklearnego Przyspieszenia, Mistrzowskiego Drona, tarcze i próbki Bezlimitu
+    złożone w aplikacji nie włączają się od razu, tylko trafiają do zakładki „📦 Magazyn”. Włączaj je przyciskiem, kiedy
+    ci pasuje: tarczę — przed snem, Azot — przed dłuższą nieobecnością. Tam też są zapasy zasobów, kotlety, Wahadłowiec,
+    Cyber-pancerz i rozbudowa magazynu. Pancerz, magazyn i Wahadłowiec działają od razu po złożeniu.</p>
+    <p><b>🧪 Nowe przedmioty:</b></p>
+    <ul>
+      <li>🎭 <b>Kamuflaż</b> (12 godz.) — nie widać cię w zwiadzie najazdów, a sam(a) możesz atakować;</li>
+      <li>🪤 <b>Przynęta</b> (doba) — najeźdźca, któremu nie powiódł się najazd na ciebie, oddaje dwa razy więcej;</li>
+      <li>🎯 <b>Trenażer postawy</b> (doba) — jeśli najazd na ciebie skończył się remisem, liczy się jako porażka najeźdźcy;</li>
+      <li>🔥 <b>Dopalacz statku</b> — od razu zeruje czas odnowienia najazdu (nie częściej niż raz na dobę);</li>
+      <li>⛽ <b>Ekonomizer</b> — następny wylot bez wodoru;</li>
+      <li>📦 <b>Powiększona ładownia</b> — łup z następnego najazdu ×1,5;</li>
+      <li>🧊 <b>Termos na kotlety</b> (doba, raz w tygodniu) — Wiertacze jedzą kotlety o 25% wolniej;</li>
+      <li>📜 <b>Pieczątka giełdy</b> (raz w tygodniu) — następna sprzedaż na giełdzie bez prowizji;</li>
+      <li>🏳️ <b>Sztandar drużyny</b> (doba) — +5% do wydobycia całej twojej drużyny;</li>
+      <li>🛡 <b>Kopuła drużyny</b> (12 godz.) — tarcza przed najazdami dla całej drużyny.</li>
+    </ul>
+    <p>Przedmioty drużynowe są drogie i trudne (potrzebny ogień, baterie i ☢️ Rdzeń), złożyć je może tylko gracz w drużynie — członkowie zrzucają się zasobami.
+    Mega-Klan chroni do 1000 wojowników, dlatego za Sztandar i Kopułę płaci <b>5 razy więcej</b> niż drużyna.
+    Trudne złożenia wymagają zestawu narzędzi z Laboratorium.</p>
+    <p>Przedmioty jednorazowe (Ekonomizer, Ładownia, Pieczątka) w magazynie „ładują się” i działają przy następnej
+    pasującej czynności. Nowicjuszowi przepisy warsztatu odblokowują się <b>po jednym na dobę</b> — od najprostszych
+    i najbardziej przydatnych po legendarne; zablokowane są szare, z czasem do odblokowania.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏴‍☠️ Najazdy: decyzja przeciw decyzji</summary>
+  <div class="body">
+    <p>Zakładka „🏴‍☠️ Najazdy” w aplikacji gry. Do najazdów potrzebne są technologie Laboratorium 📡 łączność, 🔭 zwiad
+    i ⚔️ atak na 1. poziomie. Zwiad jest darmowy i pokazuje 2 + poziom zwiadu celów; paliwo najazdu — 5 💧 wodoru za wylot.
+    Wybierasz gest (kamień, nożyce, papier), a cel ma z góry ustawioną <b>postawę obronną</b> —
+    wynik rozstrzyga Kamień-Papier-Nożyce: twój gest przeciw jego postawie. Zwycięstwo: zabierasz 20% każdego zasobu celu
+    (nie więcej niż 30 na zasób). Porażka: oddajesz celowi 10% swoich (nie więcej niż 15). Remis — paliwo spłonęło.</p>
+    <ul>
+      <li>łupi się <b>tylko zasoby</b>: monety, roboty, kotlety i zlecenia na giełdzie są nietykalne;</li>
+      <li>nowicjusze przez pierwsze 3 dni są pod ochroną, członków własnej drużyny łupić nie można, ten sam cel — nie częściej niż raz na 12 godz.;</li>
+      <li>jeden wylot na 3 godziny; ofiara dostaje wiadomość i ma <b>darmowy rewanż</b> przez 24 godziny
+      (rewanżu na rewanż nie ma — inaczej para graczy przepompowywałaby zasoby bez końca);</li>
+      <li>🛡 tarcza z warsztatu chroni cię przed najazdami: złóż ją, włącz z magazynu, a plakietka tarczy w zakładce
+      najazdów pokaże licznik do końca ochrony;</li>
+      <li>swoją postawę zmieniaj w menu najazdów — przewidywalnych łupi się częściej;</li>
+      <li>⚔️ każdy poziom ataku po pierwszym — +8% do trofeum, 🛡 każdy poziom obrony celu — −8%,
+      📚 nauka — +1% za poziom; 📡 łączność skraca czas odnowienia o 20 minut za poziom;</li>
+      <li>💊 bez Apteczki 15% trofeum najazdu „przepada w lazarecie” (cel traci je w całości).</li>
+    </ul>
+    <p>Cele są pokazywane po imieniu, bez @username i ID — najazdy zostają grą, a nie pretekstem do nękania.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎯 Cele dnia i skrzynia</summary>
+  <div class="body">
+    <p>Karta „🎯 Cele” w paszporcie aplikacji gry: każdego dnia masz trzy cele — z gier, pojedynków, farmy, warsztatu,
+    najazdów, giełdy i stacji drużyny. Zaliczasz wszystkie trzy — odbierz <b>skrzynię</b>: +50 🪙 i +10 losowego
+    zasobu, plus specjalny bonus dnia: 🪵 drewno, 🪨 kamień albo ⚡ prąd. Seria dni się sumuje: co 7. dzień z rzędu w skrzyni jest dodatkowo +200 🪙 i 🐄 krowa.
+    Cele odnawiają się o 00:00 UTC.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔬 Laboratorium: narzędzia i technologie</summary>
+  <div class="body">
+    <p>Zakładka „🔬 Laboratorium” w aplikacji gry. <b>Zestawy narzędzi</b> — 4 poziomy: ⚒️ zgrubne,
+    🛠 do precyzyjnej regulacji, 🔬 kalibracja, 🧬 nanotechnologie. Zestaw się nie zużywa, tylko odblokowuje trudne złożenia
+    w warsztacie i kolejne poziomy technologii.</p>
+    <ul>
+      <li>📡 <b>Łączność</b> — potrzebna do najazdów i wydobycia w kopalniach, dalej skraca czas odnowienia najazdu o 20 minut za poziom;</li>
+      <li>🔭 <b>Zwiad</b> — +1 cel w zwiadzie za poziom;</li>
+      <li>⚔️ <b>Atak</b> — bez niego nie ma najazdów; dalej +8% do trofeum za poziom;</li>
+      <li>🛡 <b>Obrona</b> — najeźdźca wynosi od ciebie o 8% mniej za poziom;</li>
+      <li>📚 <b>Nauka</b> — +1% do wydobycia farmy i trofeów za poziom; potrzebny ☢️ Rdzeń.</li>
+    </ul>
+    <p>Każda technologia ma 5 poziomów. <b>1. poziom</b> łączności, zwiadu, ataku i obrony można zbadać
+    od pierwszego dnia — jeśli masz potrzebny zestaw narzędzi i zasoby. Każdy kolejny poziom tej samej technologii —
+    <b>po 30 dniach</b> od poprzedniego (w stroju naukowca — o 20–40% szybciej): każde ulepszenie jest upragnione i cenne. Zbadane się nie resetuje.</p>
+    <p><b>Nauka</b> rośnie w ślad za pozostałymi: jej 1. poziom odblokowuje się, gdy wszystkie cztery technologie są zbadane
+    do 1. poziomu, 2. — gdy wszystkie do 2., i tak dalej.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🐎 Stajnia, wozy i oferty na giełdzie</summary>
+  <div class="body">
+    <p>Ile zleceń można trzymać na giełdzie jednocześnie, decyduje logistyka: bazowo — 2 oferty,
+    każdy 🐎 koń — +1, każdy 🛒 wóz — jeszcze +1 (wozów nie więcej niż koni; maksymalnie po 5).
+    Konie sprzedaje sama gra za monety (1500 / 3000 / 6000 / 10 000 / 15 000 🪙 — monety się spalają),
+    wozy składa się w warsztacie. Naładowany Wahadłowiec
+    daje własny limit — 16 ofert. Stajnia jest w zakładce „📦 Magazyn”.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Sezony: TOP miesiąca</summary>
+  <div class="body">
+    <p>Sezon to miesiąc kalendarzowy (12 sezonów w roku). Monety, roboty, magazyn i zakupy <b>nie są resetowane</b> —
+    zerują się tylko tabele: TOP graczy według monet <b>zarobionych w grze</b> w danym miesiącu (przelewy i prezenty
+    się nie liczą), ranking drużyn według miejsc w bitwach sezonu i ranking znajomych w zakładce „🤝 Znajomi”.
+    Weteran i nowicjusz 1. dnia miesiąca startują na równych zasadach.</p>
+    <p>TOP-10 dostaje <b>odznakę sezonu</b> do paszportu na zawsze — medal za miejsce i miesiąc sezonu, na przykład „🥈 2026-11” (miejsca 4–10 — 🏅).
+    Nagrody dla zwycięzców przyznaje organizator — bot napisze w prywatnej wiadomości, co zostało przyznane.</p>
+    <p>Przełącznik „🏆 Sezon | 🎯 Akcje | 💰 Najbogatsi” — w zakładce TOP.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛰 Stacja drużyny: wspólny projekt</summary>
+  <div class="body">
+    <p>Zakładka „🏆 Drużyna” w aplikacji gry. Stację buduje cała drużyna: każdy członek
+    wkłada zasoby, poziom zamyka się, gdy wpłacono po 300 × poziom każdego zasobu (łącznie 5 poziomów).
+    Każdy poziom daje <b>wszystkim wojownikom drużyny +2% do wydobycia farmy</b> (do +10%). Wychodzisz z drużyny — bonus znika.
+    Lista ostatnich wpłat pokazuje, kto ciągnie wspólną sprawę.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⛏ Kopalnie: mapa i bitwy o zasoby</summary>
+  <div class="body">
+    <p>Zakładka „⛏ Kopalnie” w aplikacji gry — mapa z 30 kopalniami: metal, wodór, kryształy, części, kamień
+    i drewno — po 5 każdego. Kopalnie są tylko dla drużyn i klanów. W bitwie o kopalnie miejsca zajmują drużyny z najlepszym łącznym wynikiem wszystkich wojowników
+    w kategorii bitwy; w klasyfikacji są tylko ci, którzy złożyli pełne zgłoszenie bateriami. Dopóki nie ma bitwy, wypad do kopalni jest niemożliwy — mapa po prostu pokazuje, kto czym włada.</p>
+    <ul>
+      <li>zwycięzca trzyma kopalnię <b>24 godziny</b> — wszystkie drużyny zdążą się nią nacieszyć;</li>
+      <li><b>każdy wojownik</b> drużyny dostaje <b>1 zasób z kopalni na godzinę</b> (w granicach swojego magazynu) —
+      do 24 jednostek za jedno przejęcie; drużyna z 50 wojowników nazbiera 1200;</li>
+      <li>miejsca i nagrody za nie ustala organizator, a pozostałym uczestnikom może przyznać nagrodę „za udział”;</li>
+      <li>potem kopalnia jest wolna, ale przejąć ją ponownie można tylko w nowej bitwie;</li>
+      <li>wydobycie trafia do wojowników z 📡 łącznością 1. poziomu; bez 💊 Apteczki co 7. godzina jest „chora”, bez wydobycia;</li>
+      <li>w zakładce widać, ile już wydobyto i ile zostało do końca utrzymania.</li>
+    </ul>
+    <p>Więcej wojowników w drużynie — więcej wydobycia. Zapraszaj znajomych i poganiaj członków drużyny w trakcie bitwy!</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤝 Giełda drużyny i wzajemna pomoc</summary>
+  <div class="body">
+    <p><b>Giełda drużyny.</b> W zakładce „📈 Giełda” przełącz się na „Giełda drużyny”: te zlecenia i wymiany widzą
+    i realizują tylko członkowie twojej drużyny, a prowizja jest niższa od ogólnej — <b>5% zamiast 10%</b>, w <b>Mega-Klanie — tylko 2%</b>.
+    Minimalna cena kotleta (200 🪙) obowiązuje także tutaj. Wychodzisz z drużyny — twoje drużynowe oferty są zdejmowane,
+    towar i monety wracają.</p>
+    <p><b>Wzajemna pomoc.</b> W zakładce „🏆 Drużyna” poproś o zasób (jedna otwarta prośba, do 200 jednostek),
+    a członkowie drużyny ci go podarują. Dawać mogą gracze od <b>3 poziomu intelektu</b> i po <b>3 codziennych kotletach</b>,
+    nie więcej niż 100 zasobów na dobę i nie więcej, niż mieści się w magazynie proszącego. Kotletów się nie podarowuje —
+    to paliwo ze sklepu.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎖 Rangi za staż w ekosystemie</summary>
+  <div class="body">
+    <p>Im dłużej jesteś w ROFL HUB, tym fajniejsza ranga po prawej od twojego imienia — w profilu, na liście
+    członków drużyny i w TOP-100 Mini App. Rangi idą od najniższej do najwyższej:</p>
+    <ul>
+      <li>🎖 <b>Nowicjusz</b> — 1 dzień w ekosystemie;</li>
+      <li>🎖 <b>Wojownik</b> — tydzień;</li>
+      <li>🎖 <b>Legenda</b> — miesiąc;</li>
+      <li>🎖 <b>ROFL</b> — 3 miesiące;</li>
+      <li>🎖 <b>LMAO</b> — pół roku;</li>
+      <li>🎖 <b>KING</b> — rok i więcej. Najwyższa kasta.</li>
+    </ul>
+    <p>Rangi nie da się kupić — można ją tylko wysłużyć.</p>
+  </div>
+</details>
+
+<details>
+  <summary>✨ Skiny i Przepustka sezonu</summary>
+  <div class="body">
+    <p><b>Skiny</b> — strój, ramka, tytuł, znacznik na mapie i torba. Nie dają siły, tylko wygląd i status, i widzą je wszyscy: w paszporcie, w TOP, w drużynie i na mapie. Skiny są sprzedawane za ★ w sklepie (sekcja „✨ SKINY”), każdy egzemplarz ma własny numer nakładu. Można je odsprzedać na rynku za monety (prowizja się spala) i ulepszać: doświadczenie rośnie, dopóki skin jest założony, a połączenie z innym skinem przesuwa go po stopniach od „Fabrycznego” do „Nieśmiertelnego”. Losowych płatnych skrzynek nie ma.</p>
+    <p>🎟 <b>Przepustka sezonu</b> — 30 poziomów, doświadczenie za zwycięstwa, pojedynki, najazdy, wyprawy, przedmioty, questy i skrzynię. Darmowa ścieżka daje monety i baterie, premium za 299 ★ — więcej monet, kotlety i 4 ekskluzywne skiny miesiąca, których nie zdobędziesz nigdzie indziej. Doświadczenie za zwycięstwa w grach — do 150 na dobę, z Bezlimitem na 30 dni — do 300.</p>
+  </div>
+</details>
+
+<details>
+  <summary>💸 Przelewy monet i polecenia</summary>
+  <div class="body">
+    <h4>🔄 Przelewy</h4>
+    <p>Wysyłaj monety dowolnemu graczowi: po ID paszportu (jest w profilu), po @username albo po VIP ID.
+    Przelew potwierdzasz przyciskiem, odbiorca dostaje powiadomienie. Minimum — 10 🪙.
+    Wysyłać monety można po osiągnięciu <b>3 poziomu intelektu</b> i <b>3 codziennych kotletach</b> — tak fałszywe
+    konta nie wyprowadzają monet startowych, a uczciwi gracze nic nie tracą.</p>
+    <h4>🤝 Program poleceń</h4>
+    <p>Każdy gracz ma osobisty link (polecenie zaproszenia w menu). Nagroda jest przyznawana
+    <b>jeden raz</b> za każdego <b>aktywnego</b> znajomego: <b>+500 🪙</b>, <b>🥩 cyber-kotlet</b> do magazynu i
+    <b>po 10</b> ⛏ metalu, 💧 wodoru, 💎 kryształów i ⚙️ części (zasoby — w granicach miejsca w magazynie). Znajomy staje się aktywny, gdy:</p>
+    <ul>
+      <li>🧠 dojdzie do <b>3 poziomu intelektu</b> w quizie;</li>
+      <li>🎁 odbierze <b>3 codzienne kotlety</b> na farmie (raz na dobę — czyli co najmniej kilka dni w grze).</li>
+    </ul>
+    <p>Gdy tylko oba warunki są spełnione, bot sam sprawdza, z czyjego linku przyszedł gracz, i przyznaje
+    bonus zapraszającemu — dostaniesz powiadomienie. Za samą rejestrację bez gry bonusu nie ma: tak
+    ekosystem jest chroniony przed fałszywymi kontami, a twoje monety nie tracą na wartości.</p>
+    <p><b>🧥 Zadanie „10 aktywnych znajomych”.</b> Gdy aktywnych stanie się 10 zaproszonych przez ciebie znajomych, w zakładce
+    „🤝 Znajomi” odblokuje się wybór: pełny strój dowolnego z sześciu rodzajów — wszystkie 5 części naraz. Nagroda jest jedna na konto.</p>
+    <p>Link, przycisk „Udostępnij”, statystyki i ranking „kto ma więcej znajomych” — w zakładce
+    „🤝 Znajomi” aplikacji gry i w menu zaproszeń w czacie.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛒 Sklep i Telegram Stars</summary>
+  <div class="body">
+    <p>Wszystkie zakupy idą przez <b>oficjalne Telegram Stars</b> — system płatności samego Telegrama.
+    Żadnych kart i zewnętrznych stron.</p>
+    <ul>
+      <li>dostawa jest <b>natychmiastowa</b>: roboty, kotlety, boosty i Bezlimity trafiają na konto od razu po zapłacie;</li>
+      <li>każdy zakup dostaje paragon z numerem płatności;</li>
+      <li>jeśli płatność przeszła, a dostawa zawiodła — <b>Stars wrócą automatycznie</b>;</li>
+      <li>pytania o płatności — polecenie wsparcia płatności w menu bota.</li>
+    </ul>
+    <p class="warn">⚠️ Jedyny oficjalny bot — @RoflHubGame_Bot. Uważaj na klony!</p>
+  </div>
+</details>
+
+<details id="shop-items">
+  <summary>🛍 Co daje każdy produkt w sklepie</summary>
+  <div class="body">
+    <h4>🚜 Dla farmy</h4>
+    <ul>
+      <li><b>🤖 Młodszy Górnik</b> (49 ★, 30 dni) — wydobywa 5 🪙 na godzinę bez paliwa: około 3 600 🪙 miesięcznie.
+        Dla tych, którzy nie chcą pilnować tankowania.</li>
+      <li><b>⚡ Cyber-Wiertacz</b> (99 ★, 30 dni) — 10 🪙 na godzinę, dwa razy mocniejszy od Górnika, ale zjada
+        1 cyber-kotlet na dobę. Z boostami — do 70 🪙 na godzinę. Dla tych, którzy chcą maksimum.</li>
+      <li><b>🥩 Paczki kotletów</b> (10, 50 i 100 szt.) — paliwo Wiertaczy: 1 kotlet = doba pracy
+        jednego robota. Im większa paczka, tym tańszy kotlet. Nadmiar można sprzedać na giełdzie.</li>
+      <li><b>📦 Lodówka</b> (na 10, 50 i 100 kotletów) — zbiornik, z którego Wiertacze tankują się
+        same. Kotlety z magazynu ładuje się do lodówki, a dalej farma pracuje bez ciebie.
+        Mała lodówka — zaglądać codziennie; na 100 kotletów — 10 Wiertaczy pracuje
+        10 dni z rzędu, a ty zajmujesz się swoimi sprawami.</li>
+      <li><b>🔋 Nuklearne Przyspieszenie x5</b> (199 ★, 30 dni) — wydobycie wszystkich robotów ×5, ale Wiertacze jedzą
+        3 razy więcej kotletów. Najszybsza droga do dużych sum.</li>
+      <li><b>❄️ Azotowe Chłodzenie +40%</b> (299 ★, 30 dni) — +40% do wydobycia wszystkich robotów bez dodatkowego
+        paliwa. Sumuje się z Nuklearnym Przyspieszeniem.</li>
+      <li><b>🛸 Mistrzowski Dron</b> (999 ★, 1 rok) — dopóki dron jest aktywny, roboty się nie starzeją: ich 30-dniowa
+        licencja zamiera. Kupione roboty służą dłużej.</li>
+      <li><b>♾ Wieczny Górnik</b> (999 ★) — zamienia darmowego Robota Stażystę w wiecznego Młodszego
+        Górnika: 5 🪙 na godzinę na zawsze. Potrzeba 3 aktywnych znajomych.</li>
+    </ul>
+    <h4>🕹️ Do gier</h4>
+    <ul>
+      <li><b>⚡ Bezlimit 24 godz.</b> (15 ★) i <b>🚀 Bezlimit 30 dni</b> (249 ★) — zdejmują dobowy limit
+        zwycięstw: graj, ile chcesz, a każde zwycięstwo przynosi monety i zasób gry bez ograniczeń.
+        Poziomy intelektu w quizie rosną szybciej.</li>
+      <li><b>💰 Paczki monet</b> (5 000 – 100 000 🪙) — monety od razu na saldo: stoły pojedynków z wysokimi
+        stawkami, zakupy na giełdzie (kotlety i zasoby), założenie własnej drużyny (100 000 🪙), złożenie
+        Wahadłowca w warsztacie. Im większa paczka, tym korzystniejszy kurs.</li>
+      <li><b>🏆 Mega-Klan</b> (2499 ★) — rozszerza twoją drużynę z 50 do 1000 miejsc: więcej wojowników w bitwach
+        i szybciej rośnie stacja drużyny.</li>
+    </ul>
+    <p>Wszystkie zakupy są dostarczane natychmiast, a przy błędzie dostawy Stars wracają automatycznie.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗑 Usunięcie konta</summary>
+  <div class="body">
+    <p>Przycisk „🗑 Usuń konto” jest w profilu. Przypadkiem go nie wciśniesz: najpierw ostrzeżenie o tym,
+    co przepadnie, i dopiero po 10 sekundach działa przycisk potwierdzenia.</p>
+    <ul>
+      <li>⏳ Konto zostaje <b>zamrożone na 7 dni</b>: w grze cię nie widać, ale jednym kliknięciem
+        „↩️ Anuluj usunięcie” wszystko wraca do stanu sprzed;</li>
+      <li>🗑 po 7 dniach monety, roboty, kotlety, zasoby, VIP ID i postępy są usuwane na zawsze,
+        kapitaństwo w drużynie przechodzi na weterana;</li>
+      <li>⭐ zakupy za Stars przepadają razem z kontem — Stars nie są zwracane;</li>
+      <li>🔁 wrócić można w dowolnej chwili — uruchom bota ponownie, ale zaczniesz od zera i bez ponownego bonusu startowego.</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>👨‍💻 O projekcie i autorze</summary>
+  <div class="body">
+    <p>ROFL HUB to międzynarodowy ekosystem gier w Telegramie: farma, quiz, pojedynki, questy,
+    drużyny i bitwy w jednym bocie i Mini App w 14 językach.</p>
+    <p>Wszystkie postacie, imiona i wydarzenia w questach i „Sprawie dnia” są fikcyjne. Wszelkie podobieństwo do prawdziwych osób,
+    żyjących lub zmarłych, oraz do prawdziwych wydarzeń jest przypadkowe.</p>
+    <p>Chcesz takiego samego bota, grę albo Mini App dla swojego projektu? Napisz do autora:
+    <a href="https://t.me/mister_telebot">@mister_telebot</a>.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📱 Mini App — imperium na jednym ekranie</summary>
+  <div class="body">
+    <p>Wciśnij przycisk <b>🎮 ROFL HUB</b> obok pola wpisywania — otworzy się cała gra: gry i questy, pojedynki, farma, magazyn, warsztat, giełda, mapa, drużyna, TOP i historia. W czacie bota zostają zaproszenia, przelewy i prywatne wiadomości o nagrodach. Od razu pod ręką:</p>
+    <ul>
+      <li>paszport z saldem, 🧠-poziomem i VIP ID;</li>
+      <li>farma: roboty, tankowanie, prędkość, najbliższe wypalenie;</li>
+      <li>🎁 codzienny kotlet można odbierać prosto stąd;</li>
+      <li>twoja drużyna i <b>TOP-100 bogaczy</b> ekosystemu.</li>
+    </ul>
+    <p>Otwarcie Mini App aktualizuje farmę tak samo jak wizyta w bocie — monety nigdy nie przepadają.</p>
+  </div>
+</details>
+
+<footer>ROFL HUB · postęp aktualizuje się w czasie rzeczywistym · cała gra — w jednej aplikacji</footer>
+
+<script>
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+  // ?s=<id раздела> — открыть нужный раздел (например, из магазина: «Что даёт каждый товар»)
+  (function () {
+    var id = new URLSearchParams(location.search).get("s");
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.BackButton && history.length > 1) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(function () { history.back(); });
+    }
+  })();
+</script>
+</body>
+</html>

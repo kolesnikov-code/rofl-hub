@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROFL HUB — Guia</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240;
+    --neon: #00ffe1; --accent: #ffd93d; --pink: #ff4d8d;
+    --text: #e8ecff; --muted: #8a93b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  a { color: var(--accent); font-weight: 700; text-decoration: none; }   /* ссылки — золотом, читаемо */
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 30px; line-height: 1.55;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon); text-shadow: 0 0 18px rgba(0,255,225,.45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  details {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0,255,225,.14); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 14px 16px; font-weight: 800; font-size: 15px;
+    color: var(--neon); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "▾"; float: right; color: var(--muted); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(180deg); }
+  .body { padding: 0 16px 14px; font-size: 14px; }
+  .body h4 { color: var(--accent); margin: 12px 0 4px; font-size: 14px; }
+  .body p { margin-bottom: 8px; }
+  .body ul { margin: 0 0 8px 18px; }
+  .body li { margin-bottom: 4px; }
+  b { color: #fff; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+    background: rgba(0,255,225,.12); border: 1px solid rgba(0,255,225,.35); color: var(--neon);
+    font-weight: 700;
+  }
+  .warn { color: var(--pink); font-weight: 700; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="logo">📚 GUIA DO ROFL HUB</div>
+<div class="sub">como tudo funciona aqui — do bife ao Mega-Clã</div>
+
+<details open>
+  <summary>🪙 Moedas: a moeda principal do ecossistema</summary>
+  <div class="body">
+    <p><b>Moedas</b> são a moeda interna do jogo no ROFL HUB. Com elas você cria equipes, joga duelos,
+    dá lances em leilões e mostra quem é mais rico no TOP-100.</p>
+    <h4>Como ganhar</h4>
+    <ul>
+      <li>🎁 <b>+500 🪙</b> logo no cadastro;</li>
+      <li>🚜 a fazenda minera moedas <b>24 horas por dia</b>, até enquanto você dorme;</li>
+      <li>🕹️ vitórias em jogos contra o bot: <b>+2 🪙</b> por vitória (Ciber-Cofre e Quebra-código — +5, Memória — +3);</li>
+      <li>🧠 níveis de inteligência no quiz: +100, +200, +300… 🪙 por nível;</li>
+      <li>⚔️ duelos contra jogadores reais — leve o pote do adversário;</li>
+      <li>🤝 <b>+500 🪙</b>, 🥩 um bife e 10 de cada recurso básico (⛏ 💧 💎 ⚙️) por cada amigo <b>ativo</b>
+        que entrar pelo seu link de indicação;</li>
+      <li>🛒 pacotes de moedas na loja por Telegram Stars.</li>
+    </ul>
+    <p>A economia é protegida contra a inflação: derrotas, taxas de duelos e da bolsa e lances vencedores em leilões queimam moedas para sempre.
+    Com o tempo, a sua riqueza só fica mais valiosa.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🚜 Ciber-fazenda: robôs e bifes</summary>
+  <div class="body">
+    <h4>🤖 Robô Estagiário — 1 🪙/hora, grátis e para sempre</h4>
+    <p>O primeiro robô de todo jogador. Ative-o na tela da fazenda (botão «Ativar seu
+    Robô Estagiário») — e ele começa a minerar <b>1 🪙 por hora para sempre</b>: sem combustível, sem prazo de validade.
+    Nos níveis de inteligência <b>10, 20, 30, 40, 50…</b> do quiz, mais um Estagiário espera por você — resgate-o
+    com o botão «🎁 Resgatar Robô Estagiário» na fazenda, no resultado da rodada do quiz ou no app.
+    Os boosts valem para ele também: com o Boost Nuclear, o Estagiário rende 5 🪙/hora.</p>
+    <p>♾ <b>Robô Minerador Eterno.</b> O Estagiário pode ser promovido a Robô Minerador <b>para sempre</b> (5 🪙/hora
+    sem expirar) — é um item da loja por 999 ★, mas com uma condição: pelo menos <b>3 amigos ativos</b>
+    que chegaram pelo seu link (o que é um amigo «ativo» — na seção sobre indicações). Assim, o robô eterno
+    fica com quem faz o ecossistema crescer.</p>
+    <h4>🤖 Robô Minerador — 5 🪙/hora</h4>
+    <p>Robô de primeiro nível. Funciona sozinho, não precisa de combustível e trabalha sem folga.</p>
+    <h4>⚡ Ciber-Perfurador — 10 🪙/hora</h4>
+    <p>Robô de segundo nível, duas vezes mais potente, mas comilão: <b>CADA Perfurador come 1 ciber-bife
+    só seu a cada 24 horas de trabalho</b>. Um bife alimenta um robô só: com
+    3 Perfuradores, prepare 3 bifes por dia; com 10 Perfuradores, 10 bifes. O bife sai
+    inteiro da geladeira no começo do turno diário. Se não tiver bife para todos, os
+    Perfuradores famintos param até serem alimentados.</p>
+    <h4>🥩 Ciber-bifes, estoque e Geladeira</h4>
+    <p>Os bifes ficam no <b>estoque</b> (é para lá que vão as compras e os bônus), mas os robôs comem da
+    <b>geladeira</b>. Passe os bifes de um para o outro com os botões «Carregar» na tela da fazenda. A Geladeira pode ser
+    ampliada na loja: 10 / 50 / 100 bifes.</p>
+    <p>🎁 A cada 24 horas, toque em <b>«PEGAR BÔNUS»</b> na fazenda do app ou no chat do bot — um bife grátis no estoque!</p>
+    <h4>🔥 Vida útil dos robôs</h4>
+    <p>Um robô comprado dura <b>30 dias</b> a partir da compra e depois expira — compre um novo na loja
+    (seção «PARA A FAZENDA»). A data da próxima expiração aparece na tela da fazenda. As exceções são os Robôs Estagiários
+    e o Robô Minerador Eterno: eles nunca expiram.</p>
+    <h4>🛸 Drone Mestre</h4>
+    <p>Um ajudante lendário por 365 dias: enquanto o drone está na fazenda, <b>o desgaste dos robôs para totalmente</b> —
+    os 30 dias de vida de um robô só correm quando o drone está inativo. Um investimento de ferro para uma fazenda grande.</p>
+    <h4>⚡ Boosts (eles se somam!)</h4>
+    <ul>
+      <li>🔋 <b>Boost Nuclear x5</b> — mineração de todos os robôs ×5 por 30 dias. O preço da potência: o bife do Perfurador
+      queima três vezes mais rápido — <b>1 bife a cada 8 horas</b> em vez de um dia. O boost funciona com qualquer quantidade de bifes, até com um só;
+      se o boost acabar e o bife não tiver queimado todo, o resto é consumido no ritmo normal — nada se perde;</li>
+      <li>❄️ <b>Resfriamento a Nitrogênio +40%</b> — Minerador 5→7, Perfurador 10→14 🪙/hora, sem gastar mais bifes;</li>
+      <li>juntos: Minerador <b>35</b>, Perfurador <b>70</b> 🪙/hora. Uma fazenda monstro!</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>🧠 Quiz e níveis de inteligência</summary>
+  <div class="body">
+    <p>O quiz é um sprint intelectual: <b>30 segundos por resposta</b>; quem não responde a tempo perde.
+    Resposta certa: +2 🪙, erro: −1. As perguntas vêm em rodadas de 10, a dica 50/50 custa 10 🪙 e a cada 10 respostas certas você ganha 🪨 pedra.</p>
+    <h4>🏅 Níveis de inteligência</h4>
+    <p>Cada nível é uma série de respostas certas, e o contador de cada série começa do zero:</p>
+    <ul>
+      <li>nível 1: <b>10 certas</b> → recompensa <b>+100 🪙</b>;</li>
+      <li>nível 2: mais <b>20 certas</b> → <b>+200 🪙</b>;</li>
+      <li>nível 3: mais 30 → +300… e assim por diante, sem fim — o nível 100 vai render <b>+10 000 🪙</b>!</li>
+    </ul>
+    <p>O seu nível 🧠 brilha no perfil, na lista de colegas de equipe e no TOP-100 — é o sinal público
+    de inteligência no ecossistema.</p>
+    <p>Limite do quiz — <span class="chip">30 vitórias/dia</span>, reinicia às 00:00 UTC. Quer subir
+    mais rápido? Na loja dá para tirar os limites por 24 horas ou 30 dias.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🕹️ Jogos rápidos contra o bot</summary>
+  <div class="body">
+    <p>Três jogos clássicos: vitória <b>+2 🪙</b>, derrota <b>−1</b>, empate não tira nada nem dá nada.
+    Limite de cada um — <span class="chip">15 vitórias/dia</span> (reinicia às 00:00 UTC).</p>
+    <ul>
+      <li>🪨 <b>Pedra-Papel-Tesoura</b> — pedra, papel e tesoura contra o bot;</li>
+      <li>📈 <b>Maior/Menor</b> — adivinhe para onde vai o número escondido;</li>
+      <li>🔐 <b>Ciber-Cofre</b> — acerte o código entre 4 opções: abriu — prêmio de <b>+5 🪙</b>, errou — alarme e −1.</li>
+    </ul>
+    <p>⚡ O Sem Limite da loja tira os limites de uma vez em <b>todos</b> os jogos.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧩 Jogos novos, Caso do dia e missões</summary>
+  <div class="body">
+    <ul>
+      <li>➗ <b>Matemática</b> — 20 segundos por conta, <span class="chip">30 vitórias/dia</span>; a cada 10 certas — ⚡ eletricidade;</li>
+      <li>🏳️ <b>Bandeiras e capitais</b> — 20 segundos por resposta, <span class="chip">30 vitórias/dia</span>, recurso — 💎 cristais;</li>
+      <li>💻 <b>Quebra-código</b> — adivinhe 4 dígitos diferentes em 10 tentativas: <b>+5 🪙</b> e ⚙️ 2 peças, <span class="chip">10 vitórias/dia</span>;</li>
+      <li>🃏 <b>Memória</b> — encontre 6 pares em no máximo 12 jogadas: <b>+3 🪙</b> e 💧 hidrogênio, <span class="chip">15 vitórias/dia</span>.</li>
+    </ul>
+    <p>🕵️ <b>Caso do dia</b> — um caso igual para todos por dia (UTC): 4 suspeitos, as pistas abrem uma por uma e você só pode acusar uma vez. Quanto menos pistas precisar, maior a recompensa: 40 / 30 / 20 / 10 🪙, e a cada 7º dia de sequência de casos resolvidos, mais +50 🪙.</p>
+    <p>🗺 <b>Missões do dia</b> — todo dia, todos recebem as mesmas 10 missões. Sem o Sem Limite, contam 3 conclusões novas por dia; as já concluídas podem ser rejogadas quantas vezes quiser. Pela primeira conclusão — 20–50 🪙 e 🪨 pedra; as ⭐ missões épicas (20+ minutos) só abrem com ⚡ Sem Limite e rendem 100 🪙 e 🪨 5.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⚔️ Duelos: jogador contra jogador</summary>
+  <div class="body">
+    <p>Duelo de Pedra-Papel-Tesoura contra um <b>jogador real</b>, valendo aposta. Três mesas, como no pôquer — escolha a que cabe no bolso:
+    <span class="chip">10 🪙</span> <span class="chip">100 🪙</span> <span class="chip">1000 🪙</span>.</p>
+    <h4>Regras do pote</h4>
+    <ul>
+      <li>a aposta vai para o pote assim que você senta à mesa;</li>
+      <li>quem vence leva <b>80% do pote</b> (aposta ×1.6), <b>20% é queimado para sempre</b> — os duelos movem a deflação;</li>
+      <li>com ⚡ Sem Limite, a taxa do vencedor cai pela metade — <b>10%</b> (prêmio ×1.8);</li>
+      <li>duelos são só por moedas: recursos se ganham em outros jogos;</li>
+      <li>empate — nova rodada de jogadas na hora, o pote continua na mesa;</li>
+      <li>você tem <b>60 segundos</b> para escolher a jogada; quem ficar calado recebe uma jogada sorteada;</li>
+      <li>se não aparecer adversário em 30 minutos, a aposta volta automaticamente;</li>
+      <li>⚔️ <b>desafio a um amigo por link</b> — uma mesa privada, fora da fila; o link vale 24 horas, e quem é novo e entra por ele vira sua indicação.</li>
+    </ul>
+    <p>Vitórias em duelos contam para a sua equipe em batalhas com categoria de duelos — treine!</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Equipes e clãs</summary>
+  <div class="body">
+    <p>A equipe é a sua turma de até <b>50 lutadores</b>. Criar uma custa <b>100 000 🪙</b>: invente
+    o nome, o lema e o emblema. Dá para começar com um <b>esquadrão</b>: até 5 lutadores por 7 500 🪙, e depois o capitão o amplia para equipe por 92 500 🪙 (no total, o mesmo preço). Na loja, a equipe pode evoluir para <b>Mega-Clã com 1000 vagas</b>. Tudo isso fica na aba «🏆 Equipe».</p>
+    <h4>👥 Lista de colegas de equipe</h4>
+    <p>Na aba «🏆 Equipe» está a formação completa: cada lutador com o seu nível de inteligência 🧠 e um
+    @username clicável — mandem mensagem uns aos outros, montem os seus chats e se preparem para as batalhas. A lista só é vista
+    <b>pelos membros desta equipe</b> — nada de estranhos.</p>
+    <h4>👑 Capitania</h4>
+    <p>Se o capitão sai da turma, a coroa passa para o veterano mais fiel — quem entrou
+    primeiro. Uma equipe sem lutadores se desfaz automaticamente.</p>
+    <p>Por que entrar? Batalhas de equipes, classificação conjunta, prêmios para cada lutador das equipes premiadas — quem joga sozinho
+    não tem nada disso.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏟️ Batalhas de equipes e clãs — os grandes eventos</summary>
+  <div class="body">
+    <p>Batalhas <b>não são rotina diária, são eventos</b>, como uma Copa do Mundo: a administração anuncia
+    a batalha no jogo (Passaporte → «📣 Eventos»), e ela tem nome, datas e categoria.</p>
+    <h4>Como funciona</h4>
+    <ul>
+      <li>a categoria é o que se mede: quem minera mais, mais vitórias em duelos ou no quiz,
+      quem traz mais novatos ativos, entre outras;</li>
+      <li>conta o <b>resultado CONJUNTO de todos os jogadores da equipe</b> — cada lutador aproxima a vitória,
+      chame os mais ativos para a turma!</li>
+      <li>a pontuação vale só dentro da janela da batalha — não dá para inflar depois;</li>
+      <li>pontos e prêmios da equipe vão para lutadores que estão nela há <b>pelo menos um dia</b> no fim da batalha: pular para a equipe líder
+      um minuto antes do fim não funciona (o mesmo vale para expedições de equipe e renda das minas);</li>
+      <li>há batalhas de equipes, de clãs, de equipes e clãs juntos — e eventos <b>individuais</b>: por exemplo, de quem o reels
+      no Instagram, YouTube Shorts ou TikTok bomba mais, ou quem traz mais amigos ativos;</li>
+      <li>o anúncio fica no Passaporte («📣 Eventos»), as batalhas em andamento e a sua posição — na aba TOP → «🎯 Eventos»;
+      quem recebe prêmio ganha uma mensagem privada do bot dizendo o que foi creditado.</li>
+    </ul>
+    <h4>⛏ Batalhas pelas minas e 🔋 inscrição</h4>
+    <p>O organizador pode sortear várias minas de uma vez: tantas minas quanto posições premiadas
+    (o 1º lugar fica com a mais valiosa). Pelas minas só lutam equipes e clãs com a <b>inscrição completa em baterias</b>:
+    equipe — 5 🔋, clã — 25 🔋. Qualquer lutador contribui na aba «⛏ Minas» — juntem tudo em equipe!</p>
+    <h4>🎁 Prêmios</h4>
+    <p>Os prêmios e o número de posições premiadas de cada batalha são definidos pela administração. Os prêmios são só do jogo:
+    moedas, recursos, itens, robôs e reforços por prazos variados, peças de traje e artefatos. Nas batalhas de equipe, <b>cada lutador</b> da equipe premiada recebe a recompensa.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗺 Mapa do mundo: expedições solo e de esquadrão</summary>
+  <div class="body">
+    <p>A aba «🗺 Mapa» no app do jogo é o mapa do mundo, onde de tempos em tempos a administração coloca
+    <b>alvos de expedição</b> (até 10 de uma vez): solo, de equipe e de clã. Cada um tem a sua história, os seus prêmios e a sua <b>hora do resultado</b>;
+    o resultado pode sair antes, se um número definido de jogadores chegar ao alvo.</p>
+    <h4>Como é a expedição</h4>
+    <ul>
+      <li>você sai do seu lado do mapa e vai devagar até o alvo, à vista de todos — o marcador anda junto com o tempo;</li>
+      <li>no alvo aparece quanto tempo leva o caminho e <b>se dá tempo</b> até a hora do resultado: se não der, não dá para sair, e quem se atrasar
+      por causa das bifurcações fica fora do resultado;</li>
+      <li>equipamento: solo — 💧 10 de hidrogênio, equipe — 🔋 5 baterias, Mega-Clã — 🔋 25 e 🥩 10 bifes. Os lutadores contribuem um a um; com o kit completo, o esquadrão sai, e se não completarem até o resultado ou o alvo for cancelado, tudo é devolvido;</li>
+      <li>o caminho solo leva 10–30 minutos, em esquadrão — mais; ao mesmo tempo, uma expedição solo por jogador e um esquadrão por equipe.</li>
+    </ul>
+    <h4>🔀 Bifurcações</h4>
+    <p>No caminho aparecem bifurcações: tempestade, depósito abandonado, esquadrão rival, ponte suspensa… Cada uma tem 2–3 opções com suas consequências: mais carga, risco de perdas ou um atalho. A bifurcação mais próxima aparece <b>logo</b>, com o cronômetro «até a bifurcação» — escolha a opção antes, e ela vale quando você chegar (dá para mudar de ideia até lá). Não escolheu? Depois de chegar à bifurcação, há tempo até a próxima; sem resposta, o esquadrão segue direto: sem ganho, sem perdas e sem atraso. No esquadrão de equipe, quem decide é a votação: se todos votarem, vale na hora; senão, vale a maioria.</p>
+    <h4>🔎 Reconhecimento de bifurcações</h4>
+    <p>Dá para descobrir as consequências das opções antes — com o botão «Reconhecer esta bifurcação». O número de reconhecimentos na expedição depende do líder do esquadrão (no solo — você, na equipe — o capitão):
+    <b>o menor valor entre 🛰 Drones espiões e níveis de 🔭 reconhecimento</b>: 1 espião e reconhecimento 1 — uma bifurcação, 5 e 5 — todas as cinco.
+    <b>A primeira expedição de cada temporada é às cegas</b> para todos.</p>
+    <h4>🏁 Resultado</h4>
+    <p>Na hora do resultado, as posições são distribuídas pela <b>carga</b> entre quem chegou. Quantas posições premiadas e o que cada uma ganha — decide
+    o organizador; aos demais que chegaram ele pode dar uma recompensa «pela participação». Quem recebe prêmio ganha uma mensagem privada do bot dizendo o que foi creditado.</p>
+    <h4>📦 O que é a carga</h4>
+    <p>A carga são os pontos da expedição. Todos começam com 100, as bifurcações somam (ganho) ou tiram (perdas) — e o resultado é pela carga.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤖 Drones de combate</summary>
+  <div class="body">
+    <p>Três tipos de companheiros pessoais, uma conquista exclusiva: montar um é tão difícil quanto o Shuttle,
+    ou dá para comprar na oficina por 100 000 🪙 (as moedas são queimadas). Não há limite de quantidade, o efeito
+    <b>se soma</b>, os drones não se gastam e não ocupam o estoque.</p>
+    <ul>
+      <li>🛡 <b>Drone guardião</b> — quem saqueia você leva menos; na expedição você perde menos carga;</li>
+      <li>⚔️ <b>Drone de ataque</b> — seus saques rendem mais; na expedição, mais ganho nas bifurcações de força;</li>
+      <li>🛰 <b>Drone espião</b> — mais alvos no reconhecimento de saques; na expedição o caminho é mais curto e, junto com o 🔭 reconhecimento,
+      ele permite reconhecer bifurcações.</li>
+    </ul>
+    <p>As porcentagens exatas estão no cartão do drone na oficina.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧍 Personagem: trajes e artefatos</summary>
+  <div class="body">
+    <p>A aba «🧍 Personagem» vem logo depois do Passaporte: avatar, 5 espaços (capacete, jaqueta, luvas, calças, botas) e mochila. O bônus vem só do <b>traje completo de um mesmo tipo</b>: ⚡ eletricista — a eletricidade cai mais vezes nas vitórias, ⛏ mineiro — uma vez por dia, uma porcentagem da mineração da fazenda, 🪖 soldado — mais espólio e ganho, expedições mais rápidas, 🥷 furtivo — chance de não aparecer no reconhecimento de quem saqueia, 🔬 cientista — intervalo menor entre níveis de tecnologia, 🔧 engenheiro — receitas da oficina mais baratas.</p>
+    <p>Cada peça tem três níveis: Básico, Aprimorado e Lendário. Para evoluir, você precisa de recursos, moedas e experiência da peça — eventos que ela viveu enquanto estava vestida; para o Lendário, também é preciso uma tecnologia do Laboratório. O bônus fica garantido no momento da ação: tirou o traje — o que já ganhou não se perde. As peças caem em eventos (grátis — até 5 por temporada), e as Básicas são vendidas no mercado da própria aba.</p>
+    <p>💠 <b>Artefatos</b> — três espaços do cinto debaixo do avatar: Coração da tempestade, Pedra da fartura, Pôr do sol carmesim, Sombra fantasma, Orbe da revelação e Guerreiro mecânico. Cada um reforça a sua linha de bônus e se soma ao traje. Grátis — um por temporada; os demais, no mercado.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔨 Leilões e VIP ID</summary>
+  <div class="body">
+    <p>De tempos em tempos, a administração coloca em leilão <b>lotes únicos</b> — por exemplo,
+    os lendários <b>VIP ID</b>: <span class="chip">ROFL-HUB-777</span>.</p>
+    <h4>Lances justos e reembolsáveis</h4>
+    <p>O lance é descontado na hora, mas se alguém cobrir você — <b>o valor inteiro volta na mesma hora</b>.
+    Só o vencedor paga quando o lote fecha.</p>
+    <h4>💎 O que o VIP ID dá</h4>
+    <p>É o seu ID personalizado no ecossistema: ele brilha no perfil, aparece no TOP-100, e por ele
+    funcionam as transferências — seus amigos podem mandar moedas direto para <b>ROFL-HUB-777</b> em vez de números sem graça.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📈 Bolsa: bifes e recursos entre jogadores</summary>
+  <div class="body">
+    <p>Na bolsa, os jogadores negociam por moedas bifes, todos os recursos e até o ☢️ Núcleo.
+    Quanto mais negócios, mais moedas são queimadas em taxas — isso segura o valor da moeda.
+    A bolsa completa fica na aba «📈 Bolsa» do app do jogo: índice de preços, gráfico de 7 dias, quem vende,
+    quem compra, as suas ordens e a troca de recursos.</p>
+    <ul>
+      <li><b>venda</b>: o item vai para uma ordem e espera o comprador; dá para retirar a qualquer momento;</li>
+      <li><b>ordem de compra</b>: «compro 10 bifes a 250» — as moedas ficam congeladas até o negócio; se você retirar a ordem, elas voltam;</li>
+      <li><b>bife por no mínimo 200 🪙</b>: o combustível da loja por Stars sempre sai mais em conta que a bolsa; na bolsa, quem compra é quem não tem tempo;</li>
+      <li><b>preços mínimos por 1 unidade</b> (na venda e na ordem de compra): ⚙️ peças e 💎 cristais — 10 🪙, ⛏ metal
+      e 💧 hidrogênio — 20, 🪨 pedra — 30, ⚡ eletricidade — 50, 🪵 madeira — 70, 🔥 fogo — 170, 🔋 baterias — 300,
+      🐄 vaca — 1 000, ☢️ Núcleo — 5 000 🪙;</li>
+      <li>até 100 bifes ou 1000 de um recurso por ordem; quantas ordens manter ao mesmo tempo depende dos cavalos e das carroças: no básico, 2 (mais detalhes na seção «Estábulo»);</li>
+      <li><b>a taxa de 10% é paga por quem vende</b>, e ela é queimada para sempre — é a proteção das moedas contra a inflação;</li>
+      <li><b>troca de recursos</b>: «dou 60 de metal por 25 de hidrogênio» — sem moedas e sem taxa; pelos preços mínimos, os dois lados
+      podem diferir no máximo 3 vezes;</li>
+      <li>enquanto a conta é nova (até o nível de inteligência 3 e 3 bifes diários), dá para comprar no máximo por três vezes o preço
+      mínimo — assim contas falsas não transferem moedas; você pode retirar o seu lote de recurso se ele couber no estoque.</li>
+    </ul>
+    <p>Bifes da geladeira não vão para a bolsa — só os do estoque.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧰 Recursos e oficina: cada jogo rende o seu</summary>
+  <div class="body">
+    <p>Cada vitória traz não só moedas, mas também o recurso do seu jogo:</p>
+    <ul>
+      <li>⛏ <b>Metal</b> — Pedra-Papel-Tesoura;</li>
+      <li>💧 <b>Hidrogênio</b> — Maior/Menor;</li>
+      <li>💎 <b>Cristais</b> — Quiz;</li>
+      <li>⚙️ <b>Peças</b> — Ciber-Cofre (3 por abertura — ele abre mais raramente);</li>
+      <li>🗺 primeira conclusão de uma missão — 20–50 🪙 e 🪨 1–2 pedras; de uma missão épica — 100 🪙 e 🪨 5.</li>
+    </ul>
+    <p><b>Matérias-primas novas</b> — para construções, logística e o Laboratório:</p>
+    <ul>
+      <li>🪨 <b>Pedra</b> — missões, sequência de respostas certas no quiz, minas, baú;</li>
+      <li>🪵 <b>Madeira</b> — minas, baú;</li>
+      <li>🔥 <b>Fogo</b> — Fogueira na oficina: madeira + pedra. Sem fogo não há ferramentas nem baterias;</li>
+      <li>⚡ <b>Eletricidade</b> — 25% de chance em qualquer vitória num jogo solo (com o traje de eletricista — 50–70%), a cada 10 respostas certas na matemática, baú;</li>
+      <li>🔋 <b>Baterias</b> — oficina (eletricidade + metal + fogo). Um recurso valioso: carga do Shuttle e inscrição da equipe na batalha pelas minas;</li>
+      <li>🐄 <b>Vacas</b> — baú de cada 7º dia da sequência, bolsa. Uma vaca na oficina rende 3 bifes;</li>
+      <li>☢️ <b>Núcleo</b> — o mais raro: só como prêmio do organizador por batalhas, expedições e eventos. É vendido na bolsa
+      a partir de 5 000 🪙 (não entra em troca recurso por recurso).</li>
+    </ul>
+    <p>Na loja por Stars não há recursos — só mineração. Entre si, os jogadores negociam recursos na bolsa
+    (por moedas, a taxa de 10% é queimada) e trocam recurso por recurso. Eles são usados
+    na <b>oficina</b> — a aba «🔧 Oficina» do app do jogo:</p>
+    <ul>
+      <li>❄️ Resfriamento a Nitrogênio por 6 h, 🔋 Boost Nuclear por 3 h, 🛸 Drone Mestre por um dia —
+      os mesmos reforços da loja, só que curtos e por recursos;</li>
+      <li>🛡 <b>Escudo contra saques</b> por um dia;</li>
+      <li>🥩 <b>ciber-bifes de uma vaca</b> — 🐄 uma vaca e 🔥 2 de fogo → 3 bifes no estoque
+      (a vaca na bolsa custa a partir de 1 000 🪙; é comprada quando falta combustível com urgência para o Boost Nuclear);</li>
+      <li>🔥 <b>Fogueira</b>, 🔋 <b>Baterias</b>, 🛒 <b>Carroça</b> (precisa de um cavalo), 💊 <b>Kit de primeiros socorros</b> por 72 horas;</li>
+      <li>🛡 <b>Ciber-Armadura</b> — +10% de mineração da fazenda por nível, até 3 níveis (+30%), cada montagem vale por 30 dias;</li>
+      <li>🚀 <b>Shuttle</b> — 1000 de cada recurso + 1000 🪙, para sempre e só seu: taxa de 5% em vez de 10%
+      nas suas vendas, até 500 bifes por ordem e até 16 ordens abertas. O Shuttle voa com bateria:
+      uma 🔋 — 30 dias de vantagens (carrega na aba «📦 Estoque»).</li>
+    </ul>
+    <p>Os estoques aparecem no perfil, na oficina e no Passaporte do Mini App. Com o Sem Limite nos jogos, os recursos
+    são minerados sem limite diário — a cada vitória.</p>
+    <p><b>📦 Estoque com limite.</b> No estoque cabem 500 de cada recurso — o que for minerado além disso se perde,
+    então vale mais a pena gastar os recursos ou vendê-los na bolsa. O estoque é ampliado na oficina para sempre:
+    1000 → 2000 → 3000 → 4000 → 5000 de cada recurso; cada ampliação é 20% mais cara que a anterior e pede
+    um tipo de recurso a mais. Itens prontos o estoque guarda <b>no total até 10% da capacidade</b>: 500 → 50 itens
+    de todos os tipos juntos, 5000 → 500. Bifes e moedas não têm limite de estoque.</p>
+    <p><b>🔥 Receitas da semana.</b> De tempos em tempos aparecem na oficina receitas temporárias: escudo por uma semana,
+    bife por 100 de metal, conversão de um recurso em outro, kits combinados. Cada uma tem um limite de montagens
+    por semana, e as próprias receitas somem tão de repente quanto apareceram. Fique de olho na aba «🔧 Oficina».</p>
+    <p><b>📦 Os itens esperam no estoque.</b> Horas de Nitrogênio, de Boost Nuclear, de Drone Mestre, escudos e amostras do Sem Limite
+    montados no app não ligam na hora — vão para a aba «📦 Estoque». Ative-os com um botão quando
+    for conveniente: o escudo antes de dormir, o Nitrogênio antes de uma longa ausência. Lá também ficam os recursos, os bifes, o Shuttle,
+    a Ciber-Armadura e a ampliação do estoque. A armadura, o estoque e o Shuttle valem logo depois de montados.</p>
+    <p><b>🧪 Itens novos:</b></p>
+    <ul>
+      <li>🎭 <b>Camuflagem</b> (12 h) — você não aparece no reconhecimento de saques, mas pode atacar;</li>
+      <li>🪤 <b>Isca</b> (um dia) — quem fracassar ao saquear você paga o dobro;</li>
+      <li>🎯 <b>Treino de postura</b> (um dia) — se um saque contra você terminar empatado, conta como fracasso de quem saqueou;</li>
+      <li>🔥 <b>Pós-combustor da nave</b> — zera na hora a recarga do saque (no máximo uma vez por dia);</li>
+      <li>⛽ <b>Economizador</b> — a próxima saída sem hidrogênio;</li>
+      <li>📦 <b>Porão ampliado</b> — o ganho do próximo saque ×1,5;</li>
+      <li>🧊 <b>Térmica de bifes</b> (um dia, uma vez por semana) — os Perfuradores comem bifes 25% mais devagar;</li>
+      <li>📜 <b>Selo da bolsa</b> (uma vez por semana) — a próxima venda na bolsa sem taxa;</li>
+      <li>🏳️ <b>Bandeira da equipe</b> (um dia) — +5% de mineração para toda a sua equipe;</li>
+      <li>🛡 <b>Cúpula da equipe</b> (12 h) — escudo contra saques para a equipe inteira.</li>
+    </ul>
+    <p>Os itens de equipe são caros e difíceis (precisam de fogo, baterias e ☢️ Núcleo), e só um jogador em equipe pode montá-los — os colegas contribuem com recursos.
+    O Mega-Clã protege até 1000 lutadores, por isso paga pela Bandeira e pela Cúpula <b>5 vezes mais</b> que uma equipe.
+    As montagens complexas precisam de um kit de ferramentas do Laboratório.</p>
+    <p>Os itens de uso único (Economizador, Porão, Selo) ficam «carregados» no estoque e disparam na próxima
+    ação adequada. Para quem é novo, as receitas da oficina abrem <b>uma por dia</b> — das mais simples
+    e úteis às lendárias; as fechadas aparecem em cinza com o tempo até abrir.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏴‍☠️ Saques: decisão contra decisão</summary>
+  <div class="body">
+    <p>A aba «🏴‍☠️ Saques» do app do jogo. Para saquear, você precisa das tecnologias do Laboratório 📡 comunicação, 🔭 reconhecimento
+    e ⚔️ ataque no nível 1. O reconhecimento é grátis e mostra 2 + nível de reconhecimento em alvos; o combustível do saque é 5 💧 de hidrogênio por saída.
+    Você escolhe uma jogada (pedra, papel, tesoura), e o alvo já deixou uma <b>postura de defesa</b> definida —
+    quem decide é o Pedra-Papel-Tesoura da sua jogada contra a postura dele. Vitória: você leva 20% de cada recurso do alvo
+    (no máximo 30 por recurso). Fracasso: você entrega ao alvo 10% dos seus (no máximo 15). Empate — o combustível queimou.</p>
+    <ul>
+      <li>só <b>recursos</b> podem ser saqueados: moedas, robôs, bifes e ordens na bolsa são intocáveis;</li>
+      <li>novatos ficam protegidos nos 3 primeiros dias, colegas de equipe não podem ser saqueados, o mesmo alvo — no máximo uma vez a cada 12 h;</li>
+      <li>uma saída a cada 3 horas; a vítima recebe uma mensagem e tem uma <b>revanche grátis</b> por 24 horas
+      (revanche de revanche não existe — senão uma dupla de jogadores ficaria passando recursos sem fim);</li>
+      <li>🛡 o escudo da oficina protege você dos saques: monte, ative pelo estoque, e o painel do escudo na aba
+      de saques mostra o cronômetro até o fim da proteção;</li>
+      <li>mude a sua postura no menu de saques — quem é previsível é saqueado mais vezes;</li>
+      <li>⚔️ cada nível de ataque depois do primeiro — +8% de espólio, 🛡 cada nível de defesa do alvo — −8%,
+      📚 ciência — +1% por nível; 📡 comunicação reduz a recarga em 20 minutos por nível;</li>
+      <li>💊 sem Kit de primeiros socorros, 15% do espólio do saque «fica na enfermaria» (o alvo perde tudo mesmo assim).</li>
+    </ul>
+    <p>Os alvos aparecem pelo nome, sem @username e sem ID — os saques continuam sendo um jogo, não um motivo para perseguição.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎯 Metas diárias e baú</summary>
+  <div class="body">
+    <p>O cartão «🎯 Metas» no Passaporte do app do jogo: todo dia você tem três metas — de jogos, duelos, fazenda, oficina,
+    saques, bolsa e estação da equipe. Cumpriu as três — pegue o <b>baú</b>: +50 🪙 e +10 de um
+    recurso aleatório, mais um bônus especial do dia: 🪵 madeira, 🪨 pedra ou ⚡ eletricidade. A sequência de dias vai somando: a cada 7º dia seguido, o baú traz ainda +200 🪙 e 🐄 uma vaca.
+    As metas se renovam às 00:00 UTC.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔬 Laboratório: ferramentas e tecnologias</summary>
+  <div class="body">
+    <p>A aba «🔬 Laboratório» do app do jogo. <b>Kits de ferramentas</b> — 4 níveis: ⚒️ rústicas,
+    🛠 ajuste fino, 🔬 calibragem, 🧬 nanotecnologia. O kit não se gasta, mas libera montagens complexas
+    na oficina e os próximos níveis de tecnologia.</p>
+    <ul>
+      <li>📡 <b>Comunicação</b> — necessária para saques e para minerar nas minas; depois reduz a recarga do saque em 20 minutos por nível;</li>
+      <li>🔭 <b>Reconhecimento</b> — +1 alvo no reconhecimento por nível;</li>
+      <li>⚔️ <b>Ataque</b> — sem ele não há saques; depois, +8% de espólio por nível;</li>
+      <li>🛡 <b>Defesa</b> — quem saqueia você leva 8% a menos por nível;</li>
+      <li>📚 <b>Ciência</b> — +1% de mineração da fazenda e de espólio por nível; precisa de ☢️ Núcleo.</li>
+    </ul>
+    <p>Cada tecnologia tem 5 níveis. O <b>nível 1</b> de comunicação, reconhecimento, ataque e defesa pode ser estudado
+    desde o primeiro dia — se você tiver o kit de ferramentas e os recursos necessários. Cada nível seguinte da mesma tecnologia vem
+    <b>30 dias</b> depois do anterior (com o traje de cientista, 20–40% mais rápido): cada melhoria é desejada e valiosa. O que foi estudado não é zerado.</p>
+    <p>A <b>Ciência</b> cresce acompanhando as outras: o nível 1 dela abre quando as quatro tecnologias estão estudadas
+    até o nível 1, o nível 2 — quando todas chegam ao 2, e assim por diante.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🐎 Estábulo, carroças e lotes da bolsa</summary>
+  <div class="body">
+    <p>Quantas ordens você pode manter na bolsa ao mesmo tempo depende da logística: no básico, 2 lotes,
+    cada 🐎 cavalo — +1, cada 🛒 carroça — mais +1 (não mais carroças que cavalos; no máximo 5 de cada).
+    Os cavalos são vendidos pelo próprio jogo por moedas (1500 / 3000 / 6000 / 10 000 / 15 000 🪙 — as moedas são queimadas),
+    as carroças são montadas na oficina. O Shuttle carregado
+    tem o seu próprio limite — 16 lotes. O estábulo fica na aba «📦 Estoque».</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Temporadas: o TOP do mês</summary>
+  <div class="body">
+    <p>Uma temporada é um mês do calendário (12 temporadas por ano). Moedas, robôs, estoque e compras <b>não são zerados</b> —
+    só as tabelas recomeçam: o TOP de jogadores por moedas <b>ganhas no jogo</b> durante o mês (transferências e presentes
+    não contam), o ranking de equipes pelas posições nas batalhas da temporada e o ranking de amigos na aba «🤝 Amigos».
+    Veterano e novato largam em pé de igualdade no dia 1.</p>
+    <p>O TOP-10 ganha um <b>emblema da temporada</b> no Passaporte para sempre — uma medalha pela posição e o mês da temporada, por exemplo «🥈 2026-11» (posições 4–10 — 🏅).
+    Os prêmios dos vencedores são definidos pelo organizador — o bot avisa no privado o que foi creditado.</p>
+    <p>O seletor «🏆 Temporada | 🎯 Eventos | 💰 Ricos» fica na aba TOP.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛰 Estação da equipe: um projeto conjunto</summary>
+  <div class="body">
+    <p>A aba «🏆 Equipe» do app do jogo. A estação é construída pela equipe inteira: qualquer membro
+    contribui com recursos, e o nível fecha quando forem investidos 300 × nível de cada recurso (5 níveis no total).
+    Cada nível dá <b>a todos os lutadores da equipe +2% de mineração da fazenda</b> (até +10%). Saiu da equipe — perdeu o bônus.
+    O feed das últimas contribuições mostra quem está puxando o projeto.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⛏ Minas: mapa e batalhas por recursos</summary>
+  <div class="body">
+    <p>A aba «⛏ Minas» do app do jogo é um mapa com 30 minas: metal, hidrogênio, cristais, peças, pedra
+    e madeira — 5 de cada. As minas são só para equipes e clãs. Na batalha pelas minas, as posições ficam com as equipes de melhor resultado conjunto de todos os lutadores
+    na categoria da batalha; só contam as que fizeram a inscrição completa em baterias. Enquanto não houver batalha, não dá para fazer incursão a uma mina — o mapa só mostra quem é dono de quê.</p>
+    <ul>
+      <li>quem vence fica com a mina por <b>24 horas</b> — dá tempo para todas as equipes jogarem;</li>
+      <li><b>cada lutador</b> da equipe recebe <b>1 recurso da mina por hora</b> (dentro do limite do próprio estoque) —
+      até 24 unidades por rodada; uma equipe de 50 lutadores junta 1200;</li>
+      <li>as posições e os prêmios por elas são definidos pelo organizador, que pode dar aos demais participantes uma recompensa «pela participação»;</li>
+      <li>depois a mina fica livre, mas só pode ser tomada de novo numa nova batalha;</li>
+      <li>a mineração vai para lutadores com 📡 comunicação de nível 1; sem 💊 Kit de primeiros socorros, cada 7ª hora é «de doença», sem mineração;</li>
+      <li>na aba aparece quanto já foi minerado e quanto falta para acabar o domínio.</li>
+    </ul>
+    <p>Mais lutadores na equipe — mais mineração. Chame os amigos e agite os colegas durante a batalha!</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤝 Bolsa da equipe e ajuda mútua</summary>
+  <div class="body">
+    <p><b>Bolsa da equipe.</b> Na aba «📈 Bolsa», mude para «Bolsa da equipe»: essas ordens e trocas só são vistas
+    e fechadas pelos seus colegas de equipe, e a taxa é menor que a geral — <b>5% em vez de 10%</b>, no <b>Mega-Clã — só 2%</b>.
+    O preço mínimo do bife (200 🪙) vale aqui também. Saiu da equipe — os seus lotes de equipe são retirados,
+    e o item e as moedas voltam.</p>
+    <p><b>Ajuda mútua.</b> Na aba «🏆 Equipe», peça um recurso (um pedido aberto, até 200 unidades),
+    e os colegas vão presenteá-lo. Podem presentear jogadores a partir do <b>nível de inteligência 3</b> e depois de <b>3 bifes diários</b>,
+    no máximo 100 recursos por dia e no máximo o que cabe no estoque de quem pediu. Bifes não podem ser presenteados —
+    eles são o combustível da loja.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎖 Patentes pelo tempo no ecossistema</summary>
+  <div class="body">
+    <p>Quanto mais tempo você está no ROFL HUB, mais forte a patente à direita do seu nome — no perfil, na lista
+    de colegas de equipe e no TOP-100 do Mini App. As patentes vão da mais baixa à mais poderosa:</p>
+    <ul>
+      <li>🎖 <b>Novato</b> — 1 dia no ecossistema;</li>
+      <li>🎖 <b>Lutador</b> — uma semana;</li>
+      <li>🎖 <b>Lenda</b> — um mês;</li>
+      <li>🎖 <b>ROFL</b> — 3 meses;</li>
+      <li>🎖 <b>LMAO</b> — meio ano;</li>
+      <li>🎖 <b>KING</b> — um ano ou mais. A casta mais alta.</li>
+    </ul>
+    <p>Patente não se compra — só se conquista com tempo de casa.</p>
+  </div>
+</details>
+
+<details>
+  <summary>✨ Skins e Passe da temporada</summary>
+  <div class="body">
+    <p><b>Skins</b> — traje, moldura, título, marcador no mapa e mochila. Eles não dão força, só visual e status, e todo mundo vê: no Passaporte, no TOP, na equipe e no mapa. As skins são vendidas por ★ na loja (seção «✨ Skins»), e cada exemplar tem o seu número de tiragem. Dá para revendê-las no mercado por moedas (a taxa é queimada) e evoluí-las: a experiência sobe enquanto a skin está vestida, e a fusão com outra skin a leva pelos estágios de «De fábrica» até «Imortal». Não existem caixas pagas aleatórias.</p>
+    <p>🎟 <b>Passe da temporada</b> — 30 níveis, experiência por vitórias, duelos, saques, expedições, itens, missões e baú. A trilha grátis dá moedas e baterias; a premium, por 299 ★, dá mais moedas, bifes e 4 skins exclusivas do mês que não existem em nenhum outro lugar. Experiência por vitórias nos jogos — até 150 por dia; com o Sem Limite de 30 dias, até 300.</p>
+  </div>
+</details>
+
+<details>
+  <summary>💸 Transferências de moedas e indicações</summary>
+  <div class="body">
+    <h4>🔄 Transferências</h4>
+    <p>Mande moedas para qualquer jogador: pelo ID do Passaporte (ele está no perfil), pelo @username ou pelo VIP ID.
+    A transferência é confirmada com um botão, e quem recebe ganha uma notificação. Mínimo — 10 🪙.
+    Dá para enviar moedas depois do <b>nível de inteligência 3</b> e de <b>3 bifes diários</b> — assim contas
+    falsas não escoam as moedas iniciais, e jogadores honestos não perdem nada.</p>
+    <h4>🤝 Programa de indicação</h4>
+    <p>Todo jogador tem um link pessoal (o comando de convite no menu). A recompensa é dada
+    <b>uma vez</b> por cada amigo <b>ativo</b>: <b>+500 🪙</b>, <b>🥩 um ciber-bife</b> no estoque e
+    <b>10 de cada</b>: ⛏ metal, 💧 hidrogênio, 💎 cristais e ⚙️ peças (os recursos — dentro do espaço livre no estoque). O amigo vira ativo quando:</p>
+    <ul>
+      <li>🧠 chega ao <b>nível de inteligência 3</b> no quiz;</li>
+      <li>🎁 pega <b>3 bifes diários</b> na fazenda (um por dia — ou seja, pelo menos uns dois dias de jogo).</li>
+    </ul>
+    <p>Assim que as duas condições são cumpridas, o bot verifica sozinho por qual link o jogador entrou e credita
+    o bônus a quem convidou — você recebe uma notificação. Só pelo cadastro, sem jogar, não há bônus: assim
+    o ecossistema fica protegido contra contas falsas, e as suas moedas não perdem valor.</p>
+    <p><b>🧥 Tarefa «10 amigos ativos».</b> Quando 10 amigos convidados por você se tornarem ativos, na aba
+    «🤝 Amigos» abre uma escolha: um traje completo de qualquer um dos seis tipos — as 5 peças de uma vez. Uma recompensa por conta.</p>
+    <p>O link, o botão «Compartilhar», as estatísticas e o ranking «quem tem mais amigos» ficam na aba
+    «🤝 Amigos» do app do jogo e no menu de convite do chat.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛒 Loja e Telegram Stars</summary>
+  <div class="body">
+    <p>Todas as compras são feitas com <b>Telegram Stars oficiais</b> — o sistema de pagamento do próprio Telegram.
+    Nada de cartões nem sites de terceiros.</p>
+    <ul>
+      <li>a entrega é <b>instantânea</b>: robôs, bifes, boosts e o Sem Limite caem na conta logo depois do pagamento;</li>
+      <li>cada compra recebe um recibo com o número do pagamento;</li>
+      <li>se o pagamento passou e a entrega falhou — <b>as Stars voltam automaticamente</b>;</li>
+      <li>dúvidas sobre pagamentos — o comando de suporte a pagamentos no menu do bot.</li>
+    </ul>
+    <p class="warn">⚠️ O único bot oficial é o @RoflHubGame_Bot. Cuidado com clones!</p>
+  </div>
+</details>
+
+<details id="shop-items">
+  <summary>🛍 O que cada item da loja oferece</summary>
+  <div class="body">
+    <h4>🚜 Para a fazenda</h4>
+    <ul>
+      <li><b>🤖 Robô Minerador</b> (49 ★, 30 dias) — minera 5 🪙 por hora sem combustível: cerca de 3 600 🪙 por mês.
+        Para quem não quer ficar de olho no abastecimento.</li>
+      <li><b>⚡ Ciber-Perfurador</b> (99 ★, 30 dias) — 10 🪙 por hora, duas vezes mais potente que o Minerador, mas come
+        1 ciber-bife por dia. Com boosts — até 70 🪙 por hora. Para quem quer o máximo.</li>
+      <li><b>🥩 Pacotes de bifes</b> (10, 50 e 100 un.) — combustível dos Perfuradores: 1 bife = um dia de trabalho
+        de um robô. Quanto maior o pacote, mais barato o bife. Os que sobrarem podem ser vendidos na bolsa.</li>
+      <li><b>📦 Geladeira</b> (para 10, 50 e 100 bifes) — o tanque de onde os Perfuradores se abastecem
+        sozinhos. Os bifes do estoque vão para a geladeira, e daí em diante a fazenda trabalha sem você.
+        Geladeira pequena — entrar todo dia; a de 100 bifes — 10 Perfuradores trabalham
+        10 dias seguidos enquanto você cuida da sua vida.</li>
+      <li><b>🔋 Boost Nuclear x5</b> (199 ★, 30 dias) — mineração de todos os robôs ×5, mas os Perfuradores comem
+        3 vezes mais bifes. O caminho mais rápido para valores altos.</li>
+      <li><b>❄️ Resfriamento a Nitrogênio +40%</b> (299 ★, 30 dias) — +40% na mineração de todos os robôs sem combustível
+        extra. Soma com o Boost Nuclear.</li>
+      <li><b>🛸 Drone Mestre</b> (999 ★, 1 ano) — enquanto o drone está ativo, os robôs não envelhecem: a licença de 30 dias
+        deles fica congelada. Os robôs comprados duram mais.</li>
+      <li><b>♾ Robô Minerador Eterno</b> (999 ★) — transforma o Robô Estagiário grátis num Robô Minerador
+        eterno: 5 🪙 por hora para sempre. Precisa de 3 amigos ativos.</li>
+    </ul>
+    <h4>🕹️ Jogos</h4>
+    <ul>
+      <li><b>⚡ Sem Limite 24 h</b> (15 ★) e <b>🚀 Sem Limite 30 dias</b> (249 ★) — tiram o limite diário
+        de vitórias: jogue quanto quiser, e cada vitória traz moedas e o recurso do jogo sem restrições.
+        Os níveis de inteligência no quiz sobem mais rápido.</li>
+      <li><b>💰 Pacotes de moedas</b> (5 000 – 100 000 🪙) — moedas direto no saldo: mesas de duelo com apostas
+        altas, compras na bolsa (bifes e recursos), criação da sua própria equipe (100 000 🪙), montagem
+        do Shuttle na oficina. Quanto maior o pacote, melhor a cotação.</li>
+      <li><b>🏆 Mega-Clã</b> (2499 ★) — amplia a sua equipe de 50 para 1000 vagas: mais lutadores nas batalhas
+        e a estação da equipe cresce mais rápido.</li>
+    </ul>
+    <p>Todas as compras são entregues na hora, e se a entrega falhar, as Stars voltam automaticamente.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗑 Exclusão da conta</summary>
+  <div class="body">
+    <p>O botão «🗑 Excluir conta» fica no perfil. Não tem como apertar sem querer: primeiro vem um aviso sobre
+    o que vai se perder, e o botão de confirmação só funciona depois de 10 segundos.</p>
+    <ul>
+      <li>⏳ A conta fica <b>congelada por 7 dias</b>: ninguém vê você no jogo, mas com um toque em
+        «↩️ Cancelar exclusão» tudo volta a ser como antes;</li>
+      <li>🗑 depois de 7 dias, moedas, robôs, bifes, recursos, VIP ID e progresso são apagados para sempre,
+        e a capitania da equipe passa para um veterano;</li>
+      <li>⭐ as compras por Stars se perdem junto com a conta — as Stars não são devolvidas;</li>
+      <li>🔁 dá para voltar quando quiser — é só iniciar o bot de novo, mas você começa do zero e sem um novo bônus de boas-vindas.</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>👨‍💻 Sobre o projeto e o autor</summary>
+  <div class="body">
+    <p>ROFL HUB é um ecossistema de jogos internacional no Telegram: fazenda, quiz, duelos, missões,
+    equipes e batalhas num só bot e num Mini App em 14 idiomas.</p>
+    <p>Todos os personagens, nomes e acontecimentos das missões e do «Caso do dia» são fictícios. Qualquer semelhança com pessoas reais,
+    vivas ou mortas, ou com fatos reais é mera coincidência.</p>
+    <p>Quer um bot, jogo ou Mini App assim para o seu projeto? Fale com o autor:
+    <a href="https://t.me/mister_telebot">@mister_telebot</a>.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📱 Mini App — um império numa só tela</summary>
+  <div class="body">
+    <p>Toque no botão <b>🎮 ROFL HUB</b> ao lado do campo de mensagem — o jogo inteiro abre: jogos e missões, duelos, fazenda, estoque, oficina, bolsa, mapa, equipe, TOP e histórico. No chat do bot ficam os convites, as transferências e as mensagens privadas sobre prêmios. Tudo à mão:</p>
+    <ul>
+      <li>Passaporte com saldo, nível 🧠 e VIP ID;</li>
+      <li>fazenda: robôs, abastecimento, velocidade, próxima expiração;</li>
+      <li>🎁 o bife diário pode ser pego direto daqui;</li>
+      <li>a sua equipe e o <b>TOP-100 dos mais ricos</b> do ecossistema.</li>
+    </ul>
+    <p>Abrir o Mini App atualiza a fazenda do mesmo jeito que visitar o bot — as moedas nunca se perdem.</p>
+  </div>
+</details>
+
+<footer>ROFL HUB · o progresso é atualizado em tempo real · o jogo inteiro num só app</footer>
+
+<script>
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+  // ?s=<id раздела> — открыть нужный раздел (например, из магазина: «Что даёт каждый товар»)
+  (function () {
+    var id = new URLSearchParams(location.search).get("s");
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.BackButton && history.length > 1) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(function () { history.back(); });
+    }
+  })();
+</script>
+</body>
+</html>

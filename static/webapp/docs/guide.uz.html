@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROFL HUB — Qanday o'ynash</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240;
+    --neon: #00ffe1; --accent: #ffd93d; --pink: #ff4d8d;
+    --text: #e8ecff; --muted: #8a93b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  a { color: var(--accent); font-weight: 700; text-decoration: none; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 30px; line-height: 1.55;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon); text-shadow: 0 0 18px rgba(0,255,225,.45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  details {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0,255,225,.14); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 14px 16px; font-weight: 800; font-size: 15px;
+    color: var(--neon); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "▾"; float: right; color: var(--muted); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(180deg); }
+  .body { padding: 0 16px 14px; font-size: 14px; }
+  .body h4 { color: var(--accent); margin: 12px 0 4px; font-size: 14px; }
+  .body p { margin-bottom: 8px; }
+  .body ul, .body ol { margin: 0 0 8px 18px; }
+  .body li { margin-bottom: 4px; }
+  b { color: #fff; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+    background: rgba(0,255,225,.12); border: 1px solid rgba(0,255,225,.35); color: var(--neon);
+    font-weight: 700;
+  }
+  .warn { color: var(--pink); font-weight: 700; }
+  .note { color: var(--muted); font-size: 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin: 4px 0 10px; }
+  .tbl th { text-align: left; color: var(--accent); font-weight: 800; padding: 6px 4px;
+    border-bottom: 1px solid rgba(0,255,225,.25); }
+  .tbl td { padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+  .tbl td:first-child { white-space: nowrap; font-weight: 700; color: #fff; }
+  .scroll { overflow-x: auto; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="logo">🧭 QANDAY O'YNASH</div>
+<div class="sub">ilovaning barcha bo'limlari bo'limlar tartibida — bu nima, nima uchun va nimani qayerdan olish</div>
+
+<details open id="start">
+  <summary>🚀 Nimadan boshlash</summary>
+  <div class="body">
+    <ol>
+      <li>🚜 <b>Fermada</b> bepul <b>Stajyor Robotni</b> faollashtir va 🎁 kundalik kotletni olib tur — tangalar sensiz ham to'planadi.</li>
+      <li>🕹 <b>O'yinlarda</b> g'alaba qil: har g'alaba — tanga va resurs. Viktorina va Kun ishidan boshla.</li>
+      <li>🎯 <b>Pasportda</b> kunning 3 maqsadini bajar va sandiqni och.</li>
+      <li>🔧 <b>Ustaxonaga</b> kirib ko'r: har kuni yangi retsept ochiladi — birinchisi allaqachon kutmoqda.</li>
+    </ol>
+    <p class="note">Barcha bo'limlar darhol ochiq. Soddaroq xohlasang — pasportda «🧩 O'yinlar va hikoyalar» rejimi bor: faqat
+    pasport, o'yinlar, do'stlar, do'kon, TOP, tarix va ma'lumot qoladi, iqtisodiyot esa yashiriladi. Ferma bunda ishlashda davom etadi.
+    Rejimni istalgan payt almashtirish mumkin.</p>
+  </div>
+</details>
+
+<details id="passport">
+  <summary>📋 Pasport</summary>
+  <div class="body">
+    <p>Asosiy sahifang: ROFL HUB da sen kimsan va bugun nima qilish kerak.</p>
+    <ul>
+      <li>🪙 <b>balans</b>, 💎 VIP ID (bo'lsa), mavsum medallari;</li>
+      <li>🎖 <b>staj uchun unvon</b>: 1 kun — Yangi, bir hafta — Jangchi, bir oy — Afsona, 3 oy — ROFL, yarim yil — LMAO, bir yil — KING. Sotib olib bo'lmaydi, faqat xizmat qilib erishiladi;</li>
+      <li>🧠 <b>intellekt darajasi</b> va keyingisigacha nechta to'g'ri javob qolgani;</li>
+      <li>📦 barcha resurslar zaxirasi;</li>
+      <li>🎯 <b>bugungi maqsadlar</b> — 3 ta topshiriq (o'yinlardagi g'alabalar, duel, ferma bonusi, ustaxonada yig'ish, bosqin, birjadagi bitim, stansiyaga hissa). Uchalasi uchun — sandiq: <b>+50 🪙</b>, 10 ta tasodifiy resurs va kunning maxsus bonusi (🪵 10, 🪨 10 yoki ⚡ 3). Ketma-ket seriyaning har 7-kuni — ustiga <b>+200 🪙</b> va 🐄 sigir;</li>
+      <li>🏅 <b>yutuqlarim</b> — hikoyaga joylash yoki do'stga yuborish mumkin bo'lgan rasm-kartochka;</li>
+      <li>📣 <b>tadbirlar</b> — janglar, ekspeditsiyalar va auksionlar e'lonlari; o'tish uchun bos;</li>
+      <li>🧭 rejim almashtirgichi: butun ekotizim yoki «🧩 O'yinlar va hikoyalar»;</li>
+      <li>🎁 <b>ishlab chiquvchidan sovg'alar</b> — eng yuqoridagi plashka: «Sovg'ani olish» ni bos. Sovg'alar muddatgacha to'planadi. Sovg'a sifatidagi kostyum detallari va artefaktlar — mavsum limiti doirasida (5 ta detal va 1 ta artefakt), oyning 1-sanasidan limit yangilanadi.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="persona">
+  <summary>🧍 Personaj</summary>
+  <div class="body">
+    <p>Avataring va uning kostyumlari. Burchakdagi <b>E</b> va <b>A</b> tugmalari qomatni o'zgartiradi: atletik yoki ingichkaroq.</p>
+    <ul>
+      <li>kostyumning 5 ta detali bor: dubulg'a, kurtka, qo'lqoplar, shim, botinkalar. <b>Bonus faqat butun kostyum kiyilganda ishlaydi</b> — bitta kostyumning beshta detali;</li>
+      <li>⚡ <b>elektrik</b> — o'yinlarda elektr g'alabalarning 50% ida tushadi (kostyumsiz — 25% ida);</li>
+      <li>⛏ <b>shaxtyor</b> — sutkada bir marta ferma o'tgan sutkada, kostyum sening ustingda bo'lgan paytda qazigan tangalarga +5%;</li>
+      <li>🪖 <b>harbiy</b> — bosqinlarda ko'proq o'lja, ekspeditsiyalarda ko'proq qazilma va yo'l tezroq;</li>
+      <li>🥷 <b>niqoblanish</b> — bosqinchilar seni razvedkada kamroq topadi;</li>
+      <li>🔬 <b>olim</b> — texnologiyaning keyingi darajasi ertaroq ochiladi;</li>
+      <li>🔧 <b>muhandis</b> — ustaxona retseptlariga kamroq resurs kerak;</li>
+      <li>detallar tadbirlarda tushadi (ekspeditsiyalar, janglar va aksiyalar, ishlab chiquvchidan sovg'alar) — mavsumda 5 tagacha, beshalasi ham har xil. Kerakli detalni to'g'ridan-to'g'ri bo'limda sotib olish yoki sotish mumkin: 500 🪙 dan arzon emas, komissiya yonadi;</li>
+      <li>⬆️ har bir detalning uchta darajasi bor: <b>Oddiy → Yaxshilangan → Afsonaviy</b>, har biri bonusni biroz kuchaytiradi. Kuchaytirish — mehnat: resurslar va tangalar, ustiga <b>detal tajribasi</b> (u kiyilgan holda boshidan o'tkazgan g'alabalar, duellar, bosqinlar, ekspeditsiyalar), Afsonaviyga esa yana Laboratoriyadagi texnologiya. Bozorda faqat Oddiy detallar sotiladi;</li>
+      <li>💠 Yaxshilangan darajadagi barcha oltita kostyum <b>nano-ekzo-zirhga</b> eritiladi: barcha bonuslar birdaniga Yaxshilangan darajada. Barcha 30 ta detal, ☢️ 1, 🔋 5, ⚡ 50 va 3000 🪙 kerak, eritilgan detallar yo'qoladi;</li>
+      <li>🎒 <b>sumka</b> — kataklar to'ri: kiyish, kuchaytirish yoki sotish uchun buyumni bos;</li>
+      <li>🔒 kostyum bonusi harakat paytida mustahkamlanadi: texnologiyani o'rgangandan yoki ekspeditsiyaga chiqqandan keyin kostyumni yechish mumkin — olingan chegirma yoki qo'shimcha qoladi;</li>
+      <li>💠 <b>artefaktlar</b> — avatar ostidagi kamarning uchta oynasi uchun toshlar. Har biri o'z yo'nalishini kuchaytiradi va kostyum bilan qo'shiladi. Bepul — mavsumda bitta, qolganlari — bozorda (1000 🪙 dan). Turlari: 🌩 Bo'ron yuragi (⚡), 🍀 Mo'l-ko'llik toshi (⛏), 🌇 Qirmizi shafaq (🪖), 👻 Arvoh soyasi (🥷), 🔮 Ilhom shari (🔬), 🤖 Mexanik jangchi (🔧).</li>
+    </ul>
+    <h4>🏆 Garaj — skinlar</h4>
+    <ul>
+      <li>skin kuch bermaydi — faqat ko'rinish va maqom. Uni hamma ko'radi: ramka va titul — TOPda, jamoada va pasportda, kostyum — avatarda, marker — ekspeditsiyalar xaritasida;</li>
+      <li>mavsumiy skinlarning raqamli tiraji («500 dan №7») va muddati bor: mavsum tugadi — endi hech qachon sotib olib bo'lmaydi;</li>
+      <li>📜 <b>kuboklar</b>: har bir kiyilgan skin va har bir kiyilgan kostyum detali nimalarni boshdan kechirganini eslab qoladi — g'alabalar, duellar, bosqinlar, ekspeditsiyalar, buyumlar, kashfiyotlar. Tarix buyum bilan birga, sotilganda ham o'tadi;</li>
+      <li>🪜 <b>bosqichlar</b>: Zavod → 🔥 Toblangan → ⚔️ Jangovar → 🎖 Faxriy → 👑 Mashhur → ♾️ O'lmas, 10 daraja. Skin kiyilgan ekan tadbirlar uchun tajriba keladi, yuqori darajalar esa yana <b>birlashtirishlarni</b> talab qiladi: skin sening boshqa skiningni yutadi (u yo'qoladi, tajribasining bir qismi o'tadi). Bitta o'yin yoki bitta birlashtirish bilan yetib bo'lmaydi;</li>
+      <li>har bir bosqich oldingisidan ko'zga tashlanarliroq: yorug'lik, aylanuvchi ramka, uchqunlar, toj;</li>
+      <li>📸 «Maqtanish» — Telegram hikoyasiga yoki do'stga kartochka;</li>
+      <li>butun mavsumiy to'plamni yig'ding — bepul titul-mukofot.</li>
+    </ul>
+    <h4>🎟 Mavsum chiptasi</h4>
+    <ul>
+      <li>bir oyda 30 daraja, tajriba — o'yinda qiladigan hamma narsang uchun: o'yindagi g'alaba +5, duel +5 (g'alaba yana +10), bosqin +8…12, ekspeditsiya +30, buyum +10, kvest +40, sandiq +30, laboratoriyadagi kashfiyot +40;</li>
+      <li>o'yinlardagi g'alabalar uchun — sutkasiga 150 tadan ko'p bo'lmagan tajriba (30 kunlik Cheksiz bilan — 300), qolgani limitsiz: faqat o'yinlar bilan 30-daraja — 20 kunda (oylik Cheksiz bilan — 10 kunda), ekspeditsiyalar, kvestlar va sandiq bilan esa — tezroq;</li>
+      <li>bepul yo'lak — tanga va batareyalar; premium (299 ★) — ko'proq tanga, kotletlar va oyning 4 ta eksklyuziv skini: marker (5-daraja), ramka (10-), titul (20-) va kostyum (30-). Ular hech qayerda sotilmaydi;</li>
+      <li>oy o'rtasida ham sotib olish mumkin — allaqachon o'tilgan barcha darajalar ochiladi.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="games">
+  <summary>🕹 O'yinlar</summary>
+  <div class="body">
+    <p>Bu yerda tanga va resurslar topiladi. G'alaba — tanga va o'yin resursi, mag'lubiyat — <b>−1 🪙</b>, durang — hech narsa yechmaydi va hech narsa bermaydi.
+    Har bir o'yinning sutkalik g'alaba limiti bor, 00:00 UTC da yangilanadi. ⚡ <b>Cheksiz</b> barcha o'yinlarda limitlarni olib tashlaydi.
+    Istalgan g'alaba uchun yana <b>+1 ⚡</b> olish imkoniyati 25%.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>O'yin</th><th>G'alaba</th><th>Limit</th></tr>
+      <tr><td>🧠 Viktorina</td><td>+2 🪙, 💎 1; har 10 ta to'g'ri uchun — 🪨</td><td>30</td></tr>
+      <tr><td>➗ Matematika</td><td>+2 🪙; har 10 ta to'g'ri uchun — ⚡</td><td>30</td></tr>
+      <tr><td>🏳️ Bayroqlar va poytaxtlar</td><td>+2 🪙, 💎 1</td><td>30</td></tr>
+      <tr><td>✊ Tosh-Qaychi-Qog'oz</td><td>+2 🪙, ⛏ 1</td><td>15</td></tr>
+      <tr><td>🔼 Katta/Kichik</td><td>+2 🪙, 💧 1</td><td>15</td></tr>
+      <tr><td>🔐 Kiber-Seyf</td><td>+5 🪙, ⚙️ 3 (4 tadan 1 kod)</td><td>15</td></tr>
+      <tr><td>💻 Kodni buzish</td><td>+5 🪙, ⚙️ 2</td><td>10</td></tr>
+      <tr><td>🃏 Xotira</td><td>+3 🪙, 💧 1</td><td>15</td></tr>
+    </table></div>
+    <h4>🧠 Viktorina va intellekt darajalari</h4>
+    <ul>
+      <li>javob uchun 30 soniya, raund — 10 savol; 50/50 maslahati — <b>10 🪙</b>;</li>
+      <li>N-daraja N×10 ta to'g'ri javob bilan yopiladi va <b>N×100 🪙</b> olib keladi (1-daraja: 10 ta javob → +100);</li>
+      <li>10, 20, 30… darajada — fermaga yana bitta <b>Stajyor Robot</b>;</li>
+      <li>noto'g'ri savolni «⚠️ Savol ustidan shikoyat» tugmasi bilan tekshiruvga yuborish mumkin.</li>
+    </ul>
+    <p>➗ Matematika va 🏳️ bayroqlar — javob uchun 20 soniya. 💻 Kodni buzish — 10 urinishda 4 ta har xil raqam
+    (🐂 — raqam o'z joyida, 🐄 — bor, lekin u yerda emas). 🃏 Xotira — 12 yurishda 6 juft.</p>
+    <h4>🕵️ Kun ishi</h4>
+    <p>Sutkada hamma uchun bitta ish: 4 gumondor, 4 dalil. Birinchi dalil darhol ochiq, ayblash faqat bir marta mumkin.
+    Kamroq dalil — kattaroq mukofot: 1 / 2 / 3 / 4 dalil uchun <b>40 / 30 / 20 / 10 🪙</b>.
+    Ochilgan ishlar seriyasining har 7-kuni — <b>+50 🪙</b>.</p>
+    <h4>⚔️ Duellar</h4>
+    <ul>
+      <li><b>tirik</b> o'yinchi bilan tosh-qaychi-qog'oz; stollar <span class="chip">10</span> <span class="chip">100</span> <span class="chip">1000</span> 🪙;</li>
+      <li>stavka darhol yechiladi. G'olib bankni komissiyasi ayirilgan holda oladi: bankning <b>20%</b> i, ⚡ Cheksiz bilan (bir kunga yoki oyga) — <b>10%</b>. Komissiya yonadi;</li>
+      <li>duellar resurs bermaydi — faqat tangalar;</li>
+      <li>imo-ishora uchun 60 soniya (ulgurmasang — imo-ishorani tasodif tanlaydi), durang — qayta o'yin;</li>
+      <li>30 daqiqa raqib yo'q — stavka qaytadi;</li>
+      <li>🤝 do'stni havola orqali chaqirish mumkin: stol uni bir sutka kutadi, keyin stavka qaytadi.</li>
+    </ul>
+    <h4>🗺 Kvestlar</h4>
+    <ul>
+      <li>tanlovli hikoyalar; ro'yxatda — kunning 10 ta kvesti, hamma uchun umumiy va har sutkada yangi (00:00 UTC); <b>sutkasiga 3 ta yangisi</b> hisoblanadi (qolganlari 00:00 UTC ni kutadi, ⚡ Cheksiz cheklovni olib tashlaydi);</li>
+      <li>birinchi o'tish uchun: <b>20–50 🪙</b> va 🪨 1–2; xohlagancha qayta o'ynash mumkin, lekin mukofot — bir marta;</li>
+      <li>⭐ <b>epiklar</b> — 20 daqiqadan katta hikoyalar, ⚡ Cheksiz bilan ochiladi; mukofot <b>100 🪙</b> va 🪨 5.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="farm">
+  <summary>🚜 Ferma</summary>
+  <div class="body">
+    <p>Robotlar tangalarni kecha-kunduz qazib beradi — hatto ilova yopiq bo'lsa ham.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Robot</th><th>Qazilma</th><th>Nima kerak</th></tr>
+      <tr><td>🤖 Stajyor Robot</td><td>1 🪙/soat</td><td>bepul, abadiy, yoqilg'isiz</td></tr>
+      <tr><td>🤖 Kichik Mayner</td><td>5 🪙/soat</td><td>do'kon, 30 kun, yoqilg'isiz</td></tr>
+      <tr><td>⚡ Kiber-Burg'ulovchi</td><td>10 🪙/soat</td><td>do'kon, 30 kun, 24 soatga 1 ta kotlet</td></tr>
+    </table></div>
+    <ul>
+      <li>🎁 <b>bonus</b>: 24 soatda bir marta — omborga bepul kiber-kotlet;</li>
+      <li>🥩 kotletlar <b>omborda</b> yotadi, Burg'ulovchilar esa <b>Muzlatkichdan</b> yeydi — «Quyish» tugmalari bilan o'tkaz (1 ta yoki hammasi). Kattaroq Muzlatkich (10 / 50 / 100) — do'konda;</li>
+      <li>🔋 <b>Yadroviy Tezlatish x5</b> — qazilma ×5, lekin Burg'ulovchidagi kotlet uch baravar tez yonadi: 8 soatga 1 ta kotlet;</li>
+      <li>❄️ <b>Azotli Sovutish +40%</b> — Mayner 5→7, Burg'ulovchi 10→14 🪙/soat, yoqilg'i ko'paymaydi. Tezlatish bilan birga — 35 va 70 🪙/soat;</li>
+      <li>🛸 <b>Master-Dron</b> — ishlab turgan ekan, robotlar qarimaydi;</li>
+      <li>➕ qazilmaga qo'shimcha bonuslar: Kiber-zirh (har daraja uchun +10%, 30 kun), jamoa stansiyasi (har daraja uchun +2%), Jamoa bayrog'i (+5%), fan (har daraja uchun +1%);</li>
+      <li>♾ Stajyorni abadiy Kichik Maynerga aylantirish mumkin (do'kon, 3 ta faol do'st kerak).</li>
+    </ul>
+  </div>
+</details>
+
+<details id="storage">
+  <summary>📦 Ombor</summary>
+  <div class="body">
+    <p>Qazib olgan va yig'gan hamma narsang shu yerda yotadi.</p>
+    <ul>
+      <li>📦 <b>sig'im</b> — har bir resursdan qanchasi sig'adi: 500 → 1000 → 2000 → 3000 → 4000 → 5000 (kengaytirish — ustaxonada). Joydan ortiq qazilma yo'qoladi, shuning uchun ortiqchasini sarflagan yoki sotgan ma'qul;</li>
+      <li>🧰 ustaxonadagi <b>buyumlar</b> (kuchaytirgich soatlari, qalqonlar, Dori qutisi va h. k.) omborda kutadi va qulay paytda tugma bilan yoqiladi. Buyumlar sig'imning 10% i qadar sig'adi (500 da — 50 dona);</li>
+      <li>🥩 kotletlar va 🪙 tangalar limit bilan cheklanmagan;</li>
+      <li>🐎 <b>otlar</b>: 1 500 / 3 000 / 6 000 / 10 000 / 15 000 🪙 (5 tadan ko'p emas, tangalar yonadi). Har bir ot — birjada +1 lot;</li>
+      <li>🚀 <b>Shattl</b> batareyada uchadi: 1 🔋 = 30 kunlik imtiyozlar.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="workshop">
+  <summary>🔧 Ustaxona</summary>
+  <div class="body">
+    <p>Resurslarni foydali buyumlarga aylantiradi. Yangi o'yinchiga <b>sutkasiga bittadan retsept</b> ochiladi — oddiydan afsonaviygacha
+    (yopiqlari taymer bilan kulrang ko'rinadi). Murakkab yig'ishlar uchun Laboratoriyadan asboblar to'plami kerak — u sarflanmaydi.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Retsept</th><th>Narx</th><th>Nima beradi</th></tr>
+      <tr><td>1. ❄️ Azot 6 soat</td><td>⛏20 💧20</td><td>6 soatga Azotli Sovutish +40%</td></tr>
+      <tr><td>2. 🔥 Gulxan</td><td>🪵10 🪨5</td><td>🔥 5 olov</td></tr>
+      <tr><td>3. 🛡 Qalqon 24 soat</td><td>⛏10 💎10</td><td>bosqinlarda seni talashmaydi</td></tr>
+      <tr><td>4. 🔋 Batareyalar</td><td>⚡5 ⛏5 🔥1 · ⚒️</td><td>🔋 2</td></tr>
+      <tr><td>5. 🛸 Dron 24 soat</td><td>⛏25 ⚙️25</td><td>bir sutkaga Master-Dron</td></tr>
+      <tr><td>6. ⛽ Ekonomayzer</td><td>⚙️25</td><td>bosqinga keyingi parvoz vodorodsiz</td></tr>
+      <tr><td>7. 📦 Ombor</td><td>pastga qara</td><td>omborni abadiy kengaytirish</td></tr>
+      <tr><td>8. 🛒 Arava</td><td>🪵40 ⛏20 🔥2 · ⚒️</td><td>birjada +1 lot (aravalar otlardan ko'p emas, ko'pi bilan 5 ta)</td></tr>
+      <tr><td>9. 🔋 Yadroviy 3 soat</td><td>⛏40 💧30 ⚙️10</td><td>3 soatga Yadroviy Tezlatish x5</td></tr>
+      <tr><td>10. 🎭 Niqoblanish 12 soat</td><td>💎20 ⚙️10</td><td>bosqinlar razvedkasida seni ko'rishmaydi</td></tr>
+      <tr><td>11. 💊 Dori qutisi 72 soat</td><td>💎20 🔥2 ⚡3 · 🛠</td><td>bosqinlarda va konlarda «kasalliklarsiz»</td></tr>
+      <tr><td>12. 🔥 Forsaj</td><td>💧40</td><td>bosqin qayta zaryadini nolga tushirish, sutkasiga bir marta</td></tr>
+      <tr><td>13. 🥩 Kotletlar</td><td>🐄1 🔥2</td><td>🥩 3 ta kotlet</td></tr>
+      <tr><td>14. 🪤 Yem 24 soat</td><td>⛏30 ⚙️20</td><td>muvaffaqiyatsiz bosqinchi ikki baravar ko'p beradi</td></tr>
+      <tr><td>15. 🎯 Trenajyor 24 soat</td><td>⛏20</td><td>mudofaadagi durang = bosqinchining muvaffaqiyatsizligi</td></tr>
+      <tr><td>16. 📦 Yuk bo'limi</td><td>⛏40 ⚙️30</td><td>keyingi bosqin o'ljasi ×1,5</td></tr>
+      <tr><td>17. 🧊 Termos 24 soat</td><td>💎60 ⚙️40 · 🛠</td><td>kotlet 24 o'rniga 32 soatga yetadi; haftada bir marta</td></tr>
+      <tr><td>18. 🦾 Kiber-zirh</td><td>pastga qara</td><td>30 kunga har daraja uchun qazilmaga +10%</td></tr>
+      <tr><td>19. 📜 Shtamp</td><td>💎50</td><td>birjadagi keyingi sotuv komissiyasiz; haftada bir marta</td></tr>
+      <tr><td>20. 🏳️ Bayroq 24 soat</td><td>⛏💧💎⚙️ 150 tadan, 🔥10, ☢️1 · 🛠</td><td>butun jamoaga qazilmaga +5%</td></tr>
+      <tr><td>21. 🛡 Gumbaz 12 soat</td><td>⛏💧💎⚙️ 300 tadan, 🔥20, 🔋10, ☢️3 · 🔬</td><td>butun jamoaga bosqinlardan qalqon</td></tr>
+      <tr><td>22. 🚀 Shattl</td><td>⛏💧💎⚙️ 1000 tadan + 1000 🪙 · 🔬</td><td>abadiy: birja komissiyasi 5%, 16 ta lot, yirik buyurtmalar (🔋 zaryadlangan ekan)</td></tr>
+      <tr><td>23–25. 🤖 Jangovar dronlar</td><td>⛏💧💎⚙️ 1000 tadan, 🔋10, 1000 🪙 + o'ziniki · 🔬</td><td>himoyachi (+🪨300), hujumchi (+🔥50), josus (+⚡150); yoki 100 000 🪙 ga sotib olish</td></tr>
+    </table></div>
+    <p class="note">Jamoa bayrog'i va Jamoa gumbazini faqat jamoadagi o'yinchi yig'adi; Mega-Klan uchun ular 5 baravar qimmat.</p>
+    <h4>📦 Omborni kengaytirish</h4>
+    <ul>
+      <li>1000 gacha: ⛏200 ⚙️200;</li>
+      <li>2000 gacha: ⛏ ⚙️ 💧 160 tadan;</li>
+      <li>3000 gacha: ⛏ ⚙️ 💧 💎 150 tadan;</li>
+      <li>4000 gacha: ⛏ ⚙️ 💧 💎 🪨 140 tadan;</li>
+      <li>5000 gacha: ⛏ ⚙️ 💧 💎 🪨 🪵 140 tadan.</li>
+    </ul>
+    <h4>🦾 Kiber-zirh</h4>
+    <ul>
+      <li>1-daraja: ⛏100 ⚙️50;</li>
+      <li>2-daraja: ⛏250 💎100 ⚙️120;</li>
+      <li>3-daraja: ⛏500 💧200 💎200 ⚙️250.</li>
+    </ul>
+    <p class="note">Har bir yig'ish darajani ko'taradi (yoki uchinchisini uzaytiradi) va 30 kunni qaytadan sanaydi.</p>
+    <h4>🗓 Hafta retseptlari</h4>
+    <p>Ma'muriyat vaqti-vaqti bilan tadbir sifatida yoqadigan vaqtinchalik retseptlar. Har birining o'z haftalik yig'ish
+    limiti bor (hafta dushanba 00:00 UTC dan hisoblanadi). Ular qanday bo'ladi:</p>
+    <ul>
+      <li>❄️ Azotli Sovutish — 6 soatdan 3 kungacha;</li>
+      <li>🔋 Yadroviy Tezlatish — 3–6 soat;</li>
+      <li>🛸 Master-Dron — bir sutkadan bir haftagacha;</li>
+      <li>🛡 bosqinlardan qalqon — 12 soatdan bir haftagacha;</li>
+      <li>🥩 kotletlar (1–2 dona, haftada bir martadan ko'p emas);</li>
+      <li>🎁 kombo — birdaniga bir nechta effekt, masalan Azot + qalqon yoki dron + qalqon;</li>
+      <li>♻️ qayta eritish — bitta asosiy resursni boshqasiga 2:1 kursida;</li>
+      <li>⚡ Cheksiz sinov namunalari — 1–3 soatga.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="lab">
+  <summary>🔬 Laboratoriya</summary>
+  <div class="body">
+    <p>Bu yerda asboblar to'plamlari yig'iladi va texnologiyalar o'rganiladi. O'rganilgani <b>hech qachon nolga tushmaydi</b>.</p>
+    <h4>🧰 Asboblar to'plamlari (sarflanmaydi, murakkab yig'ishlarni ochadi)</h4>
+    <ul>
+      <li>⚒️ qo'pol asboblar: ⛏60 🪵40 🔥5;</li>
+      <li>🛠 nozik sozlash asboblari: ⚙️120 💎60 ⚡20 🔥10;</li>
+      <li>🔬 kalibrovka: 💎250 ⚙️200 ⚡60 🔋5;</li>
+      <li>🧬 nanotexnologiyalar: 💎500 ⚙️400 ⚡150 ☢️5.</li>
+    </ul>
+    <p class="note">To'plamlar tartib bilan yig'iladi.</p>
+    <h4>🧪 Texnologiyalar (5 darajadan)</h4>
+    <ul>
+      <li>📡 <b>aloqa</b> (⛏30 ⚡10) — bosqinlar va konlardan daromad uchun kerak; birinchidan keyingi har bir daraja — bosqin qayta zaryadi −20 daqiqa. 2-darajadan boshlab yana 🔋 2 / 4 / 6 / 8;</li>
+      <li>🔭 <b>razvedka</b> (💎20 ⚡10) — bosqinlar uchun kerak; razvedkadagi nishonlar = 2 + daraja. Ekspeditsiyalarda ayrilishlarni razvedka qilishga yordam beradi;</li>
+      <li>⚔️ <b>hujum</b> (⛏40 ⚙️20 ⚡10) — bosqinlar uchun kerak; birinchidan keyingi har bir daraja o'ljaga +8%;</li>
+      <li>🛡 <b>mudofaa</b> (💧40 ⚙️20 ⚡10) — har bir daraja bosqinchi sendan olib ketadiganiga −8%;</li>
+      <li>📚 <b>fan</b> (💎100 ⚙️100 ⚡50 ☢️3) — har daraja uchun ferma qazilmasi va o'ljaga +1%.</li>
+    </ul>
+    <h4>📏 Qoidalar</h4>
+    <ul>
+      <li>qavs ichida — 1-daraja narxi; keyin qimmatroq: 2-daraja ×4, 3-daraja ×9, 4-daraja ×16, 5-daraja ×25 (fan — ×2, ×3, ×4, ×5);</li>
+      <li>fandan tashqari istalgan texnologiyaning 1-darajasi birinchi kundan ochiq;</li>
+      <li>o'sha texnologiyaning keyingi darajasi — oldingisidan <b>30 kun</b> keyin;</li>
+      <li>asboblar: 1–2-darajalar — ⚒️, 3 — 🛠, 4 — 🔬, 5 — 🧬 (fan: 1–2 — 🛠, 3 — 🔬, 4–5 — 🧬);</li>
+      <li>N-darajali fan qolgan to'rtta texnologiya N-darajagacha o'rganilganda ochiladi.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="market">
+  <summary>📈 Birja</summary>
+  <div class="body">
+    <p>O'yinchilar o'rtasidagi savdo: ortiqchasini sot, keraklisini ol. Tovar uchun tangalarni sotuvchi oladi.</p>
+    <ul>
+      <li>kotletlar va barcha resurslar, jumladan ☢️ Yadro sotiladi; kostyum detallari, artefaktlar va skinlar «Personaj» bo'limida sotiladi;</li>
+      <li><b>sotuv</b> qo'yish mumkin (tovar birja saqloviga ketadi) yoki <b>sotib olish so'rovi</b> (tangalar saqlovga ketadi);</li>
+      <li>💸 komissiyani sotuvchi to'laydi: <b>10%</b>, u yonadi. Zaryadlangan Shattl bilan — 5%. Jamoa birjasi: jamoa 5%, Mega-Klan 2%;</li>
+      <li>📦 bir vaqtdagi lotlar: 2 + otlar + aravalar; zaryadlangan Shattl bilan — 16;</li>
+      <li>bitta buyurtmada — 100 tagacha kotlet yoki 1000 tagacha resurs (Shattl bilan — 500 / 5000);</li>
+      <li>🔄 resursni resursga <b>almashuv</b> — tangasiz va komissiyasiz, 5 tagacha taklif; tomonlar qiymat bo'yicha 3 baravardan ortiq farq qilmaydi (Yadro almashtirilmaydi);</li>
+      <li>🆕 yangi o'yinchi «faol» maqomgacha uch baravar minimal narxdan qimmatiga sotib olmaydi;</li>
+      <li>📊 narx grafigi va birja indeksi — 7 kunlik.</li>
+    </ul>
+    <h4>💹 Dona uchun minimal narxlar</h4>
+    <p>⚙️ 10 · 💎 10 · ⛏ 20 · 💧 20 · 🪨 30 · ⚡ 50 · 🪵 70 · 🔥 170 · 🥩 200 · 🔋 300 · 🐄 1000 · ☢️ 5000 🪙</p>
+  </div>
+</details>
+
+<details id="map">
+  <summary>🗺 Xarita</summary>
+  <div class="body">
+    <p>Ekspeditsiya nishonlari bilan dunyo xaritasi. Nishonlarni ma'muriyat qo'yadi: har birining o'z formati (yakka, jamoa, klan yoki jamoalar
+    va klanlar birga), o'z yakun vaqti va o'z sovrinlari bor.</p>
+    <ul>
+      <li>🎒 jihozlar: yakka — 💧 10; jamoa — 🔋 5; Mega-Klan — 🔋 25 va 🥩 10. Jangchilar bittadan qo'shadi, to'liq jamlanma — otryad yo'lga chiqadi;</li>
+      <li>🚶 yo'l — yakkada 10 dan 30 daqiqagacha, otryad bilan 30 daqiqadan 2 soatgacha: uying nishonga qancha yaqin bo'lsa, shuncha tez. Xaritada raqiblar nuqtalari nishon tomon qanday sudralayotgani ko'rinadi;</li>
+      <li>⏱ yakunlar — belgilangan vaqtda yoki nishonga belgilangan sondagi o'yinchi (10, 100, 1000…) yetib borsa, ertaroq: bu yerda tezlik hal qiladi;</li>
+      <li>🧥 ba'zi yakka ekspeditsiyalarda yetib borgan har bir kishi tasodifiy kostyum detali yoki 💠 artefakt oladi — hatto sovrinli o'rinsiz ham (mavsum limiti doirasida);</li>
+      <li>🔀 yo'lda 1–5 ta <b>ayrilish</b>: eng yaqinini taymer bilan oldindan ko'rish mumkin. Yakkada sen hal qilasan, otryadda — ovoz berish (ko'pchilik). Hech kim tanlamadi — otryad o'ljasiz va yo'qotishsiz yonidan o'tib ketadi;</li>
+      <li>📦 <b>yuk</b> — ekspeditsiya ochkolari: start 100, ayrilishlar qo'shadi yoki ayiradi. Yakunlardagi o'rinlar — yetib borganlar orasida yuk bo'yicha;</li>
+      <li>🔎 ayrilish razvedkasi oqibatlarni oldindan ko'rsatadi: otryad yetakchisida qancha Josus dron va 🔭 razvedka darajasi bo'lsa (kichigi bo'yicha), shuncha marta. Otryadning mavsumdagi birinchi ekspeditsiyasi — ko'r-ko'rona;</li>
+      <li>🤖 otryadning jangovar dronlari (har biri uchun): hujumchi kuch ayrilishlarida qazilmaga +3%, himoyachi yo'qotishlarga −5%, josus yo'lga −2%;</li>
+      <li>🏁 yakun vaqtiga kechikding — hisobga tushmaysan; jihozlar yig'ilmadi yoki nishon bekor qilindi — hammasi qaytadi;</li>
+      <li>o'yinchiga bitta faol yakka yurish va jamoaga bitta otryad.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="mines">
+  <summary>⛏ Konlar</summary>
+  <div class="body">
+    <p>30 ta kon: har bir resurs uchun 5 tadan — ⛏ 💧 💎 ⚙️ 🪨 🪵. Konlar — faqat jamoa va klanlar uchun.</p>
+    <ul>
+      <li>⚔️ kon konlar uchun <b>jangda</b> qo'lga kiritiladi — ularni ma'muriyat boshlaydi. Xaritadagi bo'sh konlar yonib turadi;</li>
+      <li>🔋 hisobga tushish uchun ariza kerak: jamoa — 5 ta batareya, Mega-Klan — 25 ta, jangchilar bittadan qo'shadi;</li>
+      <li>⏳ g'olib konni <b>bir sutka</b> ushlab turadi: har bir jangchi <b>soatiga 1 ta resurs</b> oladi;</li>
+      <li>📡 qazilma faqat 1-darajali aloqasi bor va jamoada kamida bir sutka bo'lgan jangchilarga boradi;</li>
+      <li>💊 Dori qutisisiz har 7-soat «kasal» — uning uchun resurs yo'qoladi.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="raids">
+  <summary>🏴‍☠️ Bosqinlar</summary>
+  <div class="body">
+    <p>Boshqa o'yinchi omboriga bosqin — qarorga qarshi qaror: sening imo-ishorang (tosh, qaychi, qog'oz) nishonning
+    <b>himoya pozitsiyasiga</b> qarshi. Faqat asosiy resurslar ⛏ 💧 💎 ⚙️ talanadi — tangalar, robotlar va kotletlar daxlsiz.</p>
+    <h4>Parvozdan oldin</h4>
+    <ul>
+      <li>Laboratoriyada kamida 1-darajali 📡 aloqa, 🔭 razvedka va ⚔️ hujum kerak;</li>
+      <li>yoqilg'i — parvoz uchun <b>5 💧</b> (yoki Ekonomayzer zaryadi);</li>
+      <li>parvozlar orasidagi qayta zaryad — 3 soat (aloqa qisqartiradi); bitta nishonni — 12 soatda bir martadan ko'p emas.</li>
+    </ul>
+    <h4>Natija</h4>
+    <ul>
+      <li>✅ g'alaba: nishonning har bir asosiy resursidan 20% ini olasan, lekin resurs uchun 30 tadan ko'p emas (hujum, fan, Yuk bo'limi va dronlar ko'paytiradi). 💊 Dori qutisisiz o'ljaning 15% i «lazaretda yo'qoladi»;</li>
+      <li>❌ muvaffaqiyatsizlik: nishonga o'zingnikidan 10% berasan, lekin resurs uchun 15 tadan ko'p emas;</li>
+      <li>🤝 durang: faqat yoqilg'i yonadi.</li>
+    </ul>
+    <h4>Himoya</h4>
+    <ul>
+      <li>o'z himoya pozitsiyangni qo'y — aks holda u tasodifiy;</li>
+      <li>yangi o'yinchilar dastlabki 3 kun himoyada; jamoadoshlarni talash mumkin emas;</li>
+      <li>qalqon, Niqoblanish, Yem, Trenajyor — ustaxonadan; Jamoa gumbazi butun jamoani himoya qiladi;</li>
+      <li>🛡 Laboratoriyadagi mudofaa va Himoyachi dronlar yo'qotishlaringni kamaytiradi;</li>
+      <li>⚔️ talashdi — bepul <b>revansh</b> uchun 24 soat (yoqilg'isiz va qayta zaryadsiz).</li>
+    </ul>
+    <p class="note">Nishonlar @username va ID siz, ism bo'yicha ko'rsatiladi. Dronlar (har biri uchun): hujumchi o'ljaga +5%, himoyachi −5% (jami 50% dan ko'p emas), josus razvedkada +1 nishon (+5 dan ko'p emas).</p>
+  </div>
+</details>
+
+<details id="team">
+  <summary>🏆 Jamoa</summary>
+  <div class="body">
+    <p>Birga — kuchliroq: janglar, konlar, umumiy stansiya, o'z birjasi va o'zaro yordam.</p>
+    <ul>
+      <li>🛡 <b>otryad</b> — <b>7 500 🪙</b> ga 5 tagacha jangchi; sardor farqini to'lab, uni jamoagacha kengaytirishi mumkin;</li>
+      <li>🏆 <b>jamoa</b> — <b>100 000 🪙</b> ga 50 tagacha jangchi;</li>
+      <li>👑 <b>Mega-Klan</b> — 1000 tagacha jangchi (do'kondan xarid);</li>
+      <li>jamoasiz: bo'sh jamoalar ruletkasi, nom bo'yicha qidirish, o'zingnikini tuzish.</li>
+    </ul>
+    <h4>🛰 Jamoa stansiyasi</h4>
+    <p>Umumiy loyiha: jangchilar ⛏ 💧 💎 ⚙️ qo'shadi. L-daraja har bir resursdan L×300 qo'shilganda yopiladi. Har bir daraja —
+    barcha ishtirokchilarga <b>qazilmaga +2%</b> (ko'pi bilan 5 daraja, +10%). Jamoadan chiqding — bonus yo'qoladi.</p>
+    <h4>🤝 O'zaro yordam</h4>
+    <ul>
+      <li>resurs so'ra (bitta so'rov, 200 tagacha), jamoadoshlar sovg'a qiladi;</li>
+      <li>3-intellekt darajasi va 3 ta olingan kundalik kotletdan boshlab sovg'a qilish mumkin, sutkasiga 100 tagacha resurs; kotletlar sovg'a qilinmaydi.</li>
+    </ul>
+    <h4>⚔️ Janglar va aksiyalar</h4>
+    <p>Ma'muriyatning davriy tadbirlari: jamoadagi barcha jangchilarning umumiy natijasi hisoblanadi (shaxsiy hisoblar ham bo'ladi).
+    Jamoaviy mukofotlarni jang oxirida jamoada kamida bir sutka bo'lganlar oladi.</p>
+  </div>
+</details>
+
+<details id="auctions">
+  <summary>🔨 Auksionlar</summary>
+  <div class="body">
+    <p>Vaqti-vaqti bilan ma'muriyat lotlar qo'yadi: ROFL-HUB-… ko'rinishidagi chiroyli VIP ID lar va boshqa sovrinlar.</p>
+    <ul>
+      <li>💥 stavka darhol yechiladi va sendan oshirib ketishsa, qaytadi;</li>
+      <li>🏁 g'olibning tangalari yonadi, sovrin tugaganidan keyin o'tadi;</li>
+      <li>💎 VIP ID — to'laqonli manzil: u orqali tanga o'tkaziladi, u pasportda ko'rinadi.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="friends">
+  <summary>🤝 Do'stlar</summary>
+  <div class="body">
+    <ul>
+      <li>🔗 taklif havolang, «nusxalash» va «ulashish» tugmalari;</li>
+      <li>🎁 do'stning ro'yxatdan o'tishi uchun — hech narsa, lekin do'st <b>faol</b> bo'lganda (3-intellekt darajasi va 3 ta olingan kundalik kotlet), sen bir marta <b>+500 🪙</b>, 🥩 1 va har bir asosiy resursdan 10 tadan olasan;</li>
+      <li>🧥 <b>«10 ta faol do'st» topshirig'i</b>: faol bo'lgan 10 ta do'stni olib kel — va tanlagan to'liq kostyumingni ol, barcha 5 ta detal birdaniga (akkauntga bir marta, mavsumiy detal limitini sarflamaydi);</li>
+      <li>🏆 mavsum uchun faol do'stlar bo'yicha TOP-20 reytingi;</li>
+      <li>💸 do'stga @username, ID yoki VIP ID bo'yicha <b>tanga o'tkazish</b>: 10 🪙 dan. Yuborish 3-intellekt darajasi va 3 ta olingan kotletdan boshlab mumkin, qabul qilish — darhol.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="shop">
+  <summary>🏪 Do'kon</summary>
+  <div class="body">
+    <p>Telegram Stars evaziga xaridlar, yetkazib berish darhol.</p>
+    <h4>Ferma uchun</h4>
+    <ul>
+      <li>🤖 Kichik Mayner — 49 ★ · ⚡ Kiber-Burg'ulovchi — 99 ★ (30 kun);</li>
+      <li>🥩 kotletlar: 10 dona — 49 ★, 50 — 239 ★, 100 — 449 ★;</li>
+      <li>📦 10 / 50 / 100 kotletlik Muzlatkich — 99 / 499 / 999 ★;</li>
+      <li>🔋 Yadroviy Tezlatish x5 — 199 ★ · ❄️ Azotli Sovutish +40% — 299 ★ (30 kun);</li>
+      <li>🛸 Master-Dron — 999 ★ (1 yil) · ♾ Abadiy Mayner — 999 ★ (3 ta faol do'st kerak).</li>
+    </ul>
+    <h4>O'yinlar uchun</h4>
+    <ul>
+      <li>⚡ Cheksiz: 24 soat — 15 ★, 30 kun — 249 ★ (g'alaba va kvest limitlarisiz, epiklar, duel komissiyasi 10%);</li>
+      <li>💰 tangalar: 5 000 — 149 ★, 10 000 — 299 ★, 50 000 — 1299 ★, 100 000 — 2499 ★;</li>
+      <li>🏆 Mega-Klan (1000 o'ringacha) — 2499 ★.</li>
+    </ul>
+    <h4>✨ Skinlar</h4>
+    <ul>
+      <li>alohida toifa: mavsum chiptasi va ★ ga skinlar — faqat ko'rinish, hech qanday kuch yo'q. Tiraj va qoldiq kartochkada ko'rinadi.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="top">
+  <summary>👑 TOP</summary>
+  <div class="body">
+    <ul>
+      <li>🏆 <b>Mavsum</b> — oy davomida o'yinda kim ko'proq topdi (ferma, o'yinlardagi g'alabalar, viktorina darajalari, duellar, kvestlar, sandiq, do'stlar; birja va o'tkazmalarsiz). Mavsum = UTC bo'yicha kalendar oyi: faqat jadvallar yangilanadi, tangalar va robotlar qoladi. TOP-10 pasportga medal oladi, mavsum sovrinlarini ma'muriyat belgilaydi;</li>
+      <li>🎯 <b>Aksiyalar</b> — joriy janglar va aksiyalar: hisob, o'rinlar bo'yicha sovrinlar, sening o'rning va yetakchilar;</li>
+      <li>💰 <b>Boylar</b> — balans bo'yicha TOP-100.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="history">
+  <summary>📜 Tarix</summary>
+  <div class="body">
+    <p>30 kun ichida akkaunting bilan sodir bo'lgan hamma narsa:</p>
+    <ul>
+      <li>🪙 tangalar — qancha keldi va ketdi, asosiy manbalar va xarajatlar;</li>
+      <li>📦 resurslar;</li>
+      <li>📈 birjadagi bitimlar;</li>
+      <li>🎁 mukofotlar va sovg'alar.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="info">
+  <summary>📚 Ma'lumot</summary>
+  <div class="body">
+    <p>Qo'llanma (FAQ), foydalanuvchi shartnomasi va shu gid. To'lov bo'yicha savollar — bot chatida.</p>
+  </div>
+</details>
+
+<details id="sources">
+  <summary>🗂 Nima qayerda qaziladi</summary>
+  <div class="body">
+    <div class="scroll"><table class="tbl">
+      <tr><th>Nima</th><th>Qayerdan olish</th><th>Nimaga sarflash</th></tr>
+      <tr><td>🪙 tangalar</td><td>ferma, o'yinlar, viktorina darajalari, Kun ishi, duellar, kvestlar, sandiq, do'stlar, birjadagi sotuvlar, do'kon</td><td>duellar, maslahatlar, jamoa, otlar, Shattl, dronlar, detallarni kuchaytirish va ekzo-zirh, birja, auksionlar</td></tr>
+      <tr><td>🥩 kotlet</td><td>sutkada bir marta ferma bonusi, do'kon, birja, ustaxona (sigirdan), faol do'st</td><td>Burg'ulovchi yoqilg'isi, ekspeditsiyada Mega-Klan oziq-ovqati, birja</td></tr>
+      <tr><td>⛏ metall</td><td>Tosh-Qaychi-Qog'oz, konlar, sandiq, bosqinlar</td><td>kuchaytirgichlar, qalqon, zirh, arava, batareyalar, ⚒️, aloqa, hujum, stansiya</td></tr>
+      <tr><td>💧 vodorod</td><td>Katta/Kichik, Xotira, konlar, sandiq, bosqinlar</td><td>bosqin va yakka ekspeditsiya yoqilg'isi, Forsaj, kuchaytirgichlar, mudofaa, stansiya</td></tr>
+      <tr><td>💎 kristallar</td><td>viktorina, bayroqlar, konlar, sandiq, bosqinlar</td><td>qalqon, Niqoblanish, Dori qutisi, Termos, Shtamp, razvedka, fan, to'plamlar</td></tr>
+      <tr><td>⚙️ detallar</td><td>Kiber-Seyf, Kodni buzish, konlar, sandiq, bosqinlar</td><td>dron, Ekonomayzer, zirh, Yuk bo'limi, to'plamlar, hujum, mudofaa</td></tr>
+      <tr><td>🪨 tosh</td><td>viktorina (har 10 ta to'g'ri), kvestlar, konlar, sandiq</td><td>Gulxan, ombor, Himoyachi dron</td></tr>
+      <tr><td>🪵 yog'och</td><td>konlar, sandiq</td><td>Gulxan, arava, ⚒️, ombor</td></tr>
+      <tr><td>🔥 olov</td><td>ustaxonadagi Gulxan</td><td>batareyalar, arava, Dori qutisi, kotletlar, to'plamlar, Jamoa bayrog'i, Jamoa gumbazi, Hujumchi dron</td></tr>
+      <tr><td>⚡ elektr</td><td>istalgan g'alabada 25% imkoniyat, matematika (har 10 ta to'g'ri), sandiq</td><td>batareyalar, Dori qutisi, texnologiyalar, to'plamlar, Josus dron</td></tr>
+      <tr><td>🔋 batareyalar</td><td>ustaxona</td><td>Shattl zaryadi, konlar jangiga ariza, jamoaviy ekspeditsiya, aloqa, 🔬, Jamoa gumbazi, dronlar, detallarni kuchaytirish, ekzo-zirh</td></tr>
+      <tr><td>🐄 sigir</td><td>seriyaning 7-kunidagi sandiq, birja</td><td>ustaxonada 3 ta kotlet</td></tr>
+      <tr><td>☢️ Yadro</td><td>faqat ma'muriyat sovrinlari, birja</td><td>fan, 🧬, Jamoa bayrog'i, Jamoa gumbazi, ekzo-zirh</td></tr>
+    </table></div>
+  </div>
+</details>
+
+<footer>ROFL HUB · ilova bo'yicha gid · batafsil — qo'llanmada</footer>
+
+<script>
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+  // ?s=<id раздела> — открыть нужный раздел (id = ключ вкладки: passport, games, farm… или start / sources)
+  (function () {
+    var id = new URLSearchParams(location.search).get("s");
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.BackButton && history.length > 1) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(function () { history.back(); });
+    }
+  })();
+</script>
+</body>
+</html>

@@ -2772,7 +2772,7 @@
   // FAQ и соглашение — те же страницы, что открываются из чата, но внутри приложения (вкладки остаются сверху)
   let docSection = "";   // раздел FAQ, который раскрыть (например, «Что даёт каждый товар» из магазина)
   const viewDoc = path => box => {
-    const src = path + (docSection ? "?s=" + encodeURIComponent(docSection) : "");
+    const src = path + "?lang=" + encodeURIComponent(me.lang || "ru") + (docSection ? "&s=" + encodeURIComponent(docSection) : "");
     docSection = "";
     box.innerHTML = '<iframe class="doc" src="' + src + '" title="' + path.slice(1) + '"></iframe>';
   };

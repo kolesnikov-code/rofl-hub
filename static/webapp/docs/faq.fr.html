@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROFL HUB — Guide</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240;
+    --neon: #00ffe1; --accent: #ffd93d; --pink: #ff4d8d;
+    --text: #e8ecff; --muted: #8a93b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  a { color: var(--accent); font-weight: 700; text-decoration: none; }   /* ссылки — золотом, читаемо */
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 30px; line-height: 1.55;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon); text-shadow: 0 0 18px rgba(0,255,225,.45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  details {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0,255,225,.14); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 14px 16px; font-weight: 800; font-size: 15px;
+    color: var(--neon); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "▾"; float: right; color: var(--muted); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(180deg); }
+  .body { padding: 0 16px 14px; font-size: 14px; }
+  .body h4 { color: var(--accent); margin: 12px 0 4px; font-size: 14px; }
+  .body p { margin-bottom: 8px; }
+  .body ul { margin: 0 0 8px 18px; }
+  .body li { margin-bottom: 4px; }
+  b { color: #fff; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+    background: rgba(0,255,225,.12); border: 1px solid rgba(0,255,225,.35); color: var(--neon);
+    font-weight: 700;
+  }
+  .warn { color: var(--pink); font-weight: 700; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="logo">📚 GUIDE ROFL HUB</div>
+<div class="sub">comment tout fonctionne ici — de la côtelette au Méga-Clan</div>
+
+<details open>
+  <summary>🪙 Pièces : la monnaie principale de l'écosystème</summary>
+  <div class="body">
+    <p>Les <b>pièces</b> sont la monnaie de jeu interne de ROFL HUB. Elles servent à créer des équipes, à jouer des duels,
+    à miser aux enchères et à mesurer sa fortune dans le TOP-100.</p>
+    <h4>Comment en gagner</h4>
+    <ul>
+      <li>🎁 <b>+500 🪙</b> dès l'inscription ;</li>
+      <li>🚜 la ferme produit des pièces <b>24 h sur 24</b>, même pendant que tu dors ;</li>
+      <li>🕹️ victoires dans les jeux contre le bot : <b>+2 🪙</b> par victoire (Cyber-Coffre et Casse-code — +5, Mémoire — +3) ;</li>
+      <li>🧠 niveaux d'intelligence au quiz : +100, +200, +300… 🪙 par niveau ;</li>
+      <li>⚔️ duels contre de vrais joueurs — rafle la mise de ton adversaire ;</li>
+      <li>🤝 <b>+500 🪙</b>, 🥩 une côtelette et 10 de chaque ressource de base (⛏ 💧 💎 ⚙️) pour chaque ami <b>actif</b>
+        venu par ton lien de parrainage ;</li>
+      <li>🛒 des packs de pièces dans la boutique contre des Telegram Stars.</li>
+    </ul>
+    <p>L'économie est protégée contre l'inflation : les défaites, les commissions des duels et de la bourse, les enchères gagnantes brûlent des pièces pour toujours.
+    Ta fortune ne fait que prendre de la valeur avec le temps.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🚜 Cyber-ferme : robots et côtelettes</summary>
+  <div class="body">
+    <h4>🤖 Robot Stagiaire — 1 🪙/heure, gratuit et pour toujours</h4>
+    <p>Le premier robot de chaque joueur. Active-le sur l'écran de la ferme (bouton « Activer le
+    Robot Stagiaire ») — et il produira <b>1 🪙 par heure pour toujours</b> : sans carburant, sans durée de service.
+    Aux niveaux d'intelligence <b>10, 20, 30, 40, 50…</b> du quiz, un nouveau Stagiaire t'attend — récupère-le
+    avec le bouton « 🎁 Récupérer le Robot Stagiaire » à la ferme, dans le bilan d'une manche de quiz ou dans l'appli.
+    Les boosts marchent aussi sur lui : avec le Boost Nucléaire, le Stagiaire donne 5 🪙/heure.</p>
+    <p>♾ <b>Robot Mineur Éternel.</b> Le Stagiaire peut être promu Robot Mineur <b>pour toujours</b> (5 🪙/heure
+    sans expiration) — un article de la boutique à 999 ★, mais à une condition : au moins <b>3 amis actifs</b>
+    venus par ton lien (ce qu'est un ami « actif » — voir la section sur le parrainage). Ainsi, le robot éternel
+    revient à ceux qui font grandir l'écosystème.</p>
+    <h4>🤖 Robot Mineur — 5 🪙/heure</h4>
+    <p>Robot de premier niveau. Il travaille en autonomie, sans carburant, et bosse sans jour de repos.</p>
+    <h4>⚡ Cyber-Foreur — 10 🪙/heure</h4>
+    <p>Robot de deuxième niveau, deux fois plus puissant, mais vorace : <b>CHAQUE Foreur mange sa
+    1 cyber-côtelette par 24 heures de travail</b>. Une côtelette ne nourrit qu'un seul robot : tu as
+    3 Foreurs — prévois 3 côtelettes par jour, 10 Foreurs — 10 côtelettes. La côtelette est retirée
+    du frigo en entier au début du service de 24 heures. Pas assez de côtelettes pour tout le monde ? Les Foreurs
+    affamés s'arrêtent jusqu'à ce qu'on les nourrisse.</p>
+    <h4>🥩 Cyber-côtelettes, stock et Frigo</h4>
+    <p>Les côtelettes sont gardées dans le <b>stock</b> (c'est là qu'arrivent les achats et les bonus), mais les robots mangent dans le
+    <b>frigo</b>. Transfère les côtelettes avec les boutons « Charger » sur l'écran de la ferme. Le frigo peut être
+    agrandi dans la boutique : 10 / 50 / 100 côtelettes.</p>
+    <p>🎁 Toutes les 24 heures, appuie sur <b>« RÉCUPÉRER LE BONUS »</b> à la ferme dans l'appli ou dans le chat du bot — une côtelette gratuite dans ton stock !</p>
+    <h4>🔥 Durée de service des robots</h4>
+    <p>Un robot acheté vit <b>30 jours</b> à partir de l'achat, puis il disparaît — rachètes-en un dans la boutique
+    (section « POUR LA FERME »). La date de la prochaine expiration est visible sur l'écran de la ferme. Exceptions : les Robots Stagiaires
+    et le Robot Mineur Éternel, qui ne disparaissent jamais.</p>
+    <h4>🛸 Maître-Drone</h4>
+    <p>Un assistant légendaire pour 365 jours : tant que le drone est à la ferme, <b>l'usure des robots est totalement figée</b> —
+    les 30 jours de vie d'un robot ne s'écoulent que quand le drone est inactif. Un investissement en béton pour une grosse ferme.</p>
+    <h4>⚡ Boosts (ils se cumulent !)</h4>
+    <ul>
+      <li>🔋 <b>Boost Nucléaire x5</b> — production de tous les robots ×5 pendant 30 jours. Le prix de la puissance : la côtelette du Foreur
+      brûle trois fois plus vite — <b>1 côtelette pour 8 heures</b> au lieu de 24. Le boost marche avec n'importe quel nombre de côtelettes, même une seule ;
+      si le boost se termine avant que la côtelette soit consumée, le reste brûle au rythme normal, rien n'est perdu ;</li>
+      <li>❄️ <b>Refroidissement à l'Azote +40%</b> — Robot Mineur 5→7, Foreur 10→14 🪙/heure, la consommation de côtelettes n'augmente pas ;</li>
+      <li>ensemble : Robot Mineur <b>35</b>, Foreur <b>70</b> 🪙/heure. Une ferme monstrueuse !</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>🧠 Quiz et niveaux d'intelligence</summary>
+  <div class="body">
+    <p>Le quiz, c'est un sprint intellectuel : <b>30 secondes par réponse</b>, pas de réponse à temps — c'est perdu.
+    Bonne réponse : +2 🪙, erreur : −1. Les questions vont par manches de 10, l'indice 50/50 coûte 10 🪙, et chaque série de 10 bonnes réponses rapporte 🪨 une pierre.</p>
+    <h4>🏅 Niveaux d'intelligence</h4>
+    <p>Chaque niveau est une série de bonnes réponses, et le compteur de chaque série repart de zéro :</p>
+    <ul>
+      <li>niveau 1 : <b>10 bonnes réponses</b> → récompense <b>+100 🪙</b> ;</li>
+      <li>niveau 2 : encore <b>20 bonnes réponses</b> → <b>+200 🪙</b> ;</li>
+      <li>niveau 3 : encore 30 → +300… et ainsi de suite à l'infini — le niveau 100 rapportera <b>+10 000 🪙</b> !</li>
+    </ul>
+    <p>Ton niveau 🧠 s'affiche dans ton profil, dans la liste des coéquipiers et dans le TOP-100 — c'est le signe public
+    de ton intelligence dans l'écosystème.</p>
+    <p>Limite du quiz : <span class="chip">30 victoires/jour</span>, remise à zéro à 00:00 UTC. Tu veux progresser
+    plus vite ? La boutique propose de lever les limites pour 24 heures ou 30 jours.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🕹️ Jeux rapides contre le bot</summary>
+  <div class="body">
+    <p>Trois jeux classiques : victoire <b>+2 🪙</b>, défaite <b>−1</b>, une égalité ne retire rien et ne donne rien.
+    Limite de chacun : <span class="chip">15 victoires/jour</span> (remise à zéro à 00:00 UTC).</p>
+    <ul>
+      <li>🪨 <b>Pierre-Feuille-Ciseaux</b> — pierre, ciseaux, feuille contre le bot ;</li>
+      <li>📈 <b>Plus/Moins</b> — devine où se cache le nombre secret ;</li>
+      <li>🔐 <b>Cyber-Coffre</b> — trouve le code parmi 4 options : coffre ouvert — jackpot <b>+5 🪙</b>, erreur — alarme et −1.</li>
+    </ul>
+    <p>⚡ L'Illimité de la boutique lève d'un coup les limites dans <b>tous</b> les jeux.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧩 Nouveaux jeux, Affaire du jour et quêtes</summary>
+  <div class="body">
+    <ul>
+      <li>➗ <b>Calcul</b> — 20 secondes par opération, <span class="chip">30 victoires/jour</span> ; chaque série de 10 bonnes réponses donne ⚡ de l'électricité ;</li>
+      <li>🏳️ <b>Drapeaux et capitales</b> — 20 secondes par réponse, <span class="chip">30 victoires/jour</span>, ressource — 💎 cristaux ;</li>
+      <li>💻 <b>Casse-code</b> — devine 4 chiffres différents en 10 essais : <b>+5 🪙</b> et ⚙️ 2 composants, <span class="chip">10 victoires/jour</span> ;</li>
+      <li>🃏 <b>Mémoire</b> — trouve 6 paires en 12 coups maximum : <b>+3 🪙</b> et 💧 de l'hydrogène, <span class="chip">15 victoires/jour</span>.</li>
+    </ul>
+    <p>🕵️ <b>Affaire du jour</b> — une seule affaire pour tout le monde par jour (UTC) : 4 suspects, les indices s'ouvrent un par un, on ne peut accuser qu'une seule fois. Moins il te faut d'indices, plus la récompense est grosse : 40 / 30 / 20 / 10 🪙, et chaque 7e jour d'une série d'affaires résolues — encore +50 🪙.</p>
+    <p>🗺 <b>Quêtes du jour</b> — chaque jour, tout le monde a les mêmes 10 quêtes. Sans Illimité, 3 nouvelles parties terminées comptent par jour, et celles déjà finies se rejouent autant que tu veux. Pour la première victoire — 20–50 🪙 et 🪨 une pierre ; les ⭐ épopées (20+ minutes) ne s'ouvrent qu'avec ⚡ l'Illimité, et rapportent 100 🪙 et 🪨 5.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⚔️ Duels : joueur contre joueur</summary>
+  <div class="body">
+    <p>Un duel de Pierre-Feuille-Ciseaux contre un <b>vrai joueur</b>, avec une mise. Trois tables, comme au poker — choisis selon ton budget :
+    <span class="chip">10 🪙</span> <span class="chip">100 🪙</span> <span class="chip">1000 🪙</span>.</p>
+    <h4>Règles de la cagnotte</h4>
+    <ul>
+      <li>la mise part dans la cagnotte dès que tu t'assois à la table ;</li>
+      <li>le gagnant empoche <b>80% de la cagnotte</b> (mise ×1,6), <b>20% sont brûlés pour toujours</b> — les duels font tourner la déflation ;</li>
+      <li>avec ⚡ l'Illimité, la commission du gagnant est divisée par deux — <b>10%</b> (gain ×1,8) ;</li>
+      <li>les duels, c'est uniquement des pièces : les ressources se gagnent dans les autres jeux ;</li>
+      <li>égalité — on rejoue les gestes immédiatement, la cagnotte reste sur la table ;</li>
+      <li>tu as <b>60 secondes</b> pour choisir un geste ; si tu ne dis rien, le hasard choisira pour toi ;</li>
+      <li>pas d'adversaire trouvé en 30 minutes — la mise est remboursée automatiquement ;</li>
+      <li>⚔️ <b>défier un ami par lien</b> — une table privée sans file d'attente, le lien est valable 24 heures ; un nouveau joueur venu par ce lien devient ton filleul.</li>
+    </ul>
+    <p>Les victoires en duel comptent pour ton équipe dans les batailles avec une catégorie duels — entraîne-toi !</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Équipes et clans</summary>
+  <div class="body">
+    <p>Une équipe, c'est ta bande jusqu'à <b>50 combattants</b>. La créer coûte <b>100 000 🪙</b> : trouve
+    un nom, une devise et un emblème. Tu peux commencer par une <b>escouade</b> : jusqu'à 5 combattants pour 7 500 🪙, puis le capitaine l'agrandit en équipe pour 92 500 🪙 (au total, le même prix). Dans la boutique, l'équipe peut passer au <b>Méga-Clan de 1000 places</b>. Tout ça se passe dans l'onglet « 🏆 Équipe ».</p>
+    <h4>👥 Liste des coéquipiers</h4>
+    <p>L'onglet « 🏆 Équipe » montre l'effectif complet : chaque combattant avec son niveau d'intelligence 🧠 et son
+    @username cliquable — écrivez-vous, créez vos propres chats et préparez les batailles. La liste n'est visible
+    <b>que par les membres de cette équipe</b> — aucun intrus.</p>
+    <h4>👑 Le capitanat</h4>
+    <p>Si le capitaine quitte la bande, la couronne passe au vétéran le plus fidèle — celui qui l'a rejointe
+    avant tous les autres. Une équipe sans combattants est dissoute automatiquement.</p>
+    <p>Pourquoi rejoindre une équipe ? Batailles d'équipes, classement commun, prix pour chaque combattant des équipes primées — les solitaires
+    n'y ont pas droit.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏟️ Batailles d'équipes et de clans — les grands événements</summary>
+  <div class="body">
+    <p>Les batailles, ce n'est <b>pas une routine quotidienne, ce sont des événements</b>, comme une Coupe du monde : l'administration annonce
+    une bataille dans le jeu (Passeport → « 📣 Événements »), avec un nom, des dates et une catégorie.</p>
+    <h4>Comment ça marche</h4>
+    <ul>
+      <li>la catégorie, c'est ce qu'on mesure : produire le plus, gagner le plus de duels ou de quiz,
+      amener le plus de nouveaux joueurs actifs, et d'autres ;</li>
+      <li>on compte le <b>résultat COMMUN de tous les joueurs de l'équipe</b> — chaque combattant rapproche la victoire,
+      invite les plus actifs dans ta bande !</li>
+      <li>seul ce qui se passe pendant la bataille compte — impossible de tricher après coup ;</li>
+      <li>les points et les prix de l'équipe vont aux combattants qui en font partie depuis <b>au moins 24 heures</b> à la fin de la bataille : rejoindre les leaders
+      une minute avant la fin ne marchera pas (pareil pour les expéditions d'équipe et le revenu des mines) ;</li>
+      <li>il y a des batailles d'équipes, de clans, d'équipes et de clans ensemble — et des événements <b>individuels</b> : par exemple, quel reel
+      sur Instagram, YouTube Shorts ou TikTok cartonne le plus, ou qui amène le plus d'amis actifs ;</li>
+      <li>l'annonce est dans le Passeport (« 📣 Événements »), les batailles en cours et ta place — dans l'onglet TOP → « 🎯 Événements » ;
+      le bot écrit en message privé à chaque gagnant ce qu'il a reçu.</li>
+    </ul>
+    <h4>⛏ Batailles pour les mines et 🔋 inscription</h4>
+    <p>L'organisateur peut mettre en jeu plusieurs mines à la fois : autant de mines que de places primées
+    (la 1re place reçoit la plus précieuse). Seules les équipes et les clans ayant une <b>inscription complète en piles</b> se battent pour les mines :
+    équipe — 5 🔋, clan — 25 🔋. N'importe quel combattant peut contribuer dans l'onglet « ⛏ Mines » — cotisez toute l'équipe !</p>
+    <h4>🎁 Prix</h4>
+    <p>Les prix et le nombre de places primées de chaque bataille sont fixés par l'administration. Les prix sont uniquement dans le jeu :
+    pièces, ressources, objets, robots et améliorations pour diverses durées, éléments de tenue et artefacts. Dans les batailles d'équipes, <b>chaque combattant</b> de l'équipe primée reçoit la récompense.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗺 Carte du monde : expéditions solo et en escouade</summary>
+  <div class="body">
+    <p>L'onglet « 🗺 Carte » de l'appli de jeu est une carte du monde sur laquelle l'administration place de temps en temps
+    des <b>cibles d'expédition</b> (jusqu'à 10 à la fois) : solo, d'équipe et de clan. Chacune a son histoire, ses prix et son <b>heure des résultats</b> ;
+    les résultats peuvent aussi tomber plus tôt si un nombre donné de joueurs atteint la cible.</p>
+    <h4>Comment se déroule une expédition</h4>
+    <ul>
+      <li>tu pars de ton côté de la carte et tu avances lentement vers la cible sous les yeux de tous — le marqueur se déplace avec le temps ;</li>
+      <li>sur la cible, tu vois combien de temps prendra le trajet et <b>si tu arriveras à temps</b> pour l'heure des résultats : si ce n'est pas le cas, impossible de partir, et ceux qui arrivent en retard
+      à cause des embranchements ne participent pas aux résultats ;</li>
+      <li>équipement : solo — 💧 10 d'hydrogène, équipe — 🔋 5 piles, Méga-Clan — 🔋 25 et 🥩 10 côtelettes. Les combattants apportent une unité à la fois, l'escouade part avec un kit complet, et s'il n'est pas réuni avant les résultats ou si la cible est annulée — tout est rendu ;</li>
+      <li>le trajet solo dure 10–30 minutes, en escouade — plus longtemps ; en même temps — une expédition solo par joueur et une escouade par équipe.</li>
+    </ul>
+    <h4>🔀 Embranchements</h4>
+    <p>En chemin, il y a des embranchements : une tempête, un hangar abandonné, une escouade étrangère, un pont suspendu… Chacun a 2–3 options aux conséquences différentes : plus de cargaison, un risque de pertes ou un raccourci. Le prochain embranchement est visible <b>tout de suite</b>, avec un minuteur « avant l'embranchement » — choisis ton option à l'avance, elle s'appliquera quand tu y arriveras (tu peux changer d'avis d'ici là). Pas de choix ? Une fois arrivé·e à l'embranchement, tu as du temps jusqu'au suivant ; sans réponse, l'escouade passe son chemin : sans butin, sans pertes et sans retard. Dans une escouade d'équipe, on vote : si tout le monde a voté, ça s'applique tout de suite, sinon c'est la majorité qui l'emporte.</p>
+    <h4>🔎 Reconnaissance des embranchements</h4>
+    <p>Les conséquences des options peuvent être connues à l'avance — avec le bouton « Reconnaître cet embranchement ». Le nombre de reconnaissances par expédition dépend du chef de l'escouade (en solo — toi, en équipe — le capitaine) :
+    <b>le plus petit des deux entre les 🛰 Drones espions et les niveaux de 🔭 reconnaissance</b> : 1 espion et reconnaissance 1 — un embranchement, 5 et 5 — les cinq.
+    <b>La première expédition de chaque saison se fait à l'aveugle</b> pour tout le monde.</p>
+    <h4>🏁 Résultats</h4>
+    <p>À l'heure des résultats, les places sont attribuées selon la <b>cargaison</b> parmi ceux qui sont arrivés. Le nombre de places primées et ce que chacune rapporte sont décidés par
+    l'organisateur ; il peut donner aux autres arrivants une récompense « de participation ». Le bot écrit en message privé à chaque gagnant ce qu'il a reçu.</p>
+    <h4>📦 C'est quoi, la cargaison</h4>
+    <p>La cargaison, ce sont les points de l'expédition. Tout le monde part avec 100, les embranchements en ajoutent (butin) ou en retirent (pertes) — les places des résultats dépendent de la cargaison.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤖 Drones de combat</summary>
+  <div class="body">
+    <p>Trois types de compagnons personnels, un succès exclusif : en assembler un est aussi difficile qu'une Navette,
+    ou tu peux l'acheter à l'atelier pour 100 000 🪙 (les pièces sont brûlées). Leur nombre n'est pas limité, leurs effets
+    <b>se cumulent</b>, les drones ne s'usent pas et n'occupent pas de place dans le stock.</p>
+    <ul>
+      <li>🛡 <b>Drone gardien</b> — un pillard t'emporte moins ; en expédition, tu perds moins de cargaison ;</li>
+      <li>⚔️ <b>Drone d'attaque</b> — tes raids rapportent plus ; en expédition, plus de butin aux embranchements de force ;</li>
+      <li>🛰 <b>Drone espion</b> — plus de cibles en reconnaissance de raid ; en expédition, un trajet plus court, et avec la 🔭 reconnaissance —
+      la reconnaissance des embranchements.</li>
+    </ul>
+    <p>Les pourcentages exacts sont sur la fiche du drone à l'atelier.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧍 Personnage : tenues et artefacts</summary>
+  <div class="body">
+    <p>L'onglet « 🧍 Personnage » juste après le Passeport : un avatar, 5 emplacements (casque, veste, gants, pantalon, bottes) et un sac. Seule une <b>tenue complète du même type</b> donne un bonus : ⚡ électricien — l'électricité tombe plus souvent après une victoire, ⛏ mineur — une fois par jour, un pourcentage de la production de la ferme, 🪖 soldat — plus de butin et de récolte, des expéditions plus rapides, 🥷 furtif — une chance de ne pas apparaître dans la reconnaissance des pillards, 🔬 scientifique — une pause plus courte entre les niveaux de technologie, 🔧 ingénieur — des recettes d'atelier moins chères.</p>
+    <p>Chaque élément a trois niveaux : Basique, Amélioré et Légendaire. Pour l'améliorer, il faut des ressources, des pièces et de l'expérience d'élément — les événements qu'il a vécus en étant porté ; pour le Légendaire, il faut en plus une technologie du Labo. Le bonus est acquis au moment de l'action : si tu retires ta tenue, ce que tu as déjà obtenu reste. Les éléments tombent lors des événements (gratuitement — jusqu'à 5 par saison), les Basiques se vendent sur le marché de l'onglet.</p>
+    <p>💠 <b>Les artefacts</b> — trois emplacements de ceinture sous l'avatar : Cœur d'orage, Pierre d'abondance, Couchant pourpre, Ombre du fantôme, Orbe d'illumination et Guerrier mécanique. Chacun renforce sa propre ligne de bonus et se cumule avec la tenue. Gratuitement — un par saison, les autres — sur le marché.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔨 Enchères et VIP ID</summary>
+  <div class="body">
+    <p>De temps en temps, l'administration met aux enchères des <b>lots uniques</b> — par exemple,
+    des <b>VIP ID</b> légendaires : <span class="chip">ROFL-HUB-777</span>.</p>
+    <h4>Des mises honnêtes et remboursables</h4>
+    <p>La mise est débitée tout de suite, mais si quelqu'un surenchérit — <b>toute la somme t'est rendue instantanément</b>.
+    Seul le gagnant paie à la clôture du lot.</p>
+    <h4>💎 Ce que donne un VIP ID</h4>
+    <p>C'est ton identifiant personnalisé dans l'écosystème : il brille dans ton profil, il est visible dans le TOP-100, et
+    les transferts marchent avec lui — tes amis peuvent envoyer des pièces directement à <b>ROFL-HUB-777</b> au lieu de chiffres ennuyeux.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📈 Bourse : côtelettes et ressources entre joueurs</summary>
+  <div class="body">
+    <p>À la bourse, les joueurs échangent contre des pièces des côtelettes, toutes les ressources et même le ☢️ Noyau.
+    Plus il y a de transactions, plus de pièces sont brûlées en commission — c'est ce qui maintient la valeur de la pièce.
+    La bourse complète, c'est l'onglet « 📈 Bourse » de l'appli de jeu : indice des prix, graphique sur 7 jours, qui vend,
+    qui achète, tes ordres et l'échange de ressources.</p>
+    <ul>
+      <li><b>vente</b> : l'article part dans un ordre et attend un acheteur, tu peux le retirer à tout moment ;</li>
+      <li><b>ordre d'achat</b> : « j'achète 10 côtelettes à 250 » — les pièces sont bloquées jusqu'à la transaction, si tu retires l'ordre — elles reviennent ;</li>
+      <li><b>une côtelette pas moins de 200 🪙</b> : le carburant de la boutique contre des Stars est toujours plus avantageux que la bourse, sur la bourse le prennent ceux qui sont pressés ;</li>
+      <li><b>prix minimaux pour 1 unité</b> (à la vente comme à l'achat) : ⚙️ composants et 💎 cristaux — 10 🪙, ⛏ métal
+      et 💧 hydrogène — 20, 🪨 pierre — 30, ⚡ électricité — 50, 🪵 bois — 70, 🔥 feu — 170, 🔋 piles — 300,
+      🐄 vache — 1 000, ☢️ Noyau — 5 000 🪙 ;</li>
+      <li>jusqu'à 100 côtelettes ou 1000 ressources par ordre ; le nombre d'ordres ouverts en même temps dépend des chevaux et des charrettes : de base — 2 (plus de détails dans la section « Écurie ») ;</li>
+      <li><b>la commission de 10% est payée par le vendeur</b>, et elle est brûlée pour toujours — c'est la protection des pièces contre l'inflation ;</li>
+      <li><b>échange de ressources</b> : « je donne 60 métal contre 25 hydrogène » — sans pièces et sans commission ; selon les prix minimaux,
+      les deux côtés ne peuvent pas différer de plus de 3 fois ;</li>
+      <li>tant que le compte est nouveau (avant le niveau d'intelligence 3 et 3 côtelettes quotidiennes), tu ne peux pas acheter plus cher que trois fois le prix
+      minimal — ainsi les faux comptes ne transfèrent pas de pièces ; tu peux retirer ton lot de ressources s'il rentre dans ton stock.</li>
+    </ul>
+    <p>Les côtelettes du frigo ne vont pas à la bourse — seulement celles du stock.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧰 Ressources et atelier : chaque jeu a sa récolte</summary>
+  <div class="body">
+    <p>Chaque victoire rapporte non seulement des pièces, mais aussi la ressource de son jeu :</p>
+    <ul>
+      <li>⛏ <b>Métal</b> — Pierre-Feuille-Ciseaux ;</li>
+      <li>💧 <b>Hydrogène</b> — Plus/Moins ;</li>
+      <li>💎 <b>Cristaux</b> — Quiz ;</li>
+      <li>⚙️ <b>Composants</b> — Cyber-Coffre (3 par coffre ouvert — il s'ouvre plus rarement) ;</li>
+      <li>🗺 première victoire dans une quête — 20–50 🪙 et 🪨 1–2 pierres, dans une épopée — 100 🪙 et 🪨 5.</li>
+    </ul>
+    <p><b>Les nouvelles matières premières</b> — pour les constructions, la logistique et le Labo :</p>
+    <ul>
+      <li>🪨 <b>Pierre</b> — quêtes, série de bonnes réponses au quiz, mines, coffret ;</li>
+      <li>🪵 <b>Bois</b> — mines, coffret ;</li>
+      <li>🔥 <b>Feu</b> — Feu de camp à l'atelier : bois + pierre. Sans feu, ni outils ni piles ;</li>
+      <li>⚡ <b>Électricité</b> — 25% de chances pour toute victoire dans un jeu solo (en tenue d'électricien — 50–70%), chaque série de 10 bonnes réponses en calcul, coffret ;</li>
+      <li>🔋 <b>Piles</b> — atelier (électricité + métal + feu). Une ressource précieuse : la charge de la Navette et l'inscription de l'équipe à la bataille pour les mines ;</li>
+      <li>🐄 <b>Vaches</b> — le coffret de chaque 7e jour de série, la bourse. Une vache donne 3 côtelettes à l'atelier ;</li>
+      <li>☢️ <b>Noyau</b> — le plus rare : uniquement en prix de l'organisateur pour les batailles, expéditions et événements. Se vend à la bourse
+      à partir de 5 000 🪙 (ne s'échange pas ressource contre ressource).</li>
+    </ul>
+    <p>La boutique ne vend pas de ressources contre des Stars — on ne fait que les récolter. Entre eux, les joueurs les échangent à la bourse
+    (contre des pièces, la commission de 10% est brûlée) et les troquent ressource contre ressource. On les utilise
+    à l'<b>atelier</b> — l'onglet « 🔧 Atelier » de l'appli de jeu :</p>
+    <ul>
+      <li>❄️ Refroidissement à l'Azote pour 6 h, 🔋 Boost Nucléaire pour 3 h, 🛸 Maître-Drone pour 24 heures —
+      les mêmes améliorations que dans la boutique, mais courtes et contre des ressources ;</li>
+      <li>🛡 <b>Bouclier anti-raid</b> pour 24 heures ;</li>
+      <li>🥩 <b>cyber-côtelettes à partir d'une vache</b> — 🐄 une vache et 🔥 2 feux → 3 côtelettes dans ton stock
+      (la vache à la bourse — à partir de 1 000 🪙, on la prend quand on a besoin d'urgence de carburant pour le Boost Nucléaire) ;</li>
+      <li>🔥 <b>Feu de camp</b>, 🔋 <b>Piles</b>, 🛒 <b>Charrette</b> (il faut un cheval), 💊 <b>Trousse de secours</b> pour 72 heures ;</li>
+      <li>🛡 <b>Cyber-Armure</b> — +10% de production de la ferme par niveau, jusqu'à 3 niveaux (+30%), chaque assemblage dure 30 jours ;</li>
+      <li>🚀 <b>Navette</b> — 1000 de chaque ressource + 1000 🪙, pour toujours et rien qu'à toi : commission de 5% au lieu de 10%
+      sur tes ventes, jusqu'à 500 côtelettes par ordre et jusqu'à 16 ordres ouverts. La Navette vole sur pile :
+      une 🔋 — 30 jours d'avantages (elle se charge dans l'onglet « 📦 Stock »).</li>
+    </ul>
+    <p>Les réserves sont visibles dans le profil, à l'atelier et dans le Passeport de la Mini App. Avec l'Illimité, les ressources
+    se récoltent sans limite quotidienne — à chaque victoire.</p>
+    <p><b>📦 Un stock limité.</b> Le stock contient 500 de chaque ressource — ce qui est récolté au-delà est perdu,
+    donc mieux vaut dépenser les ressources ou les vendre à la bourse. Le stock s'agrandit à l'atelier pour toujours :
+    1000 → 2000 → 3000 → 4000 → 5000 de chaque ressource ; chaque agrandissement coûte 20% de plus que le précédent et demande
+    un type de ressource en plus. Pour les objets finis, le stock garde <b>au total 10% de sa capacité</b> : 500 → 50 objets
+    tous types confondus, 5000 → 500. Les côtelettes et les pièces ne sont pas limitées par le stock.</p>
+    <p><b>🔥 Recettes de la semaine.</b> De temps en temps, des recettes temporaires apparaissent à l'atelier : un bouclier pour une semaine,
+    une côtelette pour 100 métal, la refonte d'une ressource en une autre, des packs combo. Chacune a une limite d'assemblages
+    par semaine, et les recettes disparaissent aussi soudainement qu'elles sont apparues. Garde un œil sur l'onglet « 🔧 Atelier ».</p>
+    <p><b>📦 Les objets t'attendent dans le stock.</b> Les heures d'Azote, de Boost Nucléaire, de Maître-Drone, les boucliers et les essais d'Illimité
+    assemblés dans l'appli ne s'activent pas tout de suite, ils vont dans l'onglet « 📦 Stock ». Active-les d'un bouton quand
+    ça t'arrange : le bouclier — avant de dormir, l'Azote — avant une longue absence. Tu y trouves aussi tes réserves de ressources, les côtelettes, la Navette,
+    la Cyber-Armure et l'agrandissement du stock. L'armure, le stock et la Navette fonctionnent dès l'assemblage.</p>
+    <p><b>🧪 Nouveaux objets :</b></p>
+    <ul>
+      <li>🎭 <b>Camouflage</b> (12 h) — tu es invisible dans la reconnaissance des raids, mais tu peux attaquer ;</li>
+      <li>🪤 <b>Leurre</b> (24 heures) — un pillard qui échoue contre toi donne deux fois plus ;</li>
+      <li>🎯 <b>Simulateur de posture</b> (24 heures) — si un raid contre toi finit en égalité, il compte comme un échec du pillard ;</li>
+      <li>🔥 <b>Postcombustion du vaisseau</b> — remet immédiatement à zéro la recharge du raid (pas plus d'une fois par jour) ;</li>
+      <li>⛽ <b>Économiseur</b> — le prochain départ sans hydrogène ;</li>
+      <li>📦 <b>Soute élargie</b> — butin du prochain raid ×1,5 ;</li>
+      <li>🧊 <b>Thermos à côtelettes</b> (24 heures, une fois par semaine) — les Foreurs mangent les côtelettes 25% plus lentement ;</li>
+      <li>📜 <b>Tampon de la bourse</b> (une fois par semaine) — la prochaine vente à la bourse sans commission ;</li>
+      <li>🏳️ <b>Bannière d'équipe</b> (24 heures) — +5% de production pour toute ton équipe ;</li>
+      <li>🛡 <b>Dôme d'équipe</b> (12 h) — un bouclier anti-raid pour toute l'équipe.</li>
+    </ul>
+    <p>Les objets d'équipe sont chers et complexes (il faut du feu, des piles et du ☢️ Noyau), seul un joueur dans une équipe peut les assembler — les coéquipiers cotisent en ressources.
+    Le Méga-Clan protège jusqu'à 1000 combattants, il paie donc la Bannière et le Dôme <b>5 fois plus cher</b> qu'une équipe.
+    Les assemblages complexes demandent un kit d'outils du Labo.</p>
+    <p>Les objets à usage unique (Économiseur, Soute, Tampon) se « chargent » dans le stock et se déclenchent à la prochaine
+    action adaptée. Pour un nouveau joueur, les recettes de l'atelier se débloquent <b>une par jour</b> — des plus simples
+    et utiles aux légendaires ; celles qui sont verrouillées sont grisées avec le temps restant avant ouverture.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏴‍☠️ Raids : décision contre décision</summary>
+  <div class="body">
+    <p>L'onglet « 🏴‍☠️ Raids » de l'appli de jeu. Pour les raids, il faut les technologies du Labo 📡 Communications, 🔭 Reconnaissance
+    et ⚔️ Attaque au niveau 1. La reconnaissance est gratuite et montre 2 + niveau de reconnaissance cibles ; le carburant d'un raid — 5 💧 d'hydrogène par départ.
+    Tu choisis un geste (pierre, ciseaux, feuille), et la cible a déjà réglé une <b>posture de défense</b> —
+    l'issue se joue à Pierre-Feuille-Ciseaux entre ton geste et sa posture. Victoire : tu prends 20% de chaque ressource de la cible
+    (pas plus de 30 par ressource). Échec : tu donnes à la cible 10% des tiennes (pas plus de 15). Égalité — le carburant est brûlé.</p>
+    <ul>
+      <li>on ne pille <b>que des ressources</b> : les pièces, les robots, les côtelettes et les ordres de la bourse sont intouchables ;</li>
+      <li>les nouveaux joueurs sont protégés les 3 premiers jours, on ne pille pas ses coéquipiers, une même cible — pas plus d'une fois toutes les 12 h ;</li>
+      <li>un départ toutes les 3 heures ; la victime reçoit un message et dispose d'une <b>revanche gratuite</b> pendant 24 heures
+      (pas de revanche sur une revanche — sinon deux joueurs pourraient se transférer des ressources à l'infini) ;</li>
+      <li>🛡 le bouclier de l'atelier te protège des raids : assemble-le, active-le depuis le stock, et la carte du bouclier dans l'onglet
+      des raids affichera le minuteur jusqu'à la fin de la protection ;</li>
+      <li>change ta posture dans le menu des raids — les joueurs prévisibles se font piller plus souvent ;</li>
+      <li>⚔️ chaque niveau d'Attaque après le premier — +8% de butin, 🛡 chaque niveau de Défense de la cible — −8%,
+      📚 Science — +1% par niveau ; 📡 Communications réduit la recharge de 20 minutes par niveau ;</li>
+      <li>💊 sans Trousse de secours, 15% du butin du raid « disparaît à l'infirmerie » (la cible les perd quand même).</li>
+    </ul>
+    <p>Les cibles s'affichent par leur nom, sans @username ni ID — les raids restent un jeu et pas une occasion de harceler.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎯 Objectifs du jour et coffret</summary>
+  <div class="body">
+    <p>La carte « 🎯 Objectifs » dans le Passeport de l'appli de jeu : chaque jour, tu as trois objectifs — jeux, duels, ferme, atelier,
+    raids, bourse et station d'équipe. Tu as rempli les trois ? Récupère le <b>coffret</b> : +50 🪙 et +10 d'une ressource
+    au hasard, plus un bonus spécial du jour : 🪵 bois, 🪨 pierre ou ⚡ électricité. La série de jours s'accumule : chaque 7e jour d'affilée, le coffret contient en plus +200 🪙 et 🐄 une vache.
+    Les objectifs se renouvellent à 00:00 UTC.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔬 Labo : outils et technologies</summary>
+  <div class="body">
+    <p>L'onglet « 🔬 Labo » de l'appli de jeu. Les <b>kits d'outils</b> — 4 niveaux : ⚒️ outils bruts,
+    🛠 réglage fin, 🔬 calibrage, 🧬 nanotechnologies. Un kit ne s'use pas, il débloque les assemblages complexes
+    à l'atelier et les niveaux de technologie suivants.</p>
+    <ul>
+      <li>📡 <b>Communications</b> — nécessaire pour les raids et la récolte dans les mines, ensuite réduit la recharge du raid de 20 minutes par niveau ;</li>
+      <li>🔭 <b>Reconnaissance</b> — +1 cible en reconnaissance par niveau ;</li>
+      <li>⚔️ <b>Attaque</b> — sans elle, pas de raids ; ensuite +8% de butin par niveau ;</li>
+      <li>🛡 <b>Défense</b> — un pillard t'emporte 8% de moins par niveau ;</li>
+      <li>📚 <b>Science</b> — +1% de production de la ferme et de butin par niveau ; il faut du ☢️ Noyau.</li>
+    </ul>
+    <p>Chaque technologie a 5 niveaux. Le <b>niveau 1</b> des Communications, de la Reconnaissance, de l'Attaque et de la Défense peut être étudié
+    dès le premier jour — si tu as le kit d'outils nécessaire et les ressources. Chaque niveau suivant de la même technologie —
+    <b>30 jours</b> après le précédent (en tenue de scientifique — 20–40% plus vite) : chaque amélioration est désirée et précieuse. Ce qui est étudié n'est jamais remis à zéro.</p>
+    <p>La <b>Science</b> suit les autres : son niveau 1 s'ouvre quand les quatre technologies sont étudiées
+    jusqu'au niveau 1, le 2e — quand toutes sont au 2e, et ainsi de suite.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🐎 Écurie, charrettes et lots de la bourse</summary>
+  <div class="body">
+    <p>Le nombre d'ordres que tu peux garder à la bourse en même temps dépend de la logistique : de base — 2 lots,
+    chaque 🐎 cheval — +1, chaque 🛒 charrette — encore +1 (pas plus de charrettes que de chevaux ; maximum 5 de chaque).
+    Les chevaux sont vendus par le jeu lui-même contre des pièces (1500 / 3000 / 6000 / 10 000 / 15 000 🪙 — les pièces sont brûlées),
+    les charrettes s'assemblent à l'atelier. Une Navette chargée
+    donne sa propre limite — 16 lots. L'écurie se trouve dans l'onglet « 📦 Stock ».</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Saisons : le TOP du mois</summary>
+  <div class="body">
+    <p>Une saison, c'est un mois calendaire (12 saisons par an). Les pièces, les robots, le stock et les achats <b>ne sont pas remis à zéro</b> —
+    seuls les classements repartent de zéro : le TOP des joueurs par pièces <b>gagnées dans le jeu</b> pendant le mois (les transferts et les cadeaux
+    ne comptent pas), le classement des équipes selon leurs places dans les batailles de la saison et le classement des amis dans l'onglet « 🤝 Amis ».
+    Le vétéran et le nouveau venu partent à égalité le 1er du mois.</p>
+    <p>Le TOP-10 reçoit un <b>badge de saison</b> dans son Passeport pour toujours — une médaille pour la place et le mois de la saison, par exemple « 🥈 2026-11 » (places 4–10 — 🏅).
+    Les prix des gagnants sont fixés par l'organisateur — le bot t'écrira en message privé ce que tu as reçu.</p>
+    <p>Le sélecteur « 🏆 Saison | 🎯 Événements | 💰 Les plus riches » — dans l'onglet TOP.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛰 Station d'équipe : un projet commun</summary>
+  <div class="body">
+    <p>L'onglet « 🏆 Équipe » de l'appli de jeu. Toute l'équipe construit la station : n'importe quel membre
+    y verse des ressources, un niveau est terminé quand 300 × niveau de chaque ressource ont été versés (5 niveaux en tout).
+    Chaque niveau donne <b>à tous les combattants de l'équipe +2% de production de la ferme</b> (jusqu'à +10%). Tu quittes l'équipe — tu perds le bonus.
+    Le fil des derniers dons montre qui tire la cause commune.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⛏ Mines : la carte et les batailles pour les ressources</summary>
+  <div class="body">
+    <p>L'onglet « ⛏ Mines » de l'appli de jeu — une carte de 30 mines : métal, hydrogène, cristaux, composants, pierre
+    et bois — 5 de chaque. Les mines sont réservées aux équipes et aux clans. Dans une bataille pour les mines, les places reviennent aux équipes avec le meilleur résultat commun de tous les combattants
+    dans la catégorie de la bataille ; ne comptent que celles qui ont une inscription complète en piles. Tant qu'il n'y a pas de bataille, impossible de partir à l'assaut d'une mine — la carte montre simplement qui possède quoi.</p>
+    <ul>
+      <li>le gagnant garde la mine <b>24 heures</b> — toutes les équipes ont le temps de jouer ;</li>
+      <li><b>chaque combattant</b> de l'équipe reçoit <b>1 ressource de la mine par heure</b> (dans la limite de son stock) —
+      jusqu'à 24 unités par période ; une équipe de 50 combattants en récoltera 1200 ;</li>
+      <li>les places et leurs récompenses sont fixées par l'organisateur, qui peut donner aux autres participants une récompense « de participation » ;</li>
+      <li>ensuite la mine est libre, mais on ne peut la reprendre que lors d'une nouvelle bataille ;</li>
+      <li>la récolte va aux combattants ayant les 📡 Communications au niveau 1 ; sans 💊 Trousse de secours, chaque 7e heure est « malade », sans récolte ;</li>
+      <li>l'onglet montre combien a déjà été récolté et combien de temps il reste avant la fin de la possession.</li>
+    </ul>
+    <p>Plus il y a de combattants dans l'équipe, plus la récolte est grosse. Invite tes amis et secoue tes coéquipiers pendant la bataille !</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤝 Bourse d'équipe et entraide</summary>
+  <div class="body">
+    <p><b>Bourse d'équipe.</b> Dans l'onglet « 📈 Bourse », passe à la « Bourse d'équipe » : ces ordres et échanges ne sont visibles
+    et ne peuvent être conclus que par tes coéquipiers, et la commission est plus basse que la commune — <b>5% au lieu de 10%</b>, et pour un <b>Méga-Clan — seulement 2%</b>.
+    Le prix plancher de la côtelette (200 🪙) s'applique ici aussi. Tu quittes l'équipe — tes lots d'équipe sont retirés,
+    les articles et les pièces te sont rendus.</p>
+    <p><b>Entraide.</b> Dans l'onglet « 🏆 Équipe », demande une ressource (une demande ouverte à la fois, jusqu'à 200 unités),
+    et tes coéquipiers te l'offriront. Peuvent donner les joueurs à partir du <b>niveau d'intelligence 3</b> et après <b>3 côtelettes quotidiennes</b>,
+    pas plus de 100 ressources par jour et pas plus que ce qui rentre dans le stock du demandeur. Les côtelettes ne se donnent pas —
+    c'est le carburant de la boutique.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎖 Rangs selon l'ancienneté dans l'écosystème</summary>
+  <div class="body">
+    <p>Plus tu restes longtemps dans ROFL HUB, plus le rang à droite de ton nom est classe — dans ton profil, dans la liste
+    des coéquipiers et dans le TOP-100 de la Mini App. Les rangs vont du plus bas au plus prestigieux :</p>
+    <ul>
+      <li>🎖 <b>Débutant</b> — 1 jour dans l'écosystème ;</li>
+      <li>🎖 <b>Combattant</b> — une semaine ;</li>
+      <li>🎖 <b>Légende</b> — un mois ;</li>
+      <li>🎖 <b>ROFL</b> — 3 mois ;</li>
+      <li>🎖 <b>LMAO</b> — six mois ;</li>
+      <li>🎖 <b>KING</b> — un an et plus. La caste suprême.</li>
+    </ul>
+    <p>Un rang ne s'achète pas — il se mérite avec le temps.</p>
+  </div>
+</details>
+
+<details>
+  <summary>✨ Skins et pass de saison</summary>
+  <div class="body">
+    <p><b>Les skins</b> — tenue, cadre, titre, marqueur de carte et sac. Ils ne donnent aucune force, seulement du style et du statut, et tout le monde les voit : dans le Passeport, le TOP, l'équipe et sur la carte. Les skins se vendent contre des ★ dans la boutique (section « ✨ Skins »), chaque exemplaire a son propre numéro de série. On peut les revendre sur le marché contre des pièces (la commission est brûlée) et les faire évoluer : l'expérience monte tant que le skin est porté, et la fusion avec un autre skin le fait passer par les étapes, de « D'usine » à « Immortel ». Il n'y a pas de caisses payantes au hasard.</p>
+    <p>🎟 <b>Pass de saison</b> — 30 niveaux, de l'expérience pour les victoires, duels, raids, expéditions, objets, quêtes et le coffret. La piste gratuite donne des pièces et des piles, le premium à 299 ★ — plus de pièces, des côtelettes et 4 skins exclusifs du mois, introuvables ailleurs. L'expérience pour les victoires dans les jeux — jusqu'à 150 par jour, avec l'Illimité 30 jours — jusqu'à 300.</p>
+  </div>
+</details>
+
+<details>
+  <summary>💸 Transferts de pièces et parrainage</summary>
+  <div class="body">
+    <h4>🔄 Transferts</h4>
+    <p>Envoie des pièces à n'importe quel joueur : par l'ID de son Passeport (il est dans le profil), par @username ou par VIP ID.
+    Le transfert se confirme d'un bouton, le destinataire reçoit une notification. Minimum — 10 🪙.
+    On peut envoyer des pièces à partir du <b>niveau d'intelligence 3</b> et après <b>3 côtelettes quotidiennes</b> — ainsi les faux
+    comptes ne siphonnent pas les pièces de départ, et les joueurs honnêtes ne perdent rien.</p>
+    <h4>🤝 Programme de parrainage</h4>
+    <p>Chaque joueur a un lien personnel (la commande d'invitation dans le menu). La récompense est versée
+    <b>une seule fois</b> pour chaque ami <b>actif</b> : <b>+500 🪙</b>, <b>🥩 une cyber-côtelette</b> dans ton stock et
+    <b>10 de chaque</b> : ⛏ métal, 💧 hydrogène, 💎 cristaux et ⚙️ composants (les ressources — dans la limite de la place dans le stock). Un ami devient actif quand il :</p>
+    <ul>
+      <li>🧠 atteint le <b>niveau d'intelligence 3</b> au quiz ;</li>
+      <li>🎁 récupère <b>3 côtelettes quotidiennes</b> à la ferme (une fois par jour — donc au moins deux jours de jeu).</li>
+    </ul>
+    <p>Dès que les deux conditions sont remplies, le bot vérifie tout seul par quel lien le joueur est arrivé et verse
+    le bonus à celui qui l'a invité — tu reçois une notification. Une simple inscription sans jouer ne rapporte rien : ainsi
+    l'écosystème est protégé contre les faux comptes, et tes pièces ne perdent pas leur valeur.</p>
+    <p><b>🧥 Mission « 10 amis actifs ».</b> Quand 10 amis que tu as invités deviennent actifs, l'onglet
+    « 🤝 Amis » t'ouvre un choix : une tenue complète parmi les six types — les 5 éléments d'un coup. Une seule récompense par compte.</p>
+    <p>Le lien, le bouton « Partager », les statistiques et le classement « qui a le plus d'amis » — dans l'onglet
+    « 🤝 Amis » de l'appli de jeu et dans le menu d'invitation du chat.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛒 Boutique et Telegram Stars</summary>
+  <div class="body">
+    <p>Tous les achats passent par les <b>Telegram Stars officiels</b> — le système de paiement de Telegram lui-même.
+    Pas de cartes bancaires ni de sites tiers.</p>
+    <ul>
+      <li>livraison <b>instantanée</b> : robots, côtelettes, boosts et Illimités arrivent sur ton compte juste après le paiement ;</li>
+      <li>chaque achat reçoit un reçu avec un numéro de paiement ;</li>
+      <li>si le paiement est passé mais que la livraison a échoué — <b>les Stars sont remboursés automatiquement</b> ;</li>
+      <li>questions sur les paiements — la commande d'assistance paiements dans le menu du bot.</li>
+    </ul>
+    <p class="warn">⚠️ Le seul bot officiel est @RoflHubGame_Bot. Attention aux clones !</p>
+  </div>
+</details>
+
+<details id="shop-items">
+  <summary>🛍 Ce que donne chaque article de la boutique</summary>
+  <div class="body">
+    <h4>🚜 Pour la ferme</h4>
+    <ul>
+      <li><b>🤖 Robot Mineur</b> (49 ★, 30 jours) — produit 5 🪙 par heure sans carburant : environ 3 600 🪙 par mois.
+        Pour ceux qui ne veulent pas surveiller le ravitaillement.</li>
+      <li><b>⚡ Cyber-Foreur</b> (99 ★, 30 jours) — 10 🪙 par heure, deux fois plus puissant que le Robot Mineur, mais il mange
+        1 cyber-côtelette par jour. Avec les boosts — jusqu'à 70 🪙 par heure. Pour ceux qui veulent le maximum.</li>
+      <li><b>🥩 Packs de côtelettes</b> (10, 50 et 100 pcs) — le carburant des Foreurs : 1 côtelette = 24 heures de travail
+        d'un robot. Plus le pack est gros, moins la côtelette est chère. Le surplus peut se vendre à la bourse.</li>
+      <li><b>📦 Frigo</b> (pour 10, 50 et 100 côtelettes) — le réservoir où les Foreurs se ravitaillent
+        tout seuls. Les côtelettes du stock se chargent dans le frigo, et ensuite la ferme tourne sans toi.
+        Un petit frigo — il faut passer chaque jour ; celui de 100 côtelettes — 10 Foreurs travaillent
+        10 jours d'affilée pendant que tu vaques à tes occupations.</li>
+      <li><b>🔋 Boost Nucléaire x5</b> (199 ★, 30 jours) — production de tous les robots ×5, mais les Foreurs mangent
+        3 fois plus de côtelettes. Le chemin le plus rapide vers les grosses sommes.</li>
+      <li><b>❄️ Refroidissement à l'Azote +40%</b> (299 ★, 30 jours) — +40% de production de tous les robots sans carburant
+        supplémentaire. Se cumule avec le Boost Nucléaire.</li>
+      <li><b>🛸 Maître-Drone</b> (999 ★, 1 an) — tant que le drone est actif, les robots ne vieillissent pas : leur licence de 30 jours
+        est figée. Les robots achetés servent plus longtemps.</li>
+      <li><b>♾ Robot Mineur Éternel</b> (999 ★) — transforme le Robot Stagiaire gratuit en Robot Mineur
+        éternel : 5 🪙 par heure pour toujours. Il faut 3 amis actifs.</li>
+    </ul>
+    <h4>🕹️ Jeux</h4>
+    <ul>
+      <li><b>⚡ Illimité 24 h</b> (15 ★) et <b>🚀 Illimité 30 jours</b> (249 ★) — lèvent la limite quotidienne
+        de victoires : joue autant que tu veux, et chaque victoire rapporte des pièces et la ressource du jeu sans limite.
+        Les niveaux d'intelligence au quiz montent plus vite.</li>
+      <li><b>💰 Packs de pièces</b> (5 000 – 100 000 🪙) — des pièces directement sur ton solde : tables de duel à grosses
+        mises, achats à la bourse (côtelettes et ressources), création de ta propre équipe (100 000 🪙), assemblage
+        de la Navette à l'atelier. Plus le pack est gros, meilleur est le taux.</li>
+      <li><b>🏆 Méga-Clan</b> (2499 ★) — fait passer ton équipe de 50 à 1000 places : plus de combattants dans les batailles
+        et une station d'équipe qui grandit plus vite.</li>
+    </ul>
+    <p>Tous les achats sont livrés instantanément, et en cas d'échec de livraison, les Stars sont remboursés automatiquement.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗑 Suppression du compte</summary>
+  <div class="body">
+    <p>Le bouton « 🗑 Supprimer le compte » est dans le profil. Impossible d'appuyer par erreur : d'abord un avertissement sur
+    ce qui sera perdu, et le bouton de confirmation ne marche qu'au bout de 10 secondes.</p>
+    <ul>
+      <li>⏳ Le compte est <b>gelé pendant 7 jours</b> : on ne te voit plus dans le jeu, mais d'un seul appui sur
+        « ↩️ Annuler la suppression », tout redevient comme avant ;</li>
+      <li>🗑 au bout de 7 jours, les pièces, les robots, les côtelettes, les ressources, le VIP ID et la progression sont supprimés pour toujours,
+        le capitanat de l'équipe passe au vétéran ;</li>
+      <li>⭐ les achats en Stars disparaissent avec le compte — les Stars ne sont pas remboursés ;</li>
+      <li>🔁 tu peux revenir quand tu veux — relance le bot, mais tu repartiras de zéro et sans nouveau bonus de départ.</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>👨‍💻 À propos du projet et de l'auteur</summary>
+  <div class="body">
+    <p>ROFL HUB est un écosystème de jeu international sur Telegram : ferme, quiz, duels, quêtes,
+    équipes et batailles dans un seul bot et une Mini App en 14 langues.</p>
+    <p>Tous les personnages, noms et événements des quêtes et de l'« Affaire du jour » sont fictifs. Toute ressemblance avec des personnes réelles,
+    vivantes ou décédées, ou avec des événements réels serait purement fortuite.</p>
+    <p>Tu veux le même bot, un jeu ou une Mini App pour ton projet ? Écris à l'auteur :
+    <a href="https://t.me/mister_telebot">@mister_telebot</a>.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📱 Mini App — un empire sur un seul écran</summary>
+  <div class="body">
+    <p>Appuie sur le bouton <b>🎮 ROFL HUB</b> à côté du champ de saisie — tout le jeu s'ouvre : jeux et quêtes, duels, ferme, stock, atelier, bourse, carte, équipe, TOP et historique. Dans le chat du bot restent les invitations, les transferts et les messages privés sur les récompenses. Tout est à portée de main :</p>
+    <ul>
+      <li>le Passeport avec ton solde, ton niveau 🧠 et ton VIP ID ;</li>
+      <li>la ferme : robots, ravitaillement, vitesse, prochaine expiration ;</li>
+      <li>🎁 la côtelette quotidienne se récupère directement ici ;</li>
+      <li>ton équipe et le <b>TOP-100 des plus riches</b> de l'écosystème.</li>
+    </ul>
+    <p>Ouvrir la Mini App met à jour la ferme comme une visite au bot — les pièces ne se perdent jamais.</p>
+  </div>
+</details>
+
+<footer>ROFL HUB · la progression se met à jour en temps réel · tout le jeu dans une seule appli</footer>
+
+<script>
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+  // ?s=<id раздела> — открыть нужный раздел (например, из магазина: «Что даёт каждый товар»)
+  (function () {
+    var id = new URLSearchParams(location.search).get("s");
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.BackButton && history.length > 1) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(function () { history.back(); });
+    }
+  })();
+</script>
+</body>
+</html>

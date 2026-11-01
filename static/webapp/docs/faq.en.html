@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROFL HUB — Handbook</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240;
+    --neon: #00ffe1; --accent: #ffd93d; --pink: #ff4d8d;
+    --text: #e8ecff; --muted: #8a93b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  a { color: var(--accent); font-weight: 700; text-decoration: none; }   /* ссылки — золотом, читаемо */
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 30px; line-height: 1.55;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon); text-shadow: 0 0 18px rgba(0,255,225,.45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  details {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0,255,225,.14); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 14px 16px; font-weight: 800; font-size: 15px;
+    color: var(--neon); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "▾"; float: right; color: var(--muted); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(180deg); }
+  .body { padding: 0 16px 14px; font-size: 14px; }
+  .body h4 { color: var(--accent); margin: 12px 0 4px; font-size: 14px; }
+  .body p { margin-bottom: 8px; }
+  .body ul { margin: 0 0 8px 18px; }
+  .body li { margin-bottom: 4px; }
+  b { color: #fff; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+    background: rgba(0,255,225,.12); border: 1px solid rgba(0,255,225,.35); color: var(--neon);
+    font-weight: 700;
+  }
+  .warn { color: var(--pink); font-weight: 700; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="logo">📚 ROFL HUB HANDBOOK</div>
+<div class="sub">how everything works here — from a cutlet to a Mega-Clan</div>
+
+<details open>
+  <summary>🪙 Coins: the ecosystem's main currency</summary>
+  <div class="body">
+    <p><b>Coins</b> are the in-game currency of ROFL HUB. You spend them to create teams, play duels,
+    bid at auctions and show off your wealth in the TOP-100.</p>
+    <h4>How to earn</h4>
+    <ul>
+      <li>🎁 <b>+500 🪙</b> right when you sign up;</li>
+      <li>🚜 the farm mines coins <b>around the clock</b>, even while you sleep;</li>
+      <li>🕹️ wins in games against the bot: <b>+2 🪙</b> per win (Cyber-Safe and Code breaker — +5, Memory — +3);</li>
+      <li>🧠 intelligence levels in the quiz: +100, +200, +300… 🪙 per level;</li>
+      <li>⚔️ duels with live players — take your opponent's bank;</li>
+      <li>🤝 <b>+500 🪙</b>, a 🥩 cutlet and 10 of each basic resource (⛏ 💧 💎 ⚙️) for every <b>active</b> friend
+        who joins through your referral link;</li>
+      <li>🛒 coin packs in the shop for Telegram Stars.</li>
+    </ul>
+    <p>The economy is protected from inflation: losses, duel and market fees, and winning auction bids burn coins for good.
+    Over time, your wealth only grows more valuable.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🚜 Cyber-farm: robots and cutlets</summary>
+  <div class="body">
+    <h4>🤖 Intern Bot — 1 🪙/hour, free and forever</h4>
+    <p>Every player's first robot. Activate it on the farm screen (the “Activate your
+    Intern Bot” button) — and it starts mining <b>1 🪙 an hour forever</b>: no fuel, no service life.
+    At intelligence levels <b>10, 20, 30, 40, 50…</b> in the quiz another Intern Bot is waiting for you — claim it
+    with the “🎁 Claim your Intern Bot” button on the farm, in the quiz round summary or in the app.
+    Boosts work on it too: with Nuclear Boost x5 an Intern Bot gives 5 🪙/hour.</p>
+    <p>♾ <b>Eternal Miner.</b> An Intern Bot can be promoted to a Miner Bot <b>forever</b> (5 🪙/hour
+    with no expiry) — a shop item for 999 ★, with one condition: at least <b>3 active friends</b>
+    who joined through your link (what “active” means — see the referral section). This way the eternal robot
+    goes to those who grow the ecosystem.</p>
+    <h4>🤖 Miner Bot — 5 🪙/hour</h4>
+    <p>A level-one robot. Works on its own, needs no fuel, grinds with no days off.</p>
+    <h4>⚡ Cyber-Driller — 10 🪙/hour</h4>
+    <p>A level-two robot, twice as powerful but hungry: <b>EVERY Driller eats its own
+    1 cyber-cutlet per 24 hours of work</b>. One cutlet feeds only one robot: keep
+    3 Drillers — have 3 cutlets a day ready, 10 Drillers — 10 cutlets. A whole cutlet is taken
+    from the Fridge when the daily shift starts. Not enough cutlets for everyone — hungry
+    Drillers stop until they're fed.</p>
+    <h4>🥩 Cyber-cutlets, storage and the Fridge</h4>
+    <p>Cutlets are kept in <b>storage</b> (purchases and bonuses land there), but robots eat from
+    the <b>Fridge</b>. Move cutlets over with the “Refuel” buttons on the farm screen. The Fridge can be
+    upgraded in the shop: 10 / 50 / 100 cutlets.</p>
+    <p>🎁 Every 24 hours tap <b>“CLAIM BONUS”</b> on the farm in the app or in the bot chat — a free cutlet for your storage!</p>
+    <h4>🔥 Robot service life</h4>
+    <p>A purchased robot lives <b>30 days</b> from the moment of purchase, then burns out — buy a new one in the shop
+    (the “For the farm” section). The date of the next burnout is shown on the farm screen. The exceptions are Intern Bots
+    and the Eternal Miner: they never burn out.</p>
+    <h4>🛸 Master Drone</h4>
+    <p>A legendary helper for 365 days: while the drone is on the farm, <b>robot wear stops completely</b> —
+    a robot's 30 days of life only tick down while the drone is inactive. A rock-solid investment for a big farm.</p>
+    <h4>⚡ Boosts (they stack!)</h4>
+    <ul>
+      <li>🔋 <b>Nuclear Boost x5</b> — mining of all robots ×5 for 30 days. The price of power: a Driller's cutlet
+      burns three times faster — <b>1 cutlet per 8 hours</b> instead of a day. The boost works with any number of cutlets, even one;
+      if the boost ends while a cutlet is still burning, the rest is used at the normal pace — nothing is lost;</li>
+      <li>❄️ <b>Nitrogen Cooling +40%</b> — Miner 5→7, Driller 10→14 🪙/hour, cutlet use doesn't go up;</li>
+      <li>together: Miner <b>35</b>, Driller <b>70</b> 🪙/hour. A monster farm!</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>🧠 Quiz and intelligence levels</summary>
+  <div class="body">
+    <p>The quiz is a brain sprint: <b>30 seconds per answer</b>, run out of time and it's a loss.
+    Correct answer: +2 🪙, mistake: −1. Questions come in rounds of 10, a 50/50 hint costs 10 🪙, and every 10 correct answers give you 🪨 stone.</p>
+    <h4>🏅 Intelligence levels</h4>
+    <p>Each level is a series of correct answers, and the counter for each series starts from zero:</p>
+    <ul>
+      <li>level 1: <b>10 correct</b> → reward <b>+100 🪙</b>;</li>
+      <li>level 2: another <b>20 correct</b> → <b>+200 🪙</b>;</li>
+      <li>level 3: another 30 → +300… and so on forever — level 100 brings <b>+10,000 🪙</b>!</li>
+    </ul>
+    <p>Your 🧠 level shows in your profile, in the teammates list and in the TOP-100 — a public badge
+    of intelligence in the ecosystem.</p>
+    <p>Quiz limit — <span class="chip">30 wins/day</span>, resets at 00:00 UTC. Want to level up
+    faster? The shop has limit removal for 24 hours or 30 days.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🕹️ Quick games against the bot</summary>
+  <div class="body">
+    <p>Three classic games: a win <b>+2 🪙</b>, a loss <b>−1</b>, a draw takes nothing and gives nothing.
+    Each one's limit — <span class="chip">15 wins/day</span> (resets at 00:00 UTC).</p>
+    <ul>
+      <li>🪨 <b>RPS</b> — rock, paper, scissors against the bot;</li>
+      <li>📈 <b>Higher-Lower</b> — guess which way the hidden number will go;</li>
+      <li>🔐 <b>Cyber-Safe</b> — pick the code out of 4 options: crack it — jackpot <b>+5 🪙</b>, miss — the alarm goes off and −1.</li>
+    </ul>
+    <p>⚡ Unlimited from the shop lifts the limits in <b>all</b> games at once.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧩 New games, the Daily case and quests</summary>
+  <div class="body">
+    <ul>
+      <li>➗ <b>Math</b> — 20 seconds per problem, <span class="chip">30 wins/day</span>; every 10 correct — ⚡ electricity;</li>
+      <li>🏳️ <b>Flags and capitals</b> — 20 seconds per answer, <span class="chip">30 wins/day</span>, resource — 💎 crystals;</li>
+      <li>💻 <b>Code breaker</b> — guess 4 different digits in 10 tries: <b>+5 🪙</b> and ⚙️ 2 parts, <span class="chip">10 wins/day</span>;</li>
+      <li>🃏 <b>Memory</b> — find 6 pairs in no more than 12 moves: <b>+3 🪙</b> and 💧 hydrogen, <span class="chip">15 wins/day</span>.</li>
+    </ul>
+    <p>🕵️ <b>Daily case</b> — one case for everyone per day (UTC): 4 suspects, clues open one by one, and you can accuse only once. The fewer clues you needed, the bigger the reward: 40 / 30 / 20 / 10 🪙, and every 7th day of a solved-case streak gives another +50 🪙.</p>
+    <p>🗺 <b>Daily quests</b> — every day everyone gets the same 10 quests. Without Unlimited, 3 new completions count per day, and completed ones can be replayed as much as you like. For the first completion — 20–50 🪙 and 🪨 stone; ⭐ epics (20+ minutes) are open only with ⚡ Unlimited and give 100 🪙 and 🪨 5.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⚔️ Duels: player vs player</summary>
+  <div class="body">
+    <p>An RPS duel with a <b>live player</b> for a stake. Three tables, like in poker — pick what fits your pocket:
+    <span class="chip">10 🪙</span> <span class="chip">100 🪙</span> <span class="chip">1000 🪙</span>.</p>
+    <h4>Bank rules</h4>
+    <ul>
+      <li>your stake goes into the bank as soon as you sit down at the table;</li>
+      <li>the winner takes <b>80% of the bank</b> (stake ×1.6), <b>20% burns for good</b> — duels drive deflation;</li>
+      <li>with ⚡ Unlimited the winner's fee is half as much — <b>10%</b> (winnings ×1.8);</li>
+      <li>duels are coins only: resources are mined in other games;</li>
+      <li>a draw — an instant replay of gestures, the bank stays on the table;</li>
+      <li>you get <b>60 seconds</b> per gesture; if you stay silent, a random generator picks for you;</li>
+      <li>no opponent found within 30 minutes — your stake comes back automatically;</li>
+      <li>⚔️ <b>challenge a friend by link</b> — a private table that skips the queue, the link lasts 24 hours; a newcomer who joins through it becomes your referral.</li>
+    </ul>
+    <p>Duel wins count toward your team's score in battles with a duel nomination — so train up!</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Teams and clans</summary>
+  <div class="body">
+    <p>A team is your crew of up to <b>50 fighters</b>. Creating one costs <b>100,000 🪙</b>: come up with
+    a name, a motto and an emblem. You can start with a <b>squad</b>: up to 5 fighters for 7,500 🪙, and later the captain can expand it into a team for 92,500 🪙 (the same price in total). In the shop a team can be upgraded to a <b>Mega-Clan with 1000 seats</b>. All of this is in the “🏆 Team” tab.</p>
+    <h4>👥 Teammates list</h4>
+    <p>The “🏆 Team” tab has the full roster: every fighter with their 🧠 intelligence level and a clickable
+    @username — message each other, set up your own chats and get ready for battles. The list is visible
+    <b>only to members of this team</b> — no outsiders.</p>
+    <h4>👑 Captaincy</h4>
+    <p>If the captain leaves the crew, the crown passes to the most loyal veteran — the one who joined
+    earliest. A team with no fighters left disbands automatically.</p>
+    <p>Why join? Team battles, a shared score, prizes for every fighter of the winning teams — solo players
+    don't get any of that.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏟️ Team and clan battles — the main events</summary>
+  <div class="body">
+    <p>Battles are <b>not a daily routine but events</b>, like a world cup: the administration announces
+    a battle in the game (passport → “📣 Events”), and it has a name, dates and a nomination.</p>
+    <h4>How it works</h4>
+    <ul>
+      <li>the nomination is what gets measured: mine the most, win the most duels or quiz rounds,
+      bring the most active newcomers, and more;</li>
+      <li>what counts is the <b>COMBINED result of all players on the team</b> — every fighter brings victory closer,
+      so invite the most active players to your crew!</li>
+      <li>scoring happens strictly within the battle window — boosting your score after the fact is impossible;</li>
+      <li>team points and prizes go to fighters who have been on the team for <b>at least 24 hours</b> by the end of the battle: jumping to the leaders
+      a minute before the finish won't work (the same goes for team expeditions and mine income);</li>
+      <li>there are team battles, clan battles, teams and clans together — and <b>personal</b> events: for example, whose reel
+      on Instagram, YouTube Shorts or TikTok takes off best, or who brings in the most active friends;</li>
+      <li>announcements are in the passport (“📣 Events”), ongoing battles and your place — in the TOP tab → “🎯 Events”;
+      the bot sends a private message to everyone who gets a reward, saying what was credited.</li>
+    </ul>
+    <h4>⛏ Mine battles and the 🔋 entry</h4>
+    <p>The organizer can put several mines up at once: as many mines as there are prize places
+    (1st place gets the most valuable one). Only teams and clans that have submitted a <b>full battery entry</b> fight for mines:
+    a team — 5 🔋, a clan — 25 🔋. Any fighter can chip in on the “⛏ Mines” tab — pool them as a team!</p>
+    <h4>🎁 Prizes</h4>
+    <p>Prizes and the number of prize places for each battle are set by the administration. Prizes are in-game only:
+    coins, resources, crafted items, robots and boosts for various periods, suit parts and artifacts. In team battles <b>every fighter</b> of a winning team gets the reward.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗺 World map: solo and squad expeditions</summary>
+  <div class="body">
+    <p>The “🗺 Map” tab in the game app is a world map where the administration posts
+    <b>expedition targets</b> from time to time (up to 10 at once): solo, team and clan ones. Each has its own story, its own prizes and its own <b>results hour</b>;
+    results can come earlier if a set number of players reach the target.</p>
+    <h4>How an expedition goes</h4>
+    <ul>
+      <li>you set out from your side of the map and slowly walk to the target in plain sight — the marker moves along with time;</li>
+      <li>the target shows how long the trip takes and <b>whether you'll make it</b> by the results hour: if you won't, you can't set out, and anyone who's late
+      because of forks doesn't take part in the results;</li>
+      <li>gear: solo — 💧 10 hydrogen, a team — 🔋 5 batteries, a Mega-Clan — 🔋 25 and 🥩 10 cutlets. Fighters chip in one at a time; with the full set the squad sets out, and if it isn't collected by the results or the target is cancelled, everything comes back;</li>
+      <li>a solo trip takes 10–30 minutes, a squad's takes longer; at any time — one solo expedition per player and one squad per team.</li>
+    </ul>
+    <h4>🔀 Forks</h4>
+    <p>Along the way you hit forks: a storm, an abandoned warehouse, a rival squad, a rope bridge… Each has 2–3 options with their own consequences: more cargo, a risk of losses or a shortcut. The nearest fork is visible <b>right away</b>, with a “to the fork” timer — pick an option in advance and it kicks in when you get there (you can change your mind until then). Didn't pick? After reaching the fork you have time until the next one; staying silent means the squad walks on by: no loot, no losses and no delay. In a team squad the vote decides: if everyone has voted, it kicks in right away, otherwise the majority wins.</p>
+    <h4>🔎 Scouting forks</h4>
+    <p>You can learn an option's consequences in advance with the “Scout this fork” button. An expedition gets as many scouts as the squad leader has (solo — you, in a team — the captain)
+    <b>🛰 Spy drones and 🔭 Scouting levels — whichever is lower</b>: 1 spy and Scouting 1 — one fork, 5 and 5 — all five.
+    <b>The first expedition of every season is blind</b> for everyone.</p>
+    <h4>🏁 Results</h4>
+    <p>At the results hour, places are ranked by <b>cargo</b> among those who made it. How many prize places there are and what each gets is up to
+    the organizer; the others who made it may get a participation reward. The bot sends a private message to everyone who gets a reward, saying what was credited.</p>
+    <h4>📦 What cargo is</h4>
+    <p>Cargo is your expedition score. Everyone starts with 100, forks add (loot) or take away (losses) — places in the results go by cargo.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤖 Combat drones</summary>
+  <div class="body">
+    <p>Three kinds of personal companions, an exclusive achievement: building one is as hard as the Shuttle,
+    or buy one in the workshop for 100,000 🪙 (the coins burn). There's no limit on how many, their effects
+    <b>add up</b>, drones are never used up and don't take storage space.</p>
+    <ul>
+      <li>🛡 <b>Guard drone</b> — raiders carry off less from you; on expeditions you lose less cargo;</li>
+      <li>⚔️ <b>Attack drone</b> — your raids bring in more; on expeditions more loot at combat forks;</li>
+      <li>🛰 <b>Spy drone</b> — more targets in raid scouting; on expeditions a shorter trip, and together with 🔭 Scouting —
+      fork scouting.</li>
+    </ul>
+    <p>Exact percentages are on the drone's card in the workshop.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧍 Character: suits and artifacts</summary>
+  <div class="body">
+    <p>The “🧍 Character” tab right after the passport: an avatar, 5 slots (helmet, jacket, gloves, trousers, boots) and a bag. Only a <b>full set of one suit</b> gives a bonus: ⚡ Electrician — electricity drops more often for wins, ⛏ Miner — once a day a percentage of the farm's mining, 🪖 Soldier — more loot and spoils, faster expeditions, 🥷 Stealth — a chance to stay out of raiders' scouting, 🔬 Scientist — a shorter break between technology levels, 🔧 Engineer — cheaper workshop recipes.</p>
+    <p>Each part has three levels: Basic, Improved and Legendary. Upgrading needs resources, coins and part XP — events the part has lived through while worn; Legendary also needs a Lab technology. The bonus is locked in at the moment of the action: take the suit off and what you've already got stays. Parts drop in events (free — up to 5 per season), and Basic ones are sold on the market right in the tab.</p>
+    <p>💠 <b>Artifacts</b> — three belt slots under the avatar: Storm heart, Stone of plenty, Crimson sunset, Phantom shade, Insight orb and Mechanical warrior. Each one boosts its own bonus line and stacks with the suit. One per season is free, the rest are on the market.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔨 Auctions and VIP ID</summary>
+  <div class="body">
+    <p>From time to time the administration puts <b>unique lots</b> up for auction — for example,
+    legendary <b>VIP IDs</b>: <span class="chip">ROFL-HUB-777</span>.</p>
+    <h4>Fair refundable bids</h4>
+    <p>Your bid is held right away, but if someone outbids you, <b>the whole amount comes back instantly</b>.
+    Only the winner pays when the lot closes.</p>
+    <h4>💎 What a VIP ID gives</h4>
+    <p>It's your personal ID in the ecosystem: it shows off in your profile, appears in the TOP-100, and transfers
+    work with it — friends can send coins straight to <b>ROFL-HUB-777</b> instead of boring digits.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📈 Market: cutlets and resources between players</summary>
+  <div class="body">
+    <p>On the market players trade cutlets, all resources and even the ☢️ Core for coins.
+    The more deals, the more coins burn in fees — this keeps the coin's value up.
+    The full market is the “📈 Market” tab in the game app: price index, a 7-day chart, who's selling,
+    who's buying, your orders and resource swaps.</p>
+    <ul>
+      <li><b>sell order</b>: the item goes into an order and waits for a buyer; you can withdraw it at any time;</li>
+      <li><b>buy bid</b>: “buying 10 cutlets at 250” — coins are frozen until the deal; withdraw the bid and they come back;</li>
+      <li><b>a cutlet costs no less than 200 🪙</b>: fuel from the shop for Stars is always a better deal than the market; on the market it's bought by those who are short on time;</li>
+      <li><b>minimum prices for 1 item</b> (for both sales and bids): ⚙️ parts and 💎 crystals — 10 🪙, ⛏ metal
+      and 💧 hydrogen — 20, 🪨 stone — 30, ⚡ electricity — 50, 🪵 wood — 70, 🔥 fire — 170, 🔋 batteries — 300,
+      🐄 cow — 1,000, ☢️ Core — 5,000 🪙;</li>
+      <li>up to 100 cutlets or 1000 of a resource per order; how many orders you can hold at once depends on horses and carts: 2 by default (more in the “Stable” section);</li>
+      <li><b>the 10% fee is paid by the seller</b> and burns for good — this protects coins from inflation;</li>
+      <li><b>resource swaps</b>: “giving 60 metal for 25 hydrogen” — no coins and no fee; by minimum prices
+      the two sides can differ by no more than 3 times;</li>
+      <li>while an account is new (below intelligence level 3 and 3 daily cutlets), you can buy at no more than three times the minimum
+      price — so fake accounts can't pump coins around; you can withdraw your own resource lot if it fits in your storage.</li>
+    </ul>
+    <p>Cutlets from the Fridge can't go to the market — only from storage.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧰 Resources and the workshop: every game mines its own</summary>
+  <div class="body">
+    <p>Every win brings not only coins but also that game's resource:</p>
+    <ul>
+      <li>⛏ <b>Metal</b> — RPS;</li>
+      <li>💧 <b>Hydrogen</b> — Higher-Lower;</li>
+      <li>💎 <b>Crystals</b> — Quiz;</li>
+      <li>⚙️ <b>Parts</b> — Cyber-Safe (3 per crack — it opens less often);</li>
+      <li>🗺 first completion of a quest — 20–50 🪙 and 🪨 1–2 stone, of an epic — 100 🪙 and 🪨 5.</li>
+    </ul>
+    <p><b>New raw materials</b> — for building, logistics and the Lab:</p>
+    <ul>
+      <li>🪨 <b>Stone</b> — quests, streaks of correct quiz answers, mines, the chest;</li>
+      <li>🪵 <b>Wood</b> — mines, the chest;</li>
+      <li>🔥 <b>Fire</b> — the Bonfire in the workshop: wood + stone. Without fire there are no tools and no batteries;</li>
+      <li>⚡ <b>Electricity</b> — a 25% chance for any win in a solo game (in the Electrician suit — 50–70%), every 10 correct answers in Math, the chest;</li>
+      <li>🔋 <b>Batteries</b> — the workshop (electricity + metal + fire). A valuable resource: Shuttle charge and a team's entry for a mine battle;</li>
+      <li>🐄 <b>Cows</b> — the chest on every 7th day of a streak, the market. One cow makes 3 cutlets in the workshop;</li>
+      <li>☢️ <b>Core</b> — the rarest: only organizer prizes for battles, expeditions and events. Sold on the market
+      from 5,000 🪙 (it can't be swapped for other resources).</li>
+    </ul>
+    <p>The shop doesn't sell resources for Stars — they're only mined. Players trade them with each other on the market
+    (for coins, the 10% fee burns) and swap resource for resource. They're used
+    in the <b>workshop</b> — the “🔧 Workshop” tab in the game app:</p>
+    <ul>
+      <li>❄️ Nitrogen Cooling for 6 h, 🔋 Nuclear Boost for 3 h, 🛸 Master Drone for a day —
+      the same boosts as in the shop, but short and paid for with resources;</li>
+      <li>🛡 <b>Raid shield</b> for a day;</li>
+      <li>🥩 <b>cyber-cutlets from a cow</b> — 🐄 a cow and 🔥 2 fire → 3 cutlets into storage
+      (a cow on the market costs from 1,000 🪙; people buy it when they urgently need fuel for Nuclear Boost);</li>
+      <li>🔥 <b>Bonfire</b>, 🔋 <b>Batteries</b>, 🛒 <b>Cart</b> (needs a horse), 💊 <b>First-aid kit</b> for 72 hours;</li>
+      <li>🛡 <b>Cyber-armor</b> — +10% farm mining per level, up to 3 levels (+30%), each build lasts 30 days;</li>
+      <li>🚀 <b>Shuttle</b> — 1000 of each resource + 1000 🪙, forever and only yours: a 5% fee instead of 10%
+      on your sales, up to 500 cutlets per order and up to 16 open orders. The Shuttle runs on a battery:
+      one 🔋 — 30 days of perks (charged in the “📦 Storage” tab).</li>
+    </ul>
+    <p>Your stock is visible in the profile, in the workshop and in the Mini App passport. With Unlimited games, resources
+    are mined with no daily cap — for every win.</p>
+    <p><b>📦 Storage with a limit.</b> Storage holds 500 of each resource — anything mined beyond that is lost,
+    so it pays to spend resources or sell them on the market. Storage is expanded in the workshop for good:
+    1000 → 2000 → 3000 → 4000 → 5000 of each resource; each expansion costs 20% more than the last and needs
+    one more kind of resource. Storage holds finished items up to <b>10% of capacity in total</b>: 500 → 50 items
+    of all kinds together, 5000 → 500. Cutlets and coins aren't limited by storage.</p>
+    <p><b>🔥 Recipes of the week.</b> From time to time the workshop gets temporary recipes: a shield for a week,
+    a cutlet for 100 metal, smelting one resource into another, combo sets. Each has a build limit
+    per week, and the recipes themselves vanish as suddenly as they appeared. Keep an eye on the “🔧 Workshop” tab.</p>
+    <p><b>📦 Items wait in storage.</b> Hours of Nitrogen, Nuclear Boost, Master Drone, shields and Unlimited samples
+    built in the app don't switch on right away — they go to the “📦 Storage” tab. Turn them on with a button whenever
+    it suits you: a shield before bed, Nitrogen before a long break. The same tab has your resources, cutlets, the Shuttle,
+    Cyber-armor and storage expansion. Armor, storage and the Shuttle take effect right after building.</p>
+    <p><b>🧪 New items:</b></p>
+    <ul>
+      <li>🎭 <b>Camouflage</b> (12 h) — you don't show up in raid scouting, but you can still attack;</li>
+      <li>🪤 <b>Decoy</b> (24 h) — a raider who fails against you gives up twice as much;</li>
+      <li>🎯 <b>Stance trainer</b> (24 h) — if a raid on you ends in a draw, it counts as the raider's failure;</li>
+      <li>🔥 <b>Ship afterburner</b> — instantly resets the raid cooldown (no more than once a day);</li>
+      <li>⛽ <b>Fuel saver</b> — the next launch needs no hydrogen;</li>
+      <li>📦 <b>Extended cargo hold</b> — loot from the next raid ×1.5;</li>
+      <li>🧊 <b>Cutlet thermos</b> (24 h, once a week) — Drillers eat cutlets 25% slower;</li>
+      <li>📜 <b>Market stamp</b> (once a week) — your next market sale has no fee;</li>
+      <li>🏳️ <b>Team banner</b> (24 h) — +5% mining for your whole team;</li>
+      <li>🛡 <b>Team dome</b> (12 h) — a raid shield for the whole team.</li>
+    </ul>
+    <p>Team items are expensive and complex (they need fire, batteries and the ☢️ Core), and only a player on a team can build them — teammates pool resources.
+    A Mega-Clan protects up to 1000 fighters, so it pays <b>5 times more</b> than a team for the Banner and the Dome.
+    Complex builds need a tool kit from the Lab.</p>
+    <p>One-time items (Fuel saver, Cargo hold, Stamp) get “charged” in storage and kick in on the next
+    matching action. For newcomers, workshop recipes unlock <b>one per day</b> — from the simplest
+    and most useful to the legendary; locked ones are shown greyed out with the time until they open.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏴‍☠️ Raids: decision against decision</summary>
+  <div class="body">
+    <p>The “🏴‍☠️ Raids” tab in the game app. Raids need the Lab technologies 📡 Comms, 🔭 Scouting
+    and ⚔️ Attack at level 1. Scouting is free and shows 2 + your Scouting level targets; raid fuel is 5 💧 hydrogen per launch.
+    You pick a gesture (rock, paper, scissors), and the target has a <b>defense stance</b> set in advance —
+    the outcome is decided by RPS: your gesture against their stance. Win: you take 20% of each of the target's resources
+    (no more than 30 per resource). Fail: you give the target 10% of yours (no more than 15). Draw — the fuel is burned.</p>
+    <ul>
+      <li><b>only resources</b> can be looted: coins, robots, cutlets and market orders are untouchable;</li>
+      <li>newcomers are protected for the first 3 days, teammates can't be raided, the same target — no more than once every 12 h;</li>
+      <li>one launch every 3 hours; the victim gets a message and has a <b>free rematch</b> for 24 hours
+      (there's no rematch on a rematch — otherwise a pair of players could pump resources back and forth forever);</li>
+      <li>🛡 a shield from the workshop keeps you safe from raids: build it, turn it on from storage, and the shield panel on the raids
+      tab shows a timer until the protection ends;</li>
+      <li>change your stance in the raids menu — predictable players get raided more often;</li>
+      <li>⚔️ each Attack level after the first — +8% to the spoils, 🛡 each Defense level of the target — −8%,
+      📚 Science — +1% per level; 📡 Comms cuts the cooldown by 20 minutes per level;</li>
+      <li>💊 without a First-aid kit, 15% of a raid's spoils are “lost in the infirmary” (the target still loses all of it).</li>
+    </ul>
+    <p>Targets are shown by name, without @username or ID — raids stay a game, not an excuse for bullying.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎯 Daily goals and the chest</summary>
+  <div class="body">
+    <p>The “🎯 Goals” card in the game app's passport: every day you have three goals — from games, duels, the farm, the workshop,
+    raids, the market and the team station. Complete all three and grab the <b>chest</b>: +50 🪙 and +10 of a random
+    resource, plus a special bonus of the day: 🪵 wood, 🪨 stone or ⚡ electricity. Your day streak builds up: every 7th day in a row the chest adds +200 🪙 and a 🐄 cow.
+    Goals refresh at 00:00 UTC.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔬 Lab: tools and technologies</summary>
+  <div class="body">
+    <p>The “🔬 Lab” tab in the game app. <b>Tool kits</b> come in 4 levels: ⚒️ Rough tools,
+    🛠 Fine-tuning tools, 🔬 Calibration, 🧬 Nanotech. A kit is never used up — it unlocks complex builds
+    in the workshop and the next technology levels.</p>
+    <ul>
+      <li>📡 <b>Comms</b> — needed for raids and mine income, then cuts the raid cooldown by 20 minutes per level;</li>
+      <li>🔭 <b>Scouting</b> — +1 target in scouting per level;</li>
+      <li>⚔️ <b>Attack</b> — no raids without it; then +8% to the spoils per level;</li>
+      <li>🛡 <b>Defense</b> — a raider carries off 8% less from you per level;</li>
+      <li>📚 <b>Science</b> — +1% to farm mining and spoils per level; needs the ☢️ Core.</li>
+    </ul>
+    <p>Each technology has 5 levels. <b>Level 1</b> of Comms, Scouting, Attack and Defense can be researched
+    from day one — if you have the right tool kit and resources. Each next level of the same technology comes
+    <b>30 days</b> after the previous one (in the Scientist suit — 20–40% faster): every upgrade is something to look forward to and worth a lot. Research is never reset.</p>
+    <p><b>Science</b> grows after the others: its level 1 opens when all four technologies are researched
+    to level 1, level 2 — when all of them reach level 2, and so on.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🐎 Stable, carts and market lots</summary>
+  <div class="body">
+    <p>How many orders you can keep on the market at once depends on logistics: 2 lots by default,
+    each 🐎 horse gives +1, each 🛒 cart another +1 (no more carts than horses; 5 of each at most).
+    The game itself sells horses for coins (1500 / 3000 / 6000 / 10,000 / 15,000 🪙 — the coins burn),
+    carts are built in the workshop. A charged Shuttle
+    has its own limit — 16 lots. The stable is in the “📦 Storage” tab.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Seasons: TOP of the month</summary>
+  <div class="body">
+    <p>A season is a calendar month (12 seasons a year). Coins, robots, storage and purchases are <b>not reset</b> —
+    only the tables start over: the TOP of players by coins <b>earned in the game</b> during the month (transfers and gifts
+    don't count), the team ranking by places in the season's battles and the friends ranking in the “🤝 Friends” tab.
+    On the 1st, a veteran and a newcomer start on equal footing.</p>
+    <p>The TOP-10 get a <b>season badge</b> in their passport forever — a medal for the place and the season's month, for example “🥈 2026-11” (places 4–10 — 🏅).
+    Prizes for the winners are set by the organizer — the bot will message you privately with what was credited.</p>
+    <p>The “🏆 Season | 🎯 Events | 💰 Richest” switch is in the TOP tab.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛰 Team station: a shared project</summary>
+  <div class="body">
+    <p>The “🏆 Team” tab in the game app. The whole team builds the station: any member
+    donates resources, and a level is complete when 300 × the level of each resource has been donated (5 levels in total).
+    Each level gives <b>every fighter on the team +2% farm mining</b> (up to +10%). Leave the team — lose the bonus.
+    The feed of recent donations shows who's pulling the common cause.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⛏ Mines: the map and battles for resources</summary>
+  <div class="body">
+    <p>The “⛏ Mines” tab in the game app is a map of 30 mines: metal, hydrogen, crystals, parts, stone
+    and wood — 5 of each. Mines are only for teams and clans. In a mine battle, places go to the teams with the best combined result of all fighters
+    in the battle's nomination; only those who submitted a full battery entry are counted. While there's no battle, a mine raid is impossible — the map just shows who owns what.</p>
+    <ul>
+      <li>the winner holds the mine for <b>24 hours</b> — so every team gets a chance to play;</li>
+      <li><b>every fighter</b> on the team gets <b>1 of the mine's resource per hour</b> (within their own storage) —
+      up to 24 units per run; a team of 50 fighters pumps out 1200;</li>
+      <li>places and their rewards are set by the organizer, who may also give the other participants a participation reward;</li>
+      <li>after that the mine is free, but it can be captured again only in a new battle;</li>
+      <li>mining goes to fighters with 📡 Comms level 1; without a 💊 First-aid kit every 7th hour is “sick”, with no mining;</li>
+      <li>the tab shows how much has already been mined and how long is left until the hold ends.</li>
+    </ul>
+    <p>More fighters on the team means more loot. Invite friends and nudge your teammates during the battle!</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤝 Team market and mutual help</summary>
+  <div class="body">
+    <p><b>Team market.</b> In the “📈 Market” tab switch to “Team market”: these orders and swaps can be seen
+    and filled only by your teammates, and the fee is lower than on the common market — <b>5% instead of 10%</b>, and for a <b>Mega-Clan just 2%</b>.
+    The cutlet price floor (200 🪙) applies here too. Leave the team — your team lots are withdrawn,
+    and the items and coins come back.</p>
+    <p><b>Mutual help.</b> In the “🏆 Team” tab ask for a resource (one open request, up to 200 units),
+    and your teammates will gift it. Players can gift from <b>intelligence level 3</b> and after <b>3 daily cutlets</b>,
+    no more than 100 resources a day and no more than fits in the requester's storage. Cutlets can't be gifted —
+    they're fuel from the shop.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎖 Ranks for time in the ecosystem</summary>
+  <div class="body">
+    <p>The longer you're in ROFL HUB, the cooler the rank to the right of your name — in your profile, in the teammates
+    list and in the Mini App TOP-100. Ranks go from the lowest to the coolest:</p>
+    <ul>
+      <li>🎖 <b>Rookie</b> — 1 day in the ecosystem;</li>
+      <li>🎖 <b>Fighter</b> — a week;</li>
+      <li>🎖 <b>Legend</b> — a month;</li>
+      <li>🎖 <b>ROFL</b> — 3 months;</li>
+      <li>🎖 <b>LMAO</b> — half a year;</li>
+      <li>🎖 <b>KING</b> — a year or more. The highest caste.</li>
+    </ul>
+    <p>A rank can't be bought — only earned through service.</p>
+  </div>
+</details>
+
+<details>
+  <summary>✨ Skins and the season pass</summary>
+  <div class="body">
+    <p><b>Skins</b> — a suit, a frame, a title, a map marker and a bag. They give no power, only looks and status, and everyone sees them: in the passport, the TOP, the team and on the map. Skins are sold for ★ in the shop (the “✨ Skins” section), and every copy has its own edition number. You can resell them on the market for coins (the fee burns) and level them up: XP builds while the skin is worn, and merging with another skin moves it up the stages from “Factory” to “Immortal”. There are no random paid loot boxes.</p>
+    <p>🎟 <b>Season pass</b> — 30 levels, XP for wins, duels, raids, expeditions, crafted items, quests and the chest. The free track gives coins and batteries, the premium one for 299 ★ — more coins, cutlets and 4 exclusive skins of the month that you can't get anywhere else. XP for game wins — up to 150 a day, with 30-day Unlimited — up to 300.</p>
+  </div>
+</details>
+
+<details>
+  <summary>💸 Coin transfers and referrals</summary>
+  <div class="body">
+    <h4>🔄 Transfers</h4>
+    <p>Send coins to any player: by passport ID (it's in the profile), by @username or by VIP ID.
+    A transfer is confirmed with a button, and the recipient gets a notification. Minimum — 10 🪙.
+    You can send coins after <b>intelligence level 3</b> and <b>3 daily cutlets</b> — so fake
+    accounts can't drain starter coins, and honest players lose nothing.</p>
+    <h4>🤝 Referral program</h4>
+    <p>Every player has a personal link (the invite command in the menu). The reward is given
+    <b>once</b> for each <b>active</b> friend: <b>+500 🪙</b>, <b>🥩 a cyber-cutlet</b> into storage and
+    <b>10 each</b> of ⛏ metal, 💧 hydrogen, 💎 crystals and ⚙️ parts (resources — within your free storage space). A friend becomes active once they have:</p>
+    <ul>
+      <li>🧠 reached <b>intelligence level 3</b> in the quiz;</li>
+      <li>🎁 claimed <b>3 daily cutlets</b> on the farm (once a day — so at least a couple of days in the game).</li>
+    </ul>
+    <p>As soon as both conditions are met, the bot checks whose link the player came through and credits
+    the bonus to whoever invited them — you'll get a notification. A bare sign-up with no play gives no bonus: this way
+    the ecosystem is protected from fake accounts, and your coins don't lose value.</p>
+    <p><b>🧥 The “10 active friends” task.</b> Once 10 friends you invited become active, the “🤝 Friends” tab
+    opens a choice: a full suit of any of the six kinds — all 5 parts at once. One reward per account.</p>
+    <p>The link, the “Share” button, stats and the “who has the most friends” ranking are in the
+    “🤝 Friends” tab of the game app and in the invite menu in the chat.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛒 Shop and Telegram Stars</summary>
+  <div class="body">
+    <p>All purchases go through <b>official Telegram Stars</b> — Telegram's own payment system.
+    No cards and no third-party sites.</p>
+    <ul>
+      <li>delivery is <b>instant</b>: robots, cutlets, boosts and Unlimited land on your account right after payment;</li>
+      <li>every purchase gets a receipt with a payment number;</li>
+      <li>if the payment went through but delivery failed — <b>Stars are refunded automatically</b>;</li>
+      <li>payment questions — the payment support command in the bot menu.</li>
+    </ul>
+    <p class="warn">⚠️ The only official bot is @RoflHubGame_Bot. Beware of clones!</p>
+  </div>
+</details>
+
+<details id="shop-items">
+  <summary>🛍 What each shop item gives</summary>
+  <div class="body">
+    <h4>🚜 For the farm</h4>
+    <ul>
+      <li><b>🤖 Miner Bot</b> (49 ★, 30 days) — mines 5 🪙 an hour with no fuel: about 3,600 🪙 a month.
+        For those who don't want to keep an eye on refueling.</li>
+      <li><b>⚡ Cyber-Driller</b> (99 ★, 30 days) — 10 🪙 an hour, twice as powerful as the Miner, but eats
+        1 cyber-cutlet a day. With boosts — up to 70 🪙 an hour. For those who want the max.</li>
+      <li><b>🥩 Cutlet packs</b> (10, 50 and 100 pcs) — fuel for Drillers: 1 cutlet = a day of work
+        for one robot. The bigger the pack, the cheaper the cutlet. Extras can be sold on the market.</li>
+      <li><b>📦 Fridge</b> (for 10, 50 and 100 cutlets) — the tank Drillers refuel from
+        on their own. Cutlets from storage are loaded into the Fridge, and then the farm runs without you.
+        A small Fridge means checking in every day; with one for 100 cutlets, 10 Drillers work
+        10 days straight while you're busy with your own stuff.</li>
+      <li><b>🔋 Nuclear Boost x5</b> (199 ★, 30 days) — mining of all robots ×5, but Drillers eat
+        3 times more cutlets. The fastest way to big sums.</li>
+      <li><b>❄️ Nitrogen Cooling +40%</b> (299 ★, 30 days) — +40% mining for all robots with no extra
+        fuel. Stacks with Nuclear Boost.</li>
+      <li><b>🛸 Master Drone</b> (999 ★, 1 year) — while the drone is active, robots don't age: their 30-day
+        license is frozen. Purchased robots serve longer.</li>
+      <li><b>♾ Eternal Miner</b> (999 ★) — turns your free Intern Bot into an eternal Miner
+        Bot: 5 🪙 an hour forever. Requires 3 active friends.</li>
+    </ul>
+    <h4>🕹️ Gaming</h4>
+    <ul>
+      <li><b>⚡ Unlimited 24h</b> (15 ★) and <b>🚀 Unlimited 30 days</b> (249 ★) — remove the daily win
+        limit: play as much as you like, and every win brings coins and the game's resource with no limits.
+        Quiz intelligence levels grow faster.</li>
+      <li><b>💰 Coin packs</b> (5,000 – 100,000 🪙) — coins straight to your balance: high-stakes duel
+        tables, market purchases (cutlets and resources), creating your own team (100,000 🪙), building
+        the Shuttle in the workshop. The bigger the pack, the better the rate.</li>
+      <li><b>🏆 Mega-Clan</b> (2499 ★) — expands your team from 50 to 1000 seats: more fighters in battles
+        and the team station grows faster.</li>
+    </ul>
+    <p>All purchases are delivered instantly, and if delivery fails, Stars are refunded automatically.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗑 Deleting your account</summary>
+  <div class="body">
+    <p>The “🗑 Delete account” button is in your profile. You won't tap it by accident: first comes a warning about
+    what will be lost, and the confirm button only works after 10 seconds.</p>
+    <ul>
+      <li>⏳ The account is <b>frozen for 7 days</b>: nobody sees you in the game, but one tap on
+        “↩️ Cancel deletion” brings everything back as it was;</li>
+      <li>🗑 after 7 days your coins, robots, cutlets, resources, VIP ID and progress are deleted for good,
+        and team captaincy passes to a veteran;</li>
+      <li>⭐ purchases made with Stars are lost along with the account — Stars aren't refunded;</li>
+      <li>🔁 you can come back any time — just start the bot again, but you'll begin from scratch and without a second starter bonus.</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>👨‍💻 About the project and the author</summary>
+  <div class="body">
+    <p>ROFL HUB is an international gaming ecosystem in Telegram: a farm, a quiz, duels, quests,
+    teams and battles in one bot and a Mini App in 14 languages.</p>
+    <p>All characters, names and events in the quests and the “Daily case” are fictional. Any resemblance to real persons,
+    living or dead, or to actual events is purely coincidental.</p>
+    <p>Want a bot, game or Mini App like this for your own project? Message the author:
+    <a href="https://t.me/mister_telebot">@mister_telebot</a>.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📱 Mini App — an empire on one screen</summary>
+  <div class="body">
+    <p>Tap the <b>🎮 ROFL HUB</b> button next to the input field — the whole game opens: games and quests, duels, the farm, storage, the workshop, the market, the map, the team, the TOP and history. The bot chat keeps invites, transfers and private messages about rewards. Right at hand:</p>
+    <ul>
+      <li>a passport with your balance, 🧠 level and VIP ID;</li>
+      <li>the farm: robots, refueling, speed, the next burnout;</li>
+      <li>🎁 you can claim the daily cutlet right here;</li>
+      <li>your team and the ecosystem's <b>TOP-100 richest</b>.</li>
+    </ul>
+    <p>Opening the Mini App updates the farm just like a visit to the bot — coins are never lost.</p>
+  </div>
+</details>
+
+<footer>ROFL HUB · progress updates in real time · the whole game in one app</footer>
+
+<script>
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+  // ?s=<id раздела> — открыть нужный раздел (например, из магазина: «Что даёт каждый товар»)
+  (function () {
+    var id = new URLSearchParams(location.search).get("s");
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.BackButton && history.length > 1) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(function () { history.back(); });
+    }
+  })();
+</script>
+</body>
+</html>

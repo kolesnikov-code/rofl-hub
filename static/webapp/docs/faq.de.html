@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROFL HUB — Handbuch</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240;
+    --neon: #00ffe1; --accent: #ffd93d; --pink: #ff4d8d;
+    --text: #e8ecff; --muted: #8a93b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  a { color: var(--accent); font-weight: 700; text-decoration: none; }   /* ссылки — золотом, читаемо */
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 30px; line-height: 1.55;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon); text-shadow: 0 0 18px rgba(0,255,225,.45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  details {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0,255,225,.14); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 14px 16px; font-weight: 800; font-size: 15px;
+    color: var(--neon); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "▾"; float: right; color: var(--muted); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(180deg); }
+  .body { padding: 0 16px 14px; font-size: 14px; }
+  .body h4 { color: var(--accent); margin: 12px 0 4px; font-size: 14px; }
+  .body p { margin-bottom: 8px; }
+  .body ul { margin: 0 0 8px 18px; }
+  .body li { margin-bottom: 4px; }
+  b { color: #fff; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+    background: rgba(0,255,225,.12); border: 1px solid rgba(0,255,225,.35); color: var(--neon);
+    font-weight: 700;
+  }
+  .warn { color: var(--pink); font-weight: 700; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="logo">📚 ROFL HUB HANDBUCH</div>
+<div class="sub">wie hier alles funktioniert — von der Frikadelle bis zum Mega-Clan</div>
+
+<details open>
+  <summary>🪙 Münzen: die Hauptwährung des Ökosystems</summary>
+  <div class="body">
+    <p><b>Münzen</b> sind die interne Spielwährung von ROFL HUB. Mit ihnen gründest du Teams, spielst Duelle,
+    bietest bei Auktionen mit und misst dich im TOP-100 der Reichsten.</p>
+    <h4>So verdienst du sie</h4>
+    <ul>
+      <li>🎁 <b>+500 🪙</b> direkt bei der Registrierung;</li>
+      <li>🚜 die Farm schürft Münzen <b>rund um die Uhr</b>, auch während du schläfst;</li>
+      <li>🕹️ Siege in Spielen gegen den Bot: <b>+2 🪙</b> pro Sieg (Cyber-Tresor und Code knacken — +5, Memory — +3);</li>
+      <li>🧠 Intelligenz-Level im Quiz: +100, +200, +300… 🪙 pro Level;</li>
+      <li>⚔️ Duelle gegen echte Spieler — hol dir den Einsatz deines Gegners;</li>
+      <li>🤝 <b>+500 🪙</b>, 🥩 eine Frikadelle und je 10 von jeder Basis-Ressource (⛏ 💧 💎 ⚙️) für jeden <b>aktiven</b> Freund
+        über deinen Empfehlungslink;</li>
+      <li>🛒 Münzpakete im Shop für Telegram Stars.</li>
+    </ul>
+    <p>Die Wirtschaft ist gegen Inflation geschützt: Niederlagen, Gebühren bei Duellen und an der Börse sowie Gewinner-Gebote bei Auktionen verbrennen Münzen für immer.
+    Dein Vermögen wird mit der Zeit also nur wertvoller.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🚜 Cyber-Farm: Roboter und Frikadellen</summary>
+  <div class="body">
+    <h4>🤖 Praktikanten-Bot — 1 🪙/Std., gratis und für immer</h4>
+    <p>Der erste Roboter jedes Spielers. Aktiviere ihn auf dem Farm-Bildschirm (Button „Praktikanten-Bot
+    aktivieren“) — und er schürft <b>1 🪙 pro Stunde, ewig</b>: ohne Treibstoff, ohne Ablaufdatum.
+    Auf Intelligenz-Level <b>10, 20, 30, 40, 50…</b> im Quiz wartet ein weiterer Praktikant auf dich — hol ihn
+    mit dem Button „🎁 Praktikanten-Bot abholen“ auf der Farm, im Rundenergebnis des Quiz oder in der App ab.
+    Boosts wirken auch auf ihn: Mit dem Nuklear-Boost bringt der Praktikant 5 🪙/Std.</p>
+    <p>♾ <b>Ewiger Miner-Bot.</b> Den Praktikanten kannst du <b>für immer</b> zum Miner-Bot befördern (5 🪙/Std.
+    ohne Ablauf) — ein Artikel im Shop für 999 ★, aber mit Bedingung: mindestens <b>3 aktive Freunde</b>,
+    die über deinen Link gekommen sind (was „aktiv“ heißt, steht im Abschnitt zum Empfehlungsprogramm). So bekommen
+    den ewigen Roboter diejenigen, die das Ökosystem wachsen lassen.</p>
+    <h4>🤖 Miner-Bot — 5 🪙/Std.</h4>
+    <p>Roboter der ersten Stufe. Arbeitet selbstständig, braucht keinen Treibstoff und schuftet ohne freie Tage.</p>
+    <h4>⚡ Cyber-Bohrer — 10 🪙/Std.</h4>
+    <p>Roboter der zweiten Stufe, doppelt so stark, aber hungrig: <b>JEDER Bohrer frisst seine eigene
+    1 Cyber-Frikadelle pro 24 Stunden Arbeit</b>. Eine Frikadelle füttert nur einen Roboter: Hast du
+    3 Bohrer — halte 3 Frikadellen pro Tag bereit, bei 10 Bohrern — 10 Frikadellen. Die Frikadelle wird
+    beim Start der Tagesschicht komplett aus dem Kühlschrank genommen. Reichen die Frikadellen nicht für alle, bleiben hungrige
+    Bohrer stehen, bis sie gefüttert werden.</p>
+    <h4>🥩 Cyber-Frikadellen, Lager und Kühlschrank</h4>
+    <p>Frikadellen liegen im <b>Lager</b> (dort landen Käufe und Boni), aber die Roboter essen aus dem
+    <b>Kühlschrank</b>. Leg die Frikadellen mit den Tank-Buttons auf dem Farm-Bildschirm um. Den Kühlschrank kannst du
+    im Shop vergrößern: 10 / 50 / 100 Frikadellen.</p>
+    <p>🎁 Tippe alle 24 Stunden auf <b>„BONUS ABHOLEN“</b> auf der Farm in der App oder im Bot-Chat — eine Gratis-Frikadelle fürs Lager!</p>
+    <h4>🔥 Lebensdauer der Roboter</h4>
+    <p>Ein gekaufter Roboter lebt <b>30 Tage</b> ab dem Kauf und brennt dann aus — kauf einen neuen im Shop
+    (Bereich „FÜR DIE FARM“). Das nächste Ablaufdatum siehst du auf dem Farm-Bildschirm. Ausnahmen sind Praktikanten-Bots
+    und der Ewige Miner-Bot: Sie brennen nie aus.</p>
+    <h4>🛸 Master-Drohne</h4>
+    <p>Ein legendärer Helfer für 365 Tage: Solange die Drohne auf der Farm ist, <b>stoppt der Verschleiß der Roboter komplett</b> —
+    die 30 Lebenstage eines Roboters laufen nur ab, wenn die Drohne inaktiv ist. Eine eiserne Investition für eine große Farm.</p>
+    <h4>⚡ Boosts (stapeln sich!)</h4>
+    <ul>
+      <li>🔋 <b>Nuklear-Boost x5</b> — Ertrag aller Roboter ×5 für 30 Tage. Der Preis der Power: Beim Bohrer brennt die Frikadelle
+      dreimal so schnell — <b>1 Frikadelle pro 8 Stunden</b> statt pro Tag. Der Boost funktioniert mit beliebig vielen Frikadellen, auch mit einer;
+      ist der Boost vorbei und die Frikadelle noch nicht aufgebraucht, verbrennt der Rest im normalen Tempo — nichts geht verloren;</li>
+      <li>❄️ <b>Stickstoff-Kühlung +40%</b> — Miner-Bot 5→7, Bohrer 10→14 🪙/Std., der Frikadellen-Verbrauch steigt nicht;</li>
+      <li>zusammen: Miner-Bot <b>35</b>, Bohrer <b>70</b> 🪙/Std. Eine Monster-Farm!</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>🧠 Quiz und Intelligenz-Level</summary>
+  <div class="body">
+    <p>Das Quiz ist ein Denksprint: <b>30 Sekunden pro Antwort</b> — wer es nicht schafft, verliert.
+    Richtige Antwort: +2 🪙, Fehler: −1. Die Fragen kommen in Runden zu je 10, der 50/50-Joker kostet 10 🪙, und für je 10 richtige Antworten gibt es 🪨 Stein.</p>
+    <h4>🏅 Intelligenz-Level</h4>
+    <p>Jedes Level ist eine Serie richtiger Antworten, der Zähler jeder Serie startet bei null:</p>
+    <ul>
+      <li>Level 1: <b>10 richtige</b> → Belohnung <b>+100 🪙</b>;</li>
+      <li>Level 2: weitere <b>20 richtige</b> → <b>+200 🪙</b>;</li>
+      <li>Level 3: weitere 30 → +300… und so weiter bis ins Unendliche — Level 100 bringt <b>+10 000 🪙</b>!</li>
+    </ul>
+    <p>Dein 🧠-Level glänzt im Profil, in der Teammitglieder-Liste und im TOP-100 — ein öffentliches Zeichen
+    für Intelligenz im Ökosystem.</p>
+    <p>Das Quiz-Limit liegt bei <span class="chip">30 Siegen/Tag</span>, Reset um 00:00 UTC. Willst du schneller
+    aufsteigen — im Shop kannst du die Limits für 24 Stunden oder 30 Tage aufheben.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🕹️ Schnelle Spiele gegen den Bot</summary>
+  <div class="body">
+    <p>Drei klassische Spiele: Sieg <b>+2 🪙</b>, Niederlage <b>−1</b>, ein Unentschieden kostet nichts und bringt nichts.
+    Das Limit für jedes liegt bei <span class="chip">15 Siegen/Tag</span> (Reset 00:00 UTC).</p>
+    <ul>
+      <li>🪨 <b>SSP</b> — Schere, Stein, Papier gegen den Bot;</li>
+      <li>📈 <b>Höher/Tiefer</b> — errate, wohin sich die verdeckte Zahl versteckt;</li>
+      <li>🔐 <b>Cyber-Tresor</b> — finde den Code aus 4 Varianten: geknackt — Jackpot <b>+5 🪙</b>, daneben — Alarm und −1.</li>
+    </ul>
+    <p>⚡ Unbegrenzt aus dem Shop hebt die Limits sofort in <b>allen</b> Spielen auf.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧩 Neue Spiele, Fall des Tages und Quests</summary>
+  <div class="body">
+    <ul>
+      <li>➗ <b>Mathe</b> — 20 Sekunden pro Aufgabe, <span class="chip">30 Siege/Tag</span>; für je 10 richtige — ⚡ Strom;</li>
+      <li>🏳️ <b>Flaggen und Hauptstädte</b> — 20 Sekunden pro Antwort, <span class="chip">30 Siege/Tag</span>, Ressource — 💎 Kristalle;</li>
+      <li>💻 <b>Code knacken</b> — errate 4 verschiedene Ziffern in 10 Versuchen: <b>+5 🪙</b> und ⚙️ 2 Bauteile, <span class="chip">10 Siege/Tag</span>;</li>
+      <li>🃏 <b>Memory</b> — finde 6 Paare in höchstens 12 Zügen: <b>+3 🪙</b> und 💧 Wasserstoff, <span class="chip">15 Siege/Tag</span>.</li>
+    </ul>
+    <p>🕵️ <b>Fall des Tages</b> — ein Fall für alle pro Tag (UTC): 4 Verdächtige, die Hinweise werden einzeln aufgedeckt, beschuldigen kannst du nur einmal. Je weniger Hinweise du gebraucht hast, desto höher die Belohnung: 40 / 30 / 20 / 10 🪙, und jeder 7. Tag einer Serie gelöster Fälle bringt zusätzlich +50 🪙.</p>
+    <p>🗺 <b>Quests des Tages</b> — jeden Tag haben alle dieselben 10 Quests. Ohne Unbegrenzt zählen pro Tag 3 neue Durchgänge, abgeschlossene kannst du beliebig oft wiederholen. Für den ersten Durchgang gibt es 20–50 🪙 und 🪨 Stein; ⭐ Epen (20+ Minuten) sind nur mit ⚡ Unbegrenzt offen und bringen 100 🪙 und 🪨 5.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⚔️ Duelle: Spieler gegen Spieler</summary>
+  <div class="body">
+    <p>Ein SSP-Duell gegen einen <b>echten Spieler</b> um einen Einsatz. Drei Tische wie beim Poker — wähl nach deinem Geldbeutel:
+    <span class="chip">10 🪙</span> <span class="chip">100 🪙</span> <span class="chip">1000 🪙</span>.</p>
+    <h4>Regeln für den Pott</h4>
+    <ul>
+      <li>der Einsatz geht sofort beim Platznehmen in den Pott;</li>
+      <li>der Gewinner nimmt <b>80% des Potts</b> (Einsatz ×1.6), <b>20% verbrennen für immer</b> — Duelle treiben die Deflation an;</li>
+      <li>mit ⚡ Unbegrenzt ist die Gebühr des Gewinners nur halb so hoch — <b>10%</b> (Gewinn ×1.8);</li>
+      <li>Duelle gibt es nur um Münzen: Ressourcen werden in anderen Spielen geschürft;</li>
+      <li>Unentschieden — sofortige Wiederholung der Gesten, der Pott bleibt auf dem Tisch;</li>
+      <li>für eine Geste hast du <b>60 Sekunden</b>, wer schweigt, bekommt eine Geste vom Zufallsgenerator;</li>
+      <li>findet sich in 30 Minuten kein Gegner, kommt der Einsatz automatisch zurück;</li>
+      <li>⚔️ <b>Freund per Link herausfordern</b> — ein privater Tisch an der Warteschlange vorbei, der Link gilt 24 Stunden; ein Neuling, der darüber kommt, wird dein geworbener Freund.</li>
+    </ul>
+    <p>Siege in Duellen zählen für dein Team in Schlachten mit Duell-Kategorie — also trainier!</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Teams und Clans</summary>
+  <div class="body">
+    <p>Ein Team ist deine Crew mit bis zu <b>50 Kämpfern</b>. Die Gründung kostet <b>100 000 🪙</b>: Denk dir
+    Namen, Motto und Emblem aus. Du kannst auch mit einem <b>Trupp</b> starten: bis zu 5 Kämpfer für 7 500 🪙, später erweitert der Kapitän ihn für 92 500 🪙 zum Team (zusammen — derselbe Preis). Im Shop lässt sich das Team zum <b>Mega-Clan mit 1000 Plätzen</b> ausbauen. All das findest du im Tab „🏆 Team“.</p>
+    <h4>👥 Teammitglieder-Liste</h4>
+    <p>Im Tab „🏆 Team“ gibt es die komplette Aufstellung: jeder Kämpfer mit 🧠-Intelligenz-Level und anklickbarem
+    @username — schreibt euch, gründet eure eigenen Chats und bereitet euch auf Schlachten vor. Die Liste sehen
+    <b>nur Mitglieder dieses Teams</b> — keine Fremden.</p>
+    <h4>👑 Kapitänsamt</h4>
+    <p>Verlässt der Kapitän die Crew, geht die Krone an den treuesten Veteranen — den, der am frühesten
+    beigetreten ist. Ein Team ohne Kämpfer löst sich automatisch auf.</p>
+    <p>Warum beitreten? Team-Schlachten, gemeinsame Wertung, Preise für jeden Kämpfer der Gewinner-Teams — für Einzelgänger
+    gibt's das nicht.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏟️ Schlachten von Teams und Clans — die großen Events</summary>
+  <div class="body">
+    <p>Schlachten sind <b>keine tägliche Routine, sondern Events</b>, wie eine Weltmeisterschaft: Die Administration kündigt
+    eine Schlacht im Spiel an (Pass → „📣 Ereignisse“), und sie hat einen Namen, einen Zeitraum und eine Kategorie.</p>
+    <h4>So funktioniert's</h4>
+    <ul>
+      <li>die Kategorie bestimmt, was gemessen wird: am meisten farmen, die meisten Siege in Duellen oder im Quiz,
+      die meisten aktiven Neulinge werben und mehr;</li>
+      <li>gezählt wird das <b>GESAMTERGEBNIS aller Spieler des Teams</b> — jeder Kämpfer bringt den Sieg näher,
+      hol die aktivsten in deine Crew!</li>
+      <li>gewertet wird streng im Zeitfenster der Schlacht — nachträglich etwas aufzublähen ist unmöglich;</li>
+      <li>Punkte und Preise des Teams bekommen Kämpfer, die zum Ende der Schlacht <b>mindestens einen Tag</b> dabei sind: eine Minute
+      vor dem Finish zu den Spitzenreitern zu wechseln klappt nicht (dasselbe gilt für Team-Expeditionen und Minen-Erträge);</li>
+      <li>es gibt Schlachten von Teams, von Clans, von Teams und Clans gemeinsam — und <b>persönliche</b> Aktionen: zum Beispiel, wessen Reel
+      auf Instagram, YouTube Shorts oder TikTok am besten abgeht oder wer die meisten aktiven Freunde wirbt;</li>
+      <li>die Ankündigung steht im Pass („📣 Ereignisse“), laufende Schlachten und deinen Platz siehst du im Tab TOP → „🎯 Aktionen“;
+      wer eine Belohnung bekommt, erhält vom Bot eine Privatnachricht, was gutgeschrieben wurde.</li>
+    </ul>
+    <h4>⛏ Schlachten um Minen und 🔋 Anmeldung</h4>
+    <p>Der Veranstalter kann mehrere Minen auf einmal ausspielen: so viele Minen, so viele Preisplätze
+    (der 1. Platz bekommt die wertvollste). Um Minen kämpfen nur Teams und Clans mit <b>vollständiger Anmeldung in Batterien</b>:
+    Team — 5 🔋, Clan — 25 🔋. Einzahlen kann jeder Kämpfer im Tab „⛏ Minen“ — legt als ganzes Team zusammen!</p>
+    <h4>🎁 Preise</h4>
+    <p>Preise und die Zahl der Preisplätze legt die Administration für jede Schlacht fest. Preise gibt es nur im Spiel:
+    Münzen, Ressourcen, Gegenstände, Roboter und Boosts für unterschiedliche Dauer, Anzugteile und Artefakte. In Team-Schlachten bekommt <b>jeder Kämpfer</b> des Gewinner-Teams die Belohnung.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗺 Weltkarte: Solo-Expeditionen und Trupp-Expeditionen</summary>
+  <div class="body">
+    <p>Der Tab „🗺 Karte“ in der Spiel-App ist eine Weltkarte, auf der die Administration von Zeit zu Zeit
+    <b>Expeditionsziele</b> setzt (bis zu 10 gleichzeitig): solo, fürs Team und für den Clan. Jedes hat eine eigene Story, eigene Preise und eine eigene <b>Ergebnisstunde</b>;
+    die Ergebnisse können auch früher feststehen, wenn eine festgelegte Zahl von Spielern das Ziel erreicht.</p>
+    <h4>So läuft eine Expedition</h4>
+    <ul>
+      <li>du startest von deiner Seite der Karte und ziehst vor aller Augen langsam zum Ziel — der Marker bewegt sich mit der Zeit;</li>
+      <li>am Ziel siehst du, wie lange der Weg dauert und ob du <b>es rechtzeitig schaffst</b> bis zur Ergebnisstunde: Schaffst du es nicht, kannst du nicht starten, und wer wegen
+      Gabelungen zu spät kommt, nimmt an der Wertung nicht teil;</li>
+      <li>Ausrüstung: solo — 💧 10 Wasserstoff, Team — 🔋 5 Batterien, Mega-Clan — 🔋 25 und 🥩 10 Frikadellen. Kämpfer zahlen einzeln ein, mit vollständiger Ausrüstung bricht der Trupp auf, und wird bis zur Ergebnisstunde nicht genug gesammelt oder das Ziel abgesagt — kommt alles zurück;</li>
+      <li>der Weg dauert solo 10–30 Minuten, als Trupp länger; gleichzeitig gibt es eine Solo-Expedition pro Spieler und einen Trupp pro Team.</li>
+    </ul>
+    <h4>🔀 Gabelungen</h4>
+    <p>Unterwegs triffst du auf Gabelungen: ein Sturm, ein verlassenes Lager, ein fremder Trupp, eine Hängebrücke… Jede hat 2–3 Optionen mit eigenen Folgen: mehr Fracht, Verlustrisiko oder ein abgekürzter Weg. Die nächste Gabelung siehst du <b>sofort</b>, mit dem Timer „bis zur Gabelung“ — wähl im Voraus, und deine Wahl gilt, sobald du ankommst (bis dahin kannst du sie ändern). Nichts gewählt — nach der Ankunft an der Gabelung bleibt Zeit bis zur nächsten; wer schweigt, geht vorbei: keine Beute, keine Verluste, keine Verzögerung. Im Team-Trupp entscheidet eine Abstimmung: Stimmen alle ab, gilt sie sofort, sonst entscheidet die Mehrheit.</p>
+    <h4>🔎 Aufklärung von Gabelungen</h4>
+    <p>Die Folgen der Optionen kannst du vorher erfahren — mit dem Button „Gabelung aufklären“. Aufklärungen gibt es pro Expedition so viele, wie der Anführer des Trupps hat (solo — du, im Team — der Kapitän):
+    <b>🛰 Spionagedrohnen und 🔭 Aufklärungsstufen — der kleinere der beiden Werte</b>: 1 Spion und Aufklärung 1 — eine Gabelung, 5 und 5 — alle fünf.
+    <b>Die erste Expedition jeder Saison geht für alle blind.</b></p>
+    <h4>🏁 Ergebnisse</h4>
+    <p>In der Ergebnisstunde werden die Plätze unter allen Angekommenen nach <b>Fracht</b> vergeben. Wie viele Preisplätze es gibt und was es für jeden gibt, entscheidet
+    der Veranstalter; den übrigen Angekommenen kann er eine Belohnung „für die Teilnahme“ geben. Jeder, der eine Belohnung bekommt, erhält vom Bot eine Privatnachricht, was gutgeschrieben wurde.</p>
+    <h4>📦 Was ist Fracht</h4>
+    <p>Fracht ist die Punktzahl der Expedition. Alle starten mit 100, Gabelungen geben dazu (Beute) oder nehmen weg (Verluste) — nach der Fracht richten sich die Plätze.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤖 Kampfdrohnen</summary>
+  <div class="body">
+    <p>Drei Arten persönlicher Begleiter, ein exklusives Achievement: Eine zu bauen ist genauso schwer wie ein Shuttle,
+    oder du kaufst sie in der Werkstatt für 100 000 🪙 (die Münzen verbrennen). Die Anzahl ist unbegrenzt, die Wirkung
+    <b>addiert sich</b>, Drohnen verbrauchen sich nicht und belegen keinen Lagerplatz.</p>
+    <ul>
+      <li>🛡 <b>Schutzdrohne</b> — ein Angreifer erbeutet bei dir weniger; auf Expeditionen verlierst du weniger Fracht;</li>
+      <li>⚔️ <b>Angriffsdrohne</b> — deine Raids bringen mehr; auf Expeditionen mehr Beute an Kraft-Gabelungen;</li>
+      <li>🛰 <b>Spionagedrohne</b> — mehr Ziele in der Raid-Aufklärung; auf Expeditionen ein kürzerer Weg, und zusammen mit 🔭 Aufklärung —
+      Aufklärung von Gabelungen.</li>
+    </ul>
+    <p>Die genauen Prozente stehen auf der Karte der Drohne in der Werkstatt.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧍 Charakter: Anzüge und Artefakte</summary>
+  <div class="body">
+    <p>Der Tab „🧍 Charakter“ direkt nach dem Pass: Avatar, 5 Slots (Helm, Jacke, Handschuhe, Hose, Stiefel) und Tasche. Einen Bonus gibt nur das <b>komplette Set eines Anzugs</b>: ⚡ Elektriker — Strom fällt bei Siegen öfter, ⛏ Bergmann — einmal am Tag ein Prozentsatz auf den Farm-Ertrag, 🪖 Soldat — mehr Trophäen und Beute, schnellere Expeditionen, 🥷 Tarnung — Chance, nicht in der Aufklärung von Angreifern aufzutauchen, 🔬 Wissenschaftler — kürzere Pause zwischen Technologie-Stufen, 🔧 Ingenieur — günstigere Werkstatt-Rezepte.</p>
+    <p>Jedes Teil hat drei Stufen: Basis, Verbessert und Legendär. Zum Aufwerten brauchst du Ressourcen, Münzen und die Erfahrung des Teils — Ereignisse, die es angelegt miterlebt hat; für Legendär zusätzlich eine Technologie aus dem Labor. Der Bonus wird im Moment der Aktion festgeschrieben: Ziehst du den Anzug aus, bleibt bereits Erhaltenes bestehen. Teile gibt es bei Events (gratis — bis zu 5 pro Saison), Basis-Teile werden am Markt im Tab verkauft.</p>
+    <p>💠 <b>Artefakte</b> — drei Fenster am Gürtel unter dem Avatar: Herz des Gewitters, Stein des Überflusses, Purpurner Sonnenuntergang, Schatten des Geistes, Kugel der Erleuchtung und Mechanischer Krieger. Jedes stärkt seine eigene Bonuslinie und wirkt zusammen mit dem Anzug. Gratis gibt es eins pro Saison, die übrigen — am Markt.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔨 Auktionen und VIP ID</summary>
+  <div class="body">
+    <p>Von Zeit zu Zeit bringt die Administration <b>einzigartige Lose</b> unter den Hammer — zum Beispiel
+    legendäre <b>VIP IDs</b>: <span class="chip">ROFL-HUB-777</span>.</p>
+    <h4>Faire Gebote mit Rückerstattung</h4>
+    <p>Dein Gebot wird sofort abgebucht, aber wenn dich jemand überbietet, <b>kommt die ganze Summe sofort zurück</b>.
+    Zahlen muss nur der Gewinner, wenn das Los schließt.</p>
+    <h4>💎 Was eine VIP ID bringt</h4>
+    <p>Das ist deine persönliche Kennung im Ökosystem: Sie glänzt im Profil, ist im TOP-100 zu sehen, und mit ihr
+    funktionieren Überweisungen — Freunde können Münzen direkt an <b>ROFL-HUB-777</b> schicken statt an langweilige Ziffern.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📈 Börse: Frikadellen und Ressourcen zwischen Spielern</summary>
+  <div class="body">
+    <p>An der Börse handeln Spieler für Münzen mit Frikadellen, allen Ressourcen und sogar ☢️ Kern.
+    Je mehr Geschäfte, desto mehr Münzen verbrennen als Gebühr — das hält den Wert der Münze.
+    Die vollständige Börse ist der Tab „📈 Börse“ in der Spiel-App: Preisindex, Chart über 7 Tage, wer verkauft,
+    wer kauft, deine Orders und der Ressourcentausch.</p>
+    <ul>
+      <li><b>Verkauf</b>: die Ware geht in eine Order und wartet auf einen Käufer, zurückziehen kannst du sie jederzeit;</li>
+      <li><b>Kaufauftrag</b>: „kaufe 10 Frikadellen zu je 250“ — die Münzen werden bis zum Geschäft eingefroren, ziehst du den Auftrag zurück, kommen sie wieder;</li>
+      <li><b>eine Frikadelle nicht unter 200 🪙</b>: Treibstoff aus dem Shop für Stars ist immer günstiger als an der Börse, dort kaufen ihn die, die keine Zeit haben;</li>
+      <li><b>Mindestpreise für 1 Stück</b> (im Verkauf und im Kaufauftrag): ⚙️ Bauteile und 💎 Kristalle — 10 🪙, ⛏ Metall
+      und 💧 Wasserstoff — 20, 🪨 Stein — 30, ⚡ Strom — 50, 🪵 Holz — 70, 🔥 Feuer — 170, 🔋 Batterien — 300,
+      🐄 Kuh — 1 000, ☢️ Kern — 5 000 🪙;</li>
+      <li>bis zu 100 Frikadellen oder 1000 Ressourcen pro Order; wie viele Orders du gleichzeitig halten kannst, bestimmen Pferde und Karren: standardmäßig 2 (mehr dazu im Abschnitt „Stall“);</li>
+      <li><b>die Gebühr von 10% zahlt der Verkäufer</b>, und sie verbrennt für immer — das schützt die Münzen vor Inflation;</li>
+      <li><b>Ressourcentausch</b>: „gebe 60 Metall für 25 Wasserstoff“ — ohne Münzen und ohne Gebühr; nach Mindestpreisen
+      dürfen sich die Seiten höchstens um das 3-Fache unterscheiden;</li>
+      <li>solange dein Account neu ist (bis Intelligenz-Level 3 und 3 täglichen Frikadellen), kannst du höchstens zum Dreifachen des Mindestpreises
+      kaufen — so pumpen Fake-Accounts keine Münzen hin und her; ein eigenes Angebot mit Ressourcen kannst du zurückziehen, wenn es ins Lager passt.</li>
+    </ul>
+    <p>Frikadellen aus dem Kühlschrank kommen nicht an die Börse — nur aus dem Lager.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🧰 Ressourcen und Werkstatt: in jedem Spiel schürfst du etwas anderes</summary>
+  <div class="body">
+    <p>Jeder Sieg bringt nicht nur Münzen, sondern auch die Ressource seines Spiels:</p>
+    <ul>
+      <li>⛏ <b>Metall</b> — SSP;</li>
+      <li>💧 <b>Wasserstoff</b> — Höher/Tiefer;</li>
+      <li>💎 <b>Kristalle</b> — Quiz;</li>
+      <li>⚙️ <b>Bauteile</b> — Cyber-Tresor (je 3 pro Knacken — er öffnet sich seltener);</li>
+      <li>🗺 der erste Durchgang eines Quests — 20–50 🪙 und 🪨 1–2 Steine, eines Epos — 100 🪙 und 🪨 5.</li>
+    </ul>
+    <p><b>Neue Rohstoffe</b> — für Bauten, Logistik und das Labor:</p>
+    <ul>
+      <li>🪨 <b>Stein</b> — Quests, Serien richtiger Antworten im Quiz, Minen, Truhe;</li>
+      <li>🪵 <b>Holz</b> — Minen, Truhe;</li>
+      <li>🔥 <b>Feuer</b> — Lagerfeuer in der Werkstatt: Holz + Stein. Ohne Feuer gibt es weder Werkzeuge noch Batterien;</li>
+      <li>⚡ <b>Strom</b> — 25% Chance bei jedem Sieg in einem Solo-Spiel (im Elektriker-Anzug — 50–70%), alle 10 richtigen Antworten in Mathe, Truhe;</li>
+      <li>🔋 <b>Batterien</b> — Werkstatt (Strom + Metall + Feuer). Eine wertvolle Ressource: Ladung fürs Shuttle und Team-Anmeldung zur Schlacht um Minen;</li>
+      <li>🐄 <b>Kühe</b> — Truhe an jedem 7. Tag der Serie, Börse. Aus einer Kuh werden in der Werkstatt 3 Frikadellen;</li>
+      <li>☢️ <b>Kern</b> — das Seltenste: nur Preise des Veranstalters für Schlachten, Expeditionen und Events. Wird an der Börse
+      ab 5 000 🪙 verkauft (Ressource gegen Ressource lässt er sich nicht tauschen).</li>
+    </ul>
+    <p>Im Shop für Stars gibt es keine Ressourcen — nur durch Schürfen. Untereinander handeln Spieler sie an der Börse
+    (für Münzen, die Gebühr von 10% verbrennt) und tauschen Ressource gegen Ressource. Eingesetzt werden sie
+    in der <b>Werkstatt</b> — Tab „🔧 Werkstatt“ in der Spiel-App:</p>
+    <ul>
+      <li>❄️ Stickstoff-Kühlung für 6 Std., 🔋 Nuklear-Boost für 3 Std., 🛸 Master-Drohne für einen Tag —
+      dieselben Boosts wie im Shop, nur kurz und für Ressourcen;</li>
+      <li>🛡 <b>Raid-Schild</b> für einen Tag;</li>
+      <li>🥩 <b>Cyber-Frikadellen aus einer Kuh</b> — 🐄 Kuh und 🔥 2 Feuer → 3 Frikadellen ins Lager
+      (eine Kuh kostet an der Börse ab 1 000 🪙, man kauft sie, wenn man dringend Treibstoff für den Nuklear-Boost braucht);</li>
+      <li>🔥 <b>Lagerfeuer</b>, 🔋 <b>Batterien</b>, 🛒 <b>Karren</b> (braucht ein Pferd), 💊 <b>Erste-Hilfe-Set</b> für 72 Stunden;</li>
+      <li>🛡 <b>Cyber-Panzerung</b> — +10% auf den Farm-Ertrag pro Stufe, bis zu 3 Stufen (+30%), jeder Bau wirkt 30 Tage;</li>
+      <li>🚀 <b>Shuttle</b> — 1000 jeder Ressource + 1000 🪙, für immer und nur deins: Gebühr 5% statt 10%
+      auf deine Verkäufe, bis zu 500 Frikadellen pro Order und bis zu 16 offene Orders. Das Shuttle fliegt mit Batterie:
+      eine 🔋 — 30 Tage Vorteile (aufgeladen wird im Tab „📦 Lager“).</li>
+    </ul>
+    <p>Deine Vorräte siehst du im Profil, in der Werkstatt und im Pass der Mini App. Mit Unbegrenzt für Spiele werden Ressourcen
+    ohne Tageslimit geschürft — für jeden Sieg.</p>
+    <p><b>📦 Lager mit Limit.</b> Ins Lager passen 500 von jeder Ressource — was darüber hinaus geschürft wird, geht verloren,
+    also lohnt es sich, Ressourcen auszugeben oder an der Börse zu verkaufen. Das Lager wird in der Werkstatt dauerhaft erweitert:
+    1000 → 2000 → 3000 → 4000 → 5000 jeder Ressource; jede Erweiterung ist 20% teurer als die vorige und braucht
+    eine Ressourcenart mehr. Fertige Gegenstände fasst das Lager <b>insgesamt 10% der Kapazität</b>: 500 → 50 Gegenstände
+    aller Arten zusammen, 5000 → 500. Frikadellen und Münzen sind vom Lagerlimit nicht betroffen.</p>
+    <p><b>🔥 Rezepte der Woche.</b> Von Zeit zu Zeit tauchen in der Werkstatt befristete Rezepte auf: ein Schild für eine Woche,
+    eine Frikadelle für 100 Metall, das Umschmelzen einer Ressource in eine andere, Kombi-Sets. Jedes hat ein Bau-Limit
+    pro Woche, und die Rezepte verschwinden so plötzlich, wie sie gekommen sind. Behalte den Tab „🔧 Werkstatt“ im Auge.</p>
+    <p><b>📦 Gegenstände warten im Lager.</b> Stunden für Stickstoff, Nuklear-Boost, Master-Drohne, Schilde und Unbegrenzt-Proben,
+    die du in der App baust, starten nicht sofort, sondern landen im Tab „📦 Lager“. Schalte sie per Button ein, wenn es
+    passt: das Schild — vor dem Schlafen, Stickstoff — vor einer langen Abwesenheit. Dort findest du auch Ressourcenvorräte, Frikadellen, das Shuttle,
+    die Cyber-Panzerung und die Lagererweiterung. Panzerung, Lager und Shuttle wirken sofort nach dem Bau.</p>
+    <p><b>🧪 Neue Gegenstände:</b></p>
+    <ul>
+      <li>🎭 <b>Tarnung</b> (12 Std.) — in der Raid-Aufklärung bist du unsichtbar, kannst aber selbst angreifen;</li>
+      <li>🪤 <b>Köder</b> (ein Tag) — ein Angreifer, der bei dir scheitert, gibt doppelt so viel ab;</li>
+      <li>🎯 <b>Haltungs-Trainer</b> (ein Tag) — endet ein Raid auf dich unentschieden, zählt das als Scheitern des Angreifers;</li>
+      <li>🔥 <b>Schiffs-Nachbrenner</b> — setzt die Raid-Abklingzeit sofort zurück (höchstens einmal am Tag);</li>
+      <li>⛽ <b>Sparmodul</b> — der nächste Start ohne Wasserstoff;</li>
+      <li>📦 <b>Erweiterter Laderaum</b> — Beute des nächsten Raids ×1,5;</li>
+      <li>🧊 <b>Frikadellen-Thermos</b> (ein Tag, einmal pro Woche) — Bohrer essen Frikadellen 25% langsamer;</li>
+      <li>📜 <b>Börsenstempel</b> (einmal pro Woche) — der nächste Verkauf an der Börse ohne Gebühr;</li>
+      <li>🏳️ <b>Team-Banner</b> (ein Tag) — +5% Ertrag für dein ganzes Team;</li>
+      <li>🛡 <b>Team-Kuppel</b> (12 Std.) — Raid-Schild für das ganze Team.</li>
+    </ul>
+    <p>Team-Gegenstände sind teuer und aufwendig (sie brauchen Feuer, Batterien und ☢️ Kern), bauen kann sie nur ein Spieler im Team — die Teammitglieder legen Ressourcen zusammen.
+    Ein Mega-Clan schützt bis zu 1000 Kämpfer und zahlt deshalb für Banner und Kuppel <b>5-mal mehr</b> als ein Team.
+    Aufwendige Bauten brauchen ein Werkzeugset aus dem Labor.</p>
+    <p>Einmal-Gegenstände (Sparmodul, Laderaum, Stempel) werden im Lager „aufgeladen“ und greifen bei der nächsten
+    passenden Aktion. Neulingen werden die Werkstatt-Rezepte <b>eins pro Tag</b> freigeschaltet — von den einfachsten
+    und nützlichsten bis zu den legendären; gesperrte sind grau mit der Zeit bis zur Freischaltung.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏴‍☠️ Raids: Entscheidung gegen Entscheidung</summary>
+  <div class="body">
+    <p>Der Tab „🏴‍☠️ Raids“ in der Spiel-App. Für Raids brauchst du die Labor-Technologien 📡 Funk, 🔭 Aufklärung
+    und ⚔️ Angriff auf Stufe 1. Die Aufklärung ist kostenlos und zeigt 2 + Aufklärungsstufe Ziele; Treibstoff für einen Raid — 5 💧 Wasserstoff pro Start.
+    Du wählst eine Geste (Stein, Schere, Papier), und das Ziel hat vorab eine <b>Abwehrhaltung</b> eingestellt —
+    über den Ausgang entscheidet SSP: deine Geste gegen ihre Haltung. Sieg: Du nimmst 20% jeder Ressource des Ziels
+    (höchstens 30 pro Ressource). Scheitern: Du gibst dem Ziel 10% deiner eigenen ab (höchstens 15). Unentschieden — der Treibstoff ist verbrannt.</p>
+    <ul>
+      <li>geraubt werden <b>nur Ressourcen</b>: Münzen, Roboter, Frikadellen und Orders an der Börse sind tabu;</li>
+      <li>Neulinge sind die ersten 3 Tage geschützt, Teammitglieder darfst du nicht überfallen, dasselbe Ziel — höchstens einmal in 12 Std.;</li>
+      <li>ein Start alle 3 Stunden; das Opfer bekommt eine Nachricht und hat 24 Stunden lang eine <b>kostenlose Revanche</b>
+      (eine Revanche auf die Revanche gibt es nicht — sonst würden zwei Spieler endlos Ressourcen hin und her schieben);</li>
+      <li>🛡 ein Schild aus der Werkstatt schützt dich vor Raids: bauen, im Lager einschalten, und die Schild-Anzeige im Raids-Tab
+      zeigt den Timer bis zum Ende des Schutzes;</li>
+      <li>deine Haltung änderst du im Raid-Menü — wer berechenbar ist, wird öfter überfallen;</li>
+      <li>⚔️ jede Angriffsstufe nach der ersten — +8% Trophäe, 🛡 jede Verteidigungsstufe des Ziels — −8%,
+      📚 Wissenschaft — +1% pro Stufe; 📡 Funk verkürzt die Abklingzeit um 20 Minuten pro Stufe;</li>
+      <li>💊 ohne Erste-Hilfe-Set „verschwinden im Lazarett“ 15% der Raid-Trophäe (das Ziel verliert sie trotzdem komplett).</li>
+    </ul>
+    <p>Ziele werden mit Namen angezeigt, ohne @username und ID — Raids bleiben ein Spiel und kein Anlass für Mobbing.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎯 Tagesziele und Truhe</summary>
+  <div class="body">
+    <p>Die Karte „🎯 Ziele“ im Pass der Spiel-App: Jeden Tag hast du drei Ziele — aus Spielen, Duellen, Farm, Werkstatt,
+    Raids, Börse und Team-Station. Alle drei erledigt — hol dir die <b>Truhe</b>: +50 🪙 und +10 einer zufälligen
+    Ressource, dazu ein besonderer Tagesbonus: 🪵 Holz, 🪨 Stein oder ⚡ Strom. Die Tage summieren sich zu einer Serie: An jedem 7. Tag in Folge gibt es in der Truhe zusätzlich +200 🪙 und 🐄 eine Kuh.
+    Die Ziele erneuern sich um 00:00 UTC.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🔬 Labor: Werkzeuge und Technologien</summary>
+  <div class="body">
+    <p>Der Tab „🔬 Labor“ in der Spiel-App. <b>Werkzeugsets</b> — 4 Stufen: ⚒️ grobes Werkzeug,
+    🛠 Feinjustierung, 🔬 Kalibrierung, 🧬 Nanotechnologie. Ein Set verbraucht sich nicht, sondern schaltet aufwendige Bauten
+    in der Werkstatt und die nächsten Technologie-Stufen frei.</p>
+    <ul>
+      <li>📡 <b>Funk</b> — nötig für Raids und das Schürfen in Minen, danach verkürzt er die Raid-Abklingzeit um 20 Minuten pro Stufe;</li>
+      <li>🔭 <b>Aufklärung</b> — +1 Ziel in der Aufklärung pro Stufe;</li>
+      <li>⚔️ <b>Angriff</b> — ohne ihn keine Raids; danach +8% Trophäe pro Stufe;</li>
+      <li>🛡 <b>Verteidigung</b> — ein Angreifer erbeutet bei dir 8% weniger pro Stufe;</li>
+      <li>📚 <b>Wissenschaft</b> — +1% auf Farm-Ertrag und Trophäen pro Stufe; braucht ☢️ Kern.</li>
+    </ul>
+    <p>Jede Technologie hat 5 Stufen. <b>Stufe 1</b> von Funk, Aufklärung, Angriff und Verteidigung kannst du
+    ab dem ersten Tag erforschen — wenn du das nötige Werkzeugset und die Ressourcen hast. Jede weitere Stufe derselben Technologie —
+    <b>30 Tage</b> nach der vorigen (im Wissenschaftler-Anzug 20–40% schneller): Jede Verbesserung ist begehrt und wertvoll. Erforschtes wird nicht zurückgesetzt.</p>
+    <p><b>Wissenschaft</b> wächst mit den anderen mit: Ihre Stufe 1 öffnet sich, wenn alle vier Technologien
+    auf Stufe 1 sind, Stufe 2 — wenn alle auf Stufe 2 sind, und so weiter.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🐎 Stall, Karren und Börsen-Angebote</summary>
+  <div class="body">
+    <p>Wie viele Orders du gleichzeitig an der Börse halten kannst, entscheidet die Logistik: standardmäßig 2 Angebote,
+    jedes 🐎 Pferd — +1, jeder 🛒 Karren — noch +1 (nicht mehr Karren als Pferde; jeweils maximal 5).
+    Pferde verkauft das Spiel selbst für Münzen (1500 / 3000 / 6000 / 10 000 / 15 000 🪙 — die Münzen verbrennen),
+    Karren werden in der Werkstatt gebaut. Ein aufgeladenes Shuttle
+    hat sein eigenes Limit — 16 Angebote. Der Stall ist im Tab „📦 Lager“.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🏆 Saisons: TOP des Monats</summary>
+  <div class="body">
+    <p>Eine Saison ist ein Kalendermonat (12 Saisons im Jahr). Münzen, Roboter, Lager und Käufe werden <b>nicht zurückgesetzt</b> —
+    auf null gehen nur die Tabellen: das TOP der Spieler nach Münzen, die im Monat <b>im Spiel verdient</b> wurden (Überweisungen und Geschenke
+    zählen nicht), die Team-Rangliste nach Plätzen in den Schlachten der Saison und die Freundes-Rangliste im Tab „🤝 Freunde“.
+    Alte Hasen und Neulinge starten am 1. gleichauf.</p>
+    <p>Die TOP 10 bekommen ein <b>Saisonabzeichen</b> für immer in den Pass — eine Medaille für den Platz und den Monat der Saison, zum Beispiel „🥈 2026-11“ (Plätze 4–10 — 🏅).
+    Preise für die Gewinner legt der Veranstalter fest — der Bot schreibt dir per Privatnachricht, was gutgeschrieben wurde.</p>
+    <p>Der Umschalter „🏆 Saison | 🎯 Aktionen | 💰 Reichste“ ist im Tab TOP.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛰 Team-Station: ein gemeinsames Projekt</summary>
+  <div class="body">
+    <p>Der Tab „🏆 Team“ in der Spiel-App. Die Station baut das ganze Team: Jedes Mitglied
+    steckt Ressourcen hinein, eine Stufe ist abgeschlossen, wenn je 300 × Stufe von jeder Ressource eingezahlt sind (insgesamt 5 Stufen).
+    Jede Stufe gibt <b>allen Kämpfern des Teams +2% Farm-Ertrag</b> (bis zu +10%). Wer das Team verlässt, verliert den Bonus.
+    Der Feed der letzten Beiträge zeigt, wer die gemeinsame Sache voranbringt.</p>
+  </div>
+</details>
+
+<details>
+  <summary>⛏ Minen: Karte und Schlachten um Ressourcen</summary>
+  <div class="body">
+    <p>Der Tab „⛏ Minen“ in der Spiel-App — eine Karte mit 30 Minen: Metall, Wasserstoff, Kristalle, Bauteile, Stein
+    und Holz — je 5 von jeder Sorte. Minen gibt es nur für Teams und Clans. In einer Schlacht um Minen belegen die Teams mit dem besten Gesamtergebnis aller Kämpfer
+    in der Kategorie der Schlacht die Plätze; gewertet werden nur die, die eine vollständige Anmeldung in Batterien eingereicht haben. Solange keine Schlacht läuft, ist kein Ausflug zur Mine möglich — die Karte zeigt nur, wem was gehört.</p>
+    <ul>
+      <li>der Gewinner hält die Mine <b>24 Stunden</b> — alle Teams kommen zum Zug;</li>
+      <li><b>jeder Kämpfer</b> des Teams bekommt <b>1 Ressource der Mine pro Stunde</b> (im Rahmen seines Lagers) —
+      bis zu 24 Einheiten pro Durchgang; ein Team aus 50 Kämpfern holt 1200 raus;</li>
+      <li>Plätze und Belohnungen dafür legt der Veranstalter fest, den übrigen Teilnehmern kann er eine Belohnung „für die Teilnahme“ geben;</li>
+      <li>danach ist die Mine frei, aber erobern lässt sie sich erst wieder in einer neuen Schlacht;</li>
+      <li>die Ausbeute geht an Kämpfer mit 📡 Funk auf Stufe 1; ohne 💊 Erste-Hilfe-Set ist jede 7. Stunde „krank“, ohne Ausbeute;</li>
+      <li>im Tab siehst du, wie viel schon geschürft ist und wie lange die Mine noch gehalten wird.</li>
+    </ul>
+    <p>Mehr Kämpfer im Team — mehr Ausbeute. Hol deine Freunde und rüttle deine Teammitglieder während der Schlacht wach!</p>
+  </div>
+</details>
+
+<details>
+  <summary>🤝 Team-Börse und Teamhilfe</summary>
+  <div class="body">
+    <p><b>Team-Börse.</b> Wechsle im Tab „📈 Börse“ auf „Team-Börse“: Diese Orders und Tauschangebote sehen
+    und schließen nur deine Teammitglieder, und die Gebühr ist niedriger als an der allgemeinen Börse — <b>5% statt 10%</b>, beim <b>Mega-Clan nur 2%</b>.
+    Der Mindestpreis für Frikadellen (200 🪙) gilt auch hier. Verlässt du das Team, werden deine Team-Angebote zurückgezogen,
+    Ware und Münzen kommen zurück.</p>
+    <p><b>Teamhilfe.</b> Im Tab „🏆 Team“ bittest du um eine Ressource (eine offene Bitte, bis zu 200 Einheiten),
+    und die Teammitglieder schenken sie dir. Schenken können Spieler ab <b>Intelligenz-Level 3</b> und nach <b>3 täglichen Frikadellen</b>,
+    höchstens 100 Ressourcen pro Tag und nicht mehr, als ins Lager der bittenden Person passt. Frikadellen werden nicht verschenkt —
+    sie sind Treibstoff aus dem Shop.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🎖 Ränge für die Zeit im Ökosystem</summary>
+  <div class="body">
+    <p>Je länger du bei ROFL HUB bist, desto cooler der Rang rechts neben deinem Namen — im Profil, in der Liste
+    der Teammitglieder und im TOP-100 der Mini App. Die Ränge gehen vom niedrigsten zum coolsten:</p>
+    <ul>
+      <li>🎖 <b>Neuling</b> — 1 Tag im Ökosystem;</li>
+      <li>🎖 <b>Kämpfer</b> — eine Woche;</li>
+      <li>🎖 <b>Legende</b> — ein Monat;</li>
+      <li>🎖 <b>ROFL</b> — 3 Monate;</li>
+      <li>🎖 <b>LMAO</b> — ein halbes Jahr;</li>
+      <li>🎖 <b>KING</b> — ein Jahr und mehr. Die höchste Kaste.</li>
+    </ul>
+    <p>Einen Rang kann man nicht kaufen — nur erdienen.</p>
+  </div>
+</details>
+
+<details>
+  <summary>✨ Skins und Saisonpass</summary>
+  <div class="body">
+    <p><b>Skins</b> — Anzug, Rahmen, Titel, Kartenmarker und Tasche. Stärke geben sie nicht, nur Aussehen und Status, und alle sehen sie: im Pass, im TOP, im Team und auf der Karte. Skins werden für ★ im Shop verkauft (Bereich „✨ Skins“), jedes Exemplar hat seine eigene Auflagennummer. Du kannst sie am Markt für Münzen weiterverkaufen (die Gebühr verbrennt) und aufwerten: XP sammelt sich, solange der Skin angelegt ist, und das Verschmelzen mit einem anderen Skin bringt ihn Stufe für Stufe vom „Werkszustand“ bis „Unsterblich“. Zufällige bezahlte Kisten gibt es nicht.</p>
+    <p>🎟 <b>Saisonpass</b> — 30 Level, XP für Siege, Duelle, Raids, Expeditionen, Gegenstände, Quests und die Truhe. Die kostenlose Spur gibt Münzen und Batterien, Premium für 299 ★ — mehr Münzen, Frikadellen und 4 exklusive Skins des Monats, die es nirgendwo sonst gibt. XP für Siege in Spielen — bis zu 150 pro Tag, mit Unbegrenzt für 30 Tage — bis zu 300.</p>
+  </div>
+</details>
+
+<details>
+  <summary>💸 Münz-Überweisungen und Empfehlungsprogramm</summary>
+  <div class="body">
+    <h4>🔄 Überweisungen</h4>
+    <p>Schick Münzen an jeden Spieler: per Pass-ID (sie steht im Profil), per @username oder per VIP ID.
+    Die Überweisung wird per Button bestätigt, der Empfänger bekommt eine Benachrichtigung. Minimum — 10 🪙.
+    Münzen verschicken kannst du ab <b>Intelligenz-Level 3</b> und nach <b>3 täglichen Frikadellen</b> — so können Fake-Accounts
+    ihre Startmünzen nicht abziehen, und ehrliche Spieler verlieren nichts.</p>
+    <h4>🤝 Empfehlungsprogramm</h4>
+    <p>Jeder Spieler hat einen persönlichen Link (Einladungsbefehl im Menü). Die Belohnung gibt es
+    <b>einmal</b> für jeden <b>aktiven</b> Freund: <b>+500 🪙</b>, <b>🥩 eine Cyber-Frikadelle</b> ins Lager und
+    <b>je 10</b> ⛏ Metall, 💧 Wasserstoff, 💎 Kristalle und ⚙️ Bauteile (Ressourcen — im Rahmen des freien Lagerplatzes). Aktiv wird ein Freund, wenn er oder sie:</p>
+    <ul>
+      <li>🧠 im Quiz <b>Intelligenz-Level 3</b> erreicht hat;</li>
+      <li>🎁 auf der Farm <b>3 tägliche Frikadellen</b> abgeholt hat (einmal am Tag — also mindestens ein paar Tage im Spiel).</li>
+    </ul>
+    <p>Sobald beide Bedingungen erfüllt sind, prüft der Bot selbst, über wessen Link der Spieler gekommen ist, und schreibt
+    den Bonus der einladenden Person gut — du bekommst eine Benachrichtigung. Für eine bloße Registrierung ohne Spielen gibt es keinen Bonus: So
+    ist das Ökosystem vor Fake-Accounts geschützt, und deine Münzen verlieren nicht an Wert.</p>
+    <p><b>🧥 Aufgabe „10 aktive Freunde“.</b> Wenn 10 von dir eingeladene Freunde aktiv geworden sind, öffnet sich im Tab
+    „🤝 Freunde“ eine Auswahl: ein kompletter Anzug von einer der sechs Arten — alle 5 Teile auf einmal. Die Belohnung gibt es einmal pro Account.</p>
+    <p>Link, „Teilen“-Button, Statistik und die Rangliste „wer hat die meisten Freunde“ — im Tab
+    „🤝 Freunde“ der Spiel-App und im Einladungsmenü im Chat.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🛒 Shop und Telegram Stars</summary>
+  <div class="body">
+    <p>Alle Käufe laufen über <b>offizielle Telegram Stars</b> — das Zahlungssystem von Telegram selbst.
+    Keine Karten und keine fremden Websites.</p>
+    <ul>
+      <li>die Lieferung ist <b>sofort</b>: Roboter, Frikadellen, Boosts und Unbegrenzt landen direkt nach der Zahlung auf deinem Account;</li>
+      <li>jeder Kauf bekommt einen Beleg mit Zahlungsnummer;</li>
+      <li>wenn die Zahlung durchging, aber die Lieferung fehlschlug — <b>kommen die Stars automatisch zurück</b>;</li>
+      <li>Fragen zu Zahlungen — über den Befehl für den Zahlungssupport im Bot-Menü.</li>
+    </ul>
+    <p class="warn">⚠️ Der einzige offizielle Bot ist @RoflHubGame_Bot. Vorsicht vor Klonen!</p>
+  </div>
+</details>
+
+<details id="shop-items">
+  <summary>🛍 Was jeder Artikel im Shop bringt</summary>
+  <div class="body">
+    <h4>🚜 Für die Farm</h4>
+    <ul>
+      <li><b>🤖 Miner-Bot</b> (49 ★, 30 Tage) — schürft 5 🪙 pro Stunde ohne Treibstoff: etwa 3 600 🪙 im Monat.
+        Für alle, die sich nicht ums Tanken kümmern wollen.</li>
+      <li><b>⚡ Cyber-Bohrer</b> (99 ★, 30 Tage) — 10 🪙 pro Stunde, doppelt so stark wie der Miner-Bot, frisst aber
+        1 Cyber-Frikadelle pro Tag. Mit Boosts — bis zu 70 🪙 pro Stunde. Für alle, die das Maximum wollen.</li>
+      <li><b>🥩 Frikadellen-Pakete</b> (10, 50 und 100 Stk.) — Treibstoff für Bohrer: 1 Frikadelle = ein Tag Arbeit
+        eines Roboters. Je größer das Paket, desto günstiger die Frikadelle. Übrige kannst du an der Börse verkaufen.</li>
+      <li><b>📦 Kühlschrank</b> (für 10, 50 und 100 Frikadellen) — der Tank, aus dem sich die Bohrer selbst
+        betanken. Frikadellen aus dem Lager kommen in den Kühlschrank, und danach läuft die Farm ohne dich.
+        Ein kleiner Kühlschrank — jeden Tag reinschauen; mit 100 Frikadellen arbeiten 10 Bohrer
+        10 Tage am Stück, während du mit deinen eigenen Sachen beschäftigt bist.</li>
+      <li><b>🔋 Nuklear-Boost x5</b> (199 ★, 30 Tage) — Ertrag aller Roboter ×5, aber die Bohrer essen
+        3-mal so viele Frikadellen. Der schnellste Weg zu großen Summen.</li>
+      <li><b>❄️ Stickstoff-Kühlung +40%</b> (299 ★, 30 Tage) — +40% Ertrag für alle Roboter ohne zusätzlichen
+        Treibstoff. Stapelt sich mit dem Nuklear-Boost.</li>
+      <li><b>🛸 Master-Drohne</b> (999 ★, 1 Jahr) — solange die Drohne aktiv ist, altern die Roboter nicht: Ihre 30-Tage-Lizenz
+        friert ein. Gekaufte Roboter halten länger.</li>
+      <li><b>♾ Ewiger Miner-Bot</b> (999 ★) — verwandelt deinen kostenlosen Praktikanten-Bot in einen ewigen
+        Miner-Bot: 5 🪙 pro Stunde für immer. Du brauchst 3 aktive Freunde.</li>
+    </ul>
+    <h4>🕹️ Gaming</h4>
+    <ul>
+      <li><b>⚡ Unbegrenzt 24 Std.</b> (15 ★) und <b>🚀 Unbegrenzt 30 Tage</b> (249 ★) — heben das tägliche Sieglimit
+        auf: Spiel, so viel du willst, und jeder Sieg bringt Münzen und die Ressource des Spiels ohne Grenzen.
+        Intelligenz-Level im Quiz wachsen schneller.</li>
+      <li><b>💰 Münzpakete</b> (5 000 – 100 000 🪙) — Münzen sofort aufs Konto: Duell-Tische mit hohen
+        Einsätzen, Käufe an der Börse (Frikadellen und Ressourcen), ein eigenes Team gründen (100 000 🪙), das
+        Shuttle in der Werkstatt bauen. Je größer das Paket, desto besser der Kurs.</li>
+      <li><b>🏆 Mega-Clan</b> (2499 ★) — erweitert dein Team von 50 auf 1000 Plätze: mehr Kämpfer in Schlachten
+        und eine schneller wachsende Team-Station.</li>
+    </ul>
+    <p>Alle Käufe werden sofort geliefert, und schlägt die Lieferung fehl, kommen die Stars automatisch zurück.</p>
+  </div>
+</details>
+
+<details>
+  <summary>🗑 Account löschen</summary>
+  <div class="body">
+    <p>Der Button „🗑 Account löschen“ ist im Profil. Aus Versehen drückst du ihn nicht: Zuerst kommt eine Warnung,
+    was verloren geht, und erst nach 10 Sekunden reagiert der Bestätigungs-Button.</p>
+    <ul>
+      <li>⏳ Der Account wird <b>7 Tage eingefroren</b>: Im Spiel sieht dich niemand, aber mit einem Tipp auf
+        „↩️ Löschung abbrechen“ ist alles wieder wie vorher;</li>
+      <li>🗑 nach 7 Tagen werden Münzen, Roboter, Frikadellen, Ressourcen, VIP ID und Fortschritt für immer gelöscht,
+        das Kapitänsamt im Team geht an einen Veteranen;</li>
+      <li>⭐ Käufe für Stars verfallen zusammen mit dem Account — die Stars werden nicht erstattet;</li>
+      <li>🔁 zurückkommen kannst du jederzeit — starte den Bot einfach neu, aber du beginnst bei null und ohne erneuten Startbonus.</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>👨‍💻 Über das Projekt und den Autor</summary>
+  <div class="body">
+    <p>ROFL HUB ist ein internationales Spiel-Ökosystem in Telegram: Farm, Quiz, Duelle, Quests,
+    Teams und Schlachten in einem Bot und einer Mini App in 14 Sprachen.</p>
+    <p>Alle Figuren, Namen und Ereignisse in den Quests und im „Fall des Tages“ sind frei erfunden. Ähnlichkeiten mit realen Personen,
+    lebenden oder verstorbenen, und mit realen Ereignissen sind rein zufällig.</p>
+    <p>Du willst so einen Bot, ein Spiel oder eine Mini App für dein eigenes Projekt? Schreib dem Autor:
+    <a href="https://t.me/mister_telebot">@mister_telebot</a>.</p>
+  </div>
+</details>
+
+<details>
+  <summary>📱 Mini App — ein Imperium auf einem Bildschirm</summary>
+  <div class="body">
+    <p>Tippe auf den Button <b>🎮 ROFL HUB</b> neben dem Eingabefeld — und das ganze Spiel öffnet sich: Spiele und Quests, Duelle, Farm, Lager, Werkstatt, Börse, Karte, Team, TOP und Verlauf. Im Bot-Chat bleiben Einladungen, Überweisungen und Privatnachrichten zu Belohnungen. Gleich zur Hand:</p>
+    <ul>
+      <li>der Pass mit Kontostand, 🧠-Level und VIP ID;</li>
+      <li>die Farm: Roboter, Tanken, Tempo, nächstes Ablaufdatum;</li>
+      <li>🎁 die tägliche Frikadelle kannst du direkt hier abholen;</li>
+      <li>dein Team und das <b>TOP-100 der Reichsten</b> im Ökosystem.</li>
+    </ul>
+    <p>Das Öffnen der Mini App aktualisiert die Farm genauso wie ein Besuch im Bot — Münzen gehen nie verloren.</p>
+  </div>
+</details>
+
+<footer>ROFL HUB · Fortschritt in Echtzeit · das ganze Spiel in einer App</footer>
+
+<script>
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+  // ?s=<id раздела> — открыть нужный раздел (например, из магазина: «Что даёт каждый товар»)
+  (function () {
+    var id = new URLSearchParams(location.search).get("s");
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.BackButton && history.length > 1) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(function () { history.back(); });
+    }
+  })();
+</script>
+</body>
+</html>

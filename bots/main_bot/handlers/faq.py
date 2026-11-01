@@ -24,7 +24,7 @@ async def cmd_faq(message: types.Message, user_lang: str = "ru"):
     if WEBAPP_URL:
         rows.append([types.InlineKeyboardButton(
             text=t(user_lang, "faq.btn_open"),
-            web_app=types.WebAppInfo(url=f"{WEBAPP_URL}/faq"))])
+            web_app=types.WebAppInfo(url=f"{WEBAPP_URL}/faq?lang={user_lang}"))])
     rows.append([types.InlineKeyboardButton(text=t(user_lang, "common.btn_menu"),
                                             callback_data="refresh_main_menu")])
     await message.answer(t(user_lang, "faq.teaser"),

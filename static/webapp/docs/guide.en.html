@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROFL HUB — How to play</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a; --card: #141a2e; --card2: #1a2240;
+    --neon: #00ffe1; --accent: #ffd93d; --pink: #ff4d8d;
+    --text: #e8ecff; --muted: #8a93b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  a { color: var(--accent); font-weight: 700; text-decoration: none; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 12px 12px 30px; line-height: 1.55;
+  }
+  .logo {
+    text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px;
+    margin: 6px 0 2px; color: var(--neon); text-shadow: 0 0 18px rgba(0,255,225,.45);
+  }
+  .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  details {
+    background: linear-gradient(160deg, var(--card), var(--card2));
+    border: 1px solid rgba(0,255,225,.14); border-radius: 14px;
+    margin-bottom: 10px; overflow: hidden;
+  }
+  summary {
+    cursor: pointer; padding: 14px 16px; font-weight: 800; font-size: 15px;
+    color: var(--neon); list-style: none; user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "▾"; float: right; color: var(--muted); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(180deg); }
+  .body { padding: 0 16px 14px; font-size: 14px; }
+  .body h4 { color: var(--accent); margin: 12px 0 4px; font-size: 14px; }
+  .body p { margin-bottom: 8px; }
+  .body ul, .body ol { margin: 0 0 8px 18px; }
+  .body li { margin-bottom: 4px; }
+  b { color: #fff; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px;
+    background: rgba(0,255,225,.12); border: 1px solid rgba(0,255,225,.35); color: var(--neon);
+    font-weight: 700;
+  }
+  .warn { color: var(--pink); font-weight: 700; }
+  .note { color: var(--muted); font-size: 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin: 4px 0 10px; }
+  .tbl th { text-align: left; color: var(--accent); font-weight: 800; padding: 6px 4px;
+    border-bottom: 1px solid rgba(0,255,225,.25); }
+  .tbl td { padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+  .tbl td:first-child { white-space: nowrap; font-weight: 700; color: #fff; }
+  .scroll { overflow-x: auto; }
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="logo">🧭 HOW TO PLAY</div>
+<div class="sub">every section of the app in tab order — what it is, why it matters and where to get what</div>
+
+<details open id="start">
+  <summary>🚀 Where to start</summary>
+  <div class="body">
+    <ol>
+      <li>🚜 On the <b>farm</b>, activate your free <b>Intern Bot</b> and claim your 🎁 daily cutlet — coins pile up even without you.</li>
+      <li>🕹 Win in the <b>games</b>: every win brings coins and a resource. Start with the quiz and the Daily case.</li>
+      <li>🎯 In the <b>passport</b>, complete the 3 goals of the day and open the chest.</li>
+      <li>🔧 Drop by the <b>workshop</b>: a new recipe unlocks every day — the first one is already waiting.</li>
+    </ol>
+    <p class="note">All tabs are open from the start. Want something simpler? The passport has a “🧩 Games and stories” mode: only the
+    passport, games, friends, shop, TOP, history and info stay, and the economy hides. The farm keeps working all the same.
+    You can switch modes any time.</p>
+  </div>
+</details>
+
+<details id="passport">
+  <summary>📋 Passport</summary>
+  <div class="body">
+    <p>Your home page: who you are in ROFL HUB and what's worth doing today.</p>
+    <ul>
+      <li>🪙 <b>balance</b>, 💎 VIP ID (if you have one), season medals;</li>
+      <li>🎖 <b>rank for time in the game</b>: 1 day — Rookie, a week — Fighter, a month — Legend, 3 months — ROFL, half a year — LMAO, a year — KING. It can't be bought, only earned;</li>
+      <li>🧠 <b>intelligence level</b> and how many correct answers to the next one;</li>
+      <li>📦 your stock of every resource;</li>
+      <li>🎯 <b>goals for today</b> — 3 tasks (game wins, a duel, the farm bonus, a workshop build, a raid, a market deal, a station donation). All three earn a chest: <b>+50 🪙</b>, 10 of a random resource and a special bonus of the day (🪵 10, 🪨 10 or ⚡ 3). Every 7th day of a streak in a row — <b>+200 🪙</b> on top and a 🐄 cow;</li>
+      <li>🏅 <b>my achievements</b> — an image card you can post to your story or send to a friend;</li>
+      <li>📣 <b>events</b> — announcements of battles, expeditions and auctions; tap to jump there;</li>
+      <li>🧭 mode switch: the whole ecosystem or “🧩 Games and stories”;</li>
+      <li>🎁 <b>gifts from the developer</b> — a banner at the very top: tap “Claim gift”. Gifts wait until their deadline. Suit parts and artifacts as gifts count toward the season limit (5 parts and 1 artifact); the limit renews on the 1st.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="persona">
+  <summary>🧍 Character</summary>
+  <div class="body">
+    <p>Your avatar and its suits. The <b>M</b> and <b>F</b> buttons in the corner change the figure: athletic or slimmer.</p>
+    <ul>
+      <li>a suit has 5 parts: helmet, jacket, gloves, trousers, boots. <b>The bonus works only when the whole suit is on</b> — five parts of the same suit;</li>
+      <li>⚡ <b>Electrician</b> — electricity drops in 50% of game wins (without the suit — in 25%);</li>
+      <li>⛏ <b>Miner</b> — once a day +5% of the coins the farm mined over the past day while you wore the suit;</li>
+      <li>🪖 <b>Soldier</b> — more spoils in raids, more loot on expeditions and faster trips;</li>
+      <li>🥷 <b>Stealth</b> — raiders find you in scouting less often;</li>
+      <li>🔬 <b>Scientist</b> — the next technology level opens sooner;</li>
+      <li>🔧 <b>Engineer</b> — workshop recipes need fewer resources;</li>
+      <li>parts drop in events (expeditions, battles and events, gifts from the developer) — up to 5 per season, all five different. You can buy or sell the part you need right in the tab: no cheaper than 500 🪙, the fee burns;</li>
+      <li>⬆️ each part has three levels: <b>Basic → Improved → Legendary</b>, and each one boosts the bonus a little. Upgrading takes effort: resources and coins plus <b>part XP</b> (wins, duels, raids, expeditions it lived through while worn), and Legendary also needs a technology in the Lab. Only Basic parts are sold on the market;</li>
+      <li>💠 all six suits at the Improved level fuse into <b>nano exo-armour</b>: all bonuses at once at the Improved level. You need all 30 parts, ☢️ 1, 🔋 5, ⚡ 50 and 3000 🪙; the fused parts disappear;</li>
+      <li>🎒 <b>bag</b> — a grid of cells: tap an item to wear, upgrade or sell it;</li>
+      <li>🔒 the suit bonus is locked in at the moment of the action: you can take the suit off after researching a technology or setting out on an expedition — the discount or bonus you got stays;</li>
+      <li>💠 <b>artifacts</b> — stones for the three belt slots under the avatar. Each boosts its own direction and stacks with the suit. One per season is free, the rest are on the market (from 1000 🪙). Kinds: 🌩 Storm heart (⚡), 🍀 Stone of plenty (⛏), 🌇 Crimson sunset (🪖), 👻 Phantom shade (🥷), 🔮 Insight orb (🔬), 🤖 Mechanical warrior (🔧).</li>
+    </ul>
+    <h4>🏆 Garage — skins</h4>
+    <ul>
+      <li>a skin gives no power — only looks and status. Everyone sees it: the frame and title — in the TOP, the team and the passport, the suit — on the avatar, the marker — on the expedition map;</li>
+      <li>season skins have a numbered edition (“#7 of 500”) and a deadline: once the season is over, they can never be bought again;</li>
+      <li>📜 <b>trophies</b>: every skin you wear and every suit part you wear remembers what it lived through — wins, duels, raids, expeditions, crafted items, discoveries. The history moves with the item, even when it's sold;</li>
+      <li>🪜 <b>stages</b>: Factory → 🔥 Tempered → ⚔️ Battle-worn → 🎖 Veteran → 👑 Famed → ♾️ Immortal, 10 levels. XP comes from events while the skin is worn, and high levels also need <b>merges</b>: the skin absorbs another skin of yours (that one disappears, part of its XP carries over). One game or one merge won't get you there;</li>
+      <li>each stage stands out more than the last: a glow, a spinning frame, sparks, a crown;</li>
+      <li>📸 “Show off” — a card for your Telegram story or for a friend;</li>
+      <li>collect the whole season set — get a free reward title.</li>
+    </ul>
+    <h4>🎟 Season pass</h4>
+    <ul>
+      <li>30 levels per month, XP for everything you do in the game: a game win +5, a duel +5 (a win another +10), a raid +8…12, an expedition +30, a crafted item +10, a quest +40, the chest +30, a Lab discovery +40;</li>
+      <li>no more than 150 XP a day for game wins (with 30-day Unlimited — 300), everything else has no limit: with games alone you reach level 30 in 20 days (with monthly Unlimited — in 10), and with expeditions, quests and the chest — faster;</li>
+      <li>the free track — coins and batteries; premium (299 ★) — more coins, cutlets and 4 exclusive skins of the month: a marker (level 5), a frame (level 10), a title (level 20) and a suit (level 30). They're not sold anywhere;</li>
+      <li>you can buy it mid-month too — all the levels you've already passed will open.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="games">
+  <summary>🕹 Games</summary>
+  <div class="body">
+    <p>This is where coins and resources are earned. A win — coins and the game's resource, a loss — <b>−1 🪙</b>, a draw takes nothing and gives nothing.
+    Each game has its own daily win limit, reset at 00:00 UTC. ⚡ <b>Unlimited</b> lifts the limits in all games.
+    Any win has a 25% chance to give an extra <b>+1 ⚡</b>.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Game</th><th>Win</th><th>Limit</th></tr>
+      <tr><td>🧠 Quiz</td><td>+2 🪙, 💎 1; every 10 correct — 🪨</td><td>30</td></tr>
+      <tr><td>➗ Math</td><td>+2 🪙; every 10 correct — ⚡</td><td>30</td></tr>
+      <tr><td>🏳️ Flags and capitals</td><td>+2 🪙, 💎 1</td><td>30</td></tr>
+      <tr><td>✊ RPS</td><td>+2 🪙, ⛏ 1</td><td>15</td></tr>
+      <tr><td>🔼 Higher-Lower</td><td>+2 🪙, 💧 1</td><td>15</td></tr>
+      <tr><td>🔐 Cyber-Safe</td><td>+5 🪙, ⚙️ 3 (code 1 of 4)</td><td>15</td></tr>
+      <tr><td>💻 Code breaker</td><td>+5 🪙, ⚙️ 2</td><td>10</td></tr>
+      <tr><td>🃏 Memory</td><td>+3 🪙, 💧 1</td><td>15</td></tr>
+    </table></div>
+    <h4>🧠 Quiz and intelligence levels</h4>
+    <ul>
+      <li>30 seconds per answer, a round is 10 questions; a 50/50 hint — <b>10 🪙</b>;</li>
+      <li>level N is completed with N×10 correct answers and brings <b>N×100 🪙</b> (1st: 10 answers → +100);</li>
+      <li>at levels 10, 20, 30… — one more <b>Intern Bot</b> for the farm;</li>
+      <li>a bad question can be sent for review with the “⚠️ Report this question” button.</li>
+    </ul>
+    <p>➗ Math and 🏳️ flags — 20 seconds per answer. 💻 Code breaker — 4 different digits in 10 tries
+    (🐂 — right digit in the right place, 🐄 — right digit in the wrong place). 🃏 Memory — 6 pairs in 12 moves.</p>
+    <h4>🕵️ Daily case</h4>
+    <p>One case for everyone per day: 4 suspects, 4 clues. The first clue is open right away, and you can accuse only once.
+    Fewer clues — bigger reward: <b>40 / 30 / 20 / 10 🪙</b> for 1 / 2 / 3 / 4 clues.
+    Every 7th day of a solved-case streak — <b>+50 🪙</b>.</p>
+    <h4>⚔️ Duels</h4>
+    <ul>
+      <li>rock-paper-scissors with a <b>live</b> player; tables <span class="chip">10</span> <span class="chip">100</span> <span class="chip">1000</span> 🪙;</li>
+      <li>the stake is taken right away. The winner takes the bank minus the fee: <b>20%</b> of the bank, with ⚡ Unlimited (for a day or a month) — <b>10%</b>. The fee burns;</li>
+      <li>duels give no resources — only coins;</li>
+      <li>60 seconds per gesture (run out of time and chance picks your gesture), a draw is replayed;</li>
+      <li>no opponent for 30 minutes — the stake comes back;</li>
+      <li>🤝 you can challenge a friend by link: the table waits for them for 24 hours, then the stake comes back.</li>
+    </ul>
+    <h4>🗺 Quests</h4>
+    <ul>
+      <li>stories with choices; the list has 10 quests of the day, the same for everyone and new every day (00:00 UTC); <b>3 new ones a day</b> count (the rest wait until 00:00 UTC, ⚡ Unlimited lifts the limit);</li>
+      <li>for the first completion: <b>20–50 🪙</b> and 🪨 1–2; you can replay as much as you like, but the reward comes once;</li>
+      <li>⭐ <b>epics</b> — big stories of 20 minutes or more, open with ⚡ Unlimited; reward <b>100 🪙</b> and 🪨 5.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="farm">
+  <summary>🚜 Farm</summary>
+  <div class="body">
+    <p>Robots mine coins around the clock — even when the app is closed.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Robot</th><th>Mining</th><th>What it needs</th></tr>
+      <tr><td>🤖 Intern Bot</td><td>1 🪙/h</td><td>free, forever, no fuel</td></tr>
+      <tr><td>🤖 Miner Bot</td><td>5 🪙/h</td><td>shop, 30 days, no fuel</td></tr>
+      <tr><td>⚡ Cyber-Driller</td><td>10 🪙/h</td><td>shop, 30 days, 1 cutlet per 24 h</td></tr>
+    </table></div>
+    <ul>
+      <li>🎁 <b>bonus</b>: once every 24 hours — a free cyber-cutlet into storage;</li>
+      <li>🥩 cutlets are kept in <b>storage</b>, while Drillers eat from the <b>Fridge</b> — move them over with the “Refuel” buttons (1 or all). A bigger Fridge (10 / 50 / 100) is in the shop;</li>
+      <li>🔋 <b>Nuclear Boost x5</b> — mining ×5, but a Driller's cutlet burns three times faster: 1 cutlet per 8 hours;</li>
+      <li>❄️ <b>Nitrogen Cooling +40%</b> — Miner 5→7, Driller 10→14 🪙/h, no extra fuel. Together with the boost — 35 and 70 🪙/h;</li>
+      <li>🛸 <b>Master Drone</b> — while it works, robots don't age;</li>
+      <li>➕ extra mining bonuses: Cyber-armor (+10% per level, 30 days), the team station (+2% per level), the Banner (+5%), Science (+1% per level);</li>
+      <li>♾ an Intern Bot can be turned into an eternal Miner Bot (shop, needs 3 active friends).</li>
+    </ul>
+  </div>
+</details>
+
+<details id="storage">
+  <summary>📦 Storage</summary>
+  <div class="body">
+    <p>Everything you've mined and built is kept here.</p>
+    <ul>
+      <li>📦 <b>capacity</b> — how much of each resource fits: 500 → 1000 → 2000 → 3000 → 4000 → 5000 (expansion is in the workshop). Anything mined beyond the space is lost, so it's better to spend or sell the extra;</li>
+      <li>🧰 <b>items</b> from the workshop (boost hours, shields, First-aid kit, etc.) wait in storage and are turned on with a button whenever it suits you. Items fit up to 10% of capacity (at 500 — 50 pcs);</li>
+      <li>🥩 cutlets and 🪙 coins have no limit;</li>
+      <li>🐎 <b>horses</b>: 1,500 / 3,000 / 6,000 / 10,000 / 15,000 🪙 (no more than 5, the coins burn). Each horse — +1 market lot;</li>
+      <li>🚀 the <b>Shuttle</b> runs on a battery: 1 🔋 = 30 days of perks.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="workshop">
+  <summary>🔧 Workshop</summary>
+  <div class="body">
+    <p>Turns resources into useful things. For newcomers, <b>one recipe unlocks per day</b> — from simple to legendary
+    (locked ones are shown greyed out with a timer). Complex builds need a tool kit from the Lab — it's never used up.</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Recipe</th><th>Cost</th><th>What it gives</th></tr>
+      <tr><td>1. ❄️ Nitrogen 6 h</td><td>⛏20 💧20</td><td>Nitrogen Cooling +40% for 6 hours</td></tr>
+      <tr><td>2. 🔥 Bonfire</td><td>🪵10 🪨5</td><td>🔥 5 fire</td></tr>
+      <tr><td>3. 🛡 Shield 24 h</td><td>⛏10 💎10</td><td>you can't be raided</td></tr>
+      <tr><td>4. 🔋 Batteries</td><td>⚡5 ⛏5 🔥1 · ⚒️</td><td>🔋 2</td></tr>
+      <tr><td>5. 🛸 Drone 24 h</td><td>⛏25 ⚙️25</td><td>Master Drone for a day</td></tr>
+      <tr><td>6. ⛽ Fuel saver</td><td>⚙️25</td><td>next raid launch without hydrogen</td></tr>
+      <tr><td>7. 📦 Storage</td><td>see below</td><td>storage expansion forever</td></tr>
+      <tr><td>8. 🛒 Cart</td><td>🪵40 ⛏20 🔥2 · ⚒️</td><td>+1 market lot (no more carts than horses, 5 at most)</td></tr>
+      <tr><td>9. 🔋 Nuclear 3 h</td><td>⛏40 💧30 ⚙️10</td><td>Nuclear Boost x5 for 3 hours</td></tr>
+      <tr><td>10. 🎭 Camouflage 12 h</td><td>💎20 ⚙️10</td><td>you don't show up in raid scouting</td></tr>
+      <tr><td>11. 💊 First-aid kit 72 h</td><td>💎20 🔥2 ⚡3 · 🛠</td><td>no “sickness” in raids and in mines</td></tr>
+      <tr><td>12. 🔥 Afterburner</td><td>💧40</td><td>resets the raid cooldown, once a day</td></tr>
+      <tr><td>13. 🥩 Cutlets</td><td>🐄1 🔥2</td><td>🥩 3 cutlets</td></tr>
+      <tr><td>14. 🪤 Decoy 24 h</td><td>⛏30 ⚙️20</td><td>a failed raider gives up twice as much</td></tr>
+      <tr><td>15. 🎯 Trainer 24 h</td><td>⛏20</td><td>a draw on defense = the raider's failure</td></tr>
+      <tr><td>16. 📦 Cargo hold</td><td>⛏40 ⚙️30</td><td>loot from the next raid ×1.5</td></tr>
+      <tr><td>17. 🧊 Thermos 24 h</td><td>💎60 ⚙️40 · 🛠</td><td>a cutlet lasts 32 h instead of 24; once a week</td></tr>
+      <tr><td>18. 🦾 Cyber-armor</td><td>see below</td><td>+10% mining per level for 30 days</td></tr>
+      <tr><td>19. 📜 Stamp</td><td>💎50</td><td>next market sale with no fee; once a week</td></tr>
+      <tr><td>20. 🏳️ Banner 24 h</td><td>⛏💧💎⚙️ 150 each, 🔥10, ☢️1 · 🛠</td><td>+5% mining for the whole team</td></tr>
+      <tr><td>21. 🛡 Dome 12 h</td><td>⛏💧💎⚙️ 300 each, 🔥20, 🔋10, ☢️3 · 🔬</td><td>a raid shield for the whole team</td></tr>
+      <tr><td>22. 🚀 Shuttle</td><td>⛏💧💎⚙️ 1000 each + 1000 🪙 · 🔬</td><td>forever: 5% market fee, 16 lots, big orders (while charged with 🔋)</td></tr>
+      <tr><td>23–25. 🤖 Combat drones</td><td>⛏💧💎⚙️ 1000 each, 🔋10, 1000 🪙 + its own · 🔬</td><td>guard (+🪨300), attack (+🔥50), spy (+⚡150); or buy for 100,000 🪙</td></tr>
+    </table></div>
+    <p class="note">The Banner and the Dome can be built only by a player on a team; for a Mega-Clan they cost 5 times more.</p>
+    <h4>📦 Storage expansion</h4>
+    <ul>
+      <li>to 1000: ⛏200 ⚙️200;</li>
+      <li>to 2000: ⛏ ⚙️ 💧 160 each;</li>
+      <li>to 3000: ⛏ ⚙️ 💧 💎 150 each;</li>
+      <li>to 4000: ⛏ ⚙️ 💧 💎 🪨 140 each;</li>
+      <li>to 5000: ⛏ ⚙️ 💧 💎 🪨 🪵 140 each.</li>
+    </ul>
+    <h4>🦾 Cyber-armor</h4>
+    <ul>
+      <li>level 1: ⛏100 ⚙️50;</li>
+      <li>level 2: ⛏250 💎100 ⚙️120;</li>
+      <li>level 3: ⛏500 💧200 💎200 ⚙️250.</li>
+    </ul>
+    <p class="note">Each build raises the level (or extends level three) and restarts the 30-day countdown.</p>
+    <h4>🗓 Recipes of the week</h4>
+    <p>Temporary recipes the administration switches on from time to time — as an event. Each has its own build limit
+    per week (the week starts on Monday at 00:00 UTC). What they can be:</p>
+    <ul>
+      <li>❄️ Nitrogen Cooling — from 6 hours to 3 days;</li>
+      <li>🔋 Nuclear Boost — 3–6 hours;</li>
+      <li>🛸 Master Drone — from a day to a week;</li>
+      <li>🛡 raid shield — from 12 hours to a week;</li>
+      <li>🥩 cutlets (1–2 pcs, no more than once a week);</li>
+      <li>🎁 combos — several effects at once, for example Nitrogen + shield or drone + shield;</li>
+      <li>♻️ smelting — one basic resource into another at a 2:1 rate;</li>
+      <li>⚡ Unlimited samples — for 1–3 hours.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="lab">
+  <summary>🔬 Lab</summary>
+  <div class="body">
+    <p>This is where tool kits are built and technologies are researched. Research is <b>never reset</b>.</p>
+    <h4>🧰 Tool kits (never used up, unlock complex builds)</h4>
+    <ul>
+      <li>⚒️ Rough tools: ⛏60 🪵40 🔥5;</li>
+      <li>🛠 Fine-tuning tools: ⚙️120 💎60 ⚡20 🔥10;</li>
+      <li>🔬 Calibration: 💎250 ⚙️200 ⚡60 🔋5;</li>
+      <li>🧬 Nanotech: 💎500 ⚙️400 ⚡150 ☢️5.</li>
+    </ul>
+    <p class="note">Kits are built in order.</p>
+    <h4>🧪 Technologies (5 levels each)</h4>
+    <ul>
+      <li>📡 <b>Comms</b> (⛏30 ⚡10) — needed for raids and mine income; each level after the first — −20 minutes of raid cooldown. From level 2 also 🔋 2 / 4 / 6 / 8;</li>
+      <li>🔭 <b>Scouting</b> (💎20 ⚡10) — needed for raids; targets in scouting = 2 + level. Helps scout forks on expeditions;</li>
+      <li>⚔️ <b>Attack</b> (⛏40 ⚙️20 ⚡10) — needed for raids; each level after the first +8% to the spoils;</li>
+      <li>🛡 <b>Defense</b> (💧40 ⚙️20 ⚡10) — each level −8% to what a raider carries off from you;</li>
+      <li>📚 <b>Science</b> (💎100 ⚙️100 ⚡50 ☢️3) — +1% to farm mining and spoils per level.</li>
+    </ul>
+    <h4>📏 Rules</h4>
+    <ul>
+      <li>in brackets — the cost of level 1; then it gets pricier: level 2 ×4, level 3 ×9, level 4 ×16, level 5 ×25 (Science — ×2, ×3, ×4, ×5);</li>
+      <li>level 1 of any technology except Science is available from day one;</li>
+      <li>the next level of the same technology — <b>30 days</b> after the previous one;</li>
+      <li>tools: levels 1–2 — ⚒️, 3 — 🛠, 4 — 🔬, 5 — 🧬 (Science: 1–2 — 🛠, 3 — 🔬, 4–5 — 🧬);</li>
+      <li>Science level N opens when all four other technologies are researched to level N.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="market">
+  <summary>📈 Market</summary>
+  <div class="body">
+    <p>Trading between players: sell what you don't need, buy what you do. The seller gets the coins for the item.</p>
+    <ul>
+      <li>cutlets and all resources are traded, including the ☢️ Core; suit parts, artifacts and skins are sold in the “Character” tab;</li>
+      <li>you can place a <b>sell order</b> (the item goes into the market's custody) or a <b>buy bid</b> (the coins go into custody);</li>
+      <li>💸 the seller pays the fee: <b>10%</b>, and it burns. With a charged Shuttle — 5%. Team market: team 5%, Mega-Clan 2%;</li>
+      <li>📦 lots at once: 2 + horses + carts; with a charged Shuttle — 16;</li>
+      <li>one order holds up to 100 cutlets or 1000 of a resource (with the Shuttle — 500 / 5000);</li>
+      <li>🔄 <b>swap</b> resource for resource — no coins and no fee, up to 5 offers; the sides can differ in value by no more than 3 times (the Core can't be swapped);</li>
+      <li>🆕 a newcomer, until reaching “active” status, buys at no more than three times the minimum price;</li>
+      <li>📊 price chart and market index — for 7 days.</li>
+    </ul>
+    <h4>💹 Minimum prices per item</h4>
+    <p>⚙️ 10 · 💎 10 · ⛏ 20 · 💧 20 · 🪨 30 · ⚡ 50 · 🪵 70 · 🔥 170 · 🥩 200 · 🔋 300 · 🐄 1000 · ☢️ 5000 🪙</p>
+  </div>
+</details>
+
+<details id="map">
+  <summary>🗺 Map</summary>
+  <div class="body">
+    <p>A world map with expedition targets. Targets are set by the administration: each has its own format (solo, team, clan, or teams
+    and clans together), its own results hour and its own prizes.</p>
+    <ul>
+      <li>🎒 gear: solo — 💧 10; a team — 🔋 5; a Mega-Clan — 🔋 25 and 🥩 10. Fighters chip in one at a time; with the full set the squad sets out;</li>
+      <li>🚶 the trip takes from 10 to 30 minutes solo and from 30 minutes to 2 hours as a squad: the closer your home is to the target, the faster. The map shows rivals' dots crawling toward the target;</li>
+      <li>⏱ results come at the set time or earlier, if a set number of players reach the target (10, 100, 1000…): that's where speed matters;</li>
+      <li>🧥 on some solo expeditions everyone who makes it gets a random suit part or a 💠 artifact — even without a prize place (within the season limit);</li>
+      <li>🔀 along the way, 1–5 <b>forks</b>: the nearest one is visible in advance with a timer. Solo, you decide; in a squad, the vote (majority) decides. If nobody picks, the squad walks on by with no loot and no losses;</li>
+      <li>📦 <b>cargo</b> — your expedition score: you start at 100, forks add or take away. Places in the results go by cargo among those who made it;</li>
+      <li>🔎 scouting a fork shows the consequences in advance: as many times as the squad leader has Spy drones and 🔭 Scouting levels (whichever is lower). A squad's first expedition of the season is blind;</li>
+      <li>🤖 the squad's combat drones (per drone): attack +3% loot at combat forks, guard −5% losses, spy −2% trip length;</li>
+      <li>🏁 late for the results hour — you're not counted; if the gear wasn't collected or the target was cancelled, everything comes back;</li>
+      <li>one active solo expedition per player and one squad per team.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="mines">
+  <summary>⛏ Mines</summary>
+  <div class="body">
+    <p>30 mines: 5 for each resource — ⛏ 💧 💎 ⚙️ 🪨 🪵. Mines are only for teams and clans.</p>
+    <ul>
+      <li>⚔️ a mine is won in a mine <b>battle</b> — those are launched by the administration. Free mines glow on the map;</li>
+      <li>🔋 to be counted, you need an entry: a team — 5 batteries, a Mega-Clan — 25; fighters chip in one at a time;</li>
+      <li>⏳ the winner holds the mine for <b>24 hours</b>: every fighter gets <b>1 resource per hour</b>;</li>
+      <li>📡 mining goes only to fighters with Comms level 1 who have been on the team for at least 24 hours;</li>
+      <li>💊 without a First-aid kit every 7th hour is “sick” — the resource for it is lost.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="raids">
+  <summary>🏴‍☠️ Raids</summary>
+  <div class="body">
+    <p>A raid on another player's storage is decision against decision: your gesture (rock, paper, scissors) against the target's
+    <b>defense stance</b>. Only the basic resources ⛏ 💧 💎 ⚙️ can be looted — coins, robots and cutlets are untouchable.</p>
+    <h4>Before launch</h4>
+    <ul>
+      <li>in the Lab you need 📡 Comms, 🔭 Scouting and ⚔️ Attack at level 1 or higher;</li>
+      <li>fuel — <b>5 💧</b> per launch (or a Fuel saver charge);</li>
+      <li>cooldown between launches — 3 hours (Comms shortens it); the same target — no more than once every 12 hours.</li>
+    </ul>
+    <h4>Outcome</h4>
+    <ul>
+      <li>✅ win: you take 20% of each of the target's basic resources, but no more than 30 per resource (Attack, Science, Cargo hold and drones increase it). Without a 💊 First-aid kit, 15% of the spoils are “lost in the infirmary”;</li>
+      <li>❌ fail: you give the target 10% of yours, but no more than 15 per resource;</li>
+      <li>🤝 draw: only the fuel burns.</li>
+    </ul>
+    <h4>Protection</h4>
+    <ul>
+      <li>set your own defense stance — otherwise it's random;</li>
+      <li>newcomers are protected for the first 3 days; teammates can't be raided;</li>
+      <li>shield, Camouflage, Decoy, Trainer — from the workshop; the Dome protects the whole team;</li>
+      <li>🛡 Defense in the Lab and Guard drones reduce your losses;</li>
+      <li>⚔️ got raided — you have 24 hours for a free <b>rematch</b> (no fuel, no cooldown).</li>
+    </ul>
+    <p class="note">Targets are shown by name, without @username or ID. Drones (per drone): attack +5% to the spoils, guard −5% (no more than 50% in total), spy +1 target in scouting (no more than +5).</p>
+  </div>
+</details>
+
+<details id="team">
+  <summary>🏆 Team</summary>
+  <div class="body">
+    <p>Stronger together: battles, mines, a shared station, your own market and mutual help.</p>
+    <ul>
+      <li>🛡 <b>squad</b> — up to 5 fighters for <b>7,500 🪙</b>; the captain can expand it into a team by paying the difference;</li>
+      <li>🏆 <b>team</b> — up to 50 fighters for <b>100,000 🪙</b>;</li>
+      <li>👑 <b>Mega-Clan</b> — up to 1000 fighters (bought in the shop);</li>
+      <li>without a team: a roulette of open teams, search by name, creating your own.</li>
+    </ul>
+    <h4>🛰 Team station</h4>
+    <p>A shared project: fighters donate ⛏ 💧 💎 ⚙️. Level L is complete when L×300 of each resource has been donated. Each level —
+    <b>+2% mining</b> for all members (5 levels max, +10%). Leave the team — the bonus is gone.</p>
+    <h4>🤝 Mutual help</h4>
+    <ul>
+      <li>ask for a resource (one request, up to 200), and teammates will gift it;</li>
+      <li>you can gift from intelligence level 3 and 3 claimed daily cutlets, up to 100 resources a day; cutlets can't be gifted.</li>
+    </ul>
+    <h4>⚔️ Battles and events</h4>
+    <p>Periodic events from the administration: the combined result of all the team's fighters counts (there are personal scores too).
+    Team rewards go to those who have been on the team for at least 24 hours by the end of the battle.</p>
+  </div>
+</details>
+
+<details id="auctions">
+  <summary>🔨 Auctions</summary>
+  <div class="body">
+    <p>From time to time the administration puts up lots: fancy VIP IDs like ROFL-HUB-… and other prizes.</p>
+    <ul>
+      <li>💥 your bid is held right away and comes back if someone outbids you;</li>
+      <li>🏁 the winner's coins burn, and the prize passes over once the auction ends;</li>
+      <li>💎 a VIP ID is a full-fledged address: coins can be transferred to it, and it shows in the passport.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="friends">
+  <summary>🤝 Friends</summary>
+  <div class="body">
+    <ul>
+      <li>🔗 your invite link, “copy” and “share” buttons;</li>
+      <li>🎁 a friend signing up gives nothing, but when the friend becomes <b>active</b> (intelligence level 3 and 3 claimed daily cutlets), you get, once, <b>+500 🪙</b>, 🥩 1 and 10 of each basic resource;</li>
+      <li>🧥 <b>the “10 active friends” task</b>: bring in 10 friends who have become active — and claim a full suit of your choice, all 5 parts at once (once per account, it doesn't use up the season part limit);</li>
+      <li>🏆 a TOP-20 ranking by active friends for the season;</li>
+      <li>💸 <b>coin transfer</b> to a friend by @username, ID or VIP ID: from 10 🪙. You can send from intelligence level 3 and 3 claimed cutlets; receiving works right away.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="shop">
+  <summary>🏪 Shop</summary>
+  <div class="body">
+    <p>Purchases for Telegram Stars, instant delivery.</p>
+    <h4>For the farm</h4>
+    <ul>
+      <li>🤖 Miner Bot — 49 ★ · ⚡ Cyber-Driller — 99 ★ (30 days);</li>
+      <li>🥩 cutlets: 10 pcs — 49 ★, 50 — 239 ★, 100 — 449 ★;</li>
+      <li>📦 Fridge for 10 / 50 / 100 cutlets — 99 / 499 / 999 ★;</li>
+      <li>🔋 Nuclear Boost x5 — 199 ★ · ❄️ Nitrogen Cooling +40% — 299 ★ (30 days);</li>
+      <li>🛸 Master Drone — 999 ★ (1 year) · ♾ Eternal Miner — 999 ★ (needs 3 active friends).</li>
+    </ul>
+    <h4>Gaming</h4>
+    <ul>
+      <li>⚡ Unlimited: 24 h — 15 ★, 30 days — 249 ★ (no win or quest limits, epics, 10% duel fee);</li>
+      <li>💰 coins: 5,000 — 149 ★, 10,000 — 299 ★, 50,000 — 1299 ★, 100,000 — 2499 ★;</li>
+      <li>🏆 Mega-Clan (up to 1000 seats) — 2499 ★.</li>
+    </ul>
+    <h4>✨ Skins</h4>
+    <ul>
+      <li>a separate category: the season pass and skins for ★ — looks only, no power. The edition size and what's left are shown on the card.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="top">
+  <summary>👑 TOP</summary>
+  <div class="body">
+    <ul>
+      <li>🏆 <b>Season</b> — who earned the most in the game this month (farm, game wins, quiz levels, duels, quests, chest, friends; no market or transfers). A season = a calendar month in UTC: only the tables reset, coins and robots stay. The TOP-10 get a medal in their passport, season prizes are set by the administration;</li>
+      <li>🎯 <b>Events</b> — current battles and events: scoring, prizes by place, your place and the leaders;</li>
+      <li>💰 <b>Richest</b> — the TOP-100 by balance.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="history">
+  <summary>📜 History</summary>
+  <div class="body">
+    <p>Everything that happened to your account over 30 days:</p>
+    <ul>
+      <li>🪙 coins — how much came in and went out, the main sources and expenses;</li>
+      <li>📦 resources;</li>
+      <li>📈 market deals;</li>
+      <li>🎁 rewards and gifts.</li>
+    </ul>
+  </div>
+</details>
+
+<details id="info">
+  <summary>📚 Info</summary>
+  <div class="body">
+    <p>The handbook (FAQ), the user agreement and this guide. Payment questions — in the bot chat.</p>
+  </div>
+</details>
+
+<details id="sources">
+  <summary>🗂 Where to get what</summary>
+  <div class="body">
+    <div class="scroll"><table class="tbl">
+      <tr><th>What</th><th>Where to get it</th><th>What to spend it on</th></tr>
+      <tr><td>🪙 coins</td><td>farm, games, quiz levels, Daily case, duels, quests, chest, friends, market sales, shop</td><td>duels, hints, team, horses, Shuttle, drones, part upgrades and exo-armour, market, auctions</td></tr>
+      <tr><td>🥩 cutlet</td><td>farm bonus once a day, shop, market, workshop (from a cow), active friend</td><td>Driller fuel, Mega-Clan provisions on expeditions, market</td></tr>
+      <tr><td>⛏ metal</td><td>RPS, mines, chest, raids</td><td>boosts, shield, armor, cart, batteries, ⚒️, Comms, Attack, station</td></tr>
+      <tr><td>💧 hydrogen</td><td>Higher-Lower, Memory, mines, chest, raids</td><td>raid and solo expedition fuel, Afterburner, boosts, Defense, station</td></tr>
+      <tr><td>💎 crystals</td><td>quiz, flags, mines, chest, raids</td><td>shield, Camouflage, First-aid kit, Thermos, Stamp, Scouting, Science, kits</td></tr>
+      <tr><td>⚙️ parts</td><td>Cyber-Safe, Code breaker, mines, chest, raids</td><td>drone, Fuel saver, armor, Cargo hold, kits, Attack, Defense</td></tr>
+      <tr><td>🪨 stone</td><td>quiz (every 10 correct), quests, mines, chest</td><td>Bonfire, storage, Guard drone</td></tr>
+      <tr><td>🪵 wood</td><td>mines, chest</td><td>Bonfire, cart, ⚒️, storage</td></tr>
+      <tr><td>🔥 fire</td><td>Bonfire in the workshop</td><td>batteries, cart, First-aid kit, cutlets, kits, Banner, Dome, Attack drone</td></tr>
+      <tr><td>⚡ electricity</td><td>a 25% chance on any win, Math (every 10 correct), chest</td><td>batteries, First-aid kit, technologies, kits, Spy drone</td></tr>
+      <tr><td>🔋 batteries</td><td>workshop</td><td>Shuttle charge, mine battle entry, team expedition, Comms, 🔬, Dome, drones, part upgrades, exo-armour</td></tr>
+      <tr><td>🐄 cow</td><td>chest on the 7th day of a streak, market</td><td>3 cutlets in the workshop</td></tr>
+      <tr><td>☢️ Core</td><td>only administration prizes, market</td><td>Science, 🧬, Banner, Dome, exo-armour</td></tr>
+    </table></div>
+  </div>
+</details>
+
+<footer>ROFL HUB · a guide to the app · more details in the handbook</footer>
+
+<script>
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+  // ?s=<id раздела> — открыть нужный раздел (id = ключ вкладки: passport, games, farm… или start / sources)
+  (function () {
+    var id = new URLSearchParams(location.search).get("s");
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.open = true;
+    setTimeout(function () { el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150);
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.BackButton && history.length > 1) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(function () { history.back(); });
+    }
+  })();
+</script>
+</body>
+</html>

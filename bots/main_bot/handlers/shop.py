@@ -40,7 +40,7 @@ def get_catalog_keyboard(category: str, lang: str = "ru") -> types.InlineKeyboar
     if WEBAPP_URL:
         rows.append([types.InlineKeyboardButton(
             text=t(lang, "shop.btn_info"),
-            web_app=types.WebAppInfo(url=f"{WEBAPP_URL.rstrip('/')}/faq?s=shop-items"))])
+            web_app=types.WebAppInfo(url=f"{WEBAPP_URL.rstrip('/')}/faq?s=shop-items&lang={lang}"))])
     for row in SHOP_LAYOUT[category]:
         rows.append([
             types.InlineKeyboardButton(text=item_button(CATALOG[sku], lang), callback_data=f"buy_{sku}")
