@@ -14,7 +14,8 @@ from pathlib import Path
 from shared.economy import CODE_DIGITS, MEMORY_PAIRS
 
 FLAGS_PATH = Path(__file__).resolve().parents[1] / "data" / "flags.json"
-CAPITAL_LANGS = ("ru", "en")       # столицы есть только на ru/en; остальным — вопросы «чей флаг» (названия — Intl в браузере)
+# 01.11: страны и столицы в data/flags.json на всех 14 языках (name — <код>, столица — cap_<код>)
+CAPITAL_LANGS = ("ru", "en", "uz", "es", "fr", "pt", "de", "it", "pl", "id", "zh", "hi", "bn", "ar")
 MEMORY_ICONS = ("⛏", "💧", "💎", "⚙️", "🪨", "🪵", "🔥", "⚡", "🔋", "🐄")
 
 
@@ -93,9 +94,8 @@ def flags_round_state(lang: str, rng: random.Random | None = None) -> dict:
     others = rng.sample([r for r in data if r["iso"] != right["iso"]], 3)
     rows = [right] + others
     rng.shuffle(rows)
-    names_lang = lang if lang in CAPITAL_LANGS else "en"
     return {"mode": "flag", "iso": right["iso"], "flag": flag_emoji(right["iso"]),
-            "options": [r["iso"] for r in rows], "names": [r[names_lang] for r in rows], "correct": rows.index(right)}
+            "options": [r["iso"] for r in rows], "names": [r.get(lang) or r["en"] for r in rows], "correct": rows.index(right)}
 
 
 # ============================================================================ 💻 Взлом кода

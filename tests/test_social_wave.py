@@ -23,9 +23,10 @@ def test_daily_cases_are_well_formed():
     for c in cases:
         assert daily_case.validate_case(c) == [], c["id"]
         for lang in daily_case.CONTENT_LANGS:
-            body = c[lang]
+            body = daily_case.case_body(c, lang)
             # виновный назван в разгадке, а не «кто-то»
-            first = body["suspects"][c["culprit"]]["name"].split()[-1]
+            name = body["suspects"][c["culprit"]]["name"]
+            first = name[-2:] if lang == "zh" else name.split()[-1]   # в китайском нет пробелов
             assert first[:4] in body["solution"], (c["id"], lang, first)
             assert all(len(x) <= 220 for x in body["clues"]), c["id"]
             assert len(body["story"]) <= 400, c["id"]
@@ -53,7 +54,7 @@ def test_daily_case_rotation_by_day():
 def test_daily_case_reward_drops_with_every_clue():
     rewards = [DAILY_CASE_REWARD[i] for i in range(1, daily_case.CLUES + 1)]
     assert rewards == sorted(rewards, reverse=True) and len(set(rewards)) == len(rewards)
-    assert daily_case.text_lang("de") == "en" and daily_case.text_lang("ru") == "ru"
+    assert daily_case.case_body({"en": 1, "ru": 2}, "de") == 1 and daily_case.case_body({"en": 1, "ru": 2, "tr": {"de": 3}}, "de") == 3
 
 
 def test_broken_cases_file_does_not_crash(tmp_path):
@@ -215,3 +216,23 @@ def test_immortal_skin_fire_has_unique_ids_and_artifacts_have_epic_names():
     for name in ("Сердце грозы", "Камень изобилия", "Багровый закат", "Тень призрака", "Шар озарения", "Механический воин"):
         assert name in HTML, name
     assert "Искровик" not in HTML and "Туманник" not in HTML
+
+
+def test_daily_cases_and_flags_speak_all_14_languages():
+    """Владелец 01.11: все игры, кроме квестов и викторины, — на всех языках (дела дня, страны и столицы)."""
+    from shared.minigames import CAPITAL_LANGS, capital_ok, flags_data
+    packs = [l for l in daily_case.CONTENT_LANGS if l not in daily_case.BASE_LANGS]
+    for c in daily_case.load_cases():
+        assert set(c["tr"]) == set(packs), c["id"]
+        assert isinstance(c["id"], str)
+        for lang in packs:
+            body = c["tr"][lang]
+            # те же числа в уликах и тот же порядок подозреваемых (кроме безалкогольной замены 🍾 → 🥤)
+            for a, b in zip(c["ru"]["clues"], body["clues"]):
+                assert sorted(re.findall(r"\d+", a)) == sorted(re.findall(r"\d+", b)), (c["id"], lang, b)
+            emo = [s["emoji"].replace("🥤", "🍾") for s in body["suspects"]]
+            assert emo == [s["emoji"] for s in c["en"]["suspects"]], (c["id"], lang)
+    assert set(CAPITAL_LANGS) == set(daily_case.CONTENT_LANGS)
+    for lang in CAPITAL_LANGS:
+        assert all(r.get(lang) for r in flags_data()), lang
+        assert sum(capital_ok(r, lang) for r in flags_data()) >= 100, lang

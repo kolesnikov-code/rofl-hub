@@ -28,7 +28,10 @@ CASES_PATH = Path(__file__).resolve().parents[1] / "data" / "daily_cases.json"
 CASE_EPOCH = date(2026, 10, 28)      # дело №1
 CLUES = 4
 SUSPECTS = 4
-CONTENT_LANGS = ("ru", "en")         # остальные языки видят английскую версию
+# ru/en — прямо в деле (case["ru"], case["en"]); 12 языков паков — в case["tr"][код] (01.11). Отдельный раздел нужен,
+# потому что код индонезийского «id» совпадает с полем дела «id». Нет перевода — английская версия.
+BASE_LANGS = ("ru", "en")
+CONTENT_LANGS = BASE_LANGS + ("uz", "es", "fr", "pt", "de", "it", "pl", "id", "zh", "hi", "bn", "ar")
 
 _cases: list[dict] | None = None
 
@@ -66,8 +69,11 @@ def case_for_day(day: date) -> dict | None:
     return cases[(case_number(day) - 1) % len(cases)]
 
 
-def text_lang(lang: str) -> str:
-    return lang if lang in CONTENT_LANGS else "en"
+def case_body(case: dict, lang: str) -> dict:
+    """Текст дела на языке игрока (нет перевода — английский)."""
+    if lang in BASE_LANGS:
+        return case[lang]
+    return (case.get("tr") or {}).get(lang) or case["en"]
 
 
 def validate_case(c: dict) -> list[str]:
@@ -77,7 +83,7 @@ def validate_case(c: dict) -> list[str]:
     if not isinstance(c.get("culprit"), int) or not 0 <= c["culprit"] < SUSPECTS:
         errs.append(f"{cid}: culprit — индекс 0..{SUSPECTS - 1}")
     for lang in CONTENT_LANGS:
-        body = c.get(lang) or {}
+        body = (c.get(lang) if lang in BASE_LANGS else (c.get("tr") or {}).get(lang)) or {}
         for field in ("title", "story", "solution"):
             if not isinstance(body.get(field), str) or not body[field].strip():
                 errs.append(f"{cid}/{lang}: нет {field}")
@@ -171,7 +177,7 @@ async def case_payload(conn, user_id: int, lang: str, now: datetime | None = Non
     case = case_for_day(day)
     if case is None:
         return {"ok": False}
-    body = case[text_lang(lang)]
+    body = case_body(case, lang)
     run = await _run(conn, user_id, day)
     opened = run["clues"] if run else 1
     finished = bool(run and run["finished_at"])
