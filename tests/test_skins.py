@@ -166,3 +166,14 @@ def test_pass_xp_goes_to_the_season_shown_on_screen(monkeypatch):
             calls.append(args)
     asyncio.run(sp.add_xp(Conn(), 1, "quest"))
     assert calls and calls[0][1] == sp.PASS_FIRST == sp.active_season(datetime(2026, 10, 30, tzinfo=timezone.utc))
+
+
+def test_pass_reward_labels_name_the_skin_in_the_player_language():
+    """Скриншот владельца 01.11: в пропуске у pt-игрока «Костюм «Полярная вахта»» — подпись была всегда ru."""
+    from shared import season_pass as sp
+    from shared.prizes import rewards_label
+    suit = [{"kind": "skin", "skin": sp.pass_skin_ids("2026-11")["suit"]}]
+    assert "Polar Watch suit" in rewards_label(suit, "pt")
+    assert "Polar Watch suit" in rewards_label(suit, "en")
+    assert "Полярная вахта" in rewards_label(suit, "ru")
+    assert "Полярная вахта" in rewards_label(suit)          # пульт владельца — по-русски

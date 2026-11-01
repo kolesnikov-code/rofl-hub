@@ -27,7 +27,7 @@ def notice_text(lang: str, notice: dict) -> str:
     lines = [t(lang, "rn.all" if notice.get("all") else "rn.place", title=title, place=notice.get("place", 0))]
     real = [r for r in rewards if r.get("kind") != "text"]
     if real:
-        lines.append(t(lang, "rn.got", r=html.escape(rewards_label(real))))
+        lines.append(t(lang, "rn.got", r=html.escape(rewards_label(real, lang))))
     for r in rewards:
         if r.get("kind") == "text":
             lines.append(t(lang, "rn.manual", r=html.escape(r.get("text", ""))))

@@ -108,7 +108,7 @@ async def handle_history(request: web.Request) -> web.Response:
                 raw = r["payload"]
                 rewards = normalize_rewards(json.loads(raw) if isinstance(raw, str) else (raw or []))
                 out["items"].append({"at": r["created_at"].isoformat(), "label": gift_source(ctx.lang, r["ref"]),
-                                     "what": rewards_label(rewards)})
+                                     "what": rewards_label(rewards, ctx.lang)})
     return web.json_response(out)
 
 

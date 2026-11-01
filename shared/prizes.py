@@ -101,8 +101,8 @@ def needs_farm_close(rewards: list[dict]) -> bool:
     return any(r["kind"] == "robot" or (r["kind"] == "boost" and r["boost"] in FARM_BOOSTS) for r in rewards)
 
 
-def reward_label(r: dict) -> str:
-    """Короткая подпись награды эмодзи и числами (для постов на всех языках и пульта)."""
+def reward_label(r: dict, lang: str = "ru") -> str:
+    """Короткая подпись награды эмодзи и числами; имя скина — на языке игрока (пульт — ru)."""
     from shared.resources import RESOURCE_ICONS
     k = r["kind"]
     dur = _dur(r.get("hours", 0))
@@ -130,13 +130,13 @@ def reward_label(r: dict) -> str:
     if k == "artifact":
         return f"💠 ×{r['qty']}"
     if k == "skin":
-        from shared.skins import SKINS
-        return "✨ " + SKINS.get(r["skin"], {}).get("name", r["skin"])
+        from shared.skins import SKINS, skin_name
+        return "✨ " + (skin_name(r["skin"], lang) if r["skin"] in SKINS else r["skin"])
     return "🎁 " + r.get("text", "")
 
 
-def rewards_label(rewards: list[dict]) -> str:
-    return " + ".join(reward_label(r) for r in rewards) or "—"
+def rewards_label(rewards: list[dict], lang: str = "ru") -> str:
+    return " + ".join(reward_label(r, lang) for r in rewards) or "—"
 
 
 def _dur(hours: int) -> str:

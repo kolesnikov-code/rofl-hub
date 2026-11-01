@@ -281,7 +281,8 @@ async def pass_payload(conn, user_id: int, lang: str) -> dict:
     sale_st = st if sale == season else await sp.state(conn, user_id, sale)
     end = sp.season_end(season)
     levels = [{"level": n, "free": sp.rewards(season, "free", n), "paid": sp.rewards(season, "paid", n),
-               "free_label": rewards_label(sp.rewards(season, "free", n)), "paid_label": rewards_label(sp.rewards(season, "paid", n))}
+               "free_label": rewards_label(sp.rewards(season, "free", n), lang),
+               "paid_label": rewards_label(sp.rewards(season, "paid", n), lang)}
               for n in range(1, sp.PASS_LEVELS + 1)]
     return {"ok": True, **st, "levels": levels, "per_level": sp.PASS_XP_PER_LEVEL, "max": sp.PASS_LEVELS,
             "ends_at": end.isoformat(), "xp_table": sp.PASS_XP, "stars": sp.PASS_STARS,
@@ -311,7 +312,7 @@ async def handle_pass_claim(request: web.Request) -> web.Response:
             out = await pass_payload(conn, ctx.user_id, ctx.lang)
     except sp.PassError as e:
         return fail(t(ctx.lang, e.key))
-    out["got"] = rewards_label(got)
+    out["got"] = rewards_label(got, ctx.lang)
     return web.json_response(out)
 
 

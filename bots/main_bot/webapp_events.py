@@ -30,17 +30,17 @@ def _iso(v):
 EVENTS_PRIZE_ITEMS = 3        # в ленте — первые 3 награды 1-го места, остальное «… +N» (полный список — во вкладке)
 
 
-def short_rewards_label(rewards: list[dict], limit: int = EVENTS_PRIZE_ITEMS) -> str:
+def short_rewards_label(rewards: list[dict], limit: int = EVENTS_PRIZE_ITEMS, lang: str = "ru") -> str:
     """Короткая подпись приза для ленты: длинный список наград не распирает карточку."""
     from shared.prizes import reward_label
-    head = " + ".join(reward_label(r) for r in rewards[:limit])
+    head = " + ".join(reward_label(r, lang) for r in rewards[:limit])
     return head + (f" … +{len(rewards) - limit}" if len(rewards) > limit else "")
 
 
-def _rewards_label(raw) -> str:
+def _rewards_label(raw, lang: str = "ru") -> str:
     from shared.battles import prizes_by_place
     prizes = prizes_by_place(raw)
-    return short_rewards_label(prizes[min(prizes)]) if prizes else ""
+    return short_rewards_label(prizes[min(prizes)], lang=lang) if prizes else ""
 
 
 def _winner(results) -> str:
@@ -66,7 +66,7 @@ async def handle_news(request: web.Request) -> web.Response:
                           "title": localized_title(b["title"], b["title_tpl"], ctx.lang),
                           "sub": t(ctx.lang, f"post.scope_{b['scope'] or 'teams'}"), "live": live,
                           "soon": live and b["starts_at"] > now, "at": _iso(b["ends_at"] if live else b["ends_at"]),
-                          "prize": _rewards_label(b["prizes"]), "winner": "" if live else _winner(b["results"]),
+                          "prize": _rewards_label(b["prizes"], ctx.lang), "winner": "" if live else _winner(b["results"]),
                           "tab": "mines" if list(b["mine_ids"] or []) else "top"})
         if await get_flag("expeditions"):
             for r in await conn.fetch(
@@ -77,7 +77,7 @@ async def handle_news(request: web.Request) -> web.Response:
                 items.append({"kind": "exp", "icon": r["icon"] or "🗺",
                               "title": localized_title(r["title"], r["title_tpl"], ctx.lang),
                               "sub": t(ctx.lang, f"post.scope_{r['scope']}"), "live": live, "soon": False,
-                              "at": _iso(r["resolve_at"]), "prize": _rewards_label(r["prizes"]),
+                              "at": _iso(r["resolve_at"]), "prize": _rewards_label(r["prizes"], ctx.lang),
                               "winner": "" if live else _winner(r["results"]), "tab": "map"})
         if await get_flag("auctions"):
             for a in await conn.fetch("SELECT auction_id, item_title, current_price, ends_at FROM auctions "
