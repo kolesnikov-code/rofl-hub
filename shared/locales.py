@@ -311,7 +311,7 @@ RU: dict[str, str] = {
         "они не являются деньгами и не обмениваются на реальные средства.\n"
         "💫 Покупки — только через официальные Telegram Stars; цифровые товары доставляются "
         "мгновенно, при сбое доставки Stars возвращаются автоматически.\n"
-        "🛡️ Мы не собираем телефоны, геолокацию и персональные данные.\n"
+        "🛡️ Мы храним только Telegram ID, имя и игровой прогресс — без телефонов, геолокации и документов.\n"
         "🤝 Запрещены оскорбления, накрутки и мультиаккаунты — за нарушение возможна блокировка.\n"
         "..................................................\n"
         "👇 <b>Полный текст соглашения и отказ от ответственности — по кнопке:</b>\n"
@@ -1414,7 +1414,7 @@ EN: dict[str, str] = {
         "they are not money and cannot be exchanged for real funds.\n"
         "💫 Purchases go only through official Telegram Stars; digital items are delivered "
         "instantly, and Stars are refunded automatically if delivery fails.\n"
-        "🛡️ We do not collect phone numbers, location or personal data.\n"
+        "🛡️ We keep only your Telegram ID, name and game progress — no phone numbers, location or documents.\n"
         "🤝 Insults, boosting schemes and multi-accounts are forbidden — violations may lead to a ban.\n"
         "..................................................\n"
         "👇 <b>The full agreement and disclaimer — one tap away:</b>\n"
@@ -1498,7 +1498,7 @@ EN: dict[str, str] = {
         "💼 Cutlets in storage: <code>{inv}</code>\n"
         "..................................................\n"
         "<i>💿 Important: Miner Bots and Cyber-Drillers work for 30 days (the Master Drone pauses wear), the Intern Bot and an eternal Miner have no limit. "
-        "EVERY Cyber-Driller takes its OWN cutlet from the fridge for 24 hours of work (8 hours under Nuclear Overclock x5): "
+        "EVERY Cyber-Driller takes its OWN cutlet from the fridge for 24 hours of work (8 hours under Nuclear Boost x5): "
         "3 Drillers — 3 cutlets a day. Keep an eye on the fuel!</i>"
     ),
     "farm.bonus_ok": "🎁 A cyber-cutlet was added to your inventory! Come back in 24 hours.",
@@ -1970,7 +1970,7 @@ EN: dict[str, str] = {
     "sw.done_notify": "🔄 <b>Swap #{id} completed!</b> Given {give}, received {want}.",
     "ws.err_coins": "🔒 Not enough coins: {need} 🪙 needed, you have {have} 🪙.",
     "wk.eff_nitrogen": "❄️ Nitrogen Cooling +40% for {h} h",
-    "wk.eff_nuclear": "☢️ Nuclear Overclock x5 for {h} h",
+    "wk.eff_nuclear": "☢️ Nuclear Boost x5 for {h} h",
     "wk.eff_drone": "🛸 Master Drone for {h} h",
     "wk.eff_shield": "🛡 Shield for {h} h",
     "wk.eff_unlimit": "⚡ Unlimited games for {h} h",
@@ -2002,7 +2002,7 @@ EN: dict[str, str] = {
     "ws.shuttle_yes": "built",
     "ws.shuttle_no": "not built",
     "ws.recipe_nitro_6h": "Nitrogen Cooling for 6 h",
-    "ws.recipe_nuclear_3h": "Nuclear Overclock for 3 h",
+    "ws.recipe_nuclear_3h": "Nuclear Boost for 3 h",
     "ws.recipe_drone_24h": "Master Drone for 24 h",
     "ws.recipe_shield_24h": "Raid shield for 24 h",
     "ws.recipe_cutlet": "Cyber-cutlets from a cow ×3",
@@ -2015,7 +2015,7 @@ EN: dict[str, str] = {
     "ws.noop": "Already maxed",
     "ws.toast": "Done!",
     "ws.done_nitrogen": "❄️ <b>Nitrogen Cooling +40%</b> active until {until} UTC.",
-    "ws.done_nuclear": "☢️ <b>Nuclear Overclock x5</b> active until {until} UTC. Drillers burn their cutlet three times faster!",
+    "ws.done_nuclear": "☢️ <b>Nuclear Boost x5</b> active until {until} UTC. Drillers burn their cutlet three times faster!",
     "ws.done_drone": "🛸 <b>Master Drone</b> protects your robots until {until} UTC.",
     "ws.done_shield": "🛡 <b>Raid shield</b> holds until {until} UTC. Your resources are safe.",
     "ws.done_cutlet": "🥩 Done: <b>+{qty} 🥩</b> cyber-cutlets in your inventory. Refuel in /farm!",

@@ -18,7 +18,7 @@ CATEGORY_FARM = "farm"
 CATEGORY_GAMES = "games"
 
 # type → как доставлять (см. shared/delivery.py)
-# title/button — русская витрина, title_en/button_en — английская (locales ru/en)
+# title/button — русская витрина, title_en/button_en — английская; 12 языков паков — catalog_i18n.py
 CATALOG: dict[str, dict] = {
     # --- Роботы (лицензия 30 дней) ---
     "miner_junior": {"type": "miner", "kind": "junior", "stars": 49, "category": CATEGORY_FARM,
@@ -54,20 +54,20 @@ CATALOG: dict[str, dict] = {
                          "title_en": "🔋 Nuclear Boost x5 (30 days)", "button_en": "🔋 Nuclear Boost x5 | 199 ★"},
     "boost_nitrogen_30": {"type": "farm_boost", "kind": "nitrogen", "days": BOOST_DAYS, "stars": 299,
                           "category": CATEGORY_FARM,
-                          "title": "❄️ Азотное Охлаждение +40% (30 дней)",
+                          "title": "❄️ Азотное Охлаждение +40%",
                           "button": "❄️ Азотное Охлаждение +40% | 299 ★",
-                          "title_en": "❄️ Nitrogen Cooling +40% (30 days)",
+                          "title_en": "❄️ Nitrogen Cooling +40%",
                           "button_en": "❄️ Nitrogen Cooling +40% | 299 ★"},
     # --- Апгрейд Робота-Стажёра до ВЕЧНОГО Младшего Майнера (условие: 3 квалифицированных друга) ---
     "intern_upgrade": {"type": "intern_upgrade", "stars": 999, "category": CATEGORY_FARM,
-                       "title": "♾ Вечный Майнер: апгрейд Робота-Стажёра", "button": "♾ Вечный Майнер | 999 ★",
-                       "title_en": "♾ Eternal Miner: upgrade your Intern Bot",
+                       "title": "♾ Вечный Майнер из Стажёра", "button": "♾ Вечный Майнер | 999 ★",
+                       "title_en": "♾ Eternal Miner from Intern",
                        "button_en": "♾ Eternal Miner | 999 ★"},
     # --- Мастер-дрон ---
     "repair_drone_365": {"type": "vip_character", "kind": "drone", "days": DRONE_DAYS, "stars": 999,
                          "category": CATEGORY_FARM,
-                         "title": "🛸 Мастер-дрон: авторемонт на 1 год", "button": "🛸 Мастер-дрон (1 год) | 999 ★",
-                         "title_en": "🛸 Master Drone: auto-repair for 1 year",
+                         "title": "🛸 Мастер-дрон на 1 год", "button": "🛸 Мастер-дрон (1 год) | 999 ★",
+                         "title_en": "🛸 Master Drone for 1 year",
                          "button_en": "🛸 Master Drone (1 year) | 999 ★"},
     # --- Игровой безлимит ---
     "unlimit_24h": {"type": "game_unlimit", "hours": UNLIMIT_DAY_HOURS, "stars": 15, "category": CATEGORY_GAMES,
@@ -93,20 +93,22 @@ CATALOG: dict[str, dict] = {
     # --- Мега-клан ---
     "clan_upgrade": {"type": "clan_upgrade", "max_members": MEGA_CLAN_MAX_MEMBERS, "stars": 2499,
                      "category": CATEGORY_GAMES,
-                     "title": "🏆 Лицензия Мега-Клана (до 1000 мест)", "button": "🏆 Мега-Клан (1000 мест) | 2499 ★",
-                     "title_en": "🏆 Mega-Clan license (up to 1000 seats)",
+                     "title": "🏆 Мега-Клан (до 1000 мест)", "button": "🏆 Мега-Клан (1000 мест) | 2499 ★",
+                     "title_en": "🏆 Mega-Clan (up to 1000 seats)",
                      "button_en": "🏆 Mega-Clan (1000 seats) | 2499 ★"},
 }
 
 
 def item_title(item: dict, lang: str = "ru") -> str:
-    """Каталог локализован ru/en: все не-русские языки видят английскую витрину (скины — на языке игрока, titles)."""
+    """Название на языке игрока: titles (12 паков — catalog_i18n, скины — skin_name), иначе ru/en."""
     if item.get("titles", {}).get(lang):
         return item["titles"][lang]
     return item["title_en"] if lang != "ru" and item.get("title_en") else item["title"]
 
 
 def item_button(item: dict, lang: str = "ru") -> str:
+    if item.get("buttons", {}).get(lang):
+        return item["buttons"][lang]
     if item.get("titles", {}).get(lang) and item.get("stars"):
         return f"{item['titles'][lang]} | {item['stars']} ★"
     return item["button_en"] if lang != "ru" and item.get("button_en") else item["button"]
@@ -140,8 +142,19 @@ SHOP_LAYOUT: dict[str, list[list[str]]] = {
 }
 
 
+# 12 языков паков: названия и кнопки товаров (bots/main_bot/catalog_i18n.py). Битые данные — английская витрина.
+try:
+    from bots.main_bot.catalog_i18n import CATALOG_I18N, PASS_I18N, SHOP_INFO_I18N
+except Exception:  # noqa: BLE001 — витрина не должна падать из-за переводов
+    CATALOG_I18N, PASS_I18N, SHOP_INFO_I18N = {}, {}, {}
+for _lang, _items in CATALOG_I18N.items():
+    for _sku, (_title, _button) in _items.items():
+        if _sku in CATALOG:
+            CATALOG[_sku].setdefault("titles", {})[_lang] = _title
+            CATALOG[_sku].setdefault("buttons", {})[_lang] = _button
+
 # «Что даёт каждый товар» — карточка рядом с витриной в приложении (те же тексты, что в FAQ).
-# Как и весь каталог, ru/en: остальные языки видят английский вариант.
+# ru/en — здесь, 12 языков паков — SHOP_INFO_I18N (в том же порядке).
 SHOP_INFO: list[dict[str, str]] = [
     {"cat": "farm", "title": "🤖 Младший Майнер · 49 ★ · 30 дней",
      "text": "Добывает 5 🪙 в час без топлива — около 3 600 🪙 за месяц. Для тех, кто не хочет следить за заправкой.",
@@ -180,7 +193,7 @@ SHOP_INFO: list[dict[str, str]] = [
              "Безлимит на 30 дней ещё и удваивает опыт пропуска сезона за игры: до 300 в сутки вместо 150.",
      "title_en": "⚡ Unlimited · 24h for 15 ★ / 30 days for 249 ★",
      "text_en": "Removes the daily win limit: every win brings coins and the game's resource without caps. "
-                "The 30-day pass also doubles season-pass XP from games: up to 300 a day instead of 150."},
+                "30-day Unlimited also doubles season-pass XP from games: up to 300 a day instead of 150."},
     {"cat": "games", "title": "💰 Паки монет · 5 000 – 100 000 🪙",
      "text": "Монеты сразу на баланс: дуэли с большими ставками, биржа, своя команда, Шаттл. Чем больше пак, тем выгоднее курс.",
      "title_en": "💰 Coin packs · 5,000 – 100,000 🪙",
@@ -193,6 +206,9 @@ SHOP_INFO: list[dict[str, str]] = [
 
 
 def shop_info(lang: str = "ru") -> list[dict[str, str]]:
+    loc = SHOP_INFO_I18N.get(lang)
+    if loc and len(loc) == len(SHOP_INFO):
+        return [{"cat": i["cat"], "title": t, "text": x} for i, (t, x) in zip(SHOP_INFO, loc)]
     en = lang != "ru"
     return [{"cat": i["cat"], "title": i["title_en"] if en else i["title"], "text": i["text_en"] if en else i["text"]}
             for i in SHOP_INFO]
@@ -239,7 +255,9 @@ def pass_item(sku: str) -> dict | None:
     label = f"{season[5:7]}.{season[:4]}"
     return {"sku": sku, "type": "season_pass", "season": season, "stars": PASS_STARS, "category": CATEGORY_GAMES,
             "title": f"🎟 Пропуск сезона {label}", "title_en": f"🎟 Season pass {label}",
-            "button": f"🎟 Пропуск сезона | {PASS_STARS} ★", "button_en": f"🎟 Season pass | {PASS_STARS} ★"}
+            "button": f"🎟 Пропуск сезона | {PASS_STARS} ★", "button_en": f"🎟 Season pass | {PASS_STARS} ★",
+            "titles": {lang: tt.format(label=label) for lang, (tt, _b) in PASS_I18N.items()},
+            "buttons": {lang: bb.format(stars=PASS_STARS) for lang, (_t, bb) in PASS_I18N.items()}}
 
 
 def get_item(sku: str) -> dict:

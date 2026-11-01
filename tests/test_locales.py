@@ -168,5 +168,49 @@ def test_every_catalog_item_has_english_title_and_button():
         assert item.get("title_en") and item.get("button_en"), sku
         assert item_title(item, "en") == item["title_en"]
         assert item_title(item, "ru") == item["title"]
-        assert item_button(item, "de") == item["button_en"]  # не-ru языки видят en-витрину
         assert str(item["stars"]) in item["button_en"], sku
+
+
+def _u16(text: str) -> int:
+    return len(text.encode("utf-16-le")) // 2
+
+
+def test_shop_speaks_every_language_and_titles_fit_the_invoice():
+    """Владелец 01.11: витрина на языке игрока; название счёта Telegram — не длиннее 32 символов (иначе счёт не выставится)."""
+    import os
+    os.environ.setdefault("MAIN_BOT_TOKEN", "123456:TEST")
+    pytest.importorskip("aiogram")
+    from bots.main_bot.catalog import CATALOG, SHOP_INFO, get_item, item_button, item_title, pass_item, shop_info
+    from bots.main_bot.catalog_i18n import CATALOG_I18N, PASS_I18N, SHOP_INFO_I18N
+    assert set(CATALOG_I18N) == set(SHOP_INFO_I18N) == set(PASS_I18N) == set(PACK_CODES)
+    from shared.economy import utcnow
+    season = utcnow().strftime("%Y%m")
+    pas = pass_item(f"seasonpass_{season}")
+    for lang in ALL_LANGS:
+        for sku in CATALOG:
+            item = get_item(sku)
+            title, button = item_title(item, lang), item_button(item, lang)
+            assert 0 < _u16(title) <= 32, (lang, sku, title)
+            assert button.endswith(f" | {item['stars']} ★"), (lang, sku, button)
+            if lang in PACK_CODES:
+                assert title != item["title_en"], (lang, sku, "не переведено")
+        assert _u16(item_title(pas, lang)) <= 32, (lang, item_title(pas, lang))
+        assert item_button(pas, lang).endswith(f" | {pas['stars']} ★"), lang
+        info = shop_info(lang)
+        assert len(info) == len(SHOP_INFO) and all(i["title"] and i["text"] for i in info), lang
+
+
+def test_packs_keep_one_term_for_one_thing():
+    """Владелец 01.11: «все тексты одинаковые, без противоречий» — у термина в языке один перевод (shared/locale_packs/glossary.json)."""
+    import json
+    from pathlib import Path
+    glossary = json.loads((Path(__file__).resolve().parents[1] / "shared" / "locale_packs" / "glossary.json").read_text(encoding="utf-8"))
+    assert set(glossary) == set(PACK_CODES)
+    for lang in PACK_CODES:
+        texts = list(STRINGS[lang].values()) + [str(v) for v in MINIAPP_PACKS[lang].values()] + list(COMMAND_PACKS[lang].values())
+        texts += [BUTTONS[key].get(lang, "") for key in BUTTONS]
+        assert glossary[lang]["canon"], lang
+        for canon, variants in glossary[lang]["forbidden"].items():
+            for bad in variants:
+                hits = [x[:80] for x in texts if bad in x]
+                assert not hits, (lang, canon, bad, hits[:3])
