@@ -136,7 +136,8 @@ async def _deliver_skin(conn, user_id: int, order: dict, now: datetime, lang: st
     except SkinError as e:
         raise DeliveryError(t(lang, e.key)) from e
     edition = SKINS[order["skin"]].get("edition")
-    title = order["title"] if lang == "ru" else order.get("title_en", order["title"])
+    from shared.skins import skin_name
+    title = "✨ " + skin_name(order["skin"], lang)
     return t(lang, "skin.delivered", name=title, serial=got["serial"], edition=edition or "∞")
 
 

@@ -173,7 +173,33 @@ def test_pass_reward_labels_name_the_skin_in_the_player_language():
     from shared import season_pass as sp
     from shared.prizes import rewards_label
     suit = [{"kind": "skin", "skin": sp.pass_skin_ids("2026-11")["suit"]}]
-    assert "Polar Watch suit" in rewards_label(suit, "pt")
+    assert "Traje «Vigília polar»" in rewards_label(suit, "pt")
     assert "Polar Watch suit" in rewards_label(suit, "en")
     assert "Полярная вахта" in rewards_label(suit, "ru")
     assert "Полярная вахта" in rewards_label(suit)          # пульт владельца — по-русски
+
+
+def test_every_skin_is_named_in_all_14_languages_and_fits_the_invoice():
+    """Владелец 01.11: названия скинов — на всех 14 языках. Счёт Telegram — до 32 символов."""
+    from bots.main_bot.catalog import item_button, item_title, skin_item
+    from shared.economy import utcnow
+    from shared.locales import SUPPORTED_LANGS
+    from shared.season_pass import theme_title
+    from shared.skin_i18n import STATIC, TPL, WORDS, pack_name, pack_text
+    from shared.skins import SKINS, for_sale, skin_name, skin_text
+    packs = [lang for lang in SUPPORTED_LANGS if lang not in ("ru", "en")]
+    assert set(WORDS) == set(TPL) == set(packs)
+    for sid, s in SKINS.items():
+        assert s.get("pass") or sid in STATIC, f"{sid}: нет строки в skin_i18n.STATIC"
+        for lang in packs:
+            assert pack_name(sid, s, lang) == skin_name(sid, lang), (sid, lang)
+            if s["target"] == "title":
+                assert pack_text(sid, s, lang) == skin_text(sid, lang), (sid, lang)
+        if for_sale(sid, utcnow()):
+            item = skin_item("skin_" + sid)
+            for lang in SUPPORTED_LANGS:
+                assert len(item_title(item, lang)) <= 32, (sid, lang, item_title(item, lang))
+                assert item_button(item, lang).endswith(f"| {s['stars']} ★")
+    assert skin_name("ps202611_suit", "pt") == "Traje «Vigília polar» · 11.2026"
+    assert skin_name("aur_frame", "de") == "Rahmen „Nordlicht“"
+    assert theme_title("2026-11", "fr") == "Veille polaire" and theme_title("2026-11", "ru") == "Полярная вахта"

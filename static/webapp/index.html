@@ -3136,11 +3136,11 @@
     box.innerHTML = card(L.g_title,
       '<div class="game-grid">' + (me.features && me.features.quests === false ? '' : '<button class="game-tile wide case-tile" data-game="case">' +
         '<span class="gt-name">' + L.cs_title + '</span><span class="gt-meta">' + L.cs_tile + '</span></button>') +
-      GAMES_LIVE.map(id => tile(d.games.find(g => g.id === id))).join("") + GAMES_SOON.map(soon).join("") +
       (me.features && me.features.duels === false ? '' : '<button class="game-tile wide" data-game="duel"><span class="gt-name">' + L.dl_title +
         '</span><span class="gt-meta">' + L.dl_tile + '</span></button>') +
       (me.features && me.features.quests === false ? '' : '<button class="game-tile wide" data-game="quests"><span class="gt-name">' + L.g_name_quests +
-        '</span><span class="gt-meta">' + L.qs_tile + '</span></button>') + '</div>' +
+        '</span><span class="gt-meta">' + L.qs_tile + '</span></button>') +
+      GAMES_LIVE.map(id => tile(d.games.find(g => g.id === id))).join("") + GAMES_SOON.map(soon).join("") + '</div>' +
       '<div class="hint" style="margin-top:10px">' + (d.unlimited ? L.g_unlimited : L.g_hint) + '</div>' +
       '<div class="hint">' + fmt(L.quiz_level, { l: q.level, a: q.progress, b: q.required }) + '</div>');
     box.querySelectorAll("[data-game]").forEach(b => { b.onclick = () => {

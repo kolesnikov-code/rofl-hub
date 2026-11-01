@@ -50,6 +50,13 @@ def _theme(season: str):
     return PASS_THEMES[int(season[5:7])]
 
 
+def theme_title(season: str, lang: str) -> str:
+    """Тема сезона на языке игрока (12 паков — shared/skin_i18n)."""
+    from shared.skin_i18n import theme_name
+    ru, en = _theme(season)[:2]
+    return ru if lang == "ru" else (lang != "en" and theme_name(int(season[5:7]), lang)) or en
+
+
 def pass_skin_ids(season: str) -> dict[str, str]:
     """Эксклюзивные скины пропуска сезона: {"frame": id, "title": id, "marker": id, "suit": id}."""
     code = season.replace("-", "")

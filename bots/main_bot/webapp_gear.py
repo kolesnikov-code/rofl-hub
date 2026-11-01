@@ -286,7 +286,7 @@ async def pass_payload(conn, user_id: int, lang: str) -> dict:
               for n in range(1, sp.PASS_LEVELS + 1)]
     return {"ok": True, **st, "levels": levels, "per_level": sp.PASS_XP_PER_LEVEL, "max": sp.PASS_LEVELS,
             "ends_at": end.isoformat(), "xp_table": sp.PASS_XP, "stars": sp.PASS_STARS,
-            "theme": sp.PASS_THEMES[int(season[5:7])][0 if lang == "ru" else 1],
+            "theme": sp.theme_title(season, lang),
             "sale": {"season": sale, "sku": sp.pass_sku(sale), "owned": sale_st["premium"]},
             "skins": sp.pass_skin_ids(season)}
 

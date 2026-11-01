@@ -100,11 +100,15 @@ CATALOG: dict[str, dict] = {
 
 
 def item_title(item: dict, lang: str = "ru") -> str:
-    """Каталог локализован ru/en: все не-русские языки видят английскую витрину."""
+    """Каталог локализован ru/en: все не-русские языки видят английскую витрину (скины — на языке игрока, titles)."""
+    if item.get("titles", {}).get(lang):
+        return item["titles"][lang]
     return item["title_en"] if lang != "ru" and item.get("title_en") else item["title"]
 
 
 def item_button(item: dict, lang: str = "ru") -> str:
+    if item.get("titles", {}).get(lang) and item.get("stars"):
+        return f"{item['titles'][lang]} | {item['stars']} ★"
     return item["button_en"] if lang != "ru" and item.get("button_en") else item["button"]
 
 # Порядок кнопок на витрине. СТРОГО по одной кнопке в ряд (решение владельца 13.10:
@@ -209,6 +213,7 @@ def normalize_sku(payload: str) -> str:
 def skin_item(sku: str) -> dict | None:
     """✨ Скины продаются вне витрины CATALOG (Магазин → «✨ Скины»): skin_<id> → заказ, пока скин в продаже."""
     from shared.economy import utcnow
+    from shared.locales import SUPPORTED_LANGS
     from shared.skins import SKINS, for_sale, skin_name
     sid = sku[5:] if sku.startswith("skin_") else None
     if sid not in SKINS:
@@ -218,7 +223,8 @@ def skin_item(sku: str) -> dict | None:
     s = SKINS[sid]
     return {"sku": sku, "type": "skin", "skin": sid, "stars": s["stars"], "category": CATEGORY_GAMES,
             "title": "✨ " + skin_name(sid, "ru"), "title_en": "✨ " + skin_name(sid, "en"),
-            "button": f"✨ {skin_name(sid, 'ru')} | {s['stars']} ★", "button_en": f"✨ {skin_name(sid, 'en')} | {s['stars']} ★"}
+            "button": f"✨ {skin_name(sid, 'ru')} | {s['stars']} ★", "button_en": f"✨ {skin_name(sid, 'en')} | {s['stars']} ★",
+            "titles": {lang: "✨ " + skin_name(sid, lang) for lang in SUPPORTED_LANGS}}
 
 
 def pass_item(sku: str) -> dict | None:

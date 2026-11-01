@@ -143,8 +143,21 @@ def for_sale(skin_id: str, now: datetime) -> bool:
 
 
 def skin_name(skin_id: str, lang: str) -> str:
+    """Название на языке игрока: ru/en — из каталога, 12 паков — shared/skin_i18n (нет перевода — английское)."""
+    from shared.skin_i18n import pack_name
     s = SKINS[skin_id]
-    return s["name"] if lang == "ru" else s.get("name_en", s["name"])
+    if lang == "ru":
+        return s["name"]
+    return (lang != "en" and pack_name(skin_id, s, lang)) or s.get("name_en", s["name"])
+
+
+def skin_text(skin_id: str, lang: str) -> str | None:
+    """Надпись титула рядом с именем — на языке того, кто смотрит."""
+    from shared.skin_i18n import pack_text
+    s = SKINS[skin_id]
+    if lang == "ru":
+        return s.get("text")
+    return (lang != "en" and pack_text(skin_id, s, lang)) or s.get("text_en", s.get("text"))
 
 
 def public_catalog(lang: str) -> dict:
@@ -160,7 +173,7 @@ def public_catalog(lang: str) -> dict:
         out[sid] = {"target": s["target"], "rarity": s["rarity"], "set": s["set"], "look": s["look"],
                     "name": skin_name(sid, lang), "stars": s.get("stars"), "edition": s.get("edition"),
                     "until": s["until"].isoformat() if s.get("until") else None,
-                    "text": (s.get("text") if lang == "ru" else s.get("text_en", s.get("text")))}
+                    "text": skin_text(sid, lang)}
     return out
 
 
