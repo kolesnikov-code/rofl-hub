@@ -469,11 +469,12 @@ STRINGS = {
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 Pangkat: <b>{rank}</b>\n",
     "rank.rookie": "Pemula",
+    "rank.private": "Prajurit",
     "rank.fighter": "Petarung",
+    "rank.captain": "Kapten",
+    "rank.general": "Jenderal",
     "rank.legend": "Legenda",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "Penguasa",
 
     # ---------------- referal ----------------
     "ref.text": (

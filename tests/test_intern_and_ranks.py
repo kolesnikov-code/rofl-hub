@@ -94,31 +94,36 @@ def test_upgrade_requires_three_qualified_referrals():
 
 # ---------------------------------------------------------------- Звания
 def test_rank_thresholds():
+    # владелец 02.11: каждое звание — через N часов после предыдущего
+    def at(hours):
+        return rank_key_for(T0 - timedelta(hours=hours), T0)
     assert rank_key_for(None, T0) is None
-    assert rank_key_for(T0 - timedelta(hours=23), T0) is None          # меньше суток — без звания
-    assert rank_key_for(T0 - timedelta(days=1), T0) == "rookie"
-    assert rank_key_for(T0 - timedelta(days=6), T0) == "rookie"
-    assert rank_key_for(T0 - timedelta(days=7), T0) == "fighter"
-    assert rank_key_for(T0 - timedelta(days=30), T0) == "legend"
-    assert rank_key_for(T0 - timedelta(days=90), T0) == "rofl"
-    assert rank_key_for(T0 - timedelta(days=180), T0) == "lmao"
-    assert rank_key_for(T0 - timedelta(days=365), T0) == "king"
-    assert rank_key_for(T0 - timedelta(days=3000), T0) == "king"      # выше KING звания нет
+    assert at(71) is None                                  # меньше 72 ч — без звания
+    assert at(72) == "rookie"
+    assert at(72 + 167) == "rookie" and at(72 + 168) == "private"
+    assert at(240 + 359) == "private" and at(240 + 360) == "fighter"
+    assert at(600 + 720) == "captain"
+    assert at(1320 + 2399) == "captain" and at(1320 + 2400) == "general"
+    assert at(3720 + 4800) == "legend"
+    assert at(8520 + 7199) == "legend" and at(8520 + 7200) == "overlord"
+    assert at(100_000) == "overlord"                        # выше Властелина званий нет
 
 
-def test_rank_labels_localized_and_latin_top_ranks():
+def test_rank_labels_are_translated_in_every_language():
     from shared.locales import t
+    from shared.locales import SUPPORTED_LANGS
+    from shared.economy import RANKS
     from shared.ranks import name_with_rank, rank_label
-    assert rank_label("ru", T0 - timedelta(days=7), T0) == "Боец"
-    assert rank_label("en", T0 - timedelta(days=7), T0) == "Fighter"
-    for lang in ("ru", "en", "es", "zh", "ar"):
-        assert t(lang, "rank.rofl") == "ROFL" and t(lang, "rank.king") == "KING"
-    assert name_with_rank("@tolya", "ru", T0 - timedelta(days=400), T0) == "@tolya · 🎖 KING"
-    assert name_with_rank("@tolya", "ru", T0, T0) == "@tolya"           # новичок без звания — без хвоста
+    assert rank_label("ru", T0 - timedelta(days=30), T0) == "Боец"
+    assert rank_label("en", T0 - timedelta(days=30), T0) == "Fighter"
+    for lang in SUPPORTED_LANGS:
+        labels = [t(lang, f"rank.{key}") for _, key in RANKS]
+        assert len(set(labels)) == 7, lang
+        assert not {"ROFL", "LMAO", "KING"} & set(labels), lang
+    assert name_with_rank("@tolya", "ru", T0 - timedelta(days=700), T0) == "@tolya · 🎖 Властелин"
+    assert name_with_rank("@tolya", "ru", T0 - timedelta(hours=10), T0) == "@tolya"   # без звания — без хвоста
 
 
-
-# ---------------------------------------------------------------- удаление аккаунта (26.10)
 def test_account_deletion_rules():
     import shared.economy as e
     from shared.feature_flags import FLAG_DEFAULTS, FLAG_TITLES

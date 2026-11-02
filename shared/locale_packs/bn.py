@@ -466,11 +466,12 @@ STRINGS = {
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 র‍্যাঙ্ক: <b>{rank}</b>\n",
     "rank.rookie": "নবাগত",
+    "rank.private": "সৈনিক",
     "rank.fighter": "যোদ্ধা",
+    "rank.captain": "ক্যাপ্টেন",
+    "rank.general": "জেনারেল",
     "rank.legend": "কিংবদন্তি",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "অধিপতি",
 
     # ---------------- рефералка ----------------
     "ref.text": (

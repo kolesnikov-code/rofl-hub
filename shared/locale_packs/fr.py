@@ -473,11 +473,12 @@ STRINGS = {
     "profile.vip_line": "💎 VIP ID : <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 Grade : <b>{rank}</b>\n",
     "rank.rookie": "Débutant",
+    "rank.private": "Soldat",
     "rank.fighter": "Combattant",
+    "rank.captain": "Capitaine",
+    "rank.general": "Général",
     "rank.legend": "Légende",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "Souverain",
 
     # ---------------- parrainage ----------------
     "ref.text": (

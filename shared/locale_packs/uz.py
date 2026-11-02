@@ -477,11 +477,12 @@ STRINGS: dict[str, str] = {
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 Unvon: <b>{rank}</b>\n",
     "rank.rookie": "Yangi",
+    "rank.private": "Oddiy askar",
     "rank.fighter": "Jangchi",
+    "rank.captain": "Kapitan",
+    "rank.general": "General",
     "rank.legend": "Afsona",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "Hukmdor",
 
     # ---------------- рефералка ----------------
     "ref.text": (

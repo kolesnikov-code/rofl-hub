@@ -476,11 +476,12 @@ STRINGS = {
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 Rang: <b>{rank}</b>\n",
     "rank.rookie": "Neuling",
+    "rank.private": "Gefreiter",
     "rank.fighter": "Kämpfer",
+    "rank.captain": "Kapitän",
+    "rank.general": "General",
     "rank.legend": "Legende",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "Herrscher",
 
     # ---------------- Einladungsprogramm ----------------
     "ref.text": (

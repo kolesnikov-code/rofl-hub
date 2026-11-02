@@ -503,11 +503,12 @@ STRINGS: dict[str, str] = {
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 रैंक: <b>{rank}</b>\n",
     "rank.rookie": "नया खिलाड़ी",
+    "rank.private": "सिपाही",
     "rank.fighter": "योद्धा",
+    "rank.captain": "कप्तान",
+    "rank.general": "जनरल",
     "rank.legend": "लीजेंड",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "सम्राट",
 
     # ---------------- рефералка ----------------
     "ref.text": (

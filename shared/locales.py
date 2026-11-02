@@ -595,11 +595,12 @@ RU: dict[str, str] = {
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 Звание: <b>{rank}</b>\n",
     "rank.rookie": "Новичок",
+    "rank.private": "Рядовой",
     "rank.fighter": "Боец",
+    "rank.captain": "Капитан",
+    "rank.general": "Генерал",
     "rank.legend": "Легенда",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "Властелин",
 
     # ---------------- рефералка ----------------
     "ref.text": (
@@ -1702,11 +1703,12 @@ EN: dict[str, str] = {
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 Rank: <b>{rank}</b>\n",
     "rank.rookie": "Rookie",
+    "rank.private": "Private",
     "rank.fighter": "Fighter",
+    "rank.captain": "Captain",
+    "rank.general": "General",
     "rank.legend": "Legend",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "Overlord",
 
     # ---------------- referral ----------------
     "ref.text": (

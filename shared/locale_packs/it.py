@@ -465,11 +465,12 @@ STRINGS = {
     "profile.vip_line": "💎 VIP ID: <b>{aliases}</b>\n",
     "profile.rank_line": "🎖 Grado: <b>{rank}</b>\n",
     "rank.rookie": "Novellino",
+    "rank.private": "Soldato",
     "rank.fighter": "Combattente",
+    "rank.captain": "Capitano",
+    "rank.general": "Generale",
     "rank.legend": "Leggenda",
-    "rank.rofl": "ROFL",
-    "rank.lmao": "LMAO",
-    "rank.king": "KING",
+    "rank.overlord": "Sovrano",
 
     # ---------------- рефералка ----------------
     "ref.text": (

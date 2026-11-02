@@ -100,7 +100,7 @@ def test_build_me_payload_shape():
     assert farm["nearest_burnout"].startswith("2026-11-11")
     assert farm["units"] == [{"kind": "junior", "fueled": True, "eternal": False},
                              {"kind": "premium", "fueled": True, "eternal": False}]
-    assert payload["rank"] == "Fighter"          # 10 дней в экосистеме, язык en
+    assert payload["rank"] == "Private"          # 10 дней (240 ч) в экосистеме — Рядовой, язык en
     assert payload["team"] is None
 
 

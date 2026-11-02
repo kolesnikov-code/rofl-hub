@@ -835,27 +835,31 @@ def interns_for_level(level: int) -> int:
 
 
 # --------------------------------------------------------------------------
-# Звания по стажу в экосистеме (решение владельца 22.10): справа от имени игрока.
-# От низшего к крутейшему; ROFL/LMAO/KING — латиницей на всех языках.
+# Звания по стажу в экосистеме (владелец 02.11 — иерархия, понятная любому возрасту; было 22.10 с ROFL/LMAO/KING).
+# Каждое звание — через столько ЧАСОВ после предыдущего (Новичок — после регистрации); меньше 72 ч — без звания.
 # --------------------------------------------------------------------------
-RANKS: tuple[tuple[int, str], ...] = (
-    (1, "rookie"),      # 1 день
-    (7, "fighter"),     # неделя
-    (30, "legend"),     # месяц
-    (90, "rofl"),       # 3 месяца
-    (180, "lmao"),      # полгода
-    (365, "king"),      # год и больше
+RANK_STEPS_HOURS: tuple[tuple[str, int], ...] = (
+    ("rookie", 72),       # Новичок — 3 дня после регистрации
+    ("private", 168),     # Рядовой — ещё 7 дней
+    ("fighter", 360),     # Боец — ещё 15 дней
+    ("captain", 720),     # Капитан — ещё 30 дней
+    ("general", 2400),    # Генерал — ещё 100 дней
+    ("legend", 4800),     # Легенда — ещё 200 дней
+    ("overlord", 7200),   # Властелин — ещё 300 дней, высшее
 )
+# (часов стажа с регистрации, ключ звания) — накопленные пороги
+RANKS: tuple[tuple[int, str], ...] = tuple(
+    (sum(h for _, h in RANK_STEPS_HOURS[:i + 1]), key) for i, (key, _) in enumerate(RANK_STEPS_HOURS))
 
 
 def rank_key_for(created_at: datetime | None, now: datetime) -> str | None:
-    """Ключ звания по стажу или None (меньше суток в экосистеме)."""
+    """Ключ звания по стажу или None (меньше 72 часов в экосистеме)."""
     if created_at is None:
         return None
-    days = (now - created_at).total_seconds() / 86400
+    hours = (now - created_at).total_seconds() / 3600
     key = None
-    for threshold_days, rank in RANKS:
-        if days >= threshold_days:
+    for threshold_hours, rank in RANKS:
+        if hours >= threshold_hours:
             key = rank
     return key
 
