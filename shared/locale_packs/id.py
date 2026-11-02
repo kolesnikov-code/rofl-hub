@@ -34,6 +34,7 @@ BUTTONS = {
     "shop": "🏪 TOKO",
     "shop_cat_farm": "🚜 UNTUK LADANG",
     "shop_cat_games": "🕹️ GAME",
+    "language": "🌐 BAHASA / LANGUAGE",
 }
 
 STRINGS = {
@@ -48,6 +49,8 @@ STRINGS = {
     "quest.locked": "🔒 {n} misi baru hari ini sudah selesai. Sisanya terbuka pukul 00:00 UTC — atau aktifkan ⚡ Tanpa Batas. Misi yang sudah selesai bisa dimainkan ulang.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Bagian ini sekarang ada di aplikasi game — di sana lebih nyaman dan lebih keren. Ketuk tombolnya 👇",
+    "lang.kb_hint": "🌐 Untuk mengganti bahasa: tombol di bawah atau perintah /language.",
+    "lang.changed": "✅ Selesai: sekarang bot berbahasa Indonesia. Jika aplikasi sedang terbuka, tutup lalu buka lagi.",
     "app.keyboard_gone": "🧹 Tombol lama di bawah sudah dihapus: sekarang seluruh game ada di aplikasi. Kamu juga bisa membukanya dengan tombol «🎮 ROFL HUB» di samping kolom ketik.",
     "start.console_app": "🚀 <b>Siap!</b> Seluruh game ada di aplikasi: ketuk tombol di bawah. Nanti kamu selalu bisa membukanya dengan tombol «🎮 ROFL HUB» di samping kolom ketik.",
     "start.welcome_back_app": "👋 <b>Selamat datang kembali, @{username}!</b> Progresmu aman — buka game-nya 👇",
@@ -1826,6 +1829,7 @@ COMMANDS = {
     "faq": "📚 Pertanyaan umum",
     "rules": "📜 Perjanjian pengguna",
     "paysupport": "🛟 Dukungan pembayaran",
+    "language": "🌐 Ganti bahasa",
     "workshop": "🔧 Bengkel: sumber daya jadi peningkatan",
     "raid": "🏴‍☠️ Serbuan: pengintaian & balas dendam",
     "goals": "🎯 Target harian & peti",

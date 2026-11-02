@@ -34,6 +34,7 @@ BUTTONS: dict[str, str] = {
     "shop": "🏪 DO'KON",
     "shop_cat_farm": "🚜 FERMA UCHUN",
     "shop_cat_games": "🕹️ O'YINLAR",
+    "language": "🌐 TIL / LANGUAGE",
 }
 
 STRINGS: dict[str, str] = {
@@ -48,6 +49,8 @@ STRINGS: dict[str, str] = {
     "quest.locked": "🔒 Bugungi {n} ta yangi kvest o‘tildi. Qolganlari 00:00 UTC da ochiladi — yoki ⚡ Cheksizni yoq. O‘tilgan kvestlarni qayta o‘ynash mumkin.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Bu bo'lim endi o'yin ilovasida — u yerda qulayroq va chiroyliroq. Tugmani bos 👇",
+    "lang.kb_hint": "🌐 Tilni o'zgartirish — pastdagi tugma yoki /language buyrug'i.",
+    "lang.changed": "✅ Tayyor: endi bot o'zbek tilida gaplashadi. Ilova ochiq bo'lsa, uni yopib, qayta oching.",
     "app.keyboard_gone": "🧹 Pastdagi eski tugmalar olib tashlandi: endi butun o'yin ilovada. Uni kiritish maydoni yonidagi «🎮 ROFL HUB» tugmasi bilan ham ochishing mumkin.",
     "start.console_app": "🚀 <b>Tayyor!</b> Butun o'yin ilovada: pastdagi tugmani bos. Keyin uni har doim kiritish maydoni yonidagi «🎮 ROFL HUB» tugmasi bilan ochishing mumkin.",
     "start.welcome_back_app": "👋 <b>Qaytganing bilan, @{username}!</b> Natijalaring joyida — o'yinni och 👇",
@@ -1790,6 +1793,7 @@ COMMANDS: dict[str, str] = {
     "faq": "📚 Ko'p so'raladigan savollar",
     "rules": "📜 Foydalanuvchi shartnomasi",
     "paysupport": "🛟 To'lovlar bo'yicha yordam",
+    "language": "🌐 Tilni o'zgartirish",
     "workshop": "🔧 Ustaxona: resurslardan kuchaytirgichlar",
     "raid": "🏴‍☠️ Bosqinlar: razvedka va revansh",
     "goals": "🎯 Kundalik maqsadlar va sandiq",

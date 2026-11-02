@@ -33,6 +33,7 @@ BUTTONS: dict[str, str] = {
     "shop": "🏪 TIENDA",
     "shop_cat_farm": "🚜 PARA LA GRANJA",
     "shop_cat_games": "🕹️ JUEGOS",
+    "language": "🌐 IDIOMA / LANGUAGE",
 }
 
 STRINGS: dict[str, str] = {
@@ -47,6 +48,8 @@ STRINGS: dict[str, str] = {
     "quest.locked": "🔒 Ya hiciste tus {n} misiones nuevas de hoy. Las demás se abren a las 00:00 UTC, o activa ⚡ Ilimitado. Las completadas se pueden repetir.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Esta sección ahora está en la app del juego: ahí es más cómoda y bonita. Pulsa el botón 👇",
+    "lang.kb_hint": "🌐 Para cambiar el idioma: el botón de abajo o el comando /language.",
+    "lang.changed": "✅ Listo: ahora el bot habla español. Si la app está abierta, ciérrala y vuelve a abrirla.",
     "app.keyboard_gone": "🧹 Quitamos los botones antiguos de abajo: ahora todo el juego está en la app. También puedes abrirla con el botón «🎮 ROFL HUB» junto al campo de texto.",
     "start.console_app": "🚀 <b>¡Listo!</b> Todo el juego está en la app: pulsa el botón de abajo. Luego siempre puedes abrirla con el botón «🎮 ROFL HUB» junto al campo de texto.",
     "start.welcome_back_app": "👋 <b>¡Hola de nuevo, @{username}!</b> Tu progreso sigue ahí: abre el juego 👇",
@@ -1921,6 +1924,7 @@ COMMANDS: dict[str, str] = {
     "faq": "📚 Preguntas frecuentes",
     "rules": "📜 Acuerdo de usuario",
     "paysupport": "🛟 Soporte de pagos",
+    "language": "🌐 Cambiar idioma",
     "workshop": "🔧 Taller: recursos en mejoras",
     "raid": "🏴‍☠️ Asaltos: exploración y revancha",
     "goals": "🎯 Metas diarias y cofre",

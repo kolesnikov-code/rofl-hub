@@ -9,12 +9,12 @@ import html
 import logging
 
 from aiogram import F, Router, types
-from aiogram.filters import CommandStart
+from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 
 from bots.main_bot.guards import feature_enabled
 from bots.main_bot.handlers.app_first import app_markup, app_ready
-from bots.main_bot.handlers.menu import get_reply_main_keyboard
+from bots.main_bot.handlers.menu import get_reply_keyboard, get_reply_main_keyboard
 from shared import analytics
 from shared.analytics import track
 from shared.account_deletion import restore_account
@@ -22,7 +22,7 @@ from shared.database import db
 from bots.main_bot.webapp_links import app_url
 from shared.duels import invite_info, valid_invite_code
 from shared.economy import DUEL_INVITE_TTL_HOURS, START_BALANCE, START_CUTLETS_INVENTORY, duel_payout
-from shared.locales import resolve_lang, t
+from shared.locales import btn_variants, resolve_lang, t
 
 router = Router()
 logger = logging.getLogger(__name__)
@@ -48,6 +48,21 @@ def get_language_selection_keyboard(ref_part: str, auc_part: str,
                for code, label in LANGUAGES]
     rows = [buttons[i:i + 2] for i in range(0, len(buttons), 2)]
     return types.InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+LANGUAGE_PROMPT = "🌐 <b>Select your language / Выберите язык:</b>"
+
+
+def get_language_change_keyboard() -> types.InlineKeyboardMarkup:
+    """Та же сетка 14 языков, что при /start, — для смены языка уже зарегистрированным игроком."""
+    buttons = [types.InlineKeyboardButton(text=label, callback_data=f"chg_lang:{code}") for code, label in LANGUAGES]
+    return types.InlineKeyboardMarkup(inline_keyboard=[buttons[i:i + 2] for i in range(0, len(buttons), 2)])
+
+
+async def send_lang_hint(target: types.Message, lang: str) -> None:
+    """С приложением нижняя панель — одна кнопка «🌐 язык»: показываем её короткой подсказкой."""
+    if app_ready():
+        await target.answer(t(lang, "lang.kb_hint"), reply_markup=get_reply_keyboard(lang), parse_mode="HTML")
 
 
 def parse_start_args(text: str | None, user_id: int) -> tuple[int | None, int | None, str | None]:
@@ -181,13 +196,14 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     if not user:
         await message.answer(
-            "🌐 <b>Select your language / Выберите язык:</b>",
+            LANGUAGE_PROMPT,
             reply_markup=get_language_selection_keyboard(ref_part, auc_part, _source_to_cb(source)),
             parse_mode="HTML")
         return
 
     lang = resolve_lang(user["lang"])
     await state.clear()
+    await send_lang_hint(message, lang)
     if returned:
         await message.answer(t(lang, "acct.welcome_back"),
                              reply_markup=_main_markup(lang), parse_mode="HTML")
@@ -274,6 +290,7 @@ async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext, use
     auction_id = _auction_id_from(auc_part)
 
     await callback.message.edit_text(t(user_lang, "start.intro4"), parse_mode="HTML")
+    await send_lang_hint(callback.message, user_lang)
     await callback.message.answer(
         t(user_lang, "start.console_app" if app_ready() else "start.console"),
         reply_markup=_main_markup(user_lang), parse_mode="HTML")
@@ -284,6 +301,35 @@ async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext, use
         await trigger_inline_auction_window(callback.message, auction_id)
     if (code := _duel_code_from(auc_part)) is not None:
         await send_duel_invite(callback.message, user_lang, code)
+
+
+# ============================================================================
+# 🌐 Смена языка (02.11): кнопка нижней панели или /language — на случай, если выбрали не тот язык
+# ============================================================================
+@router.message(Command("language", "lang"))
+@router.message(F.text.in_(btn_variants("language")))
+async def cmd_change_language(message: types.Message):
+    await message.answer(LANGUAGE_PROMPT, reply_markup=get_language_change_keyboard(), parse_mode="HTML")
+
+
+@router.callback_query(F.data.startswith("chg_lang:"))
+async def process_language_change(callback: types.CallbackQuery):
+    lang = callback.data.split(":", 1)[1]
+    if lang not in LANGUAGE_CODES:
+        await callback.answer()
+        return
+    async with db.pool.acquire() as conn:
+        status = await conn.execute("UPDATE users SET lang = $2 WHERE user_id = $1", callback.from_user.id, lang)
+    if status.endswith(" 0"):   # ещё не зарегистрирован — язык выбирается в /start
+        await callback.answer("/start", show_alert=True)
+        return
+    await callback.answer()
+    label = dict(LANGUAGES)[lang]
+    try:
+        await callback.message.edit_text(f"🌐 ✅ {label}")
+    except Exception:
+        pass
+    await callback.message.answer(t(lang, "lang.changed"), reply_markup=get_reply_keyboard(lang), parse_mode="HTML")
 
 
 # ============================================================================

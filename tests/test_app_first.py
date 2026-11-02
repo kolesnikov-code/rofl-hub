@@ -39,12 +39,11 @@ def test_section_command_answers_with_a_button_into_its_tab(with_app):
     assert markup.inline_keyboard[0][0].web_app.url == "https://app.example?tab=farm"
 
 
-def test_old_reply_keyboard_is_removed_and_tab_opened(with_app):
-    from aiogram.types import ReplyKeyboardRemove
+def test_old_reply_keyboard_is_replaced_by_language_button_and_tab_opened(with_app):
     from shared.locales import btn
     msg = _Msg(btn("es", "games_zone"))
     asyncio.run(app_first.old_keyboard_pressed(msg, user_lang="es"))
-    assert isinstance(msg.sent[0][1], ReplyKeyboardRemove)
+    assert [[b.text for b in row] for row in msg.sent[0][1].keyboard] == [[btn("es", "language")]]
     assert msg.sent[1][1].inline_keyboard[0][0].web_app.url.endswith("tab=games")
 
 

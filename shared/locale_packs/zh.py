@@ -34,6 +34,7 @@ BUTTONS = {
     "shop": "🏪 商店",
     "shop_cat_farm": "🚜 农场专区",
     "shop_cat_games": "🕹️ 游戏专区",
+    "language": "🌐 语言 / LANGUAGE",
 }
 
 STRINGS = {
@@ -48,6 +49,8 @@ STRINGS = {
     "quest.locked": "🔒 今天的 {n} 个新任务已完成。其余任务将在 00:00 UTC 开放——或开启 ⚡ 无限模式。已完成的任务可以重玩。",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 此板块已移至游戏应用内——那里更方便、更好看。点击下方按钮 👇",
+    "lang.kb_hint": "🌐 更换语言：点下方按钮或发送命令 /language。",
+    "lang.changed": "✅ 完成：机器人现在说中文。如果应用已打开，请关闭后重新打开。",
     "app.keyboard_gone": "🧹 底部的旧按钮已移除：整个游戏现在都在应用里。你也可以点输入框旁的「🎮 ROFL HUB」按钮打开它。",
     "start.console_app": "🚀 <b>准备就绪！</b>整个游戏都在应用里：点击下方按钮。之后随时可以点输入框旁的「🎮 ROFL HUB」按钮打开。",
     "start.welcome_back_app": "👋 <b>欢迎回来，@{username}！</b>你的进度都在——打开游戏 👇",
@@ -2020,6 +2023,7 @@ COMMANDS = {
     "faq": "📚 常见问题",
     "rules": "📜 用户协议",
     "paysupport": "🛟 付款支持",
+    "language": "🌐 更换语言",
     "workshop": "🔧 工坊：资源换强化",
     "raid": "🏴‍☠️ 突袭：侦察与复仇战",
     "goals": "🎯 每日目标与宝箱",

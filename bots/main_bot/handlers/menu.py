@@ -2,6 +2,7 @@ import logging
 from aiogram import Router, types, F
 from aiogram.filters import Command
 
+from bots.main_bot import config
 from bots.main_bot.config import WEBAPP_URL
 from bots.main_bot.guards import feature_enabled
 from bots.main_bot.webapp_links import app_button
@@ -42,12 +43,25 @@ def get_reply_main_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
             [
                 types.KeyboardButton(text=btn(lang, "teams")),
                 types.KeyboardButton(text=btn(lang, "shop"))
-            ]
+            ],
+            [types.KeyboardButton(text=btn(lang, "language"))],
         ],
         # БЕЗ is_persistent (решение владельца 15.10): игрок сам прячет/открывает панель
         # нативной кнопкой Telegram ⊞ у поля ввода; persistent разворачивал её насильно.
         resize_keyboard=True,
     )
+
+
+def get_reply_lang_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
+    """Нижняя панель при подключённом приложении (02.11): вся игра в приложении, внизу — только смена языка
+    (случайно выбрали не тот или дети пошутили — игрок не теряется)."""
+    return types.ReplyKeyboardMarkup(keyboard=[[types.KeyboardButton(text=btn(lang, "language"))]],
+                                     resize_keyboard=True)
+
+
+def get_reply_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
+    """Нижняя панель игрока: с приложением — только язык, без него — прежняя сетка разделов (+ язык)."""
+    return get_reply_lang_keyboard(lang) if config.WEBAPP_URL else get_reply_main_keyboard(lang)
 
 
 GAMES_HUB_BUTTONS = (

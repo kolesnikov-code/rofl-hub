@@ -154,7 +154,8 @@ def test_reply_keyboards_built_per_language():
 
     for lang in ALL_LANGS:
         texts = [b.text for row in get_reply_main_keyboard(lang).keyboard for b in row]
-        assert len(texts) == 6 and all(t.strip() for t in texts), lang
+        assert len(texts) == 7 and all(t.strip() for t in texts), lang
+        assert "LANGUAGE" in texts[-1], lang   # смену языка узнают на любом языке
     assert "🚜 MY FARM" in [b.text for row in get_reply_main_keyboard("en").keyboard for b in row]
 
 

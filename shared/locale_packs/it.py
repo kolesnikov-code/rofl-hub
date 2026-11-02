@@ -34,6 +34,7 @@ BUTTONS = {
     "shop": "🏪 NEGOZIO",
     "shop_cat_farm": "🚜 PER LA FATTORIA",
     "shop_cat_games": "🕹️ GAMING",
+    "language": "🌐 LINGUA / LANGUAGE",
 }
 
 STRINGS = {
@@ -48,6 +49,8 @@ STRINGS = {
     "quest.locked": "🔒 Hai fatto le tue {n} quest nuove di oggi. Le altre si aprono alle 00:00 UTC, oppure attiva ⚡ Illimitato. Quelle completate si possono rigiocare.",
     # 27.10: «чат — дверь и почтальон», вся игра в приложении
     "app.moved": "🎮 Questa sezione ora è nell'app del gioco: lì è più comoda e più bella. Tocca il pulsante 👇",
+    "lang.kb_hint": "🌐 Per cambiare lingua: il pulsante qui sotto o il comando /language.",
+    "lang.changed": "✅ Fatto: ora il bot parla italiano. Se l'app è aperta, chiudila e riaprila.",
     "app.keyboard_gone": "🧹 I vecchi pulsanti in basso sono stati rimossi: ora tutto il gioco è nell'app. Puoi aprirla anche con il pulsante «🎮 ROFL HUB» accanto al campo di testo.",
     "start.console_app": "🚀 <b>Fatto!</b> Tutto il gioco è nell'app: tocca il pulsante qui sotto. Poi potrai sempre aprirla con il pulsante «🎮 ROFL HUB» accanto al campo di testo.",
     "start.welcome_back_app": "👋 <b>Ciao di nuovo, @{username}!</b> I tuoi progressi sono al sicuro: apri il gioco 👇",
@@ -1904,6 +1907,7 @@ COMMANDS = {
     "faq": "📚 Domande frequenti",
     "rules": "📜 Accordo utente",
     "paysupport": "🛟 Supporto pagamenti",
+    "language": "🌐 Cambia lingua",
     "workshop": "🔧 Officina: risorse in potenziamenti",
     "raid": "🏴‍☠️ Incursioni: ricognizione e rivincita",
     "goals": "🎯 Obiettivi del giorno e forziere",

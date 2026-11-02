@@ -85,11 +85,12 @@ BOT_COMMANDS: dict[str, tuple[str, str]] = {
     "faq": ("📚 Частые вопросы", "📚 FAQ"),
     "rules": ("📜 Пользовательское соглашение", "📜 User agreement"),
     "paysupport": ("🛟 Поддержка по платежам", "🛟 Payment support"),
+    "language": ("🌐 Сменить язык", "🌐 Change language"),
 }
 
 
 # 27.10 «чат — дверь и почтальон»: при подключённом приложении в синем меню только то, что живёт в чате
-APP_MODE_COMMANDS = ("app", "menu", "invite", "transfer", "faq", "rules", "paysupport")
+APP_MODE_COMMANDS = ("app", "menu", "invite", "transfer", "faq", "rules", "paysupport", "language")
 
 
 def menu_commands() -> list[str]:

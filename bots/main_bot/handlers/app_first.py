@@ -14,6 +14,7 @@ from aiogram import F, Router, types
 from aiogram.filters import Command
 
 from bots.main_bot import config
+from bots.main_bot.handlers.menu import get_reply_lang_keyboard
 from bots.main_bot.webapp_links import app_button
 from shared.locales import btn_variants, t
 
@@ -54,9 +55,9 @@ async def section_moved(message: types.Message, user_lang: str = "ru"):
 
 @router.message(F.text.in_(set(OLD_REPLY_TEXTS)), app_ready)
 async def old_keyboard_pressed(message: types.Message, user_lang: str = "ru"):
-    """Кнопка старой нижней клавиатуры: убираем клавиатуру и даём кнопку в нужную вкладку."""
+    """Кнопка старой нижней клавиатуры: меняем её на панель «🌐 язык» и даём кнопку в нужную вкладку."""
     await message.answer(t(user_lang, "app.keyboard_gone"), parse_mode="HTML",
-                         reply_markup=types.ReplyKeyboardRemove())
+                         reply_markup=get_reply_lang_keyboard(user_lang))
     await message.answer(t(user_lang, "app.moved"), parse_mode="HTML",
                          reply_markup=app_markup(user_lang, OLD_REPLY_TEXTS[message.text]))
 

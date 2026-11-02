@@ -41,6 +41,8 @@ BUTTONS: dict[str, dict[str, str]] = {
     "shop": {"ru": "🏪 МАГАЗИН", "en": "🏪 SHOP"},
     "shop_cat_farm": {"ru": "🚜 ДЛЯ ФЕРМЫ", "en": "🚜 FOR THE FARM"},
     "shop_cat_games": {"ru": "🕹️ ИГРОВЫЕ", "en": "🕹️ GAMING"},
+    # 🌐 смена языка (02.11): «LANGUAGE» на каждом языке — узнают, даже если по ошибке выбрали незнакомый
+    "language": {"ru": "🌐 ЯЗЫК / LANGUAGE", "en": "🌐 LANGUAGE"},
 }
 
 
@@ -848,6 +850,8 @@ RU: dict[str, str] = {
     "menu.btn_app": "🚀 Игровое приложение: ферма, мастерская, налёты",
     "app.btn_section": "🚀 ОТКРЫТЬ В ПРИЛОЖЕНИИ",
     "app.moved": "🎮 Этот раздел теперь в игровом приложении — там удобнее и красивее. Жми кнопку 👇",
+    "lang.kb_hint": "🌐 Сменить язык — кнопка внизу или команда /language.",
+    "lang.changed": "✅ Готово: теперь бот говорит по-русски. Если приложение открыто — закрой его и открой заново.",
     "app.keyboard_gone": "🧹 Старые кнопки внизу убраны: вся игра теперь в приложении. Открыть его можно и кнопкой «🎮 ROFL HUB» у поля ввода.",
     "start.console_app": "🚀 <b>Готово!</b> Вся игра — в приложении: жми кнопку ниже. Потом его всегда можно открыть кнопкой «🎮 ROFL HUB» у поля ввода.",
     "start.welcome_back_app": "👋 <b>С возвращением, @{username}!</b> Твой прогресс на месте — открывай игру 👇",
@@ -1953,6 +1957,8 @@ EN: dict[str, str] = {
     "menu.btn_app": "🚀 Game app: farm, workshop, raids",
     "app.btn_section": "🚀 OPEN IN THE APP",
     "app.moved": "🎮 This section now lives in the game app — it's easier and prettier there. Tap the button 👇",
+    "lang.kb_hint": "🌐 To change the language — use the button below or the /language command.",
+    "lang.changed": "✅ Done: the bot now speaks English. If the app is open, close it and open it again.",
     "app.keyboard_gone": "🧹 The old buttons at the bottom are gone: the whole game is in the app now. You can also open it with the «🎮 ROFL HUB» button next to the input field.",
     "start.console_app": "🚀 <b>All set!</b> The whole game is in the app: tap the button below. Later you can always open it with the «🎮 ROFL HUB» button next to the input field.",
     "start.welcome_back_app": "👋 <b>Welcome back, @{username}!</b> Your progress is safe — open the game 👇",
