@@ -13,7 +13,7 @@ from shared.locales import t
 
 
 def rank_label(lang: str, created_at: datetime | None, now: datetime) -> str:
-    """Название звания на языке игрока или пустая строка (стаж меньше 72 часов)."""
+    """Название звания на языке игрока или пустая строка (дата регистрации неизвестна)."""
     key = rank_key_for(created_at, now)
     return t(lang, f"rank.{key}") if key else ""
 

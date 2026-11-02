@@ -98,15 +98,17 @@ def test_rank_thresholds():
     def at(hours):
         return rank_key_for(T0 - timedelta(hours=hours), T0)
     assert rank_key_for(None, T0) is None
-    assert at(71) is None                                  # меньше 72 ч — без звания
-    assert at(72) == "rookie"
-    assert at(72 + 167) == "rookie" and at(72 + 168) == "private"
-    assert at(240 + 359) == "private" and at(240 + 360) == "fighter"
-    assert at(600 + 720) == "captain"
-    assert at(1320 + 2399) == "captain" and at(1320 + 2400) == "general"
-    assert at(3720 + 4800) == "legend"
-    assert at(8520 + 7199) == "legend" and at(8520 + 7200) == "overlord"
+    assert at(0) == "rookie" and at(71) == "rookie"        # Новичок — сразу, первые 72 ч (защита от налётов)
+    assert rank_key_for(T0 + timedelta(minutes=1), T0) == "rookie"   # часы сервера чуть врут — всё равно Новичок
+    assert at(72) == "private"
+    assert at(72 + 359) == "private" and at(72 + 360) == "fighter"
+    assert at(432 + 720) == "captain"
+    assert at(1152 + 2399) == "captain" and at(1152 + 2400) == "general"
+    assert at(3552 + 4800) == "legend"
+    assert at(8352 + 7199) == "legend" and at(8352 + 7200) == "overlord"
     assert at(100_000) == "overlord"                        # выше Властелина званий нет
+    from shared.economy import RAID_NEWBIE_SHIELD_DAYS, RANKS
+    assert RANKS[1][0] == RAID_NEWBIE_SHIELD_DAYS * 24      # Новичок кончается вместе с защитой от налётов
 
 
 def test_rank_labels_are_translated_in_every_language():
@@ -114,14 +116,15 @@ def test_rank_labels_are_translated_in_every_language():
     from shared.locales import SUPPORTED_LANGS
     from shared.economy import RANKS
     from shared.ranks import name_with_rank, rank_label
-    assert rank_label("ru", T0 - timedelta(days=30), T0) == "Боец"
-    assert rank_label("en", T0 - timedelta(days=30), T0) == "Fighter"
+    assert rank_label("ru", T0 - timedelta(days=20), T0) == "Боец"
+    assert rank_label("en", T0 - timedelta(days=20), T0) == "Fighter"
     for lang in SUPPORTED_LANGS:
         labels = [t(lang, f"rank.{key}") for _, key in RANKS]
         assert len(set(labels)) == 7, lang
         assert not {"ROFL", "LMAO", "KING"} & set(labels), lang
     assert name_with_rank("@tolya", "ru", T0 - timedelta(days=700), T0) == "@tolya · 🎖 Властелин"
-    assert name_with_rank("@tolya", "ru", T0 - timedelta(hours=10), T0) == "@tolya"   # без звания — без хвоста
+    assert name_with_rank("@tolya", "ru", T0 - timedelta(hours=10), T0) == "@tolya · 🎖 Новичок"
+    assert name_with_rank("@tolya", "ru", None, T0) == "@tolya"          # дата неизвестна — без хвоста
 
 
 def test_account_deletion_rules():
