@@ -19,7 +19,7 @@ from shared.database import db
 from shared.economy import ALL_KINDS, ITEM_EFFECTS, MINE_HOLD_HOURS, finish_count_ok, utcnow
 from shared.webapp_auth import validate_init_data
 
-VIP_PREFIX = "ROFL-HUB-"
+VIP_PREFIX = "BARON-"
 VIP_POOL = ("777", "888", "999", "100", "007", "001", "2026", "1000", "1111", "7777", "8888", "9999", "1337",
             "SHARK", "KING", "BOSS", "LEGEND", "TIGER", "WOLF", "DRAGON", "GHOST", "NINJA", "PHOENIX", "TITAN",
             "ROCKET", "CYBER", "ALPHA", "OMEGA", "GOLD", "DIAMOND", "STAR", "HERO", "CHAMP", "MASTER", "ACE")
@@ -437,7 +437,7 @@ async def handle_admin_vip_auction(request: web.Request) -> web.Response:
     else:
         alias = str(data.get("alias") or "").strip().upper()[:32]
         if not alias.startswith(VIP_PREFIX) or alias.isdigit():
-            return _fail("VIP ID должен начинаться с ROFL-HUB-")
+            return _fail("VIP ID должен начинаться с BARON-")
     if not 1 <= price <= 100_000_000 or not 1 <= step <= 10_000_000:
         return _fail("Цена и шаг — положительные числа")
     ends, err = end_time(data, utcnow(), AUCTION_MAX_HOURS, "Длительность — от 1 часа до 30 дней")

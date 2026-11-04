@@ -1,4 +1,4 @@
-"""Французская локализация ROFL HUB."""
+"""Французская локализация Bot Barons."""
 # Глоссарий (консистентность терминов):
 # монеты -> pièces
 # Младший Майнер -> Robot Mineur
@@ -53,10 +53,10 @@ STRINGS = {
     "app.moved": "🎮 Cette section est désormais dans l'appli du jeu — plus pratique et plus belle. Appuie sur le bouton 👇",
     "lang.kb_hint": "🌐 Pour changer de langue : le bouton ci-dessous ou la commande /language.",
     "lang.changed": "✅ C'est fait : le bot parle maintenant français. Si l'appli est ouverte, ferme-la et rouvre-la.",
-    "app.keyboard_gone": "🧹 Les anciens boutons du bas ont disparu : tout le jeu est désormais dans l'appli. Tu peux aussi l'ouvrir avec le bouton «🎮 ROFL HUB» à côté du champ de saisie.",
-    "start.console_app": "🚀 <b>C'est prêt !</b> Tout le jeu est dans l'appli : appuie sur le bouton ci-dessous. Ensuite, tu pourras toujours l'ouvrir avec le bouton «🎮 ROFL HUB» à côté du champ de saisie.",
+    "app.keyboard_gone": "🧹 Les anciens boutons du bas ont disparu : tout le jeu est désormais dans l'appli. Tu peux aussi l'ouvrir avec le bouton «🎮 Bot Barons» à côté du champ de saisie.",
+    "start.console_app": "🚀 <b>C'est prêt !</b> Tout le jeu est dans l'appli : appuie sur le bouton ci-dessous. Ensuite, tu pourras toujours l'ouvrir avec le bouton «🎮 Bot Barons» à côté du champ de saisie.",
     "start.welcome_back_app": "👋 <b>Re-bonjour, @{username} !</b> Ta progression est intacte — ouvre le jeu 👇",
-    "menu.app": "📱 <b>ROFL HUB</b>\nTout le jeu est dans l'appli 👇\n\n<b>Dans le chat:</b>\n• /invite — inviter un ami\n• /transfer — envoyer des pièces\n• /faq — questions fréquentes\n• /rules — conditions d'utilisation\n• /paysupport — aide aux paiements\n• /delete_account — supprimer le compte",
+    "menu.app": "📱 <b>Bot Barons</b>\nTout le jeu est dans l'appli 👇\n\n<b>Dans le chat:</b>\n• /invite — inviter un ami\n• /transfer — envoyer des pièces\n• /faq — questions fréquentes\n• /rules — conditions d'utilisation\n• /paysupport — aide aux paiements\n• /delete_account — supprimer le compte",
     # TODO(перевод 26.10): история — пока по-английски
     "hist.mining": "⛏ Minage de la ferme",
     "hist.game_win": "🎮 Victoire en jeu",
@@ -181,9 +181,9 @@ STRINGS = {
     # ---------------- commun ----------------
     "common.no_profile": "⚠️ Profil introuvable. Appuie sur /start pour t'inscrire.",
     "common.btn_menu": "💿 Menu Principal",
-    "common.blocked": "🚫 Ton compte a été bloqué par l'administration de ROFL HUB.",
+    "common.blocked": "🚫 Ton compte a été bloqué par l'administration de Bot Barons.",
     "common.feature_off": "⚙️ Cette section est en maintenance. Reviens un peu plus tard !",
-    "common.maintenance": "🛠 ROFL HUB est en maintenance rapide. De retour bientôt — tes pièces et ta progression sont en sécurité !",
+    "common.maintenance": "🛠 Bot Barons est en maintenance rapide. De retour bientôt — tes pièces et ta progression sont en sécurité !",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Content de te revoir, @{username} !</b>\nTa progression est intacte. Le panneau de navigation est en bas de l'écran.",
@@ -192,7 +192,7 @@ STRINGS = {
     "start.btn_fight": "Raconte vite, et AU COMBAT !",
     "start.console": "🚀 <b>Console de commande activée ! Utilise les boutons en bas de l'écran.</b>",
     "start.intro1": (
-        "👋 <b>Salut ! Je suis ROFL HUB BOT, le bot principal de l'écosystème de jeu ROFL HUB. Un hub de jeux et de savoir nouvelle génération !</b>\n\n<b>Ici tu peux :</b>\n🎮 Jouer contre le bot et de vrais adversaires\n💸 Gagner la monnaie du jeu avec tes victoires, ou lancer une ferme qui la mine 24h/24\n🤼 Créer une équipe et foncer vers le haut du classement\n🏆 Faire évoluer ton équipe en clan et te battre dans le classement international\n💰 Gagner des batailles et rafler des prix avec ta bande\n👑 Remporter un VIP ID légendaire aux enchères\n\n<b>Ce chat-bot sait :</b>\n📱 Ouvrir l'appli de jeu, où vit tout le jeu\n⚡ Créditer des pièces pour les jeux, les batailles d'équipes et de clans, les succès, l'activité et les filleuls\n🔄 Transférer des pièces de jeu à un autre joueur ROFL HUB\n🚀 Vendre des boosters, l'Illimité, des skins et bien plus…\n\n<i>Appuie sur « CONTINUER » et je t'en dis plus 👇</i>"
+        "👋 <b>Salut ! Je suis Bot Barons, le bot principal de l'écosystème de jeu Bot Barons. Un hub de jeux et de savoir nouvelle génération !</b>\n\n<b>Ici tu peux :</b>\n🎮 Jouer contre le bot et de vrais adversaires\n💸 Gagner la monnaie du jeu avec tes victoires, ou lancer une ferme qui la mine 24h/24\n🤼 Créer une équipe et foncer vers le haut du classement\n🏆 Faire évoluer ton équipe en clan et te battre dans le classement international\n💰 Gagner des batailles et rafler des prix avec ta bande\n👑 Remporter un VIP ID légendaire aux enchères\n\n<b>Ce chat-bot sait :</b>\n📱 Ouvrir l'appli de jeu, où vit tout le jeu\n⚡ Créditer des pièces pour les jeux, les batailles d'équipes et de clans, les succès, l'activité et les filleuls\n🔄 Transférer des pièces de jeu à un autre joueur Bot Barons\n🚀 Vendre des boosters, l'Illimité, des skins et bien plus…\n\n<i>Appuie sur « CONTINUER » et je t'en dis plus 👇</i>"
     ),
     "start.intro2": (
         "🎁 <b>VOICI TES PREMIÈRES RÉCOMPENSES D'INSCRIPTION !</b>\n"
@@ -200,24 +200,24 @@ STRINGS = {
         "💸 Tu as reçu <b>{balance} 🪙</b>\n"
         "🥩 Tu as reçu <b>{cutlets} cyber-côtelette</b>\n"
         "..................................................\n"
-        "C'est ton bonus de bienvenue pour avoir rejoint le club ROFL HUB.\n\n"
+        "C'est ton bonus de bienvenue pour avoir rejoint le club Bot Barons.\n\n"
         "🔒 <i>Le bonus n'est accordé qu'une seule fois, à l'inscription.</i>\n\n"
         "Les pièces se dépensent de mille façons — elles sont la base de l'économie du hub. Prends-en soin...\n\n"
         "⁉️ <b>Mais tu te poses sûrement une question :</b> c'est quoi, cette côtelette ? Qui dois-je nourrir avec ça ?"
     ),
     "start.intro3": (
-        "<b>D'ABORD, POURQUOI LES PIÈCES DE JEU SONT-ELLES SI IMPORTANTES ?</b>\n\nLes pièces sont le moteur de tous les échanges, compétitions et achats dans <b>ROFL HUB</b>. Et tu peux les gagner gratuitement !\n..................................................\n<b>Il y a plein de façons d'en gagner :</b>\n• Inviter des amis avec ton lien de parrainage\n• Gagner des parties contre le bot\n• Gagner des duels contre d'autres joueurs\n• Participer aux batailles d'équipes et de clans\n• Accomplir les objectifs du jour et ouvrir le coffret\n• Adopter un robot qui mine des pièces 24h/24 (Robot Stagiaire / Robot Mineur / Cyber-Foreur)\n..................................................\n<b>Si tu as un Cyber-Foreur, il faut le nourrir chaque jour. C'est là qu'intervient la cyber-côtelette : le carburant du minage automatique. Tu peux récupérer une côtelette gratuite à la ferme une fois par jour ! Ta mission est simple — passer et nourrir ton robot.</b>\n\nSi tu oublies de le nourrir, le robot s'éteint et le minage s'arrête.\n\nLe Robot Stagiaire et le Robot Mineur n'ont pas besoin de carburant. Le Stagiaire est gratuit et éternel, tandis que le Robot Mineur et le Cyber-Foreur s'achètent pour 30 jours (le Maître-Drone met l'usure en pause). Tu pigeras en cours de route :) Ne nous dispersons pas.\n\nEncore un mot sur <b>ROFL HUB</b>, pour que tu comprennes comment tout fonctionne ici.\n\n🛑 <b>Encore un message — et ensuite, au combat !</b>"
+        "<b>D'ABORD, POURQUOI LES PIÈCES DE JEU SONT-ELLES SI IMPORTANTES ?</b>\n\nLes pièces sont le moteur de tous les échanges, compétitions et achats dans <b>Bot Barons</b>. Et tu peux les gagner gratuitement !\n..................................................\n<b>Il y a plein de façons d'en gagner :</b>\n• Inviter des amis avec ton lien de parrainage\n• Gagner des parties contre le bot\n• Gagner des duels contre d'autres joueurs\n• Participer aux batailles d'équipes et de clans\n• Accomplir les objectifs du jour et ouvrir le coffret\n• Adopter un robot qui mine des pièces 24h/24 (Robot Stagiaire / Robot Mineur / Cyber-Foreur)\n..................................................\n<b>Si tu as un Cyber-Foreur, il faut le nourrir chaque jour. C'est là qu'intervient la cyber-côtelette : le carburant du minage automatique. Tu peux récupérer une côtelette gratuite à la ferme une fois par jour ! Ta mission est simple — passer et nourrir ton robot.</b>\n\nSi tu oublies de le nourrir, le robot s'éteint et le minage s'arrête.\n\nLe Robot Stagiaire et le Robot Mineur n'ont pas besoin de carburant. Le Stagiaire est gratuit et éternel, tandis que le Robot Mineur et le Cyber-Foreur s'achètent pour 30 jours (le Maître-Drone met l'usure en pause). Tu pigeras en cours de route :) Ne nous dispersons pas.\n\nEncore un mot sur <b>Bot Barons</b>, pour que tu comprennes comment tout fonctionne ici.\n\n🛑 <b>Encore un message — et ensuite, au combat !</b>"
     ),
     "start.intro4": (
-        "<b>LA VERSION COURTE. ROFL HUB, C'EST :</b>\n• Des jeux et des quêtes pour tous les goûts — tout dans une seule appli\n• Une escouade (jusqu'à 5 joueurs) ou une équipe (jusqu'à 50 joueurs)\n• Faire évoluer ton équipe en clan (jusqu'à 1000 joueurs)\n• Des batailles d'équipes et de clans avec des prix\n• Des joueurs du monde entier — tes futurs amis en font peut-être partie !\n..................................................\n<b>Comme promis, c'est le message final. Maintenant, au combat ! Commandes utiles :</b>\n\n/app — ouvrir le jeu\n/menu — ce que le chat sait faire d'autre\n/faq — questions fréquentes\n/rules — conditions d'utilisation\n"
+        "<b>LA VERSION COURTE. BOT BARONS, C'EST :</b>\n• Des jeux et des quêtes pour tous les goûts — tout dans une seule appli\n• Une escouade (jusqu'à 5 joueurs) ou une équipe (jusqu'à 50 joueurs)\n• Faire évoluer ton équipe en clan (jusqu'à 1000 joueurs)\n• Des batailles d'équipes et de clans avec des prix\n• Des joueurs du monde entier — tes futurs amis en font peut-être partie !\n..................................................\n<b>Comme promis, c'est le message final. Maintenant, au combat ! Commandes utiles :</b>\n\n/app — ouvrir le jeu\n/menu — ce que le chat sait faire d'autre\n/faq — questions fréquentes\n/rules — conditions d'utilisation\n"
     ),
 
     # ---------------- menu & zone de jeu ----------------
     "menu.text": (
-        "📱 <b>MENU PRINCIPAL DE L'ÉCOSYSTÈME ROFL HUB</b>\n..................................................\n👤 <b>PROFIL ET PASSEPORT :</b>\n• /start — Commencer l'intro et créer un compte\n• /profile — Ton passeport, ton solde et ton équipe en temps réel\n• /my_stats — Tes statistiques de jeu depuis le début\n\n🚜 <b>CYBER-FERME ET AUTOMATISATION :</b>\n• /farm — Hub carburant : ravitaillement et vitesse de minage des robots\n• /shop — Boutique : robots, côtelettes et améliorations du hub\n\n🕹️ <b>SALLE DE JEU :</b>\n• /games — Hub inline de tous les jeux contre le bot\n• /quiz — Quiz de vitesse : 30 secondes par réponse, niveaux et bonus\n• /duel — Duels 1 contre 1 avec de vrais joueurs : tables 10/100/1000 🪙\n• /quests — QUÊTES : polars, comédies et énigmes avec récompenses\n• /rps, /high_low, /safe — Jeux rapides pour des pièces\n\n👥 <b>GESTION DE TA BANDE :</b>\n• /create_team — Enregistrer ta propre équipe pour 100 000 🪙\n• /my_team — Tableau de bord de la bande et LISTE DES COÉQUIPIERS avec niveaux 🧠\n• /all_teams — Roulette d'équipes aléatoires\n\n💸 <b>ARGENT ET AMIS :</b>\n• /invite — Ton lien de parrainage : une récompense pour chaque ami actif\n• /transfer — Envoyer des pièces à un autre joueur\n\n📚 <b>AIDE ET RÈGLES :</b>\n• /faq — Le guide complet de l'écosystème (s'ouvre dans la Mini App)\n• /rules — Conditions d'utilisation\n• /delete_account — Supprimer le compte\n..................................................\n<i>⚙️ Les boutons en bas de l'écran mènent à n'importe quelle section.</i>"
+        "📱 <b>MENU PRINCIPAL DE L'ÉCOSYSTÈME BOT BARONS</b>\n..................................................\n👤 <b>PROFIL ET PASSEPORT :</b>\n• /start — Commencer l'intro et créer un compte\n• /profile — Ton passeport, ton solde et ton équipe en temps réel\n• /my_stats — Tes statistiques de jeu depuis le début\n\n🚜 <b>CYBER-FERME ET AUTOMATISATION :</b>\n• /farm — Hub carburant : ravitaillement et vitesse de minage des robots\n• /shop — Boutique : robots, côtelettes et améliorations du hub\n\n🕹️ <b>SALLE DE JEU :</b>\n• /games — Hub inline de tous les jeux contre le bot\n• /quiz — Quiz de vitesse : 30 secondes par réponse, niveaux et bonus\n• /duel — Duels 1 contre 1 avec de vrais joueurs : tables 10/100/1000 🪙\n• /quests — QUÊTES : polars, comédies et énigmes avec récompenses\n• /rps, /high_low, /safe — Jeux rapides pour des pièces\n\n👥 <b>GESTION DE TA BANDE :</b>\n• /create_team — Enregistrer ta propre équipe pour 100 000 🪙\n• /my_team — Tableau de bord de la bande et LISTE DES COÉQUIPIERS avec niveaux 🧠\n• /all_teams — Roulette d'équipes aléatoires\n\n💸 <b>ARGENT ET AMIS :</b>\n• /invite — Ton lien de parrainage : une récompense pour chaque ami actif\n• /transfer — Envoyer des pièces à un autre joueur\n\n📚 <b>AIDE ET RÈGLES :</b>\n• /faq — Le guide complet de l'écosystème (s'ouvre dans la Mini App)\n• /rules — Conditions d'utilisation\n• /delete_account — Supprimer le compte\n..................................................\n<i>⚙️ Les boutons en bas de l'écran mènent à n'importe quelle section.</i>"
     ),
     "menu.games_hub": (
-        "🕹️ <b>BIENVENUE DANS LA ZONE DE JEU ROFL HUB !</b>\n..................................................\nAffronte le bot dans des jeux rapides, teste tes connaissances au Quiz ou défie un vrai adversaire en duel !\n\n💸 Une victoire rapporte : <b>+2 🪙</b> (Cyber-Coffre : <b>+5 🪙</b>)\n💀 Une défaite coûte : <b>−1 🪙</b>, une égalité ne coûte rien\n🧠 Au Quiz, chrono de 30 secondes et niveaux d'intelligence : le niveau 1, c'est 10 bonnes réponses et <b>+100 🪙</b>, chaque niveau suivant est plus long de 10 réponses — mais la récompense grimpe de 100 🪙 !\n..................................................\n👇 <b>Choisis un jeu :</b>"
+        "🕹️ <b>BIENVENUE DANS LA ZONE DE JEU BOT BARONS !</b>\n..................................................\nAffronte le bot dans des jeux rapides, teste tes connaissances au Quiz ou défie un vrai adversaire en duel !\n\n💸 Une victoire rapporte : <b>+2 🪙</b> (Cyber-Coffre : <b>+5 🪙</b>)\n💀 Une défaite coûte : <b>−1 🪙</b>, une égalité ne coûte rien\n🧠 Au Quiz, chrono de 30 secondes et niveaux d'intelligence : le niveau 1, c'est 10 bonnes réponses et <b>+100 🪙</b>, chaque niveau suivant est plus long de 10 réponses — mais la récompense grimpe de 100 🪙 !\n..................................................\n👇 <b>Choisis un jeu :</b>"
     ),
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 Pierre-Feuille-Ciseaux",
@@ -225,20 +225,20 @@ STRINGS = {
     "menu.btn_safe": "🔐 Cyber-Coffre",
     "menu.btn_duel": "⚔️ DUELS 1v1",
     "app.open": (
-        "🎮 <b>ROFL HUB</b>\n\nTout le jeu dans une seule appli : passeport, ferme, jeux, quêtes, bourse, équipe et bien plus.\n\n👇 Appuie sur le bouton :"
+        "🎮 <b>Bot Barons</b>\n\nTout le jeu dans une seule appli : passeport, ferme, jeux, quêtes, bourse, équipe et bien plus.\n\n👇 Appuie sur le bouton :"
     ),
     "app.btn": "🎮 OUVRIR LA MINI APP",
     "app.unavailable": "⚙️ La Mini App se connecte encore aux serveurs de l'écosystème. Repasse un peu plus tard !",
     "faq.teaser": (
-        "📚 <b>GUIDE DE L'ÉCOSYSTÈME ROFL HUB</b>\n..................................................\nL'essentiel en bref :\n🚜 Les robots minent des pièces 24h/24 : Robot Stagiaire — 1 🪙/h, gratuit et éternel, Robot Mineur — 5 🪙/h sans carburant, Cyber-Foreur — 10 🪙/h, et CHAQUE Foreur mange sa propre cyber-côtelette une fois par jour. Le Robot Mineur et le Cyber-Foreur vivent 30 jours (le Maître-Drone met l'usure en pause).\n🧠 Quiz : 30 secondes par réponse, niveaux d'intelligence aux récompenses croissantes.\n⚔️ Duels contre de vrais joueurs aux tables de 10/100/1000 🪙.\n🏆 Escouades jusqu'à 5 combattants, équipes jusqu'à 50 (Méga-Clan — jusqu'à 1000) et batailles événementielles avec des prix.\n..................................................\n👇 <b>Le guide complet avec toutes les mécaniques — en un tap :</b>"
+        "📚 <b>GUIDE DE L'ÉCOSYSTÈME BOT BARONS</b>\n..................................................\nL'essentiel en bref :\n🚜 Les robots minent des pièces 24h/24 : Robot Stagiaire — 1 🪙/h, gratuit et éternel, Robot Mineur — 5 🪙/h sans carburant, Cyber-Foreur — 10 🪙/h, et CHAQUE Foreur mange sa propre cyber-côtelette une fois par jour. Le Robot Mineur et le Cyber-Foreur vivent 30 jours (le Maître-Drone met l'usure en pause).\n🧠 Quiz : 30 secondes par réponse, niveaux d'intelligence aux récompenses croissantes.\n⚔️ Duels contre de vrais joueurs aux tables de 10/100/1000 🪙.\n🏆 Escouades jusqu'à 5 combattants, équipes jusqu'à 50 (Méga-Clan — jusqu'à 1000) et batailles événementielles avec des prix.\n..................................................\n👇 <b>Le guide complet avec toutes les mécaniques — en un tap :</b>"
     ),
     "faq.btn_open": "📖 OUVRIR LE GUIDE COMPLET",
     "rules.teaser": (
-        "📜 <b>CONDITIONS D'UTILISATION DE ROFL HUB</b>\n..................................................\nL'essentiel :\n🪙 Les pièces et tous les objets du jeu sont des éléments virtuels de divertissement : ce n'est pas de l'argent et ils ne s'échangent pas contre des fonds réels.\n💫 Les achats passent uniquement par les Telegram Stars officiels ; les articles numériques sont livrés instantanément, et les Stars sont remboursées automatiquement si la livraison échoue.\n🛡️ Nous ne conservons que ton Telegram ID, ton nom et ta progression dans le jeu — ni numéros de téléphone, ni géolocalisation, ni documents.\n🤝 Insultes, combines de triche et multi-comptes sont interdits — toute violation peut mener à un blocage.\n..................................................\n👇 <b>Le texte complet des conditions et la clause de non-responsabilité — en un tap :</b>\n<i>⚖️ En utilisant le bot, tu confirmes accepter les conditions.</i>"
+        "📜 <b>CONDITIONS D'UTILISATION DE BOT BARONS</b>\n..................................................\nL'essentiel :\n🪙 Les pièces et tous les objets du jeu sont des éléments virtuels de divertissement : ce n'est pas de l'argent et ils ne s'échangent pas contre des fonds réels.\n💫 Les achats passent uniquement par les Telegram Stars officiels ; les articles numériques sont livrés instantanément, et les Stars sont remboursées automatiquement si la livraison échoue.\n🛡️ Nous ne conservons que ton Telegram ID, ton nom et ta progression dans le jeu — ni numéros de téléphone, ni géolocalisation, ni documents.\n🤝 Insultes, combines de triche et multi-comptes sont interdits — toute violation peut mener à un blocage.\n..................................................\n👇 <b>Le texte complet des conditions et la clause de non-responsabilité — en un tap :</b>\n<i>⚖️ En utilisant le bot, tu confirmes accepter les conditions.</i>"
     ),
     "rules.btn_open": "📜 OUVRIR LES CONDITIONS COMPLÈTES",
     "quest.list_header": (
-        "🗺️ <b>QUÊTES ROFL HUB</b>\n"
+        "🗺️ <b>QUÊTES BOT BARONS</b>\n"
         "..................................................\n"
         "Des histoires interactives avec des choix et des embranchements : polars, comédies, énigmes. "
         "La première victoire dans chaque quête rapporte des pièces, et tu peux rejouer autant que tu veux !\n"
@@ -301,7 +301,7 @@ STRINGS = {
 
     # ---------------- profil ----------------
     "profile.caption": (
-        "📋 <b>ESPACE PERSONNEL DU JOUEUR ROFL HUB</b>\n"
+        "📋 <b>ESPACE PERSONNEL DU JOUEUR BOT BARONS</b>\n"
         "..................................................\n"
         "🆔 Ton ID de Passeport : <code>{user_id}</code>\n"
         "{vip}"
@@ -417,7 +417,7 @@ STRINGS = {
         "⚔️ <b>DUELS 1 CONTRE 1 : PIERRE-FEUILLE-CISEAUX AVEC MISE</b>\n"
         "..................................................\n"
         "Choisis une table selon ton budget — comme au poker. La mise est prélevée tout de suite, "
-        "et ton adversaire est un vrai joueur ROFL HUB !\n\n"
+        "et ton adversaire est un vrai joueur Bot Barons !\n\n"
         "💰 La cagnotte = les deux mises. Le gagnant prend <b>{payout_percent}%</b> de la cagnotte, "
         "<b>{burn_percent}%</b> part en fumée pour de bon (déflation !).\n"
         "🤝 Égalité ? Rejouez aussitôt vos gestes, la cagnotte reste sur la table.\n"
@@ -483,7 +483,7 @@ STRINGS = {
 
     # ---------------- parrainage ----------------
     "ref.text": (
-        "🤝 <b>PROGRAMME DE PARRAINAGE ROFL HUB</b>\n"
+        "🤝 <b>PROGRAMME DE PARRAINAGE BOT BARONS</b>\n"
         "..................................................\n"
         "Invite des amis via ton lien personnel et reçois <b>{bonus}</b> "
         "pour chaque ami qui devient joueur actif !\n\n"
@@ -495,7 +495,7 @@ STRINGS = {
         "<i>Balance le lien dans les chats de classe, à tes amis et sur les réseaux — plus la bande est grande, plus ton solde grimpe vite !</i>"
     ),
     "ref.btn_share": "📣 Partager le lien",
-    "ref.share_text": "Rejoins l'écosystème de jeu ROFL HUB !",
+    "ref.share_text": "Rejoins l'écosystème de jeu Bot Barons !",
     "ref.qualified_line": ("✅ <b>Un ami actif</b> est quelqu'un qui a atteint le <b>niveau d'intelligence {level}</b> "
                            "au quiz et récupéré <b>{claims} côtelettes quotidiennes</b> à la ferme. Alors tu gagnes <b>{bonus}</b>, "
                            "une seule fois par ami. Pas de bonus pour une simple inscription sans jeu : c'est plus juste pour tous."),
@@ -552,7 +552,7 @@ STRINGS = {
     ),
     "acct.btn_undo": "↩️ Annuler la suppression",
     "acct.undone": "🎉 Suppression annulée : le compte est de nouveau à toi !",
-    "acct.purged": "🗑 Ton compte ROFL HUB a été supprimé. Merci d'avoir joué ! Si tu veux revenir, appuie sur /start.",
+    "acct.purged": "🗑 Ton compte Bot Barons a été supprimé. Merci d'avoir joué ! Si tu veux revenir, appuie sur /start.",
     "acct.deleted_notice": "Le compte a été supprimé. Appuie sur /start pour recommencer.",
     "acct.welcome_back": (
         "👋 <b>Content de te revoir !</b>\n"
@@ -571,7 +571,7 @@ STRINGS = {
         "Format de la commande :\n"
         "<code>/transfer ID montant</code> — par ID de Passeport (visible dans /profile)\n"
         "<code>/transfer @username montant</code> — par nom d'utilisateur\n"
-        "<code>/transfer ROFL-HUB-777 montant</code> — par un VIP ID d'enchères\n\n"
+        "<code>/transfer BARON-777 montant</code> — par un VIP ID d'enchères\n\n"
         "Exemples :\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
         "📌 Montant minimum : <b>{min} 🪙</b>"
     ),
@@ -606,7 +606,7 @@ STRINGS = {
     ),
 
     # ---------------- boutique & paiements ----------------
-    "shop.header": "🏪 <b>BOUTIQUE ROFL HUB</b>\nLes achats passent par les Telegram Stars officiels. Choisis une catégorie avec les boutons en bas.",
+    "shop.header": "🏪 <b>BOUTIQUE BOT BARONS</b>\nLes achats passent par les Telegram Stars officiels. Choisis une catégorie avec les boutons en bas.",
     "shop.cat_farm": (
         "🚜 <b>BOUTIQUE · POUR LA FERME</b>\n"
         "..................................................\n"
@@ -622,7 +622,7 @@ STRINGS = {
         "..................................................\n"
         "👇 <b>Choisis un article :</b>"
     ),
-    "pay.invoice_desc": "Livraison instantanée du contenu en jeu de ROFL HUB.",
+    "pay.invoice_desc": "Livraison instantanée du contenu en jeu de Bot Barons.",
     "pay.invoice_error": "⚠️ Impossible de créer la facture Telegram Stars. Réessaie plus tard.",
     "pay.success": "🎉 <b>Paiement confirmé !</b>\n🧾 <code>{charge}</code>\n💵 Débité : <b>{stars} ★</b>\n\n{text}",
     "pay.crash": (
@@ -635,7 +635,7 @@ STRINGS = {
     "pay.support": (
         "🛟 <b>ASSISTANCE PAIEMENTS TELEGRAM STARS</b>\n"
         "..................................................\n"
-        "Tous les articles ROFL HUB sont numériques et livrés instantanément après paiement.\n\n"
+        "Tous les articles Bot Barons sont numériques et livrés instantanément après paiement.\n\n"
         "⚙️ <b>Si le paiement est passé mais l'article n'est pas arrivé :</b>\n"
         "le bot rembourse automatiquement les Stars en cas d'échec de livraison. Si ce n'est pas le cas, "
         "envoie ici le numéro de paiement (il figure sur le reçu, format <code>xxxx...</code>) et décris le problème. "
@@ -1109,7 +1109,7 @@ MINIAPP = {
     "gr_serial": "#{n} sur {of}",
     "gr_mineEmpty": "Pas encore de skins. Ils se vendent ci-dessous, tombent lors des événements et changent de mains à la bourse.",
     "gr_mine": "✨ MES SKINS",
-    "gr_bragText": "Regarde mon look sur ROFL HUB — tu fais mieux ?",
+    "gr_bragText": "Regarde mon look sur Bot Barons — tu fais mieux ?",
     "gr_brag": "📸 Frimer",
     "gr_showHint": "Voici comment les autres te voient : cadre et titre dans le TOP et dans ton équipe, tenue sur l'avatar, marqueur sur la carte des expéditions.",
     "gr_title": "🏆 GARAGE",
@@ -1225,7 +1225,7 @@ MINIAPP = {
     "dl_premOn": "⚡ Tu as Illimité — la commission sur les gains est de {b}% au lieu de {a}%.",
     "dl_premOff": "⚡ Avec Illimité, la commission sur les gains est de {b}% au lieu de {a}%.",
     "md_title": "🧭 Comment veux-tu jouer ?",
-    "md_hint": "ROFL HUB est vaste. Choisis par où commencer — tu peux changer de mode à tout moment dans le passeport.",
+    "md_hint": "Bot Barons est vaste. Choisis par où commencer — tu peux changer de mode à tout moment dans le passeport.",
     "md_full": "🌐 Tout l'écosystème",
     "md_fullText": "Une ferme de robots, le stock, l'atelier, la bourse, les équipes, les raids, les mines et la carte du monde — plus tous les jeux et histoires. Toutes les sections sont ouvertes dès le départ.",
     "md_puzzle": "🧩 Jeux et histoires",
@@ -1246,14 +1246,14 @@ MINIAPP = {
     "di_head": "🤝 Défier un ami",
     "di_hint": "Ta propre table par lien : elle ne passe pas par la file et n'attend que ton ami. Un nouveau venu arrivé par le lien devient ton ami.",
     "di_table": "🤝 Défier un ami · table de {s} 🪙",
-    "di_shareText": "Je te défie en duel sur ROFL HUB ! Mise {s} 🪙 — on va voir qui gagne 😎",
+    "di_shareText": "Je te défie en duel sur Bot Barons ! Mise {s} 🪙 — on va voir qui gagne 😎",
     "ac_title": "🏅 Mes succès",
     "ac_streak": "🔥 Série d'Affaires du jour : {n}",
     "ac_hint": "Tous tes succès réunis sur une carte — publie-la en story ou envoie-la à un ami.",
     "ac_make": "📸 Créer la carte",
     "ac_cardSub": "mes succès",
     "ac_cardCall": "Tu fais mieux ?",
-    "ac_shareText": "Mon score sur ROFL HUB : 🧠 niveau {l}, 🗺 {q} quêtes, 🕵️ {d} affaires, ⚔️ {w} duels gagnés. Tu fais mieux ?",
+    "ac_shareText": "Mon score sur Bot Barons : 🧠 niveau {l}, 🗺 {q} quêtes, 🕵️ {d} affaires, ⚔️ {w} duels gagnés. Tu fais mieux ?",
     "ac_story": "📲 Publier en story",
     "ac_send": "✈️ Envoyer à un ami",
     "ac_save": "💾 Enregistrer l'image",
@@ -1865,7 +1865,7 @@ MINIAPP = {
     "blocked": "Compte bloqué par l'administration.",
     "deleting": "Ton compte est en cours de suppression. Tu as changé d'avis ? Annule la suppression dans le chat du bot.",
     "error": "Impossible de charger les données. Réessaie plus tard.",
-    "outside": "Ouvre cette application depuis le bot Telegram ROFL HUB.",
+    "outside": "Ouvre cette application depuis le bot Telegram Bot Barons.",
     "robotsTitle": "🤖 TES ROBOTS",
     "buyMore": "🛒 Acheter",
     "rateShort": "{v} 🪙/h",

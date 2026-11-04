@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 dp = Dispatcher(storage=MemoryStorage())
 
 # Юзернейм главного бота для моментальной генерации диплинков
-MAIN_BOT_USERNAME = os.getenv("MAIN_BOT_USERNAME", "RoflHubGame_Bot").lstrip("@")
+MAIN_BOT_USERNAME = os.getenv("MAIN_BOT_USERNAME", "BotBaronsBot").lstrip("@")
 
 MAIN_BOT_TOKEN = os.getenv("MAIN_BOT_TOKEN")
 
@@ -120,7 +120,7 @@ async def cmd_admin_start(message: types.Message):
         await message.answer("❌ Доступ заблокирован. Этот бот — закрытый пульт управления.")
         return
     await message.answer(
-        "🛠️ <b>ШТАБ-КВАРТИРА МОДЕРАЦИИ ROFL HUB</b>\n..................................................\n"
+        "🛠️ <b>ШТАБ-КВАРТИРА МОДЕРАЦИИ BOT BARONS</b>\n..................................................\n"
         "🟢 <b>ДОСТУПНЫЕ КОМАНДЫ ПУЛЬТА:</b>\n"
         "• /new_auction — Запустить лот и вывесить автоматический анонс в канал юзеров\n"
         "• /close_auction [ID] — Принудительно закрыть торги\n"
@@ -160,7 +160,7 @@ async def admin_assign_vip(message: types.Message):
         return
     parts = message.text.split()
     if len(parts) != 3 or not parts[1].isdigit():
-        await message.answer("⚠️ Пример: <code>/assign_vip 123456789 ROFL-HUB-777</code>",
+        await message.answer("⚠️ Пример: <code>/assign_vip 123456789 BARON-777</code>",
                              parse_mode="HTML")
         return
     user_id, alias = int(parts[1]), parts[2].strip().upper()[:32]
@@ -196,7 +196,7 @@ async def admin_revoke_vip(message: types.Message):
         return
     parts = message.text.split()
     if len(parts) != 2:
-        await message.answer("⚠️ Пример: <code>/revoke_vip ROFL-HUB-777</code>", parse_mode="HTML")
+        await message.answer("⚠️ Пример: <code>/revoke_vip BARON-777</code>", parse_mode="HTML")
         return
     alias = parts[1].strip().upper()
     async with db.pool.acquire() as conn:
@@ -250,7 +250,7 @@ async def admin_block_user(message: types.Message):
     if not found:
         await message.answer("❌ Игрок с таким ID не найден в базе.")
         return
-    await notify_user_via_main_bot(user_id, "🚫 <b>Твой аккаунт заблокирован администрацией ROFL HUB.</b>")
+    await notify_user_via_main_bot(user_id, "🚫 <b>Твой аккаунт заблокирован администрацией Bot Barons.</b>")
     await message.answer(f"🚫 Игрок <code>{user_id}</code> заблокирован: бот перестал отвечать на его действия.",
                          parse_mode="HTML")
 
@@ -268,7 +268,7 @@ async def admin_unblock_user(message: types.Message):
     if not found:
         await message.answer("❌ Игрок с таким ID не найден в базе.")
         return
-    await notify_user_via_main_bot(user_id, "✅ <b>Твой аккаунт разблокирован. С возвращением в ROFL HUB!</b>")
+    await notify_user_via_main_bot(user_id, "✅ <b>Твой аккаунт разблокирован. С возвращением в Bot Barons!</b>")
     await message.answer(f"✅ Игрок <code>{user_id}</code> разблокирован.", parse_mode="HTML")
 
 
@@ -297,7 +297,7 @@ async def admin_gift(message: types.Message):
 
     if amount > 0:
         await notify_user_via_main_bot(
-            user_id, f"🎁 <b>Администрация ROFL HUB подарила тебе {amount} монет!</b> Проверь /profile")
+            user_id, f"🎁 <b>Администрация Bot Barons подарила тебе {amount} монет!</b> Проверь /profile")
     await message.answer(
         f"💰 Готово! Игроку <code>{user_id}</code> {'начислено' if amount > 0 else 'списано'} "
         f"<b>{abs(amount)} монет</b>. Новый баланс: <b>{new_balance}</b>.", parse_mode="HTML")
@@ -927,7 +927,7 @@ def _features_kb(flags: dict[str, bool]) -> types.InlineKeyboardMarkup:
 
 
 async def _features_text() -> str:
-    return ("🎛 <b>ПУЛЬТ ЭКОСИСТЕМЫ ROFL HUB</b>\n"
+    return ("🎛 <b>ПУЛЬТ ЭКОСИСТЕМЫ BOT BARONS</b>\n"
             "..................................................\n"
             "Нажми на тумблер, чтобы включить/выключить раздел.\n"
             "Выключенный раздел отвечает игрокам «на техобслуживании»;\n"
@@ -1382,7 +1382,7 @@ async def cmd_promoters(message: types.Message):
 
 async def dynamic_analytics_daemon(bot: Bot):
     """
-    Фоновый демон сбора метрик холдинга ROFL HUB CORE.
+    Фоновый демон сбора метрик холдинга BOT BARONS CORE.
     Срабатывает строго в 06:00, 12:00, 18:00 UTC (экспресс-срез)
     и в 00:00 UTC (глубокий суточный когортный анализ).
     """

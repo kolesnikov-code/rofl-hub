@@ -120,7 +120,7 @@ async def mark_refunded(conn, charge_id: str) -> bool:
 def format_daily_report(r: dict) -> str:
     """HTML-текст отчёта для Тайной Комнаты админа."""
     return (
-        "👑 <b>СУТОЧНЫЙ ОТЧЁТ ХОЛДИНГА ROFL HUB</b>\n"
+        "👑 <b>СУТОЧНЫЙ ОТЧЁТ ХОЛДИНГА BOT BARONS</b>\n"
         "..................................................\n"
         f"👥 Игроков всего: <b>{r['total_users']}</b> (заблокировано: {r['blocked_users']})\n"
         f"🔥 DAU (актив за 24ч): <b>{r['dau']}</b>\n"

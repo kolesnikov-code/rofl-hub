@@ -531,7 +531,7 @@ async def test_transfer_by_vip_alias(conn):
     await _mk_user(conn, 120, 500)
     await _make_active(conn, 120)
     await _mk_user(conn, 121, 0)
-    await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ('ROFL-HUB-777', 121)")
+    await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ('BARON-777', 121)")
 
     # Резолв алиаса — как в обработчике /transfer (регистронезависимый)
     recipient = await conn.fetchrow(
@@ -1401,7 +1401,7 @@ async def test_account_deletion_full_cycle(conn):
     await _tech(conn, 970, comm=1)
     await conn.execute("INSERT INTO miners (user_id, kind, expires_at) VALUES (970, 'intern', $1)",
                        now + timedelta(days=36500))
-    await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ('ROFL-HUB-DEL', 970)")
+    await conn.execute("INSERT INTO vip_aliases (alias, user_id) VALUES ('BARON-DEL', 970)")
     team_id = await conn.fetchval(
         "INSERT INTO teams (team_name, captain_id, members_count) VALUES ('Del', 970, 2) RETURNING team_id")
     await conn.execute("UPDATE users SET team_id = $1, team_joined_at = $2 WHERE user_id = 970", team_id, now)

@@ -33,7 +33,7 @@ async def _resolve_recipient(conn, raw: str) -> dict | None:
     if raw.isdigit():
         return await conn.fetchrow(
             "SELECT user_id, username, display_name, is_blocked FROM users WHERE user_id = $1" + alive, int(raw))
-    # VIP ID (например ROFL-HUB-777) — равноправный айдишник для переводов
+    # VIP ID (например BARON-777) — равноправный айдишник для переводов
     return await conn.fetchrow(
         "SELECT u.user_id, u.username, u.display_name, u.is_blocked "
         "FROM vip_aliases v JOIN users u ON u.user_id = v.user_id "

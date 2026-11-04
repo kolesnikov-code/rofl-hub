@@ -64,9 +64,9 @@ def test_new_headers_and_texts():
     assert t("ru", "farm.intern_line", rate=1, count=1).startswith("• Роботы-Стажёры (1 🪙/ч)")
     assert "/shop" not in t("ru", "farm.status_no_drills")
     profile = t("ru", "profile.caption", user_id=1, vip="", balance=1, team="—", level=1, next_level=2, left=1, reward=200)
-    assert "ТВОЙ ПРОФИЛЬ ROFL HUB" in profile and "В приложении — всё остальное" in profile and "ЛИЧНЫЙ КАБИНЕТ" not in profile
+    assert "ТВОЙ ПРОФИЛЬ BOT BARONS" in profile and "В приложении — всё остальное" in profile and "ЛИЧНЫЙ КАБИНЕТ" not in profile
     clans = (ROOT / "bots" / "main_bot" / "handlers" / "clans.py").read_text(encoding="utf-8")
-    assert "КОМАНДЫ И КЛАНЫ ROFL HUB" in clans and "ЦЕНТРАЛЬНЫЙ ОФИС" not in clans
+    assert "КОМАНДЫ И КЛАНЫ BOT BARONS" in clans and "ЦЕНТРАЛЬНЫЙ ОФИС" not in clans
 
 
 def test_intern_written_with_hyphen_everywhere():

@@ -106,7 +106,7 @@ async def test_admin_api_requires_owner(monkeypatch):
             r = await client.request(method, path, headers={"X-Telegram-Init-Data": _init(222)})
             assert r.status == 403, path                                         # чужой ID
         page = await client.get("/admin")
-        assert page.status == 200 and "ПУЛЬТ ROFL HUB" in await page.text()
+        assert page.status == 200 and "ПУЛЬТ BOT BARONS" in await page.text()
     finally:
         await client.close()
 

@@ -74,7 +74,7 @@ def test_shipped_csv_every_question_valid_for_buttons():
 def test_shipped_csv_covers_rofl_hub_category():
     ql.load_questions_from_csv(ql.DEFAULT_CSV_PATH)
     categories = {q["category"] for q in ql._questions}
-    assert "ROFL HUB" in categories
+    assert "Bot Barons" in categories
     assert len(categories) >= 10
 
 

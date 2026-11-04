@@ -1,4 +1,4 @@
-"""Индонезийская локализация ROFL HUB."""
+"""Индонезийская локализация Bot Barons."""
 # Глоссарий (консистентность терминов):
 # монеты -> koin
 # Младший Майнер -> Robot Penambang
@@ -52,10 +52,10 @@ STRINGS = {
     "app.moved": "🎮 Bagian ini sekarang ada di aplikasi game — di sana lebih nyaman dan lebih keren. Ketuk tombolnya 👇",
     "lang.kb_hint": "🌐 Untuk mengganti bahasa: tombol di bawah atau perintah /language.",
     "lang.changed": "✅ Selesai: sekarang bot berbahasa Indonesia. Jika aplikasi sedang terbuka, tutup lalu buka lagi.",
-    "app.keyboard_gone": "🧹 Tombol lama di bawah sudah dihapus: sekarang seluruh game ada di aplikasi. Kamu juga bisa membukanya dengan tombol «🎮 ROFL HUB» di samping kolom ketik.",
-    "start.console_app": "🚀 <b>Siap!</b> Seluruh game ada di aplikasi: ketuk tombol di bawah. Nanti kamu selalu bisa membukanya dengan tombol «🎮 ROFL HUB» di samping kolom ketik.",
+    "app.keyboard_gone": "🧹 Tombol lama di bawah sudah dihapus: sekarang seluruh game ada di aplikasi. Kamu juga bisa membukanya dengan tombol «🎮 Bot Barons» di samping kolom ketik.",
+    "start.console_app": "🚀 <b>Siap!</b> Seluruh game ada di aplikasi: ketuk tombol di bawah. Nanti kamu selalu bisa membukanya dengan tombol «🎮 Bot Barons» di samping kolom ketik.",
     "start.welcome_back_app": "👋 <b>Selamat datang kembali, @{username}!</b> Progresmu aman — buka game-nya 👇",
-    "menu.app": "📱 <b>ROFL HUB</b>\nSeluruh game ada di aplikasi 👇\n\n<b>Di chat:</b>\n• /invite — undang teman\n• /transfer — kirim koin\n• /faq — pertanyaan umum\n• /rules — perjanjian pengguna\n• /paysupport — bantuan pembayaran\n• /delete_account — hapus akun",
+    "menu.app": "📱 <b>Bot Barons</b>\nSeluruh game ada di aplikasi 👇\n\n<b>Di chat:</b>\n• /invite — undang teman\n• /transfer — kirim koin\n• /faq — pertanyaan umum\n• /rules — perjanjian pengguna\n• /paysupport — bantuan pembayaran\n• /delete_account — hapus akun",
     # TODO(перевод 26.10): история — пока по-английски
     "hist.mining": "⛏ Hasil ladang",
     "hist.game_win": "🎮 Menang game",
@@ -76,7 +76,7 @@ STRINGS = {
     "hist.swap_refund": "🔁 Tukar: dikembalikan",
     "hist.transfer_in": "🔄 Transfer dari pemain",
     "hist.transfer_out": "🔄 Transfer ke pemain",
-    "hist.admin_gift": "🎁 Hadiah dari tim ROFL HUB",
+    "hist.admin_gift": "🎁 Hadiah dari tim Bot Barons",
     "hist.prize": "🏆 Hadiah juara",
     "hist.daily_chest": "🎁 Peti target harian",
     "hist.daily_case": "🕵️ Kasus harian",
@@ -138,14 +138,14 @@ STRINGS = {
     "hist.gear_exo": "💠 Peleburan Zirah Nano-Exo",
     "hist.suit_miner": "⛏ Bonus kostum penambang",
     "hist.other": "• Lainnya",
-    "hist.src_gift": "🎁 Hadiah dari tim ROFL HUB",
+    "hist.src_gift": "🎁 Hadiah dari tim Bot Barons",
     "hist.src_battle": "🏟 Pertempuran atau event",
     "hist.src_exp": "🗺 Ekspedisi di peta dunia",
     # TODO(перевод 26.10): награды в личку и аукционы — пока по-английски
     "rn.place": "🏁 <b>Hasil “{title}”</b>: kamu meraih peringkat {place}!",
     "rn.all": "🏁 <b>Hasil “{title}”</b>: terima kasih sudah ikut!",
     "rn.got": "🎁 Masuk: <b>{r}</b>",
-    "rn.manual": "🎁 Hadiah: <b>{r}</b> — tim ROFL HUB akan menghubungimu untuk menyerahkannya.",
+    "rn.manual": "🎁 Hadiah: <b>{r}</b> — tim Bot Barons akan menghubungimu untuk menyerahkannya.",
     "rn.mine": "⛏ Tambang #{mine} jadi milik timmu selama {hours} jam — anggota dengan 📡 komunikasi mendapat sumber dayanya tiap jam.",
     "rn.where": "Semuanya sudah masuk ke gudang dan saldomu — cek di aplikasi game.",
     "auc.err_none": "🚨 Lot tidak ditemukan.",
@@ -180,9 +180,9 @@ STRINGS = {
     # ---------------- umum ----------------
     "common.no_profile": "⚠️ Profil tidak ditemukan. Tekan /start untuk mendaftar.",
     "common.btn_menu": "💿 Menu Utama",
-    "common.blocked": "🚫 Akunmu diblokir oleh admin ROFL HUB.",
+    "common.blocked": "🚫 Akunmu diblokir oleh admin Bot Barons.",
     "common.feature_off": "⚙️ Bagian ini sedang dalam perawatan. Coba lagi nanti ya!",
-    "common.maintenance": "🛠 ROFL HUB sedang perawatan singkat. Segera kembali — koin dan progresmu aman!",
+    "common.maintenance": "🛠 Bot Barons sedang perawatan singkat. Segera kembali — koin dan progresmu aman!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Selamat datang kembali, @{username}!</b>\nProgresmu aman. Panel navigasi ada di bagian bawah layar.",
@@ -191,7 +191,7 @@ STRINGS = {
     "start.btn_fight": "Cepat ceritakan — lalu BERTARUNG!",
     "start.console": "🚀 <b>Konsol kendali aktif! Gunakan tombol di bagian bawah layar.</b>",
     "start.intro1": (
-        "👋 <b>Hai! Aku ROFL HUB BOT — bot utama ekosistem game ROFL HUB. Hub game dan pengetahuan generasi baru!</b>\n\n<b>Di sini kamu bisa:</b>\n🎮 Main melawan bot dan lawan sungguhan\n💸 Dapatkan mata uang game dari kemenangan, atau jalankan ladang yang menambangnya nonstop\n🤼 Buat tim dan serbu puncak papan peringkat\n🏆 Upgrade timmu jadi klan dan bertarung di peringkat internasional\n💰 Menangkan pertempuran dan raih hadiah bersama gengmu\n👑 Menangkan VIP ID legendaris di lelang\n\n<b>Chat-bot ini bisa:</b>\n📱 Membuka aplikasi game, tempat seluruh game berada\n⚡ Memberikan koin untuk game, pertempuran tim dan klan, pencapaian, aktivitas, dan referal\n🔄 Mentransfer koin game ke pemain ROFL HUB lain\n🚀 Menjual booster, Tanpa Batas, skin, dan banyak lagi…\n\n<i>Tekan “LANJUT”, dan aku ceritakan lebih banyak 👇</i>"
+        "👋 <b>Hai! Aku Bot Barons — bot utama ekosistem game Bot Barons. Hub game dan pengetahuan generasi baru!</b>\n\n<b>Di sini kamu bisa:</b>\n🎮 Main melawan bot dan lawan sungguhan\n💸 Dapatkan mata uang game dari kemenangan, atau jalankan ladang yang menambangnya nonstop\n🤼 Buat tim dan serbu puncak papan peringkat\n🏆 Upgrade timmu jadi klan dan bertarung di peringkat internasional\n💰 Menangkan pertempuran dan raih hadiah bersama gengmu\n👑 Menangkan VIP ID legendaris di lelang\n\n<b>Chat-bot ini bisa:</b>\n📱 Membuka aplikasi game, tempat seluruh game berada\n⚡ Memberikan koin untuk game, pertempuran tim dan klan, pencapaian, aktivitas, dan referal\n🔄 Mentransfer koin game ke pemain Bot Barons lain\n🚀 Menjual booster, Tanpa Batas, skin, dan banyak lagi…\n\n<i>Tekan “LANJUT”, dan aku ceritakan lebih banyak 👇</i>"
     ),
     "start.intro2": (
         "🎁 <b>INI HADIAH PERTAMAMU UNTUK PENDAFTARAN!</b>\n"
@@ -199,24 +199,24 @@ STRINGS = {
         "💸 Kamu menerima: <b>{balance} 🪙</b>\n"
         "🥩 Kamu menerima: <b>{cutlets} kotlet siber</b>\n"
         "..................................................\n"
-        "Ini bonus awalmu karena bergabung dengan klub ROFL HUB.\n\n"
+        "Ini bonus awalmu karena bergabung dengan klub Bot Barons.\n\n"
         "🔒 <i>Bonus hanya diberikan satu kali, saat pendaftaran.</i>\n\n"
         "Koin bisa dipakai dengan banyak cara — koin adalah tulang punggung ekonomi hub. Jaga baik-baik...\n\n"
         "⁉️ <b>Tapi kamu pasti punya pertanyaan:</b> kotlet apa ini? Siapa yang harus diberi makan?"
     ),
     "start.intro3": (
-        "<b>PERTAMA, KENAPA KOIN GAME BEGITU PENTING?</b>\n\nKoin menggerakkan semua perdagangan, kompetisi, dan pembelian di <b>ROFL HUB</b>. Dan kamu bisa mendapatkannya gratis!\n..................................................\n<b>Ada banyak cara mendapatkannya:</b>\n• Undang teman lewat link referalmu\n• Menangkan game melawan bot\n• Menangkan duel melawan pemain lain\n• Ikut pertempuran tim dan klan\n• Selesaikan target harian dan buka peti\n• Pelihara robot yang menambang koin 24/7 (Robot Magang / Robot Penambang / Pengebor Siber)\n..................................................\n<b>Kalau kamu punya Pengebor Siber — ia harus diberi makan setiap hari. Di sinilah kotlet siber berperan: bahan bakar untuk penambangan otomatis. Satu kotlet bisa diklaim gratis di ladang sekali sehari! Tugasmu simpel — mampir dan beri makan robotmu.</b>\n\nKalau lupa memberi makan — robot kehabisan daya dan penambangan berhenti.\n\nRobot Magang dan Robot Penambang tidak butuh bahan bakar. Robot Magang gratis dan abadi, sedangkan Robot Penambang dan Pengebor Siber dibeli untuk 30 hari (Drone Master menghentikan sementara keausan). Nanti kamu paham sambil jalan :) Sekarang kita lanjut dulu.\n\nSedikit lagi tentang <b>ROFL HUB</b>, biar kamu paham cara semuanya bekerja di sini.\n\n🛑 <b>Satu pesan lagi — lalu langsung bertarung!</b>"
+        "<b>PERTAMA, KENAPA KOIN GAME BEGITU PENTING?</b>\n\nKoin menggerakkan semua perdagangan, kompetisi, dan pembelian di <b>Bot Barons</b>. Dan kamu bisa mendapatkannya gratis!\n..................................................\n<b>Ada banyak cara mendapatkannya:</b>\n• Undang teman lewat link referalmu\n• Menangkan game melawan bot\n• Menangkan duel melawan pemain lain\n• Ikut pertempuran tim dan klan\n• Selesaikan target harian dan buka peti\n• Pelihara robot yang menambang koin 24/7 (Robot Magang / Robot Penambang / Pengebor Siber)\n..................................................\n<b>Kalau kamu punya Pengebor Siber — ia harus diberi makan setiap hari. Di sinilah kotlet siber berperan: bahan bakar untuk penambangan otomatis. Satu kotlet bisa diklaim gratis di ladang sekali sehari! Tugasmu simpel — mampir dan beri makan robotmu.</b>\n\nKalau lupa memberi makan — robot kehabisan daya dan penambangan berhenti.\n\nRobot Magang dan Robot Penambang tidak butuh bahan bakar. Robot Magang gratis dan abadi, sedangkan Robot Penambang dan Pengebor Siber dibeli untuk 30 hari (Drone Master menghentikan sementara keausan). Nanti kamu paham sambil jalan :) Sekarang kita lanjut dulu.\n\nSedikit lagi tentang <b>Bot Barons</b>, biar kamu paham cara semuanya bekerja di sini.\n\n🛑 <b>Satu pesan lagi — lalu langsung bertarung!</b>"
     ),
     "start.intro4": (
-        "<b>VERSI SINGKATNYA. ROFL HUB ADALAH:</b>\n• Game dan misi untuk semua selera — semuanya dalam satu aplikasi\n• Regu (hingga 5 pemain) atau tim (hingga 50 pemain)\n• Upgrade timmu jadi klan (hingga 1000 pemain)\n• Pertempuran tim dan klan berhadiah\n• Pemain di seluruh dunia — teman barumu mungkin ada di antaranya!\n..................................................\n<b>Seperti janjiku, ini pesan penutup. Sekarang — bertarung! Perintah berguna:</b>\n\n/app — buka game\n/menu — apa lagi yang bisa dilakukan chat\n/faq — pertanyaan yang sering diajukan\n/rules — perjanjian pengguna\n"
+        "<b>VERSI SINGKATNYA. BOT BARONS ADALAH:</b>\n• Game dan misi untuk semua selera — semuanya dalam satu aplikasi\n• Regu (hingga 5 pemain) atau tim (hingga 50 pemain)\n• Upgrade timmu jadi klan (hingga 1000 pemain)\n• Pertempuran tim dan klan berhadiah\n• Pemain di seluruh dunia — teman barumu mungkin ada di antaranya!\n..................................................\n<b>Seperti janjiku, ini pesan penutup. Sekarang — bertarung! Perintah berguna:</b>\n\n/app — buka game\n/menu — apa lagi yang bisa dilakukan chat\n/faq — pertanyaan yang sering diajukan\n/rules — perjanjian pengguna\n"
     ),
 
     # ---------------- menu & zona game ----------------
     "menu.text": (
-        "📱 <b>EKOSISTEM ROFL HUB — MENU UTAMA</b>\n..................................................\n👤 <b>PROFIL & PASPOR:</b>\n• /start — mulai perkenalan dan daftarkan akun\n• /profile — Paspormu, saldo, dan tim secara real time\n• /my_stats — statistik game-mu sepanjang waktu\n\n🚜 <b>LADANG SIBER & OTOMATISASI:</b>\n• /farm — Hub bahan bakar: pengisian dan kecepatan menambang robot\n• /shop — Toko: penambang, kotlet, dan upgrade hub\n\n🕹️ <b>RUANG GAME:</b>\n• /games — Hub inline semua game melawan bot\n• /quiz — Kuis kecepatan: 30 detik per jawaban, level dan bonus\n• /duel — Duel 1-lawan-1 dengan pemain sungguhan: meja 10/100/1000 🪙\n• /quests — MISI: cerita detektif, komedi, dan teka-teki berhadiah\n• /rps, /high_low, /safe — Game cepat berhadiah koin\n\n👥 <b>MANAJEMEN GENG:</b>\n• /create_team — Daftarkan tim sendiri seharga 100.000 🪙\n• /my_team — Dasbor geng dan DAFTAR REKAN TIM dengan level 🧠\n• /all_teams — Rulet tim acak\n\n💸 <b>UANG & TEMAN:</b>\n• /invite — link referalmu: hadiah untuk setiap teman aktif\n• /transfer — Kirim koin ke pemain lain\n\n📚 <b>PANDUAN & ATURAN:</b>\n• /faq — Panduan lengkap ekosistem (dibuka di Mini App)\n• /rules — Perjanjian pengguna\n• /delete_account — Hapus akun\n..................................................\n<i>⚙️ Tombol di bagian bawah layar membawamu ke bagian mana pun.</i>"
+        "📱 <b>EKOSISTEM BOT BARONS — MENU UTAMA</b>\n..................................................\n👤 <b>PROFIL & PASPOR:</b>\n• /start — mulai perkenalan dan daftarkan akun\n• /profile — Paspormu, saldo, dan tim secara real time\n• /my_stats — statistik game-mu sepanjang waktu\n\n🚜 <b>LADANG SIBER & OTOMATISASI:</b>\n• /farm — Hub bahan bakar: pengisian dan kecepatan menambang robot\n• /shop — Toko: penambang, kotlet, dan upgrade hub\n\n🕹️ <b>RUANG GAME:</b>\n• /games — Hub inline semua game melawan bot\n• /quiz — Kuis kecepatan: 30 detik per jawaban, level dan bonus\n• /duel — Duel 1-lawan-1 dengan pemain sungguhan: meja 10/100/1000 🪙\n• /quests — MISI: cerita detektif, komedi, dan teka-teki berhadiah\n• /rps, /high_low, /safe — Game cepat berhadiah koin\n\n👥 <b>MANAJEMEN GENG:</b>\n• /create_team — Daftarkan tim sendiri seharga 100.000 🪙\n• /my_team — Dasbor geng dan DAFTAR REKAN TIM dengan level 🧠\n• /all_teams — Rulet tim acak\n\n💸 <b>UANG & TEMAN:</b>\n• /invite — link referalmu: hadiah untuk setiap teman aktif\n• /transfer — Kirim koin ke pemain lain\n\n📚 <b>PANDUAN & ATURAN:</b>\n• /faq — Panduan lengkap ekosistem (dibuka di Mini App)\n• /rules — Perjanjian pengguna\n• /delete_account — Hapus akun\n..................................................\n<i>⚙️ Tombol di bagian bawah layar membawamu ke bagian mana pun.</i>"
     ),
     "menu.games_hub": (
-        "🕹️ <b>SELAMAT DATANG DI ZONA GAME ROFL HUB!</b>\n..................................................\nLawan bot di game cepat, uji pengetahuanmu di kuis, atau tantang lawan sungguhan berduel!\n\n💸 Tiap kemenangan: <b>+2 🪙</b> (Brankas Siber: <b>+5 🪙</b>)\n💀 Kalah: <b>−1 🪙</b>, seri tidak dipotong\n🧠 Kuis punya timer 30 detik dan level kecerdasan: level 1 = 10 jawaban benar dan <b>+100 🪙</b>, setiap level berikutnya 10 jawaban lebih panjang — tapi hadiahnya naik 100 🪙!\n..................................................\n👇 <b>Pilih game:</b>"
+        "🕹️ <b>SELAMAT DATANG DI ZONA GAME BOT BARONS!</b>\n..................................................\nLawan bot di game cepat, uji pengetahuanmu di kuis, atau tantang lawan sungguhan berduel!\n\n💸 Tiap kemenangan: <b>+2 🪙</b> (Brankas Siber: <b>+5 🪙</b>)\n💀 Kalah: <b>−1 🪙</b>, seri tidak dipotong\n🧠 Kuis punya timer 30 detik dan level kecerdasan: level 1 = 10 jawaban benar dan <b>+100 🪙</b>, setiap level berikutnya 10 jawaban lebih panjang — tapi hadiahnya naik 100 🪙!\n..................................................\n👇 <b>Pilih game:</b>"
     ),
     "menu.btn_quiz": "🧠 Kuis",
     "menu.btn_rps": "🪨 Batu-Gunting-Kertas",
@@ -224,20 +224,20 @@ STRINGS = {
     "menu.btn_safe": "🔐 Brankas Siber",
     "menu.btn_duel": "⚔️ DUEL 1-lawan-1",
     "app.open": (
-        "🎮 <b>ROFL HUB</b>\n\nSeluruh game dalam satu aplikasi: paspor, ladang, game, misi, bursa, tim, dan banyak lagi.\n\n👇 Ketuk tombolnya:"
+        "🎮 <b>Bot Barons</b>\n\nSeluruh game dalam satu aplikasi: paspor, ladang, game, misi, bursa, tim, dan banyak lagi.\n\n👇 Ketuk tombolnya:"
     ),
     "app.btn": "🎮 BUKA MINI APP",
     "app.unavailable": "⚙️ Mini App masih dihubungkan ke server ekosistem. Cek lagi nanti ya!",
     "faq.teaser": (
-        "📚 <b>PANDUAN EKOSISTEM ROFL HUB</b>\n..................................................\nVersi singkatnya:\n🚜 Robot menambang koin nonstop: Robot Magang — 1 🪙/jam, gratis dan abadi, Robot Penambang — 5 🪙/jam tanpa bahan bakar, Pengebor Siber — 10 🪙/jam, dan SETIAP Pengebor memakan 1 kotlet sibernya sendiri sehari. Robot Penambang dan Pengebor bertahan 30 hari (Drone Master menghentikan sementara keausan).\n🧠 Kuis: 30 detik per jawaban, level kecerdasan dengan hadiah yang terus naik.\n⚔️ Duel melawan pemain sungguhan di meja 10/100/1000 🪙.\n🏆 Regu hingga 5 petarung, tim hingga 50 (Mega-Klan — hingga 1000) dan event pertempuran berhadiah.\n..................................................\n👇 <b>Panduan lengkap dengan semua mekanik — satu ketukan saja:</b>"
+        "📚 <b>PANDUAN EKOSISTEM BOT BARONS</b>\n..................................................\nVersi singkatnya:\n🚜 Robot menambang koin nonstop: Robot Magang — 1 🪙/jam, gratis dan abadi, Robot Penambang — 5 🪙/jam tanpa bahan bakar, Pengebor Siber — 10 🪙/jam, dan SETIAP Pengebor memakan 1 kotlet sibernya sendiri sehari. Robot Penambang dan Pengebor bertahan 30 hari (Drone Master menghentikan sementara keausan).\n🧠 Kuis: 30 detik per jawaban, level kecerdasan dengan hadiah yang terus naik.\n⚔️ Duel melawan pemain sungguhan di meja 10/100/1000 🪙.\n🏆 Regu hingga 5 petarung, tim hingga 50 (Mega-Klan — hingga 1000) dan event pertempuran berhadiah.\n..................................................\n👇 <b>Panduan lengkap dengan semua mekanik — satu ketukan saja:</b>"
     ),
     "faq.btn_open": "📖 BUKA PANDUAN LENGKAP",
     "rules.teaser": (
-        "📜 <b>PERJANJIAN PENGGUNA ROFL HUB</b>\n..................................................\nIntinya:\n🪙 Koin dan semua item dalam game adalah elemen hiburan virtual: bukan uang dan tidak bisa ditukar dengan dana nyata.\n💫 Pembelian hanya lewat Telegram Stars resmi; barang digital dikirim instan, dan Stars dikembalikan otomatis jika pengiriman gagal.\n🛡️ Kami hanya menyimpan Telegram ID, nama, dan progres game-mu — tanpa nomor telepon, lokasi, atau dokumen.\n🤝 Dilarang menghina, memakai trik curang, dan multi-akun — pelanggaran bisa berujung blokir.\n..................................................\n👇 <b>Teks lengkap perjanjian dan disclaimer — satu ketukan saja:</b>\n<i>⚖️ Dengan menggunakan bot ini kamu menyatakan setuju dengan ketentuannya.</i>"
+        "📜 <b>PERJANJIAN PENGGUNA BOT BARONS</b>\n..................................................\nIntinya:\n🪙 Koin dan semua item dalam game adalah elemen hiburan virtual: bukan uang dan tidak bisa ditukar dengan dana nyata.\n💫 Pembelian hanya lewat Telegram Stars resmi; barang digital dikirim instan, dan Stars dikembalikan otomatis jika pengiriman gagal.\n🛡️ Kami hanya menyimpan Telegram ID, nama, dan progres game-mu — tanpa nomor telepon, lokasi, atau dokumen.\n🤝 Dilarang menghina, memakai trik curang, dan multi-akun — pelanggaran bisa berujung blokir.\n..................................................\n👇 <b>Teks lengkap perjanjian dan disclaimer — satu ketukan saja:</b>\n<i>⚖️ Dengan menggunakan bot ini kamu menyatakan setuju dengan ketentuannya.</i>"
     ),
     "rules.btn_open": "📜 BUKA PERJANJIAN LENGKAP",
     "quest.list_header": (
-        "🗺️ <b>MISI ROFL HUB</b>\n"
+        "🗺️ <b>MISI BOT BARONS</b>\n"
         "..................................................\n"
         "Cerita interaktif dengan pilihan dan percabangan: detektif, komedi, teka-teki. "
         "Kemenangan pertama di setiap misi memberi koin, dan kamu bisa mengulanginya sepuasnya!\n"
@@ -300,7 +300,7 @@ STRINGS = {
 
     # ---------------- profil ----------------
     "profile.caption": (
-        "📋 <b>DASBOR PEMAIN ROFL HUB</b>\n"
+        "📋 <b>DASBOR PEMAIN BOT BARONS</b>\n"
         "..................................................\n"
         "🆔 ID Paspormu: <code>{user_id}</code>\n"
         "{vip}"
@@ -416,7 +416,7 @@ STRINGS = {
         "⚔️ <b>DUEL 1-LAWAN-1: BATU-GUNTING-KERTAS DENGAN TARUHAN</b>\n"
         "..................................................\n"
         "Pilih meja sesuai kantongmu — seperti di poker. Taruhan langsung dipotong, "
-        "dan lawanmu adalah pemain ROFL HUB sungguhan!\n\n"
+        "dan lawanmu adalah pemain Bot Barons sungguhan!\n\n"
         "💰 Pot = kedua taruhan. Pemenang mengambil <b>{payout_percent}%</b> pot, "
         "<b>{burn_percent}%</b> terbakar selamanya (deflasi!).\n"
         "🤝 Seri berarti gestur langsung diulang — pot tetap di meja.\n"
@@ -479,7 +479,7 @@ STRINGS = {
 
     # ---------------- referal ----------------
     "ref.text": (
-        "🤝 <b>PROGRAM REFERAL ROFL HUB</b>\n"
+        "🤝 <b>PROGRAM REFERAL BOT BARONS</b>\n"
         "..................................................\n"
         "Undang teman lewat link pribadimu dan dapatkan <b>{bonus}</b> "
         "untuk setiap orang yang menjadi pemain aktif!\n\n"
@@ -491,7 +491,7 @@ STRINGS = {
         "<i>Sebarkan link ke teman sekelas, sahabat, dan media sosial — makin besar gengmu, makin cepat saldomu tumbuh!</i>"
     ),
     "ref.btn_share": "📣 Bagikan link",
-    "ref.share_text": "Gabung ke ekosistem game ROFL HUB!",
+    "ref.share_text": "Gabung ke ekosistem game Bot Barons!",
     "ref.qualified_line": ("✅ <b>Teman aktif</b> adalah teman yang mencapai <b>level kecerdasan {level}</b> di kuis dan mengambil <b>{claims} kotlet harian</b> di ladang. Setelah itu kamu dapat <b>{bonus}</b>, satu kali untuk setiap teman. Daftar tanpa bermain tidak dapat bonus — lebih adil untuk semua."),
     "ref.qualified_notify": ("🤝 <b>Temanmu menjadi pemain aktif!</b>\nLevel kecerdasan {level} dan {claims} kotlet harian — tercapai. Kamu dapat <b>{bonus}</b>. Undang lagi!"),
 
@@ -590,7 +590,7 @@ STRINGS = {
     ),
     "acct.btn_undo": "↩️ Batalkan penghapusan",
     "acct.undone": "🎉 Penghapusan dibatalkan — akunmu kembali milikmu!",
-    "acct.purged": "🗑 Akun ROFL HUB-mu telah dihapus. Terima kasih sudah bermain! Ingin kembali? Ketuk /start.",
+    "acct.purged": "🗑 Akun Bot Barons-mu telah dihapus. Terima kasih sudah bermain! Ingin kembali? Ketuk /start.",
     "acct.deleted_notice": "Akun sudah dihapus. Ketuk /start untuk memulai dari awal.",
     "acct.welcome_back": (
         "👋 <b>Selamat datang kembali!</b>\n"
@@ -608,7 +608,7 @@ STRINGS = {
         "Format perintah:\n"
         "<code>/transfer ID jumlah</code> — lewat ID Paspor (lihat /profile)\n"
         "<code>/transfer @username jumlah</code> — lewat username\n"
-        "<code>/transfer ROFL-HUB-777 jumlah</code> — lewat VIP ID dari lelang\n\n"
+        "<code>/transfer BARON-777 jumlah</code> — lewat VIP ID dari lelang\n\n"
         "Contoh:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
         "📌 Jumlah minimum: <b>{min} 🪙</b>"
     ),
@@ -643,7 +643,7 @@ STRINGS = {
     ),
 
     # ---------------- toko & pembayaran ----------------
-    "shop.header": "🏪 <b>TOKO ROFL HUB</b>\nPembelian lewat Telegram Stars resmi. Pilih kategori dengan tombol di bawah.",
+    "shop.header": "🏪 <b>TOKO BOT BARONS</b>\nPembelian lewat Telegram Stars resmi. Pilih kategori dengan tombol di bawah.",
     "shop.cat_farm": (
         "🚜 <b>TOKO · UNTUK LADANG</b>\n"
         "..................................................\n"
@@ -659,7 +659,7 @@ STRINGS = {
         "..................................................\n"
         "👇 <b>Pilih barang:</b>"
     ),
-    "pay.invoice_desc": "Pengiriman instan konten dalam game ROFL HUB.",
+    "pay.invoice_desc": "Pengiriman instan konten dalam game Bot Barons.",
     "pay.invoice_error": "⚠️ Gagal membuat invoice Telegram Stars. Coba lagi nanti.",
     "pay.success": "🎉 <b>Pembayaran dikonfirmasi!</b>\n🧾 <code>{charge}</code>\n💵 Terpotong: <b>{stars} ★</b>\n\n{text}",
     "pay.crash": (
@@ -672,7 +672,7 @@ STRINGS = {
     "pay.support": (
         "🛟 <b>DUKUNGAN PEMBAYARAN TELEGRAM STARS</b>\n"
         "..................................................\n"
-        "Semua barang ROFL HUB bersifat digital dan dikirim instan setelah pembayaran.\n\n"
+        "Semua barang Bot Barons bersifat digital dan dikirim instan setelah pembayaran.\n\n"
         "⚙️ <b>Jika sudah bayar tapi barang tidak sampai:</b>\n"
         "bot otomatis mengembalikan Stars saat pengiriman gagal. Kalau itu tidak terjadi — "
         "kirim nomor pembayaranmu ke sini (ada di struk, format <code>xxxx...</code>) dan jelaskan masalahnya. "
@@ -1092,7 +1092,7 @@ MINIAPP = {
     "gr_serial": "#{n} dari {of}",
     "gr_mineEmpty": "Belum ada skin. Skin dijual di bawah, didapat di event, dan berpindah tangan di bursa.",
     "gr_mine": "✨ SKIN-KU",
-    "gr_bragText": "Lihat gayaku di ROFL HUB — bisa lebih keren?",
+    "gr_bragText": "Lihat gayaku di Bot Barons — bisa lebih keren?",
     "gr_brag": "📸 Pamerkan",
     "gr_showHint": "Begini orang lain melihatmu: bingkai dan gelar di TOP dan di timmu, kostum di avatar, penanda di peta ekspedisi.",
     "gr_title": "🏆 GARASI",
@@ -1208,7 +1208,7 @@ MINIAPP = {
     "dl_premOn": "⚡ Kamu punya Tanpa Batas — biaya kemenangan {b}%, bukan {a}%.",
     "dl_premOff": "⚡ Dengan Tanpa Batas biaya kemenangan {b}%, bukan {a}%.",
     "md_title": "🧭 Mau main dengan cara apa?",
-    "md_hint": "ROFL HUB itu luas. Pilih mau mulai dari mana — mode bisa diganti kapan saja di paspor.",
+    "md_hint": "Bot Barons itu luas. Pilih mau mulai dari mana — mode bisa diganti kapan saja di paspor.",
     "md_full": "🌐 Seluruh ekosistem",
     "md_fullText": "Ladang robot, gudang, bengkel, bursa, tim, serbuan, tambang, dan peta dunia — plus semua game dan cerita. Semua bagian terbuka sejak awal.",
     "md_puzzle": "🧩 Game dan cerita",
@@ -1229,14 +1229,14 @@ MINIAPP = {
     "di_head": "🤝 Tantang teman",
     "di_hint": "Meja pribadi lewat tautan: tidak masuk antrean dan hanya menunggu temanmu. Pemain baru yang datang lewat tautan jadi temanmu.",
     "di_table": "🤝 Tantang teman · meja {s} 🪙",
-    "di_shareText": "Aku menantangmu duel di ROFL HUB! Taruhan {s} 🪙 — kita lihat siapa yang menang 😎",
+    "di_shareText": "Aku menantangmu duel di Bot Barons! Taruhan {s} 🪙 — kita lihat siapa yang menang 😎",
     "ac_title": "🏅 Pencapaianku",
     "ac_streak": "🔥 Rentetan Kasus harian: {n}",
     "ac_hint": "Semua pencapaian terkumpul di satu kartu — unggah ke story atau kirim ke teman.",
     "ac_make": "📸 Buat kartu",
     "ac_cardSub": "pencapaianku",
     "ac_cardCall": "Bisa lebih baik?",
-    "ac_shareText": "Skorku di ROFL HUB: 🧠 level {l}, 🗺 {q} misi, 🕵️ {d} kasus, ⚔️ {w} kemenangan duel. Bisa lebih baik?",
+    "ac_shareText": "Skorku di Bot Barons: 🧠 level {l}, 🗺 {q} misi, 🕵️ {d} kasus, ⚔️ {w} kemenangan duel. Bisa lebih baik?",
     "ac_story": "📲 Unggah ke story",
     "ac_send": "✈️ Kirim ke teman",
     "ac_save": "💾 Simpan gambar",
@@ -1458,10 +1458,10 @@ MINIAPP = {
     "auc_noBids": "belum ada tawaran",
     "auc_you": "👑 kamu memimpin",
     "auc_ends": "Berakhir dalam",
-    "auc_noEnd": "sampai tim ROFL HUB menutupnya",
+    "auc_noEnd": "sampai tim Bot Barons menutupnya",
     "auc_bid": "💥 +{s} · biaya {c} 🪙",
     "auc_balance": "Kamu punya: {b} 🪙",
-    "auc_rules": "Tawaran bisa kembali: jika dilampaui, koinmu langsung kembali. Hanya pemenang yang membayar — koin itu dibakar. VIP ID berpindah ke pemenang otomatis; hadiah lain diserahkan oleh tim ROFL HUB.",
+    "auc_rules": "Tawaran bisa kembali: jika dilampaui, koinmu langsung kembali. Hanya pemenang yang membayar — koin itu dibakar. VIP ID berpindah ke pemenang otomatis; hadiah lain diserahkan oleh tim Bot Barons.",
     "auc_sold": "🏁 Terjual seharga {p} 🪙",
     "auc_unsold": "🏁 Ditutup tanpa tawaran",
     "auc_closed": "Lot selesai",
@@ -1735,7 +1735,7 @@ MINIAPP = {
     "blocked": "Akun diblokir oleh admin.",
     "deleting": "Akunmu dijadwalkan untuk dihapus. Berubah pikiran? Batalkan di chat bot.",
     "error": "Gagal memuat data. Coba lagi nanti.",
-    "outside": "Buka aplikasi ini dari bot Telegram ROFL HUB.",
+    "outside": "Buka aplikasi ini dari bot Telegram Bot Barons.",
     "robotsTitle": "🤖 ROBOT-ROBOTMU", "buyMore": "🛒 Beli", "rateShort": "{v} 🪙/jam",
     "refuelOne": "🥩 Isi 1", "refuelAll": "⚡ Isi semua", "refueled": "Terisi: {n} 🥩",
     "res_metal_src": "Batu-Gunting-Kertas, tambang, peti, serbuan", "res_hydrogen_src": "Besar/Kecil, Memori, tambang, peti, serbuan", "res_crystal_src": "Kuis, Bendera dan ibu kota, tambang, peti, serbuan",

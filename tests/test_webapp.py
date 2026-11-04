@@ -85,10 +85,10 @@ def test_build_me_payload_shape():
                    fuel_until=now + timedelta(hours=5)),
     ]
     quiz = {"quiz_level": 2, "quiz_level_progress": 7}
-    payload = build_me_payload(user, miners, quiz, None, ["ROFL-HUB-777"], now)
+    payload = build_me_payload(user, miners, quiz, None, ["BARON-777"], now)
 
     assert payload["lang"] == "en" and payload["balance"] == 5000
-    assert payload["vip_aliases"] == ["ROFL-HUB-777"]
+    assert payload["vip_aliases"] == ["BARON-777"]
     assert payload["quiz"] == {"level": 2, "progress": 7, "required": 30,
                                "next_level": 3, "next_reward": 300}
     farm = payload["farm"]

@@ -8,6 +8,14 @@
 тестами. Mini App: https://rofl-hub-production.up.railway.app. SHOP_TEST_MODE на проде выключен.
 Локальные запуски ботов конфликтуют с серверными (getUpdates) — не запускать параллельно.
 
+## ⚠️ ПЕРЕИМЕНОВАНИЕ 04.11.2026: ИГРА НАЗЫВАЕТСЯ «Bot Barons» (новый бот @BotBaronsBot)
+- Владелец: «ROFL HUB» не говорит, о чём игра; знак не регистрировался, сайта нет; игроков почти нет → новый бот.
+  Во ВСЕХ текстах 14 языков: «Bot Barons» (в заголовках капсом — «BOT BARONS»), VIP ID — BARON-777 (VIP_PREFIX, миграция
+  vip_aliases/auctions в SCHEMA_STATEMENTS), карточка bot-barons-card.jpg. Тест tests/test_rebrand_bot_barons.py не пускает
+  «ROFL HUB / ROFL-HUB- / RoflHub» обратно в shared/bots/static/data. Ниже по тексту «ROFL HUB» — историческое имя проекта.
+  Внутренние имена (папка репо, MINING_ACC_PER_ROFL, rofl_lang, /rofl_hub_all) не переименованы — игрок их не видит.
+- На Railway владелец меняет MAIN_BOT_TOKEN (оба сервиса) и MAIN_BOT_USERNAME=BotBaronsBot; старому боту — описание «мы переехали».
+
 ## Правила работы
 - Отказоустойчивый код + юнит-тесты на каждое изменение. Перед сдачей: `python -m pytest -q` (Windows, .venv).
 - Любое изменение баланса монет — ТОЛЬКО через `shared/ledger.change_balance()` внутри транзакции с `FOR UPDATE`.

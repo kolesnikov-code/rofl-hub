@@ -1,5 +1,5 @@
 """
-Локальный бэкап базы ROFL HUB в JSON-файл.
+Локальный бэкап базы Bot Barons в JSON-файл.
 
 Запуск (из корня проекта, DATABASE_URL берётся из .env):
     python -m scripts.backup_db

@@ -1,4 +1,4 @@
-"""Узбекская (латиница, o'zbekcha) локализация ROFL HUB."""
+"""Узбекская (латиница, o'zbekcha) локализация Bot Barons."""
 # Глоссарий (консистентность терминов):
 # монеты -> tanga / tangalar
 # Младший Майнер -> Kichik Mayner
@@ -52,10 +52,10 @@ STRINGS: dict[str, str] = {
     "app.moved": "🎮 Bu bo'lim endi o'yin ilovasida — u yerda qulayroq va chiroyliroq. Tugmani bos 👇",
     "lang.kb_hint": "🌐 Tilni o'zgartirish — pastdagi tugma yoki /language buyrug'i.",
     "lang.changed": "✅ Tayyor: endi bot o'zbek tilida gaplashadi. Ilova ochiq bo'lsa, uni yopib, qayta oching.",
-    "app.keyboard_gone": "🧹 Pastdagi eski tugmalar olib tashlandi: endi butun o'yin ilovada. Uni kiritish maydoni yonidagi «🎮 ROFL HUB» tugmasi bilan ham ochishing mumkin.",
-    "start.console_app": "🚀 <b>Tayyor!</b> Butun o'yin ilovada: pastdagi tugmani bos. Keyin uni har doim kiritish maydoni yonidagi «🎮 ROFL HUB» tugmasi bilan ochishing mumkin.",
+    "app.keyboard_gone": "🧹 Pastdagi eski tugmalar olib tashlandi: endi butun o'yin ilovada. Uni kiritish maydoni yonidagi «🎮 Bot Barons» tugmasi bilan ham ochishing mumkin.",
+    "start.console_app": "🚀 <b>Tayyor!</b> Butun o'yin ilovada: pastdagi tugmani bos. Keyin uni har doim kiritish maydoni yonidagi «🎮 Bot Barons» tugmasi bilan ochishing mumkin.",
     "start.welcome_back_app": "👋 <b>Qaytganing bilan, @{username}!</b> Natijalaring joyida — o'yinni och 👇",
-    "menu.app": "📱 <b>ROFL HUB</b>\nButun o'yin ilovada 👇\n\n<b>Chatda:</b>\n• /invite — do'stni taklif qilish\n• /transfer — tanga o'tkazish\n• /faq — ko'p so'raladigan savollar\n• /rules — foydalanuvchi shartnomasi\n• /paysupport — to'lovlar bo'yicha yordam\n• /delete_account — akkauntni o'chirish",
+    "menu.app": "📱 <b>Bot Barons</b>\nButun o'yin ilovada 👇\n\n<b>Chatda:</b>\n• /invite — do'stni taklif qilish\n• /transfer — tanga o'tkazish\n• /faq — ko'p so'raladigan savollar\n• /rules — foydalanuvchi shartnomasi\n• /paysupport — to'lovlar bo'yicha yordam\n• /delete_account — akkauntni o'chirish",
     # TODO(перевод 26.10): история — пока по-английски
     "hist.mining": "⛏ Ferma qazilmasi",
     "hist.game_win": "🎮 O'yinda g'alaba",
@@ -180,9 +180,9 @@ STRINGS: dict[str, str] = {
     # ---------------- общее ----------------
     "common.no_profile": "⚠️ Profil topilmadi. Ro'yxatdan o'tish uchun /start ni bos.",
     "common.btn_menu": "💿 Bosh Menyu",
-    "common.blocked": "🚫 Akkauntingni ROFL HUB ma'muriyati bloklagan.",
+    "common.blocked": "🚫 Akkauntingni Bot Barons ma'muriyati bloklagan.",
     "common.feature_off": "⚙️ Bu bo'lim vaqtincha texnik xizmatda. Birozdan keyin qaytib ko'r!",
-    "common.maintenance": "🛠 ROFL HUB qisqa texnik ishlarda. Tez orada qaytamiz — tangalaring va yutuqlaring xavfsiz!",
+    "common.maintenance": "🛠 Bot Barons qisqa texnik ishlarda. Tez orada qaytamiz — tangalaring va yutuqlaring xavfsiz!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Yana xush kelibsan, @{username}!</b>\nProgressing joyida. Navigatsiya paneli — ekranning pastida.",
@@ -191,7 +191,7 @@ STRINGS: dict[str, str] = {
     "start.btn_fight": "Tezroq aytib ber — JANGGA!",
     "start.console": "🚀 <b>Boshqaruv paneli yoqildi! Ekran pastidagi tugmalardan foydalan.</b>",
     "start.intro1": (
-        "👋 <b>Salom! Men — ROFL HUB BOT, ROFL HUB o'yin ekotizimining bosh boti. Bu — o'yinlar va bilimlarning yangi avlod hubi!</b>\n\n<b>Bu yerda sen:</b>\n🎮 Botga va jonli raqiblarga qarshi o'ynaysan\n💸 G'alabalar uchun o'yin valyutasini olasan yoki uni kecha-yu kunduz qazib beradigan ferma ochasan\n🤼 Jamoa tuzib, reyting TOPiga ko'tarilasan\n🏆 Jamoani klangacha o'stirib, xalqaro reytingda kurashasan\n💰 Janglarda g'alaba qozonib, jamoang bilan birga sovrinlarni olasan\n👑 Auksionda afsonaviy VIP ID yutib olasan\n\n<b>Bu chat-bot quyidagilarni biladi:</b>\n📱 Butun o'yin joylashgan o'yin ilovasini ochish\n⚡ O'yinlar, jamoa va klan janglari, yutuqlar, faollik va referallar uchun tanga hisoblash\n🔄 O'yin tangalarini boshqa ROFL HUB o'yinchisiga o'tkazish\n🚀 Kuchaytirgichlar, Cheksiz, skinlar va yana ko'p narsalarni sotish…\n\n<i>«DAVOM ETISH» tugmasini bos, batafsil aytib beraman 👇</i>"
+        "👋 <b>Salom! Men — Bot Barons, Bot Barons o'yin ekotizimining bosh boti. Bu — o'yinlar va bilimlarning yangi avlod hubi!</b>\n\n<b>Bu yerda sen:</b>\n🎮 Botga va jonli raqiblarga qarshi o'ynaysan\n💸 G'alabalar uchun o'yin valyutasini olasan yoki uni kecha-yu kunduz qazib beradigan ferma ochasan\n🤼 Jamoa tuzib, reyting TOPiga ko'tarilasan\n🏆 Jamoani klangacha o'stirib, xalqaro reytingda kurashasan\n💰 Janglarda g'alaba qozonib, jamoang bilan birga sovrinlarni olasan\n👑 Auksionda afsonaviy VIP ID yutib olasan\n\n<b>Bu chat-bot quyidagilarni biladi:</b>\n📱 Butun o'yin joylashgan o'yin ilovasini ochish\n⚡ O'yinlar, jamoa va klan janglari, yutuqlar, faollik va referallar uchun tanga hisoblash\n🔄 O'yin tangalarini boshqa Bot Barons o'yinchisiga o'tkazish\n🚀 Kuchaytirgichlar, Cheksiz, skinlar va yana ko'p narsalarni sotish…\n\n<i>«DAVOM ETISH» tugmasini bos, batafsil aytib beraman 👇</i>"
     ),
     "start.intro2": (
         "🎁 <b>RO'YXATDAN O'TGANING UCHUN ILK MUKOFOTLARINGNI OL!</b>\n"
@@ -199,24 +199,24 @@ STRINGS: dict[str, str] = {
         "💸 Senga hisoblandi: <b>{balance} 🪙</b>\n"
         "🥩 Senga hisoblandi: <b>{cutlets} kiber-kotlet</b>\n"
         "..................................................\n"
-        "Bu — ROFL HUB klubiga qo'shilganing uchun boshlang'ich bonusing.\n\n"
+        "Bu — Bot Barons klubiga qo'shilganing uchun boshlang'ich bonusing.\n\n"
         "🔒 <i>Bonus faqat bir marta, ro'yxatdan o'tish paytida beriladi.</i>\n\n"
         "Tangalarni turli yo'llar bilan sarflash mumkin — ular hub iqtisodiyotining asosi. Ularni asrab-avayla...\n\n"
         "⁉️ <b>Lekin senda savol tug'ilgan bo'lsa kerak:</b> bu qanaqa kotlet? Uni kimga yedirish kerak?"
     ),
     "start.intro3": (
-        "<b>AVVAL: O'YIN TANGALARI NEGA BUNCHALIK MUHIM?</b>\n\nTangalar — <b>ROFL HUB</b>'dagi barcha savdo, musobaqa va xaridlarning asosi. Va ularni bepul topish mumkin!\n..................................................\n<b>Ularni topishning yo'llari ko'p:</b>\n• Referal havolang orqali do'stlarni taklif qilish\n• Botga qarshi o'yinlarda g'alaba qozonish\n• Boshqa o'yinchilar bilan duellarda yutish\n• Jamoa va klan janglarida qatnashish\n• Kundalik maqsadlarni bajarib, sandiqni ochish\n• Tangani kecha-yu kunduz qazadigan robot olish (Stajyor Robot / Kichik Mayner / Kiber-Burg'ulovchi)\n..................................................\n<b>Agar senda Kiber-Burg'ulovchi bo'lsa — uni har kuni boqish kerak. Mana shu yerda kiber-kotlet asqatadi: bu avtomatik qazib olish uchun yoqilg'i. Fermada kuniga bir marta bitta kotletni bepul olsa bo'ladi! Vazifang oddiy — kirib, robotingni boqish.</b>\n\nVaqtida boqmasang — robot o'chadi va qazib olish to'xtaydi.\n\nStajyor Robot va Kichik Mayner yoqilg'i talab qilmaydi. Stajyor bepul va abadiy, Mayner va Burg'ulovchi esa 30 kunga sotib olinadi (Master-Dron eskirishni to'xtatib turadi). Yo'l-yo'lakay o'rganib ketasan :) Chalg'imaylik.\n\nHammasi qanday ishlashini tushunishing uchun <b>ROFL HUB</b> haqida yana ozgina gapirib beraman.\n\n🛑 <b>Yana bitta xabar — keyin jangga!</b>"
+        "<b>AVVAL: O'YIN TANGALARI NEGA BUNCHALIK MUHIM?</b>\n\nTangalar — <b>Bot Barons</b>'dagi barcha savdo, musobaqa va xaridlarning asosi. Va ularni bepul topish mumkin!\n..................................................\n<b>Ularni topishning yo'llari ko'p:</b>\n• Referal havolang orqali do'stlarni taklif qilish\n• Botga qarshi o'yinlarda g'alaba qozonish\n• Boshqa o'yinchilar bilan duellarda yutish\n• Jamoa va klan janglarida qatnashish\n• Kundalik maqsadlarni bajarib, sandiqni ochish\n• Tangani kecha-yu kunduz qazadigan robot olish (Stajyor Robot / Kichik Mayner / Kiber-Burg'ulovchi)\n..................................................\n<b>Agar senda Kiber-Burg'ulovchi bo'lsa — uni har kuni boqish kerak. Mana shu yerda kiber-kotlet asqatadi: bu avtomatik qazib olish uchun yoqilg'i. Fermada kuniga bir marta bitta kotletni bepul olsa bo'ladi! Vazifang oddiy — kirib, robotingni boqish.</b>\n\nVaqtida boqmasang — robot o'chadi va qazib olish to'xtaydi.\n\nStajyor Robot va Kichik Mayner yoqilg'i talab qilmaydi. Stajyor bepul va abadiy, Mayner va Burg'ulovchi esa 30 kunga sotib olinadi (Master-Dron eskirishni to'xtatib turadi). Yo'l-yo'lakay o'rganib ketasan :) Chalg'imaylik.\n\nHammasi qanday ishlashini tushunishing uchun <b>Bot Barons</b> haqida yana ozgina gapirib beraman.\n\n🛑 <b>Yana bitta xabar — keyin jangga!</b>"
     ),
     "start.intro4": (
-        "<b>QISQASI. ROFL HUB — bu:</b>\n• Har qanday didga mos o'yinlar va kvestlar — hammasi bitta ilovada\n• Otryad (5 o'yinchigacha) yoki jamoa (50 o'yinchigacha)\n• Jamoani klangacha o'stirish (1000 o'yinchigacha)\n• Sovrinlar uchun jamoa va klan janglari\n• Butun dunyo bo'ylab o'yinchilar — yangi do'stlaring ular orasida bo'lishi mumkin!\n..................................................\n<b>Va'da qilganimdek, bu yakuniy xabar. Endi — jangga! Foydali buyruqlar:</b>\n\n/app — o'yinni ochish\n/menu — chat yana nimalarni biladi\n/faq — ko'p so'raladigan savollar\n/rules — foydalanuvchi shartnomasi\n"
+        "<b>QISQASI. BOT BARONS — bu:</b>\n• Har qanday didga mos o'yinlar va kvestlar — hammasi bitta ilovada\n• Otryad (5 o'yinchigacha) yoki jamoa (50 o'yinchigacha)\n• Jamoani klangacha o'stirish (1000 o'yinchigacha)\n• Sovrinlar uchun jamoa va klan janglari\n• Butun dunyo bo'ylab o'yinchilar — yangi do'stlaring ular orasida bo'lishi mumkin!\n..................................................\n<b>Va'da qilganimdek, bu yakuniy xabar. Endi — jangga! Foydali buyruqlar:</b>\n\n/app — o'yinni ochish\n/menu — chat yana nimalarni biladi\n/faq — ko'p so'raladigan savollar\n/rules — foydalanuvchi shartnomasi\n"
     ),
 
     # ---------------- меню и игровая зона ----------------
     "menu.text": (
-        "📱 <b>ROFL HUB EKOTIZIMI — BOSH MENYU</b>\n..................................................\n👤 <b>PROFIL VA PASPORT:</b>\n• /start — tanishuvni boshlash va akkaunt ochish\n• /profile — Pasporting, balansing va jamoang real vaqtda\n• /my_stats — butun vaqt davomidagi o'yin statistikang\n\n🚜 <b>KIBER-FERMA VA AVTOMATLASHTIRISH:</b>\n• /farm — Yoqilg'i hubi: yoqilg'i quyish va robotlarning qazib olish tezligi\n• /shop — Do'kon: maynerlar, kotletlar va hub yaxshilanishlari\n\n🕹️ <b>O'YIN XONASI:</b>\n• /games — Botga qarshi barcha o'yinlarning inlayn-hubi\n• /quiz — Tezkor viktorina: javobga 30 soniya, darajalar va bonuslar\n• /duel — Jonli o'yinchilar bilan yakkama-yakka duellar: 10/100/1000 🪙 stollari\n• /quests — KVESTLAR: mukofotli detektivlar, komediyalar va boshqotirmalar\n• /rps, /high_low, /safe — Tanga uchun tezkor o'yinlar\n\n👥 <b>JAMOANI BOSHQARISH:</b>\n• /create_team — O'z jamoangni 100 000 🪙 ga ro'yxatdan o'tkazish\n• /my_team — Jamoa dashbordi va 🧠 darajali JAMOADOSHLAR RO'YXATI\n• /all_teams — Tasodifiy jamoalar ruletkasi\n\n💸 <b>PUL VA DO'STLAR:</b>\n• /invite — referal havolang: har bir faol do'st uchun mukofot\n• /transfer — Boshqa o'yinchiga tanga o'tkazish\n\n📚 <b>QO'LLANMA VA QOIDALAR:</b>\n• /faq — Ekotizimning to'liq qo'llanmasi (Mini App'da ochiladi)\n• /rules — Foydalanuvchi shartnomasi\n• /delete_account — Akkauntni o'chirish\n..................................................\n<i>⚙️ Ekran pastidagi tugmalar seni istalgan bo'limga olib boradi.</i>"
+        "📱 <b>BOT BARONS EKOTIZIMI — BOSH MENYU</b>\n..................................................\n👤 <b>PROFIL VA PASPORT:</b>\n• /start — tanishuvni boshlash va akkaunt ochish\n• /profile — Pasporting, balansing va jamoang real vaqtda\n• /my_stats — butun vaqt davomidagi o'yin statistikang\n\n🚜 <b>KIBER-FERMA VA AVTOMATLASHTIRISH:</b>\n• /farm — Yoqilg'i hubi: yoqilg'i quyish va robotlarning qazib olish tezligi\n• /shop — Do'kon: maynerlar, kotletlar va hub yaxshilanishlari\n\n🕹️ <b>O'YIN XONASI:</b>\n• /games — Botga qarshi barcha o'yinlarning inlayn-hubi\n• /quiz — Tezkor viktorina: javobga 30 soniya, darajalar va bonuslar\n• /duel — Jonli o'yinchilar bilan yakkama-yakka duellar: 10/100/1000 🪙 stollari\n• /quests — KVESTLAR: mukofotli detektivlar, komediyalar va boshqotirmalar\n• /rps, /high_low, /safe — Tanga uchun tezkor o'yinlar\n\n👥 <b>JAMOANI BOSHQARISH:</b>\n• /create_team — O'z jamoangni 100 000 🪙 ga ro'yxatdan o'tkazish\n• /my_team — Jamoa dashbordi va 🧠 darajali JAMOADOSHLAR RO'YXATI\n• /all_teams — Tasodifiy jamoalar ruletkasi\n\n💸 <b>PUL VA DO'STLAR:</b>\n• /invite — referal havolang: har bir faol do'st uchun mukofot\n• /transfer — Boshqa o'yinchiga tanga o'tkazish\n\n📚 <b>QO'LLANMA VA QOIDALAR:</b>\n• /faq — Ekotizimning to'liq qo'llanmasi (Mini App'da ochiladi)\n• /rules — Foydalanuvchi shartnomasi\n• /delete_account — Akkauntni o'chirish\n..................................................\n<i>⚙️ Ekran pastidagi tugmalar seni istalgan bo'limga olib boradi.</i>"
     ),
     "menu.games_hub": (
-        "🕹️ <b>ROFL HUB O'YIN ZONASIGA XUSH KELIBSAN!</b>\n..................................................\nTezkor o'yinlarda botga qarshi chiq, viktorinada bilimingni sina yoki jonli raqibni duelga chaqir!\n\n💸 G'alaba keltiradi: <b>+2 🪙</b> (Kiber-Seyf: <b>+5 🪙</b>)\n💀 Mag'lubiyat olib ketadi: <b>−1 🪙</b>, durang hech narsa olmaydi\n🧠 Viktorinada — 30 soniyalik taymer va intellekt darajalari: 1-daraja — 10 to'g'ri javob va <b>+100 🪙</b>, har keyingi daraja 10 javobga uzunroq — lekin mukofot ham 100 🪙 ga o'sadi!\n..................................................\n👇 <b>O'yinni tanla:</b>"
+        "🕹️ <b>BOT BARONS O'YIN ZONASIGA XUSH KELIBSAN!</b>\n..................................................\nTezkor o'yinlarda botga qarshi chiq, viktorinada bilimingni sina yoki jonli raqibni duelga chaqir!\n\n💸 G'alaba keltiradi: <b>+2 🪙</b> (Kiber-Seyf: <b>+5 🪙</b>)\n💀 Mag'lubiyat olib ketadi: <b>−1 🪙</b>, durang hech narsa olmaydi\n🧠 Viktorinada — 30 soniyalik taymer va intellekt darajalari: 1-daraja — 10 to'g'ri javob va <b>+100 🪙</b>, har keyingi daraja 10 javobga uzunroq — lekin mukofot ham 100 🪙 ga o'sadi!\n..................................................\n👇 <b>O'yinni tanla:</b>"
     ),
     "menu.btn_quiz": "🧠 Viktorina",
     "menu.btn_rps": "🪨 Tosh-Qaychi-Qog'oz",
@@ -224,7 +224,7 @@ STRINGS: dict[str, str] = {
     "menu.btn_safe": "🔐 Kiber-Seyf",
     "menu.btn_duel": "⚔️ Yakkama-yakka DUELLAR",
     "app.open": (
-        "🎮 <b>ROFL HUB MINI APP</b>\n\n"
+        "🎮 <b>BOT BARONS MINI APP</b>\n\n"
         "Pasport, ferma, jamoa va eng boy o'yinchilar — bitta neon ekranda. "
         "Kundalik kotletni to'g'ridan-to'g'ri o'sha yerdan olsa bo'ladi!\n\n"
         "👇 Tugmani bos:"
@@ -232,15 +232,15 @@ STRINGS: dict[str, str] = {
     "app.btn": "🎮 MINI APP'NI OCHISH",
     "app.unavailable": "⚙️ Mini App hali ekotizim serverlariga ulanmoqda. Birozdan keyin kirib ko'r!",
     "faq.teaser": (
-        "📚 <b>ROFL HUB EKOTIZIMI QO'LLANMASI</b>\n..................................................\nEng muhimi qisqacha:\n🚜 Robotlar tangani kecha-yu kunduz qazib beradi: Stajyor Robot — 1 🪙/soat, bepul va abadiy, Kichik Mayner — yoqilg'isiz 5 🪙/soat, Kiber-Burg'ulovchi — 10 🪙/soat, va HAR BIR Burg'ulovchi kuniga o'zining kiber-kotletini yeydi. Mayner va Burg'ulovchi 30 kun yashaydi (Master-Dron eskirishni to'xtatib turadi).\n🧠 Viktorina: javobga 30 soniya, o'sib boruvchi mukofotli intellekt darajalari.\n⚔️ Jonli o'yinchilar bilan 10/100/1000 🪙 stollarida duellar.\n🏆 5 jangchigacha otryadlar, 50 tagacha jamoalar (Mega-Klan — 1000 tagacha) va sovrinli jang tadbirlari.\n..................................................\n👇 <b>Barcha mexanikalar yoritilgan to'liq qo'llanma — tugmada:</b>"
+        "📚 <b>BOT BARONS EKOTIZIMI QO'LLANMASI</b>\n..................................................\nEng muhimi qisqacha:\n🚜 Robotlar tangani kecha-yu kunduz qazib beradi: Stajyor Robot — 1 🪙/soat, bepul va abadiy, Kichik Mayner — yoqilg'isiz 5 🪙/soat, Kiber-Burg'ulovchi — 10 🪙/soat, va HAR BIR Burg'ulovchi kuniga o'zining kiber-kotletini yeydi. Mayner va Burg'ulovchi 30 kun yashaydi (Master-Dron eskirishni to'xtatib turadi).\n🧠 Viktorina: javobga 30 soniya, o'sib boruvchi mukofotli intellekt darajalari.\n⚔️ Jonli o'yinchilar bilan 10/100/1000 🪙 stollarida duellar.\n🏆 5 jangchigacha otryadlar, 50 tagacha jamoalar (Mega-Klan — 1000 tagacha) va sovrinli jang tadbirlari.\n..................................................\n👇 <b>Barcha mexanikalar yoritilgan to'liq qo'llanma — tugmada:</b>"
     ),
     "faq.btn_open": "📖 TO'LIQ QO'LLANMANI OCHISH",
     "rules.teaser": (
-        "📜 <b>ROFL HUB FOYDALANUVCHI SHARTNOMASI</b>\n..................................................\nIkki og'iz so'z bilan eng muhimi:\n🪙 Tangalar va barcha o'yin buyumlari — virtual ko'ngilochar elementlar: ular pul emas va real mablag'ga almashtirilmaydi.\n💫 Xaridlar — faqat rasmiy Telegram Stars orqali; raqamli tovarlar bir zumda yetkaziladi, yetkazishda nosozlik bo'lsa, Stars avtomatik qaytariladi.\n🛡️ Biz faqat Telegram ID, ism va o'yin progressingni saqlaymiz — telefon raqamlari, geolokatsiya va hujjatlarsiz.\n🤝 Haqorat, sun'iy ko'tarish va multiakkauntlar taqiqlangan — buzganlar bloklanishi mumkin.\n..................................................\n👇 <b>Shartnomaning to'liq matni va mas'uliyatdan voz kechish — tugmada:</b>\n<i>⚖️ Botdan foydalanar ekansan, shartlarga roziligingni tasdiqlaysan.</i>"
+        "📜 <b>BOT BARONS FOYDALANUVCHI SHARTNOMASI</b>\n..................................................\nIkki og'iz so'z bilan eng muhimi:\n🪙 Tangalar va barcha o'yin buyumlari — virtual ko'ngilochar elementlar: ular pul emas va real mablag'ga almashtirilmaydi.\n💫 Xaridlar — faqat rasmiy Telegram Stars orqali; raqamli tovarlar bir zumda yetkaziladi, yetkazishda nosozlik bo'lsa, Stars avtomatik qaytariladi.\n🛡️ Biz faqat Telegram ID, ism va o'yin progressingni saqlaymiz — telefon raqamlari, geolokatsiya va hujjatlarsiz.\n🤝 Haqorat, sun'iy ko'tarish va multiakkauntlar taqiqlangan — buzganlar bloklanishi mumkin.\n..................................................\n👇 <b>Shartnomaning to'liq matni va mas'uliyatdan voz kechish — tugmada:</b>\n<i>⚖️ Botdan foydalanar ekansan, shartlarga roziligingni tasdiqlaysan.</i>"
     ),
     "rules.btn_open": "📜 TO'LIQ SHARTNOMANI OCHISH",
     "quest.list_header": (
-        "🗺️ <b>ROFL HUB KVESTLARI</b>\n"
+        "🗺️ <b>BOT BARONS KVESTLARI</b>\n"
         "..................................................\n"
         "Tanlovlar va burilishlarga boy interaktiv hikoyalar: detektivlar, komediyalar, boshqotirmalar. "
         "Har bir kvestdagi ilk g'alaba tanga keltiradi, qayta o'ynash esa cheksiz!\n"
@@ -303,7 +303,7 @@ STRINGS: dict[str, str] = {
 
     # ---------------- профиль ----------------
     "profile.caption": (
-        "📋 <b>ROFL HUB O'YINCHISINING SHAXSIY KABINETI</b>\n"
+        "📋 <b>BOT BARONS O'YINCHISINING SHAXSIY KABINETI</b>\n"
         "..................................................\n"
         "🆔 Pasport ID'ing: <code>{user_id}</code>\n"
         "{vip}"
@@ -421,7 +421,7 @@ STRINGS: dict[str, str] = {
         "⚔️ <b>YAKKAMA-YAKKA DUELLAR: GAROVGA TOSH-QAYCHI-QOG'OZ</b>\n"
         "..................................................\n"
         "Cho'ntagingga mos stolni tanla — xuddi pokerdagidek. Garov darhol yechib olinadi, "
-        "raqibing — jonli ROFL HUB o'yinchisi!\n\n"
+        "raqibing — jonli Bot Barons o'yinchisi!\n\n"
         "💰 Bank = ikkala garov. G'olib bankning <b>{payout_percent}%</b>ini oladi, "
         "<b>{burn_percent}%</b> esa abadiy kuyadi (deflyatsiya!).\n"
         "🤝 Durang — ishoralar zudlik bilan qayta o'ynaladi, bank stolda qoladi.\n"
@@ -487,7 +487,7 @@ STRINGS: dict[str, str] = {
 
     # ---------------- рефералка ----------------
     "ref.text": (
-        "🤝 <b>ROFL HUB REFERAL DASTURI</b>\n"
+        "🤝 <b>BOT BARONS REFERAL DASTURI</b>\n"
         "..................................................\n"
         "Do'stlaringni shaxsiy havolang orqali taklif qil va faol o'yinchiga aylangan "
         "har bir kishi uchun <b>{bonus}</b> ol!\n\n"
@@ -499,7 +499,7 @@ STRINGS: dict[str, str] = {
         "<i>Havolani sinfdoshlar chatiga, do'stlarga va ijtimoiy tarmoqlarga tashla — davrang qancha katta bo'lsa, balansing shuncha tez o'sadi!</i>"
     ),
     "ref.btn_share": "📣 Havolani ulashish",
-    "ref.share_text": "ROFL HUB o'yin ekotizimiga qo'shil!",
+    "ref.share_text": "Bot Barons o'yin ekotizimiga qo'shil!",
     "ref.qualified_line": ("✅ <b>Faol do'st</b> — viktorinada <b>{level}-intellekt darajasiga</b> yetgan "
                            "va fermada <b>{claims} ta kundalik kotlet</b>ni olgan kishi. Shunda senga — <b>{bonus}</b>, "
                            "har bir do'st uchun bir marta. O'ynamasdan ro'yxatdan o'tgani uchun bonus yo'q — bu hamma uchun adolatliroq."),
@@ -545,7 +545,7 @@ STRINGS: dict[str, str] = {
     ),
     "acct.btn_undo": "↩️ O'chirishni bekor qilish",
     "acct.undone": "🎉 O'chirish bekor qilindi — akkaunt yana sening qo'lingda!",
-    "acct.purged": "🗑 ROFL HUB akkaunting o'chirildi. O'yining uchun rahmat! Qaytmoqchi bo'lsang — /start ni bos.",
+    "acct.purged": "🗑 Bot Barons akkaunting o'chirildi. O'yining uchun rahmat! Qaytmoqchi bo'lsang — /start ni bos.",
     "acct.deleted_notice": "Akkaunt o'chirilgan. Qaytadan boshlash uchun /start ni bos.",
     "acct.welcome_back": (
         "👋 <b>Qaytganing bilan!</b>\n"
@@ -564,7 +564,7 @@ STRINGS: dict[str, str] = {
         "Buyruq formati:\n"
         "<code>/transfer ID summa</code> — Pasport ID bo'yicha (/profile da ko'rinadi)\n"
         "<code>/transfer @username summa</code> — username bo'yicha\n"
-        "<code>/transfer ROFL-HUB-777 summa</code> — auksiondan olingan VIP ID bo'yicha\n\n"
+        "<code>/transfer BARON-777 summa</code> — auksiondan olingan VIP ID bo'yicha\n\n"
         "Misollar:\n<code>/transfer 123456789 500</code>\n<code>/transfer @friend 100</code>\n\n"
         "📌 Eng kam summa: <b>{min} 🪙</b>"
     ),
@@ -599,7 +599,7 @@ STRINGS: dict[str, str] = {
     ),
 
     # ---------------- магазин и платежи ----------------
-    "shop.header": "🏪 <b>ROFL HUB DO'KONI</b>\nXaridlar — rasmiy Telegram Stars orqali. Pastdagi tugmalar bilan kategoriyani tanla.",
+    "shop.header": "🏪 <b>BOT BARONS DO'KONI</b>\nXaridlar — rasmiy Telegram Stars orqali. Pastdagi tugmalar bilan kategoriyani tanla.",
     "shop.cat_farm": (
         "🚜 <b>DO'KON · FERMA UCHUN</b>\n"
         "..................................................\n"
@@ -615,7 +615,7 @@ STRINGS: dict[str, str] = {
         "..................................................\n"
         "👇 <b>Tovarni tanla:</b>"
     ),
-    "pay.invoice_desc": "ROFL HUB o'yin ichidagi kontentni bir zumda yetkazish.",
+    "pay.invoice_desc": "Bot Barons o'yin ichidagi kontentni bir zumda yetkazish.",
     "pay.invoice_error": "⚠️ Telegram Stars to'lov hisobini yaratib bo'lmadi. Keyinroq urinib ko'r.",
     "pay.success": "🎉 <b>To'lov tasdiqlandi!</b>\n🧾 <code>{charge}</code>\n💵 Yechildi: <b>{stars} ★</b>\n\n{text}",
     "pay.crash": (
@@ -628,7 +628,7 @@ STRINGS: dict[str, str] = {
     "pay.support": (
         "🛟 <b>TELEGRAM STARS TO'LOVLARI BO'YICHA YORDAM</b>\n"
         "..................................................\n"
-        "Barcha ROFL HUB tovarlari — raqamli va to'lovdan keyin bir zumda yetkaziladi.\n\n"
+        "Barcha Bot Barons tovarlari — raqamli va to'lovdan keyin bir zumda yetkaziladi.\n\n"
         "⚙️ <b>Agar to'lov o'tgan-u, tovar kelmagan bo'lsa:</b>\n"
         "yetkazishda nosozlik bo'lsa, bot Stars'ni avtomatik qaytaradi. Agar bu sodir bo'lmasa — "
         "shu yerga to'lov raqamini yubor (u chekda bor, formati <code>xxxx...</code>) va muammoni tasvirlab ber. "
@@ -1093,7 +1093,7 @@ MINIAPP: dict[str, str] = {
     "gr_serial": "{of} dan #{n}",
     "gr_mineEmpty": "Hozircha skinlar yo'q. Ular pastda sotiladi, aksiyalarda tushadi va birjada qo'ldan qo'lga o'tadi.",
     "gr_mine": "✨ MENING SKINLARIM",
-    "gr_bragText": "ROFL HUB'dagi ko'rinishimga qara — bundan zo'rini qila olasanmi?",
+    "gr_bragText": "Bot Barons'dagi ko'rinishimga qara — bundan zo'rini qila olasanmi?",
     "gr_brag": "📸 Maqtanish",
     "gr_showHint": "Boshqalar seni shunday ko'radi: ramka va unvon — TOP va jamoangda, kostyum — avatarda, marker — ekspeditsiyalar xaritasida.",
     "gr_title": "🏆 GARAJ",
@@ -1209,7 +1209,7 @@ MINIAPP: dict[str, str] = {
     "dl_premOn": "⚡ Senda Cheksiz bor — yutuqdan komissiya {a}% emas, {b}%.",
     "dl_premOff": "⚡ Cheksiz bilan yutuqdan komissiya {a}% emas, {b}%.",
     "md_title": "🧭 Qanday o'ynaysan?",
-    "md_hint": "ROFL HUB katta. Nimadan boshlashni tanla — rejimni istalgan payt pasportda almashtirish mumkin.",
+    "md_hint": "Bot Barons katta. Nimadan boshlashni tanla — rejimni istalgan payt pasportda almashtirish mumkin.",
     "md_full": "🌐 Butun ekotizim",
     "md_fullText": "Robotlar fermasi, ombor, ustaxona, birja, jamoalar, bosqinlar, konlar va dunyo xaritasi — ustiga barcha o'yinlar va hikoyalar. Barcha bo'limlar boshidan ochiq.",
     "md_puzzle": "🧩 O'yinlar va hikoyalar",
@@ -1230,14 +1230,14 @@ MINIAPP: dict[str, str] = {
     "di_head": "🤝 Do'stni chaqirish",
     "di_hint": "Havola orqali o'z stoling: u navbatga tushmaydi, faqat do'stingni kutadi. Havola orqali kelgan yangi o'yinchi do'sting bo'ladi.",
     "di_table": "🤝 Do'stni chaqirish · {s} 🪙 stol",
-    "di_shareText": "Seni ROFL HUB'da duelga chaqiraman! Garov {s} 🪙 — ko'ramiz, kim kimni 😎",
+    "di_shareText": "Seni Bot Barons'da duelga chaqiraman! Garov {s} 🪙 — ko'ramiz, kim kimni 😎",
     "ac_title": "🏅 Mening yutuqlarim",
     "ac_streak": "🔥 Kun ishlari seriyasi: {n}",
     "ac_hint": "Barcha yutuqlaring bitta kartochkaga yig'iladi — uni hikoyaga joylash yoki do'stga yuborish mumkin.",
     "ac_make": "📸 Kartochka yaratish",
     "ac_cardSub": "mening yutuqlarim",
     "ac_cardCall": "Bundan yaxshiroq qila olasanmi?",
-    "ac_shareText": "ROFL HUB'dagi hisobim: 🧠 {l}-daraja, 🗺 {q} ta kvest, 🕵️ {d} ta ish, ⚔️ duellarda {w} ta g'alaba. Bundan yaxshiroq qila olasanmi?",
+    "ac_shareText": "Bot Barons'dagi hisobim: 🧠 {l}-daraja, 🗺 {q} ta kvest, 🕵️ {d} ta ish, ⚔️ duellarda {w} ta g'alaba. Bundan yaxshiroq qila olasanmi?",
     "ac_story": "📲 Hikoyaga joylash",
     "ac_send": "✈️ Do'stga yuborish",
     "ac_save": "💾 Rasmni saqlash",
@@ -1699,7 +1699,7 @@ MINIAPP: dict[str, str] = {
     "blocked": "Akkaunt ma'muriyat tomonidan bloklangan.",
     "deleting": "Akkaunting o'chirish navbatida. Fikringdan qaytdingmi? O'chirishni bot chatida bekor qil.",
     "error": "Ma'lumotlarni yuklab bo'lmadi. Keyinroq urinib ko'r.",
-    "outside": "Bu ilovani ROFL HUB Telegram-botidan och.",
+    "outside": "Bu ilovani Bot Barons Telegram-botidan och.",
     "robotsTitle": "🤖 SENING ROBOTLARING", "buyMore": "🛒 Sotib olish", "rateShort": "{v} 🪙/soat",
     "refuelOne": "🥩 1 ta quyish", "refuelAll": "⚡ Hammasini quyish", "refueled": "Quyildi: {n} 🥩",
     "res_metal_src": "Tosh-Qaychi-Qog'oz, konlar, sandiq, bosqinlar", "res_hydrogen_src": "Katta/Kichik, Xotira, konlar, sandiq, bosqinlar", "res_crystal_src": "Viktorina, Bayroqlar va poytaxtlar, konlar, sandiq, bosqinlar",
