@@ -1,6 +1,7 @@
 """🌐 02.11: сменить язык можно в любой момент — кнопкой нижней панели или /language (выбрали не тот, дети пошутили)."""
 import asyncio
 import os
+from pathlib import Path
 
 import pytest
 
@@ -29,7 +30,7 @@ def test_language_button_is_recognizable_in_every_language():
 def test_with_the_app_bottom_panel_is_only_the_language_button(with_app):
     for lang in SUPPORTED_LANGS:
         kb = menu.get_reply_keyboard(lang)
-        assert [[b.text for b in row] for row in kb.keyboard] == [[btn(lang, "open_app")], [btn(lang, "language")]], lang
+        assert [[b.text for b in row] for row in kb.keyboard] == [[btn(lang, "language")]], lang
 
 
 def test_without_the_app_language_button_ends_the_old_grid(monkeypatch):
@@ -118,11 +119,60 @@ def test_change_ignores_unknown_codes_and_unregistered_players(with_app, monkeyp
     assert cb.message.sent == [] and cb.alerts == ["/start"]
 
 
-def test_open_app_button_sits_above_language_and_sends_the_launch_button(with_app):
-    """04.11: «🎮 ОТКРЫТЬ ПРИЛОЖЕНИЕ» всегда над языком; текст кнопки = app.btn, нажатие ловит cmd_open_app."""
-    from bots.main_bot.handlers import menu
+class _Sent:
+    def __init__(self, log):
+        self.log, self.chat = log, type("C", (), {"id": 42})()
+        log_ = log
+
+        class _Bot:
+            async def unpin_all_chat_messages(self, chat_id):
+                log_.append(("unpin_all", chat_id))
+        self.bot = _Bot()
+
+    async def pin(self, disable_notification=False):
+        self.log.append(("pin", disable_notification))
+
+
+class _PinMsg:
+    def __init__(self):
+        self.sent, self.log = [], []
+
+    async def answer(self, text, **kw):
+        self.sent.append((text, kw.get("reply_markup")))
+        return _Sent(self.log)
+
+
+def test_open_app_is_not_in_the_bottom_panel_but_pinned_in_the_chat(with_app):
+    """04.11: reply-кнопка приложения — лишнее нажатие; вместо неё закреплённое «Открыть приложение» с web_app-кнопкой."""
     for lang in SUPPORTED_LANGS:
-        assert btn(lang, "open_app") == t(lang, "app.btn"), lang
-        assert menu.get_reply_keyboard(lang).keyboard[0][0].text == btn(lang, "open_app"), lang
-    assert len(btn_variants("open_app")) == len(SUPPORTED_LANGS)
-    assert not btn_variants("open_app") & btn_variants("language")
+        texts = [b.text for row in menu.get_reply_keyboard(lang).keyboard for b in row]
+        assert btn(lang, "open_app") not in texts, lang
+    msg = _PinMsg()
+    asyncio.run(start.send_pinned_app(msg, "de"))
+    text, kb = msg.sent[0]
+    assert text == t("de", "app.btn") and kb.inline_keyboard[0][0].web_app is not None
+    assert msg.log == [("unpin_all", 42), ("pin", True)]     # наверху один закреп, без звука
+
+
+def test_pin_failure_does_not_break_the_message(with_app):
+    msg = _PinMsg()
+
+    async def boom(*a, **kw):
+        raise RuntimeError("no rights")
+    sent_cls = _Sent
+    orig = sent_cls.pin
+    sent_cls.pin = boom
+    try:
+        asyncio.run(start.send_pinned_app(msg, "ru"))
+    finally:
+        sent_cls.pin = orig
+    assert len(msg.sent) == 1
+
+
+def test_onboarding_end_start_and_language_change_send_the_pinned_app():
+    src = Path(start.__file__).read_text(encoding="utf-8")
+    for fn in ("async def cmd_start(", "async def cmd_start_step_4(", "async def process_language_change("):
+        body = src[src.index(fn):]
+        end = body.find("@router", 1)
+        body = body if end < 0 else body[:end]
+        assert "send_pinned_app(" in body, fn

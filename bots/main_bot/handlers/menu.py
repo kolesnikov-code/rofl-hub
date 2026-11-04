@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.message(Command("app"))
-@router.message(F.text.in_(btn_variants("open_app")))
+@router.message(F.text.in_(btn_variants("open_app")))   # кнопка панели 04.11 (убрана) — у кого осталась
 async def cmd_open_app(message: types.Message, user_lang: str = "ru"):
     """Кнопка запуска Telegram Mini App (работает только с HTTPS-адресом сервера)."""
     if not WEBAPP_URL:
@@ -54,12 +54,10 @@ def get_reply_main_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
 
 
 def get_reply_lang_keyboard(lang: str = "ru") -> types.ReplyKeyboardMarkup:
-    """Нижняя панель при подключённом приложении: вся игра в приложении — внизу «Открыть приложение» (04.11),
-    под ней смена языка (02.11: случайно выбрали не тот или дети пошутили — игрок не теряется).
-    Кнопка приложения — текстовая: web_app в reply-кнопке открывает приложение без initData (игрок не опознаётся),
-    поэтому по нажатию бот присылает инлайн-кнопку запуска (cmd_open_app)."""
-    return types.ReplyKeyboardMarkup(keyboard=[[types.KeyboardButton(text=btn(lang, "open_app"))],
-                                               [types.KeyboardButton(text=btn(lang, "language"))]],
+    """Нижняя панель при подключённом приложении (02.11): вся игра в приложении, внизу — только смена языка
+    (случайно выбрали не тот или дети пошутили — игрок не теряется). Приложение открывается из закреплённого
+    сообщения (send_pinned_app) и синей кнопкой у поля ввода: reply-кнопка web_app не передаёт initData."""
+    return types.ReplyKeyboardMarkup(keyboard=[[types.KeyboardButton(text=btn(lang, "language"))]],
                                      resize_keyboard=True)
 
 

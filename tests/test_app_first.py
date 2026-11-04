@@ -43,7 +43,7 @@ def test_old_reply_keyboard_is_replaced_by_language_button_and_tab_opened(with_a
     from shared.locales import btn
     msg = _Msg(btn("es", "games_zone"))
     asyncio.run(app_first.old_keyboard_pressed(msg, user_lang="es"))
-    assert [[b.text for b in row] for row in msg.sent[0][1].keyboard] == [[btn("es", "open_app")], [btn("es", "language")]]
+    assert [[b.text for b in row] for row in msg.sent[0][1].keyboard] == [[btn("es", "language")]]
     assert msg.sent[1][1].inline_keyboard[0][0].web_app.url.endswith("tab=games")
 
 

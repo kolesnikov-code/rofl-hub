@@ -216,9 +216,28 @@ async def cmd_start(message: types.Message, state: FSMContext):
             await conn.execute("UPDATE users SET pending_duel = $2 WHERE user_id = $1", user_id, duel_code)
         await send_duel_invite(message, lang, duel_code)
         return
-    await message.answer(
-        t(lang, "start.welcome_back_app" if app_ready() else "start.welcome_back", username=username),
-        reply_markup=_main_markup(lang), parse_mode="HTML")
+    if app_ready():
+        await message.answer(t(lang, "start.welcome_back_app", username=username), parse_mode="HTML")
+        await send_pinned_app(message, lang)
+        return
+    await message.answer(t(lang, "start.welcome_back", username=username),
+                         reply_markup=_main_markup(lang), parse_mode="HTML")
+
+
+async def send_pinned_app(target: types.Message, lang: str) -> None:
+    """📌 «Открыть приложение» с инлайн-кнопкой — закреплено вверху чата (владелец 04.11): после онбординга, на /start
+    и после смены языка. Прошлые закрепы бота снимаются, чтобы наверху был один, на языке игрока; сбой закрепа не мешает."""
+    markup = app_markup(lang)
+    if markup is None:
+        return
+    sent = await target.answer(t(lang, "app.btn"), reply_markup=markup)
+    if sent is None:
+        return
+    try:
+        await sent.bot.unpin_all_chat_messages(sent.chat.id)
+        await sent.pin(disable_notification=True)
+    except Exception:
+        logger.warning("pin app message failed", exc_info=True)
 
 
 def _main_markup(lang: str):
@@ -291,9 +310,12 @@ async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext, use
 
     await callback.message.edit_text(t(user_lang, "start.intro4"), parse_mode="HTML")
     await send_lang_hint(callback.message, user_lang)
-    await callback.message.answer(
-        t(user_lang, "start.console_app" if app_ready() else "start.console"),
-        reply_markup=_main_markup(user_lang), parse_mode="HTML")
+    if app_ready():
+        await callback.message.answer(t(user_lang, "start.console_app"), parse_mode="HTML")
+        await send_pinned_app(callback.message, user_lang)
+    else:
+        await callback.message.answer(t(user_lang, "start.console"),
+                                      reply_markup=_main_markup(user_lang), parse_mode="HTML")
     await track(callback.from_user.id, "onboarding_done")
 
     if auction_id:
@@ -330,6 +352,8 @@ async def process_language_change(callback: types.CallbackQuery):
     except Exception:
         pass
     await callback.message.answer(t(lang, "lang.changed"), reply_markup=get_reply_keyboard(lang), parse_mode="HTML")
+    if app_ready():
+        await send_pinned_app(callback.message, lang)   # закреп — на новом языке
 
 
 # ============================================================================
