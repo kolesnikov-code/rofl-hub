@@ -40,6 +40,7 @@ BUTTONS: dict[str, str] = {
     "shop": "🏪 दुकान",
     "shop_cat_farm": "🚜 फ़ार्म के लिए",
     "shop_cat_games": "🕹️ गेमिंग",
+    "open_app": "🎮 MINI APP खोलो",
     "language": "🌐 भाषा / LANGUAGE",
 }
 

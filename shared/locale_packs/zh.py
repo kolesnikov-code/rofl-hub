@@ -34,6 +34,7 @@ BUTTONS = {
     "shop": "🏪 商店",
     "shop_cat_farm": "🚜 农场专区",
     "shop_cat_games": "🕹️ 游戏专区",
+    "open_app": "🎮 打开应用",
     "language": "🌐 语言 / LANGUAGE",
 }
 

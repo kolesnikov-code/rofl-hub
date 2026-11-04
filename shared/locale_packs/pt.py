@@ -33,6 +33,7 @@ BUTTONS = {
     "shop": "🏪 LOJA",
     "shop_cat_farm": "🚜 PARA A FAZENDA",
     "shop_cat_games": "🕹️ JOGOS",
+    "open_app": "🎮 ABRIR O MINI APP",
     "language": "🌐 IDIOMA / LANGUAGE",
 }
 

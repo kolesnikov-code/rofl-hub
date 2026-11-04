@@ -34,6 +34,7 @@ BUTTONS = {
     "shop": "🏪 TOKO",
     "shop_cat_farm": "🚜 UNTUK LADANG",
     "shop_cat_games": "🕹️ GAME",
+    "open_app": "🎮 BUKA MINI APP",
     "language": "🌐 BAHASA / LANGUAGE",
 }
 

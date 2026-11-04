@@ -33,6 +33,7 @@ BUTTONS: dict[str, str] = {
     "shop": "🏪 TIENDA",
     "shop_cat_farm": "🚜 PARA LA GRANJA",
     "shop_cat_games": "🕹️ JUEGOS",
+    "open_app": "🎮 ABRIR LA MINI APP",
     "language": "🌐 IDIOMA / LANGUAGE",
 }
 

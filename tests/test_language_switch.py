@@ -29,7 +29,7 @@ def test_language_button_is_recognizable_in_every_language():
 def test_with_the_app_bottom_panel_is_only_the_language_button(with_app):
     for lang in SUPPORTED_LANGS:
         kb = menu.get_reply_keyboard(lang)
-        assert [[b.text for b in row] for row in kb.keyboard] == [[btn(lang, "language")]], lang
+        assert [[b.text for b in row] for row in kb.keyboard] == [[btn(lang, "open_app")], [btn(lang, "language")]], lang
 
 
 def test_without_the_app_language_button_ends_the_old_grid(monkeypatch):
@@ -108,7 +108,7 @@ def test_change_saves_language_and_answers_in_the_new_one(with_app, monkeypatch)
     assert conn.calls == [(42, "de")]
     text, kb = cb.message.sent[0]
     assert text == t("de", "lang.changed")
-    assert kb.keyboard[0][0].text == btn("de", "language")
+    assert kb.keyboard[-1][0].text == btn("de", "language")
 
 
 def test_change_ignores_unknown_codes_and_unregistered_players(with_app, monkeypatch):
@@ -116,3 +116,13 @@ def test_change_ignores_unknown_codes_and_unregistered_players(with_app, monkeyp
     assert conn.calls == [] and cb.message.sent == []
     cb, conn = _run_change(monkeypatch, "chg_lang:fr", rows=0)
     assert cb.message.sent == [] and cb.alerts == ["/start"]
+
+
+def test_open_app_button_sits_above_language_and_sends_the_launch_button(with_app):
+    """04.11: «🎮 ОТКРЫТЬ ПРИЛОЖЕНИЕ» всегда над языком; текст кнопки = app.btn, нажатие ловит cmd_open_app."""
+    from bots.main_bot.handlers import menu
+    for lang in SUPPORTED_LANGS:
+        assert btn(lang, "open_app") == t(lang, "app.btn"), lang
+        assert menu.get_reply_keyboard(lang).keyboard[0][0].text == btn(lang, "open_app"), lang
+    assert len(btn_variants("open_app")) == len(SUPPORTED_LANGS)
+    assert not btn_variants("open_app") & btn_variants("language")

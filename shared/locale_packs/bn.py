@@ -35,6 +35,7 @@ BUTTONS = {
     "shop": "🏪 দোকান",
     "shop_cat_farm": "🚜 ফার্মের জন্য",
     "shop_cat_games": "🕹️ গেমিং",
+    "open_app": "🎮 MINI APP খোলো",
     "language": "🌐 ভাষা / LANGUAGE",
 }
 

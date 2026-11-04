@@ -43,6 +43,8 @@ BUTTONS: dict[str, dict[str, str]] = {
     "shop_cat_games": {"ru": "🕹️ ИГРОВЫЕ", "en": "🕹️ GAMING"},
     # 🌐 смена языка (02.11): «LANGUAGE» на каждом языке — узнают, даже если по ошибке выбрали незнакомый
     "language": {"ru": "🌐 ЯЗЫК / LANGUAGE", "en": "🌐 LANGUAGE"},
+    # 🎮 над языком (04.11): web_app в reply-кнопке не даёт initData — кнопка присылает инлайн-запуск
+    "open_app": {"ru": "🎮 ОТКРЫТЬ ПРИЛОЖЕНИЕ", "en": "🎮 OPEN THE APP"},
 }
 
 

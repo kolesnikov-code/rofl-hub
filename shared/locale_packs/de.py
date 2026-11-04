@@ -35,6 +35,7 @@ BUTTONS = {
     "shop": "🏪 SHOP",
     "shop_cat_farm": "🚜 FÜR DIE FARM",
     "shop_cat_games": "🕹️ GAMING",
+    "open_app": "🎮 MINI APP ÖFFNEN",
     "language": "🌐 SPRACHE / LANGUAGE",
 }
 
