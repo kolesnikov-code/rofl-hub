@@ -62,7 +62,7 @@ async def cmd_clan_hub(message: types.Message | types.CallbackQuery, user_lang: 
             return
 
     welcome_text = (
-        f"👥 <b>КОМАНДЫ И КЛАНЫ BOT BARONS</b>\n"
+        f"👥 <b>КОМАНДЫ И КЛАНЫ CYBER BARONS</b>\n"
         f"..................................................\n"
         f"Изначально ВСЕГДА создаётся обычная команда за 100 000 монет до 50 человек. "
         f"И уже затем в магазине /shop её можно прокачать звёздами до уровня КЛАН на 1000 человек!\n\n"

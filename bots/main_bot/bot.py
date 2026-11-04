@@ -1,5 +1,5 @@
 """
-Точка входа главного бота Bot Barons. Запуск: python -m bots.main_bot.bot
+Точка входа главного бота Cyber Barons. Запуск: python -m bots.main_bot.bot
 """
 from __future__ import annotations
 
@@ -170,7 +170,7 @@ async def main() -> None:
     if WEBAPP_URL:
         try:
             await bot.set_chat_menu_button(
-                menu_button=MenuButtonWebApp(text="🎮 Bot Barons", web_app=WebAppInfo(url=WEBAPP_URL)))
+                menu_button=MenuButtonWebApp(text="🎮 Cyber Barons", web_app=WebAppInfo(url=WEBAPP_URL)))
             logger.info("Кнопка Mini App установлена: %s", WEBAPP_URL)
         except Exception:
             logger.exception("Не удалось установить кнопку Mini App — бот работает дальше.")

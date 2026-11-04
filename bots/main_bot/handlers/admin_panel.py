@@ -31,5 +31,5 @@ async def cmd_admin(message: types.Message) -> None:
         return
     kb = types.InlineKeyboardMarkup(inline_keyboard=[[
         types.InlineKeyboardButton(text="🎛 Открыть пульт", web_app=types.WebAppInfo(url=url))]])
-    await message.answer("🎛 <b>Пульт Bot Barons</b>: битвы и акции, призы, подарки, VIP-аукционы, тумблеры.",
+    await message.answer("🎛 <b>Пульт Cyber Barons</b>: битвы и акции, призы, подарки, VIP-аукционы, тумблеры.",
                          reply_markup=kb, parse_mode="HTML")

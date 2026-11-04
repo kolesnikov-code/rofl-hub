@@ -46,11 +46,11 @@ def test_translated_doc_keeps_the_original_layout(base, lang):
     assert ID.findall(dst) == ID.findall(src)
     assert dst.split("<script>")[-1] == src.split("<script>")[-1]
     assert f'<html lang="{lang}"' in dst
-    for handle in ("@BotBaronsBot", "@mister_telebot", "https://t.me/mister_telebot"):
+    for handle in ("@CyberBaronsBot", "@mister_telebot", "https://t.me/mister_telebot"):
         assert src.count(handle) == dst.count(handle), handle   # имена ботов и ссылки — не переводятся
     text = re.sub(r"<script.*?</script>|<style.*?</style>", "", dst, flags=re.S)
     assert not re.search(r"[А-Яа-яЁё]", text), "в переводе остался русский текст"
-    assert "rofl" not in re.sub(r"BOT BARONS|ROFL-HUB|rofl-hub|RoflHub|\bROFL\b", "", text).lower()
+    assert "rofl" not in re.sub(r"CYBER BARONS|ROFL-HUB|rofl-hub|RoflHub|\bROFL\b", "", text).lower()
 
 
 def test_app_and_chat_open_docs_in_the_player_language():

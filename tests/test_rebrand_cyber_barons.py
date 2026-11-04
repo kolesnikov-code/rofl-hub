@@ -1,10 +1,10 @@
-"""🏷 04.11: игра переименована ROFL HUB → Bot Barons (новый бот @BotBaronsBot). Старое имя игроку не показываем."""
+"""🏷 04.11: игра переименована ROFL HUB → Cyber Barons (на час была Bot Barons) (новый бот @CyberBaronsBot). Старое имя игроку не показываем."""
 import re
 import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-OLD = re.compile(r"ROFL HUB|ROFL-HUB-|RoflHub|rofl-hub-card", re.IGNORECASE)
+OLD = re.compile(r"ROFL HUB|ROFL-HUB-|RoflHub|rofl-hub-card|Bot Barons|BotBaronsBot", re.IGNORECASE)   # и промежуточное имя 04.11
 # Внутренние имена (не видны игроку) и миграция переименования — можно
 ALLOWED = ("shared/database.py",)
 
@@ -29,11 +29,11 @@ def test_new_name_bot_and_vip_prefix():
     from shared.locales import SUPPORTED_LANGS, t
     assert VIP_PREFIX == "BARON-"
     for lang in SUPPORTED_LANGS:
-        assert "Bot Barons" in t(lang, "start.intro1"), lang      # первое знакомство — с новым именем
+        assert "Cyber Barons" in t(lang, "start.intro1"), lang      # первое знакомство — с новым именем
     html = (ROOT / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
-    assert "bot-barons-card.jpg" in html and "Bot Barons" in html
+    assert "cyber-barons-card.jpg" in html and "Cyber Barons" in html
     bot_src = (ROOT / "bots" / "main_bot" / "bot.py").read_text(encoding="utf-8")
-    assert 'MenuButtonWebApp(text="🎮 Bot Barons"' in bot_src
+    assert 'MenuButtonWebApp(text="🎮 Cyber Barons"' in bot_src
 
 
 def test_vip_rename_migration_is_idempotent_sql():

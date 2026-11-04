@@ -1,5 +1,5 @@
 """
-Языковые паки Bot Barons. Каждый модуль <код>.py экспортирует:
+Языковые паки Cyber Barons. Каждый модуль <код>.py экспортирует:
 - BUTTONS: dict[key, str] — 8 reply-кнопок;
 - STRINGS: dict[key, str] — все ключи интерфейса (эталон ключей — RU в shared/locales.py);
 - MINIAPP: dict[key, str] — словарь Mini App (эталон — I18N в static/webapp/index.html);

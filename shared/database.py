@@ -1058,11 +1058,12 @@ SCHEMA_STATEMENTS: list[str] = [
     SELECT user_id, '2026-11', SUM(xp) FROM moved GROUP BY user_id
     ON CONFLICT (user_id, season) DO UPDATE SET xp = season_pass.xp + EXCLUDED.xp;
     """,
-    # --- 04.11: переименование ROFL HUB → Bot Barons: VIP ID ROFL-HUB-777 → BARON-777 (идемпотентно) ---
+    # --- 04.11: переименование ROFL HUB → Cyber Barons (сначала было Bot Barons): VIP ID ROFL-HUB-777 → BARON-777 (идемпотентно) ---
     "UPDATE vip_aliases SET alias = 'BARON-' || substr(alias, 10) WHERE alias LIKE 'ROFL-HUB-%';",
     "UPDATE auctions SET vip_alias = 'BARON-' || substr(vip_alias, 10) WHERE vip_alias LIKE 'ROFL-HUB-%';",
-    "UPDATE auctions SET item_title = replace(replace(item_title, 'ROFL-HUB-', 'BARON-'), 'ROFL HUB', 'Bot Barons') "
-    "WHERE item_title LIKE '%ROFL%';",
+    "UPDATE auctions SET item_title = replace(replace(replace(item_title, 'ROFL-HUB-', 'BARON-'), 'ROFL HUB', 'Cyber Barons'), "
+    "'Bot Barons', 'Cyber Barons') "
+    "WHERE item_title LIKE '%ROFL%' OR item_title LIKE '%Bot Barons%';",
 ]
 
 

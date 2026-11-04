@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 def get_plural_form(number: int, form_1: str, form_2: str, form_5: str) -> str:
     """
-    Универсальный геймдев-валидатор русской лингвистики холдинга BOT BARONS CORE.
+    Универсальный геймдев-валидатор русской лингвистики холдинга CYBER BARONS CORE.
     Ювелирно рассчитывает окончания слов в зависимости от числительного.
     """
     abs_num = abs(number) % 100

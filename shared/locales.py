@@ -1,5 +1,5 @@
 """
-Локализация Bot Barons: 14 языков (решение владельца 13.10.2026).
+Локализация Cyber Barons: 14 языков (решение владельца 13.10.2026).
 
 Устройство:
 - ru и en живут в этом файле (ru — ЭТАЛОН ключей и содержания);
@@ -163,9 +163,9 @@ RU: dict[str, str] = {
     # ---------------- общее ----------------
     "common.no_profile": "⚠️ Профиль не найден. Нажми /start для регистрации.",
     "common.btn_menu": "💿 Главное меню",
-    "common.blocked": "🚫 Твой аккаунт заблокирован администрацией Bot Barons.",
+    "common.blocked": "🚫 Твой аккаунт заблокирован администрацией Cyber Barons.",
     "common.feature_off": "⚙️ Раздел временно на техобслуживании. Загляни чуть позже!",
-    "common.maintenance": "🛠 Bot Barons на коротких техработах. Скоро вернёмся — монеты и прогресс в сохранности!",
+    "common.maintenance": "🛠 Cyber Barons на коротких техработах. Скоро вернёмся — монеты и прогресс в сохранности!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>С возвращением, @{username}!</b>\nТвой прогресс на месте. Панель навигации — внизу экрана.",
@@ -174,7 +174,7 @@ RU: dict[str, str] = {
     "start.btn_fight": "Расскажи скорее и в БОЙ!",
     "start.console": "🚀 <b>Консоль управления активирована! Используй кнопки внизу экрана.</b>",
     "start.intro1": (
-        "👋 <b>Привет! Я — Bot Barons, главный бот игровой экосистемы Bot Barons. "
+        "👋 <b>Привет! Я — Cyber Barons, главный бот игровой экосистемы Cyber Barons. "
         "Это познавательно-развлекательный хаб нового поколения!</b>\n\n"
         "<b>Здесь ты можешь:</b>\n"
         "🎮 Играть против бота и живых соперников\n"
@@ -186,7 +186,7 @@ RU: dict[str, str] = {
         "<b>Этот чат-бот умеет:</b>\n"
         "📱 Открывать игровое приложение, где живёт вся игра\n"
         "⚡ Начислять монеты в играх, битвах команд и кланов, за достижения, активность и рефералов\n"
-        "🔄 Переводить игровые монеты другому игроку Bot Barons\n"
+        "🔄 Переводить игровые монеты другому игроку Cyber Barons\n"
         "🚀 Продавать ускорители, Безлимит, скины и многое другое…\n\n"
         "<i>Жми «ПРОДОЛЖИТЬ», и я расскажу подробнее 👇</i>"
     ),
@@ -196,14 +196,14 @@ RU: dict[str, str] = {
         "💸 Тебе начислено: <b>{balance} 🪙</b>\n"
         "🥩 Тебе начислено: <b>{cutlets} кибер-котлета</b>\n"
         "..................................................\n"
-        "Это твой стартовый бонус за вступление в клуб Bot Barons.\n\n"
+        "Это твой стартовый бонус за вступление в клуб Cyber Barons.\n\n"
         "🔒 <i>Бонус выдаётся только один раз в момент регистрации.</i>\n\n"
         "Монеты можно потратить разными способами, они — основа экономики хаба. Береги их...\n\n"
         "⁉️ <b>Но у тебя наверняка возник вопрос:</b> Что за котлета? Кого ей кормить?"
     ),
     "start.intro3": (
         "<b>СНАЧАЛА НУЖНО ПОНЯТЬ, ПОЧЕМУ ТАК ВАЖНЫ ИГРОВЫЕ МОНЕТЫ?</b>\n\n"
-        "Монеты — основа всей торговли, состязаний и покупок в <b>Bot Barons</b>. "
+        "Монеты — основа всей торговли, состязаний и покупок в <b>Cyber Barons</b>. "
         "И их можно добывать бесплатно!\n"
         "..................................................\n"
         "<b>Сделать это можно разными способами:</b>\n"
@@ -221,11 +221,11 @@ RU: dict[str, str] = {
         "Робот-Стажёр и Младший Майнер топлива не требуют. "
         "Стажёр бесплатный и вечный, а Майнер и Бурильщик покупаются на 30 дней (Мастер-дрон замораживает износ). "
         "Разберёшься по ходу :) Не будем отвлекаться.\n\n"
-        "Хочу рассказать ещё немного о <b>Bot Barons</b>, чтобы было понятно, как здесь всё устроено.\n\n"
+        "Хочу рассказать ещё немного о <b>Cyber Barons</b>, чтобы было понятно, как здесь всё устроено.\n\n"
         "🛑 <b>Осталось ещё одно сообщение — и в бой!</b>"
     ),
     "start.intro4": (
-        "<b>РАССКАЗЫВАЮ ОЧЕНЬ КРАТКО. BOT BARONS — это:</b>\n"
+        "<b>РАССКАЗЫВАЮ ОЧЕНЬ КРАТКО. CYBER BARONS — это:</b>\n"
         "• Игры и квесты на любой вкус — в одном приложении\n"
         "• Отряд (до 5 человек) или команда (до 50 человек)\n"
         "• Возможность прокачать команду до клана (до 1000 человек)\n"
@@ -241,7 +241,7 @@ RU: dict[str, str] = {
 
     # ---------------- меню и игровая зона ----------------
     "menu.text": (
-        "📱 <b>ГЛАВНОЕ МЕНЮ ЭКОСИСТЕМЫ BOT BARONS</b>\n"
+        "📱 <b>ГЛАВНОЕ МЕНЮ ЭКОСИСТЕМЫ CYBER BARONS</b>\n"
         "..................................................\n"
         "👤 <b>ЛИЧНЫЙ ПРОФИЛЬ И ПАСПОРТ:</b>\n"
         "• /start — начать знакомство и зарегистрировать аккаунт\n"
@@ -271,7 +271,7 @@ RU: dict[str, str] = {
         "<i>⚙️ Кнопки внизу экрана — быстрый переход по разделам.</i>"
     ),
     "menu.games_hub": (
-        "🕹️ <b>ДОБРО ПОЖАЛОВАТЬ В ИГРОВУЮ ЗОНУ BOT BARONS!</b>\n"
+        "🕹️ <b>ДОБРО ПОЖАЛОВАТЬ В ИГРОВУЮ ЗОНУ CYBER BARONS!</b>\n"
         "..................................................\n"
         "Сразись с ботом в быстрых играх, проверь эрудицию в викторине или вызови живого соперника на дуэль!\n\n"
         "💸 Победа приносит: <b>+2 🪙</b> (Кибер-Сейф: <b>+5 🪙</b>)\n"
@@ -287,14 +287,14 @@ RU: dict[str, str] = {
     "menu.btn_safe": "🔐 Кибер-Сейф",
     "menu.btn_duel": "⚔️ ДУЭЛИ 1-на-1",
     "app.open": (
-        "🎮 <b>Bot Barons</b>\n\n"
+        "🎮 <b>Cyber Barons</b>\n\n"
         "Вся игра — в одном приложении: паспорт, ферма, игры, квесты, биржа, команда и многое другое.\n\n"
         "👇 Жми кнопку:"
     ),
     "app.btn": "🎮 ОТКРЫТЬ ПРИЛОЖЕНИЕ",
     "app.unavailable": "⚙️ Приложение ещё подключается к серверам экосистемы. Загляни чуть позже!",
     "faq.teaser": (
-        "📚 <b>СПРАВОЧНИК ЭКОСИСТЕМЫ BOT BARONS</b>\n"
+        "📚 <b>СПРАВОЧНИК ЭКОСИСТЕМЫ CYBER BARONS</b>\n"
         "..................................................\n"
         "Коротко о главном:\n"
         "🚜 Роботы добывают монеты круглосуточно: Робот-Стажёр — 1 🪙/ч бесплатно и навсегда, Младший Майнер — 5 🪙/ч без топлива, "
@@ -308,7 +308,7 @@ RU: dict[str, str] = {
     ),
     "faq.btn_open": "📖 ОТКРЫТЬ ПОЛНЫЙ СПРАВОЧНИК",
     "rules.teaser": (
-        "📜 <b>ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ BOT BARONS</b>\n"
+        "📜 <b>ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ CYBER BARONS</b>\n"
         "..................................................\n"
         "Главное в двух словах:\n"
         "🪙 Монеты и все игровые предметы — виртуальные развлекательные элементы: "
@@ -323,7 +323,7 @@ RU: dict[str, str] = {
     ),
     "rules.btn_open": "📜 ОТКРЫТЬ ПОЛНОЕ СОГЛАШЕНИЕ",
     "quest.list_header": (
-        "🗺️ <b>КВЕСТЫ BOT BARONS</b>\n"
+        "🗺️ <b>КВЕСТЫ CYBER BARONS</b>\n"
         "..................................................\n"
         "Интерактивные истории с выборами и развилками: детективы, комедии, головоломки. "
         "Первая победа в каждом квесте приносит монеты, переигрывать можно сколько угодно!\n\n"
@@ -408,7 +408,7 @@ RU: dict[str, str] = {
 
     # ---------------- профиль ----------------
     "profile.caption": (
-        "📋 <b>ТВОЙ ПРОФИЛЬ BOT BARONS</b>\n"
+        "📋 <b>ТВОЙ ПРОФИЛЬ CYBER BARONS</b>\n"
         "..................................................\n"
         "🆔 ID паспорта: <code>{user_id}</code>\n"
         "{vip}"
@@ -534,7 +534,7 @@ RU: dict[str, str] = {
         "⚔️ <b>ДУЭЛИ 1-НА-1: КАМЕНЬ-НОЖНИЦЫ-БУМАГА НА СТАВКУ</b>\n"
         "..................................................\n"
         "Выбирай стол по карману — как в покере. Ставка списывается сразу, "
-        "соперник — живой игрок Bot Barons!\n\n"
+        "соперник — живой игрок Cyber Barons!\n\n"
         "💰 Банк = обе ставки. Победитель забирает <b>{payout_percent}%</b> банка, "
         "<b>{burn_percent}%</b> сгорает навсегда (дефляция!).\n"
         "🤝 Ничья — мгновенная переигровка жестов, банк на столе.\n"
@@ -606,7 +606,7 @@ RU: dict[str, str] = {
 
     # ---------------- рефералка ----------------
     "ref.text": (
-        "🤝 <b>РЕФЕРАЛЬНАЯ ПРОГРАММА BOT BARONS</b>\n"
+        "🤝 <b>РЕФЕРАЛЬНАЯ ПРОГРАММА CYBER BARONS</b>\n"
         "..................................................\n"
         "Приглашай друзей по персональной ссылке и получай <b>{bonus}</b> "
         "за каждого, кто станет активным игроком!\n\n"
@@ -618,7 +618,7 @@ RU: dict[str, str] = {
         "<i>Кидай ссылку в чаты класса, друзьям и в соцсети — чем больше банда, тем быстрее растёт твой баланс!</i>"
     ),
     "ref.btn_share": "📣 Поделиться ссылкой",
-    "ref.share_text": "Залетай в игровую экосистему Bot Barons!",
+    "ref.share_text": "Залетай в игровую экосистему Cyber Barons!",
     "ref.qualified_line": (
         "✅ <b>Активный друг</b> — тот, кто дошёл до <b>{level} уровня интеллекта</b> в викторине "
         "и забрал <b>{claims} ежедневные котлеты</b> на ферме. Тогда тебе — <b>{bonus}</b>, "
@@ -681,7 +681,7 @@ RU: dict[str, str] = {
     ),
     "acct.btn_undo": "↩️ Отменить удаление",
     "acct.undone": "🎉 Удаление отменено — аккаунт снова твой!",
-    "acct.purged": "🗑 Твой аккаунт Bot Barons удалён. Спасибо за игру! Захочешь вернуться — нажми /start.",
+    "acct.purged": "🗑 Твой аккаунт Cyber Barons удалён. Спасибо за игру! Захочешь вернуться — нажми /start.",
     "acct.deleted_notice": "Аккаунт удалён. Нажми /start, чтобы начать заново.",
     "acct.welcome_back": (
         "👋 <b>С возвращением!</b>\n"
@@ -735,7 +735,7 @@ RU: dict[str, str] = {
     ),
 
     # ---------------- магазин и платежи ----------------
-    "shop.header": "🏪 <b>МАГАЗИН BOT BARONS</b>\nПокупки — через официальные Telegram Stars. Выбери категорию кнопками внизу.",
+    "shop.header": "🏪 <b>МАГАЗИН CYBER BARONS</b>\nПокупки — через официальные Telegram Stars. Выбери категорию кнопками внизу.",
     "shop.cat_farm": (
         "🚜 <b>МАГАЗИН · ДЛЯ ФЕРМЫ</b>\n"
         "..................................................\n"
@@ -751,7 +751,7 @@ RU: dict[str, str] = {
         "..................................................\n"
         "👇 <b>Выбери товар:</b>"
     ),
-    "pay.invoice_desc": "Мгновенная доставка внутриигрового контента Bot Barons.",
+    "pay.invoice_desc": "Мгновенная доставка внутриигрового контента Cyber Barons.",
     "pay.invoice_error": "⚠️ Не удалось сформировать счёт Telegram Stars. Попробуй позже.",
     "pay.success": "🎉 <b>Платёж подтверждён!</b>\n🧾 <code>{charge}</code>\n💵 Списано: <b>{stars} ★</b>\n\n{text}",
     "pay.crash": (
@@ -764,7 +764,7 @@ RU: dict[str, str] = {
     "pay.support": (
         "🛟 <b>ПОДДЕРЖКА ПО ПЛАТЕЖАМ TELEGRAM STARS</b>\n"
         "..................................................\n"
-        "Все товары Bot Barons — цифровые и доставляются мгновенно после оплаты.\n\n"
+        "Все товары Cyber Barons — цифровые и доставляются мгновенно после оплаты.\n\n"
         "⚙️ <b>Если оплата прошла, а товар не пришёл:</b>\n"
         "бот автоматически возвращает Stars при сбое доставки. Если этого не случилось — "
         "пришли сюда номер платежа (он есть в чеке, формат <code>xxxx...</code>) и опиши проблему. "
@@ -855,10 +855,10 @@ RU: dict[str, str] = {
     "app.moved": "🎮 Этот раздел теперь в игровом приложении — там удобнее и красивее. Жми кнопку 👇",
     "lang.kb_hint": "🌐 Сменить язык — кнопка внизу или команда /language.",
     "lang.changed": "✅ Готово: теперь бот говорит по-русски. Если приложение открыто — закрой его и открой заново.",
-    "app.keyboard_gone": "🧹 Старые кнопки внизу убраны: вся игра теперь в приложении. Открыть его можно и кнопкой «🎮 Bot Barons» у поля ввода.",
-    "start.console_app": "🚀 <b>Готово!</b> Вся игра — в приложении: жми кнопку ниже. Потом его всегда можно открыть кнопкой «🎮 Bot Barons» у поля ввода.",
+    "app.keyboard_gone": "🧹 Старые кнопки внизу убраны: вся игра теперь в приложении. Открыть его можно и кнопкой «🎮 Cyber Barons» у поля ввода.",
+    "start.console_app": "🚀 <b>Готово!</b> Вся игра — в приложении: жми кнопку ниже. Потом его всегда можно открыть кнопкой «🎮 Cyber Barons» у поля ввода.",
     "start.welcome_back_app": "👋 <b>С возвращением, @{username}!</b> Твой прогресс на месте — открывай игру 👇",
-    "menu.app": "📱 <b>Bot Barons</b>\nВся игра — в приложении 👇\n\n<b>В чате:</b>\n• /invite — пригласить друга\n• /transfer — перевести монеты\n• /faq — частые вопросы\n• /rules — пользовательское соглашение\n• /paysupport — помощь с платежами\n• /delete_account — удалить аккаунт",
+    "menu.app": "📱 <b>Cyber Barons</b>\nВся игра — в приложении 👇\n\n<b>В чате:</b>\n• /invite — пригласить друга\n• /transfer — перевести монеты\n• /faq — частые вопросы\n• /rules — пользовательское соглашение\n• /paysupport — помощь с платежами\n• /delete_account — удалить аккаунт",
     "app.goto_workshop": "🔧 <b>Мастерская</b> живёт в игровом приложении: ресурсы, рецепты и крафт в одно касание.",
     "app.goto_raids": "🏴‍☠️ <b>Налёты</b> живут в игровом приложении: разведка, стойка обороны и реванш.",
     "app.goto_station": "🛰 <b>Станция команды</b> живёт в игровом приложении: прогресс, вклады и бонус для всей команды.",
@@ -1269,9 +1269,9 @@ EN: dict[str, str] = {
     # ---------------- common ----------------
     "common.no_profile": "⚠️ Profile not found. Press /start to register.",
     "common.btn_menu": "💿 Main Menu",
-    "common.blocked": "🚫 Your account has been blocked by the Bot Barons administration.",
+    "common.blocked": "🚫 Your account has been blocked by the Cyber Barons administration.",
     "common.feature_off": "⚙️ This section is under maintenance. Check back a bit later!",
-    "common.maintenance": "🛠 Bot Barons is under quick maintenance. Back soon — your coins and progress are safe!",
+    "common.maintenance": "🛠 Cyber Barons is under quick maintenance. Back soon — your coins and progress are safe!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Welcome back, @{username}!</b>\nYour progress is safe. The navigation panel is at the bottom of the screen.",
@@ -1280,7 +1280,7 @@ EN: dict[str, str] = {
     "start.btn_fight": "Tell me quick — then BATTLE!",
     "start.console": "🚀 <b>Control console activated! Use the buttons at the bottom of the screen.</b>",
     "start.intro1": (
-        "👋 <b>Hi! I'm Bot Barons — the main bot of the Bot Barons gaming ecosystem. "
+        "👋 <b>Hi! I'm Cyber Barons — the main bot of the Cyber Barons gaming ecosystem. "
         "A new-generation hub of games and knowledge!</b>\n\n"
         "<b>Here you can:</b>\n"
         "🎮 Play against the bot and real opponents\n"
@@ -1292,7 +1292,7 @@ EN: dict[str, str] = {
         "<b>This chat-bot can:</b>\n"
         "📱 Open the game app, where the whole game lives\n"
         "⚡ Award coins for games, team and clan battles, achievements, activity and referrals\n"
-        "🔄 Transfer game coins to another Bot Barons player\n"
+        "🔄 Transfer game coins to another Cyber Barons player\n"
         "🚀 Sell boosters, Unlimited, skins and much more…\n\n"
         "<i>Press “CONTINUE” and I'll tell you more 👇</i>"
     ),
@@ -1302,14 +1302,14 @@ EN: dict[str, str] = {
         "💸 You received: <b>{balance} 🪙</b>\n"
         "🥩 You received: <b>{cutlets} cyber-cutlet</b>\n"
         "..................................................\n"
-        "This is your welcome bonus for joining the Bot Barons club.\n\n"
+        "This is your welcome bonus for joining the Cyber Barons club.\n\n"
         "🔒 <i>The bonus is granted only once, at registration.</i>\n\n"
         "Coins can be spent in many ways — they are the backbone of the hub's economy. Guard them well...\n\n"
         "⁉️ <b>But you surely have a question:</b> what's this cutlet? Who do I feed it to?"
     ),
     "start.intro3": (
         "<b>FIRST, WHY DO GAME COINS MATTER SO MUCH?</b>\n\n"
-        "Coins power all trading, contests and purchases in <b>Bot Barons</b>. "
+        "Coins power all trading, contests and purchases in <b>Cyber Barons</b>. "
         "And you can earn them for free!\n"
         "..................................................\n"
         "<b>There are many ways to earn them:</b>\n"
@@ -1327,11 +1327,11 @@ EN: dict[str, str] = {
         "The Intern Bot and the Miner Bot need no fuel. "
         "The Intern is free and lasts forever, while the Miner and the Driller are bought for 30 days (the Master Drone pauses wear). "
         "You'll figure it out as you go :) Let's not get distracted.\n\n"
-        "A little more about <b>Bot Barons</b>, so you understand how everything works here.\n\n"
+        "A little more about <b>Cyber Barons</b>, so you understand how everything works here.\n\n"
         "🛑 <b>One more message — and then to battle!</b>"
     ),
     "start.intro4": (
-        "<b>THE SHORT VERSION. BOT BARONS IS:</b>\n"
+        "<b>THE SHORT VERSION. CYBER BARONS IS:</b>\n"
         "• Games and quests for every taste — all in one app\n"
         "• A squad (up to 5 players) or a team (up to 50 players)\n"
         "• Upgrade your team into a clan (up to 1000 players)\n"
@@ -1347,7 +1347,7 @@ EN: dict[str, str] = {
 
     # ---------------- menu & game zone ----------------
     "menu.text": (
-        "📱 <b>BOT BARONS ECOSYSTEM — MAIN MENU</b>\n"
+        "📱 <b>CYBER BARONS ECOSYSTEM — MAIN MENU</b>\n"
         "..................................................\n"
         "👤 <b>PROFILE & PASSPORT:</b>\n"
         "• /start — begin the intro and register an account\n"
@@ -1377,7 +1377,7 @@ EN: dict[str, str] = {
         "<i>⚙️ The buttons at the bottom of the screen take you to any section.</i>"
     ),
     "menu.games_hub": (
-        "🕹️ <b>WELCOME TO THE BOT BARONS GAME ZONE!</b>\n"
+        "🕹️ <b>WELCOME TO THE CYBER BARONS GAME ZONE!</b>\n"
         "..................................................\n"
         "Take on the bot in quick games, test your knowledge in the quiz or challenge a real opponent to a duel!\n\n"
         "💸 A win pays: <b>+2 🪙</b> (Cyber-Safe: <b>+5 🪙</b>)\n"
@@ -1393,14 +1393,14 @@ EN: dict[str, str] = {
     "menu.btn_safe": "🔐 Cyber-Safe",
     "menu.btn_duel": "⚔️ 1-on-1 DUELS",
     "app.open": (
-        "🎮 <b>Bot Barons</b>\n\n"
+        "🎮 <b>Cyber Barons</b>\n\n"
         "The whole game in one app: passport, farm, games, quests, market, team and much more.\n\n"
         "👇 Tap the button:"
     ),
     "app.btn": "🎮 OPEN THE APP",
     "app.unavailable": "⚙️ The app is still connecting to the ecosystem servers. Check back soon!",
     "faq.teaser": (
-        "📚 <b>BOT BARONS ECOSYSTEM GUIDE</b>\n"
+        "📚 <b>CYBER BARONS ECOSYSTEM GUIDE</b>\n"
         "..................................................\n"
         "The short version:\n"
         "🚜 Robots mine coins around the clock: Intern Bot — 1 🪙/h, free and forever, Miner Bot — 5 🪙/h fuel-free, "
@@ -1414,7 +1414,7 @@ EN: dict[str, str] = {
     ),
     "faq.btn_open": "📖 OPEN THE FULL GUIDE",
     "rules.teaser": (
-        "📜 <b>BOT BARONS USER AGREEMENT</b>\n"
+        "📜 <b>CYBER BARONS USER AGREEMENT</b>\n"
         "..................................................\n"
         "The essentials:\n"
         "🪙 Coins and all in-game items are virtual entertainment elements: "
@@ -1429,7 +1429,7 @@ EN: dict[str, str] = {
     ),
     "rules.btn_open": "📜 OPEN THE FULL AGREEMENT",
     "quest.list_header": (
-        "🗺️ <b>BOT BARONS QUESTS</b>\n"
+        "🗺️ <b>CYBER BARONS QUESTS</b>\n"
         "..................................................\n"
         "Interactive stories with choices and branches: detectives, comedies, puzzles. "
         "The first victory in each quest pays coins, and you can replay as much as you like!\n"
@@ -1515,7 +1515,7 @@ EN: dict[str, str] = {
 
     # ---------------- profile ----------------
     "profile.caption": (
-        "📋 <b>YOUR BOT BARONS PROFILE</b>\n"
+        "📋 <b>YOUR CYBER BARONS PROFILE</b>\n"
         "..................................................\n"
         "🆔 Passport ID: <code>{user_id}</code>\n"
         "{vip}"
@@ -1641,7 +1641,7 @@ EN: dict[str, str] = {
         "⚔️ <b>1-ON-1 DUELS: ROCK-PAPER-SCISSORS FOR A STAKE</b>\n"
         "..................................................\n"
         "Pick a table that fits your wallet — just like poker. The stake is taken "
-        "immediately, and your opponent is a real Bot Barons player!\n\n"
+        "immediately, and your opponent is a real Cyber Barons player!\n\n"
         "💰 The pot = both stakes. The winner takes <b>{payout_percent}%</b> of the pot, "
         "<b>{burn_percent}%</b> burns forever (deflation!).\n"
         "🤝 A draw means an instant gesture replay — the pot stays on the table.\n"
@@ -1714,7 +1714,7 @@ EN: dict[str, str] = {
 
     # ---------------- referral ----------------
     "ref.text": (
-        "🤝 <b>BOT BARONS REFERRAL PROGRAM</b>\n"
+        "🤝 <b>CYBER BARONS REFERRAL PROGRAM</b>\n"
         "..................................................\n"
         "Invite friends via your personal link and get <b>{bonus}</b> "
         "for everyone who becomes an active player!\n\n"
@@ -1726,7 +1726,7 @@ EN: dict[str, str] = {
         "<i>Share the link with classmates, friends and socials — the bigger the crew, the faster your balance grows!</i>"
     ),
     "ref.btn_share": "📣 Share the link",
-    "ref.share_text": "Join the Bot Barons gaming ecosystem!",
+    "ref.share_text": "Join the Cyber Barons gaming ecosystem!",
     "ref.qualified_line": (
         "✅ <b>An active friend</b> is someone who reached <b>intellect level {level}</b> in the quiz "
         "and claimed <b>{claims} daily cutlets</b> on the farm. Then you get <b>{bonus}</b>, "
@@ -1789,7 +1789,7 @@ EN: dict[str, str] = {
     ),
     "acct.btn_undo": "↩️ Cancel deletion",
     "acct.undone": "🎉 Deletion cancelled — the account is yours again!",
-    "acct.purged": "🗑 Your Bot Barons account has been deleted. Thanks for playing! Want to come back? Tap /start.",
+    "acct.purged": "🗑 Your Cyber Barons account has been deleted. Thanks for playing! Want to come back? Tap /start.",
     "acct.deleted_notice": "This account has been deleted. Tap /start to begin again.",
     "acct.welcome_back": (
         "👋 <b>Welcome back!</b>\n"
@@ -1843,7 +1843,7 @@ EN: dict[str, str] = {
     ),
 
     # ---------------- shop & payments ----------------
-    "shop.header": "🏪 <b>BOT BARONS SHOP</b>\nPurchases go through official Telegram Stars. Pick a category with the buttons below.",
+    "shop.header": "🏪 <b>CYBER BARONS SHOP</b>\nPurchases go through official Telegram Stars. Pick a category with the buttons below.",
     "shop.cat_farm": (
         "🚜 <b>SHOP · FOR THE FARM</b>\n"
         "..................................................\n"
@@ -1859,7 +1859,7 @@ EN: dict[str, str] = {
         "..................................................\n"
         "👇 <b>Pick an item:</b>"
     ),
-    "pay.invoice_desc": "Instant delivery of Bot Barons in-game content.",
+    "pay.invoice_desc": "Instant delivery of Cyber Barons in-game content.",
     "pay.invoice_error": "⚠️ Couldn't create the Telegram Stars invoice. Try again later.",
     "pay.success": "🎉 <b>Payment confirmed!</b>\n🧾 <code>{charge}</code>\n💵 Charged: <b>{stars} ★</b>\n\n{text}",
     "pay.crash": (
@@ -1872,7 +1872,7 @@ EN: dict[str, str] = {
     "pay.support": (
         "🛟 <b>TELEGRAM STARS PAYMENT SUPPORT</b>\n"
         "..................................................\n"
-        "All Bot Barons items are digital and delivered instantly after payment.\n\n"
+        "All Cyber Barons items are digital and delivered instantly after payment.\n\n"
         "⚙️ <b>If you paid but the item didn't arrive:</b>\n"
         "the bot refunds Stars automatically when delivery fails. If that didn't happen — "
         "send your payment number here (it's in the receipt, format <code>xxxx...</code>) and describe "
@@ -1963,10 +1963,10 @@ EN: dict[str, str] = {
     "app.moved": "🎮 This section now lives in the game app — it's easier and prettier there. Tap the button 👇",
     "lang.kb_hint": "🌐 To change the language — use the button below or the /language command.",
     "lang.changed": "✅ Done: the bot now speaks English. If the app is open, close it and open it again.",
-    "app.keyboard_gone": "🧹 The old buttons at the bottom are gone: the whole game is in the app now. You can also open it with the «🎮 Bot Barons» button next to the input field.",
-    "start.console_app": "🚀 <b>All set!</b> The whole game is in the app: tap the button below. Later you can always open it with the «🎮 Bot Barons» button next to the input field.",
+    "app.keyboard_gone": "🧹 The old buttons at the bottom are gone: the whole game is in the app now. You can also open it with the «🎮 Cyber Barons» button next to the input field.",
+    "start.console_app": "🚀 <b>All set!</b> The whole game is in the app: tap the button below. Later you can always open it with the «🎮 Cyber Barons» button next to the input field.",
     "start.welcome_back_app": "👋 <b>Welcome back, @{username}!</b> Your progress is safe — open the game 👇",
-    "menu.app": "📱 <b>Bot Barons</b>\nThe whole game is in the app 👇\n\n<b>In the chat:</b>\n• /invite — invite a friend\n• /transfer — send coins\n• /faq — FAQ\n• /rules — user agreement\n• /paysupport — payment support\n• /delete_account — delete your account",
+    "menu.app": "📱 <b>Cyber Barons</b>\nThe whole game is in the app 👇\n\n<b>In the chat:</b>\n• /invite — invite a friend\n• /transfer — send coins\n• /faq — FAQ\n• /rules — user agreement\n• /paysupport — payment support\n• /delete_account — delete your account",
     "app.goto_workshop": "🔧 The <b>workshop</b> lives in the game app: resources, recipes and one-tap crafting.",
     "app.goto_raids": "🏴‍☠️ <b>Raids</b> live in the game app: scouting, defense stance and revenge.",
     "app.goto_station": "🛰 The <b>team station</b> lives in the game app: progress, donations and a bonus for the whole team.",

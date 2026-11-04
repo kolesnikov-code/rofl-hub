@@ -27,7 +27,7 @@ _by_id: dict[int, dict] = {}
 _lang_banks: dict[str, tuple[list[dict], dict[int, dict]] | None] = {}
 
 FALLBACK_QUESTIONS = [
-    {"id": 1, "category": "Экономика Bot Barons", "q": "Сколько монет в час приносит Кибер-Бурильщик?",
+    {"id": 1, "category": "Экономика Cyber Barons", "q": "Сколько монет в час приносит Кибер-Бурильщик?",
      "correct": "10", "options": ["5", "10", "20", "50"]},
 ]
 

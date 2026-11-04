@@ -1,4 +1,4 @@
-"""Deutsche (du) Lokalisierung Bot Barons."""
+"""Deutsche (du) Lokalisierung Cyber Barons."""
 # Глоссарий (консистентность терминов):
 # монеты -> Münzen
 # Младший Майнер -> Miner-Bot
@@ -53,10 +53,10 @@ STRINGS = {
     "app.moved": "🎮 Dieser Bereich ist jetzt in der Spiel-App – dort ist es bequemer und schöner. Tippe auf den Button 👇",
     "lang.kb_hint": "🌐 Sprache ändern: über den Button unten oder mit dem Befehl /language.",
     "lang.changed": "✅ Fertig: Der Bot spricht jetzt Deutsch. Wenn die App offen ist, schließ sie und öffne sie neu.",
-    "app.keyboard_gone": "🧹 Die alten Buttons unten sind weg: Das ganze Spiel ist jetzt in der App. Du kannst sie auch über den Button «🎮 Bot Barons» neben dem Eingabefeld öffnen.",
-    "start.console_app": "🚀 <b>Fertig!</b> Das ganze Spiel ist in der App: Tippe auf den Button unten. Später öffnest du sie jederzeit über den Button «🎮 Bot Barons» neben dem Eingabefeld.",
+    "app.keyboard_gone": "🧹 Die alten Buttons unten sind weg: Das ganze Spiel ist jetzt in der App. Du kannst sie auch über den Button «🎮 Cyber Barons» neben dem Eingabefeld öffnen.",
+    "start.console_app": "🚀 <b>Fertig!</b> Das ganze Spiel ist in der App: Tippe auf den Button unten. Später öffnest du sie jederzeit über den Button «🎮 Cyber Barons» neben dem Eingabefeld.",
     "start.welcome_back_app": "👋 <b>Willkommen zurück, @{username}!</b> Dein Fortschritt ist gespeichert – öffne das Spiel 👇",
-    "menu.app": "📱 <b>Bot Barons</b>\nDas ganze Spiel ist in der App 👇\n\n<b>Im Chat:</b>\n• /invite — Freund einladen\n• /transfer — Münzen senden\n• /faq — häufige Fragen\n• /rules — Nutzungsvereinbarung\n• /paysupport — Hilfe bei Zahlungen\n• /delete_account — Konto löschen",
+    "menu.app": "📱 <b>Cyber Barons</b>\nDas ganze Spiel ist in der App 👇\n\n<b>Im Chat:</b>\n• /invite — Freund einladen\n• /transfer — Münzen senden\n• /faq — häufige Fragen\n• /rules — Nutzungsvereinbarung\n• /paysupport — Hilfe bei Zahlungen\n• /delete_account — Konto löschen",
     # TODO(перевод 26.10): история — пока по-английски
     "hist.mining": "⛏ Farm-Ertrag",
     "hist.game_win": "🎮 Spielsieg",
@@ -181,9 +181,9 @@ STRINGS = {
     # ---------------- allgemein ----------------
     "common.no_profile": "⚠️ Profil nicht gefunden. Tippe auf /start, um dich zu registrieren.",
     "common.btn_menu": "💿 Hauptmenü",
-    "common.blocked": "🚫 Dein Account wurde von der Bot-Barons-Administration gesperrt.",
+    "common.blocked": "🚫 Dein Account wurde von der Cyber-Barons-Administration gesperrt.",
     "common.feature_off": "⚙️ Dieser Bereich wird gerade gewartet. Schau etwas später wieder vorbei!",
-    "common.maintenance": "🛠 Bot Barons ist kurz in Wartung. Gleich zurück — deine Münzen und dein Fortschritt sind sicher!",
+    "common.maintenance": "🛠 Cyber Barons ist kurz in Wartung. Gleich zurück — deine Münzen und dein Fortschritt sind sicher!",
 
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Willkommen zurück, @{username}!</b>\nDein Fortschritt ist sicher. Die Navigationsleiste ist unten auf dem Bildschirm.",
@@ -192,7 +192,7 @@ STRINGS = {
     "start.btn_fight": "Erzähl schnell — und ab in den KAMPF!",
     "start.console": "🚀 <b>Steuerkonsole aktiviert! Nutze die Buttons unten auf dem Bildschirm.</b>",
     "start.intro1": (
-        "👋 <b>Hi! Ich bin der Bot Barons — der Haupt-Bot des Spiele-Ökosystems Bot Barons. Ein Hub der neuen Generation für Spiele und Wissen!</b>\n\n<b>Hier kannst du:</b>\n🎮 Gegen den Bot und echte Gegner spielen\n💸 Spielwährung für Siege verdienen oder eine Farm starten, die sie rund um die Uhr schürft\n🤼 Ein Team gründen und die Rangliste stürmen\n🏆 Dein Team zum Clan ausbauen und im internationalen Ranking kämpfen\n💰 Mit deiner Crew Schlachten gewinnen und Preise abräumen\n👑 Eine legendäre VIP ID auf einer Auktion ersteigern\n\n<b>Dieser Chat-Bot kann:</b>\n📱 Die Spiele-App öffnen, in der das ganze Spiel lebt\n⚡ Münzen für Spiele, Team- und Clan-Schlachten, Erfolge, Aktivität und Einladungen gutschreiben\n🔄 Spielmünzen an andere Bot-Barons-Spieler überweisen\n🚀 Booster, Unbegrenzt, Skins und vieles mehr verkaufen…\n\n<i>Tippe auf „WEITER“ und ich erzähle dir mehr 👇</i>"
+        "👋 <b>Hi! Ich bin der Cyber Barons — der Haupt-Bot des Spiele-Ökosystems Cyber Barons. Ein Hub der neuen Generation für Spiele und Wissen!</b>\n\n<b>Hier kannst du:</b>\n🎮 Gegen den Bot und echte Gegner spielen\n💸 Spielwährung für Siege verdienen oder eine Farm starten, die sie rund um die Uhr schürft\n🤼 Ein Team gründen und die Rangliste stürmen\n🏆 Dein Team zum Clan ausbauen und im internationalen Ranking kämpfen\n💰 Mit deiner Crew Schlachten gewinnen und Preise abräumen\n👑 Eine legendäre VIP ID auf einer Auktion ersteigern\n\n<b>Dieser Chat-Bot kann:</b>\n📱 Die Spiele-App öffnen, in der das ganze Spiel lebt\n⚡ Münzen für Spiele, Team- und Clan-Schlachten, Erfolge, Aktivität und Einladungen gutschreiben\n🔄 Spielmünzen an andere Cyber-Barons-Spieler überweisen\n🚀 Booster, Unbegrenzt, Skins und vieles mehr verkaufen…\n\n<i>Tippe auf „WEITER“ und ich erzähle dir mehr 👇</i>"
     ),
     "start.intro2": (
         "🎁 <b>HIER SIND DEINE ERSTEN BELOHNUNGEN FÜR DIE REGISTRIERUNG!</b>\n"
@@ -200,24 +200,24 @@ STRINGS = {
         "💸 Gutgeschrieben: <b>{balance} 🪙</b>\n"
         "🥩 Gutgeschrieben: <b>{cutlets} Cyber-Frikadelle</b>\n"
         "..................................................\n"
-        "Das ist dein Startbonus für den Beitritt zum Bot-Barons-Club.\n\n"
+        "Das ist dein Startbonus für den Beitritt zum Cyber-Barons-Club.\n\n"
         "🔒 <i>Den Bonus gibt es nur einmal — im Moment der Registrierung.</i>\n\n"
         "Münzen kannst du auf viele Arten ausgeben — sie sind das Fundament der Hub-Wirtschaft. Pass gut auf sie auf...\n\n"
         "⁉️ <b>Aber du fragst dich sicher:</b> Was soll diese Frikadelle? Wen soll ich damit füttern?"
     ),
     "start.intro3": (
-        "<b>ZUERST: WARUM SIND SPIELMÜNZEN SO WICHTIG?</b>\n\nMünzen treiben Handel, Wettkämpfe und Käufe in <b>Bot Barons</b> an. Und du kannst sie kostenlos verdienen!\n..................................................\n<b>Es gibt viele Wege, sie zu verdienen:</b>\n• Freunde über deinen Einladungslink einladen\n• Spiele gegen den Bot gewinnen\n• Duelle gegen andere Spieler gewinnen\n• An Team- und Clan-Schlachten teilnehmen\n• Tagesziele erfüllen und die Truhe öffnen\n• Einen Roboter holen, der rund um die Uhr Münzen schürft (Praktikanten-Bot / Miner-Bot / Cyber-Bohrer)\n..................................................\n<b>Wenn du einen Cyber-Bohrer hast, musst du ihn jeden Tag füttern. Genau dafür gibt es die Cyber-Frikadelle: Treibstoff für das automatische Schürfen. Eine Frikadelle kannst du einmal am Tag gratis auf der Farm abholen! Deine Aufgabe ist simpel — vorbeischauen und den Roboter füttern.</b>\n\nVerpasst du die Fütterung, schaltet der Roboter ab und das Schürfen stoppt.\n\nDer Praktikanten-Bot und der Miner-Bot brauchen keinen Treibstoff. Der Praktikant ist gratis und hält für immer, Miner und Bohrer werden für 30 Tage gekauft (die Master-Drohne pausiert den Verschleiß). Du kommst unterwegs schnell rein :) Nicht ablenken lassen.\n\nNoch ein bisschen mehr über <b>Bot Barons</b>, damit du verstehst, wie hier alles läuft.\n\n🛑 <b>Noch eine Nachricht — und dann ab in den Kampf!</b>"
+        "<b>ZUERST: WARUM SIND SPIELMÜNZEN SO WICHTIG?</b>\n\nMünzen treiben Handel, Wettkämpfe und Käufe in <b>Cyber Barons</b> an. Und du kannst sie kostenlos verdienen!\n..................................................\n<b>Es gibt viele Wege, sie zu verdienen:</b>\n• Freunde über deinen Einladungslink einladen\n• Spiele gegen den Bot gewinnen\n• Duelle gegen andere Spieler gewinnen\n• An Team- und Clan-Schlachten teilnehmen\n• Tagesziele erfüllen und die Truhe öffnen\n• Einen Roboter holen, der rund um die Uhr Münzen schürft (Praktikanten-Bot / Miner-Bot / Cyber-Bohrer)\n..................................................\n<b>Wenn du einen Cyber-Bohrer hast, musst du ihn jeden Tag füttern. Genau dafür gibt es die Cyber-Frikadelle: Treibstoff für das automatische Schürfen. Eine Frikadelle kannst du einmal am Tag gratis auf der Farm abholen! Deine Aufgabe ist simpel — vorbeischauen und den Roboter füttern.</b>\n\nVerpasst du die Fütterung, schaltet der Roboter ab und das Schürfen stoppt.\n\nDer Praktikanten-Bot und der Miner-Bot brauchen keinen Treibstoff. Der Praktikant ist gratis und hält für immer, Miner und Bohrer werden für 30 Tage gekauft (die Master-Drohne pausiert den Verschleiß). Du kommst unterwegs schnell rein :) Nicht ablenken lassen.\n\nNoch ein bisschen mehr über <b>Cyber Barons</b>, damit du verstehst, wie hier alles läuft.\n\n🛑 <b>Noch eine Nachricht — und dann ab in den Kampf!</b>"
     ),
     "start.intro4": (
-        "<b>DIE KURZFASSUNG. BOT BARONS IST:</b>\n• Spiele und Quests für jeden Geschmack — alles in einer App\n• Ein Trupp (bis zu 5 Spieler) oder ein Team (bis zu 50 Spieler)\n• Dein Team zum Clan ausbauen (bis zu 1000 Spieler)\n• Team- und Clan-Schlachten um Preise\n• Spieler weltweit — vielleicht sind deine neuen Freunde schon dabei!\n..................................................\n<b>Wie versprochen: Das ist die letzte Nachricht. Jetzt geht's in den Kampf! Nützliche Befehle:</b>\n\n/app — das Spiel öffnen\n/menu — was der Chat sonst noch kann\n/faq — häufig gestellte Fragen\n/rules — Nutzungsvereinbarung\n"
+        "<b>DIE KURZFASSUNG. CYBER BARONS IST:</b>\n• Spiele und Quests für jeden Geschmack — alles in einer App\n• Ein Trupp (bis zu 5 Spieler) oder ein Team (bis zu 50 Spieler)\n• Dein Team zum Clan ausbauen (bis zu 1000 Spieler)\n• Team- und Clan-Schlachten um Preise\n• Spieler weltweit — vielleicht sind deine neuen Freunde schon dabei!\n..................................................\n<b>Wie versprochen: Das ist die letzte Nachricht. Jetzt geht's in den Kampf! Nützliche Befehle:</b>\n\n/app — das Spiel öffnen\n/menu — was der Chat sonst noch kann\n/faq — häufig gestellte Fragen\n/rules — Nutzungsvereinbarung\n"
     ),
 
     # ---------------- Menü & Spielzone ----------------
     "menu.text": (
-        "📱 <b>BOT BARONS ÖKOSYSTEM — HAUPTMENÜ</b>\n..................................................\n👤 <b>PROFIL & PASS:</b>\n• /start — Intro starten und Account registrieren\n• /profile — Dein Pass, Kontostand und Team in Echtzeit\n• /my_stats — deine Spielstatistik seit dem Start\n\n🚜 <b>CYBER-FARM & AUTOMATISIERUNG:</b>\n• /farm — Treibstoff-Hub: Auftanken und Schürf-Tempo der Roboter\n• /shop — Shop: Miner, Frikadellen und Hub-Upgrades\n\n🕹️ <b>SPIELZONE:</b>\n• /games — Inline-Hub aller Spiele gegen den Bot\n• /quiz — Speed-Quiz: 30 Sekunden pro Antwort, Level und Boni\n• /duel — 1-gegen-1-Duelle mit echten Spielern: Tische 10/100/1000 🪙\n• /quests — QUESTS: Krimis, Komödien und Rätsel mit Belohnungen\n• /rps, /high_low, /safe — Schnelle Spiele um Münzen\n\n👥 <b>CREW-VERWALTUNG:</b>\n• /create_team — Eigenes Team für 100.000 🪙 registrieren\n• /my_team — Crew-Dashboard und TEAMMATE-LISTE mit 🧠-Leveln\n• /all_teams — Roulette zufälliger Teams\n\n💸 <b>GELD & FREUNDE:</b>\n• /invite — dein Einladungslink: eine Belohnung für jeden aktiven Freund\n• /transfer — Münzen an andere Spieler senden\n\n📚 <b>GUIDE & REGELN:</b>\n• /faq — Der komplette Ökosystem-Guide (öffnet sich in der Mini App)\n• /rules — Nutzungsvereinbarung\n• /delete_account — Account löschen\n..................................................\n<i>⚙️ Mit den Buttons unten auf dem Bildschirm kommst du in jeden Bereich.</i>"
+        "📱 <b>CYBER BARONS ÖKOSYSTEM — HAUPTMENÜ</b>\n..................................................\n👤 <b>PROFIL & PASS:</b>\n• /start — Intro starten und Account registrieren\n• /profile — Dein Pass, Kontostand und Team in Echtzeit\n• /my_stats — deine Spielstatistik seit dem Start\n\n🚜 <b>CYBER-FARM & AUTOMATISIERUNG:</b>\n• /farm — Treibstoff-Hub: Auftanken und Schürf-Tempo der Roboter\n• /shop — Shop: Miner, Frikadellen und Hub-Upgrades\n\n🕹️ <b>SPIELZONE:</b>\n• /games — Inline-Hub aller Spiele gegen den Bot\n• /quiz — Speed-Quiz: 30 Sekunden pro Antwort, Level und Boni\n• /duel — 1-gegen-1-Duelle mit echten Spielern: Tische 10/100/1000 🪙\n• /quests — QUESTS: Krimis, Komödien und Rätsel mit Belohnungen\n• /rps, /high_low, /safe — Schnelle Spiele um Münzen\n\n👥 <b>CREW-VERWALTUNG:</b>\n• /create_team — Eigenes Team für 100.000 🪙 registrieren\n• /my_team — Crew-Dashboard und TEAMMATE-LISTE mit 🧠-Leveln\n• /all_teams — Roulette zufälliger Teams\n\n💸 <b>GELD & FREUNDE:</b>\n• /invite — dein Einladungslink: eine Belohnung für jeden aktiven Freund\n• /transfer — Münzen an andere Spieler senden\n\n📚 <b>GUIDE & REGELN:</b>\n• /faq — Der komplette Ökosystem-Guide (öffnet sich in der Mini App)\n• /rules — Nutzungsvereinbarung\n• /delete_account — Account löschen\n..................................................\n<i>⚙️ Mit den Buttons unten auf dem Bildschirm kommst du in jeden Bereich.</i>"
     ),
     "menu.games_hub": (
-        "🕹️ <b>WILLKOMMEN IN DER BOT BARONS SPIELZONE!</b>\n..................................................\nFordere den Bot in schnellen Spielen heraus, teste dein Wissen im Quiz oder fordere einen echten Gegner zum Duell!\n\n💸 Ein Sieg bringt: <b>+2 🪙</b> (Cyber-Tresor: <b>+5 🪙</b>)\n💀 Eine Niederlage kostet: <b>−1 🪙</b>, ein Unentschieden nichts\n🧠 Das Quiz hat einen 30-Sekunden-Timer und Intelligenz-Level: Level 1 sind 10 richtige Antworten und <b>+100 🪙</b>, jedes weitere Level ist 10 Antworten länger — aber die Belohnung wächst um 100 🪙!\n..................................................\n👇 <b>Wähl ein Spiel:</b>"
+        "🕹️ <b>WILLKOMMEN IN DER CYBER BARONS SPIELZONE!</b>\n..................................................\nFordere den Bot in schnellen Spielen heraus, teste dein Wissen im Quiz oder fordere einen echten Gegner zum Duell!\n\n💸 Ein Sieg bringt: <b>+2 🪙</b> (Cyber-Tresor: <b>+5 🪙</b>)\n💀 Eine Niederlage kostet: <b>−1 🪙</b>, ein Unentschieden nichts\n🧠 Das Quiz hat einen 30-Sekunden-Timer und Intelligenz-Level: Level 1 sind 10 richtige Antworten und <b>+100 🪙</b>, jedes weitere Level ist 10 Antworten länger — aber die Belohnung wächst um 100 🪙!\n..................................................\n👇 <b>Wähl ein Spiel:</b>"
     ),
     "menu.btn_quiz": "🧠 Quiz",
     "menu.btn_rps": "🪨 SSP",
@@ -225,7 +225,7 @@ STRINGS = {
     "menu.btn_safe": "🔐 Cyber-Tresor",
     "menu.btn_duel": "⚔️ 1-gegen-1-DUELLE",
     "app.open": (
-        "🎮 <b>BOT BARONS MINI APP</b>\n\n"
+        "🎮 <b>CYBER BARONS MINI APP</b>\n\n"
         "Pass, Farm, Team und die reichsten Spieler — auf einem Neon-Screen. "
         "Die tägliche Frikadelle kannst du direkt dort abholen!\n\n"
         "👇 Tipp auf den Button:"
@@ -233,15 +233,15 @@ STRINGS = {
     "app.btn": "🎮 MINI APP ÖFFNEN",
     "app.unavailable": "⚙️ Die Mini App verbindet sich noch mit den Servern des Ökosystems. Schau gleich wieder vorbei!",
     "faq.teaser": (
-        "📚 <b>BOT BARONS ÖKOSYSTEM-GUIDE</b>\n..................................................\nDas Wichtigste in Kürze:\n🚜 Roboter schürfen rund um die Uhr Münzen: Praktikanten-Bot — 1 🪙/Std., gratis und für immer, Miner-Bot — 5 🪙/Std. ohne Treibstoff, Cyber-Bohrer — 10 🪙/Std., und JEDER Bohrer frisst einmal am Tag seine eigene Cyber-Frikadelle. Miner und Bohrer leben 30 Tage (die Master-Drohne pausiert den Verschleiß).\n🧠 Quiz: 30 Sekunden pro Antwort, Intelligenz-Level mit wachsenden Belohnungen.\n⚔️ Duelle gegen echte Spieler an Tischen mit 10/100/1000 🪙.\n🏆 Trupps bis 5 Kämpfer, Teams bis 50 (Mega-Clan — bis 1000) und Event-Schlachten mit Preisen.\n..................................................\n👇 <b>Der komplette Guide mit allen Mechaniken — nur einen Tap entfernt:</b>"
+        "📚 <b>CYBER BARONS ÖKOSYSTEM-GUIDE</b>\n..................................................\nDas Wichtigste in Kürze:\n🚜 Roboter schürfen rund um die Uhr Münzen: Praktikanten-Bot — 1 🪙/Std., gratis und für immer, Miner-Bot — 5 🪙/Std. ohne Treibstoff, Cyber-Bohrer — 10 🪙/Std., und JEDER Bohrer frisst einmal am Tag seine eigene Cyber-Frikadelle. Miner und Bohrer leben 30 Tage (die Master-Drohne pausiert den Verschleiß).\n🧠 Quiz: 30 Sekunden pro Antwort, Intelligenz-Level mit wachsenden Belohnungen.\n⚔️ Duelle gegen echte Spieler an Tischen mit 10/100/1000 🪙.\n🏆 Trupps bis 5 Kämpfer, Teams bis 50 (Mega-Clan — bis 1000) und Event-Schlachten mit Preisen.\n..................................................\n👇 <b>Der komplette Guide mit allen Mechaniken — nur einen Tap entfernt:</b>"
     ),
     "faq.btn_open": "📖 KOMPLETTEN GUIDE ÖFFNEN",
     "rules.teaser": (
-        "📜 <b>BOT BARONS NUTZUNGSVEREINBARUNG</b>\n..................................................\nDas Wichtigste:\n🪙 Münzen und alle Spielgegenstände sind virtuelle Unterhaltungselemente: Sie sind kein Geld und können nicht in echtes Geld umgetauscht werden.\n💫 Käufe laufen nur über offizielle Telegram Stars; digitale Artikel werden sofort geliefert, bei Lieferfehlern werden Stars automatisch erstattet.\n🛡️ Wir speichern nur deine Telegram-ID, deinen Namen und deinen Spielfortschritt — keine Telefonnummern, Standorte oder Dokumente.\n🤝 Beleidigungen, Push-Tricks und Multi-Accounts sind verboten — Verstöße können zur Sperre führen.\n..................................................\n👇 <b>Die vollständige Vereinbarung samt Haftungsausschluss — nur einen Tipp entfernt:</b>\n<i>⚖️ Mit der Nutzung des Bots bestätigst du dein Einverständnis mit den Bedingungen.</i>"
+        "📜 <b>CYBER BARONS NUTZUNGSVEREINBARUNG</b>\n..................................................\nDas Wichtigste:\n🪙 Münzen und alle Spielgegenstände sind virtuelle Unterhaltungselemente: Sie sind kein Geld und können nicht in echtes Geld umgetauscht werden.\n💫 Käufe laufen nur über offizielle Telegram Stars; digitale Artikel werden sofort geliefert, bei Lieferfehlern werden Stars automatisch erstattet.\n🛡️ Wir speichern nur deine Telegram-ID, deinen Namen und deinen Spielfortschritt — keine Telefonnummern, Standorte oder Dokumente.\n🤝 Beleidigungen, Push-Tricks und Multi-Accounts sind verboten — Verstöße können zur Sperre führen.\n..................................................\n👇 <b>Die vollständige Vereinbarung samt Haftungsausschluss — nur einen Tipp entfernt:</b>\n<i>⚖️ Mit der Nutzung des Bots bestätigst du dein Einverständnis mit den Bedingungen.</i>"
     ),
     "rules.btn_open": "📜 KOMPLETTE VEREINBARUNG ÖFFNEN",
     "quest.list_header": (
-        "🗺️ <b>BOT BARONS QUESTS</b>\n"
+        "🗺️ <b>CYBER BARONS QUESTS</b>\n"
         "..................................................\n"
         "Interaktive Storys mit Entscheidungen und Verzweigungen: Krimis, Komödien, Rätsel. "
         "Der erste Sieg in jeder Quest bringt Münzen, und jede Story kannst du beliebig oft wiederholen!\n"
@@ -304,7 +304,7 @@ STRINGS = {
 
     # ---------------- Profil ----------------
     "profile.caption": (
-        "📋 <b>BOT BARONS SPIELER-DASHBOARD</b>\n"
+        "📋 <b>CYBER BARONS SPIELER-DASHBOARD</b>\n"
         "..................................................\n"
         "🆔 Deine Pass-ID: <code>{user_id}</code>\n"
         "{vip}"
@@ -420,7 +420,7 @@ STRINGS = {
         "⚔️ <b>1-GEGEN-1-DUELLE: SCHERE-STEIN-PAPIER UM DEN EINSATZ</b>\n"
         "..................................................\n"
         "Wähl einen Tisch, der zu deinem Budget passt — wie beim Poker. Der Einsatz wird sofort abgebucht, "
-        "dein Gegner ist ein echter Bot-Barons-Spieler!\n\n"
+        "dein Gegner ist ein echter Cyber-Barons-Spieler!\n\n"
         "💰 Der Pot = beide Einsätze. Der Sieger bekommt <b>{payout_percent}%</b> des Pots, "
         "<b>{burn_percent}%</b> verbrennen für immer (Deflation!).\n"
         "🤝 Unentschieden — sofortige Wiederholung der Zeichen, der Pot bleibt auf dem Tisch.\n"
@@ -486,7 +486,7 @@ STRINGS = {
 
     # ---------------- Einladungsprogramm ----------------
     "ref.text": (
-        "🤝 <b>BOT BARONS EINLADUNGSPROGRAMM</b>\n"
+        "🤝 <b>CYBER BARONS EINLADUNGSPROGRAMM</b>\n"
         "..................................................\n"
         "Lade Freunde über deinen persönlichen Link ein und erhalte <b>{bonus}</b> "
         "für jeden, der ein aktiver Spieler wird!\n\n"
@@ -498,7 +498,7 @@ STRINGS = {
         "<i>Teile den Link im Klassenchat, mit Freunden und auf Social Media — je größer die Crew, desto schneller wächst dein Kontostand!</i>"
     ),
     "ref.btn_share": "📣 Link teilen",
-    "ref.share_text": "Komm ins Spiele-Ökosystem von Bot Barons!",
+    "ref.share_text": "Komm ins Spiele-Ökosystem von Cyber Barons!",
     "ref.qualified_line": ("✅ <b>Aktiver Freund</b> ist, wer im Quiz <b>Intelligenz-Level {level}</b> erreicht "
                            "und auf der Farm <b>{claims} tägliche Frikadellen</b> abgeholt hat. Dann bekommst du <b>{bonus}</b>, "
                            "einmal pro Freund. Für eine Registrierung ohne Spielen gibt es keinen Bonus – das ist fairer für alle."),
@@ -545,7 +545,7 @@ STRINGS = {
     ),
     "acct.btn_undo": "↩️ Löschung abbrechen",
     "acct.undone": "🎉 Löschung abgebrochen — der Account gehört wieder dir!",
-    "acct.purged": "🗑 Dein Bot Barons-Account wurde gelöscht. Danke fürs Spielen! Willst du zurückkommen? Tippe /start.",
+    "acct.purged": "🗑 Dein Cyber Barons-Account wurde gelöscht. Danke fürs Spielen! Willst du zurückkommen? Tippe /start.",
     "acct.deleted_notice": "Der Account wurde gelöscht. Tippe /start, um neu zu beginnen.",
     "acct.welcome_back": (
         "👋 <b>Willkommen zurück!</b>\n"
@@ -599,7 +599,7 @@ STRINGS = {
     ),
 
     # ---------------- Shop & Zahlungen ----------------
-    "shop.header": "🏪 <b>BOT BARONS SHOP</b>\nKäufe laufen über offizielle Telegram Stars. Wähl unten eine Kategorie.",
+    "shop.header": "🏪 <b>CYBER BARONS SHOP</b>\nKäufe laufen über offizielle Telegram Stars. Wähl unten eine Kategorie.",
     "shop.cat_farm": (
         "🚜 <b>SHOP · FÜR DIE FARM</b>\n"
         "..................................................\n"
@@ -611,7 +611,7 @@ STRINGS = {
     "shop.cat_games": (
         "🕹️ <b>SHOP · GAMING</b>\n..................................................\nUnbegrenzt (ohne Sieglimit), Münzpakete und die Mega-Clan-Lizenz.\n..................................................\n👇 <b>Wähl einen Artikel:</b>"
     ),
-    "pay.invoice_desc": "Sofortige Lieferung von Bot-Barons-Ingame-Inhalten.",
+    "pay.invoice_desc": "Sofortige Lieferung von Cyber-Barons-Ingame-Inhalten.",
     "pay.invoice_error": "⚠️ Die Telegram-Stars-Rechnung konnte nicht erstellt werden. Versuch es später noch mal.",
     "pay.success": "🎉 <b>Zahlung bestätigt!</b>\n🧾 <code>{charge}</code>\n💵 Abgebucht: <b>{stars} ★</b>\n\n{text}",
     "pay.crash": (
@@ -624,7 +624,7 @@ STRINGS = {
     "pay.support": (
         "🛟 <b>SUPPORT FÜR TELEGRAM-STARS-ZAHLUNGEN</b>\n"
         "..................................................\n"
-        "Alle Bot-Barons-Artikel sind digital und werden sofort nach der Zahlung geliefert.\n\n"
+        "Alle Cyber-Barons-Artikel sind digital und werden sofort nach der Zahlung geliefert.\n\n"
         "⚙️ <b>Wenn du bezahlt hast, aber der Artikel nicht angekommen ist:</b>\n"
         "Der Bot erstattet Stars automatisch, wenn die Lieferung fehlschlägt. Falls das nicht passiert ist, "
         "schick hier deine Zahlungsnummer (steht auf dem Beleg, Format <code>xxxx...</code>) und beschreibe das Problem. "
@@ -1089,7 +1089,7 @@ MINIAPP = {
     "gr_serial": "#{n} von {of}",
     "gr_mineEmpty": "Noch keine Skins. Unten werden sie verkauft, außerdem gibt es sie bei Events und an der Börse.",
     "gr_mine": "✨ MEINE SKINS",
-    "gr_bragText": "Schau dir meinen Look in Bot Barons an — kannst du ihn toppen?",
+    "gr_bragText": "Schau dir meinen Look in Cyber Barons an — kannst du ihn toppen?",
     "gr_brag": "📸 Angeben",
     "gr_showHint": "So sehen dich die anderen: Rahmen und Titel im TOP und in deinem Team, der Anzug am Avatar, der Marker auf der Expeditionskarte.",
     "gr_title": "🏆 GARAGE",
@@ -1205,7 +1205,7 @@ MINIAPP = {
     "dl_premOn": "⚡ Du hast Unbegrenzt — die Gewinngebühr beträgt {b}% statt {a}%.",
     "dl_premOff": "⚡ Mit Unbegrenzt beträgt die Gewinngebühr {b}% statt {a}%.",
     "md_title": "🧭 Wie willst du spielen?",
-    "md_hint": "Bot Barons ist groß. Wähle, womit du anfängst — den Modus kannst du jederzeit im Pass ändern.",
+    "md_hint": "Cyber Barons ist groß. Wähle, womit du anfängst — den Modus kannst du jederzeit im Pass ändern.",
     "md_full": "🌐 Das ganze Ökosystem",
     "md_fullText": "Roboterfarm, Lager, Werkstatt, Börse, Teams, Raids, Minen und die Weltkarte — plus alle Spiele und Geschichten. Alle Bereiche sind von Anfang an offen.",
     "md_puzzle": "🧩 Spiele und Geschichten",
@@ -1226,14 +1226,14 @@ MINIAPP = {
     "di_head": "🤝 Freund herausfordern",
     "di_hint": "Dein eigener Tisch per Link: Er kommt nicht in die Warteschlange und wartet nur auf deinen Freund. Wer neu ist und über den Link kommt, wird dein Freund.",
     "di_table": "🤝 Freund herausfordern · Tisch {s} 🪙",
-    "di_shareText": "Ich fordere dich zum Duell in Bot Barons! Einsatz {s} 🪙 — mal sehen, wer gewinnt 😎",
+    "di_shareText": "Ich fordere dich zum Duell in Cyber Barons! Einsatz {s} 🪙 — mal sehen, wer gewinnt 😎",
     "ac_title": "🏅 Meine Erfolge",
     "ac_streak": "🔥 Serie beim Fall des Tages: {n}",
     "ac_hint": "Alle Erfolge kommen auf eine Karte — poste sie in deiner Story oder schick sie einem Freund.",
     "ac_make": "📸 Karte erstellen",
     "ac_cardSub": "meine Erfolge",
     "ac_cardCall": "Schaffst du mehr?",
-    "ac_shareText": "Mein Stand in Bot Barons: 🧠 Level {l}, 🗺 Quests: {q}, 🕵️ Fälle: {d}, ⚔️ Duellsiege: {w}. Schaffst du mehr?",
+    "ac_shareText": "Mein Stand in Cyber Barons: 🧠 Level {l}, 🗺 Quests: {q}, 🕵️ Fälle: {d}, ⚔️ Duellsiege: {w}. Schaffst du mehr?",
     "ac_story": "📲 In meiner Story posten",
     "ac_send": "✈️ An einen Freund senden",
     "ac_save": "💾 Bild speichern",
@@ -1695,7 +1695,7 @@ MINIAPP = {
     "blocked": "Account von der Administration gesperrt.",
     "deleting": "Dein Account steht zur Löschung an. Doch umentschieden? Brich die Löschung im Bot-Chat ab.",
     "error": "Daten konnten nicht geladen werden. Versuch es später noch mal.",
-    "outside": "Öffne diese App über den Telegram-Bot von Bot Barons.",
+    "outside": "Öffne diese App über den Telegram-Bot von Cyber Barons.",
     "robotsTitle": "🤖 DEINE ROBOTER", "buyMore": "🛒 Kaufen", "rateShort": "{v} 🪙/Std.",
     "refuelOne": "🥩 1 tanken", "refuelAll": "⚡ Alle tanken", "refueled": "Getankt: {n} 🥩",
     "res_metal_src": "SSP, Minen, Truhe, Raids", "res_hydrogen_src": "Höher/Tiefer, Memory, Minen, Truhe, Raids", "res_crystal_src": "Quiz, Flaggen und Hauptstädte, Minen, Truhe, Raids",

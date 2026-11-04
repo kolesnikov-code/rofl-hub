@@ -167,18 +167,18 @@ Literature;In Pushkin's The Tale of the Fisherman and the Fish, what did the old
 Literature;Who created Cheburashka and Gena the Crocodile?;Eduard Uspensky;Nikolai Nosov;Grigory Oster;Viktor Dragunsky
 Literature;What are the names of the three bogatyr heroes in Vasnetsov's famous painting?;Ilya, Dobrynya, Alyosha;Ilya, Ivan, Pyotr;Dobrynya, Nikita, Alyosha;Svyatogor, Ilya, Mikula
 Literature;Who wrote The Tale of Tsar Saltan?;Alexander Pushkin;Pyotr Yershov;Vasily Zhukovsky;Ivan Krylov
-Bot Barons;How many coins per hour does a Cyber-Driller mine?;10;5;20;50
-Bot Barons;How many coins per hour does a Miner Bot mine?;5;10;15;2
-Bot Barons;How many days does a purchased farm robot work?;30;7;100;365
-Bot Barons;How many hours of work does one cyber-cutlet give a Cyber-Driller?;24;12;48;8
-Bot Barons;How many coins does a win in a regular game bring?;2;1;5;10
-Bot Barons;How many coins does it cost to create your own team?;100,000;50,000;10,000;1,000,000
-Bot Barons;How many Quiz wins are allowed per day?;30;15;10;50
-Bot Barons;How many correct answers do you need for Quiz level 1?;10;30;50;100
-Bot Barons;What is the reward for reaching intellect level 1 in the Quiz?;100 🪙;500 🪙;1,000 🪙;50 🪙
-Bot Barons;How many times does Nuclear Boost multiply your farm's mining?;5;2;3;10
-Bot Barons;By what percentage does Nitrogen Cooling boost your robots?;40;20;50;25
-Bot Barons;How many seconds do you get to answer in the Quiz?;30;15;10;60
+Cyber Barons;How many coins per hour does a Cyber-Driller mine?;10;5;20;50
+Cyber Barons;How many coins per hour does a Miner Bot mine?;5;10;15;2
+Cyber Barons;How many days does a purchased farm robot work?;30;7;100;365
+Cyber Barons;How many hours of work does one cyber-cutlet give a Cyber-Driller?;24;12;48;8
+Cyber Barons;How many coins does a win in a regular game bring?;2;1;5;10
+Cyber Barons;How many coins does it cost to create your own team?;100,000;50,000;10,000;1,000,000
+Cyber Barons;How many Quiz wins are allowed per day?;30;15;10;50
+Cyber Barons;How many correct answers do you need for Quiz level 1?;10;30;50;100
+Cyber Barons;What is the reward for reaching intellect level 1 in the Quiz?;100 🪙;500 🪙;1,000 🪙;50 🪙
+Cyber Barons;How many times does Nuclear Boost multiply your farm's mining?;5;2;3;10
+Cyber Barons;By what percentage does Nitrogen Cooling boost your robots?;40;20;50;25
+Cyber Barons;How many seconds do you get to answer in the Quiz?;30;15;10;60
 Human Body;About how many times does the human heart beat in a day?;100,000;10,000;1,000,000;300,000
 Human Body;Where is the smallest bone in the human body?;In the ear;In the little finger;In the nose;In the wrist
 Human Body;Which is the largest and strongest bone in the human body?;The femur;The collarbone;The shoulder blade;The jaw
