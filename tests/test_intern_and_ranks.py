@@ -94,18 +94,18 @@ def test_upgrade_requires_three_qualified_referrals():
 
 # ---------------------------------------------------------------- Звания
 def test_rank_thresholds():
-    # владелец 02.11: каждое звание — через N часов после предыдущего
+    # владелец 04.11: у каждого звания свой срок, Новичок — сразу на 72 ч
     def at(hours):
         return rank_key_for(T0 - timedelta(hours=hours), T0)
     assert rank_key_for(None, T0) is None
     assert at(0) == "rookie" and at(71) == "rookie"        # Новичок — сразу, первые 72 ч (защита от налётов)
     assert rank_key_for(T0 + timedelta(minutes=1), T0) == "rookie"   # часы сервера чуть врут — всё равно Новичок
     assert at(72) == "private"
-    assert at(72 + 359) == "private" and at(72 + 360) == "fighter"
-    assert at(432 + 720) == "captain"
-    assert at(1152 + 2399) == "captain" and at(1152 + 2400) == "general"
-    assert at(3552 + 4800) == "legend"
-    assert at(8352 + 7199) == "legend" and at(8352 + 7200) == "overlord"
+    assert at(72 + 167) == "private" and at(240) == "fighter"         # Рядовой — 7 дней (04.11)
+    assert at(240 + 359) == "fighter" and at(600) == "captain"         # Боец — 15 дней
+    assert at(600 + 719) == "captain" and at(1320) == "general"        # Капитан — 30 дней
+    assert at(1320 + 2399) == "general" and at(3720) == "legend"       # Генерал — 100 дней
+    assert at(3720 + 4799) == "legend" and at(8520) == "overlord"      # Легенда — 200 дней
     assert at(100_000) == "overlord"                        # выше Властелина званий нет
     from shared.economy import RAID_NEWBIE_SHIELD_DAYS, RANKS
     assert RANKS[1][0] == RAID_NEWBIE_SHIELD_DAYS * 24      # Новичок кончается вместе с защитой от налётов
