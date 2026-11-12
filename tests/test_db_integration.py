@@ -3926,3 +3926,20 @@ async def test_abuse_feed_catches_twink_farm_ref_suit_and_pass_game_cap(conn):
     assert await sp.game_xp_cap(conn, 4203, now) == sp.PASS_GAME_XP_DAILY_MONTHLY
     await grant_unlimit(conn, "@gift30", 0)
     assert await sp.game_xp_cap(conn, 4203, now) == sp.PASS_GAME_XP_DAILY
+
+
+async def test_ops_summary_sql_counts_match_hand_count(conn):
+    """🎛 Сводка пульта: живые пользователи, новые/активные, Stars без возвратов и TEST-чеков."""
+    from shared.ops_summary import SUMMARY_SQL, build_payload
+    await _mk_user(conn, 1)
+    await _mk_user(conn, 2)
+    await _mk_user(conn, 3)
+    await conn.execute("UPDATE users SET created_at = now() - interval '3 days', "
+                       "last_seen_at = now() - interval '3 days' WHERE user_id = 2")
+    await conn.execute("UPDATE users SET deleted_at = now() WHERE user_id = 3")
+    await conn.execute("INSERT INTO star_payments (user_id, telegram_charge_id, item_payload, stars_amount) VALUES "
+                       "(1, 'c1', 'x', 15), (1, 'TEST_c2', 'x', 99), (1, 'c3', 'x', 249)")
+    await conn.execute("UPDATE star_payments SET refunded_at = now() WHERE telegram_charge_id = 'c3'")
+    p = build_payload(await conn.fetchrow(SUMMARY_SQL))
+    assert p["users"] == {"total": 2, "new_24h": 1, "active_24h": 1, "active_7d": 2}
+    assert p["money"] == {"stars_24h": 15, "stars_30d": 15, "stars_total": 15}

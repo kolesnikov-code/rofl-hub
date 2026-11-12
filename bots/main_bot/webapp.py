@@ -496,6 +496,8 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app.router.add_get("/health", lambda r: web.json_response({"ok": True}))
     from bots.main_bot.webapp_admin import register_admin_routes
     register_admin_routes(app)   # 🎛 пульт владельца (/admin) — только ADMIN_ID
+    from shared.ops_summary import register_ops_routes
+    register_ops_routes(app)     # 🎛 сводка для пульта холдинга (подпись OPS_SECRET, без неё — 404)
     # Игровые разделы приложения: мастерская, налёты, биржа, станция, цели, заправка
     from bots.main_bot.webapp_game import register_game_routes
     register_game_routes(app)
