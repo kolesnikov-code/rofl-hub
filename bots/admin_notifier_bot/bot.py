@@ -1267,17 +1267,9 @@ async def bc_confirm(callback: types.CallbackQuery):
 # ============================================================================
 # 📊 ПРОДУКТОВЫЕ МЕТРИКИ: снапшоты, дельты, отчёты по расписанию и по запросу
 # ============================================================================
-async def _previous_snapshot(conn) -> dict | None:
-    """Последний сохранённый срез любого вида — все срезы считаются за rolling-сутки."""
-    row = await conn.fetchrow("SELECT data FROM metrics_snapshots ORDER BY taken_at DESC LIMIT 1")
-    if not row:
-        return None
-    data = row["data"]
-    return json.loads(data) if isinstance(data, str) else data
-
-
 async def send_scheduled_report(bot: Bot, hour: int) -> None:
-    """Полный суточный (00 UTC) отчёт в Тайную Комнату + снапшот."""
+    """00 UTC: суточный срез в metrics_snapshots и чистка старых событий. Сообщение в Тайную Комнату
+    больше не шлётся (владелец 13.11): вся аналитика — в пульте холдинга (shared/ops_summary.details)."""
     kind = metrics.report_kind_for_hour(hour)
     if kind is None:
         return
@@ -1285,18 +1277,9 @@ async def send_scheduled_report(bot: Bot, hour: int) -> None:
     since = now - timedelta(days=1)
     async with db.pool.acquire() as conn:
         snap = await metrics.collect_snapshot(conn, since, now)
-        prev = await _previous_snapshot(conn)
-        if kind == "daily":
-            retention = await metrics.fetch_retention_cohorts(conn, last_n=7)
-            spend = await metrics.fetch_spend_cohorts(conn)
-            text = metrics.build_daily_report(snap, prev, retention, spend)
-        else:
-            text = metrics.build_express_report(snap, prev, hour)
         await conn.execute("INSERT INTO metrics_snapshots (kind, data) VALUES ($1, $2::jsonb)",
                            kind, metrics.snapshot_to_json(snap))
-    for part in metrics.split_message(text):
-        await bot.send_message(ADMIN_SECRET_CHANNEL_ID, part, parse_mode="HTML")
-    logger.info("🟢 Отчёт '%s' (%02d:00 UTC) отправлен в Тайную Комнату.", kind, hour)
+    logger.info("🟢 Срез '%s' (%02d:00 UTC) сохранён; отчёт — в пульте холдинга.", kind, hour)
 
     if kind == "daily":
         deleted = await purge_old_events()

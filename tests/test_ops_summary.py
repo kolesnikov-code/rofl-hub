@@ -43,6 +43,23 @@ def test_payload_is_contract_v1_with_aggregates_only():
     assert set(p) == {"v", "users", "money", "kpis", "alerts"}
 
 
+def test_details_carry_the_former_daily_report_as_sections():
+    from tests.test_metrics import _fake_snapshot
+    retention = [{"cohort": "2026-11-12", "size": 5, "d1_pct": 40.0, "d3_pct": None, "d7_pct": None,
+                  "d30_pct": None}]
+    spend = [{"cohort": "f2p", "size": 10, "active_7d_pct": 30.0, "favorite_game": None,
+              "k_qualified_30d": 0.1}]
+    sections = ops_summary.build_details(_fake_snapshot(), retention, spend)
+    titles = " ".join(s["title"] for s in sections)
+    for marker in ("Привлечение", "Воронка", "Активность", "Retention", "Вирусность", "Монетизация",
+                   "Экономика", "Игры", "Когорты трат"):
+        assert marker in titles
+    rows = {r[0]: r[1] for s in sections for r in s["rows"]}
+    assert rows["DAU / WAU / MAU"] == "10 / 20 / 40" and rows["Выручка"] == "★ 150, покупок: 3"
+    assert rows["2026-11-12 (5 чел.)"].startswith("D1 40.0% · D3 —")
+    assert rows["F2P"].endswith("игра: —")
+
+
 def test_signing_file_is_the_pult_contract():
     from shared import ops_sign
     assert ops_sign.HEADER_TS == "X-Ops-Ts" and ops_sign.HEADER_SIG == "X-Ops-Sig" and ops_sign.MAX_SKEW == 300
