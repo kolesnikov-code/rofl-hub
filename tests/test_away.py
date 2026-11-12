@@ -21,7 +21,7 @@ def test_away_needs_a_real_break_and_some_mining():
 
 def test_me_counts_mining_since_previous_open_and_moves_the_mark():
     src = (ROOT / "bots/main_bot/webapp.py").read_text(encoding="utf-8")
-    assert "mined_since(conn, user_id, prev_seen)" in src and "SET app_seen_at = $2" in src
+    assert "mined_since(conn, user_id, prev_seen)" in src and "SET app_seen_at = now()" in src   # время транзакции = created_at ledger
     assert 'payload["away"] = away' in src
     schema = (ROOT / "shared/database.py").read_text(encoding="utf-8")
     assert "ADD COLUMN IF NOT EXISTS app_seen_at TIMESTAMPTZ" in schema

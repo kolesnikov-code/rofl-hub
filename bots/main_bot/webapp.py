@@ -259,7 +259,9 @@ async def handle_me(request: web.Request) -> web.Response:
                 return web.json_response({"error": "deleting"}, status=403)
             prev_seen = user["app_seen_at"]
             away = away_summary(prev_seen, now, await mined_since(conn, user_id, prev_seen)) if prev_seen else None
-            await conn.execute("UPDATE users SET app_seen_at = $2 WHERE user_id = $1", user_id, now)
+            # now() — время транзакции, как у created_at строк ledger: добыча, начисленная этим же открытием
+            # (за прошлый перерыв), в следующее окно не попадёт (раньше считалась дважды)
+            await conn.execute("UPDATE users SET app_seen_at = now() WHERE user_id = $1", user_id)
             quiz_row = await conn.fetchrow(
                 "SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = $1", user_id)
             team_row = None
