@@ -30,7 +30,7 @@ from shared.economy import (
     quiz_level_reward,
     utcnow,
 )
-from shared.farm_logic import apply_lazy_farm, farm_counts
+from shared.farm_logic import apply_lazy_farm, away_summary, farm_counts, mined_since
 from shared.locales import resolve_lang, t
 from shared.ranks import rank_label
 from shared.resources import get_resources
@@ -257,6 +257,9 @@ async def handle_me(request: web.Request) -> web.Response:
                 return web.json_response({"error": "blocked"}, status=403)
             if user["deletion_requested_at"] is not None:
                 return web.json_response({"error": "deleting"}, status=403)
+            prev_seen = user["app_seen_at"]
+            away = away_summary(prev_seen, now, await mined_since(conn, user_id, prev_seen)) if prev_seen else None
+            await conn.execute("UPDATE users SET app_seen_at = $2 WHERE user_id = $1", user_id, now)
             quiz_row = await conn.fetchrow(
                 "SELECT quiz_level, quiz_level_progress FROM game_stats WHERE user_id = $1", user_id)
             team_row = None
@@ -290,6 +293,7 @@ async def handle_me(request: web.Request) -> web.Response:
     payload["days_in_game"] = max(0, (now - user["created_at"]).days)
     payload["app_mode"] = user["app_mode"]
     payload["pending_duel"] = user["pending_duel"]
+    payload["away"] = away   # 🌙 «Пока тебя не было»: {coins, seconds} или None
     return web.json_response(payload)
 
 

@@ -26,6 +26,7 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 
 from shared.economy import (
+    AWAY_MIN_MINUTES,
     CUTLET_ENERGY_SECONDS,
     MINING_ACC_PER_ROFL,
     NUCLEAR_FUEL_MULTIPLIER,
@@ -241,6 +242,21 @@ async def user_bonus_percent(conn, user) -> int:
         station_level = await conn.fetchval(
             "SELECT level FROM team_stations WHERE team_id = $1", user["team_id"]) or 0
     return farm_bonus_percent(0, station_level) + science * SCIENCE_PERCENT_PER_LEVEL
+
+
+def away_summary(prev_seen: datetime | None, now: datetime, mined: int) -> dict | None:
+    """«Пока тебя не было»: сколько роботы добыли с прошлого открытия приложения (владелец 13.11).
+    Окно — только после перерыва не меньше AWAY_MIN_MINUTES и если добыто хоть что-то."""
+    if prev_seen is None or mined <= 0 or now - prev_seen < timedelta(minutes=AWAY_MIN_MINUTES):
+        return None
+    return {"coins": int(mined), "seconds": int((now - prev_seen).total_seconds())}
+
+
+async def mined_since(conn, user_id: int, since: datetime) -> int:
+    """Монеты фермы (ledger 'mining') после момента since — сколько бы раз ферму ни пересчитывали между делом."""
+    return int(await conn.fetchval(
+        "SELECT COALESCE(SUM(delta), 0) FROM ledger WHERE user_id = $1 AND reason = 'mining' AND created_at > $2",
+        user_id, since) or 0)
 
 
 async def apply_lazy_farm(conn, user_id: int, now: datetime | None = None):
