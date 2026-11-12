@@ -39,10 +39,51 @@ def test_without_the_app_language_button_ends_the_old_grid(monkeypatch):
     assert kb.keyboard[-1][0].text == btn("ru", "language") and len(kb.keyboard) == 4
 
 
-def test_change_grid_offers_all_14_languages_in_owner_order():
-    rows = start.get_language_change_keyboard().inline_keyboard
-    codes = [b.callback_data.split(":")[1] for row in rows for b in row]
-    assert codes == [c for c, _ in start.LANGUAGES] and all(len(r) == 2 for r in rows)
+def test_change_grid_offers_only_owner_languages_plus_the_current_one():
+    """13.11 (владелец): на выбор — английский, узбекский, русский; остальные языки — только автоматически."""
+    codes = lambda kb: [b.callback_data.split(":")[1] for row in kb.inline_keyboard for b in row]
+    assert start.OFFERED_LANGS == ("en", "uz", "ru")
+    assert codes(start.get_language_change_keyboard("ru")) == ["en", "uz", "ru"]
+    kb = start.get_language_change_keyboard("pt")            # язык подобран по Telegram — вернуться к нему можно
+    assert codes(kb) == ["en", "uz", "ru", "pt"] and all(len(r) <= 2 for r in kb.inline_keyboard)
+    assert kb.inline_keyboard[-1][-1].text.startswith("✅")
+
+
+def test_language_comes_from_telegram_with_sane_fallbacks():
+    f = start.lang_from_telegram
+    assert f("ru") == "ru" and f("pt-br") == "pt" and f("zh-hans") == "zh" and f("UZ") == "uz"
+    assert f("uk") == "ru" and f("kk") == "ru" and f("be") == "ru"   # почти всегда читают по-русски
+    assert f("tr") == "en" and f(None) == "en" and f("") == "en"
+
+
+def test_first_screen_has_continue_and_one_short_language_row():
+    kb = start.intro1_keyboard("uz", "none").inline_keyboard
+    assert kb[0][0].callback_data == "intro_step_2:none" and kb[0][0].text == t("uz", "start.btn_continue")
+    assert [b.text for b in kb[1]] == ["🇺🇸 EN", "✅ 🇺🇿 UZ", "🇷🇺 RU"]
+    assert all(len(b.callback_data.encode()) <= 64 for b in kb[1])
+    assert [b.text for b in start.intro1_keyboard("hi", "duel_abcd1234").inline_keyboard[1]][-1] == "✅ 🇮🇳 HI"
+
+
+def test_new_player_is_registered_on_start_without_the_language_grid(monkeypatch):
+    calls = {}
+
+    async def fake_register(target, user_id, username, full_name, lang, referrer_id, auc_part, source, edit=False):
+        calls.update(user=user_id, lang=lang, auc=auc_part, edit=edit)
+
+    class _NoUserConn:
+        async def fetchrow(self, *a):
+            return None
+    monkeypatch.setattr(start.db, "_pool", _Pool(_NoUserConn()))
+    monkeypatch.setattr(start, "register_and_greet", fake_register)
+    msg = _Msg()
+    msg.text = "/start"
+    msg.from_user = type("U", (), {"id": 7, "username": "neo", "full_name": "Neo", "language_code": "pt-br"})()
+
+    class _State:
+        async def clear(self):
+            pass
+    asyncio.run(start.cmd_start(msg, _State()))
+    assert calls == {"user": 7, "lang": "pt", "auc": "none", "edit": False} and msg.sent == []
 
 
 def test_language_command_is_in_the_blue_menu_of_every_language(with_app, monkeypatch):

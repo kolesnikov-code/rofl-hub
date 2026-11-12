@@ -1,5 +1,6 @@
 """
-/start: выбор языка → регистрация → онбординг 4 шага → reply-панель.
+/start: регистрация сразу (язык — из Telegram) → онбординг 4 шага → reply-панель.
+Кнопками языка предлагаются только OFFERED_LANGS (владелец 13.11); остальные языки — автоматически.
 Deep-link: /start <referrer_id> или /start auction_<id>.
 Плюс контур возвратного аукциона (ставки/обновление).
 """
@@ -39,24 +40,49 @@ LANGUAGES = [
     ("ar", "🇦🇪 العربية"), ("bn", "🇧🇩 বাংলা"),
 ]
 LANGUAGE_CODES = {code for code, _ in LANGUAGES}
+# 13.11 (владелец): на выбор кнопками — только эти языки; остальные 11 включаются сами по языку Telegram.
+# Реклама на новый рынок (Бразилия, Индия…) = добавить его код сюда — кнопка появится везде.
+OFFERED_LANGS = ("en", "uz", "ru")   # порядок кнопок — владелец
+# Языки интерфейса Telegram не из наших 14, чьи носители почти всегда читают по-русски
+RU_READERS = {"uk", "be", "kk", "ky", "tg"}
+LANG_SHORT = {code: label.split(" ", 1)[0] + " " + code.upper() for code, label in LANGUAGES}   # «🇷🇺 RU»
 
 
-def get_language_selection_keyboard(ref_part: str, auc_part: str,
-                                    src_part: str = "none") -> types.InlineKeyboardMarkup:
-    buttons = [types.InlineKeyboardButton(
-                   text=label, callback_data=f"set_lang:{code}:{ref_part}:{auc_part}:{src_part}")
-               for code, label in LANGUAGES]
-    rows = [buttons[i:i + 2] for i in range(0, len(buttons), 2)]
-    return types.InlineKeyboardMarkup(inline_keyboard=rows)
+def lang_from_telegram(code: str | None) -> str:
+    """Язык игры по языку интерфейса Telegram: «pt-br» → pt, «uk» → ru, незнакомый или пустой → en."""
+    base = (code or "").lower().replace("_", "-").split("-")[0]
+    if base in LANGUAGE_CODES:
+        return base
+    return "ru" if base in RU_READERS else "en"
+
+
+def offered_langs(current: str | None = None) -> list[str]:
+    """Кнопки выбора: предлагаемые языки + текущий, если игроку его подобрали автоматически (чтобы мог вернуться)."""
+    codes = list(OFFERED_LANGS)
+    if current in LANGUAGE_CODES and current not in codes:
+        codes.append(current)
+    return codes
 
 
 LANGUAGE_PROMPT = "🌐 <b>Select your language / Выберите язык:</b>"
 
 
-def get_language_change_keyboard() -> types.InlineKeyboardMarkup:
-    """Та же сетка 14 языков, что при /start, — для смены языка уже зарегистрированным игроком."""
-    buttons = [types.InlineKeyboardButton(text=label, callback_data=f"chg_lang:{code}") for code, label in LANGUAGES]
+def get_language_change_keyboard(current: str | None = None) -> types.InlineKeyboardMarkup:
+    """Смена языка зарегистрированным игроком: только предлагаемые языки (+ его текущий), по 2 в ряд."""
+    labels = dict(LANGUAGES)
+    buttons = [types.InlineKeyboardButton(text=("✅ " if code == current else "") + labels[code],
+                                          callback_data=f"chg_lang:{code}") for code in offered_langs(current)]
     return types.InlineKeyboardMarkup(inline_keyboard=[buttons[i:i + 2] for i in range(0, len(buttons), 2)])
+
+
+def intro1_keyboard(lang: str, auc_part: str) -> types.InlineKeyboardMarkup:
+    """Первый экран онбординга: «Продолжить» + один ряд коротких кнопок языка (текущий — с ✅)."""
+    langs = [types.InlineKeyboardButton(text=("✅ " if code == lang else "") + LANG_SHORT[code],
+                                        callback_data=f"ob_lang:{code}:{auc_part}") for code in offered_langs(lang)]
+    return types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text=t(lang, "start.btn_continue"), callback_data=f"intro_step_2:{auc_part}")],
+        langs,
+    ])
 
 
 async def send_lang_hint(target: types.Message, lang: str) -> None:
@@ -78,15 +104,6 @@ def parse_start_args(text: str | None, user_id: int) -> tuple[int | None, int | 
     if arg.isdigit() and int(arg) != user_id:
         return int(arg), None, arg
     return None, None, arg
-
-
-def _source_to_cb(source: str) -> str:
-    """Источник → компактный тег для callback_data (лимит 64 байта)."""
-    if source == analytics.SOURCE_TG_AFFILIATE:
-        return "tgr"
-    if source.startswith(("p_", "c_")):
-        return source
-    return "none"   # organic и referral восстанавливаются из ref_part
 
 
 def _source_from_cb(tag: str, referrer_id: int | None) -> str:
@@ -195,10 +212,10 @@ async def cmd_start(message: types.Message, state: FSMContext):
     auc_part = f"auc_{auction_id}" if auction_id else (f"duel_{duel_code}" if duel_code else "none")
 
     if not user:
-        await message.answer(
-            LANGUAGE_PROMPT,
-            reply_markup=get_language_selection_keyboard(ref_part, auc_part, _source_to_cb(source)),
-            parse_mode="HTML")
+        # 13.11: без сетки языков — регистрируем сразу, язык из Telegram; сменить — кнопками под первым экраном
+        lang = lang_from_telegram(message.from_user.language_code)
+        await register_and_greet(message, user_id, message.from_user.username or f"user_{user_id}",
+                                 message.from_user.full_name, lang, referrer_id, auc_part, source)
         return
 
     lang = resolve_lang(user["lang"])
@@ -262,22 +279,45 @@ async def process_language_binding(callback: types.CallbackQuery, state: FSMCont
     if lang not in LANGUAGE_CODES:
         lang = "ru"
     referrer_id = int(ref_part) if ref_part.isdigit() and int(ref_part) != user_id else None
-    auction_id = _auction_id_from(auc_part)
     source = _source_from_cb(src_part, referrer_id)
+    # Старая сетка 14 языков (сообщения, отправленные до 13.11): та же регистрация, что теперь сразу по /start
+    await register_and_greet(callback.message, user_id, username, callback.from_user.full_name, lang,
+                             referrer_id, auc_part, source, edit=True)
 
+
+async def register_and_greet(target: types.Message, user_id: int, username: str, full_name: str | None, lang: str,
+                             referrer_id: int | None, auc_part: str, source: str, edit: bool = False) -> None:
+    """Регистрация + первый экран онбординга (с кнопками языка). edit=True — правит сообщение со старой сеткой."""
     async with db.pool.acquire() as conn:
         async with conn.transaction():
             created = await register_user(conn, user_id, username, lang, referrer_id,
-                                          display_name=callback.from_user.full_name, source=source)
+                                          display_name=full_name, source=source)
             if (code := _duel_code_from(auc_part)) is not None:
                 await conn.execute("UPDATE users SET pending_duel = $2 WHERE user_id = $1", user_id, code)
+            if not created:   # уже был (повторный /start, гонка двух нажатий) — первый экран на его языке
+                lang = resolve_lang(await conn.fetchval("SELECT lang FROM users WHERE user_id = $1", user_id))
     if created:
         await track(user_id, "registered", source=source, lang=lang)
+    send = target.edit_text if edit else target.answer
+    await send(t(lang, "start.intro1"), reply_markup=intro1_keyboard(lang, auc_part), parse_mode="HTML")
 
-    kb = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text=t(lang, "start.btn_continue"),
-                                    callback_data=f"intro_step_2:{auc_part}")]])
-    await callback.message.edit_text(t(lang, "start.intro1"), reply_markup=kb, parse_mode="HTML")
+
+@router.callback_query(F.data.startswith("ob_lang:"))
+async def process_onboarding_language(callback: types.CallbackQuery):
+    """Кнопка языка под первым экраном: язык профиля меняется, экран перерисовывается на нём."""
+    parts = callback.data.split(":", 2)
+    lang = parts[1] if len(parts) == 3 else ""
+    if lang not in LANGUAGE_CODES:
+        await callback.answer()
+        return
+    async with db.pool.acquire() as conn:
+        await conn.execute("UPDATE users SET lang = $2 WHERE user_id = $1", callback.from_user.id, lang)
+    await callback.answer()
+    try:
+        await callback.message.edit_text(t(lang, "start.intro1"), reply_markup=intro1_keyboard(lang, parts[2]),
+                                         parse_mode="HTML")
+    except Exception:   # нажали тот же язык — текст не изменился
+        pass
 
 
 @router.callback_query(F.data.startswith("intro_step_2"))
@@ -330,8 +370,8 @@ async def cmd_start_step_4(callback: types.CallbackQuery, state: FSMContext, use
 # ============================================================================
 @router.message(Command("language", "lang"))
 @router.message(F.text.in_(btn_variants("language")))
-async def cmd_change_language(message: types.Message):
-    await message.answer(LANGUAGE_PROMPT, reply_markup=get_language_change_keyboard(), parse_mode="HTML")
+async def cmd_change_language(message: types.Message, user_lang: str = "ru"):
+    await message.answer(LANGUAGE_PROMPT, reply_markup=get_language_change_keyboard(user_lang), parse_mode="HTML")
 
 
 @router.callback_query(F.data.startswith("chg_lang:"))

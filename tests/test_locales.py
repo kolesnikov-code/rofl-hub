@@ -142,8 +142,9 @@ def test_start_language_grid_is_owner_layout():
     codes = [code for code, _ in LANGUAGES]
     assert len(codes) == 14 and len(set(codes)) == 14
     assert set(codes) == set(ALL_LANGS)
-    # Раскладка владельца: первые три ряда (по 2 кнопки)
-    assert codes[:6] == ["en", "es", "uz", "fr", "ru", "pt"]
+    # 13.11: кнопками предлагаются только эти (порядок владельца), остальные — автоматически по Telegram
+    from bots.main_bot.handlers.start import OFFERED_LANGS
+    assert OFFERED_LANGS == ("en", "uz", "ru")
 
 
 def test_reply_keyboards_built_per_language():
