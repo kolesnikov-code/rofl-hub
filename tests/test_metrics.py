@@ -57,10 +57,8 @@ def test_net_inflation_sign():
 
 # ---------------------------------------------------------------- расписание
 def test_report_schedule_matches_spec():
-    assert report_kind_for_hour(0) == "daily"
-    for h in (6, 12, 18):
-        assert report_kind_for_hour(h) == "express"
-    for h in (1, 5, 7, 11, 13, 17, 19, 23):
+    assert report_kind_for_hour(0) == "daily"   # владелец 12.11: только суточный, экспрессов нет
+    for h in (1, 5, 6, 7, 11, 12, 13, 17, 18, 19, 23):
         assert report_kind_for_hour(h) is None
 
 

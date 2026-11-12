@@ -1277,7 +1277,7 @@ async def _previous_snapshot(conn) -> dict | None:
 
 
 async def send_scheduled_report(bot: Bot, hour: int) -> None:
-    """Экспресс (06/12/18) или полный суточный (00) отчёт в Тайную Комнату + снапшот."""
+    """Полный суточный (00 UTC) отчёт в Тайную Комнату + снапшот."""
     kind = metrics.report_kind_for_hour(hour)
     if kind is None:
         return
@@ -1383,8 +1383,8 @@ async def cmd_promoters(message: types.Message):
 async def dynamic_analytics_daemon(bot: Bot):
     """
     Фоновый демон сбора метрик холдинга CYBER BARONS CORE.
-    Срабатывает строго в 06:00, 12:00, 18:00 UTC (экспресс-срез)
-    и в 00:00 UTC (глубокий суточный когортный анализ).
+    Срабатывает раз в сутки в 00:00 UTC (суточный когортный анализ, metrics.report_kind_for_hour);
+    остальное — /metrics по запросу владельца.
     """
     logger.info("⏳ Астрономический аналитический демон успешно запущен по UTC!")
 
@@ -1413,7 +1413,7 @@ async def dynamic_analytics_daemon(bot: Bot):
             current_date = now_utc.date()
 
             # Проверяем, наступила ли целевая минута (00 минут) нужного часа
-            if current_hour in [0, 6, 12, 18] and current_minute == 0:
+            if metrics.report_kind_for_hour(current_hour) and current_minute == 0:
                 # Если в этот час триггер уже срабатывал — пропускаем тик
                 if current_hour == last_triggered_hour:
                     continue

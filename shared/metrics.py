@@ -61,12 +61,9 @@ def net_inflation(emission: int, burn: int) -> int:
 
 
 def report_kind_for_hour(hour: int) -> str | None:
-    """Расписание демона: 0 → полный суточный, 6/12/18 → экспресс, иначе ничего."""
-    if hour == 0:
-        return "daily"
-    if hour in (6, 12, 18):
-        return "express"
-    return None
+    """Расписание демона: только 00:00 UTC → полный суточный (владелец 12.11: экспрессы 06/12/18
+    убраны — хватает суточного и /metrics по запросу)."""
+    return "daily" if hour == 0 else None
 
 
 def split_message(text: str, limit: int = TG_MESSAGE_LIMIT) -> list[str]:
