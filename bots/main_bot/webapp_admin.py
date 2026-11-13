@@ -3,7 +3,8 @@
 квесты (ротация до 10 + эпики), ⚡ Безлимит игроку по @username и 🕵️ проверка на абуз (shared/abuse.py).
 
 Открывается из ГЛАВНОГО бота командой /admin (initData подписан его токеном), доступ — только ID из
-переменной ADMIN_ID. Пульт лишь пишет в базу: игроки видят битвы, цели и лоты в приложении (Паспорт → События,
+переменной ADMIN_ID + 🔐 ПИН (shared/admin_pin.py, 14.11): admin_pin_middleware не пускает в /api/admin/* без сессии,
+выданной после ПИНа; 5 ошибок — блок 15 мин (×2 дальше) и ЛС владельцу; ADMIN_RESET_PIN=1 — сброс забытого ПИНа. Пульт лишь пишет в базу: игроки видят битвы, цели и лоты в приложении (Паспорт → События,
 вкладка «Аукционы»), итоги по времени подводит демон админ-бота и пишет получившим награды в личку
 (каналов нет — решение владельца 26.10). Тексты — по-русски.
 """
@@ -15,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 
 from aiohttp import web
 
+from shared import admin_pin
 from shared.database import db
 from shared.economy import ALL_KINDS, ITEM_EFFECTS, MINE_HOLD_HOURS, finish_count_ok, utcnow
 from shared.webapp_auth import validate_init_data
@@ -39,6 +41,119 @@ def _admin(request: web.Request) -> int | web.Response:
     if uid not in admin_ids():
         return web.json_response({"error": "forbidden"}, status=403)
     return uid
+
+
+# ---------------------------------------------------------------- 🔐 ПИН пульта
+AUTH_PATHS = ("/api/admin/auth", "/api/admin/auth/state")
+_reset_done = False
+
+
+def _owner_uid(request: web.Request) -> int | web.Response:
+    """Первый ключ — подпись Telegram и ID владельца (401 без подписи, 403 чужой)."""
+    parsed = validate_init_data(request.headers.get("X-Telegram-Init-Data", ""), request.app["bot_token"])
+    if not parsed or "user" not in parsed:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    uid = int(parsed["user"]["id"])
+    if uid not in admin_ids():
+        return web.json_response({"error": "forbidden"}, status=403)
+    return uid
+
+
+async def _pin_row(conn):
+    """Строка ПИНа. ADMIN_RESET_PIN=1 — один раз за запуск стирает её (забыли ПИН: задать новый при входе)."""
+    global _reset_done
+    if os.getenv("ADMIN_RESET_PIN", "").strip() == "1" and not _reset_done:
+        await conn.execute("DELETE FROM admin_pin")
+        _reset_done = True
+    return await conn.fetchrow("SELECT pin_hash, pin_ver, fails, locked_until FROM admin_pin WHERE id = 1")
+
+
+@web.middleware
+async def admin_pin_middleware(request: web.Request, handler):
+    """Второй ключ: без сессии после ПИНа в /api/admin/* не пускаем (страница /admin и вход по ПИНу — открыты)."""
+    path = request.path
+    if not path.startswith("/api/admin/") or path in AUTH_PATHS:
+        return await handler(request)
+    uid = _owner_uid(request)
+    if isinstance(uid, web.Response):
+        return uid
+    try:
+        async with db.pool.acquire() as conn:
+            row = await _pin_row(conn)
+    except Exception:
+        return web.json_response({"error": "unavailable"}, status=503)
+    if not row or not admin_pin.verify_session(request.headers.get(admin_pin.SESSION_HEADER),
+                                               admin_pin.session_secret(request.app["bot_token"]), uid,
+                                               row["pin_ver"]):
+        return web.json_response({"error": "pin"}, status=401)
+    return await handler(request)
+
+
+async def handle_admin_auth_state(request: web.Request) -> web.Response:
+    uid = _owner_uid(request)
+    if isinstance(uid, web.Response):
+        return uid
+    async with db.pool.acquire() as conn:
+        row = await _pin_row(conn)
+    locked = 0
+    if row and row["locked_until"]:
+        locked = max(0, int((row["locked_until"] - utcnow()).total_seconds()))
+    return web.json_response({"pin_set": bool(row and row["pin_hash"]), "locked_for": locked})
+
+
+async def _notify_owners(request: web.Request, text: str) -> None:
+    bot = request.app.get("bot")
+    for owner in admin_ids():
+        try:
+            if bot is not None:
+                await bot.send_message(owner, text)
+        except Exception:
+            pass
+
+
+async def handle_admin_auth(request: web.Request) -> web.Response:
+    """Ввод ПИНа. setup=True — первый ввод, когда ПИНа ещё нет. Ответ — сессия на admin_pin.SESSION_HOURS."""
+    uid = _owner_uid(request)
+    if isinstance(uid, web.Response):
+        return uid
+    data = await _body(request)
+    pin = str(data.get("pin", ""))
+    now = utcnow()
+    lock_text = None
+    async with db.pool.acquire() as conn:
+        async with conn.transaction():
+            await _pin_row(conn)
+            await conn.execute("INSERT INTO admin_pin (id) VALUES (1) ON CONFLICT DO NOTHING")
+            row = await conn.fetchrow(
+                "SELECT pin_hash, pin_ver, fails, locked_until FROM admin_pin WHERE id = 1 FOR UPDATE")
+            if row["locked_until"] and row["locked_until"] > now:
+                wait = int((row["locked_until"] - now).total_seconds())
+                return web.json_response({"error": "locked", "locked_for": wait}, status=429)
+            if not admin_pin.valid_pin(pin):
+                return web.json_response({"error": "format"}, status=400)
+            if not row["pin_hash"]:
+                if not data.get("setup"):
+                    return web.json_response({"error": "setup"}, status=409)
+                ver = os.urandom(8).hex()
+                await conn.execute("UPDATE admin_pin SET pin_hash = $1, pin_ver = $2, fails = 0, locked_until = NULL "
+                                   "WHERE id = 1", admin_pin.hash_pin(pin), ver)
+            elif not admin_pin.check_pin(pin, row["pin_hash"]):
+                fails = row["fails"] + 1
+                lock = admin_pin.lock_seconds(fails)
+                await conn.execute("UPDATE admin_pin SET fails = $1, locked_until = $2 WHERE id = 1", fails,
+                                   now + timedelta(seconds=lock) if lock else None)
+                if not lock:
+                    return web.json_response({"error": "pin", "left": admin_pin.MAX_PIN_FAILS - fails}, status=403)
+                lock_text = (f"🔒 Пульт Cyber Barons: {fails} неверных ПИНов подряд. Вход закрыт на {lock // 60} мин. "
+                             "Если это не ты — смени облачный пароль Telegram и проверь активные сеансы.")
+            else:
+                ver = row["pin_ver"]
+                await conn.execute("UPDATE admin_pin SET fails = 0, locked_until = NULL WHERE id = 1")
+    if lock_text:
+        await _notify_owners(request, lock_text)
+        return web.json_response({"error": "locked", "locked_for": admin_pin.lock_seconds(fails)}, status=429)
+    token = admin_pin.issue_session(admin_pin.session_secret(request.app["bot_token"]), uid, ver)
+    return web.json_response({"session": token})
 
 
 def _fail(message: str, status: int = 400) -> web.Response:
@@ -721,6 +836,9 @@ async def handle_admin_abuse_block(request: web.Request) -> web.Response:
 
 def register_admin_routes(app: web.Application) -> None:
     app.router.add_get("/admin", handle_admin_page)
+    app.middlewares.append(admin_pin_middleware)   # 🔐 второй ключ пульта — ПИН
+    app.router.add_get("/api/admin/auth/state", handle_admin_auth_state)
+    app.router.add_post("/api/admin/auth", handle_admin_auth)
     app.router.add_get("/api/admin/meta", handle_admin_meta)
     app.router.add_get("/api/admin/battles", handle_admin_battles)
     app.router.add_post("/api/admin/battle", handle_admin_battle_create)

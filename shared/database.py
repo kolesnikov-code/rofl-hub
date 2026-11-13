@@ -683,6 +683,16 @@ SCHEMA_STATEMENTS: list[str] = [
     "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",
     "CREATE INDEX IF NOT EXISTS star_payments_created_idx ON star_payments (created_at);",
     RESET_ALL_STATEMENT,
+    # --- 14.11: 🔐 ПИН пульта владельца (shared/admin_pin.py) — одна строка, только хэш ---
+    """
+    CREATE TABLE IF NOT EXISTS admin_pin (
+        id SMALLINT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+        pin_hash TEXT,
+        pin_ver VARCHAR(32),
+        fails INT NOT NULL DEFAULT 0,
+        locked_until TIMESTAMP WITH TIME ZONE
+    );
+    """,
     # --- 27.10: битвы и акции v2 (пульт владельца): зачёт, места, рудники по местам, ручные итоги ---
     "ALTER TABLE battles ADD COLUMN IF NOT EXISTS scope VARCHAR(8) NOT NULL DEFAULT 'teams';",
     "ALTER TABLE battles ADD COLUMN IF NOT EXISTS places INT NOT NULL DEFAULT 10;",

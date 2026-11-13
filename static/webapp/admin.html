@@ -87,6 +87,12 @@
   .kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
   .kv div { background: #0d1326; border-radius: 10px; padding: 8px 10px; } .kv small { display: block; color: var(--muted); font-size: 11px; }
   @media (min-width: 900px) { .cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; align-items: start; } }
+  /* 🔐 ПИН пульта */
+  .pin { max-width: 320px; margin: 24px auto; text-align: center; }
+  .pin-dots { font-size: 28px; letter-spacing: 10px; min-height: 40px; margin: 10px 0; }
+  .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pin-pad button { font-size: 22px; padding: 14px 0; margin: 0; }
+  .pin-msg { min-height: 22px; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -104,11 +110,54 @@
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const num = n => Number(n || 0).toLocaleString("ru-RU");
   const dt = iso => iso ? new Date(iso).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "UTC" }) + " UTC" : "—";
+  // 🔐 ПИН: сессия живёт в sessionStorage (закрыл пульт — вводи снова), сервер всё равно проверяет срок и версию ПИНа
+  let session = "";
+  try { session = sessionStorage.getItem("admin_session") || ""; } catch (e) {}
   async function api(path, opts) {
-    const res = await fetch(path, Object.assign({ headers: { "X-Telegram-Init-Data": initData, "Content-Type": "application/json" } }, opts || {}));
+    const headers = { "X-Telegram-Init-Data": initData, "Content-Type": "application/json", "X-Admin-Session": session };
+    const res = await fetch(path, Object.assign({ headers }, opts || {}));
     const body = await res.json().catch(() => ({}));
+    if (res.status === 401 && body.error === "pin") { pinScreen(); throw { error: "pin", message: "нужен ПИН" }; }
     if (!res.ok) throw body;
     return body;
+  }
+  const mmss = sec => Math.floor(sec / 60) + " мин " + (sec % 60) + " с";
+  async function pinScreen() {
+    $("tabs").innerHTML = "";
+    const app = $("app");
+    let state;
+    try { state = await api("/api/admin/auth/state"); }
+    catch (e) { app.innerHTML = '<div class="card bad">' + (e.error === "forbidden" ? "⛔ Пульт только для владельца." : "Ошибка: " + esc(e.message || e.error || e)) + '</div>'; return; }
+    let pin = "", first = "";
+    const setup = !state.pin_set;
+    const title = () => setup ? (first ? "Повтори новый ПИН" : "Придумай ПИН (4–8 цифр)") : "Введи ПИН пульта";
+    app.innerHTML = '<div class="card pin"><b id="pinT"></b><div class="pin-dots" id="pinD"></div><div class="pin-pad">' +
+      ["1","2","3","4","5","6","7","8","9","⌫","0","✅"].map(k => '<button class="btn" data-k="' + k + '">' + k + '</button>').join("") +
+      '</div><div class="pin-msg" id="pinM"></div></div>';
+    const draw = () => { $("pinT").textContent = title(); $("pinD").textContent = "●".repeat(pin.length) || "·"; };
+    const msg = t => { $("pinM").textContent = t; };
+    if (state.locked_for > 0) msg("🔒 Вход закрыт ещё на " + mmss(state.locked_for));
+    draw();
+    app.querySelectorAll("[data-k]").forEach(b => { b.onclick = async () => {
+      const k = b.dataset.k;
+      if (k === "⌫") { pin = pin.slice(0, -1); return draw(); }
+      if (k !== "✅") { if (pin.length < 8) pin += k; return draw(); }
+      if (pin.length < 4) return msg("Минимум 4 цифры");
+      if (setup && !first) { first = pin; pin = ""; msg(""); return draw(); }
+      if (setup && first !== pin) { first = ""; pin = ""; msg("ПИНы не совпали — ещё раз"); return draw(); }
+      try {
+        const res = await post("/api/admin/auth", { pin, setup });
+        session = res.session;
+        try { sessionStorage.setItem("admin_session", session); } catch (e) {}
+        go();
+      } catch (e) {
+        pin = ""; draw();
+        if (e.error === "locked") msg("🔒 5 ошибок — вход закрыт на " + mmss(e.locked_for || 0));
+        else if (e.error === "pin") msg("❌ Неверный ПИН. Осталось попыток: " + e.left);
+        else if (e.error === "setup") pinScreen();
+        else msg("Ошибка: " + (e.message || e.error || e));
+      }
+    }; });
   }
   const post = (path, data) => api(path, { method: "POST", body: JSON.stringify(data || {}) });
   function say(text) { if (tg && tg.showAlert) tg.showAlert(text); else alert(text); }
@@ -773,9 +822,9 @@
     $("tabs").querySelectorAll("[data-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.tab; go(); }; });
     const app = $("app");
     try { meta = meta || await api("/api/admin/meta"); await TABS[tab][1](app); }
-    catch (e) { app.innerHTML = '<div class="card bad">' + (e.error === "forbidden" ? "⛔ Пульт только для владельца." : "Ошибка: " + esc(e.message || e.error || e)) + '</div>'; }
+    catch (e) { if (e.error === "pin") return; app.innerHTML = '<div class="card bad">' + (e.error === "forbidden" ? "⛔ Пульт только для владельца." : "Ошибка: " + esc(e.message || e.error || e)) + '</div>'; }
   }
-  go();
+  if (session) go(); else pinScreen();
 })();
 </script>
 </body>
