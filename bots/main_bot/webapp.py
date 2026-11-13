@@ -296,6 +296,9 @@ async def handle_me(request: web.Request) -> web.Response:
     payload["app_mode"] = user["app_mode"]
     payload["pending_duel"] = user["pending_duel"]
     payload["away"] = away   # 🌙 «Пока тебя не было»: {coins, seconds} или None
+    if prev_seen is None:
+        # Первое открытие приложения — конец знакомства (14.11: вместо 4 шагов в чате одно приветствие с «Играть»)
+        await track(user_id, "onboarding_done", source="webapp")
     return web.json_response(payload)
 
 

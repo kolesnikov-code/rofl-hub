@@ -186,6 +186,8 @@ STRINGS = {
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Que bom te ver de volta, @{username}!</b>\nSeu progresso está intacto. O painel de navegação fica na parte de baixo da tela.",
     "start.btn_continue": "🛸 CONTINUAR",
+    "start.welcome": "👋 <b>Olá! Este é o Cyber Barons</b> — um jogo em que um único robô vira um <b>império</b>.\n\n🎮 Vença no <b>quiz, em duelos e missões</b> → ganhe moedas e recursos.\n🛠 Com os recursos, crie <b>boosts, armadura e equipamento</b> → supere rivais em saques, na bolsa e em batalhas de equipes.\n🤖 E os robôs da sua fazenda <b>mineram moedas mesmo quando você não está</b>.\n\n🎁 Seu presente inicial já chegou: <b>{coins} 🪙 e um Robô Estagiário grátis</b>.\n🏆 Monte uma equipe e conquiste o <b>título de barão da temporada</b>!\n\n👇 Toque em «Jogar»",
+    "start.btn_play": "🎮 Jogar",
     "start.btn_cutlet": "Que ciber-bife é esse?🥩🤔",
     "start.btn_fight": "Conta logo e PARTIU BATALHA!",
     "start.console": "🚀 <b>Console de controle ativado! Use os botões na parte de baixo da tela.</b>",

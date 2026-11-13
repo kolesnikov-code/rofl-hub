@@ -187,6 +187,8 @@ STRINGS = {
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Selamat datang kembali, @{username}!</b>\nProgresmu aman. Panel navigasi ada di bagian bawah layar.",
     "start.btn_continue": "🛸 LANJUT",
+    "start.welcome": "👋 <b>Hai! Ini Cyber Barons</b> — game tempat satu robot tumbuh menjadi <b>kerajaan</b>.\n\n🎮 Menangkan <b>kuis, duel, dan misi</b> → dapatkan koin dan sumber daya.\n🛠 Ubah sumber daya menjadi <b>boost, zirah, dan perlengkapan</b> → kalahkan rival dalam serbuan, di bursa, dan dalam pertempuran tim.\n🤖 Sementara itu robot di ladangmu <b>menambang koin bahkan saat kamu pergi</b>.\n\n🎁 Hadiah awalmu sudah ada: <b>{coins} 🪙 dan Robot Magang gratis</b>.\n🏆 Bentuk tim dan raih <b>gelar baron musim ini</b>!\n\n👇 Ketuk «Main»",
+    "start.btn_play": "🎮 Main",
     "start.btn_cutlet": "Apa itu kotlet siber?🥩🤔",
     "start.btn_fight": "Cepat ceritakan — lalu BERTARUNG!",
     "start.console": "🚀 <b>Konsol kendali aktif! Gunakan tombol di bagian bawah layar.</b>",

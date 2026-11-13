@@ -1,5 +1,6 @@
 """
-/start: регистрация сразу (язык — из Telegram) → онбординг 4 шага → reply-панель.
+/start: регистрация сразу (язык — из Telegram) → ОДНО приветствие start.welcome с кнопкой «Играть» (14.11,
+текст утверждён владельцем) + нижняя кнопка «🌐 LANGUAGE». Без приложения (нет WEBAPP_URL) — прежние 4 шага.
 Кнопками языка предлагаются только OFFERED_LANGS (владелец 13.11); остальные языки — автоматически.
 Deep-link: /start <referrer_id> или /start auction_<id>.
 Плюс контур возвратного аукциона (ставки/обновление).
@@ -15,6 +16,7 @@ from aiogram.fsm.context import FSMContext
 
 from bots.main_bot.guards import feature_enabled
 from bots.main_bot.handlers.app_first import app_markup, app_ready
+from bots.main_bot.webapp_links import app_button
 from bots.main_bot.handlers.menu import get_reply_keyboard, get_reply_main_keyboard
 from shared import analytics
 from shared.analytics import track
@@ -23,6 +25,8 @@ from shared.database import db
 from bots.main_bot.webapp_links import app_url
 from shared.duels import invite_info, valid_invite_code
 from shared.economy import DUEL_INVITE_TTL_HOURS, START_BALANCE, START_CUTLETS_INVENTORY, duel_payout
+
+WELCOME_AGAIN_HOURS = 24   # сменил язык в первые сутки — приветствие приходит заново, уже на новом языке
 from shared.locales import btn_variants, resolve_lang, t
 
 router = Router()
@@ -298,8 +302,43 @@ async def register_and_greet(target: types.Message, user_id: int, username: str,
                 lang = resolve_lang(await conn.fetchval("SELECT lang FROM users WHERE user_id = $1", user_id))
     if created:
         await track(user_id, "registered", source=source, lang=lang)
-    send = target.edit_text if edit else target.answer
-    await send(t(lang, "start.intro1"), reply_markup=intro1_keyboard(lang, auc_part), parse_mode="HTML")
+    if not app_ready():   # без приложения — прежнее знакомство в 4 шага
+        send = target.edit_text if edit else target.answer
+        await send(t(lang, "start.intro1"), reply_markup=intro1_keyboard(lang, auc_part), parse_mode="HTML")
+        return
+    if edit:   # старая сетка 14 языков — убираем её, приветствие приходит новым сообщением
+        try:
+            await target.delete()
+        except Exception:
+            pass
+    await set_lang_panel(target, lang)
+    await send_welcome(target, lang)
+    if (auction_id := _auction_id_from(auc_part)) is not None:
+        await trigger_inline_auction_window(target, auction_id)
+    if (code := _duel_code_from(auc_part)) is not None:
+        await send_duel_invite(target, lang, code)
+
+
+async def set_lang_panel(target: types.Message, lang: str) -> None:
+    """Нижняя кнопка «🌐 LANGUAGE» без лишнего сообщения в чате: клавиатура ставится служебным сообщением,
+    которое тут же удаляется, — сама клавиатура остаётся. Не удалилось — остаётся короткая подсказка, не беда."""
+    try:
+        sent = await target.answer(t(lang, "lang.kb_hint"), reply_markup=get_reply_keyboard(lang), parse_mode="HTML")
+        await sent.delete()
+    except Exception:
+        logger.warning("lang panel setup failed", exc_info=True)
+
+
+async def send_welcome(target: types.Message, lang: str) -> None:
+    """Единственное приветствие (утверждено владельцем 14.11) с кнопкой «Играть»; закрепляется вверху чата."""
+    button = app_button(t(lang, "start.btn_play"))
+    markup = types.InlineKeyboardMarkup(inline_keyboard=[[button]]) if button else None
+    sent = await target.answer(t(lang, "start.welcome", coins=START_BALANCE), reply_markup=markup, parse_mode="HTML")
+    try:
+        await sent.bot.unpin_all_chat_messages(sent.chat.id)
+        await sent.pin(disable_notification=True)
+    except Exception:
+        logger.warning("pin welcome failed", exc_info=True)
 
 
 @router.callback_query(F.data.startswith("ob_lang:"))
@@ -381,8 +420,11 @@ async def process_language_change(callback: types.CallbackQuery):
         await callback.answer()
         return
     async with db.pool.acquire() as conn:
-        status = await conn.execute("UPDATE users SET lang = $2 WHERE user_id = $1", callback.from_user.id, lang)
-    if status.endswith(" 0"):   # ещё не зарегистрирован — язык выбирается в /start
+        fresh = await conn.fetchval(
+            "UPDATE users SET lang = $2 WHERE user_id = $1 "
+            "RETURNING created_at > NOW() - make_interval(hours => $3)",
+            callback.from_user.id, lang, WELCOME_AGAIN_HOURS)
+    if fresh is None:   # ещё не зарегистрирован — регистрация по /start
         await callback.answer("/start", show_alert=True)
         return
     await callback.answer()
@@ -391,6 +433,10 @@ async def process_language_change(callback: types.CallbackQuery):
         await callback.message.edit_text(f"🌐 ✅ {label}")
     except Exception:
         pass
+    if app_ready() and fresh:   # новичок не понял язык приветствия — показываем его заново, уже понятным
+        await set_lang_panel(callback.message, lang)
+        await send_welcome(callback.message, lang)
+        return
     await callback.message.answer(t(lang, "lang.changed"), reply_markup=get_reply_keyboard(lang), parse_mode="HTML")
     if app_ready():
         await send_pinned_app(callback.message, lang)   # закреп — на новом языке

@@ -93,12 +93,17 @@ def test_language_command_is_in_the_blue_menu_of_every_language(with_app, monkey
 
 
 class _Conn:
-    def __init__(self, rows):
-        self.rows, self.calls = rows, []
+    """rows=0 — игрок не найден; fresh — зарегистрирован меньше суток назад."""
+    def __init__(self, rows, fresh=False):
+        self.rows, self.fresh, self.calls = rows, fresh, []
 
     async def execute(self, sql, *args):
         self.calls.append(args)
         return f"UPDATE {self.rows}"
+
+    async def fetchval(self, sql, *args):
+        self.calls.append(args[:2])
+        return self.fresh if self.rows else None
 
 
 class _Pool:
@@ -137,8 +142,8 @@ class _Cb:
         self.alerts.append(text)
 
 
-def _run_change(monkeypatch, data, rows=1):
-    conn = _Conn(rows)
+def _run_change(monkeypatch, data, rows=1, fresh=False):
+    conn = _Conn(rows, fresh)
     monkeypatch.setattr(start.db, "_pool", _Pool(conn))
     cb = _Cb(data)
     asyncio.run(start.process_language_change(cb))
@@ -217,3 +222,70 @@ def test_onboarding_end_start_and_language_change_send_the_pinned_app():
         end = body.find("@router", 1)
         body = body if end < 0 else body[:end]
         assert "send_pinned_app(" in body, fn
+
+
+# ---------------------------------------------------------------- 14.11: одно приветствие вместо 4 шагов
+def test_welcome_is_approved_text_with_gift_and_play_button_in_every_language():
+    from shared.economy import START_BALANCE
+    for lang in SUPPORTED_LANGS:
+        text = t(lang, "start.welcome", coins=START_BALANCE)
+        assert "Cyber Barons" in text and f"{START_BALANCE} 🪙" in text, lang
+        assert text.count("<b>") == text.count("</b>") >= 6, lang          # разметка как в утверждённом ru
+        assert [ln[:1] for ln in text.split("\n") if ln][:3] == ["👋", "🎮", "🛠"], lang
+        assert t(lang, "start.btn_play").startswith("🎮"), lang
+        assert "/" not in t(lang, "start.btn_play"), lang                   # без слэш-команд на кнопке
+    assert "викторине, дуэлях и квестах" in t("ru", "start.welcome", coins=500)
+
+
+class _WMsg:
+    def __init__(self):
+        self.sent, self.deleted, self.pinned = [], [], []
+        self.chat = type("C", (), {"id": 42})()
+        outer = self
+
+        class _Bot:
+            async def unpin_all_chat_messages(self, chat_id):
+                outer.pinned.append("unpin")
+        self.bot = _Bot()
+
+    async def answer(self, text, **kw):
+        outer = self
+
+        class _Sent:
+            chat, bot = outer.chat, outer.bot
+
+            async def delete(self):
+                outer.deleted.append(text)
+
+            async def pin(self, disable_notification=False):
+                outer.pinned.append(text)
+        self.sent.append((text, kw.get("reply_markup")))
+        return _Sent()
+
+
+def test_welcome_flow_is_one_visible_message_with_play_and_language_panel(with_app):
+    msg = _WMsg()
+
+    async def go():
+        await start.set_lang_panel(msg, "ru")
+        await start.send_welcome(msg, "ru")
+    asyncio.run(go())
+    (hint, panel), (welcome, kb) = msg.sent
+    assert msg.deleted == [hint]                                            # служебное сообщение убрано
+    assert panel.keyboard[-1][0].text == btn("ru", "language")              # а кнопка языка осталась
+    assert welcome == t("ru", "start.welcome", coins=500) and msg.pinned == ["unpin", welcome]
+    assert kb.inline_keyboard[0][0].text == t("ru", "start.btn_play") and kb.inline_keyboard[0][0].web_app
+
+
+def test_new_player_changing_language_gets_the_welcome_again(with_app, monkeypatch):
+    sent = []
+
+    async def fake_panel(target, lang):
+        sent.append(("panel", lang))
+
+    async def fake_welcome(target, lang):
+        sent.append(("welcome", lang))
+    monkeypatch.setattr(start, "set_lang_panel", fake_panel)
+    monkeypatch.setattr(start, "send_welcome", fake_welcome)
+    cb, _ = _run_change(monkeypatch, "chg_lang:uz", fresh=True)
+    assert sent == [("panel", "uz"), ("welcome", "uz")] and cb.message.sent == []

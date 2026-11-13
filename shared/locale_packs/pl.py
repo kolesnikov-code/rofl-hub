@@ -186,6 +186,8 @@ STRINGS: dict[str, str] = {
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Witaj z powrotem, @{username}!</b>\nTwój postęp jest bezpieczny. Panel nawigacji znajdziesz na dole ekranu.",
     "start.btn_continue": "🛸 DALEJ",
+    "start.welcome": "👋 <b>Cześć! To jest Cyber Barons</b> — gra, w której z jednego robota wyrasta <b>imperium</b>.\n\n🎮 Wygrywaj w <b>quizie, pojedynkach i questach</b> → zdobywaj monety i surowce.\n🛠 Z surowców twórz <b>boosty, pancerz i ekwipunek</b> → wyprzedzaj rywali w najazdach, na giełdzie i w bitwach drużyn.\n🤖 A roboty na farmie <b>wydobywają monety, nawet gdy cię nie ma</b>.\n\n🎁 Prezent na start już czeka: <b>{coins} 🪙 i darmowy Robot Stażysta</b>.\n🏆 Zbierz drużynę i zdobądź <b>tytuł barona sezonu</b>!\n\n👇 Naciśnij „Graj”",
+    "start.btn_play": "🎮 Graj",
     "start.btn_cutlet": "Co to za cyber-kotlet?🥩🤔",
     "start.btn_fight": "Mów szybko i DO BOJU!",
     "start.console": "🚀 <b>Konsola sterowania aktywowana! Używaj przycisków na dole ekranu.</b>",
