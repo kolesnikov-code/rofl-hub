@@ -229,12 +229,14 @@ def test_welcome_is_approved_text_with_gift_and_play_button_in_every_language():
     from shared.economy import START_BALANCE
     for lang in SUPPORTED_LANGS:
         text = t(lang, "start.welcome", coins=START_BALANCE)
-        assert "Cyber Barons" in text and f"{START_BALANCE} 🪙" in text, lang
+        assert "Cyber Barons" in text and f"<b>{START_BALANCE} " in text and "🪙" not in text, lang
         assert text.count("<b>") == text.count("</b>") >= 6, lang          # разметка как в утверждённом ru
         assert [ln[:1] for ln in text.split("\n") if ln][:3] == ["👋", "🎮", "🛠"], lang
         assert t(lang, "start.btn_play").startswith("🎮"), lang
         assert "/" not in t(lang, "start.btn_play"), lang                   # без слэш-команд на кнопке
-    assert "викторине, дуэлях и квестах" in t("ru", "start.welcome", coins=500)
+    ru = t("ru", "start.welcome", coins=500)
+    assert "викторине, дуэлях и квестах" in ru and "<b>500 монет и бесплатный Робот-Стажёр</b>!" in ru
+    assert "стань <b>кибер-бароном</b>!" in ru
 
 
 class _WMsg:
@@ -271,7 +273,7 @@ def test_welcome_flow_is_one_visible_message_with_play_and_language_panel(with_a
         await start.send_welcome(msg, "ru")
     asyncio.run(go())
     (hint, panel), (welcome, kb) = msg.sent
-    assert msg.deleted == [hint]                                            # служебное сообщение убрано
+    assert msg.deleted == []                     # с удалённым сообщением пропадала и клавиатура (14.11)
     assert panel.keyboard[-1][0].text == btn("ru", "language")              # а кнопка языка осталась
     assert welcome == t("ru", "start.welcome", coins=500) and msg.pinned == ["unpin", welcome]
     assert kb.inline_keyboard[0][0].text == t("ru", "start.btn_play") and kb.inline_keyboard[0][0].web_app

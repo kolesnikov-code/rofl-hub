@@ -187,7 +187,7 @@ STRINGS = {
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Che bello rivederti, @{username}!</b>\nI tuoi progressi sono al sicuro. Il pannello di navigazione è in fondo allo schermo.",
     "start.btn_continue": "🛸 CONTINUA",
-    "start.welcome": "👋 <b>Ciao! Questo è Cyber Barons</b> — un gioco in cui un solo robot diventa un <b>impero</b>.\n\n🎮 Vinci a <b>quiz, duelli e quest</b> → ottieni monete e risorse.\n🛠 Con le risorse crea <b>boost, armatura ed equipaggiamento</b> → supera i rivali nelle incursioni, in borsa e nelle battaglie tra squadre.\n🤖 E i robot della tua fattoria <b>estraggono monete anche quando non ci sei</b>.\n\n🎁 Il tuo regalo di benvenuto è già qui: <b>{coins} 🪙 e un Robot Stagista gratis</b>.\n🏆 Forma una squadra e conquista il <b>titolo di barone della stagione</b>!\n\n👇 Tocca «Gioca»",
+    "start.welcome": "👋 <b>Ciao! Questo è Cyber Barons</b> — un gioco in cui un solo robot diventa un <b>impero</b>.\n\n🎮 Vinci a <b>quiz, duelli e quest</b> → ottieni monete e risorse.\n🛠 Con le risorse crea <b>boost, armatura ed equipaggiamento</b> → supera i rivali nelle incursioni, in borsa e nelle battaglie tra squadre.\n🤖 E i robot della tua fattoria <b>estraggono monete anche quando non ci sei</b>.\n\n🎁 Il tuo regalo di benvenuto è già qui: <b>{coins} monete e un Robot Stagista gratis</b>!\n🏆 Forma una squadra e conquista il <b>titolo di cyber-barone</b>!\n\n👇 Tocca «Gioca»",
     "start.btn_play": "🎮 Gioca",
     "start.btn_cutlet": "Cos'è una cyber-cotoletta?🥩🤔",
     "start.btn_fight": "Dimmi tutto e poi in BATTAGLIA!",

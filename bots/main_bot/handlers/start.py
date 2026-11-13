@@ -320,11 +320,10 @@ async def register_and_greet(target: types.Message, user_id: int, username: str,
 
 
 async def set_lang_panel(target: types.Message, lang: str) -> None:
-    """Нижняя кнопка «🌐 LANGUAGE» без лишнего сообщения в чате: клавиатура ставится служебным сообщением,
-    которое тут же удаляется, — сама клавиатура остаётся. Не удалилось — остаётся короткая подсказка, не беда."""
+    """Нижняя кнопка «🌐 LANGUAGE»: короткая подсказка с клавиатурой — ПЕРЕД приветствием, чтобы «Играть» было
+    последним в чате. Удалять подсказку нельзя (проверено владельцем 14.11): вместе с ней пропадает и клавиатура."""
     try:
-        sent = await target.answer(t(lang, "lang.kb_hint"), reply_markup=get_reply_keyboard(lang), parse_mode="HTML")
-        await sent.delete()
+        await target.answer(t(lang, "lang.kb_hint"), reply_markup=get_reply_keyboard(lang), parse_mode="HTML")
     except Exception:
         logger.warning("lang panel setup failed", exc_info=True)
 

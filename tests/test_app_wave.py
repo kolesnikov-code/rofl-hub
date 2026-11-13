@@ -73,7 +73,8 @@ def test_farm_shows_intern_line_even_with_zero_robots():
 def test_no_coin_word_after_numbers(lang, word):
     strings = RU if lang == "ru" else EN
     pattern = re.compile(r"(?:\d|\})(?:</b>|</code>)?[  ]+" + word, re.I)
-    offenders = [k for k, v in strings.items() if k != "img.balance" and pattern.search(v)]
+    # start.welcome — слово по решению владельца 14.11: 🪙 после «500» переносилась на новую строку
+    offenders = [k for k, v in strings.items() if k not in ("img.balance", "start.welcome") and pattern.search(v)]
     assert not offenders, offenders
 
 

@@ -187,7 +187,7 @@ STRINGS: dict[str, str] = {
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Yana xush kelibsan, @{username}!</b>\nProgressing joyida. Navigatsiya paneli — ekranning pastida.",
     "start.btn_continue": "🛸 DAVOM ETISH",
-    "start.welcome": "👋 <b>Salom! Bu — Cyber Barons</b>: bitta robotdan butun bir <b>imperiya</b> o'sib chiqadigan o'yin.\n\n🎮 <b>Viktorina, duellar va kvestlarda</b> g'alaba qozon → tanga va resurslar ol.\n🛠 Resurslardan <b>bustlar, zirh va jihozlar</b> yasa → bosqinlarda, birjada va jamoa janglarida raqiblardan o'zib ket.\n🤖 Fermadagi robotlar esa <b>sen yo'qligingda ham tanga qazib oladi</b>.\n\n🎁 Boshlang'ich sovg'a allaqachon senda: <b>{coins} 🪙 va bepul Stajyor Robot</b>.\n🏆 Jamoa tuz va <b>mavsum baroni</b> bo'l!\n\n👇 «O'ynash» tugmasini bos",
+    "start.welcome": "👋 <b>Salom! Bu — Cyber Barons</b>: bitta robotdan butun bir <b>imperiya</b> o'sib chiqadigan o'yin.\n\n🎮 <b>Viktorina, duellar va kvestlarda</b> g'alaba qozon → tanga va resurslar ol.\n🛠 Resurslardan <b>bustlar, zirh va jihozlar</b> yasa → bosqinlarda, birjada va jamoa janglarida raqiblardan o'zib ket.\n🤖 Fermadagi robotlar esa <b>sen yo'qligingda ham tanga qazib oladi</b>.\n\n🎁 Boshlang'ich sovg'a allaqachon senda: <b>{coins} tanga va bepul Stajyor Robot</b>!\n🏆 Jamoa tuz va <b>kiber-baron</b> bo'l!\n\n👇 «O'ynash» tugmasini bos",
     "start.btn_play": "🎮 O'ynash",
     "start.btn_cutlet": "Kiber-kotlet nima o'zi?🥩🤔",
     "start.btn_fight": "Tezroq aytib ber — JANGGA!",

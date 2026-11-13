@@ -170,7 +170,7 @@ RU: dict[str, str] = {
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>С возвращением, @{username}!</b>\nТвой прогресс на месте. Панель навигации — внизу экрана.",
     "start.btn_continue": "🛸 ПРОДОЛЖИТЬ",
-    "start.welcome": "👋 <b>Привет! Это Cyber Barons</b> — игра, где из одного робота вырастает <b>империя</b>.\n\n🎮 Побеждай в <b>викторине, дуэлях и квестах</b> → получай монеты и ресурсы.\n🛠 Из ресурсов собирай <b>бусты, броню и снаряжение</b> → обходи соперников в налётах, на бирже и в битвах команд.\n🤖 А роботы на ферме <b>добывают монеты, даже пока тебя нет</b>.\n\n🎁 Стартовый подарок уже у тебя: <b>{coins} 🪙 и бесплатный Робот-Стажёр</b>.\n🏆 Собери команду и стань <b>бароном сезона</b>!\n\n👇 Жми «Играть»",
+    "start.welcome": "👋 <b>Привет! Это Cyber Barons</b> — игра, где из одного робота вырастает <b>империя</b>.\n\n🎮 Побеждай в <b>викторине, дуэлях и квестах</b> → получай монеты и ресурсы.\n🛠 Из ресурсов собирай <b>бусты, броню и снаряжение</b> → обходи соперников в налётах, на бирже и в битвах команд.\n🤖 А роботы на ферме <b>добывают монеты, даже пока тебя нет</b>.\n\n🎁 Стартовый подарок уже у тебя: <b>{coins} монет и бесплатный Робот-Стажёр</b>!\n🏆 Собери команду и стань <b>кибер-бароном</b>!\n\n👇 Жми «Играть»",
     "start.btn_play": "🎮 Играть",
     "start.btn_cutlet": "Что за кибер-котлета?🥩🤔",
     "start.btn_fight": "Расскажи скорее и в БОЙ!",
@@ -1278,7 +1278,7 @@ EN: dict[str, str] = {
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Welcome back, @{username}!</b>\nYour progress is safe. The navigation panel is at the bottom of the screen.",
     "start.btn_continue": "🛸 CONTINUE",
-    "start.welcome": "👋 <b>Hi! This is Cyber Barons</b> — a game where one robot grows into an <b>empire</b>.\n\n🎮 Win at <b>quizzes, duels and quests</b> → earn coins and resources.\n🛠 Turn resources into <b>boosts, armor and gear</b> → outplay rivals in raids, on the market and in team battles.\n🤖 Meanwhile your farm robots <b>mine coins even while you're away</b>.\n\n🎁 Your starter gift is already here: <b>{coins} 🪙 and a free Intern Bot</b>.\n🏆 Build a team and become the <b>baron of the season</b>!\n\n👇 Tap «Play»",
+    "start.welcome": "👋 <b>Hi! This is Cyber Barons</b> — a game where one robot grows into an <b>empire</b>.\n\n🎮 Win at <b>quizzes, duels and quests</b> → earn coins and resources.\n🛠 Turn resources into <b>boosts, armor and gear</b> → outplay rivals in raids, on the market and in team battles.\n🤖 Meanwhile your farm robots <b>mine coins even while you're away</b>.\n\n🎁 Your starter gift is already here: <b>{coins} coins and a free Intern Bot</b>!\n🏆 Build a team and become a <b>cyber baron</b>!\n\n👇 Tap «Play»",
     "start.btn_play": "🎮 Play",
     "start.btn_cutlet": "What's a cyber-cutlet?🥩🤔",
     "start.btn_fight": "Tell me quick — then BATTLE!",

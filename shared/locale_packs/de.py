@@ -188,7 +188,7 @@ STRINGS = {
     # ---------------- /start ----------------
     "start.welcome_back": "👋 <b>Willkommen zurück, @{username}!</b>\nDein Fortschritt ist sicher. Die Navigationsleiste ist unten auf dem Bildschirm.",
     "start.btn_continue": "🛸 WEITER",
-    "start.welcome": "👋 <b>Hi! Das ist Cyber Barons</b> — ein Spiel, in dem aus einem Roboter ein <b>Imperium</b> wird.\n\n🎮 Gewinne im <b>Quiz, in Duellen und Quests</b> → hol dir Münzen und Ressourcen.\n🛠 Baue aus Ressourcen <b>Boosts, Panzerung und Ausrüstung</b> → überhole Rivalen bei Raids, an der Börse und in Team-Schlachten.\n🤖 Und die Roboter auf deiner Farm <b>schürfen Münzen, auch wenn du nicht da bist</b>.\n\n🎁 Dein Startgeschenk ist schon da: <b>{coins} 🪙 und ein kostenloser Praktikanten-Bot</b>.\n🏆 Gründe ein Team und hol dir den <b>Titel „Baron der Saison“</b>!\n\n👇 Tippe auf „Spielen“",
+    "start.welcome": "👋 <b>Hi! Das ist Cyber Barons</b> — ein Spiel, in dem aus einem Roboter ein <b>Imperium</b> wird.\n\n🎮 Gewinne im <b>Quiz, in Duellen und Quests</b> → hol dir Münzen und Ressourcen.\n🛠 Baue aus Ressourcen <b>Boosts, Panzerung und Ausrüstung</b> → überhole Rivalen bei Raids, an der Börse und in Team-Schlachten.\n🤖 Und die Roboter auf deiner Farm <b>schürfen Münzen, auch wenn du nicht da bist</b>.\n\n🎁 Dein Startgeschenk ist schon da: <b>{coins} Münzen und ein kostenloser Praktikanten-Bot</b>!\n🏆 Gründe ein Team und hol dir den <b>Titel „Cyber-Baron“</b>!\n\n👇 Tippe auf „Spielen“",
     "start.btn_play": "🎮 Spielen",
     "start.btn_cutlet": "Was ist eine Cyber-Frikadelle?🥩🤔",
     "start.btn_fight": "Erzähl schnell — und ab in den KAMPF!",
