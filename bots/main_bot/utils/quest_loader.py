@@ -27,6 +27,7 @@
   без надписи палец рисует на стекле "fx_draw": "figure" (высокая фигура, по умолчанию) или "face" (лицо духа/зверя).
   Зеркало ставим только туда, где в тексте есть зеркало/стекло (ванная, шкаф, витрина), и НИКОГДА в комедии (HORROR_MOODS);
 - "fx_lock" (у сцены с mood "keypad") — исход набора кода по сюжету: "open" или "error"; без него — только набор, без вердикта;
+- "age": 16 — метка 🔞 16+ (жёсткий хоррор/триллер): бейдж в списке и предупреждение перед первым входом.
 - "epic": true — эпик (~час игры): вне ротации и суточного лимита, владелец включает отдельно (тумблер epic:<id>).
 
 Новый квест = новый JSON-файл, кода не требуется. Тесты проверяют каждый
@@ -85,6 +86,8 @@ def validate_quest(q: dict) -> list[str]:
         errors.append(f"{qid}: epic — true/false")
     if "notes" in q and not isinstance(q["notes"], bool):
         errors.append(f"{qid}: notes — true/false (совет «записывай детали на бумаге»)")
+    if "age" in q and q["age"] != 16:
+        errors.append(f"{qid}: age — только 16 (метка 🔞 16+; без поля — 12+)")
     if not _mood_ok(q.get("mood")):
         errors.append(f"{qid}: mood — метка атмосферы (static/webapp/fx.js) или список до двух меток")
     is_comedy = "омеди" in str(q.get("genre", "")).lower()

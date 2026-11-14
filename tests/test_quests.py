@@ -187,3 +187,14 @@ def test_visible_choices_need_missing():
     with_key = [i for i, _ in visible_choices(scene, {"key"})]
     assert without == [0, 2]
     assert with_key == [0, 1]
+
+
+def test_age_16_label_is_the_only_allowed_age():
+    """🔞 14.11: "age": 16 — бейдж и предупреждение; другие значения — ошибка (без поля квест 12+)."""
+    import copy
+    from pathlib import Path
+    q = _mini_quest()
+    assert validate_quest(dict(copy.deepcopy(q), age=16)) == []
+    assert any("age" in e for e in validate_quest(dict(copy.deepcopy(q), age=18)))
+    html = (Path(__file__).resolve().parents[1] / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert "qs_ageWarn" in html and 'localStorage.getItem("age16_"' in html

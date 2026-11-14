@@ -75,6 +75,7 @@ async def handle_quests(request: web.Request) -> web.Response:
         {"id": q["id"], "title": q["title"], "genre": q["genre"], "minutes": q["minutes"], "reward": q["reward_coins"],
          "teaser": q["teaser"], "status": qe.status_of(q, progs.get(q["id"])), "epic": qe.is_epic(q),
          "notes": bool(q.get("notes") or qe.is_epic(q)),
+         "age": 16 if q.get("age") == 16 else None,   # 🔞 метка 16+ и предупреждение перед первым входом
          "locked": qe.lock_reason(q, progs.get(q["id"]), daily)} for q in quests]})
 
 
