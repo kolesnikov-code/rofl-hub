@@ -683,6 +683,8 @@ SCHEMA_STATEMENTS: list[str] = [
     "CREATE INDEX IF NOT EXISTS users_referred_idx ON users (referred_by) WHERE referred_by IS NOT NULL;",
     "CREATE INDEX IF NOT EXISTS star_payments_created_idx ON star_payments (created_at);",
     RESET_ALL_STATEMENT,
+    # --- 14.11: зарегистрировался в приложении, минуя чат → на первом /start полное приветствие ---
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS chat_welcome_due BOOLEAN NOT NULL DEFAULT FALSE;",
     # --- 14.11: 🔐 ПИН пульта владельца (shared/admin_pin.py) — одна строка, только хэш ---
     """
     CREATE TABLE IF NOT EXISTS admin_pin (

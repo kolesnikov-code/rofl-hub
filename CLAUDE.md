@@ -404,6 +404,9 @@
 - Новичок, открывший приложение минуя /start, регистрируется в /api/me (webapp.register_from_app → start.register_user):
   бонус START_BALANCE, язык из Telegram, start_param как у /start (ID друга → реферал, duel_<код> → вызвавший + pending_duel,
   p_/c_ → источник); events registered с via=app. Удалённый аккаунт — только через /start. Ссылки в рекламу: t.me/<бот>?startapp=p_код.
+  Такому игроку ставится users.chat_welcome_due: первый /start показывает полное приветствие (панель языка + welcome с «Играть»),
+  флаг снимается атомарно (start._take_chat_welcome). 🌐 Язык в приложении — чип в правом верхнем углу шапки (chooseLang),
+  POST /api/lang; на выбор те же языки, что кнопками в чате (me.langs = OFFERED_LANGS + текущий).
 
 ## Решение владельца (14.11.2026) — /start = ОДНО приветствие
 - Утверждённый владельцем текст start.welcome ({coins} = START_BALANCE) + инлайн-кнопка start.btn_play «🎮 Играть» (web_app),

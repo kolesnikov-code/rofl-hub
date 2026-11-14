@@ -95,6 +95,18 @@ async def send_lang_hint(target: types.Message, lang: str) -> None:
         await target.answer(t(lang, "lang.kb_hint"), reply_markup=get_reply_keyboard(lang), parse_mode="HTML")
 
 
+async def _take_chat_welcome(user_id: int) -> bool:
+    """Флаг «приветствие в чате ещё не показывали» (регистрация из приложения) — снимается атомарно, один раз."""
+    try:
+        async with db.pool.acquire() as conn:
+            return bool(await conn.fetchval(
+                "UPDATE users SET chat_welcome_due = FALSE WHERE user_id = $1 AND chat_welcome_due RETURNING TRUE",
+                user_id))
+    except Exception:
+        logger.warning("chat welcome flag failed", exc_info=True)
+        return False
+
+
 def parse_start_args(text: str | None, user_id: int) -> tuple[int | None, int | None, str | None]:
     """Возвращает (referrer_id, auction_id, raw_arg) из текста команды /start."""
     if not text:
@@ -224,6 +236,14 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     lang = resolve_lang(user["lang"])
     await state.clear()
+    if app_ready() and await _take_chat_welcome(user_id):
+        # Пришёл сразу в приложение (кнопка «Открыть», ?startapp=…) и впервые пишет боту: приветствие с подарком,
+        # «Играть» и кнопкой языка — как у новичка, но без второй регистрации и второго бонуса
+        await set_lang_panel(message, lang)
+        await send_welcome(message, lang)
+        if auction_id:
+            await trigger_inline_auction_window(message, auction_id)
+        return
     await send_lang_hint(message, lang)
     if returned:
         await message.answer(t(lang, "acct.welcome_back"),

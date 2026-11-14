@@ -32,6 +32,13 @@
     text-shadow: 0 0 18px rgba(0, 255, 225, .45);
   }
   .sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  /* 🌐 14.11: смена языка — чип в правом верхнем углу шапки */
+  .lang-chip { position: absolute; top: 8px; right: 10px; z-index: 5; background: rgba(0, 255, 225, .08);
+    border: 1px solid rgba(0, 255, 225, .35); color: var(--text); border-radius: 999px; padding: 5px 10px;
+    font-size: 12px; font-weight: 700; cursor: pointer; }
+  .lang-opt { display: block; width: 100%; margin-top: 8px; padding: 12px; border-radius: 12px; font-size: 16px;
+    background: #0d1326; color: var(--text); border: 1px solid rgba(0, 255, 225, .3); cursor: pointer; text-align: left; }
+  .lang-opt.on { border-color: var(--neon); box-shadow: 0 0 12px rgba(0, 255, 225, .3); }
   .card {
     background: linear-gradient(160deg, var(--card), var(--card2));
     border: 1px solid rgba(0, 255, 225, .14);
@@ -772,6 +779,7 @@
 </style>
 </head>
 <body>
+  <button class="lang-chip hidden" id="langChip" aria-label="LANGUAGE">🌐 RU</button>
   <div class="logo">⚡ Cyber Barons</div>
   <div class="sub" id="subtitle">Mini App</div>
   <div class="tabs" id="tabs"></div>
@@ -1581,6 +1589,32 @@
       await setMode(b.dataset.mode);
       m.remove();
       if (after) after();
+    }; });
+  }
+  // 🌐 Смена языка (14.11): те же языки, что кнопками в чате; «LANGUAGE» узнают на любом языке
+  function chooseLang() {
+    const m = modal('<h2>🌐 LANGUAGE</h2>' + (me.langs || []).map(([code, label]) =>
+      '<button class="lang-opt' + (code === me.lang ? ' on' : '') + '" data-lang="' + esc(code) + '">' + esc(label) + '</button>').join("") +
+      '<button class="btn ghost" id="langX" style="margin-top:12px">✖️</button>');
+    m.querySelector("#langX").onclick = () => m.remove();
+    m.onclick = e => { if (e.target === m) m.remove(); };
+    m.querySelectorAll("[data-lang]").forEach(b => { b.onclick = async () => {
+      const code = b.dataset.lang;
+      if (code === me.lang) return m.remove();
+      m.querySelectorAll("button").forEach(x => x.disabled = true);
+      try {
+        await api("/api/lang", { method: "POST", body: JSON.stringify({ lang: code }) });
+        await loadPack(code);
+        await refreshMe();
+        try { localStorage.setItem("rofl_lang", me.lang); } catch (e) {}
+        setLang(me.lang);
+        renderChrome();
+        renderTabs();
+        m.remove();
+        await go(current);
+      } catch (e) {
+        m.remove();
+      }
     }; });
   }
   function inviteCode() {
@@ -4985,6 +5019,12 @@
   // ================= Старт =================
   function renderChrome() {
     document.getElementById("subtitle").textContent = L.subtitle;
+    const chip = document.getElementById("langChip");
+    if (chip && me && me.langs && me.langs.length) {
+      chip.textContent = "🌐 " + String(me.lang || "").toUpperCase();
+      chip.classList.remove("hidden");
+      chip.onclick = chooseLang;
+    }
     document.getElementById("footer").innerHTML = esc(L.footer) +
       '<div class="made-by">' + esc(L.madeBy).replace("@mister_telebot",
         '<a href="https://t.me/mister_telebot">@mister_telebot</a>') + '</div>';

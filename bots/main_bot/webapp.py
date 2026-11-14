@@ -239,13 +239,41 @@ async def register_from_app(request: web.Request) -> bool:
             async with conn.transaction():
                 created = await register_user(conn, uid, u.get("username") or f"user_{uid}", lang, referrer,
                                               display_name=full_name, source=source)
-                if created and duel:
-                    await conn.execute("UPDATE users SET pending_duel = $2 WHERE user_id = $1", uid, duel)
+                if created:   # чата ещё не было: на первом /start — полное приветствие, а не «с возвращением»
+                    await conn.execute("UPDATE users SET pending_duel = $2, chat_welcome_due = TRUE WHERE user_id = $1",
+                                       uid, duel)
         except asyncpg.UniqueViolationError:   # два запроса разом (или /start в ту же секунду) — профиль уже создан
             return False
     if created:
         await track(uid, "registered", source=source, lang=lang, via="app")
     return created
+
+
+def _lang_options(current: str) -> list[list[str]]:
+    """Языки на выбор в приложении — те же, что кнопками в чате (OFFERED_LANGS + текущий), с подписями."""
+    from bots.main_bot.handlers.start import LANGUAGES, offered_langs
+    labels = dict(LANGUAGES)
+    return [[code, labels[code]] for code in offered_langs(current)]
+
+
+async def handle_lang(request: web.Request) -> web.Response:
+    """🌐 Смена языка из приложения (14.11): тот же users.lang, что и кнопкой в чате."""
+    from bots.main_bot.handlers.start import LANGUAGE_CODES
+    user_id = await _auth_user_id(request)
+    if user_id is None:
+        return _unauthorized()
+    try:
+        data = await request.json()
+    except Exception:
+        data = {}
+    code = str((data or {}).get("lang", ""))
+    if code not in LANGUAGE_CODES:
+        return web.json_response({"error": "bad_lang"}, status=400)
+    async with db.pool.acquire() as conn:
+        status = await conn.execute("UPDATE users SET lang = $2 WHERE user_id = $1 AND deleted_at IS NULL", user_id, code)
+    if status.endswith(" 0"):
+        return web.json_response({"error": "no_profile"}, status=404)
+    return web.json_response({"lang": code})
 
 
 def _unauthorized() -> web.Response:
@@ -338,6 +366,7 @@ async def handle_me(request: web.Request) -> web.Response:
     payload["app_mode"] = user["app_mode"]
     payload["pending_duel"] = user["pending_duel"]
     payload["away"] = away   # 🌙 «Пока тебя не было»: {coins, seconds} или None
+    payload["langs"] = _lang_options(lang)   # 🌐 кнопка языка в шапке приложения
     if prev_seen is None:
         # Первое открытие приложения — конец знакомства (14.11: вместо 4 шагов в чате одно приветствие с «Играть»)
         await track(user_id, "onboarding_done", source="webapp")
@@ -539,6 +568,7 @@ def create_webapp(bot_token: str, bot=None) -> web.Application:
     app.router.add_get("/rules", handle_rules)
     app.router.add_get("/guide", handle_guide)   # 🧭 «Как играть» — третья подвкладка «Инфо»
     app.router.add_get("/api/me", handle_me)
+    app.router.add_post("/api/lang", handle_lang)
     app.router.add_post("/api/bonus", handle_bonus)
     app.router.add_post("/api/intern", handle_intern)
     app.router.add_get("/api/top", handle_top)

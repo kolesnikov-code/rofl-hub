@@ -113,3 +113,62 @@ def test_existing_player_and_bad_signature_are_not_registered(env):
     bad.headers["X-Telegram-Init-Data"] += "x"
     assert asyncio.run(register_from_app(bad)) is False
     assert made == []
+
+
+# ---------------------------------------------------------------- 14.11: язык в приложении и первое приветствие в чате
+class _LangConn(_Conn):
+    def __init__(self, rows=1, due=None):
+        super().__init__()
+        self.rows, self.due = rows, due
+
+    async def execute(self, sql, *args):
+        self.calls.append((sql, args))
+        return f"UPDATE {self.rows}"
+
+    async def fetchval(self, sql, *args):
+        return self.due
+
+
+def test_app_language_switch_saves_only_known_languages(monkeypatch):
+    from aiohttp.test_utils import TestClient, TestServer
+    from bots.main_bot.webapp import create_webapp
+    from shared.database import db
+    conn = _LangConn()
+    monkeypatch.setattr(db, "_pool", _Pool(conn))
+
+    async def go():
+        c = TestClient(TestServer(create_webapp(TOKEN)))
+        await c.start_server()
+        try:
+            h = _Req(42).headers
+            assert (await c.post("/api/lang", json={"lang": "uz"})).status == 401
+            assert (await c.post("/api/lang", json={"lang": "xx"}, headers=h)).status == 400
+            r = await c.post("/api/lang", json={"lang": "uz"}, headers=h)
+            assert r.status == 200 and (await r.json()) == {"lang": "uz"}
+            assert conn.calls[-1][1] == (42, "uz")
+            conn.rows = 0
+            assert (await c.post("/api/lang", json={"lang": "en"}, headers=h)).status == 404
+        finally:
+            await c.close()
+    asyncio.run(go())
+
+
+def test_app_language_options_match_chat_buttons():
+    from bots.main_bot.webapp import _lang_options
+    assert [c for c, _ in _lang_options("ru")] == ["en", "uz", "ru"]
+    assert _lang_options("pt")[-1] == ["pt", "🇧🇷 Português"]          # подобранный автоматически — тоже в списке
+
+
+def test_first_start_after_app_registration_gets_the_full_welcome_once(monkeypatch):
+    from shared.database import db
+    conn = _LangConn(due=True)
+    monkeypatch.setattr(db, "_pool", _Pool(conn))
+    assert asyncio.run(start._take_chat_welcome(42)) is True
+    conn.due = None                                                       # флаг снят атомарно — второй раз нет
+    assert asyncio.run(start._take_chat_welcome(42)) is False
+
+
+def test_app_has_language_chip():
+    from pathlib import Path
+    html = (Path(__file__).resolve().parents[1] / "static" / "webapp" / "index.html").read_text(encoding="utf-8")
+    assert 'id="langChip"' in html and "function chooseLang" in html and '"/api/lang"' in html
