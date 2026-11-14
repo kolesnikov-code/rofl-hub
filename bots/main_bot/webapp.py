@@ -9,6 +9,8 @@
 from __future__ import annotations
 
 import gzip
+
+import asyncpg
 import logging
 import time
 from datetime import datetime, timedelta
@@ -207,6 +209,45 @@ async def _auth_user_id(request: web.Request) -> int | None:
     return int(parsed["user"]["id"])
 
 
+async def register_from_app(request: web.Request) -> bool:
+    """Новичок открыл приложение, минуя чат (кнопка «Открыть» в списке чатов, ссылка ?startapp=…, каталог
+    приложений Telegram) — регистрируем так же, как /start: стартовый бонус, язык из Telegram, пригласивший и
+    источник из start_param (цифры — ID друга, duel_<код>, p_/c_ — промоутер/канал). Возвращает True, если создан.
+    Удалённый аккаунт сюда не попадает: возврат — только через /start (restore_account, без повторных бонусов)."""
+    from bots.main_bot.handlers.start import _duel_code_from, lang_from_telegram, register_user
+    from shared.analytics import parse_source
+    from shared.duels import invite_info
+    parsed = validate_init_data(request.headers.get("X-Telegram-Init-Data", ""), request.app["bot_token"])
+    if not parsed or "user" not in parsed:
+        return False
+    u = parsed["user"]
+    uid = int(u["id"])
+    sp = str(parsed.get("start_param") or "").strip()[:64]
+    async with db.pool.acquire() as conn:
+        if await conn.fetchval("SELECT 1 FROM users WHERE user_id = $1", uid):
+            return False
+        referrer = int(sp) if sp.isdigit() and int(sp) != uid else None
+        duel = _duel_code_from(sp)
+        if duel and referrer is None:
+            inv = await invite_info(conn, duel)
+            if inv is not None and inv["player1"] != uid:
+                referrer = inv["player1"]
+        source = parse_source(sp, referrer)
+        lang = lang_from_telegram(u.get("language_code"))
+        full_name = " ".join(x for x in (u.get("first_name"), u.get("last_name")) if x) or None
+        try:
+            async with conn.transaction():
+                created = await register_user(conn, uid, u.get("username") or f"user_{uid}", lang, referrer,
+                                              display_name=full_name, source=source)
+                if created and duel:
+                    await conn.execute("UPDATE users SET pending_duel = $2 WHERE user_id = $1", uid, duel)
+        except asyncpg.UniqueViolationError:   # два запроса разом (или /start в ту же секунду) — профиль уже создан
+            return False
+    if created:
+        await track(uid, "registered", source=source, lang=lang, via="app")
+    return created
+
+
 def _unauthorized() -> web.Response:
     return web.json_response({"error": "unauthorized"}, status=401)
 
@@ -246,6 +287,7 @@ async def handle_me(request: web.Request) -> web.Response:
     user_id = await _auth_user_id(request)
     if user_id is None:
         return _unauthorized()
+    await register_from_app(request)   # пришёл сразу в приложение, минуя /start
 
     now = utcnow()
     async with db.pool.acquire() as conn:
